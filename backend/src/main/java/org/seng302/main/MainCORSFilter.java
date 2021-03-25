@@ -25,18 +25,13 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-package org.seng302.example;
-
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
+package org.seng302.main;
 
 import org.springframework.stereotype.Component;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * This class set headers properly for CORS compliance. Global filtering is
