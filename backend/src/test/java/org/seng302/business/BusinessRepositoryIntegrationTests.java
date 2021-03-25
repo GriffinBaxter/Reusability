@@ -1,7 +1,9 @@
 package org.seng302.business;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.seng302.Address.Address;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,6 +30,20 @@ public class BusinessRepositoryIntegrationTests {
 
     private Optional<Business> found;
 
+    private static Address address;
+
+    @BeforeAll
+    public static void before() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+    }
+
     /**
      * Tests that a business is returned when calling findBusinessById() with an existing id
      */
@@ -36,7 +52,7 @@ public class BusinessRepositoryIntegrationTests {
         // given
         Business business = new Business("example name",
                                         "some text",
-                                        "11 example rd",
+                                        address,
                                         BusinessType.RETAIL_TRADE,
                                         LocalDateTime.now());
 
@@ -64,7 +80,7 @@ public class BusinessRepositoryIntegrationTests {
         // given
         Business business = new Business("example name",
                 "some text",
-                "11 example rd",
+                address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now());
 

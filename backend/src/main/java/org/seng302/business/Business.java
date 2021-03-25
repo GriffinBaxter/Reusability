@@ -5,7 +5,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.seng302.main.Validation;
+import org.seng302.Address.Address;
+import org.seng302.Address.Validation;
 import org.seng302.user.User;
 
 import java.time.LocalDateTime;
@@ -53,15 +54,18 @@ public class Business {
      */
     public Business(String name,
                     String description,
-                    String address,
+                    Address address,
                     BusinessType businessType,
                     LocalDateTime created
     ) throws Exception{
         if (!Validation.isName(name)){
             throw new Exception("Invalid business name");
         }
+        if (address == null){
+            throw new Exception("Invalid address");
+        }
         this.name = name;
-        this.address = address;
+        this.address = address.toString();
         this.businessType = businessType;
         this.description = (description.equals("")) ? null : description;
         this.created = created;

@@ -1,4 +1,4 @@
-package org.seng302.main;
+package org.seng302.Address;
 
 public class Validation {
 

@@ -1,5 +1,6 @@
 package org.seng302.business;
 
+import org.seng302.Address.Address;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class BusinessResource {
         Business business = new Business(
                 businessPayload.getName(),
                 businessPayload.getDescription(),
-                businessPayload.getAddress(),
+                Address.toAddress(businessPayload.getAddress()),
                 businessPayload.getBusinessType(),
                 LocalDateTime.now()
                 );

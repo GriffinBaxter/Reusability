@@ -1,5 +1,6 @@
 package org.seng302.user;
 
+import org.seng302.Address.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,7 +93,7 @@ public class UserResource {
                     registration.getEmail(),
                     registration.getDateOfBirth(),
                     registration.getPhoneNumber(),
-                    registration.getHomeAddress(),
+                    Address.toAddress(registration.getHomeAddress()),
                     registration.getPassword(),
                     LocalDateTime.now(),
                     USER);
@@ -150,7 +151,7 @@ public class UserResource {
                 user.get().getEmail(),
                 user.get().getDateOfBirth(),
                 user.get().getPhoneNumber(),
-                user.get().getHomeAddress(),
+                Address.toAddress(user.get().getHomeAddress()),
                 user.get().getCreated(),
                 role
         );

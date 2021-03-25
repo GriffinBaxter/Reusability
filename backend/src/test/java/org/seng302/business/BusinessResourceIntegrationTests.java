@@ -3,6 +3,7 @@ package org.seng302.business;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.seng302.Address.Address;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -53,8 +54,18 @@ public class BusinessResourceIntegrationTests {
 
     private Business business;
 
+    private Address address;
+
     @BeforeAll
     public void setup() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
         user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -63,7 +74,7 @@ public class BusinessResourceIntegrationTests {
                 "testemail@email.com",
                 LocalDate.of(2020, 2, 2),
                 "0271316",
-                "testaddress",
+                address,
                 "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
@@ -71,9 +82,9 @@ public class BusinessResourceIntegrationTests {
         business = new Business(
                 "name",
                 "some text",
-                "92 River Lum Road, Lumbridge, Misthalin",
+                address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0))
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0))
         );
         userRepository.save(user);
         businessRepository.save(business);
@@ -146,19 +157,25 @@ public class BusinessResourceIntegrationTests {
     public void canRetrieveBusinessWhenBusinessDoesExist() throws Exception {
         id = business.getId();
         expectedJson = "{" +
-                        "\"id\":" + business.getId() + "," +
-                        "\"name\":\"" + business.getName() + "\"," +
-                        "\"description\":\"" + business.getDescription() + "\"," +
-                        "\"address\":\"" + business.getAddress() + "\"," +
-                        "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                        "\"created\":\"" + business.getCreated() + ":00\"" +
-                        "}";
+                "\"id\":" + id + "," +
+                "\"name\":\"" + business.getName() + "\"," +
+                "\"description\":\"" + business.getDescription() + "\"," +
+                "\"address\":\"{" +
+                    "\"streetNumber\": \"" + address.getStreetNumber() + "\"," +
+                    "\"streetName\": \"" + address.getStreetName() + "\"," +
+                    "\"city\": \"" + address.getCity() + "\"," +
+                    "\"region\": \"" + address.getRegion() + "\"," +
+                    "\"country\": \"" + address.getCountry() + "\"," +
+                    "\"postcode\": \"" + address.getPostcode() + "\"" +
+                    "}\"," +
+                "\"businessType\":\"" + business.getBusinessType() + "\"," +
+                "\"created\":\"" + business.getCreated() + "\"}";
 
         Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getContentAsString().replace("\\n", "").replace("\\", "")).isEqualTo(expectedJson);
     }
 
     /**

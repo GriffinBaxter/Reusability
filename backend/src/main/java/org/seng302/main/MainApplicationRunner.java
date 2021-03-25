@@ -2,6 +2,7 @@ package org.seng302.main;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.Address.Address;
 import org.seng302.business.BusinessRepository;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -66,6 +67,14 @@ public class MainApplicationRunner implements ApplicationRunner {
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
     public void checkDGAAExists() throws Exception {
         if (!(userRepository.existsByRole(Role.DEFAULTGLOBALAPPLICATIONADMIN))) {
+            Address address = new Address(
+                    "3/24",
+                    "Ilam Road",
+                    "Christchurch",
+                    "Canterbury",
+                    "New Zealand",
+                    "90210"
+            );
             User dGAA = new User(
                     "John",
                     "Doe",
@@ -75,7 +84,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "email@email.com",
                     LocalDate.of(2020, 2, 2),
                     "0271316",
-                    "address",
+                    address,
                     "password",
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),

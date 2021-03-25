@@ -2,8 +2,10 @@ package org.seng302.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.seng302.Address.Address;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -34,6 +36,20 @@ public class UserRepositoryIntegrationTests {
     private Optional<User> foundUser;
     private List<UserPayload> foundUserPayloadList;
 
+    private static Address address;
+
+    @BeforeAll
+    public static void before() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+    }
+
     /**
      * Tests that a (correct) user is returned when calling findByEmail() with an existing email
      */
@@ -42,7 +58,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -77,7 +93,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -99,7 +115,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -148,7 +164,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -184,7 +200,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -208,7 +224,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -241,7 +257,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -264,7 +280,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -313,7 +329,7 @@ public class UserRepositoryIntegrationTests {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "0271316", address, "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);

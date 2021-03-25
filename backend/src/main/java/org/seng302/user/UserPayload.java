@@ -1,5 +1,7 @@
 package org.seng302.user;
 
+import org.seng302.Address.Address;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -16,7 +18,7 @@ public class UserPayload {
     private String email;
     private LocalDate dateOfBirth;
     private String phoneNumber;
-    private String homeAddress;
+    private Address homeAddress;
     private LocalDateTime created;
     private Role role;
 
@@ -30,7 +32,7 @@ public class UserPayload {
             String email,
             LocalDate dateOfBirth,
             String phoneNumber,
-            String homeAddress,
+            Address homeAddress,
             LocalDateTime created,
             Role role
     ) {
@@ -84,7 +86,7 @@ public class UserPayload {
         return phoneNumber;
     }
 
-    public String getHomeAddress() {
+    public Address getHomeAddress() {
         return homeAddress;
     }
 

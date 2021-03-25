@@ -1,6 +1,7 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
+import org.seng302.Address.Address;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -66,8 +67,18 @@ public class UserResourceIntegrationTests {
 
     private User anotherUser;
 
+    private Address address;
+
     @BeforeAll
     public void setup() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
         userRepository.deleteAll();
         user = new User("testfirst",
                         "testlast",
@@ -77,7 +88,7 @@ public class UserResourceIntegrationTests {
                         "testemail@email.com",
                         LocalDate.of(2020, 2, 2),
                         "0271316",
-                        "testaddress",
+                        address,
                         "testpassword",
                         LocalDateTime.of(LocalDate.of(2021, 2, 2),
                                             LocalTime.of(0, 0)),
@@ -90,7 +101,7 @@ public class UserResourceIntegrationTests {
                                 "example@example.com",
                                 LocalDate.of(2021, Month.JANUARY, 1),
                                 "123456789",
-                                "1 Example Street",
+                                address,
                                 "password",
                                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1),
                                             LocalTime.of(0, 0)),
