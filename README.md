@@ -1,4 +1,4 @@
-# Seng302 Team 6 Project
+# SENG 302 Team 400 Project
 
 Project uses `gradle`, `npm`, `Spring Boot`, `Vue.js` and `Gitlab CI`.
 
@@ -20,18 +20,6 @@ A backend sub-project (business logic and persistence server):
 The following is assuming you already cloned the repository.
 ### Frontend / GUI
 
-    open two terminals. In both:
-    $ cd team-6
-
-    In the first terminal:
-
-    $ cd test-server
-    $ npm install
-    $ node app.js
-
-
-    In the second terminal:
-
     $ cd frontend
     $ npm install
     $ npm run serve
@@ -50,6 +38,8 @@ For example this can be achieved by doing the following for Chrome:
 
 Running on: http://localhost:9499/ by default
 
+The backend can be tested by using the examples from the [API specification](https://eng-git.canterbury.ac.nz/seng302-2021/seng302-api-spec-2021) in the [Swagger Editor](https://editor.swagger.io/).
+
 ## Todo (S2)
 
 - Update team name into `build.gradle` and `package.json`
@@ -61,6 +51,10 @@ Running on: http://localhost:9499/ by default
 ## Contributors
 
 - SENG302 teaching team
+- Griffin Baxter
+- Zhedong Cao
+- Billie Johnson
+- Zachary Kaye
 - Hayley Krippner
 - Jack Patterson
 - Dan Ronen
