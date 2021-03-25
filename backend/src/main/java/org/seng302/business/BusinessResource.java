@@ -53,7 +53,7 @@ public class BusinessResource {
         Business business = new Business(
                 businessPayload.getName(),
                 businessPayload.getDescription(),
-                Address.toAddress(businessPayload.getAddress()),
+                businessPayload.getAddress(),
                 businessPayload.getBusinessType(),
                 LocalDateTime.now()
                 );

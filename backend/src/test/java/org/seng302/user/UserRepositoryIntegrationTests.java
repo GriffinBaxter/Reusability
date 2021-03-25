@@ -80,7 +80,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUser.get().getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUser.get().getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUser.get().getPhoneNumber());
-        assertThat(user.getHomeAddress()).isEqualTo(foundUser.get().getHomeAddress());
+        assertThat(user.getHomeAddress().toString()).isEqualTo(foundUser.get().getHomeAddress().toString());
         assertThat(user.getCreated()).isEqualTo(foundUser.get().getCreated());
         assertThat(user.getPassword()).isEqualTo(foundUser.get().getPassword());
     }
@@ -137,7 +137,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUser.get().getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUser.get().getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUser.get().getPhoneNumber());
-        assertThat(user.getHomeAddress()).isEqualTo(foundUser.get().getHomeAddress());
+        assertThat(user.getHomeAddress().toString()).isEqualTo(foundUser.get().getHomeAddress().toString());
         assertThat(user.getCreated()).isEqualTo(foundUser.get().getCreated());
         assertThat(user.getPassword()).isEqualTo(foundUser.get().getPassword());
     }

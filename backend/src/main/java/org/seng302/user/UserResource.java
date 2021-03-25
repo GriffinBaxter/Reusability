@@ -97,7 +97,7 @@ public class UserResource {
                     registration.getEmail(),
                     registration.getDateOfBirth(),
                     registration.getPhoneNumber(),
-                    Address.toAddress(registration.getHomeAddress()),
+                    registration.getHomeAddress(),
                     registration.getPassword(),
                     LocalDateTime.now(),
                     USER);
@@ -124,10 +124,26 @@ public class UserResource {
      * @return User object if it exists
      */
     @GetMapping("/users/{id}")
-    public UserPayload retrieveUser(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
-    ) {
-        getUserVerifySession(sessionToken);
+    public UserPayload retrieveUser(HttpServletRequest request, @PathVariable Integer id) {
+        String sessionToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Access token is missing or invalid");
+        }
+        for (Cookie cookie: cookies) {
+            if (cookie.getName() == "JSESSIONID"){
+                sessionToken = cookie.getValue();
+            }
+        }
+        if (sessionToken == null){
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Access token is missing or invalid");
+        }
+        System.out.println(sessionToken);
+        //getUserVerifySession(sessionToken);
 
         Optional<User> user = userRepository.findById(id);
 
@@ -155,7 +171,7 @@ public class UserResource {
                 user.get().getEmail(),
                 user.get().getDateOfBirth(),
                 user.get().getPhoneNumber(),
-                Address.toAddress(user.get().getHomeAddress()),
+                user.get().getHomeAddress(),
                 user.get().getCreated(),
                 role
         );

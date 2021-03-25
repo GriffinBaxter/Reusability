@@ -10,12 +10,12 @@ public class AddressTest {
     @Test
     public void testToString(){
         String expected = "{\n" +
-                "\"streetNumber\": \"3/24\",\n" +
-                "\"streetName\": \"Ilam Road\",\n" +
-                "\"city\": \"Christchurch\",\n" +
-                "\"region\": \"Canterbury\",\n" +
-                "\"country\": \"New Zealand\",\n" +
-                "\"postcode\": \"90210\"\n" +
+                "\"streetNumber\":\"3/24\",\n" +
+                "\"streetName\":\"Ilam Road\",\n" +
+                "\"city\":\"Christchurch\",\n" +
+                "\"region\":\"Canterbury\",\n" +
+                "\"country\":\"New Zealand\",\n" +
+                "\"postcode\":\"90210\"\n" +
                 "}";
         Address address = new Address(
                 "3/24",
@@ -31,12 +31,12 @@ public class AddressTest {
     @Test
     public void testToAddressWithJsonFormat(){
         String string = "{\n" +
-                "\"streetNumber\": \"3/24\",\n" +
-                "\"streetName\": \"Ilam Road\",\n" +
-                "\"city\": \"Christchurch\",\n" +
-                "\"region\": \"Canterbury\",\n" +
-                "\"country\": \"New Zealand\",\n" +
-                "\"postcode\": \"90210\"\n" +
+                "\"streetNumber\":\"3/24\",\n" +
+                "\"streetName\":\"Ilam Road\",\n" +
+                "\"city\":\"Christchurch\",\n" +
+                "\"region\":\"Canterbury\",\n" +
+                "\"country\":\"New Zealand\",\n" +
+                "\"postcode\":\"90210\"\n" +
                 "}";
         Address address = Address.toAddress(string);
 
@@ -51,12 +51,12 @@ public class AddressTest {
     @Test
     public void testToAddressWithoutJsonFormat(){
         String string = "{" +
-                "\"streetNumber\": \"3/24\"," +
-                "\"streetName\": \"Ilam Road\"," +
-                "\"city\": \"Christchurch\"," +
-                "\"region\": \"Canterbury\"," +
-                "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90210\"" +
+                "\"streetNumber\":\"3/24\"," +
+                "\"streetName\":\"Ilam Road\"," +
+                "\"city\":\"Christchurch\"," +
+                "\"region\":\"Canterbury\"," +
+                "\"country\":\"New Zealand\"," +
+                "\"postcode\":\"90210\"" +
                 "}";
         Address address = Address.toAddress(string);
 

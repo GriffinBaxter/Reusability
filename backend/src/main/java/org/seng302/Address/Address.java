@@ -59,7 +59,7 @@ public class Address {
         String postcode = "";
 
         for (int i = 0; i < 6; i++){
-            String data = infos[i].split(": ")[1];
+            String data = infos[i].split(":")[1];
             if (i == 0) streetNumber = data;
             else if (i == 1) streetName = data;
             else if (i == 2) city = data;
@@ -74,12 +74,12 @@ public class Address {
     @Override
     public String toString() {
         return "{\n" +
-                "\"streetNumber\": \"" + streetNumber + "\",\n" +
-                "\"streetName\": \""   + streetName   + "\",\n" +
-                "\"city\": \""        + city         + "\",\n" +
-                "\"region\": \""       + region       + "\",\n" +
-                "\"country\": \""      + country      + "\",\n" +
-                "\"postcode\": \""     + postcode     + "\"\n" +
+                "\"streetNumber\":\"" + streetNumber + "\",\n" +
+                "\"streetName\":\""   + streetName   + "\",\n" +
+                "\"city\":\""        + city         + "\",\n" +
+                "\"region\":\""       + region       + "\",\n" +
+                "\"country\":\""      + country      + "\",\n" +
+                "\"postcode\":\""     + postcode     + "\"\n" +
                 "}";
     }
 }

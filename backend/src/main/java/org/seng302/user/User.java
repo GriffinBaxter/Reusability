@@ -174,8 +174,8 @@ public class User {
         return phoneNumber;
     }
 
-    public String getHomeAddress() {
-        return homeAddress;
+    public Address getHomeAddress() {
+        return Address.toAddress(homeAddress);
     }
 
     public String getPassword() {

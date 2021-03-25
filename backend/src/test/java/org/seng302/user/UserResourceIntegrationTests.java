@@ -57,7 +57,7 @@ public class UserResourceIntegrationTests {
                                     "\"email\":\"%s\"," +
                                     "\"dateOfBirth\":\"%s\"," +
                                     "\"phoneNumber\":\"%s\"," +
-                                    "\"homeAddress\":\"%s\"," +
+                                    "\"homeAddress\":%s,"+
                                     "\"created\":\"%s" + "\"," +
                                     "\"role\":%s}";
 
@@ -202,7 +202,7 @@ public class UserResourceIntegrationTests {
         // given
         User newUser = new User("Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
                           "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()), "01234567",
-                     "testaddress", "testpassword", LocalDateTime.now(), Role.USER);
+                     address, "testpassword", LocalDateTime.now(), Role.USER);
         newUser.setId(4);
         given(userRepository.findByEmail(newUser.getEmail())).willReturn(java.util.Optional.empty());
 
@@ -339,7 +339,7 @@ public class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
     }
 
     /**
@@ -361,7 +361,7 @@ public class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
     }
 
     /**
@@ -384,7 +384,7 @@ public class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
     }
 
     /**
@@ -467,7 +467,7 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"") + "]";
+                user.getPhoneNumber(), user.getHomeAddress().toString(), user.getCreated(), "\"" + user.getRole() + "\"") + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
@@ -493,7 +493,7 @@ public class UserResourceIntegrationTests {
         // then
         for (MockHttpServletResponse response: responseList) {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
         }
     }
 
@@ -544,7 +544,7 @@ public class UserResourceIntegrationTests {
         // then
         for (MockHttpServletResponse response: responseList) {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
         }
     }
 
@@ -595,7 +595,7 @@ public class UserResourceIntegrationTests {
         // then
         for (MockHttpServletResponse response: responseList) {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
         }
     }
 

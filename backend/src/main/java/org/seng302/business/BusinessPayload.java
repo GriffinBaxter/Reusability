@@ -1,9 +1,16 @@
 package org.seng302.business;
 
+import org.seng302.Address.Address;
+
 public class BusinessPayload {
     private String name;
     private String description;
-    private String address;
+    private String streetNumber;
+    private String streetName;
+    private String city;
+    private String region;
+    private String country;
+    private String postcode;
     private String businessType;
 
     public String getName() {
@@ -14,8 +21,8 @@ public class BusinessPayload {
         return description;
     }
 
-    public String getAddress() {
-        return address;
+    public Address getAddress() {
+        return new Address(streetNumber, streetName, city, region, country, postcode);
     }
 
     public BusinessType getBusinessType() {

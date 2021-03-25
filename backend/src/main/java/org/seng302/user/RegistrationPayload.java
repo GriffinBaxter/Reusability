@@ -13,7 +13,12 @@ public class RegistrationPayload {
     private String email;
     private LocalDate dateOfBirth;
     private String phoneNumber;
-    private Address homeAddress;
+    private String streetNumber;
+    private String streetName;
+    private String city;
+    private String region;
+    private String country;
+    private String postcode;
     private String password;
 
     public String getFirstName() {
@@ -48,8 +53,8 @@ public class RegistrationPayload {
         return phoneNumber;
     }
 
-    public String getHomeAddress() {
-        return homeAddress.toString();
+    public Address getHomeAddress() {
+        return new Address(streetNumber, streetName, city, region, country, postcode);
     }
 
     public String getPassword() {
