@@ -1,8 +1,8 @@
-# Seng302 Example Project
+# Seng302 Team 6 Project
 
-Basic project template using `gradle`, `npm`, `Spring Boot`, `Vue.js` and `Gitlab CI`.
+Project uses `gradle`, `npm`, `Spring Boot`, `Vue.js` and `Gitlab CI`.
 
-## Basic Project Structure
+## Project Structure
 
 A frontend sub-project (web GUI):
 
@@ -17,7 +17,20 @@ A backend sub-project (business logic and persistence server):
 
 ## How to run
 
+The following is assuming you already cloned the repository.
 ### Frontend / GUI
+
+    open two terminals. In both:
+    $ cd team-6
+
+    In the first terminal:
+
+    $ cd test-server
+    $ npm install
+    $ node app.js
+
+
+    In the second terminal:
 
     $ cd frontend
     $ npm install
@@ -25,18 +38,17 @@ A backend sub-project (business logic and persistence server):
 
 Running on: http://localhost:9500/ by default
 
+Note that due to CORS policy and sameSite cookie policy, you will need to disable some security measures.
+For example this can be achieved by doing the following for Chrome: 
+- Create a shortcut to Chrome 
+- In the properties add '--disable-web-security --user-data-dir="C:/ChromeDevSession"' after everything in the target property field.
+
 ### Backend / server
 
     cd backend
     ./gradlew bootRun
 
 Running on: http://localhost:9499/ by default
-
-## Todo (S1)
-
-- Add team name into `build.gradle` and `package.json`
-- Update this README title
-- Update this README contributors
 
 ## Todo (S2)
 
@@ -49,6 +61,10 @@ Running on: http://localhost:9499/ by default
 ## Contributors
 
 - SENG302 teaching team
+- Hayley Krippner
+- Jack Patterson
+- Dan Ronen
+- Troy Tomlins
 
 ## References
 
