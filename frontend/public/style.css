@@ -1,0 +1,171 @@
+@import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
+
+/*
+ * Created on Wed Feb 10 2021
+ *
+ * The Unlicense
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or distribute
+ * this software, either in source code form or as a compiled binary, for any
+ * purpose, commercial or non-commercial, and by any means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors of this
+ * software dedicate any and all copyright interest in the software to the public
+ * domain. We make this dedication for the benefit of the public at large and to
+ * the detriment of our heirs and successors. We intend this dedication to be an
+ * overt act of relinquishment in perpetuity of all present and future rights to
+ * this software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <https://unlicense.org>
+ */
+
+
+/****************************************
+                 Global
+ ****************************************/
+
+body {
+  background: #fafbfc;
+}
+
+/****************************************
+               Login Page
+ ****************************************/
+
+#formContainer {
+  background-color: #fff;
+  border-radius: 1rem;
+}
+
+#loginButton {
+  background-color: #1EBA8C;
+  color: white;
+  border-color: #1EBA8C;
+}
+
+#loginButton:hover {
+  background-color: transparent;
+  color: #1EBA8C;
+}
+
+#loginButton:focus{
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
+/****************************************
+              Profile Page
+ ****************************************/
+
+/*#profileContainer {*/
+/*  width: 60%;*/
+/*}*/
+
+#editProfileButton {
+  background-color: #fff;
+  border-color: #23d9a3;
+}
+
+#editProfileButton:hover {
+  background-color: #23d9a3
+}
+
+#logoutButton {
+  border-color: #23d9a3;
+  color: black;
+}
+
+#logoutButton:hover {
+  background-color: #23d9a3;
+}
+
+
+/****************************
+   Profile Header Component
+ ****************************/
+
+#searchContainer {
+  width: 45%;
+}
+
+/****************************************
+              Search Page
+ ****************************************/
+
+/*.right-border {*/
+/*  border-right: 1px solid grey;*/
+/*}*/
+
+/*.left-border {*/
+/*  border-left: 1px solid grey;*/
+/*}*/
+
+.header-col {
+  background-color: #a2b2c3;
+}
+
+.row-colour {
+  background-color: #fff;
+}
+
+.row-colour-dark {
+  background-color: #efefef;
+}
+
+.row-colour:hover {
+  background-color: lightgrey;
+}
+
+.col-hover:hover {
+  background-color: lightgrey;
+}
+
+
+/*****************************************************************
+                  Autocomplete Dropdown Styling
+
+           This CSS is from the example code snippet
+   found on w3schools for a simple autocomplete dropdown menu:
+    https://www.w3schools.com/howto/howto_js_autocomplete.asp
+
+ *****************************************************************/
+
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+/*****************************************************************/
