@@ -16,10 +16,10 @@ public class UserPayload {
     private String nickname;
     private String bio;
     private String email;
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
     private String phoneNumber;
     private Address homeAddress;
-    private LocalDateTime created;
+    private String created;
     private Role role;
 
     public UserPayload(
@@ -43,10 +43,10 @@ public class UserPayload {
         this.nickname = nickname;
         this.bio = bio;
         this.email = email;
-        this.dateOfBirth = dateOfBirth;
+        this.dateOfBirth = dateOfBirth.toString();
         this.phoneNumber = phoneNumber;
         this.homeAddress = homeAddress;
-        this.created = created;
+        this.created = created.toString();
         this.role = role;
     }
 
@@ -78,7 +78,7 @@ public class UserPayload {
         return email;
     }
 
-    public LocalDate getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
@@ -90,7 +90,7 @@ public class UserPayload {
         return homeAddress;
     }
 
-    public LocalDateTime getCreated() {
+    public String getCreated() {
         return created;
     }
 
