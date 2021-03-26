@@ -1,5 +1,6 @@
 package org.seng302.business;
 
+import org.seng302.Address.Address;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class BusinessResource {
      * @return business object if it exists
      */
     @GetMapping("/businesses/{id}")
-    public Business retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+    public BusinessPayload retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                      @PathVariable String id){
         //access token invalid
         getUserVerifySession(sessionToken);
@@ -81,6 +82,14 @@ public class BusinessResource {
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
-        return business.get();
+        return new BusinessPayload(
+                business.get().getId(),
+                business.get().getAdministrators(),
+                business.get().getName(),
+                business.get().getDescription(),
+                business.get().getAddress(),
+                business.get().getBusinessType(),
+                business.get().getCreated()
+                );
     }
 }

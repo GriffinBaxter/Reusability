@@ -100,12 +100,12 @@ public class BusinessResourceIntegrationTests {
                         "\"name\": \"Lumbridge General Store\",\n" +
                         "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
                         "\"address\": {\n" +
-                                "{z\"streetNumber\": \"3/24\",\n" +
+                                "\"streetNumber\": \"3/24\",\n" +
                                 "\"streetName\": \"Ilam Road\",\n" +
                                 "\"city\": \"Christchurch\",\n" +
                                 "\"region\": \"Canterbury\",\n" +
                                 "\"country\": \"New Zealand\",\n" +
-                                "\"postcode\": \"90210\",\n" +
+                                "\"postcode\": \"90210\"\n" +
                                 "},\n" +
                         "\"businessType\": \"Accommodation and Food Services\"\n" +
                         "}";
@@ -126,11 +126,18 @@ public class BusinessResourceIntegrationTests {
     @Test
     public void canCreateWhenDataValidAndCookieExists() throws Exception {
         payloadJson = "{\n" +
-                        "\"name\": \"Lumbridge General Store\",\n" +
-                        "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
-                        "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
-                        "\"businessType\": \"Accommodation and Food Services\"\n" +
-                        "}";
+                "\"name\": \"Lumbridge General Store\",\n" +
+                "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
+                "\"address\": {\n" +
+                    "\"streetNumber\": \"3/24\",\n" +
+                    "\"streetName\": \"Ilam Road\",\n" +
+                    "\"city\": \"Christchurch\",\n" +
+                    "\"region\": \"Canterbury\",\n" +
+                    "\"country\": \"New Zealand\",\n" +
+                    "\"postcode\": \"90210\"\n" +
+                    "},\n" +
+                "\"businessType\": \"Accommodation and Food Services\"\n" +
+                "}";
         Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
@@ -147,12 +154,18 @@ public class BusinessResourceIntegrationTests {
         payloadJson = "{\n" +
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
-                "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
+                "\"address\": {\n" +
+                    "\"streetNumber\": \"3/24\",\n" +
+                    "\"streetName\": \"Ilam Road\",\n" +
+                    "\"city\": \"Christchurch\",\n" +
+                    "\"region\": \"Canterbury\",\n" +
+                    "\"country\": \"New Zealand\",\n" +
+                    "\"postcode\": \"90210\"\n" +
+                "},\n" +
                 "\"businessType\": \"Accommodation and Food Services\"\n" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(0));
-        response = mvc.perform(post("/businesses").cookie(cookie)
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+        response = mvc.perform(post("/businesses").contentType(MediaType.APPLICATION_JSON)
+                .content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
@@ -165,25 +178,26 @@ public class BusinessResourceIntegrationTests {
         id = business.getId();
         expectedJson = "{" +
                 "\"id\":" + id + "," +
+                "\"administrators\":" + business.getAdministrators() + "," +
                 "\"name\":\"" + business.getName() + "\"," +
                 "\"description\":\"" + business.getDescription() + "\"," +
-                "\"address\":\"{" +
+                "\"address\":{" +
                     "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
                     "\"streetName\":\"" + address.getStreetName() + "\"," +
                     "\"city\":\"" + address.getCity() + "\"," +
                     "\"region\":\"" + address.getRegion() + "\"," +
                     "\"country\":\"" + address.getCountry() + "\"," +
                     "\"postcode\":\"" + address.getPostcode() + "\"" +
-                    "}\"," +
+                    "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
-
+        System.out.println(expectedJson);
         Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString().replace("\\n", "").replace("\\", ""))
-                .isEqualTo(expectedJson);//TODO: fix time different in format.
+                .isEqualTo(expectedJson);
     }
 
     /**
@@ -194,8 +208,7 @@ public class BusinessResourceIntegrationTests {
         id = business.getId();
         expectedJson = "";
 
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(0));
-        response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(get(String.format("/businesses/%d", id))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);

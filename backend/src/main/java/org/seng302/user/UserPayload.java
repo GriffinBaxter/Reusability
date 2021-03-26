@@ -4,6 +4,8 @@ import org.seng302.Address.Address;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Payload for the User (notably excluding the password field, for JSON responses).
@@ -21,6 +23,34 @@ public class UserPayload {
     private Address homeAddress;
     private String created;
     private Role role;
+
+    /**
+     * translate a list of User to a list of UserPayload
+     * @param users a list of User
+     * @return a list of UserPayload
+     */
+    public static List<UserPayload> toUserPayload (List<User> users){
+        List<UserPayload> userPayloads = new ArrayList<>();
+        UserPayload userPayload;
+        for (User user: users){
+            userPayload = new UserPayload(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getMiddleName(),
+                    user.getNickname(),
+                    user.getBio(),
+                    user.getEmail(),
+                    user.getDateOfBirth(),
+                    user.getPhoneNumber(),
+                    user.getHomeAddress(),
+                    user.getCreated(),
+                    user.getRole()
+            );
+            userPayloads.add(userPayload);
+        }
+        return userPayloads;
+    }
 
     public UserPayload(
             int id,

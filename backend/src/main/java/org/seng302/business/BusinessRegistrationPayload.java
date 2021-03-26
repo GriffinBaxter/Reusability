@@ -5,12 +5,7 @@ import org.seng302.Address.Address;
 public class BusinessRegistrationPayload {
     private String name;
     private String description;
-    private String streetNumber;
-    private String streetName;
-    private String city;
-    private String region;
-    private String country;
-    private String postcode;
+    private Address address;
     private String businessType;
 
     public String getName() {
@@ -22,13 +17,18 @@ public class BusinessRegistrationPayload {
     }
 
     public Address getAddress() {
-        return new Address(streetNumber, streetName, city, region, country, postcode);
+        return address;
     }
 
     public BusinessType getBusinessType() {
         return businessTypeTranslate(businessType);
     }
 
+    /**
+     * make a string to businessType object
+     * @param string a string contain businessType
+     * @return businessType
+     */
     private BusinessType businessTypeTranslate(String string){
         BusinessType businessType;
         if (string.toUpperCase().equals("ACCOMMODATION AND FOOD SERVICES")){

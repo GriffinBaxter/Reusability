@@ -47,6 +47,35 @@ public class Address {
         return postcode;
     }
 
+    public void setStreetNumber(String streetNumber) {
+        this.streetNumber = streetNumber;
+    }
+
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
+    }
+
+    /**
+     * make a string address to become an address object
+     * @param string address in json form
+     * @return an address object
+     */
     public static Address toAddress(String string){
         String[] infos = string.replace("{", "").replace("}", "").
                 replace("\"", "").replace("\n","").split(",");
@@ -71,6 +100,10 @@ public class Address {
         return new Address(streetNumber, streetName, city, region, country, postcode);
     }
 
+    /**
+     * make an address object to json form
+     * @return a string contain address info in json form
+     */
     @Override
     public String toString() {
         return "{\n" +
