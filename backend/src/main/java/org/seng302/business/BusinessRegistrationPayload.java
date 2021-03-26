@@ -2,7 +2,7 @@ package org.seng302.business;
 
 import org.seng302.Address.Address;
 
-public class BusinessPayload {
+public class BusinessRegistrationPayload {
     private String name;
     private String description;
     private String streetNumber;

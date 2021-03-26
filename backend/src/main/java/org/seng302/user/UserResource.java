@@ -1,6 +1,5 @@
 package org.seng302.user;
 
-import org.seng302.Address.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +53,7 @@ public class UserResource {
      * @param response HTTP Response
      */
     @PostMapping("/login")
-    public UserIdPayload loginUser(@RequestBody LoginPayload login, HttpServletResponse response) {
+    public UserIdPayload loginUser(@RequestBody UserLoginPayload login, HttpServletResponse response) {
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
         if (user.isPresent()) {
@@ -77,7 +76,7 @@ public class UserResource {
      * @param registration Registration payload
      */
     @PostMapping("/users")
-    public ResponseEntity<UserIdPayload> registerUser(@RequestBody RegistrationPayload registration,
+    public ResponseEntity<UserIdPayload> registerUser(@RequestBody UserRegistrationPayload registration,
                                                       HttpServletResponse response) {
 
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {

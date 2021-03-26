@@ -1,6 +1,5 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,23 +37,23 @@ public class BusinessResource {
     }
 
     /**
-     * create a new business by info given by businessPayload
+     * create a new business by info given by businessRegistrationPayload
      * @param sessionToken value of cookie
-     * @param businessPayload contain new business info
+     * @param businessRegistrationPayload contain new business info
      * @throws Exception Access token is missing or invalid
      */
     @PostMapping("/businesses")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Business account created successfully")
     public void createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                               @RequestBody BusinessPayload businessPayload) throws Exception {
+                               @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
         //access token invalid
         User currentUser = getUserVerifySession(sessionToken);
 
         Business business = new Business(
-                businessPayload.getName(),
-                businessPayload.getDescription(),
-                businessPayload.getAddress(),
-                businessPayload.getBusinessType(),
+                businessRegistrationPayload.getName(),
+                businessRegistrationPayload.getDescription(),
+                businessRegistrationPayload.getAddress(),
+                businessRegistrationPayload.getBusinessType(),
                 LocalDateTime.now()
                 );
         business.addAdministrators(currentUser); //add user to administrators list

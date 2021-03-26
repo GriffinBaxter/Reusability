@@ -4,7 +4,7 @@ import org.seng302.Address.Address;
 
 import java.time.LocalDate;
 
-public class RegistrationPayload {
+public class UserRegistrationPayload {
     private String firstName;
     private String lastName;
     private String middleName;
