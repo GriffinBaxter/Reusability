@@ -2,6 +2,12 @@
   <div>
     <ProfileHeader/>
     <div class="container p-5 mt-3" id="profileContainer">
+
+      <div class="row" v-if="hasAdminRights()">
+        <div class="col-xl-3 mb-5 text-center">
+          <div class="display-5">You have application admin rights!</div>
+        </div>
+      </div>
       <div class="row">
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
@@ -115,12 +121,14 @@ import ProfileHeader from "@/components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "@/components/Footer";
+import {UserRole} from '@/components/User'
 
 export default {
   name: "Profile",
   components: {
     Footer,
     ProfileHeader,
+
   },
   data() {
     return {
@@ -136,9 +144,17 @@ export default {
       created: "",
       joined: "",
       otherUser: false,
+      role: UserRole.USER
     }
   },
   methods: {
+    /**
+     * Determines if a user's role is of type admin
+     * @return {boolean} returns true if user is an admin. Otherwise false.
+     */
+    hasAdminRights() {
+      return this.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || this.role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
     getCreatedDate(createdDate) {
       /*
       Calculates the months between the given date and the current date, then formats the given date and months.
@@ -220,6 +236,9 @@ export default {
       this.bio = data.bio;
       this.email = data.email;
 
+      if (data.role) {
+        this.role = data.role;
+      }
 
 
       this.getCreatedDate(data.created);
