@@ -59,7 +59,9 @@ public class UserResourceIntegrationTests {
                                     "\"phoneNumber\":\"%s\"," +
                                     "\"homeAddress\":%s,"+
                                     "\"created\":\"%s" + "\"," +
-                                    "\"role\":%s}";
+                                    "\"role\":%s," +
+                                    "\"businessesAdministered\":%s" +
+            "}";
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
@@ -328,7 +330,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"");
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"", user.getBusinessesAdministered());
 
         // when
         when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
@@ -351,7 +353,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null);
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered());
 
         // when
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
@@ -373,7 +375,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null);
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered());
 
         // when
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
@@ -467,21 +469,22 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress().toString(), user.getCreated(), "\"" + user.getRole() + "\"") + "]";
+                user.getPhoneNumber(), user.getHomeAddress().toString(), user.getCreated(), "\"" + user.getRole() + "\"",
+                user.getBusinessesAdministered()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
                                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), user.getRole()));
+                                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), user.getRole(), user.getBusinessesAdministered()));
 
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                                                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
+                                                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2]))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1]))).thenReturn(list);
         when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -518,21 +521,21 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                     user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                    user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null) + "]";
+                    user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null));
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered()));
 
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
+                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2]))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1]))).thenReturn(list);
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
 
         for (String searchQuery: searchQueryList) {
@@ -569,21 +572,21 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null) + "]";
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null));
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered()));
 
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
+                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2]))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1]))).thenReturn(list);
         when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
 
         for (String searchQuery: searchQueryList) {
@@ -657,15 +660,15 @@ public class UserResourceIntegrationTests {
         // when
         List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null));
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered()));
 
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
+                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2]))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1]))).thenReturn(list);
         when(userRepository.findById(0)).thenReturn(Optional.empty());
 
         for (String searchQuery: searchQueryList) {
@@ -704,15 +707,15 @@ public class UserResourceIntegrationTests {
         // when
         List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null));
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered()));
 
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3)))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
+                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2]))).thenReturn(list);
+        when(UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1]))).thenReturn(list);
 
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(

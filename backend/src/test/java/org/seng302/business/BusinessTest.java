@@ -59,7 +59,8 @@ public class BusinessTest {
                     "some text",
                     address,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
+                    user
             );
         }catch (Exception e){
             assertEquals("Invalid business name", e.getMessage());
@@ -74,7 +75,8 @@ public class BusinessTest {
                     "some text",
                     null,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
+                    user
             );
         }catch (Exception e){
             assertEquals("Invalid address", e.getMessage());
@@ -88,7 +90,8 @@ public class BusinessTest {
                 "",
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         assertNull(businessAccount.getDescription());
     }
@@ -105,23 +108,22 @@ public class BusinessTest {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)));
+                        LocalTime.of(0, 0)),
+                user);
         User user = new User("first",
                 "last",
                 "middle",
                 "nick",
-                "biography",
-                "email@email.com",
-                LocalDate.of(2020, 2, 2),
-                "0271316",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, 1, 1),
+                "123456789",
                 address,
                 "password",
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0)),
                 Role.USER);
-
         business.addAdministrators(user);
-        assertEquals(user, business.getAdministrators().get(0));
         assertEquals(business, user.getBusinessesAdministeredObjects().get(0));
     }
 
@@ -137,7 +139,8 @@ public class BusinessTest {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)));
+                        LocalTime.of(0, 0)),
+                user);
         User user = new User("first",
                 "last",
                 "middle",
@@ -152,7 +155,6 @@ public class BusinessTest {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        business.addAdministrators(user);
         business.removeAdministrators(user);
 
         assertThat(business.getAdministrators().isEmpty()).isTrue();

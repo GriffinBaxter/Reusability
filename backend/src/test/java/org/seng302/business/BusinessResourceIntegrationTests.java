@@ -84,7 +84,8 @@ public class BusinessResourceIntegrationTests {
                 "some text",
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0))
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
         );
         userRepository.save(user);
         businessRepository.save(business);
@@ -178,7 +179,7 @@ public class BusinessResourceIntegrationTests {
         id = business.getId();
         expectedJson = "{" +
                 "\"id\":" + id + "," +
-                "\"administrators\":" + business.getAdministrators() + "," +
+                "\"administrators\":[]," +
                 "\"name\":\"" + business.getName() + "\"," +
                 "\"description\":\"" + business.getDescription() + "\"," +
                 "\"address\":{" +

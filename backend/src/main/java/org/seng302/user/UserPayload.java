@@ -23,6 +23,7 @@ public class UserPayload {
     private Address homeAddress;
     private String created;
     private Role role;
+    private List<Integer> businessesAdministered;
 
     /**
      * translate a list of User to a list of UserPayload
@@ -45,7 +46,8 @@ public class UserPayload {
                     user.getPhoneNumber(),
                     user.getHomeAddress(),
                     user.getCreated(),
-                    user.getRole()
+                    user.getRole(),
+                    user.getBusinessesAdministered()
             );
             userPayloads.add(userPayload);
         }
@@ -64,7 +66,8 @@ public class UserPayload {
             String phoneNumber,
             Address homeAddress,
             LocalDateTime created,
-            Role role
+            Role role,
+            List<Integer> businessesAdministered
     ) {
         this.id = id;
         this.firstName = firstName;
@@ -78,6 +81,7 @@ public class UserPayload {
         this.homeAddress = homeAddress;
         this.created = created.toString();
         this.role = role;
+        this.businessesAdministered = businessesAdministered;
     }
 
     public int getId() {
@@ -128,7 +132,59 @@ public class UserPayload {
         return role;
     }
 
+    public List<Integer> getBusinessesAdministered() {
+        return businessesAdministered;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public void setBusinessesAdministered(List<Integer> businessesAdministered) {
+        this.businessesAdministered = businessesAdministered;
     }
 }

@@ -132,7 +132,7 @@ public class UserResource {
                     "Access token is missing or invalid");
         }
         for (Cookie cookie: cookies) {
-            if (cookie.getName() == "JSESSIONID"){
+            if (cookie.getName().equals("JSESSIONID")){
                 sessionToken = cookie.getValue();
             }
         }
@@ -172,7 +172,8 @@ public class UserResource {
                 user.get().getPhoneNumber(),
                 user.get().getHomeAddress(),
                 user.get().getCreated(),
-                role
+                role,
+                user.get().getBusinessesAdministered()
         );
     }
 
@@ -188,7 +189,7 @@ public class UserResource {
     ) {
         getUserVerifySession(sessionToken);
 
-        List<UserPayload> users;
+        List<User> users;
 
         String[] searchQuerySplit = searchQuery.split(" ");
 
@@ -208,12 +209,12 @@ public class UserResource {
         }
 
         if (!verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            for (UserPayload user: users) {
+            for (User user: users) {
                 user.setRole(null);
             }
         }
 
-        return users.stream().distinct().collect(Collectors.toList());
+        return UserPayload.toUserPayload(users);
     }
 
     /**

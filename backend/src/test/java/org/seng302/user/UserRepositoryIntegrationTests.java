@@ -171,9 +171,9 @@ public class UserRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundUserPayloadList = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
+        foundUserPayloadList = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
                 "TESTFIRST", "TESTMIDDLE", "TESTLAST"
-        );
+        ));
 
         // then
         assertThat(foundUserPayloadList.size() == 1).isTrue();
@@ -186,7 +186,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUserPayloadList.get(0).getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUserPayloadList.get(0).getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUserPayloadList.get(0).getPhoneNumber());
-        assertThat(user.getHomeAddress()).isEqualTo(foundUserPayloadList.get(0).getHomeAddress());
+        assertThat(user.getHomeAddress().toString()).isEqualTo(foundUserPayloadList.get(0).getHomeAddress().toString());
         assertThat(user.getCreated()).isEqualTo(foundUserPayloadList.get(0).getCreated());
     }
 
@@ -207,9 +207,9 @@ public class UserRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundUserPayloadList = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
+        foundUserPayloadList = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
                 "not first", "not middle", "not last"
-        );
+        ));
 
         // then
         assertThat(foundUserPayloadList.isEmpty()).isTrue();
@@ -231,7 +231,7 @@ public class UserRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundUserPayloadList = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("TESTFIRST", "TESTLAST");
+        foundUserPayloadList = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("TESTFIRST", "TESTLAST"));
 
         // then
         assertThat(foundUserPayloadList.size() == 1).isTrue();
@@ -244,7 +244,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUserPayloadList.get(0).getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUserPayloadList.get(0).getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUserPayloadList.get(0).getPhoneNumber());
-        assertThat(user.getHomeAddress()).isEqualTo(foundUserPayloadList.get(0).getHomeAddress());
+        assertThat(user.getHomeAddress().toString()).isEqualTo(foundUserPayloadList.get(0).getHomeAddress().toString());
         assertThat(user.getCreated()).isEqualTo(foundUserPayloadList.get(0).getCreated());
     }
 
@@ -264,7 +264,7 @@ public class UserRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundUserPayloadList = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("not first", "not last");
+        foundUserPayloadList = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("not first", "not last"));
 
         // then
         assertThat(foundUserPayloadList.isEmpty()).isTrue();
@@ -287,10 +287,10 @@ public class UserRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        List<UserPayload> foundUserPayloadListNickname = userRepository.findByNicknameIgnoreCase("TESTNICK");
-        List<UserPayload> foundUserPayloadListFirst = userRepository.findByFirstNameIgnoreCase("TESTFIRST");
-        List<UserPayload> foundUserPayloadListLast = userRepository.findByLastNameIgnoreCase("TESTLAST");
-        List<UserPayload> foundUserPayloadListMiddle = userRepository.findByMiddleNameIgnoreCase("TESTMIDDLE");
+        List<UserPayload> foundUserPayloadListNickname = UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase("TESTNICK"));
+        List<UserPayload> foundUserPayloadListFirst = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase("TESTFIRST"));
+        List<UserPayload> foundUserPayloadListLast = UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase("TESTLAST"));
+        List<UserPayload> foundUserPayloadListMiddle = UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase("TESTMIDDLE"));
         List<UserPayload> foundUserPayloads = List.of(
                 foundUserPayloadListNickname.get(0),
                 foundUserPayloadListFirst.get(0),
@@ -314,7 +314,7 @@ public class UserRepositoryIntegrationTests {
             assertThat(user.getBio()).isEqualTo(foundUserPayload.getBio());
             assertThat(user.getDateOfBirth()).isEqualTo(foundUserPayload.getDateOfBirth());
             assertThat(user.getPhoneNumber()).isEqualTo(foundUserPayload.getPhoneNumber());
-            assertThat(user.getHomeAddress()).isEqualTo(foundUserPayload.getHomeAddress());
+            assertThat(user.getHomeAddress().toString()).isEqualTo(foundUserPayload.getHomeAddress().toString());
             assertThat(user.getCreated()).isEqualTo(foundUserPayload.getCreated());
         }
     }
@@ -336,10 +336,10 @@ public class UserRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        List<UserPayload> foundUserPayloadListNickname = userRepository.findByNicknameIgnoreCase("not nickname");
-        List<UserPayload> foundUserPayloadListFirst = userRepository.findByFirstNameIgnoreCase("not first");
-        List<UserPayload> foundUserPayloadListLast = userRepository.findByLastNameIgnoreCase("not last");
-        List<UserPayload> foundUserPayloadListMiddle = userRepository.findByMiddleNameIgnoreCase("not middle");
+        List<UserPayload> foundUserPayloadListNickname = UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase("not nickname"));
+        List<UserPayload> foundUserPayloadListFirst = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase("not first"));
+        List<UserPayload> foundUserPayloadListLast = UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase("not last"));
+        List<UserPayload> foundUserPayloadListMiddle = UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase("not middle"));
 
         // then
         assertThat(foundUserPayloadListNickname.isEmpty()).isTrue();

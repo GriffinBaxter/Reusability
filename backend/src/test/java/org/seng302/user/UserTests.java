@@ -24,6 +24,8 @@ public class UserTests {
 
     private static Address address;
 
+    private static User user;
+
     @BeforeAll
     public static void before() throws Exception {
         address = new Address(
@@ -34,6 +36,19 @@ public class UserTests {
                 "New Zealand",
                 "90210"
         );
+        user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                address,
+                "testpassword",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
     }
 
     /**
@@ -47,7 +62,8 @@ public class UserTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)));
+                        LocalTime.of(0, 0)),
+                user);
     }
 
     /**
@@ -322,7 +338,8 @@ public class UserTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)));
+                        LocalTime.of(0, 0)),
+                user);
         User user = new User("first",
                 "last",
                 "middle",

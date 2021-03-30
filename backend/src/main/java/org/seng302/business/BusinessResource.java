@@ -55,7 +55,8 @@ public class BusinessResource {
                 businessRegistrationPayload.getDescription(),
                 businessRegistrationPayload.getAddress(),
                 businessRegistrationPayload.getBusinessType(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                currentUser
                 );
         business.addAdministrators(currentUser); //add user to administrators list
         businessRepository.saveAndFlush(business);

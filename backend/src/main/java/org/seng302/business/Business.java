@@ -56,7 +56,8 @@ public class Business {
                     String description,
                     Address address,
                     BusinessType businessType,
-                    LocalDateTime created
+                    LocalDateTime created,
+                    User administrator
     ) throws Exception{
         if (!Validation.isName(name)){
             throw new Exception("Invalid business name");
@@ -69,6 +70,7 @@ public class Business {
         this.businessType = businessType;
         this.description = (description.equals("")) ? null : description;
         this.created = created;
+        administrators.add(administrator);
     }
 
     //getter
@@ -201,7 +203,7 @@ public class Business {
      * @param user A user who was an administrator for this business.
      */
     public void removeAdministrators(User user) {
-        this.administrators.remove(user);
+        this.administrators.remove(user.getId());
         user.getBusinessesAdministeredObjects().remove(this);
     }
 

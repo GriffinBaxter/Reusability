@@ -106,13 +106,13 @@ public class Address {
      */
     @Override
     public String toString() {
-        return "{\n" +
-                "\"streetNumber\":\"" + streetNumber + "\",\n" +
-                "\"streetName\":\""   + streetName   + "\",\n" +
-                "\"city\":\""        + city         + "\",\n" +
-                "\"region\":\""       + region       + "\",\n" +
-                "\"country\":\""      + country      + "\",\n" +
-                "\"postcode\":\""     + postcode     + "\"\n" +
+        return "{" +
+                "\"streetNumber\":\"" + streetNumber + "\"," +
+                "\"streetName\":\""   + streetName   + "\"," +
+                "\"city\":\""        + city         + "\"," +
+                "\"region\":\""       + region       + "\"," +
+                "\"country\":\""      + country      + "\"," +
+                "\"postcode\":\""     + postcode     + "\"" +
                 "}";
     }
 }

@@ -5,13 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.seng302.Address.Address;
 import org.seng302.main.Main;
+import org.seng302.user.Role;
+import org.seng302.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +36,8 @@ public class BusinessRepositoryIntegrationTests {
 
     private static Address address;
 
+    private static User user;
+
     @BeforeAll
     public static void before() throws Exception {
         address = new Address(
@@ -42,6 +48,19 @@ public class BusinessRepositoryIntegrationTests {
                 "New Zealand",
                 "90210"
         );
+        user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                address,
+                "testpassword",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
     }
 
     /**
@@ -54,7 +73,8 @@ public class BusinessRepositoryIntegrationTests {
                                         "some text",
                                         address,
                                         BusinessType.RETAIL_TRADE,
-                                        LocalDateTime.now());
+                                        LocalDateTime.now(),
+                                        user);
 
         entityManager.persist(business);
         entityManager.flush();
@@ -82,7 +102,8 @@ public class BusinessRepositoryIntegrationTests {
                 "some text",
                 address,
                 BusinessType.RETAIL_TRADE,
-                LocalDateTime.now());
+                LocalDateTime.now(),
+                user);
 
         entityManager.persist(business);
         entityManager.flush();
