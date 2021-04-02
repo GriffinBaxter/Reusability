@@ -5,7 +5,8 @@
 
       <div class="row" v-if="hasAdminRights()">
         <div class="col-xl-3 mb-5 text-center">
-          <div class="display-5">You have application admin rights!</div>
+          <div class="display-5" v-if="otherUser">This user has application admin rights!</div>
+          <div class="display-5" v-else>You have application admin rights!</div>
         </div>
       </div>
       <div class="row">
