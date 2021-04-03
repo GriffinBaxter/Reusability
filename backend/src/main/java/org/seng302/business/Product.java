@@ -34,9 +34,6 @@ public class Product {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "manufacturer")
-    private String manufacturer;
-
     @Column(name = "recommended_retail_price")
     private Double recommendedRetailPrice;
 
@@ -51,7 +48,6 @@ public class Product {
      * @param business The business the product belongs to.
      * @param name The full name of the product.
      * @param description The description of the product (optional).
-     * @param manufacturer The manufacturer of the product (optional).
      * @param recommendedRetailPrice The recommended retail price (RRP) of the product (optional).
      * @param created The date and time the product was created.
      * @throws Exception Validation exception.
@@ -60,7 +56,6 @@ public class Product {
                    Business business,
                    String name,
                    String description,
-                   String manufacturer,
                    Double recommendedRetailPrice,
                    LocalDateTime created
     ) throws Exception{
@@ -73,9 +68,6 @@ public class Product {
         if (!Validation.isName(name)){
             throw new Exception("Invalid product name");
         }
-        if (!manufacturer.equals("") && !Validation.isName(manufacturer)){
-            throw new Exception("Invalid manufacturer");
-        }
         if (created == null) {
             throw new Exception("Invalid date");
         }
@@ -84,7 +76,6 @@ public class Product {
         this.businessId = business.getId();
         this.name = name;
         this.description = (description.equals("")) ? null : description;
-        this.manufacturer = (manufacturer.equals("")) ? null : manufacturer;
         this.recommendedRetailPrice = recommendedRetailPrice;
         this.created = created;
     }
@@ -105,10 +96,6 @@ public class Product {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
     }
 
     public Double getRecommendedRetailPrice() {
@@ -135,10 +122,6 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
     }
 
     public void setRecommendedRetailPrice(Double recommendedRetailPrice) {

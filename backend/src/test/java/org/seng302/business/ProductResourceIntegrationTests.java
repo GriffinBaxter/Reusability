@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,9 +26,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
  * ProductResource test class
@@ -52,10 +55,16 @@ public class ProductResourceIntegrationTests {
 
     private MockHttpServletResponse response;
 
+    private final String productPayloadJson = "{\"id\":\"%s\"," +
+                                        "\"name\":\"%s\"," +
+                                        "\"description\":\"%s\"," +
+                                        "\"recommendedRetailPrice\":%.1f}";
+
+    private String payloadJson;
+
     private final String expectedProductJson = "{\"id\":\"%s\"," +
                                         "\"name\":\"%s\"," +
                                         "\"description\":\"%s\"," +
-                                        "\"manufacturer\":\"%s\"," +
                                         "\"recommendedRetailPrice\":%.1f," +
                                         "\"created\":\"%s\"}";
 
@@ -71,7 +80,11 @@ public class ProductResourceIntegrationTests {
 
     private Business business;
 
+    private Business anotherBusiness;
+
     private Product product;
+
+    private Product anotherProduct;
 
 
     @BeforeAll
@@ -144,12 +157,21 @@ public class ProductResourceIntegrationTests {
         business.setId(1);
         business.addAdministrators(user);
 
+        anotherBusiness = new Business(
+                "anotherName",
+                "some text",
+                "95 River Lum Road, Lumbridge, Misthalin",
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0))
+        );
+        anotherBusiness.setId(2);
+        anotherBusiness.addAdministrators(user);
+
         product = new Product(
                 "PROD",
                 business,
                 "Beans",
                 "Description",
-                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
@@ -158,6 +180,310 @@ public class ProductResourceIntegrationTests {
         this.mvc = MockMvcBuilders.standaloneSetup(new ProductResource(
                 productRepository, businessRepository, userRepository))
                 .build();
+    }
+
+    /**
+     * Tests that a CREATED status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains a product with valid data (and a product ID
+     * that doesn't already exist for the given business) and an existing business ID.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canCreateProductWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        Product newProduct = new Product(
+                        "NEW",
+                        business,
+                        "NewProd",
+                        "NewDesc",
+                        10.00,
+                        LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0))
+        );
+        payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
+                                    newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+        given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
+                .willReturn(Optional.empty());
+
+        // when
+        when(productRepository.save(any(Product.class))).thenReturn(newProduct);
+        response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Tests that a CREATED status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains a product with valid data (and a product ID
+     * that doesn't already exist for the given business) and an existing business ID.
+     * Test specifically for when the cookie contains an ID belonging to a DGAA.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canCreateProductWhenBusinessExistsAndDataValidWithDgaaCookie() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        Product newProduct = new Product(
+                "NEW",
+                business,
+                "NewProd",
+                "NewDesc",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0))
+        );
+        payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
+                                    newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+        given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
+                .willReturn(Optional.empty());
+
+        // when
+        when(productRepository.save(any(Product.class))).thenReturn(newProduct);
+        response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Tests that a CREATED status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains a product with valid data (and a product ID
+     * that doesn't already exist for the given business) and an existing business ID.
+     * Test specifically for when the cookie contains an ID belonging to a GAA.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canCreateProductWhenBusinessExistsAndDataValidWithGaaCookie() throws Exception {
+        // given
+        given(userRepository.findById(2)).willReturn(Optional.ofNullable(gAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        Product newProduct = new Product(
+                "NEW",
+                business,
+                "NewProd",
+                "NewDesc",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0))
+        );
+        payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
+                                    newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+        given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
+                .willReturn(Optional.empty());
+
+        // when
+        when(productRepository.save(any(Product.class))).thenReturn(newProduct);
+        response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", String.valueOf(gAA.getId()))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Tests that a CREATED status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains a product with valid data (and a product ID
+     * that doesn't already exist for the given business but exists for a different business) and an
+     * existing business ID.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canCreateProductWithProductIdThatExistsForAnotherBusiness() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(businessRepository.findBusinessById(2)).willReturn(Optional.ofNullable(anotherBusiness));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .willReturn(Optional.ofNullable(product));
+
+        Product newProduct = new Product(
+                "PROD",
+                anotherBusiness,
+                "Beans",
+                "Description",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
+                                    newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+        given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), anotherBusiness.getId()))
+                .willReturn(Optional.empty());
+
+        // when
+        when(productRepository.save(any(Product.class))).thenReturn(newProduct);
+        response = mvc.perform(post(String.format("/businesses/%d/products", anotherBusiness.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains a product ID that already exists for an
+     * existing business ID.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantCreateProductWhenBusinessExistsButProductIdAlreadyExists() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .willReturn(Optional.ofNullable(product));
+        payloadJson = String.format(productPayloadJson, product.getProductId(), product.getName(),
+                                    product.getDescription(), product.getRecommendedRetailPrice());
+
+        // when
+        response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains invalid data and an existing business ID.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantCreateProductWhenBusinessExistsButDataIsInvalid() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .willReturn(Optional.empty());
+        payloadJson = String.format(productPayloadJson, "P", product.getName(),
+                product.getDescription(), product.getRecommendedRetailPrice());
+
+        // when
+        response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains valid data and an existing business ID but with
+     * a non-admin cookie.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantCreateProductWhenBusinessExistsAndDataValidWithNonAdminCookie() throws Exception {
+        // given
+        given(userRepository.findById(4)).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        Product newProduct = new Product(
+                "NEW",
+                business,
+                "Beans",
+                "Description",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
+                newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+        given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
+                .willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", String.valueOf(anotherUser.getId()))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains valid data and an existing business ID but with
+     * no cookie.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantCreateProductWhenBusinessExistsAndDataValidWithNoCookie() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        Product newProduct = new Product(
+                "NEW",
+                business,
+                "Beans",
+                "Description",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
+                newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+        given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
+                .willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when sending a product creation payload to the
+     * /businesses/{id}/products API endpoint that contains valid data but a non-existing business ID.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantCreateProductWhenBusinessDoesntExist() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        payloadJson = String.format(productPayloadJson, "PRO", "name", "desc", 30.00);
+
+        // when
+        response = mvc.perform(post(String.format("/businesses/%d/products", 0))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
     /**
@@ -174,13 +500,12 @@ public class ProductResourceIntegrationTests {
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
-                        product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                        product.getCreated()) + "]";
+                        product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()) + "]";
 
         // when
         List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                                            product.getDescription(), product.getManufacturer(),
-                                            product.getRecommendedRetailPrice(), product.getCreated()));
+                                            product.getDescription(), product.getRecommendedRetailPrice(),
+                                            product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -206,13 +531,11 @@ public class ProductResourceIntegrationTests {
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
-                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                product.getCreated()) + "]";
+                product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()) + "]";
 
         // when
         List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                product.getDescription(), product.getManufacturer(),
-                product.getRecommendedRetailPrice(), product.getCreated()));
+                product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -238,13 +561,11 @@ public class ProductResourceIntegrationTests {
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
-                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                product.getCreated()) + "]";
+                product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()) + "]";
 
         // when
         List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                product.getDescription(), product.getManufacturer(),
-                product.getRecommendedRetailPrice(), product.getCreated()));
+                product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))

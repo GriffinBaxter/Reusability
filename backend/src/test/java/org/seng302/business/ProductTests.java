@@ -44,7 +44,6 @@ public class ProductTests {
                 business,
                 "Beans",
                 "Description",
-                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                 LocalTime.of(0, 0))
@@ -54,14 +53,13 @@ public class ProductTests {
         assertEquals(1, product.getBusinessId());
         assertEquals("Beans", product.getName());
         assertEquals("Description", product.getDescription());
-        assertEquals("Manufacturer", product.getManufacturer());
         assertEquals(20.00, product.getRecommendedRetailPrice());
         assertEquals(LocalDateTime.of(LocalDate.of(2021, 1, 1),
                     LocalTime.of(0, 0)), product.getCreated());
     }
 
     /**
-     * Tests that the optional fields (description, manufacturer, and recommendedRetailPrice) are set to null when empty,
+     * Tests that the optional fields (description and recommendedRetailPrice) are set to null when empty,
      * and that this doesn't prevent a product from being created.
      *
      * @throws Exception Exception error
@@ -73,14 +71,12 @@ public class ProductTests {
                 business,
                 "Beans",
                 "",
-                "",
                 null,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                 LocalTime.of(0, 0))
         );
 
         assertNull(product.getDescription());
-        assertNull(product.getManufacturer());
         assertNull(product.getRecommendedRetailPrice());
     }
 
@@ -95,7 +91,6 @@ public class ProductTests {
                     business,
                     "Beans",
                     "Description",
-                    "Manufacturer",
                     20.00,
                     LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                     LocalTime.of(0, 0))
@@ -116,7 +111,6 @@ public class ProductTests {
                     null,
                     "Beans",
                     "Description",
-                    "Manufacturer",
                     20.00,
                     LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                     LocalTime.of(0, 0))
@@ -137,34 +131,12 @@ public class ProductTests {
                     business,
                     "",
                     "Description",
-                    "Manufacturer",
                     20.00,
                     LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                     LocalTime.of(0, 0))
             );
         } catch (Exception e) {
             assertEquals("Invalid product name", e.getMessage());
-        }
-    }
-
-    /**
-     * Tests that an invalid manufacturer throws an error.
-     */
-    @Test
-    public void TestInvalidManufacturer() {
-        try {
-            Product product = new Product(
-                    "PROD",
-                    business,
-                    "Beans",
-                    "Description",
-                    "",
-                    20.00,
-                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                    LocalTime.of(0, 0))
-            );
-        } catch (Exception e) {
-            assertEquals("Invalid manufacturer", e.getMessage());
         }
     }
 
@@ -179,7 +151,6 @@ public class ProductTests {
                     business,
                     "Beans",
                     "Description",
-                    "Manufacturer",
                     20.00,
                     null
             );
