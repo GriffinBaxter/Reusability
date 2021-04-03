@@ -17,13 +17,14 @@ import org.seng302.business.Business;
 import org.seng302.main.Validation;
 
 /**
- * Class for individual accounts.
+ * Class for user accounts
  */
 @Embeddable
 @Data // generate setters and getters for all fields (lombok pre-processor)
 @NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class User {
+
     @Id // this field (attribute) is the table primary key
     @GeneratedValue // autoincrement the ID
     @Column(name = "id", nullable = false)

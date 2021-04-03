@@ -1,6 +1,7 @@
 package org.seng302.business;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -17,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class ProductTests {
 
-    private static Business business;
+    private Business business;
 
-    @BeforeAll
-    public static void setup() throws Exception {
+    @BeforeEach
+    public void setup() throws Exception {
         business = new Business(
                 "name",
                 "description",
@@ -28,13 +29,19 @@ public class ProductTests {
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now()
         );
+        business.setId(1);
     }
 
+    /**
+     * Tests that a product can be created given valid parameters.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void TestValidProduct() throws Exception {
         Product product = new Product(
                 "PROD",
-                1,
+                business,
                 "Beans",
                 "Description",
                 "Manufacturer",
@@ -43,7 +50,7 @@ public class ProductTests {
                                 LocalTime.of(0, 0))
         );
 
-        assertEquals("PROD", product.getProductCode());
+        assertEquals("PROD", product.getProductId());
         assertEquals(1, product.getBusinessId());
         assertEquals("Beans", product.getName());
         assertEquals("Description", product.getDescription());
@@ -53,11 +60,17 @@ public class ProductTests {
                     LocalTime.of(0, 0)), product.getCreated());
     }
 
+    /**
+     * Tests that the optional fields (description, manufacturer, and recommendedRetailPrice) are set to null when empty,
+     * and that this doesn't prevent a product from being created.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void TestOptionalFields() throws Exception {
         Product product = new Product(
                 "PROD",
-                1,
+                business,
                 "Beans",
                 "",
                 "",
@@ -71,12 +84,15 @@ public class ProductTests {
         assertNull(product.getRecommendedRetailPrice());
     }
 
+    /**
+     * Tests that an invalid product code throws an error.
+     */
     @Test
     public void TestInvalidProductCode() {
         try {
             Product product = new Product(
                     "",
-                    1,
+                    business,
                     "Beans",
                     "Description",
                     "Manufacturer",
@@ -85,16 +101,19 @@ public class ProductTests {
                                     LocalTime.of(0, 0))
             );
         } catch (Exception e) {
-            assertEquals("Invalid product code", e.getMessage());
+            assertEquals("Invalid product id", e.getMessage());
         }
     }
 
+    /**
+     * Tests that an invalid (null) business object throws an error.
+     */
     @Test
-    public void TestInvalidBusinessIdZero() {
+    public void TestInvalidBusiness() {
         try {
             Product product = new Product(
                     "PROD",
-                    0,
+                    null,
                     "Beans",
                     "Description",
                     "Manufacturer",
@@ -103,34 +122,19 @@ public class ProductTests {
                                     LocalTime.of(0, 0))
             );
         } catch (Exception e) {
-            assertEquals("Invalid business ID", e.getMessage());
+            assertEquals("Invalid business", e.getMessage());
         }
     }
 
-    @Test
-    public void TestInvalidBusinessIdNegative() {
-        try {
-            Product product = new Product(
-                    "PROD",
-                    -1,
-                    "Beans",
-                    "Description",
-                    "Manufacturer",
-                    20.00,
-                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                    LocalTime.of(0, 0))
-            );
-        } catch (Exception e) {
-            assertEquals("Invalid business ID", e.getMessage());
-        }
-    }
-
+    /**
+     * Tests that an invalid name throws an error.
+     */
     @Test
     public void TestInvalidName() {
         try {
             Product product = new Product(
                     "PROD",
-                    1,
+                    business,
                     "",
                     "Description",
                     "Manufacturer",
@@ -143,12 +147,15 @@ public class ProductTests {
         }
     }
 
+    /**
+     * Tests that an invalid manufacturer throws an error.
+     */
     @Test
     public void TestInvalidManufacturer() {
         try {
             Product product = new Product(
                     "PROD",
-                    1,
+                    business,
                     "Beans",
                     "Description",
                     "",
@@ -161,12 +168,15 @@ public class ProductTests {
         }
     }
 
+    /**
+     * Tests that an invalid creation date throws an error.
+     */
     @Test
     public void TestInvalidCreatedDate() {
         try {
             Product product = new Product(
                     "PROD",
-                    1,
+                    business,
                     "Beans",
                     "Description",
                     "Manufacturer",

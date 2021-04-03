@@ -1,26 +1,38 @@
 package org.seng302.business;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * ProductPayload class
+ */
 public class ProductPayload {
 
-    private String productCode;
+    private String id;
     private String name;
     private String description;
     private String manufacturer;
     private Double recommendedRetailPrice;
     private String created;
 
+    /**
+     * Constructor for product payloads.
+     *
+     * @param id Product code
+     * @param name Product name
+     * @param description Product description
+     * @param manufacturer Manufacturer of the product
+     * @param recommendedRetailPrice The recommended retail price (RRP) of the product, a double
+     * @param created The date and time the product was created
+     */
     public ProductPayload(
-            String productCode,
+            String id,
             String name,
             String description,
             String manufacturer,
             Double recommendedRetailPrice,
             LocalDateTime created
     ) {
-        this.productCode = productCode;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.manufacturer = manufacturer;
@@ -28,8 +40,8 @@ public class ProductPayload {
         this.created = created.toString();
     }
 
-    public String getProductCode() {
-        return productCode;
+    public String getId() {
+        return id;
     }
 
     public String getName() {

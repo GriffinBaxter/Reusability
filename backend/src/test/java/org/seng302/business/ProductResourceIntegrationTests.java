@@ -29,6 +29,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+/**
+ * ProductResource test class
+ */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,7 +52,7 @@ public class ProductResourceIntegrationTests {
 
     private MockHttpServletResponse response;
 
-    private final String expectedProductJson = "{\"productCode\":\"%s\"," +
+    private final String expectedProductJson = "{\"id\":\"%s\"," +
                                         "\"name\":\"%s\"," +
                                         "\"description\":\"%s\"," +
                                         "\"manufacturer\":\"%s\"," +
@@ -143,7 +146,7 @@ public class ProductResourceIntegrationTests {
 
         product = new Product(
                 "PROD",
-                1,
+                business,
                 "Beans",
                 "Description",
                 "Manufacturer",
@@ -157,18 +160,25 @@ public class ProductResourceIntegrationTests {
                 .build();
     }
 
+    /**
+     * Tests that an OK status and a list of product payloads is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void canRetrieveProductsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
-        expectedJson = "[" + String.format(expectedProductJson, product.getProductCode(), product.getName(),
+        expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
                         product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
                         product.getCreated()) + "]";
 
         // when
-        List<ProductPayload> list = List.of(new ProductPayload(product.getProductCode(), product.getName(),
+        List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
                                             product.getDescription(), product.getManufacturer(),
                                             product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
@@ -182,18 +192,25 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    /**
+     * Tests that an OK status and a list of product payloads is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a DGAA.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void canRetrieveProductsWhenBusinessExistsWithDgaaCookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
-        expectedJson = "[" + String.format(expectedProductJson, product.getProductCode(), product.getName(),
+        expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
                 product.getCreated()) + "]";
 
         // when
-        List<ProductPayload> list = List.of(new ProductPayload(product.getProductCode(), product.getName(),
+        List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(),
                 product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
@@ -207,18 +224,25 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    /**
+     * Tests that an OK status and a list of product payloads is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a GAA.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void canRetrieveProductsWhenBusinessExistsWithGaaCookie() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(gAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
-        expectedJson = "[" + String.format(expectedProductJson, product.getProductCode(), product.getName(),
+        expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
                 product.getCreated()) + "]";
 
         // when
-        List<ProductPayload> list = List.of(new ProductPayload(product.getProductCode(), product.getName(),
+        List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(),
                 product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
@@ -232,6 +256,12 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when the business ID in the /businesses/{id}/products
+     * API endpoint does not exist.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void cantRetrieveProductsWhenBusinessDoesntExist() throws Exception {
         // given
@@ -249,6 +279,12 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    /**
+     * Tests that an UNAUTHORIZED status and is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists but the cookie contains a non-existing user ID.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void cantRetrieveProductsWhenBusinessExistsWithNonExistingIdCookie() throws Exception {
         // given
@@ -265,6 +301,12 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    /**
+     * Tests that an UNAUTHORIZED status and is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists but the cookie contains a non-admin user ID.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void cantRetrieveProductsWhenBusinessExistsWithNonAdminUserCookie() throws Exception {
         // given
@@ -282,6 +324,12 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    /**
+     * Tests that an UNAUTHORIZED status and is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists but there is no cookie.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void cantRetrieveProductsWhenBusinessExistsWithNoCookie() throws Exception {
         // given

@@ -7,7 +7,9 @@ import org.seng302.main.Validation;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-
+/**
+ * Class for products
+ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -15,9 +17,8 @@ import java.time.LocalDateTime;
 public class Product {
 
     @Id
-    @Column(name = "product_code", nullable = false)
-    private String productCode;
-
+    @Column(name = "id", nullable = false)
+    private String id;
 
     @ManyToOne(targetEntity=Business.class, fetch = FetchType.LAZY)
     @JoinColumn(name="business_id", insertable = false, updatable = false)
@@ -44,10 +45,10 @@ public class Product {
 
 
     /**
-     * Constructor for ProductCatalogue objects (products).
+     * Constructor for products.
      *
-     * @param productCode Unique 3-4 letter code for a product belonging to a given business.
-     * @param businessId The ID of the business the product belongs to.
+     * @param id Unique 3-4 letter code for a product belonging to a given business.
+     * @param business The business the product belongs to.
      * @param name The full name of the product.
      * @param description The description of the product (optional).
      * @param manufacturer The manufacturer of the product (optional).
@@ -55,19 +56,19 @@ public class Product {
      * @param created The date and time the product was created.
      * @throws Exception Validation exception.
      */
-    public Product(String productCode,
-                   Integer businessId,
+    public Product(String id,
+                   Business business,
                    String name,
                    String description,
                    String manufacturer,
                    Double recommendedRetailPrice,
                    LocalDateTime created
     ) throws Exception{
-        if (!Validation.isProductCode(productCode)){
-            throw new Exception("Invalid product code");
+        if (!Validation.isProductCode(id)){
+            throw new Exception("Invalid product id");
         }
-        if (businessId <= 0) {
-            throw new Exception("Invalid business ID");
+        if (business == null) {
+            throw new Exception("Invalid business");
         }
         if (!Validation.isName(name)){
             throw new Exception("Invalid product name");
@@ -78,7 +79,8 @@ public class Product {
         if (created == null) {
             throw new Exception("Invalid date");
         }
-        this.productCode = productCode;
+        this.id = id;
+        this.business = business;
         this.businessId = business.getId();
         this.name = name;
         this.description = (description.equals("")) ? null : description;
@@ -89,8 +91,8 @@ public class Product {
 
     // Getters
 
-    public String getProductCode() {
-        return productCode;
+    public String getProductId() {
+        return id;
     }
 
     public Integer getBusinessId() {
@@ -119,8 +121,8 @@ public class Product {
 
     // Setters
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
+    public void setProductId(String id) {
+        this.id = id;
     }
 
     public void setBusinessId(Integer businessId) {

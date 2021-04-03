@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * ProductRepository test class.
+ * ProductRepository test class
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -29,14 +29,16 @@ public class ProductRepositoryIntegrationTests {
     private TestEntityManager entityManager;
 
     @Autowired
-    private BusinessRepository businessRepository;
-
-    @Autowired
     private ProductRepository productRepository;
 
     private List<ProductPayload> foundProductPayloadList;
 
-
+    /**
+     * Tests that when there are products in the database with the given business ID then
+     * the list of product payloads returned contains the products with that business ID.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void whenFindExistingProductsByExistingIdThenReturnProductList() throws Exception {
         // given
@@ -51,7 +53,7 @@ public class ProductRepositoryIntegrationTests {
 
         Product product = new Product(
                 "PROD",
-                1,
+                business,
                 "Beans",
                 "Description",
                 "Manufacturer",
@@ -63,11 +65,11 @@ public class ProductRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundProductPayloadList = productRepository.findProductsByBusinessId(1);
+        foundProductPayloadList = productRepository.findProductsByBusinessId(business.getId());
 
         // then
         assertThat(foundProductPayloadList.isEmpty()).isFalse();
-        assertThat(foundProductPayloadList.get(0).getProductCode()).isEqualTo("PROD");
+        assertThat(foundProductPayloadList.get(0).getId()).isEqualTo("PROD");
         assertThat(foundProductPayloadList.get(0).getName()).isEqualTo("Beans");
         assertThat(foundProductPayloadList.get(0).getDescription()).isEqualTo("Description");
         assertThat(foundProductPayloadList.get(0).getManufacturer()).isEqualTo("Manufacturer");
@@ -77,6 +79,12 @@ public class ProductRepositoryIntegrationTests {
                                                                         LocalTime.of(0, 0)).toString());
     }
 
+    /**
+     * Tests that when there are no products in the database with the given business ID then
+     * the list of product payloads returned is empty.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void whenFindNonExistingProductsByExistingIdThenReturnEmptyProductList() throws Exception {
         // given
@@ -89,15 +97,23 @@ public class ProductRepositoryIntegrationTests {
         entityManager.persist(business);
         entityManager.flush();
 
-        foundProductPayloadList = productRepository.findProductsByBusinessId(1);
+        // when
+        foundProductPayloadList = productRepository.findProductsByBusinessId(business.getId());
 
+        // then
         assertThat(foundProductPayloadList.isEmpty()).isTrue();
     }
 
+    /**
+     * Tests that when trying to retrieve products with a non-existing business ID then
+     * the list of product payloads returned is empty.
+     */
     @Test
     public void whenFindProductsByNonExistingIdThenDontReturnProductPayload() {
+        // when
         foundProductPayloadList = productRepository.findProductsByBusinessId(1);
 
+        // then
         assertThat(foundProductPayloadList.isEmpty()).isTrue();
     }
 }

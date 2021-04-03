@@ -30,6 +30,13 @@ public class ProductResource {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * Constructor used to insert mocked repositories for testing.
+     *
+     * @param productRepository ProductRepository
+     * @param businessRepository BusinessRepository
+     * @param userRepository UserRepository
+     */
     public ProductResource(ProductRepository productRepository,
                            BusinessRepository businessRepository,
                            UserRepository userRepository) {
@@ -38,6 +45,12 @@ public class ProductResource {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Retrieve products given a business ID. This is a GET call to the given endpoint.
+     * @param sessionToken Session token
+     * @param id Business ID
+     * @return A list of ProductPayload objects representing the products belonging to the given business
+     */
     @GetMapping("/businesses/{id}/products")
     public List<ProductPayload> retrieveProducts(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id

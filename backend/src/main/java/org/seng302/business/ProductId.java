@@ -2,9 +2,12 @@ package org.seng302.business;
 
 import java.io.Serializable;
 
+/**
+ * Class for the composite primary key of Product
+ */
 public class ProductId implements Serializable {
 
-    private String productCode;
+    private String id;
 
     private Integer businessId;
 
@@ -12,8 +15,14 @@ public class ProductId implements Serializable {
 
     }
 
-    public ProductId(String productCode, Integer businessId) {
-        this.productCode = productCode;
+    /**
+     * Constructor for ProductId.
+     *
+     * @param id Product code unique within the business' product catalogue.
+     * @param businessId ID of the business the product belongs to.
+     */
+    public ProductId(String id, Integer businessId) {
+        this.id = id;
         this. businessId = businessId;
     }
 
