@@ -18,9 +18,13 @@ public class Product {
     @Column(name = "product_code", nullable = false)
     private String productCode;
 
+
+    @ManyToOne(targetEntity=Business.class, fetch = FetchType.LAZY)
+    @JoinColumn(name="business_id", insertable = false, updatable = false)
+    private Business business;
+
     @Id
-//    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-//    @JoinColumn(name = "business_id")
+    @Column(name = "business_id")
     private Integer businessId;
 
     @Column(name = "name", nullable = false)
@@ -75,7 +79,7 @@ public class Product {
             throw new Exception("Invalid date");
         }
         this.productCode = productCode;
-        this.businessId = businessId;
+        this.businessId = business.getId();
         this.name = name;
         this.description = (description.equals("")) ? null : description;
         this.manufacturer = (manufacturer.equals("")) ? null : manufacturer;

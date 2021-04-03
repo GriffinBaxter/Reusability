@@ -42,8 +42,8 @@ public class Business {
     @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.EAGER)
     private List<User> administrators = new ArrayList<User>();
 
-//    @OneToMany(mappedBy = "business_id")
-//    private List<Product> products = new ArrayList<Product>();
+    @OneToMany(targetEntity=Product.class,cascade = CascadeType.ALL , fetch = FetchType.LAZY,mappedBy = "business")
+    private List<Product> products = new ArrayList<Product>();
 
 
     /**
