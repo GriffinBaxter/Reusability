@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -21,13 +24,32 @@ public class BusinessResource {
     private UserRepository userRepository;
 
     /**
-     * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
-     * @param sessionToken Session token
-     * @return User object
+     * Verifies the cookie(its self and the value its contain), throws an error if it does not exist, and if it does,
+     * returns the User object.
+     * @param request http servlet request
+     * @return current select user object
      */
-    private User getUserVerifySession(String sessionToken) {
+    private User getUserVerifySession(HttpServletRequest request) {
+        String sessionToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){ //Cookie not exist
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Access token is missing or invalid");
+        }
+        for (Cookie cookie: cookies) {
+            if (cookie.getName().equals("JSESSIONID")){
+                sessionToken = cookie.getValue();
+            }
+        }
+        if (sessionToken == null){ //Cookie value not exist
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Access token is missing or invalid");
+        }
+
         Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
-        if (sessionToken == null || user.isEmpty()) {
+        if (sessionToken == null || user.isEmpty()) { //Cookie not contain an user
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Access token is missing or invalid"
@@ -39,16 +61,16 @@ public class BusinessResource {
 
     /**
      * create a new business by info given by businessRegistrationPayload
-     * @param sessionToken value of cookie
      * @param businessRegistrationPayload contain new business info
+     * @param response http servlet response
      * @throws Exception Access token is missing or invalid
      */
     @PostMapping("/businesses")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Business account created successfully")
-    public void createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                               @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
+    public void createBusiness(@RequestBody BusinessRegistrationPayload businessRegistrationPayload,
+                               HttpServletRequest response) throws Exception {
         //access token invalid
-        User currentUser = getUserVerifySession(sessionToken);
+        User currentUser = getUserVerifySession(response);
 
         Business business = new Business(
                 businessRegistrationPayload.getName(),
@@ -64,15 +86,14 @@ public class BusinessResource {
 
     /**
      * get method for retrieving a specific business account.
-     * @param sessionToken value of cookie
      * @param id user id
+     * @param response http servlet request
      * @return business object if it exists
      */
     @GetMapping("/businesses/{id}")
-    public BusinessPayload retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                     @PathVariable String id){
+    public BusinessPayload retrieveBusiness(@PathVariable String id, HttpServletRequest response){
         //access token invalid
-        getUserVerifySession(sessionToken);
+        getUserVerifySession(response);
 
         Optional<Business> business = businessRepository.findBusinessById(Integer.valueOf(id));
 

@@ -97,18 +97,18 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void setAdministratorComplete() throws Exception {
-        payloadJson = "{\n" +
-                        "\"name\": \"Lumbridge General Store\",\n" +
-                        "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
-                        "\"address\": {\n" +
-                                "\"streetNumber\": \"3/24\",\n" +
-                                "\"streetName\": \"Ilam Road\",\n" +
-                                "\"city\": \"Christchurch\",\n" +
-                                "\"region\": \"Canterbury\",\n" +
-                                "\"country\": \"New Zealand\",\n" +
-                                "\"postcode\": \"90210\"\n" +
-                                "},\n" +
-                        "\"businessType\": \"Accommodation and Food Services\"\n" +
+        payloadJson = "{" +
+                        "\"name\": \"Lumbridge General Store\"," +
+                        "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                        "\"address\": {" +
+                                "\"streetNumber\": \"3/24\"," +
+                                "\"streetName\": \"Ilam Road\"," +
+                                "\"city\": \"Christchurch\"," +
+                                "\"region\": \"Canterbury\"," +
+                                "\"country\": \"New Zealand\"," +
+                                "\"postcode\": \"90210\"" +
+                                "}," +
+                        "\"businessType\": \"Accommodation and Food Services\"" +
                         "}";
         Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
         response = mvc.perform(post("/businesses").cookie(cookie)
@@ -152,18 +152,18 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canCreateWhenDataValidAndCookieNotExists() throws Exception {
-        payloadJson = "{\n" +
-                "\"name\": \"Lumbridge General Store\",\n" +
-                "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
-                "\"address\": {\n" +
-                    "\"streetNumber\": \"3/24\",\n" +
-                    "\"streetName\": \"Ilam Road\",\n" +
-                    "\"city\": \"Christchurch\",\n" +
-                    "\"region\": \"Canterbury\",\n" +
-                    "\"country\": \"New Zealand\",\n" +
-                    "\"postcode\": \"90210\"\n" +
-                "},\n" +
-                "\"businessType\": \"Accommodation and Food Services\"\n" +
+        payloadJson = "{" +
+                "\"name\": \"Lumbridge General Store\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
         response = mvc.perform(post("/businesses").contentType(MediaType.APPLICATION_JSON)
                 .content(payloadJson)).andReturn().getResponse();

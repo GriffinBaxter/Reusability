@@ -31,13 +31,32 @@ public class UserResource {
     }
 
     /**
-     * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
-     * @param sessionToken Session token
-     * @return User object
+     * Verifies the cookie(its self and the value its contain), throws an error if it does not exist, and if it does,
+     * returns the User object.
+     * @param request http servlet request
+     * @return current select user object
      */
-    public User getUserVerifySession(String sessionToken) {
+    public User getUserVerifySession(HttpServletRequest request) {
+        String sessionToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null){ //Cookie not exist
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Access token is missing or invalid");
+        }
+        for (Cookie cookie: cookies) {
+            if (cookie.getName().equals("JSESSIONID")){
+                sessionToken = cookie.getValue();
+            }
+        }
+        if (sessionToken == null){ //Cookie value not exist
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Access token is missing or invalid");
+        }
+
         Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
-        if (sessionToken == null || user.isEmpty()) {
+        if (sessionToken == null || user.isEmpty()) { //Cookie not contain an user
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Access token is missing or invalid"
@@ -46,6 +65,53 @@ public class UserResource {
             return user.get();
         }
     }
+
+    /**
+     * Checks if the current user's role matches the role parameter.
+     * This method is useful for user authentication/identification.
+     * @param currentUser current user
+     * @param role Role being matched
+     * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
+     */
+    private boolean verifyRole(User currentUser, Role role) {
+        if (currentUser.getRole().equals(role)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * check does the change legality, if is return the user select user
+     * @param id user id of select user
+     * @param request http servlet request
+     * @return select user
+     */
+    private User verifyPermission(int id, HttpServletRequest request){
+        //401
+        User currentUser = getUserVerifySession(request);
+
+        //403
+        if (currentUser.getRole() != DEFAULTGLOBALAPPLICATIONADMIN){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "The user does not have permission to perform the requested action"
+            );
+        }
+
+        //406
+        Optional<User> optionalSelectedUser = userRepository.findById(id);
+        if (optionalSelectedUser.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                            "for example trying to access a resource by an ID that does not exist."
+            );
+        }
+
+        return optionalSelectedUser.get();
+    }
+
+
 
     /**
      * Attempt to authenticate a user account with a username and password.
@@ -124,29 +190,12 @@ public class UserResource {
      */
     @GetMapping("/users/{id}")
     public UserPayload retrieveUser(HttpServletRequest request, @PathVariable Integer id) {
-        String sessionToken = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null){
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Access token is missing or invalid");
-        }
-        for (Cookie cookie: cookies) {
-            if (cookie.getName().equals("JSESSIONID")){
-                sessionToken = cookie.getValue();
-            }
-        }
-        if (sessionToken == null){
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Access token is missing or invalid");
-        }
-        System.out.println(sessionToken);
-        //getUserVerifySession(sessionToken);
 
-        Optional<User> user = userRepository.findById(id);
+        User currentUser = getUserVerifySession(request);
 
-        if (user.isEmpty()) {
+        Optional<User> selectUser = userRepository.findById(id);
+
+        if (selectUser.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -156,38 +205,36 @@ public class UserResource {
 
         Role role = null;
 
-        if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            role = user.get().getRole();
+        if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+            role = selectUser.get().getRole();
         }
 
         return new UserPayload(
-                user.get().getId(),
-                user.get().getFirstName(),
-                user.get().getLastName(),
-                user.get().getMiddleName(),
-                user.get().getNickname(),
-                user.get().getBio(),
-                user.get().getEmail(),
-                user.get().getDateOfBirth(),
-                user.get().getPhoneNumber(),
-                user.get().getHomeAddress(),
-                user.get().getCreated(),
+                selectUser.get().getId(),
+                selectUser.get().getFirstName(),
+                selectUser.get().getLastName(),
+                selectUser.get().getMiddleName(),
+                selectUser.get().getNickname(),
+                selectUser.get().getBio(),
+                selectUser.get().getEmail(),
+                selectUser.get().getDateOfBirth(),
+                selectUser.get().getPhoneNumber(),
+                selectUser.get().getHomeAddress(),
+                selectUser.get().getCreated(),
                 role,
-                user.get().getBusinessesAdministered()
+                selectUser.get().getBusinessesAdministered()
         );
     }
 
     /**
      * Search for users by some criteria, for now using names and nickname.
-     * @param sessionToken Session token
+     * @param request http servlet request
      * @param searchQuery Search query
      * @return A list of UserPayload objects matching the search query
      */
     @GetMapping("/users/search")
-    public List<UserPayload> searchUsers(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @RequestParam String searchQuery
-    ) {
-        getUserVerifySession(sessionToken);
+    public List<UserPayload> searchUsers(HttpServletRequest request, @RequestParam String searchQuery) {
+        User currentUser = getUserVerifySession(request);
 
         List<User> users;
 
@@ -210,7 +257,7 @@ public class UserResource {
 
         List<UserPayload> userPayloads = UserPayload.toUserPayload(users);
 
-        if (!verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+        if (!verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
             for (UserPayload userPayload: userPayloads) {
                 userPayload.setRole(null);
             }
@@ -220,55 +267,21 @@ public class UserResource {
     }
 
     /**
-     * Checks if the current user's role matches the role parameter.
-     * This method is useful for user authentication/identification.
-     * @param sessionToken Session token
-     * @param role Role being matched
-     * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
-     */
-    private boolean verifyRole(String sessionToken, Role role) {
-        Integer id = Integer.valueOf(sessionToken);
-        Optional<User> userOptional = userRepository.findById(id);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (user.getRole().equals(role)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Get method for change the Role of a user from USER to GLOBALAPPLICATIONADMIN by Email address
      * @param id Email address (primary key)
      */
     @PutMapping("/users/{id}/makeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
-    public void setGAA(@PathVariable int id, HttpServletRequest request,
-                       @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
-        User currentUser = getUserVerifySession(sessionToken);
-
-        Optional<User> optionalSelectedUser = userRepository.findById(id);
-
-        if (optionalSelectedUser.isEmpty()) {
+    public void setGAA(@PathVariable int id, HttpServletRequest request){
+        User selectedUser = verifyPermission(id, request);
+        if (selectedUser.getRole() != USER) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+                    HttpStatus.FORBIDDEN,
+                    "The user does not have permission to perform the requested action"
             );
-        } else {
-            User selectedUser = optionalSelectedUser.get();
-            if (selectedUser.getRole() == USER && currentUser.getRole() == DEFAULTGLOBALAPPLICATIONADMIN){
-                selectedUser.setRole(GLOBALAPPLICATIONADMIN);
-                userRepository.saveAndFlush(selectedUser);
-            } else {
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "The user does not have permission to perform the requested action"
-                );
-            }
         }
+        selectedUser.setRole(GLOBALAPPLICATIONADMIN);
+        userRepository.saveAndFlush(selectedUser);
     }
 
 
@@ -278,29 +291,15 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/revokeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
-    public void revokeGAA(@PathVariable int id, HttpServletRequest request,
-                          @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
-        User currentUser = getUserVerifySession(sessionToken);
-
-        Optional<User> optionalSelectedUser = userRepository.findById(id);
-
-        if (optionalSelectedUser.isEmpty()){
+    public void revokeGAA(@PathVariable int id, HttpServletRequest request) {
+        User selectedUser = verifyPermission(id, request);
+        if (selectedUser.getRole() != GLOBALAPPLICATIONADMIN) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+                    HttpStatus.FORBIDDEN,
+                    "The user does not have permission to perform the requested action"
             );
-        } else {
-            User selectedUser = optionalSelectedUser.get();
-            if (selectedUser.getRole() == GLOBALAPPLICATIONADMIN && currentUser.getRole() == DEFAULTGLOBALAPPLICATIONADMIN) {
-                selectedUser.setRole(USER);
-                userRepository.saveAndFlush(selectedUser);
-            } else {
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "The user does not have permission to perform the requested action"
-                );
-            }
         }
+        selectedUser.setRole(USER);
+        userRepository.saveAndFlush(selectedUser);
     }
 }
