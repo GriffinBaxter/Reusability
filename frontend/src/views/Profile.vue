@@ -3,8 +3,8 @@
     <ProfileHeader/>
     <div class="container p-5 mt-3" id="profileContainer">
 
-      <div class="row" v-if="hasAdminRights()">
-        <div class="col-xl-3 mb-5 text-center">
+      <div class="row" v-if="hasAdminRights(role)">
+        <div class="col-xl-12 mb-5 text-center mx-auto">
           <div class="display-5" v-if="otherUser">This user has application admin rights!</div>
           <div class="display-5" v-else>You have application admin rights!</div>
         </div>
@@ -13,19 +13,29 @@
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
-              <div></div>
                 <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
               </div>
             </div>
           </div>
-          <!--   For later use:   -->
-<!--          <div class="card text-center shadow-sm mt-3">-->
-<!--            <div class="card-body">-->
-<!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-<!--            </div>-->
-<!--          </div>-->
+
+          <!-- This only works under the assumption that only the DGAA can see the roles. This means
+          that -->
+          <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser">
+            <div class="card-body">
+              <button class="btn btn-lg btn-outline-danger" v-if="hasAdminRights(role)">Revoke admin rights</button>
+              <button class="btn btn-lg btn-outline-success" v-else>Give admin rights</button>
+            </div>
+          </div>
+
+          <!--             For later use:-->
+          <!--          <div class="card text-center shadow-sm mt-3">-->
+          <!--            <div class="card-body">-->
+          <!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
+          <!--            </div>-->
+          <!--          </div>-->
+
         </div>
         <div class="col">
           <div class="card shadow-sm">
@@ -145,16 +155,24 @@ export default {
       created: "",
       joined: "",
       otherUser: false,
-      role: UserRole.USER
+      role: null
     }
   },
   methods: {
     /**
-     * Determines if a user's role is of type admin
-     * @return {boolean} returns true if user is an admin. Otherwise false.
+     * Determines if the role is of a valid type (e.g. not null, some other invalid string, etc).
+     * @param role - Some role.
+     * @return {boolean} Returns true if the role of the user is of the expected possible roles. Otherwise false.
      */
-    hasAdminRights() {
-      return this.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || this.role === UserRole.GLOBALAPPLICATIONADMIN;
+    isValidRole(role) {
+      return role in UserRole;
+    },
+    /** Given a role we test it against two of the possible admin roles. To determine if the role is of type admin.
+     * @param role - A given role of some user.
+     * @return {boolean} Returns true if the role is of type admin. Otherwise false.
+     */
+    hasAdminRights(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || role === UserRole.GLOBALAPPLICATIONADMIN;
     },
     getCreatedDate(createdDate) {
       /*
