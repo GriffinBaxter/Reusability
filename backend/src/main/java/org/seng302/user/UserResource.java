@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.seng302.main.Authorization;
 
 import static org.seng302.user.Role.*;
 
@@ -25,23 +26,6 @@ public class UserResource {
 
     @Autowired
     private UserRepository userRepository;
-
-    /**
-     * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
-     * @param sessionToken Session token
-     * @return User object
-     */
-    public User getUserVerifySession(String sessionToken) {
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
-        if (sessionToken == null || user.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Access token is missing or invalid"
-            );
-        } else {
-            return user.get();
-        }
-    }
 
     /**
      * Attempt to authenticate a user account with a username and password.
@@ -122,7 +106,7 @@ public class UserResource {
     public UserPayload retrieveUser(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
     ) {
-        getUserVerifySession(sessionToken);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> user = userRepository.findById(id);
 
@@ -136,7 +120,7 @@ public class UserResource {
 
         Role role = null;
 
-        if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+        if (Authorization.verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN, userRepository)) {
             role = user.get().getRole();
         }
 
@@ -166,7 +150,7 @@ public class UserResource {
     public List<UserPayload> searchUsers(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @RequestParam String searchQuery
     ) {
-        getUserVerifySession(sessionToken);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
         List<UserPayload> users;
 
@@ -187,33 +171,13 @@ public class UserResource {
             users.addAll(userRepository.findByMiddleNameIgnoreCase(searchQuery));
         }
 
-        if (!verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+        if (!Authorization.verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN, userRepository)) {
             for (UserPayload user: users) {
                 user.setRole(null);
             }
         }
 
         return users.stream().distinct().collect(Collectors.toList());
-    }
-
-    /**
-     * Checks if the current user's role matches the role parameter.
-     * This method is useful for user authentication/identification.
-     * @param sessionToken Session token
-     * @param role Role being matched
-     * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
-     */
-    private boolean verifyRole(String sessionToken, Role role) {
-        Integer id = Integer.valueOf(sessionToken);
-        Optional<User> userOptional = userRepository.findById(id);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (user.getRole().equals(role)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -224,7 +188,7 @@ public class UserResource {
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
     public void setGAA(@PathVariable int id, HttpServletRequest request,
                        @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
-        User currentUser = getUserVerifySession(sessionToken);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
@@ -257,7 +221,7 @@ public class UserResource {
     @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
     public void revokeGAA(@PathVariable int id, HttpServletRequest request,
                           @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
-        User currentUser = getUserVerifySession(sessionToken);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 

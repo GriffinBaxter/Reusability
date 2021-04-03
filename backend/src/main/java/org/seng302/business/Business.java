@@ -42,6 +42,9 @@ public class Business {
     @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.EAGER)
     private List<User> administrators = new ArrayList<User>();
 
+//    @OneToMany(mappedBy = "business_id")
+//    private List<Product> products = new ArrayList<Product>();
+
 
     /**
      * create new BusinessAccount object with description
@@ -126,6 +129,15 @@ public class Business {
     }
 
     //setter
+
+    /**
+     * set id
+     * @param id id
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     /**
      * set name
      * @param name name

@@ -1,5 +1,6 @@
 package org.seng302.business;
 
+import org.seng302.main.Authorization;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +21,6 @@ public class BusinessResource {
     private UserRepository userRepository;
 
     /**
-     * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
-     * @param sessionToken Session token
-     * @return User object
-     */
-    private User getUserVerifySession(String sessionToken) {
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
-        if (sessionToken == null || user.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Access token is missing or invalid"
-            );
-        } else {
-            return user.get();
-        }
-    }
-
-    /**
      * create a new business by info given by businessPayload
      * @param sessionToken value of cookie
      * @param businessPayload contain new business info
@@ -47,7 +31,7 @@ public class BusinessResource {
     public void createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                @RequestBody BusinessPayload businessPayload) throws Exception {
         //access token invalid
-        User currentUser = getUserVerifySession(sessionToken);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Business business = new Business(
                 businessPayload.getName(),
@@ -70,7 +54,7 @@ public class BusinessResource {
     public Business retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                      @PathVariable String id){
         //access token invalid
-        getUserVerifySession(sessionToken);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<Business> business = businessRepository.findBusinessById(Integer.valueOf(id));
 

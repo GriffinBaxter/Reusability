@@ -14,7 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.seng302.business.Business;
-import net.minidev.json.annotate.JsonIgnore;
 import org.seng302.main.Validation;
 
 /**

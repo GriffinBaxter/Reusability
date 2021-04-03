@@ -1,5 +1,6 @@
 package org.seng302.main;
 
+
 public class Validation {
 
     /**
@@ -93,4 +94,9 @@ public class Validation {
         }
         return flag;
     }
+
+    public static boolean isProductCode(String productCode) {
+        return productCode.matches("^[a-zA-Z0-9]{3,4}$");
+    }
+
 }
