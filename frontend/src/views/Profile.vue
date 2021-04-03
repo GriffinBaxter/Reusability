@@ -20,12 +20,33 @@
             </div>
           </div>
 
-          <!-- This only works under the assumption that only the DGAA can see the roles. This means
-          that -->
+          <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
+            <div class="card-header">Something went wrong with your action...</div>
+            <div class="card-body">{{actionErrorMessage}}</div>
+          </div>
+
+          <!-- This only works under the assumption that only the DGAA can see the roles. Otherwise we have a problem!
+          This is because the only otherway to tell what is your role, is by searching your user. But we cannot trust
+          the UserID cookie, as it can be changed without effecting the site's authorization process.
+          This means you can "be a DGAA" to make the buttons appear (not that it won't allow you to perform DGAA actions
+          however, as the session toekn won't allow that in the backend). This is only for the front end this problem.
+
+          However, this issue isn't too large. This is because you can manually edit the HTML if you wanted to as well.
+                loadingGaaAction
+                <span class="spinner-border spinner-border-sm"></span>
+          -->
           <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser">
             <div class="card-body">
-              <button class="btn btn-lg btn-outline-danger" v-if="hasAdminRights(role)">Revoke admin rights</button>
-              <button class="btn btn-lg btn-outline-success" v-else>Give admin rights</button>
+              <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
+              <div v-if="hasAdminRights(role)">
+                <div class="spinner-border spinner-border-sm text-danger" v-if="loadingGaaAction"></div>
+                <button type="button" class="btn btn-lg btn-outline-danger" v-else @click="revokeUserGAA">Revoke admin rights</button>
+              </div>
+
+              <div v-else>
+                <div class="spinner-border spinner-border-sm text-success" v-if="loadingGaaAction"></div>
+                <button type="button" class="btn btn-lg btn-outline-success" v-else @click="grantUserGAA">Grant admin rights</button>
+              </div>
             </div>
           </div>
 
@@ -143,6 +164,9 @@ export default {
   },
   data() {
     return {
+      actionErrorMessage: "",
+      loadingGaaAction: false,
+      urlID: null,
       firstName: "",
       lastName: "",
       middleName: "",
@@ -196,6 +220,123 @@ export default {
 
       const finalDate = this.formatAge(createdDate);
       this.joined = `${finalDate} (${months} months ago)`;
+    },
+    /**
+     * Performs the action that grants GAA to the (page) user and handles all errors
+     * specified in the API spec.
+     */
+    async grantUserGAA() {
+
+      // If the process is already running return.
+      if (this.loadingGaaAction) return;
+
+      if (this.urlID == null) {
+        this.actionErrorMessage = "Sorry, but something went wrong..."
+        return
+      }
+
+      this.loadingGaaAction = true;
+
+      await Api.makeAdmin(this.urlID).then(
+        data => {
+          if (data.status === 200) {
+            // successful grant of admin rights!
+            this.role = UserRole.GLOBALAPPLICATIONADMIN
+          } else {
+            this.actionErrorMessage = "Sorry, but something went wrong..."
+          }
+        }
+      ).catch(error => {
+        if (error.response) {
+          // Code is not 2xx
+          if (error.response.status === 401) {
+            // Missing or invalid token
+            this.$router.push({path: '/invalidtoken'});
+          }
+
+          if (error.response.status === 403) {
+            // Lacks permissions
+            this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+          }
+
+          if (error.response.status === 406) {
+            // Something is wrong with the requested route (not a 404).
+            this.actionErrorMessage = "Sorry, but something went wrong..."
+          }
+
+        } else if (error.request) {
+          // No response received. Timeout occurs
+          this.$router.push({path: '/timeout'});
+        } else {
+          // Something went wrong with the request setup...
+          this.actionErrorMessage = "Sorry, but something went wrong..."
+        }
+      })
+
+
+      this.loadingGaaAction = false;
+
+    },
+    /**
+     * Performs the action that revokes GAA from the (page) user and handles all errors
+     * specified in the API spec.
+     */
+    async revokeUserGAA() {
+
+      // If the process is already running return.
+      if (this.loadingGaaAction) return;
+
+      if (this.urlID == null) {
+        this.actionErrorMessage = "Sorry, but something went wrong..."
+        return
+      }
+
+      this.loadingGaaAction = true;
+
+      await Api.revokeAdmin(this.urlID).then(
+          data => {
+            if (data.status === 200) {
+              // successful revoke of admin rights!
+              this.role = UserRole.USER
+            } else {
+              this.actionErrorMessage = "Sorry, but something went wrong..."
+            }
+          }
+      ).catch(error => {
+
+        if (error.response) {
+          // Code is not 2xx
+          if (error.response.status === 401) {
+            // Missing or invalid token
+            this.$router.push({path: '/invalidtoken'});
+          }
+
+          if (error.response.status === 403) {
+            // Lacks permissions
+            this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+          }
+
+          if (error.response.status === 406) {
+            // Something is wrong with the requested route (not a 404).
+            this.actionErrorMessage = "Sorry, but something went wrong..."
+          }
+
+          if (error.response.status === 409) {
+            // DGAA attempting to remove his admin status
+            this.actionErrorMessage = "Sorry, but as DGAA you cannot remove your admin status."
+          }
+
+        } else if (error.request) {
+          // No response received. Timeout occurs
+          this.$router.push({path: '/timeout'});
+        } else {
+          // Something went wrong with the request setup...
+          this.actionErrorMessage = "Sorry, but something went wrong..."
+        }
+      })
+
+      this.loadingGaaAction = false;
+
     },
     retrieveUser(userID) {
       /*
@@ -283,12 +424,13 @@ export default {
     if (currentID && validJSESSIONID) {
 
       const url = document.URL
-      const urlID = url.substring(url.lastIndexOf('/') + 1);
-      if (currentID === urlID || urlID === 'profile') {
+      this.urlID = url.substring(url.lastIndexOf('/') + 1);
+
+      if (currentID === this.urlID || this.urlID === 'profile') {
         this.retrieveUser(currentID);
       } else {
         // Another user
-        this.retrieveUser(urlID);
+        this.retrieveUser(this.urlID);
         this.otherUser = true;
       }
 
