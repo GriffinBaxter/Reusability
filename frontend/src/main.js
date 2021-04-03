@@ -30,10 +30,16 @@
  */
 import Vue from 'vue'
 import App from './App'
+import router from './router'
+
 
 Vue.config.productionTip = false
 
 import VueLogger from 'vuejs-logger';
+
+// Import bootstrap (installed using npm)
+import 'bootstrap/dist/css/bootstrap.css';
+import '../public/style.css';
 
 const options = {
   isEnabled: true,
@@ -51,5 +57,7 @@ Vue.use(VueLogger, options);
 new Vue({
   el: '#app',
   components: { App },
-  template: '<App/>'
-});
+  template: '<App/>',
+  router
+})
+

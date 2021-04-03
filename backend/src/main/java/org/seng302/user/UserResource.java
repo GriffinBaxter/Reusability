@@ -27,6 +27,10 @@ public class UserResource {
     @Autowired
     private UserRepository userRepository;
 
+    public UserResource(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     /**
      * Attempt to authenticate a user account with a username and password.
      * @param login Login payload
@@ -80,9 +84,9 @@ public class UserResource {
                     registration.getPassword(),
                     LocalDateTime.now(),
                     USER);
-            userRepository.save(newUser);
+            User createdUser = userRepository.save(newUser);
+            int userId = createdUser.getId();
 
-            int userId = userRepository.findByEmail(registration.getEmail()).get().getId();
             Cookie cookie = new Cookie("JSESSIONID", String.valueOf(userId));
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
