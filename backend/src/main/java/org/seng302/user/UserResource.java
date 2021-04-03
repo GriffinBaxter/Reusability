@@ -208,13 +208,15 @@ public class UserResource {
             users.addAll(userRepository.findByMiddleNameIgnoreCase(searchQuery));
         }
 
+        List<UserPayload> userPayloads = UserPayload.toUserPayload(users);
+
         if (!verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            for (User user: users) {
-                user.setRole(null);
+            for (UserPayload userPayload: userPayloads) {
+                userPayload.setRole(null);
             }
         }
 
-        return UserPayload.toUserPayload(users);
+        return userPayloads;
     }
 
     /**
