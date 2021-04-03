@@ -7,6 +7,7 @@ import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,6 +28,11 @@ public class MainApplicationRunner implements ApplicationRunner {
     private static final Logger logger = LogManager.getLogger(MainApplicationRunner.class.getName());
     private UserRepository userRepository;
     private BusinessRepository businessRepository;
+
+    @Value("${dgaa.email}")
+    private String dgaaEmail;
+    @Value("${dgaa.password}")
+    private String dgaaPassword;
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
@@ -65,6 +71,13 @@ public class MainApplicationRunner implements ApplicationRunner {
      */
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
     public void checkDGAAExists() throws Exception {
+        if (!(isPresent(dgaaEmail))) {
+            dgaaEmail = "email@email.com";
+        }
+        if (!(isPresent(dgaaPassword))) {
+            dgaaPassword = "password";
+        }
+
         if (!(userRepository.existsByRole(Role.DEFAULTGLOBALAPPLICATIONADMIN))) {
             User dGAA = new User(
                     "John",
@@ -72,11 +85,11 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "S",
                     "Generic",
                     "Biography",
-                    "email@email.com",
+                    dgaaEmail,
                     LocalDate.of(2020, 2, 2),
                     "0271316",
                     "address",
-                    "password",
+                    dgaaPassword,
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
                     Role.DEFAULTGLOBALAPPLICATIONADMIN);
@@ -85,5 +98,9 @@ public class MainApplicationRunner implements ApplicationRunner {
         } else {
             logger.info("DGGA exists.");
         }
+    }
+
+    public boolean isPresent(String dgaaData) {
+        return (dgaaData != null) && !(dgaaData.isEmpty());
     }
 }
