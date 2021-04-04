@@ -3,12 +3,21 @@
     <ProfileHeader/>
     <div class="container p-5 mt-3" id="profileContainer">
 
-      <div class="row" v-if="hasAdminRights(role)">
+      <!-- These messages will appear for GAA accounts -->
+      <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
         <div class="col-xl-12 mb-5 text-center mx-auto">
           <div class="display-5" v-if="otherUser">This user has application admin rights!</div>
           <div class="display-5" v-else>You have application admin rights!</div>
         </div>
       </div>
+
+        <!-- These messages will appear for DGAA accounts -->
+        <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
+          <div class="col-xl-12 mb-5 text-center mx-auto">
+            <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
+            <div class="display-5" v-else>You have default application admin rights!</div>
+          </div>
+        </div>
       <div class="row">
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
@@ -25,20 +34,18 @@
             <div class="card-body">{{actionErrorMessage}}</div>
           </div>
 
-          <!-- This only works under the assumption that only the DGAA can see the roles. Otherwise we have a problem!
-          This is because the only otherway to tell what is your role, is by searching your user. But we cannot trust
-          the UserID cookie, as it can be changed without effecting the site's authorization process.
-          This means you can "be a DGAA" to make the buttons appear (not that it won't allow you to perform DGAA actions
-          however, as the session toekn won't allow that in the backend). This is only for the front end this problem.
+          <!--
+          This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
+          because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
+          but the backend will prevent this from occuring.
 
-          However, this issue isn't too large. This is because you can manually edit the HTML if you wanted to as well.
-                loadingGaaAction
-                <span class="spinner-border spinner-border-sm"></span>
+          The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
+          another user's id.
           -->
-          <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser">
+          <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
             <div class="card-body">
               <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
-              <div v-if="hasAdminRights(role)">
+              <div v-if="isGAA(role)">
                 <div class="spinner-border spinner-border-sm text-danger" v-if="loadingGaaAction"></div>
                 <button type="button" class="btn btn-lg btn-outline-danger" v-else @click="revokeUserGAA">Revoke admin rights</button>
               </div>
@@ -144,16 +151,15 @@
       </div>
       <Footer></Footer>
     </div>
-
   </div>
 </template>
 
 <script>
-import ProfileHeader from "@/components/ProfileHeader";
+import ProfileHeader from "../components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import Footer from "@/components/Footer";
-import {UserRole} from '@/components/User'
+import Footer from "../components/Footer";
+import {UserRole} from '../components/User'
 
 export default {
   name: "Profile",
@@ -183,6 +189,7 @@ export default {
     }
   },
   methods: {
+    // ---------------------------------------- These functions probably belong in User.js But then they can't easily be used with the profile --------------------------
     /**
      * Determines if the role is of a valid type (e.g. not null, some other invalid string, etc).
      * @param role - Some role.
@@ -198,6 +205,23 @@ export default {
     hasAdminRights(role) {
       return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || role === UserRole.GLOBALAPPLICATIONADMIN;
     },
+    /**
+     * Determines whether a role is DGAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a DGAA. Otherwise return false.
+     */
+    isDGAA(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * Determines whether a role is GAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a GAA. Otherwise return false.
+     */
+    isGAA(role) {
+      return role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    // --------------------------------------------------------------------------------------------------------------------
     getCreatedDate(createdDate) {
       /*
       Calculates the months between the given date and the current date, then formats the given date and months.
