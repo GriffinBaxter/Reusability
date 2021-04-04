@@ -1,8 +1,8 @@
-# Seng302 Example Project
+# SENG 302 Team 400 Project
 
-Basic project template using `gradle`, `npm`, `Spring Boot`, `Vue.js` and `Gitlab CI`.
+Project uses `gradle`, `npm`, `Spring Boot`, `Vue.js` and `Gitlab CI`.
 
-## Basic Project Structure
+## Project Structure
 
 A frontend sub-project (web GUI):
 
@@ -17,6 +17,7 @@ A backend sub-project (business logic and persistence server):
 
 ## How to run
 
+The following is assuming you already cloned the repository.
 ### Frontend / GUI
 
     $ cd frontend
@@ -25,6 +26,11 @@ A backend sub-project (business logic and persistence server):
 
 Running on: http://localhost:9500/ by default
 
+Note that due to CORS policy and sameSite cookie policy, you will need to disable some security measures.
+For example this can be achieved by doing the following for Chrome: 
+- Create a shortcut to Chrome 
+- In the properties add '--disable-web-security --user-data-dir="C:/ChromeDevSession"' after everything in the target property field.
+
 ### Backend / server
 
     cd backend
@@ -32,11 +38,7 @@ Running on: http://localhost:9500/ by default
 
 Running on: http://localhost:9499/ by default
 
-## Todo (S1)
-
-- Add team name into `build.gradle` and `package.json`
-- Update this README title
-- Update this README contributors
+The backend can be tested by using the examples from the [API specification](https://eng-git.canterbury.ac.nz/seng302-2021/seng302-api-spec-2021) in the [Swagger Editor](https://editor.swagger.io/).
 
 ## Todo (S2)
 
@@ -49,6 +51,14 @@ Running on: http://localhost:9499/ by default
 ## Contributors
 
 - SENG302 teaching team
+- Griffin Baxter
+- Zhedong Cao
+- Billie Johnson
+- Zachary Kaye
+- Hayley Krippner
+- Jack Patterson
+- Dan Ronen
+- Troy Tomlins
 
 ## References
 
