@@ -9,8 +9,8 @@
           <span>12/14</span>
         </div>
         </div>
-        <div class="with-bg-size">
-<!--          <img src="https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg" alt="image 1">-->
+        <div class="crop">
+          <img src="https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg" alt="image 1">
         </div>
         <div>
           <p> This is my first photo of the feed. This is a multilined comment for testing purposes. I am learning to code with #BreatheCode</p>
@@ -84,20 +84,24 @@ header h1{
   margin: 0;
 }
 
+/*
+ * Margins for each news item are 12px wide and news item is 600px wide.
+ * crop and crop img are used to crop the given image and keep the correct ratio and scale it to fit within
+ * the news item.
+ */
 .crop {
+  width: 600px;
+  height: 450px;
   overflow: hidden;
-  dislay: block;
-  margin-right: auto;
-  margin-left: auto;
 }
 
-.with-bg-size {
-  background-image: url('https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg');
-
-  height: 400px;
-  background-position: center;
-  /* Make the background image cover the area of the <div>, and clip the excess */
-  background-size: cover;
+/*
+ * Used with .crop to obtain the effect explained in .crop's comment.
+ */
+.crop img {
+  width: 1500px;
+  height: 900px;
+  margin: -75px  0 -100px 0;
 }
 
 div.post{
@@ -111,11 +115,17 @@ div.post img {
   width: 100%;
 }
 
+/*
+ * styling for header of the post. This will later be change to be the business icon of the owner of the post.
+ */
 div.post .post-header div:first-child{
   display: inline-block;
   width: 80%;
 }
 
+/*
+ * styling for date
+ */
 div.post .post-header div:last-child{
   display: inline-block;
   width: 20%;
@@ -129,8 +139,11 @@ div.post h2, div.post p {
   padding: 20px;
 }
 
+/*
+ * width is 624px since news feed item is 600px and then 12px margin each side.
+ */
 div.container{
-  width: 600px;
+  width: 624px;
   margin: auto;
 }
 </style>
