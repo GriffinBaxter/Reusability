@@ -246,7 +246,7 @@ export default {
     return {
 
       // Used for having pre-filled input fields
-      DEBUG_MODE: false,
+      DEBUG_MODE: true,
 
       // A copy of the user config file for error checking.
       config: User.config,

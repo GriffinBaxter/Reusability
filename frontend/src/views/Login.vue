@@ -73,7 +73,7 @@ export default {
       Api.signIn(email, pass).then((response) => {
         Cookies.set('userID', response.data.userId)
         // Also grab JSESSIONID when we have agreed on an implementation with the backend team.
-        this.$router.push({ name: 'Profile' })
+        this.$router.push({ name: 'Home' })
         this.$refs.errorLbl.style.visibility = "hidden";
       })
       .catch((error) => {
