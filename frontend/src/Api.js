@@ -185,12 +185,6 @@ export class Business{
     },
     businessType: {
       name: "Business type",
-      options: [
-        { text: 'Accommodation and Food Services', value: 'ACCOMMODATION AND FOOD SERVICES' },
-        { text: 'Retail Trade', value: 'RETAIL TRADE' },
-        { text: 'Charitable organisation', value: 'CHARITABLE ORGANISATION' },
-        { text: 'Non-profit organisation', value: 'NON-PROFIT ORGANISATION' }
-      ]
     },
     businessAddress: {
       name: "Business address",
