@@ -4,117 +4,51 @@
       <div class="post">
         <div class="post-header">
           <div>
-            <h2>Greater than 600px wide</h2>
+            <h2>Apples to Go</h2>
           </div><div>
           <span>12/14</span>
         </div>
         </div>
-        <div v-if="checkImageSize('https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg')==='larger'">
-          <div class="crop">
-            <img src="https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg" alt="image 1">
-          </div>
-        </div>
-        <div v-if="checkImageSize('https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg')==='perfect'">
-            <img src="https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg" alt="image 1">
-        </div>
-        <div v-if="checkImageSize('https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg')==='smaller'">
-          <div class="crop">
-            <img src="https://i.pinimg.com/originals/89/27/dc/8927dcf60dfd605fce74cc3e2aea015f.jpg" alt="image 1">
-          </div>
+        <div>
+          <img src="../../public/apples.jpg" height=400 width=200 alt="image 2">
         </div>
         <div>
-          <p> This is my first photo of the feed. This is a multilined comment for testing purposes. I am learning to code with #BreatheCode</p>
+          <p> This is my first photo of the feed. This is a multilined comment for testing purposes.</p>
         </div>
       </div>
 
       <div class="post">
         <div class="post-header">
           <div>
-            <h2>Smaller than 600px wide</h2>
+            <h2>End of Stock Cans</h2>
           </div><div>
           <span>12/14</span>
         </div>
         </div>
-        <div v-if="checkImageSize('https://upload.wikimedia.org/wikipedia/en/thumb/e/e0/WPVG_icon_2016.svg/240px-WPVG_icon_2016.svg.png')==='larger'">
-          <div class="crop">
-            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e0/WPVG_icon_2016.svg/240px-WPVG_icon_2016.svg.png" alt="image 1">
-          </div>
-        </div>
-        <div v-if="checkImageSize('https://upload.wikimedia.org/wikipedia/en/thumb/e/e0/WPVG_icon_2016.svg/240px-WPVG_icon_2016.svg.png')==='perfect'">
-          <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e0/WPVG_icon_2016.svg/240px-WPVG_icon_2016.svg.png" alt="image 1">
-        </div>
-        <div v-if="checkImageSize('https://upload.wikimedia.org/wikipedia/en/thumb/e/e0/WPVG_icon_2016.svg/240px-WPVG_icon_2016.svg.png')==='smaller'">
-          <div class="crop">
-            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e0/WPVG_icon_2016.svg/240px-WPVG_icon_2016.svg.png" alt="image 1">
-          </div>
+        <div>
+          <img src="../../public/cans.jpg" height=400 width=200 alt="image 3">
         </div>
         <div>
-          <p> This is my first photo of the feed. This is a multilined comment for testing purposes. I am learning to code with #BreatheCode</p>
+          <p> This is my second photo of the feed. This is a multilined comment for testing purposes.</p>
         </div>
       </div>
 
       <div class="post">
         <div class="post-header">
           <div>
-            <h2>Smaller than 600px wide</h2>
+            <h2>Summer Dresses Must Go</h2>
           </div><div>
           <span>12/14</span>
         </div>
         </div>
-        <div v-if="checkImageSize('https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80')==='larger'">
-          <div class="crop">
-            <img src="https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80" alt="image 1">
-          </div>
-        </div>
-        <div v-if="checkImageSize('https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80')==='perfect'">
-          <img src="https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80" alt="image 1">
-        </div>
-        <div v-if="checkImageSize('https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80')==='smaller'">
-          <div class="crop">
-            <img src="https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80" alt="image 1">
-          </div>
+        <div>
+          <img src="../../public/clothes.jpg" height=400 width=200 alt="image 3">
         </div>
         <div>
-          <p> This is my first photo of the feed. This is a multilined comment for testing purposes. I am learning to code with #BreatheCode</p>
+          <p> This is my third photo of the feed. This is a multilined comment for testing purposes.</p>
         </div>
       </div>
 
-
-
-
-
-
-
-      <div class="post">
-        <div class="post-header">
-          <div>
-            <h2>First Photo</h2>
-          </div><div>
-          <span>12/14</span>
-        </div>
-        </div>
-        <div class="crop">
-          <img src="https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80" height=400 width=200 alt="image 2">
-        </div>
-        <div>
-          <p> This is my first photo of the feed. This is a multilined comment for testing purposes. I am learning to code with #BreatheCode</p>
-        </div>
-      </div>
-      <div class="post">
-        <div class="post-header">
-          <div>
-            <h2>First Photo</h2>
-          </div><div>
-          <span>12/14</span>
-        </div>
-        </div>
-        <div class="crop">
-          <img src="https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80" height=400 width=200 alt="image 3">
-        </div>
-        <div>
-          <p> This is my first photo of the feed. This is a multilined comment for testing purposes. I am learning to code with #BreatheCode</p>
-        </div>
-      </div>
     </div>
     <Footer />
   </div>
@@ -131,22 +65,7 @@ export default {
     Footer
   },
   methods: {
-    //TODO: test
-    checkImageSize(imageUrl) {
-      let img = new Image();
-      img.src = imageUrl;
-      let size = ""
-      console.log(img.width)
-      console.log(img.height)
-      if ((img.width > 600) || (img.height > 400)) {
-        size = "larger"
-      } else if ((img.width < 600) || (img.height < 400)) {
-        size = "smaller"
-      } else {
-        size = "perfect"
-      }
-      return size
-    }
+
   }
 }
 </script>
