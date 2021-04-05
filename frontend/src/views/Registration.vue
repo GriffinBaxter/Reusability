@@ -233,7 +233,7 @@
 <script>
 import Api, {User} from "../Api";
 import Cookies from 'js-cookie';
-import AddressAPI from "../addressInstance"
+import AddressAPI from "../addressInstance";
 import Footer from "../components/Footer";
 
 export default {

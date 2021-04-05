@@ -12,53 +12,76 @@
             <h3 class="display-6 m-2 mb-5 text-center">Business Registration</h3>
           </div>
         </div>
+        <form id="registration" class="needs-validation mb-3 px-5" novalidate @submit.prevent>
         <div class="row my-lg-2">
-          <div class="col-lg-4 my-2 my-lg-0">
-            <label>Name*</label>
+          <div class="col my-2 my-lg-0">
+            <label for="business-name">Name*</label>
+            <input id="business-name" name="business-name" tabindex="1" type="text" v-model="businessName"
+                   :maxlength="config.businessName.maxLength" required>
           </div>
         </div>
         <div class="row my-lg-2">
           <div class="col-lg-4 my-2 my-lg-0">
-            <label>Type*</label>
+            <label for="business-type">Type*</label>
+            <select id="business-type" name="business-type" tabindex="2" v-model="businessType" required></select>
           </div>
 
           <div class="col my-2 my-lg-0">
-            <label>Address Autofill (Optional)</label>
+            <label for="business-address">Address Autofill (Optional)</label>
+            <input id="business-address" name="business-address" ref="businessAddressInput" type="text" tabindex="3"
+                   :maxlength="config.businessAddress.maxLength" autocomplete="off">
           </div>
         </div>
         <div class="row my-lg-2">
           <div class="col-lg-6 my-2 my-lg-0">
-            <label>Street Address</label>
+            <label for="streetAddress">Street Address</label>
+            <input tabindex="4" id="streetAddress"
+                   name="streetAddress" ref="streetAddress" required autocomplete="off">
           </div>
           <div class="col-lg-6 my-2 my-lg-0">
-            <label>Suburb</label>
+            <label for="suburb">Suburb</label>
+            <input tabindex="5" name="suburb" id="suburb" ref="suburb"
+                   autocomplete="off" required>
           </div>
         </div>
         <div class="row my-lg-2">
           <div class="col-lg-6 my-2 my-lg-0">
-            <label>City</label>
+            <label for="city">City</label>
+            <input tabindex="6" name="city" id="city" ref="city"
+                   autocomplete="off" required>
           </div>
 
           <div class="col-lg-6 my-2 my-lg-0">
-            <label>State/Region</label>
+            <label for="region">State/Region</label>
+            <input tabindex="7" name="region" id="region" ref="region"
+                   autocomplete="off" required>
           </div>
         </div>
 
         <div class="row my-lg-2">
           <div class="col-lg-6 my-2 my-lg-0">
-            <label>Country*</label>
+            <label for="country">Country*</label>
+            <input tabindex="8" id="country" name="country"
+                   ref="country" autocomplete="off" required>
           </div>
 
           <div class="col-lg-6 my-2 my-lg-0">
-            <label>Postcode</label>
+            <label for="postcode">Postcode</label>
+            <input tabindex="9" id="postcode" name="postcode"
+                   ref="postcode" autocomplete="off" required>
           </div>
         </div>
 
         <div class="row my-lg-2">
           <div class="col my-2 my-lg-0">
-            <label>Description</label>
+            <label for="description">Description</label>
+            <textarea id="description" name="description" tabindex="10" rows="5" cols="70" v-model="description"
+                      :maxlength="config.description.maxLength"
+                      style="resize: none"/>
           </div>
         </div>
+
+        </form>
       </div>
     </div>
     <Footer/>
@@ -66,6 +89,7 @@
 </template>
 
 <script>
+import {Business} from "../Api";
 import Footer from "../components/Footer";
 
 export default {
@@ -73,10 +97,45 @@ export default {
   components: {
     Footer,
   },
+
+  data() {
+    return {
+
+      // Used for having pre-filled input fields
+      DEBUG_MODE: false,
+
+      // A copy of the user config file for error checking.
+      config: Business.config,
+
+      // Business name related variables
+      businessName: "",
+
+      // Business type related variables
+      businessType: "",
+
+      // Description related variables
+      description: "",
+
+      // Address autocompletion related variables
+      address: "",
+      addresses: [],
+      autocompleteFocusIndex: 0,
+      addressResultProperties: []
+    }
+  }
 }
 </script>
 
 <style scoped>
+form {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 950px;
+  align-content: center;
+  justify-content: center;
+}
 
 label {
   text-align: left;
@@ -87,5 +146,25 @@ label {
 #register-form {
   border-radius: 2%;
 }
+
+/*------------------ Hide arrows from input numbers ---------------------*/
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input:focus, textarea:focus, #register-button:focus{
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+/*------------------------------------------------------------------------*/
 
 </style>

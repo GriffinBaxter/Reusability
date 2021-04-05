@@ -167,6 +167,82 @@ export class User{
 
 }
 
+export class Business{
+
+  // This is a config for the business requirement details
+  static config = {
+    businessName: {
+      name: "Name",
+      minLength: 1,
+      maxLength: 100,
+      regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
+      regexMessage: "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$",
+    },
+    description: {
+      name: "Description",
+      minLength: 0,
+      maxLength: 600
+    },
+    businessType: {
+      name: "Business type",
+      options: [
+        { text: 'Accommodation and Food Services', value: 'ACCOMMODATION AND FOOD SERVICES' },
+        { text: 'Retail Trade', value: 'RETAIL TRADE' },
+        { text: 'Charitable organisation', value: 'CHARITABLE ORGANISATION' },
+        { text: 'Non-profit organisation', value: 'NON-PROFIT ORGANISATION' }
+      ]
+    },
+    businessAddress: {
+      name: "Business address",
+      minLength: 0,
+      maxLength: 255,
+      regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
+      regexMessage: "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$",
+    },
+    streetAddress: {
+      name: "Street address",
+      minLength: 1,
+      maxLength: 255
+    },
+    city: {
+      name: "City",
+      minLength: 1,
+      maxLength: 255
+    },
+    suburb: {
+      name: "Suburb",
+      minLength: 0,
+      maxLength: 255
+    },
+    region: {
+      name: "Region",
+      minLength: 1,
+      maxLength: 255
+    },
+    country: {
+      name: "Country",
+      minLength: 1,
+      maxLength: 255
+    },
+    postcode: {
+      name: "Postcode",
+      minLength: 1,
+      maxLength: 255
+    },
+  };
+
+  constructor({businessName, description, businessType, businessAddress}) {
+    this.data = {
+      businessName,
+      description,
+      businessType,
+      businessAddress
+    }
+
+  }
+
+}
+
 export default {
 
   // Sends a post request to the backend with a new user object to store
@@ -187,7 +263,11 @@ export default {
     return instance.get(`/users/search?searchQuery=${query}`, {
       withCredentials: true
     })
-  }
+  },
+
+  // Sends a post request to the backend with a new business object to store
+  addNewBusiness: (business) => instance.post('/businesses', {...business.data}, {'headers': {"Access-Control-Allow-Origin": "*"}}),
+
 
   // Usage examples from original file:
   //
