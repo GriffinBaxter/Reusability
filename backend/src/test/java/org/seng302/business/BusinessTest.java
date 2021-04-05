@@ -60,7 +60,8 @@ public class BusinessTest {
                     address,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                     LocalDateTime.now(),
-                    user
+                    user,
+                    user.getId()
             );
         }catch (Exception e){
             assertEquals("Invalid business name", e.getMessage());
@@ -76,7 +77,8 @@ public class BusinessTest {
                     null,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                     LocalDateTime.now(),
-                    user
+                    user,
+                    user.getId()
             );
         }catch (Exception e){
             assertEquals("Invalid address", e.getMessage());
@@ -91,7 +93,8 @@ public class BusinessTest {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                user.getId()
         );
         assertNull(businessAccount.getDescription());
     }
@@ -109,7 +112,8 @@ public class BusinessTest {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user);
+                user,
+                user.getId());
         User user = new User("first",
                 "last",
                 "middle",
@@ -140,7 +144,8 @@ public class BusinessTest {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user);
+                user,
+                user.getId());
         User user = new User("first",
                 "last",
                 "middle",

@@ -22,6 +22,9 @@ public class Business {
     @Column(name = "id", nullable = false)
     private int id;
 
+    @Column(name = "primaryAdministratorId")
+    private Integer primaryAdministratorId;
+
 //    include name*, description, address*, type* and registration date*
     @Column(name = "name", nullable = false)
     private String name;
@@ -57,7 +60,8 @@ public class Business {
                     Address address,
                     BusinessType businessType,
                     LocalDateTime created,
-                    User administrator
+                    User administrator,
+                    Integer primaryAdministratorId
     ) throws Exception{
         if (!Validation.isName(name)){
             throw new Exception("Invalid business name");
@@ -71,6 +75,7 @@ public class Business {
         this.description = (description.equals("")) ? null : description;
         this.created = created;
         administrators.add(administrator);
+        this.primaryAdministratorId = primaryAdministratorId;
     }
 
     //getter
@@ -103,8 +108,8 @@ public class Business {
      * get address
      * @return address
      */
-    public String getAddress() {
-        return address;
+    public Address getAddress() {
+        return Address.toAddress(address);
     }
 
     /**
@@ -129,6 +134,14 @@ public class Business {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * get primary administrator Id
+     * @return primaryAdministratorId
+     */
+    public Integer getPrimaryAdministratorId() {
+        return primaryAdministratorId;
     }
 
     //setter
@@ -178,6 +191,13 @@ public class Business {
         this.description = description;
     }
 
+    /**
+     * set primaryAdministratorId
+     * @param primaryAdministratorId primary administrator Id
+     */
+    public void setPrimaryAdministratorId(Integer primaryAdministratorId) {
+        this.primaryAdministratorId = primaryAdministratorId;
+    }
 
     /**
      * Returns a list of User objects who are administrators of this business

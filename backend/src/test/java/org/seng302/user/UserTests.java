@@ -63,7 +63,8 @@ public class UserTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user);
+                user,
+                user.getId());
     }
 
     /**
@@ -339,26 +340,12 @@ public class UserTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user);
-        User user = new User("first",
-                "last",
-                "middle",
-                "nick",
-                "biography",
-                "email@email.com",
-                LocalDate.of(2020, 2, 2),
-                "0271316",
-                address, "password",
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)),
-                Role.USER);
+                user,
+                user.getId());
 
         business.addAdministrators(user);
 
-        List<Integer> ids = new ArrayList<>();
-        ids.add(business.getId());
-
-        assertEquals(ids, user.getBusinessesAdministered());
+        assertEquals(user, business.getAdministrators().get(0));
     }
 
 

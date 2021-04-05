@@ -1,6 +1,8 @@
 package org.seng302.user;
 
 import org.seng302.Address.Address;
+import org.seng302.business.Business;
+import org.seng302.business.BusinessPayload;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ public class UserPayload {
     private Address homeAddress;
     private String created;
     private Role role;
-    private List<Integer> businessesAdministered;
+    private List<BusinessPayload> businessesAdministered;
 
     /**
      * translate a list of User to a list of UserPayload
@@ -47,8 +49,7 @@ public class UserPayload {
                     user.getHomeAddress(),
                     user.getCreated(),
                     user.getRole(),
-                    user.getBusinessesAdministered()
-            );
+                    user.getBusinessesAdministeredObjects());
             userPayloads.add(userPayload);
         }
         return userPayloads;
@@ -67,7 +68,7 @@ public class UserPayload {
             Address homeAddress,
             LocalDateTime created,
             Role role,
-            List<Integer> businessesAdministered
+            List<Business> businessesAdministeredObject
     ) {
         this.id = id;
         this.firstName = firstName;
@@ -81,7 +82,10 @@ public class UserPayload {
         this.homeAddress = homeAddress;
         this.created = created.toString();
         this.role = role;
-        this.businessesAdministered = businessesAdministered;
+        this.businessesAdministered = BusinessPayload.toBusinessPayload(businessesAdministeredObject);
+        if (this.businessesAdministered.isEmpty()){
+            this.businessesAdministered.add(null);
+        }
     }
 
     public int getId() {
@@ -132,7 +136,7 @@ public class UserPayload {
         return role;
     }
 
-    public List<Integer> getBusinessesAdministered() {
+    public List<BusinessPayload> getBusinessesAdministered() {
         return businessesAdministered;
     }
 
@@ -184,7 +188,7 @@ public class UserPayload {
         this.role = role;
     }
 
-    public void setBusinessesAdministered(List<Integer> businessesAdministered) {
+    public void setBusinessesAdministered(List<BusinessPayload> businessesAdministered) {
         this.businessesAdministered = businessesAdministered;
     }
 }

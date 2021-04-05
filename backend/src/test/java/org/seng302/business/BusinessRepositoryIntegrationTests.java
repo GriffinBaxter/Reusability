@@ -74,7 +74,8 @@ public class BusinessRepositoryIntegrationTests {
                                         address,
                                         BusinessType.RETAIL_TRADE,
                                         LocalDateTime.now(),
-                                        user);
+                                        user,
+                                        user.getId());
 
         entityManager.persist(business);
         entityManager.flush();
@@ -87,7 +88,7 @@ public class BusinessRepositoryIntegrationTests {
         assertThat(business.getId()).isEqualTo(found.get().getId());
         assertThat(business.getName()).isEqualTo(found.get().getName());
         assertThat(business.getDescription()).isEqualTo(found.get().getDescription());
-        assertThat(business.getAddress()).isEqualTo(found.get().getAddress());
+        assertThat(business.getAddress().toString()).isEqualTo(found.get().getAddress().toString());
         assertThat(business.getBusinessType()).isEqualTo(found.get().getBusinessType());
 
     }
@@ -103,7 +104,8 @@ public class BusinessRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user);
+                user,
+                user.getId());
 
         entityManager.persist(business);
         entityManager.flush();

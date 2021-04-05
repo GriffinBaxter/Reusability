@@ -293,37 +293,4 @@ public class User {
     public List<Business> getBusinessesAdministeredObjects() {
         return businessesAdministeredObjects;
     }
-
-    /**
-     * Loops through a list of businesses administered by the user and
-     * gets the businesses ids' and adds them to a list of integers.
-     * @return businessesAdministered A list of business ids' administered by the user.
-     */
-    public List<Integer> getBusinessesAdministered() {
-        List<Integer> businessesAdministered = new ArrayList<>();
-        for (Business business: businessesAdministeredObjects) {
-            businessesAdministered.add(business.getId());
-        }
-        return businessesAdministered;
-    }
-
-    @Override
-    public String toString() {
-        return "User(" +
-                "id=" + id +
-                ", firstName=" + firstName +
-                ", lastName=" + lastName +
-                ", middleName=" + middleName +
-                ", nickname=" + nickname +
-                ", bio=" + bio +
-                ", email=" + email +
-                ", dateOfBirth=" + dateOfBirth +
-                ", phoneNumber=" + phoneNumber +
-                ", homeAddress=" + homeAddress +
-                ", password=" + password +
-                ", created=" + created +
-                ", businessesAdministered=" + getBusinessesAdministered() +
-                ')';
-    }
-
 }

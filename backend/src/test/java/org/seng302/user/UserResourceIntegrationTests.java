@@ -216,7 +216,14 @@ public class UserResourceIntegrationTests {
                 "\"email\": \"bob@email.com\", " +
                 "\"dateOfBirth\": \"2000-02-01\", " +
                 "\"phoneNumber\": \"01234567\", " +
-                "\"homeAddress\": \"testaddress\", " +
+                "\"homeAddress\": {" +
+                        "\"streetNumber\": \"3/24\"," +
+                        "\"streetName\": \"Ilam Road\"," +
+                        "\"city\": \"Christchurch\"," +
+                        "\"region\": \"Canterbury\"," +
+                        "\"country\": \"New Zealand\"," +
+                        "\"postcode\": \"90210\"" +
+                " }, " +
                 "\"password\": \"testpassword\"}";
 
         // when
@@ -245,7 +252,14 @@ public class UserResourceIntegrationTests {
                 "\"email\": \"%s\", " +
                 "\"dateOfBirth\": \"2000-02-01\", " +
                 "\"phoneNumber\": \"01234567\", " +
-                "\"homeAddress\": \"testaddress\", " +
+                "\"homeAddress\": {" +
+                        "\"streetNumber\": \"3/24\"," +
+                        "\"streetName\": \"Ilam Road\"," +
+                        "\"city\": \"Christchurch\"," +
+                        "\"region\": \"Canterbury\"," +
+                        "\"country\": \"New Zealand\"," +
+                        "\"postcode\": \"90210\"" +
+                " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
 
@@ -276,7 +290,14 @@ public class UserResourceIntegrationTests {
                 "\"email\": \"test@email.com\", " +
                 "\"dateOfBirth\": \"2000-02-01\", " +
                 "\"phoneNumber\": \"01234567\", " +
-                "\"homeAddress\": \"testaddress\", " +
+                "\"homeAddress\": {" +
+                        "\"streetNumber\": \"3/24\"," +
+                        "\"streetName\": \"Ilam Road\"," +
+                        "\"city\": \"Christchurch\"," +
+                        "\"region\": \"Canterbury\"," +
+                        "\"country\": \"New Zealand\"," +
+                        "\"postcode\": \"90210\"" +
+                " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
 
@@ -305,7 +326,14 @@ public class UserResourceIntegrationTests {
                 "\"email\": \"%s\", " +
                 "\"dateOfBirth\": \"2000-02-01\", " +
                 "\"phoneNumber\": \"01234567\", " +
-                "\"homeAddress\": \"testaddress\", " +
+                "\"homeAddress\": {" +
+                        "\"streetNumber\": \"3/24\"," +
+                        "\"streetName\": \"Ilam Road\"," +
+                        "\"city\": \"Christchurch\"," +
+                        "\"region\": \"Canterbury\"," +
+                        "\"country\": \"New Zealand\"," +
+                        "\"postcode\": \"90210\"" +
+                " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
 
@@ -330,7 +358,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"", user.getBusinessesAdministered());
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]");
 
         // when
         when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
@@ -341,7 +369,7 @@ public class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     /**
@@ -353,7 +381,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered());
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]");
 
         // when
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
@@ -363,7 +391,7 @@ public class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     /**
@@ -375,7 +403,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered());
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]");
 
         // when
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
@@ -386,7 +414,7 @@ public class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     /**
@@ -470,7 +498,7 @@ public class UserResourceIntegrationTests {
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
                 user.getPhoneNumber(), user.getHomeAddress().toString(), user.getCreated(), "\"" + user.getRole() + "\"",
-                user.getBusinessesAdministered()) + "]";
+                "[null]") + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
@@ -493,7 +521,7 @@ public class UserResourceIntegrationTests {
         // then
         for (MockHttpServletResponse response: responseList) {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
         }
     }
 
@@ -518,7 +546,7 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                     user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                    user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered()) + "]";
+                    user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]") + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
@@ -541,7 +569,7 @@ public class UserResourceIntegrationTests {
         // then
         for (MockHttpServletResponse response: responseList) {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
         }
     }
 
@@ -566,7 +594,7 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, user.getBusinessesAdministered()) + "]";
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]") + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
@@ -589,7 +617,7 @@ public class UserResourceIntegrationTests {
         // then
         for (MockHttpServletResponse response: responseList) {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson.replace("\n", ""));
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
         }
     }
 

@@ -1,6 +1,5 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -78,7 +78,8 @@ public class BusinessResource {
                 businessRegistrationPayload.getAddress(),
                 businessRegistrationPayload.getBusinessType(),
                 LocalDateTime.now(),
-                currentUser
+                currentUser,
+                currentUser.getId()
                 );
         business.addAdministrators(currentUser); //add user to administrators list
         businessRepository.saveAndFlush(business);
@@ -104,9 +105,16 @@ public class BusinessResource {
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
+
+        List<User> administrators = business.get().getAdministrators();
+        for (User administrator : administrators){
+            administrator.setBusinessesAdministeredObjects(new ArrayList<>());
+        }
+
         return new BusinessPayload(
                 business.get().getId(),
-                business.get().getAdministrators(),
+                administrators,
+                business.get().getPrimaryAdministratorId(),
                 business.get().getName(),
                 business.get().getDescription(),
                 business.get().getAddress(),

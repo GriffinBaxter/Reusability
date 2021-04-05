@@ -1,5 +1,6 @@
 package org.seng302.user;
 
+import org.seng302.business.Business;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.seng302.user.Role.*;
 
@@ -209,6 +209,11 @@ public class UserResource {
             role = selectUser.get().getRole();
         }
 
+        List<Business> administrators = selectUser.get().getBusinessesAdministeredObjects();
+        for (Business administrator : administrators) {
+            administrator.setAdministrators(new ArrayList<>());
+        }
+
         return new UserPayload(
                 selectUser.get().getId(),
                 selectUser.get().getFirstName(),
@@ -222,7 +227,7 @@ public class UserResource {
                 selectUser.get().getHomeAddress(),
                 selectUser.get().getCreated(),
                 role,
-                selectUser.get().getBusinessesAdministered()
+                administrators
         );
     }
 
