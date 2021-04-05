@@ -647,14 +647,16 @@ test( 'Testing for the region with symbols', () => {
  *  @result message raised is Input must be between 1 and 255.
  */
 test( 'Test for the country for the max length', () => {
-    const inputValue = "2555"*255
+    const inputValue = "Abc"*255
     const expectedValue = `Input must be between 1 and 255 characters long.`;
 
     expect(reg.methods.getErrorMessage(
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
-        Business.config.country.maxLength
+        Business.config.country.maxLength,
+        Business.config.country.regexMessage,
+        Business.config.country.regex
     )).toBe(expectedValue)
 })
 
@@ -671,7 +673,9 @@ test( 'Test for the country for the minimum length and empty string', () => {
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
-        Business.config.country.maxLength
+        Business.config.country.maxLength,
+        Business.config.country.regexMessage,
+        Business.config.country.regex
     )).toBe(expectedValue)
 })
 
@@ -687,7 +691,9 @@ test( 'Testing for a valid country', () => {
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
-        Business.config.country.maxLength
+        Business.config.country.maxLength,
+        Business.config.country.regexMessage,
+        Business.config.country.regex
     )).toBe(expectedValue)
 })
 
@@ -710,7 +716,7 @@ test( 'Testing for country with numbers', () => {
 })
 
 /**
- * Testing for country with symbols.
+ * Testing for country with invalid symbols.
  * @result message raised is "Must be alphanumeric (spaces, -, ' optional)".
  */
 test( 'Testing for the country with symbols', () => {
@@ -727,6 +733,244 @@ test( 'Testing for the country with symbols', () => {
     )).toBe(expectedValue)
 })
 
+/**
+ * Testing for country with valid symbols.
+ * @result No messages should be raised.
+ */
+test( 'Testing for the country with symbols', () => {
+    const inputValue = "'- country"
+    const expectedValue = ""
 
-//TODO postcode
-//TODO business type
+    expect(reg.methods.getErrorMessage(
+        Business.config.country.name,
+        inputValue,
+        Business.config.country.minLength,
+        Business.config.country.maxLength,
+        Business.config.country.regexMessage,
+        Business.config.country.regex
+    )).toBe(expectedValue)
+})
+
+// ************************************************ Suburb Tests *******************************************************
+
+/**
+ * Testing that an error message is returned when the suburb has a length greater than the maximum length of 255
+ * characters.
+ *  @result message raised is Input must be between 0 and 255.
+ */
+test( 'Test for the suburb for the max length', () => {
+    const inputValue = "2555"*255
+    const expectedValue = `Input must be between 0 and 255 characters long.`;
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.suburb.name,
+        inputValue,
+        Business.config.suburb.minLength,
+        Business.config.suburb.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing that an error message is returned when we submit the empty string.
+ * @result No messages should be raised.
+ */
+test( 'Test for the suburb for empty string', () => {
+    const inputValue = ""
+    const expectedValue = "";
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.suburb.name,
+        inputValue,
+        Business.config.suburb.minLength,
+        Business.config.suburb.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for valid input of suburb.
+ * @result No messages should be raised.
+ */
+test( 'Testing for a valid suburb', () => {
+    const inputValue = "Ilam"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.suburb.name,
+        inputValue,
+        Business.config.suburb.minLength,
+        Business.config.suburb.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for suburb with numbers.
+ * @result No messages should be raised.
+ */
+test( 'Testing for suburb with numbers', () => {
+    const inputValue = "suburb 13"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.suburb.name,
+        inputValue,
+        Business.config.suburb.minLength,
+        Business.config.suburb.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for suburb with symbols.
+ * @result No messages should be raised.
+ */
+test( 'Testing for the suburb with symbols', () => {
+    const inputValue = "!@#!@ suburb"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.suburb.name,
+        inputValue,
+        Business.config.suburb.minLength,
+        Business.config.suburb.maxLength
+    )).toBe(expectedValue)
+})
+
+// *********************************************** Postcode Tests ******************************************************
+
+/**
+ * Testing that an error message is returned when the postcode has a length greater than the maximum length of 255
+ * characters.
+ *  @result message raised is Input must be between 0 and 255.
+ */
+test( 'Test for the postcode for the max length', () => {
+    const inputValue = "2555"*255
+    const expectedValue = `Input must be between 0 and 255 characters long.`;
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.postcode.name,
+        inputValue,
+        Business.config.postcode.minLength,
+        Business.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing that an error message is returned when we submit the empty string.
+ * @result No messages should be raised.
+ */
+test( 'Test for the postcode for empty string', () => {
+    const inputValue = ""
+    const expectedValue = "";
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.postcode.name,
+        inputValue,
+        Business.config.postcode.minLength,
+        Business.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for valid input of postcode.
+ * @result No messages should be raised.
+ */
+test( 'Testing for a valid postcode', () => {
+    const inputValue = "8014"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.postcode.name,
+        inputValue,
+        Business.config.postcode.minLength,
+        Business.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for postcode with numbers.
+ * @result No messages should be raised.
+ */
+test( 'Testing for postcode with numbers', () => {
+    const inputValue = "1111"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.postcode.name,
+        inputValue,
+        Business.config.postcode.minLength,
+        Business.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for postcode with symbols.
+ * @result No messages should be raised.
+ */
+test( 'Testing for the postcode with symbols', () => {
+    const inputValue = "!@#!@ suburb"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.postcode.name,
+        inputValue,
+        Business.config.postcode.minLength,
+        Business.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
+// ************************************************ between() Tests ****************************************************
+/**
+ * Test for checking the functionality of between() when value 1 < value 2 < value 3.
+ * @result true.
+ */
+test('Test if value 1 < value 2 < 3 gives true', () => {
+    const testVal = 2;
+    const testMin = 1;
+    const testMax = 3;
+    const expectedMessage = true;
+
+    expect(reg.methods.between(testVal, testMin, testMax)
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for checking the functionality of between() when value 1 > value 2 > value 3.
+ * @result false.
+ */
+test('Test if value 1 > value 2 > 3 gives false', () => {
+    const testVal = 8;
+    const testMin = 7;
+    const testMax = 6;
+    const expectedMessage = false;
+
+    expect(reg.methods.between(testVal, testMin, testMax)
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for checking the functionality of between() when value 1 = value 2 = value 3.
+ * @result true.
+ */
+test('Test if value 1 = value 2 = value 3 gives true', () => {
+    const testVal = 11;
+    const testMin = 11;
+    const testMax = 11;
+    const expectedMessage = true;
+
+    expect(reg.methods.between(testVal, testMin, testMax)
+    ).toBe(expectedMessage);
+
+})
+
+/**
+ * Test for checking the functionality of between() when value 1 > value 2 = value 3.
+ * @result true.
+ */
+test('Test if value 1 > value 2 = value 3 gives false', () => {
+    const testVal = 8;
+    const testMin = 11;
+    const testMax = 20;
+    const expectedMessage = false;
+
+    expect(reg.methods.between(testVal, testMin, testMax)
+    ).toBe(expectedMessage);
+})
