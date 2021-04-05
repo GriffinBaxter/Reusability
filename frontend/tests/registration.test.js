@@ -1166,7 +1166,7 @@ test('Home address with input that contains invalid symbols', () => {
 })
 
 /**
- * Test for ensuring an error message is raised when input is entered into the home address field and contains the
+ * Test for ensuring no error message is raised when input is entered into the home address field and contains the
  * sample data's home address.
  * @result message raised is the empty string.
  */
@@ -1832,7 +1832,7 @@ test( 'Test for the country for the max length', () => {
 
 /**
  * Testing that an error message is returned when we submit the empty string for the country. This is also a test for
- * the minimum length of the country, where an empty string is allowed i.e. 0 length.
+ * the minimum length of the country, where an empty string is not allowed i.e. 0 length.
  * @result messaged raised is Please enter input.
  */
 test( 'Test for the country for the minimum length and empty string', () => {

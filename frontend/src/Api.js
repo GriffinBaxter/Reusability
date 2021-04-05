@@ -195,13 +195,13 @@ export class Business{
     },
     streetAddress: {
       name: "Street address",
-      minLength: 1,
+      minLength: 0,
       maxLength: 255
     },
     city: {
       name: "City",
-      minLength: 1,
-      maxLength: 255
+      minLength: 0,
+      maxLength: 255,
     },
     suburb: {
       name: "Suburb",
@@ -210,17 +210,19 @@ export class Business{
     },
     region: {
       name: "Region",
-      minLength: 1,
+      minLength: 0,
       maxLength: 255
     },
     country: {
       name: "Country",
       minLength: 1,
-      maxLength: 255
+      maxLength: 255,
+      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
+      regex: /^[a-zA-Z '-]+$/
     },
     postcode: {
       name: "Postcode",
-      minLength: 1,
+      minLength: 0,
       maxLength: 255
     },
   };

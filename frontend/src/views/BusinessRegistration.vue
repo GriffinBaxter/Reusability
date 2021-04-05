@@ -220,6 +220,18 @@ export default {
     },
 
     /**
+     * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
+     *
+     * @param val, int, the value to be tested for being within the range.
+     * @param min, int, the minimum value in the range.
+     * @param max, int, the maximum value in the range.
+     * @returns Boolean, true if within range, false is not within range.
+     */
+    between(val, min, max) {
+      return min <= val && val <= max;
+    },
+
+    /**
      * This method determines the error message to be generated for a given input value based on the field type and
      * its associated validity (determined by a regex).
      *
