@@ -1,3 +1,9 @@
+<!--https://stackoverflow.com/questions/45000510/vue-js-error-component-template-should-contain-exactly-one-root-element-->
+<!--<link rel="preconnect" href="https://fonts.gstatic.com">-->
+<!--<link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">-->
+<!--<link rel="preconnect" href="https://fonts.gstatic.com">-->
+<!--<link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">-->
+
 <template>
   <nav class="navbar sticky-top  navbar-expand-lg navbar-light shadow" style="background-color: white">
 
@@ -6,6 +12,8 @@
         <!-- Logo image -->
         <router-link class="navbar-brand " to="/home">
           <img src="../../public/logo.png" alt="Logo" class="img-fluid d-inline-block" id="logoImage">
+<!--          <p class="company-name-main">Reusability</p>-->
+<!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
         </router-link>
 
         <!-- hamburger icon -->
@@ -90,5 +98,13 @@ export default {
 <style scoped>
   #logoImage {
     max-width: 200px;
+  }
+
+  .company-name-main {
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .company-name-sub-heading {
+    font-family: 'Oswald', sans-serif;
   }
 </style>
