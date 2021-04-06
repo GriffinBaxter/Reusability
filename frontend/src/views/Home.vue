@@ -1,63 +1,66 @@
 <template>
-  <div id="home" class="container">
-    <div class="container-news">
+  <div>
+    <Navbar></Navbar>
+    <div id="home" class="container">
+      <div class="container-news">
 
-      <div class="post shadow py-5 px-4">
-        <div class="post-header">
+        <div class="post shadow py-5 px-4">
+          <div class="post-header">
+            <div>
+              <img id="profile-image-1" src="../../public/profile_icon_1.jpg" alt="profile image">
+              <span class="account-name">Green Grocers </span>
+            </div><div>
+              <span>Apr 6</span>
+            </div>
+          </div>
           <div>
-            <img id="profile-image-1" src="../../public/profile_icon_1.jpg" alt="profile image">
-            <span class="account-name">Green Grocers </span>
-          </div><div>
-            <span>Apr 6</span>
+            <p class="post-description"> This is the first photo of the feed. This is a multi-lined comment for testing purposes.</p>
+          </div>
+          <p></p>
+          <div>
+            <img class="post-image" src="../../public/apples.jpg" alt="image 2">
           </div>
         </div>
-        <div>
-          <p class="post-description"> This is the first photo of the feed. This is a multi-lined comment for testing purposes.</p>
-        </div>
-        <p></p>
-        <div>
-          <img class="post-image" src="../../public/apples.jpg" alt="image 2">
-        </div>
-      </div>
 
-      <div class="post shadow py-5 px-4">
-        <div class="post-header">
+        <div class="post shadow py-5 px-4">
+          <div class="post-header">
+            <div>
+              <img id="profile-image-2" src="../../public/profile_icon_2.jpg" alt="profile image">
+              <span class="account-name">Fast Frank's</span>
+            </div><div>
+            <span>Apr 4</span>
+          </div>
+          </div>
           <div>
-            <img id="profile-image-2" src="../../public/profile_icon_2.jpg" alt="profile image">
-            <span class="account-name">Fast Frank's</span>
-          </div><div>
-          <span>Apr 4</span>
-        </div>
-        </div>
-        <div>
-          <p class="post-description"> This is the second photo of the feed. This is a multi-lined comment for testing purposes.</p>
-        </div>
-        <p></p>
-        <div>
-          <img class="post-image" src="../../public/cans.jpg" alt="image 2">
-        </div>
-      </div>
-
-      <div class="post shadow py-5 px-4">
-        <div class="post-header">
+            <p class="post-description"> This is the second photo of the feed. This is a multi-lined comment for testing purposes.</p>
+          </div>
+          <p></p>
           <div>
-            <img id="profile-image-3" src="../../public/profile_icon_3.jpg" alt="profile image">
-            <span class="account-name">New Leaf Organics</span>
-          </div><div>
-          <span>Apr 3</span>
+            <img class="post-image" src="../../public/cans.jpg" alt="image 2">
+          </div>
         </div>
-        </div>
-        <div>
-          <p class="post-description"> This is the third photo of the feed. This is a multi-lined comment for testing purposes.</p>
-        </div>
-        <p></p>
-        <div>
-          <img class="post-image" src="../../public/clothes.jpg" alt="image 2">
-        </div>
-      </div>
 
+        <div class="post shadow py-5 px-4">
+          <div class="post-header">
+            <div>
+              <img id="profile-image-3" src="../../public/profile_icon_3.jpg" alt="profile image">
+              <span class="account-name">New Leaf Organics</span>
+            </div><div>
+            <span>Apr 3</span>
+          </div>
+          </div>
+          <div>
+            <p class="post-description"> This is the third photo of the feed. This is a multi-lined comment for testing purposes.</p>
+          </div>
+          <p></p>
+          <div>
+            <img class="post-image" src="../../public/clothes.jpg" alt="image 2">
+          </div>
+        </div>
+
+      </div>
+      <Footer/>
     </div>
-    <Footer/>
   </div>
 </template>
 
@@ -65,11 +68,13 @@
 // import Api from '../Api';
 // import Cookies from 'js-cookie';
 import Footer from '../components/Footer';
+import Navbar from '../components/Navbar'
 
 export default {
   name: "Home",
   components: {
-    Footer
+    Footer,
+    Navbar
   },
   methods: {
 
