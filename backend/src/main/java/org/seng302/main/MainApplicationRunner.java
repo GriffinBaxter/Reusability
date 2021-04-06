@@ -50,6 +50,9 @@ public class MainApplicationRunner implements ApplicationRunner {
 
         userRepository.findAll().forEach(logger::info);
         businessRepository.findAll().forEach(logger::info);
+
+        addTestUsers();
+
     }
 
 
@@ -85,5 +88,109 @@ public class MainApplicationRunner implements ApplicationRunner {
         } else {
             logger.info("DGGA exists.");
         }
+    }
+
+    public void addTestUsers() throws Exception {
+        User newUser1 = new User(
+                "Alex",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "test@email.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "address",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        newUser1 = userRepository.save(newUser1);
+        logger.info("Added first test user: {}", newUser1);
+
+        User newUser2 = new User(
+                "Chad",
+                "Taylor",
+                "S",
+                "Cha",
+                "Biography123",
+                "chad.taylor@example.com",
+                LocalDate.of(2008, 2, 2),
+                "0271316678",
+                "10 Address Street, 123, jsadoj",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        newUser2 = userRepository.save(newUser2);
+        logger.info("Added second test user: {}", newUser2);
+
+        User newUser3 = new User(
+                "Naomi",
+                "Wilson",
+                "I",
+                "Gm",
+                "Biography",
+                "naomi.wilson@example.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                "address",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        newUser3 = userRepository.save(newUser3);
+        logger.info("Added third test user: {}", newUser3);
+
+        User newUser4 = new User(
+                "Seth",
+                "Murphy",
+                "S",
+                "S",
+                "Biography",
+                "seth.murphy@example.com",
+                LocalDate.of(2008, 2, 2),
+                "027188316",
+                "address",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        newUser4 = userRepository.save(newUser4);
+        logger.info("Added fourth test user: {}", newUser4);
+
+        User newUser5 = new User(
+                "Minttu",
+                "Wainio",
+                "A",
+                "Min",
+                "Biography",
+                "minttu.wainio@example.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "address",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        newUser5 = userRepository.save(newUser5);
+        logger.info("Added fifth test user: {}", newUser5);
+
+        User newUser6 = new User(
+                "Francisca",
+                "Benitez",
+                "T",
+                "Fran",
+                "Biography",
+                "francisca.benitez@example.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "address",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        newUser6 = userRepository.save(newUser6);
+        logger.info("Added sixth test user: {}", newUser6);
     }
 }
