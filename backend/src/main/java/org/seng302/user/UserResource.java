@@ -1,6 +1,9 @@
 package org.seng302.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -170,34 +173,71 @@ public class UserResource {
     public List<UserPayload> searchUsers(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @RequestParam String searchQuery
     ) {
-        getUserVerifySession(sessionToken);
+        //getUserVerifySession(sessionToken);
+        int pageNo = 0;
+        int pageSize = 5;
 
-        List<UserPayload> users;
+        Pageable paging = PageRequest.of(pageNo, pageSize);
+        Page<User> pagedResult = userRepository.findAll(paging);
 
-        String[] searchQuerySplit = searchQuery.split(" ");
+        // Convert to payloads
+        return convertToPayload(pagedResult.getContent(), sessionToken);
 
-        if (searchQuerySplit.length == 3) {  // Query including the first, middle and last names.
-            users = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
-                    searchQuerySplit[0], searchQuerySplit[1], searchQuerySplit[2]
+
+//        List<UserPayload> users;
+//
+//        String[] searchQuerySplit = searchQuery.split(" ");
+//        // TODO make any search work for all names.
+//
+//        if (searchQuerySplit.length == 3) {  // Query including the first, middle and last names.
+//            users = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
+//                    searchQuerySplit[0], searchQuerySplit[1], searchQuerySplit[2]
+//            );
+//        } else if (searchQuerySplit.length == 2) {  // Query including the first and last names.
+//            users = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(
+//                    searchQuerySplit[0], searchQuerySplit[1]
+//            );
+//        } else {  // Query including either the nickname, first, middle or last name.
+//            users = new ArrayList<>(userRepository.findByNicknameIgnoreCase(searchQuery));
+//            users.addAll(userRepository.findByFirstNameIgnoreCase(searchQuery));
+//            users.addAll(userRepository.findByLastNameIgnoreCase(searchQuery));
+//            users.addAll(userRepository.findByMiddleNameIgnoreCase(searchQuery));
+//        }
+//
+//        if (!verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+//            for (UserPayload user: users) {
+//                user.setRole(null);
+//            }
+//        }
+
+        //return users.stream().distinct().collect(Collectors.toList());
+    }
+
+    public List<UserPayload> convertToPayload(List<User> userList, String sessionToken) {
+        List<UserPayload> payLoads = new ArrayList<>();
+
+        for (User user : userList) {
+            Role role = null;
+//            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+//                role = user.getRole();
+//            }
+            UserPayload newPayload = new UserPayload(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getMiddleName(),
+                    user.getNickname(),
+                    user.getBio(),
+                    user.getEmail(),
+                    user.getDateOfBirth(),
+                    user.getPhoneNumber(),
+                    user.getHomeAddress(),
+                    user.getCreated(),
+                    role
             );
-        } else if (searchQuerySplit.length == 2) {  // Query including the first and last names.
-            users = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(
-                    searchQuerySplit[0], searchQuerySplit[1]
-            );
-        } else {  // Query including either the nickname, first, middle or last name.
-            users = new ArrayList<>(userRepository.findByNicknameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByFirstNameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByLastNameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByMiddleNameIgnoreCase(searchQuery));
+            payLoads.add(newPayload);
         }
-
-        if (!verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            for (UserPayload user: users) {
-                user.setRole(null);
-            }
-        }
-
-        return users.stream().distinct().collect(Collectors.toList());
+        return payLoads;
     }
 
     /**

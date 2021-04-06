@@ -1,5 +1,6 @@
 package org.seng302.user;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -79,4 +80,5 @@ public interface UserRepository extends JpaRepository<User, String> {
      * @return A boolean whether a user with the role exists.
      */
     boolean existsByRole(Role role);
+
 }
