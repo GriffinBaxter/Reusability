@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <p class="copyright mt-4">© SENG302 Team 6 2021</p>
+    <p class="copyright mt-4">© SENG302 Team 400 2021</p>
   </footer>
 </template>
 
@@ -13,6 +13,10 @@ export default {
 <style scoped>
   footer {
     text-align: center;
-    color: lightgrey;
+    color: white;
+    background-color: #8c8c8c;
+    width: 100%;
   }
 </style>
+
+<!--https://mdbootstrap.com/docs/standard/navigation/footer/-->

@@ -1,56 +1,63 @@
 <template>
   <div id="home" class="container">
     <div class="container-news">
-      <div class="post">
+
+      <div class="post shadow py-5 px-4">
         <div class="post-header">
           <div>
-            <h2>Apples to Go</h2>
+            <img id="profile-image-1" src="../../public/profile_icon_1.jpg" alt="profile image">
+            <span class="account-name">Green Grocers </span>
           </div><div>
-          <span>12/14</span>
-        </div>
-        </div>
-        <div>
-          <img src="../../public/apples.jpg" height=400 width=200 alt="image 2">
+            <span>Apr 6</span>
+          </div>
         </div>
         <div>
-          <p> This is my first photo of the feed. This is a multilined comment for testing purposes.</p>
+          <p class="post-description"> This is the first photo of the feed. This is a multi-lined comment for testing purposes.</p>
+        </div>
+        <p></p>
+        <div>
+          <img class="post-image" src="../../public/apples.jpg" alt="image 2">
         </div>
       </div>
 
-      <div class="post">
+      <div class="post shadow py-5 px-4">
         <div class="post-header">
           <div>
-            <h2>End of Stock Cans</h2>
+            <img id="profile-image-2" src="../../public/profile_icon_2.jpg" alt="profile image">
+            <span class="account-name">Fast Frank's</span>
           </div><div>
-          <span>12/14</span>
+          <span>Apr 4</span>
         </div>
         </div>
         <div>
-          <img src="../../public/cans.jpg" height=400 width=200 alt="image 3">
+          <p class="post-description"> This is the second photo of the feed. This is a multi-lined comment for testing purposes.</p>
         </div>
+        <p></p>
         <div>
-          <p> This is my second photo of the feed. This is a multilined comment for testing purposes.</p>
+          <img class="post-image" src="../../public/cans.jpg" alt="image 2">
         </div>
       </div>
 
-      <div class="post">
+      <div class="post shadow py-5 px-4">
         <div class="post-header">
           <div>
-            <h2>Summer Dresses Must Go</h2>
+            <img id="profile-image-3" src="../../public/profile_icon_3.jpg" alt="profile image">
+            <span class="account-name">New Leaf Organics</span>
           </div><div>
-          <span>12/14</span>
+          <span>Apr 3</span>
         </div>
         </div>
         <div>
-          <img src="../../public/clothes.jpg" height=400 width=200 alt="image 3">
+          <p class="post-description"> This is the third photo of the feed. This is a multi-lined comment for testing purposes.</p>
         </div>
+        <p></p>
         <div>
-          <p> This is my third photo of the feed. This is a multilined comment for testing purposes.</p>
+          <img class="post-image" src="../../public/clothes.jpg" alt="image 2">
         </div>
       </div>
 
     </div>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
@@ -73,7 +80,7 @@ export default {
 <style scoped>
 
 body {
-  background: #BDBDBD;
+  background: #f1f1f1;
   margin: 0;
 }
 div {
@@ -110,13 +117,21 @@ header h1{
 
 div.post{
   background: white;
-  margin-top: 10px;
+  margin-top: 20px;
   border-radius: 15px;
   margin-bottom: 5%;
 }
 
 div.post img {
   width: 100%;
+}
+
+/*
+ * styling for header of the post. This will later be change to be the business icon of the owner of the post.
+ */
+div.post .post-header div:first-child{
+  display: inline-block;
+  width: 80%;
 }
 
 /*
@@ -140,14 +155,34 @@ div.post .post-header div:last-child{
 
 div.post h2, div.post p {
   margin: 0;
-  padding: 20px;
+  padding: 10px;
 }
 
 /*
  * width is 624px since news feed item is 600px and then 12px margin each side.
  */
 div.container{
-  width: 624px;
+  width: 524px;
   margin: auto;
 }
+
+#profile-image-1, #profile-image-2, #profile-image-3{
+  height: 50px;
+  width: auto;
+  border-radius: 50px;
+}
+
+.post-image {
+  border-radius: 15px;
+}
+
+.account-name {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.post-description {
+  margin-bottom: 30px;
+}
+
 </style>
