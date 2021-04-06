@@ -1,56 +1,59 @@
 <template>
-  <div id="home" class="container">
-    <div class="container-news">
-      <div class="post">
-        <div class="post-header">
+  <div>
+    <Navbar></Navbar>
+    <div id="home" class="container">
+      <div class="container-news">
+        <div class="post">
+          <div class="post-header">
+            <div>
+              <h2>Apples to Go</h2>
+            </div><div>
+            <span>12/14</span>
+          </div>
+          </div>
           <div>
-            <h2>Apples to Go</h2>
-          </div><div>
-          <span>12/14</span>
-        </div>
-        </div>
-        <div>
-          <img src="../../public/apples.jpg" height=400 width=200 alt="image 2">
-        </div>
-        <div>
-          <p> This is my first photo of the feed. This is a multilined comment for testing purposes.</p>
-        </div>
-      </div>
-
-      <div class="post">
-        <div class="post-header">
+            <img src="../../public/apples.jpg" height=400 width=200 alt="image 2">
+          </div>
           <div>
-            <h2>End of Stock Cans</h2>
-          </div><div>
-          <span>12/14</span>
+            <p> This is my first photo of the feed. This is a multilined comment for testing purposes.</p>
+          </div>
         </div>
-        </div>
-        <div>
-          <img src="../../public/cans.jpg" height=400 width=200 alt="image 3">
-        </div>
-        <div>
-          <p> This is my second photo of the feed. This is a multilined comment for testing purposes.</p>
-        </div>
-      </div>
 
-      <div class="post">
-        <div class="post-header">
+        <div class="post">
+          <div class="post-header">
+            <div>
+              <h2>End of Stock Cans</h2>
+            </div><div>
+            <span>12/14</span>
+          </div>
+          </div>
           <div>
-            <h2>Summer Dresses Must Go</h2>
-          </div><div>
-          <span>12/14</span>
+            <img src="../../public/cans.jpg" height=400 width=200 alt="image 3">
+          </div>
+          <div>
+            <p> This is my second photo of the feed. This is a multilined comment for testing purposes.</p>
+          </div>
         </div>
-        </div>
-        <div>
-          <img src="../../public/clothes.jpg" height=400 width=200 alt="image 3">
-        </div>
-        <div>
-          <p> This is my third photo of the feed. This is a multilined comment for testing purposes.</p>
-        </div>
-      </div>
 
+        <div class="post">
+          <div class="post-header">
+            <div>
+              <h2>Summer Dresses Must Go</h2>
+            </div><div>
+            <span>12/14</span>
+          </div>
+          </div>
+          <div>
+            <img src="../../public/clothes.jpg" height=400 width=200 alt="image 3">
+          </div>
+          <div>
+            <p> This is my third photo of the feed. This is a multilined comment for testing purposes.</p>
+          </div>
+        </div>
+
+      </div>
+      <Footer />
     </div>
-    <Footer />
   </div>
 </template>
 
@@ -58,11 +61,13 @@
 // import Api from '../Api';
 // import Cookies from 'js-cookie';
 import Footer from '../components/Footer';
+import Navbar from '../components/Navbar'
 
 export default {
   name: "Home",
   components: {
-    Footer
+    Footer,
+    Navbar
   },
   methods: {
 
