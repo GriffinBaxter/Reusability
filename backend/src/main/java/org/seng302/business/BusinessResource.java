@@ -1,5 +1,7 @@
 package org.seng302.business;
 
+import org.seng302.Address.Address;
+import org.seng302.Address.Validation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,17 +74,57 @@ public class BusinessResource {
         //access token invalid
         User currentUser = getUserVerifySession(response);
 
-        Business business = new Business(
-                businessRegistrationPayload.getName(),
-                businessRegistrationPayload.getDescription(),
-                businessRegistrationPayload.getAddress(),
-                businessRegistrationPayload.getBusinessType(),
-                LocalDateTime.now(),
-                currentUser,
-                currentUser.getId()
-                );
-        business.addAdministrators(currentUser); //add user to administrators list
-        businessRepository.saveAndFlush(business);
+        String name = businessRegistrationPayload.getName();
+        String description = businessRegistrationPayload.getDescription();
+        BusinessType businessType = businessRegistrationPayload.getBusinessType();
+        Address address = businessRegistrationPayload.getAddress();
+
+        //TODO: 400 not in api spec
+        System.out.println(name);
+        if (!Validation.isBusinessName(name)){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal business name"
+            );
+        }
+
+        if (!Validation.isDescription(description)){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal description"
+            );
+        }
+        if (!Validation.isAddress(address)){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal address"
+            );
+        }
+        if (businessType == null){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal business type"
+            );
+        }
+
+        if (Validation.isNewBusiness(businessRepository.findBusinessesByAddress(address.toString()), name, address)){
+            Business business = new Business(
+                    name,
+                    description,
+                    address,
+                    businessType,
+                    LocalDateTime.now(),
+                    currentUser,
+                    currentUser.getId()
+            );
+            business.addAdministrators(currentUser); //add user to administrators list
+            businessRepository.saveAndFlush(business);
+        } else { //TODO: 409 not in api spec
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Name and Address already in use"
+            );
+        }
     }
 
     /**

@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +34,8 @@ public class BusinessRepositoryIntegrationTests {
     private  BusinessRepository businessRepository;
 
     private Optional<Business> found;
+
+    private List<Business> listFound;
 
     private static Address address;
 
@@ -94,7 +97,7 @@ public class BusinessRepositoryIntegrationTests {
     }
 
     /**
-     * Tests that no user is returned when calling findByEmail() with a non-existing email
+     * Tests that no user is returned when calling findBusinessById() with a non-existing id
      */
     @Test
     public void whenFindByNonExistingId_thenDontReturnBusiness() throws Exception {
@@ -117,6 +120,101 @@ public class BusinessRepositoryIntegrationTests {
         assertThat(found.isEmpty()).isTrue();
     }
 
+    /**
+     * Tests that a list which contain an user is returned when calling findBusinessesByName() with a existing name
+     */
+    @Test
+    public void whenFindByExistingName_thenReturnAListContainBusinesses() throws Exception {
+        // given
+        Business business = new Business("example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user,
+                user.getId());
 
+        entityManager.persist(business);
+        entityManager.flush();
 
+        // when
+        listFound = businessRepository.findBusinessesByName("example name");
+
+        // then
+        assertThat(business.equals(listFound.get(0))).isTrue();
+    }
+
+    /**
+     * Tests that a empty list is returned when calling findBusinessesByName() with a non-existing name
+     */
+    @Test
+    public void whenFindByNonExistingName_thenReturnAEmptyList() throws Exception {
+        // given
+        Business business = new Business("example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user,
+                user.getId());
+
+        entityManager.persist(business);
+        entityManager.flush();
+
+        // when
+        listFound = businessRepository.findBusinessesByName("");
+
+        // then
+        assertThat(listFound.isEmpty()).isTrue();
+    }
+
+    /**
+     * Tests that a list which contain an user is returned when calling findBusinessesByAddress() with a
+     * existing address
+     */
+    @Test
+    public void whenFindByExistingAddress_thenReturnAListContainBusinesses() throws Exception {
+        // given
+        Business business = new Business("example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user,
+                user.getId());
+
+        entityManager.persist(business);
+        entityManager.flush();
+
+        // when
+        listFound = businessRepository.findBusinessesByAddress(address.toString());
+
+        // then
+        assertThat(business.equals(listFound.get(0))).isTrue();
+    }
+
+    /**
+     * Tests that a list which contain an user is returned when calling findBusinessesByAddress() with a
+     * existing address
+     */
+    @Test
+    public void whenFindByNonExistingAddress_thenReturnAEmptyList() throws Exception {
+        // given
+        Business business = new Business("example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user,
+                user.getId());
+
+        entityManager.persist(business);
+        entityManager.flush();
+
+        // when
+        listFound = businessRepository.findBusinessesByAddress("");
+
+        // then
+        assertThat(listFound.isEmpty()).isTrue();
+    }
 }
