@@ -250,10 +250,12 @@ export class Business{
 export default {
 
   // Sends a post request to the backend with a new user object to store
-  addNewUser: (user) => instance.post('/users', {...user.data}, {'headers': {"Access-Control-Allow-Origin": "*"}}),
+  addNewUser: (user) => instance.post('/users', {...user.data}, { withCredentials: true}),
 
   // Sends a post request to the backend with the user's login details
-  signIn: (email, password) => instance.post('login', {email, password}),
+  signIn: (email, password) => instance.post('login', {email, password}, {
+    withCredentials: true
+  }),
 
   // Sends a get request to the backend asking for a the given user's details
   getUser: (userID) => {
