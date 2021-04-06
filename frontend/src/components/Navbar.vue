@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar sticky-top  navbar-expand-lg navbar-light" style="background-color: #23d9a3">
+  <nav class="navbar sticky-top  navbar-expand-lg navbar-light shadow" style="background-color: white">
 
       <div class="container my-3 mx-auto">
 
