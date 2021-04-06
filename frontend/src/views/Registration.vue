@@ -1,229 +1,231 @@
 <template>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-3 m-3">
-        <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
-      </div>
-    </div>
-    <div class="col-lg-8 mx-auto">
-      <div class="container shadow py-5 px-4 bg-white mb-5" id="register-form">
-        <div class="row">
-          <div class="col">
-            <h3 class="display-6 m-2 mb-5 text-center">Register</h3>
-          </div>
+  <div>
+    <div class="container all-but-footer">
+      <div class="row justify-content-center">
+        <div class="col-3 m-3">
+          <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
         </div>
-        <form id="registration" class="needs-validation mb-3 px-5" novalidate @submit.prevent>
-          <div class="row my-lg-2">
-            <div class="col-lg-4 my-2 my-lg-0">
-            <label for="first-name">First Name*</label>
-            <input id="first-name" name="first-name" tabindex="1" type="text" v-model="firstName"
-                   :class="toggleInvalidClass(firstNameErrorMsg)" :maxlength="config.firstName.maxLength"
-                   required> <!-- Add max length attached to the max length in the config-->
-            <div class="invalid-feedback">
-              {{firstNameErrorMsg}}
-            </div>
-            </div>
-
-            <div class="col-lg-4 my-2 my-lg-0">
-              <label for="middle-name">Middle Name</label>
-              <input id="middle-name" name="middle-name" tabindex="2" type="text" v-model="middleName"
-                     :class="toggleInvalidClass(middleNameErrorMsg)" :maxlength="config.middleName.maxLength">
-              <div class="invalid-feedback">
-                {{middleNameErrorMsg}}
-              </div>
-            </div>
-
-            <div class="col-lg-4 my-2 my-lg-0">
-              <label for="last-name">Last Name*</label>
-              <input id="last-name" name="last-name" tabindex="3" type="text" v-model="lastName"
-                     :class="toggleInvalidClass(lastNameErrorMsg)" :maxlength="config.lastName.maxLength" required>
-              <div class="invalid-feedback">
-                {{lastNameErrorMsg}}
-              </div>
+      </div>
+      <div class="col-lg-8 mx-auto">
+        <div class="container shadow py-5 px-4 bg-white mb-5" id="register-form">
+          <div class="row">
+            <div class="col">
+              <h3 class="display-6 m-2 mb-5 text-center">Register</h3>
             </div>
           </div>
-
-
-          <div class="row my-lg-2">
-            <div class="col-lg-4 my-2 my-lg-0">
-              <label for="date-Of-Birth">Date of Birth*</label>
-              <input id="date-Of-Birth" name="date-of-birth" tabindex="4" type="date" v-model="dateOfBirth"
-                     :max="getMaxDateOfBirth()" :class="toggleInvalidClass(dateOfBirthErrorMsg)" required>
+          <form id="registration" class="needs-validation mb-3 px-5" novalidate @submit.prevent>
+            <div class="row my-lg-2">
+              <div class="col-lg-4 my-2 my-lg-0">
+              <label for="first-name">First Name*</label>
+              <input id="first-name" name="first-name" tabindex="1" type="text" v-model="firstName"
+                     :class="toggleInvalidClass(firstNameErrorMsg)" :maxlength="config.firstName.maxLength"
+                     required> <!-- Add max length attached to the max length in the config-->
               <div class="invalid-feedback">
-                {{dateOfBirthErrorMsg}}
+                {{firstNameErrorMsg}}
               </div>
-            </div>
-
-            <div class="col-lg my-2 my-lg-0">
-              <label for="nickname">Nickname</label>
-              <input id="nickname" name="nickname" type="text" tabindex="5" v-model="nickname"
-                     :class="toggleInvalidClass(nicknameErrorMsg)" :maxlength="config.nickname.maxLength">
-              <div class="invalid-feedback">
-                {{nicknameErrorMsg}}
               </div>
-            </div>
 
-          </div>
-          <div class="row my-lg-2 ">
-            <div class="col my-2 my-lg-0">
-              <label for="email">Email*</label>
-              <input id="email" name="email" type="email" tabindex="6" v-model="email"
-                     :class="toggleInvalidClass(emailErrorMsg)" :maxlength="config.email.maxLength" required>
-              <div class="invalid-feedback">
-                {{emailErrorMsg}}
-              </div>
-            </div>
-          </div>
-
-          <div class="row my-lg-2">
-            <div class="col my-2 my-lg-0">
-              <h6>Password must meet the following conditions:</h6>
-              <ul>
-                <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase)">
-                  One lowercase letter</li>
-                <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase)">
-                  One uppercase letter</li>
-                <li :class="checkPasswordCriteria(password, config.password.regexContainNumber)">
-                  One number</li>
-                <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol)">
-                  One of the following: !, @, #, $, %, ^, & and or*</li>
-                <li :class="checkPasswordCriteria(password, config.password.regexContainLength)">
-                  At least 8 characters in length</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="row my-lg-2">
-            <div class="col my-2 my-lg-0">
-              <label for="password">Password*</label>
-              <div class="input-group">
-                <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" :maxlength="config.password.maxLength" required>
-                <span class="input-group-text" @click="showPassword = !showPassword"
-                      @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
-                      tabindex="8">
-                  <i v-if="!showPassword" class="fas fa-eye"></i>
-                  <i v-else class="fas fa-eye-slash"></i>
-                  </span>
+              <div class="col-lg-4 my-2 my-lg-0">
+                <label for="middle-name">Middle Name</label>
+                <input id="middle-name" name="middle-name" tabindex="2" type="text" v-model="middleName"
+                       :class="toggleInvalidClass(middleNameErrorMsg)" :maxlength="config.middleName.maxLength">
                 <div class="invalid-feedback">
-                  {{passwordErrorMsg}}
+                  {{middleNameErrorMsg}}
+                </div>
+              </div>
+
+              <div class="col-lg-4 my-2 my-lg-0">
+                <label for="last-name">Last Name*</label>
+                <input id="last-name" name="last-name" tabindex="3" type="text" v-model="lastName"
+                       :class="toggleInvalidClass(lastNameErrorMsg)" :maxlength="config.lastName.maxLength" required>
+                <div class="invalid-feedback">
+                  {{lastNameErrorMsg}}
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="row my-lg-2">
-            <div class="col my-2 my-lg-0">
-              <label for="confirm-password">Confirm Password*</label>
-              <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
-                     v-model="confirmPassword" :class="toggleInvalidClass(confirmPasswordErrorMsg)"
-                     :maxlength="config.password.maxLength" required>
-              <div class="invalid-feedback">
-                {{confirmPasswordErrorMsg}}
+
+            <div class="row my-lg-2">
+              <div class="col-lg-4 my-2 my-lg-0">
+                <label for="date-Of-Birth">Date of Birth*</label>
+                <input id="date-Of-Birth" name="date-of-birth" tabindex="4" type="date" v-model="dateOfBirth"
+                       :max="getMaxDateOfBirth()" :class="toggleInvalidClass(dateOfBirthErrorMsg)" required>
+                <div class="invalid-feedback">
+                  {{dateOfBirthErrorMsg}}
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div class="row my-lg-2">
-
-            <div class="col-lg-4 my-2 my-lg-0">
-              <label for="phone-number">Phone Number</label>
-              <input id="phone-number" name="phone-number" tabindex="10" type="text" placeholder="+64 123 132 132" v-model="phoneNumber"
-                     :class="toggleInvalidClass(phoneNumberErrorMsg)" required>
-              <div class="invalid-feedback">
-                {{phoneNumberErrorMsg}}
+              <div class="col-lg my-2 my-lg-0">
+                <label for="nickname">Nickname</label>
+                <input id="nickname" name="nickname" type="text" tabindex="5" v-model="nickname"
+                       :class="toggleInvalidClass(nicknameErrorMsg)" :maxlength="config.nickname.maxLength">
+                <div class="invalid-feedback">
+                  {{nicknameErrorMsg}}
+                </div>
               </div>
+
             </div>
-
-
-            <div class="col my-2 my-lg-0">
-            <label for="home-address">Address Autofill (Optional)</label>
-              <input id="home-address" name="home-address" ref="homeAddressInput" type="text" @input="input()"
-                     @keydown="addressKeyDown($event)" :class="toggleInvalidClass(homeAddressErrorMsg)"
-                     :maxlength="config.homeAddress.maxLength" autocomplete="off">
-              <div class="invalid-feedback">
-              {{homeAddressErrorMsg}}
-              </div>
-            </div>
-          </div>
-
-          <div class="row my-lg-2">
-            <div class="col my-2 my-lg-0">
-              <label for="streetAddress">Street Address*</label>
-              <input :class="toggleInvalidClass(streetAddressErrorMsg)" tabindex="11" id="streetAddress"
-                     name="streetAddress" ref="streetAddress" required autocomplete="off">
-              <div class="invalid-feedback">
-                {{streetAddressErrorMsg}}
-              </div>
-            </div>
-          </div>
-
-          <div class="row my-lg-2">
-            <div class="col-lg-6 my-2 my-lg-0">
-              <label for="suburb">Suburb</label>
-              <input :class="toggleInvalidClass(suburbErrorMsg)" tabindex="12" name="suburb" id="suburb" ref="suburb"
-                     autocomplete="off" required>
-              <div class="invalid-feedback">
-                {{suburbErrorMsg}}
+            <div class="row my-lg-2 ">
+              <div class="col my-2 my-lg-0">
+                <label for="email">Email*</label>
+                <input id="email" name="email" type="email" tabindex="6" v-model="email"
+                       :class="toggleInvalidClass(emailErrorMsg)" :maxlength="config.email.maxLength" required>
+                <div class="invalid-feedback">
+                  {{emailErrorMsg}}
+                </div>
               </div>
             </div>
 
-            <div class="col-lg-6 my-2 my-lg-0">
-              <label for="city">City*</label>
-              <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="13" name="city" id="city" ref="city"
-                     autocomplete="off" required>
-              <div class="invalid-feedback">
-                {{cityErrorMsg}}
+            <div class="row my-lg-2">
+              <div class="col my-2 my-lg-0">
+                <h6>Password must meet the following conditions:</h6>
+                <ul>
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase)">
+                    One lowercase letter</li>
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase)">
+                    One uppercase letter</li>
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainNumber)">
+                    One number</li>
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol)">
+                    One of the following: !, @, #, $, %, ^, & and or*</li>
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainLength)">
+                    At least 8 characters in length</li>
+                </ul>
               </div>
             </div>
-          </div>
 
-          <div class="row my-lg-2">
-            <div class="col-lg-6 my-2 my-lg-0">
-              <label for="region">State/Region*</label>
-              <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="14" name="region" id="region" ref="region"
-                     autocomplete="off" required>
-              <div class="invalid-feedback">
-                {{regionErrorMsg}}
+            <div class="row my-lg-2">
+              <div class="col my-2 my-lg-0">
+                <label for="password">Password*</label>
+                <div class="input-group">
+                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" :maxlength="config.password.maxLength" required>
+                  <span class="input-group-text" @click="showPassword = !showPassword"
+                        @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
+                        tabindex="8">
+                    <i v-if="!showPassword" class="fas fa-eye"></i>
+                    <i v-else class="fas fa-eye-slash"></i>
+                    </span>
+                  <div class="invalid-feedback">
+                    {{passwordErrorMsg}}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="col-lg-6 my-2 my-lg-0">
-              <label for="country">Country*</label>
-              <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="15" id="country" name="country"
-                     ref="country" autocomplete="off" required>
-              <div class="invalid-feedback">
-                {{countryErrorMsg}}
+            <div class="row my-lg-2">
+              <div class="col my-2 my-lg-0">
+                <label for="confirm-password">Confirm Password*</label>
+                <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
+                       v-model="confirmPassword" :class="toggleInvalidClass(confirmPasswordErrorMsg)"
+                       :maxlength="config.password.maxLength" required>
+                <div class="invalid-feedback">
+                  {{confirmPasswordErrorMsg}}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="row my-lg-2">
-            <div class="col my-2 my-lg-0">
-              <label for="bio">Bio</label>
-              <textarea id="bio" name="bio" tabindex="16" rows="5" cols="70" v-model="bio"
-                        :class="toggleInvalidClass(bioErrorMsg)" :maxlength="config.bio.maxLength"
-                        style="resize: none"/>
-              <div class="invalid-feedback">
-                {{bioErrorMsg}}
+            <div class="row my-lg-2">
+
+              <div class="col-lg-4 my-2 my-lg-0">
+                <label for="phone-number">Phone Number</label>
+                <input id="phone-number" name="phone-number" tabindex="10" type="text" placeholder="+64 123 132 132" v-model="phoneNumber"
+                       :class="toggleInvalidClass(phoneNumberErrorMsg)" required>
+                <div class="invalid-feedback">
+                  {{phoneNumberErrorMsg}}
+                </div>
+              </div>
+
+
+              <div class="col my-2 my-lg-0">
+              <label for="home-address">Address Autofill (Optional)</label>
+                <input id="home-address" name="home-address" ref="homeAddressInput" type="text" @input="input()"
+                       @keydown="addressKeyDown($event)" :class="toggleInvalidClass(homeAddressErrorMsg)"
+                       :maxlength="config.homeAddress.maxLength" autocomplete="off">
+                <div class="invalid-feedback">
+                {{homeAddressErrorMsg}}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="row my-lg-2">
-            <div class="col-lg-12 mt-2 my-lg-0 mx-auto">
-              <div id="registration-error" ref="registration-error" v-if="toastErrorMessage" class="alert alert-danger"
-                   role="alert">
-                <label>{{ toastErrorMessage }}</label>
+            <div class="row my-lg-2">
+              <div class="col my-2 my-lg-0">
+                <label for="streetAddress">Street Address*</label>
+                <input :class="toggleInvalidClass(streetAddressErrorMsg)" tabindex="11" id="streetAddress"
+                       name="streetAddress" ref="streetAddress" required autocomplete="off">
+                <div class="invalid-feedback">
+                  {{streetAddressErrorMsg}}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="d-grid gap-2 d-lg-block">
-            <button class="btn btn-lg btn-outline-primary" type="button" tabindex="18" @click="$router.push('/')">Back to Login</button>
-            <button id="register-button" tabindex="17" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewUser($event)">Register</button>
-          </div>
+            <div class="row my-lg-2">
+              <div class="col-lg-6 my-2 my-lg-0">
+                <label for="suburb">Suburb</label>
+                <input :class="toggleInvalidClass(suburbErrorMsg)" tabindex="12" name="suburb" id="suburb" ref="suburb"
+                       autocomplete="off" required>
+                <div class="invalid-feedback">
+                  {{suburbErrorMsg}}
+                </div>
+              </div>
 
-        </form>
+              <div class="col-lg-6 my-2 my-lg-0">
+                <label for="city">City*</label>
+                <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="13" name="city" id="city" ref="city"
+                       autocomplete="off" required>
+                <div class="invalid-feedback">
+                  {{cityErrorMsg}}
+                </div>
+              </div>
+            </div>
+
+            <div class="row my-lg-2">
+              <div class="col-lg-6 my-2 my-lg-0">
+                <label for="region">State/Region*</label>
+                <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="14" name="region" id="region" ref="region"
+                       autocomplete="off" required>
+                <div class="invalid-feedback">
+                  {{regionErrorMsg}}
+                </div>
+              </div>
+
+              <div class="col-lg-6 my-2 my-lg-0">
+                <label for="country">Country*</label>
+                <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="15" id="country" name="country"
+                       ref="country" autocomplete="off" required>
+                <div class="invalid-feedback">
+                  {{countryErrorMsg}}
+                </div>
+              </div>
+            </div>
+
+            <div class="row my-lg-2">
+              <div class="col my-2 my-lg-0">
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" tabindex="16" rows="5" cols="70" v-model="bio"
+                          :class="toggleInvalidClass(bioErrorMsg)" :maxlength="config.bio.maxLength"
+                          style="resize: none"/>
+                <div class="invalid-feedback">
+                  {{bioErrorMsg}}
+                </div>
+              </div>
+            </div>
+
+            <div class="row my-lg-2">
+              <div class="col-lg-12 mt-2 my-lg-0 mx-auto">
+                <div id="registration-error" ref="registration-error" v-if="toastErrorMessage" class="alert alert-danger"
+                     role="alert">
+                  <label>{{ toastErrorMessage }}</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-lg-block">
+              <button class="btn btn-lg btn-outline-primary" type="button" tabindex="18" @click="$router.push('/')">Back to Login</button>
+              <button id="register-button" tabindex="17" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewUser($event)">Register</button>
+            </div>
+
+          </form>
+        </div>
       </div>
     </div>
     <Footer/>
@@ -1097,5 +1099,9 @@ input:focus, textarea:focus, #register-button:focus{
   border: 1px solid #1EBABC;
 }
 /*------------------------------------------------------------------------*/
+
+.all-but-footer {
+  min-height: calc(100vh - 240px);
+}
 
 </style>
