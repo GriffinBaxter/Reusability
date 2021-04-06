@@ -1,6 +1,6 @@
 <template>
   <!-- Footer -->
-  <footer class="bg-dark text-center text-white">
+  <footer class="bg-dark text-center text-white footer-styling">
     <!-- Grid container -->
     <div class="container p-4">
 
@@ -221,3 +221,10 @@
 <!--  </footer>-->
 <!--  &lt;!&ndash; Footer &ndash;&gt;-->
 <!--</template>-->
+
+<style scoped>
+  .footer-styling {
+    bottom: 0;
+    width: 100%;
+  }
+</style>

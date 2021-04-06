@@ -4,7 +4,7 @@
 
   <div>
     <Navbar></Navbar>
-    <div id="home" class="container">
+    <div id="home" class="container all-but-footer">
       <div class="container-news">
 
         <div class="post shadow py-5 px-4">
@@ -62,11 +62,8 @@
         </div>
 
       </div>
-
     </div>
-
-    <Footer/>
-
+    <Footer></Footer>
   </div>
 </template>
 
@@ -194,6 +191,10 @@ div.container{
 
 .post-description {
   margin-bottom: 30px;
+}
+
+.all-but-footer {
+  min-height: calc(100vh - 240px);
 }
 
 </style>

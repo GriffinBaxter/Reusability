@@ -521,4 +521,8 @@ export default {
   color: #1EBA8C;
 }
 
+.all-but-footer {
+  min-height: calc(100vh - 240px);
+}
+
 </style>

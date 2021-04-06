@@ -1,5 +1,6 @@
 <template>
-  <div id="login" class="container">
+  <div>
+  <div id="login" class="container all-but-footer">
     <div class="row justify-content-center">
       <div class="col-3 m-3">
         <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
@@ -44,7 +45,9 @@
         </div>
       </div>
     </div>
-    <Footer />
+
+  </div>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -98,6 +101,10 @@ export default {
 
 #errorLabel {
   visibility: hidden;
+}
+
+.all-but-footer {
+  min-height: calc(100vh - 240px);
 }
 
 </style>

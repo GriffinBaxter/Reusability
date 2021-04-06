@@ -1,7 +1,7 @@
 <template>
   <div>
     <ProfileHeader/>
-    <div class="container p-5 mt-3" id="profileContainer">
+    <div class="container p-5 mt-3 all-but-footer" id="profileContainer">
       <div class="row">
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
@@ -104,9 +104,9 @@
           <button class="btn btn-outline-primary float-end mt-4" id="logoutButton" @click="logout()">Sign Out</button>
         </div>
       </div>
-      <Footer></Footer>
-    </div>
 
+    </div>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -262,5 +262,9 @@ export default {
 </script>
 
 <style scoped>
+
+.all-but-footer {
+  min-height: calc(100vh - 338px);
+}
 
 </style>
