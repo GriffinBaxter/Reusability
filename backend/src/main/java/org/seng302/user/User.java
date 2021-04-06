@@ -74,6 +74,9 @@ public class User {
             inverseJoinColumns = { @JoinColumn(name = "businesses_id") })
     private List<Business> businessesAdministeredObjects = new ArrayList<>();
 
+    @Column(name = "session_uuid")
+    private String sessionUUID;
+
 
     /**
      * User account constructor.
@@ -190,6 +193,10 @@ public class User {
         return role;
     }
 
+    public String getSessionUUID() {
+        return sessionUUID;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -240,6 +247,10 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public void setSessionUUID(String sessionUUID) {
+        this.sessionUUID = sessionUUID;
     }
 
     /**
@@ -305,6 +316,16 @@ public class User {
             businessesAdministered.add(business.getId());
         }
         return businessesAdministered;
+    }
+
+    /**
+     * Generate and set a randomised UUID used for a session token.
+     * @return UUID
+     */
+    public String generateAndSetSessionUUID() {
+        String sessionUUID = UUID.randomUUID().toString();
+        this.sessionUUID = sessionUUID;
+        return sessionUUID;
     }
 
     @Override

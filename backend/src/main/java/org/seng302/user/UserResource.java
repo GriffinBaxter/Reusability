@@ -36,7 +36,7 @@ public class UserResource {
      * @return User object
      */
     public User getUserVerifySession(String sessionToken) {
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
+        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
         if (sessionToken == null || user.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
@@ -58,11 +58,10 @@ public class UserResource {
 
         if (user.isPresent()) {
             if (user.get().verifyPassword(login.getPassword())) {
-                int userId = user.get().getId();
-                Cookie cookie = new Cookie("JSESSIONID", String.valueOf(userId));
+                Cookie cookie = new Cookie("JSESSIONID", user.get().generateAndSetSessionUUID());
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
-                return new UserIdPayload(userId);
+                return new UserIdPayload(user.get().getId());
             }
         }
         throw new ResponseStatusException(
@@ -76,8 +75,9 @@ public class UserResource {
      * @param registration Registration payload
      */
     @PostMapping("/users")
-    public ResponseEntity<UserIdPayload> registerUser(@RequestBody RegistrationPayload registration,
-                                                      HttpServletResponse response) {
+    public ResponseEntity<UserIdPayload> registerUser(
+            @RequestBody RegistrationPayload registration, HttpServletResponse response
+    ) {
 
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
             throw new ResponseStatusException(
@@ -103,7 +103,7 @@ public class UserResource {
             User createdUser = userRepository.save(newUser);
             int userId = createdUser.getId();
 
-            Cookie cookie = new Cookie("JSESSIONID", String.valueOf(userId));
+            Cookie cookie = new Cookie("JSESSIONID", newUser.generateAndSetSessionUUID());
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
@@ -208,8 +208,7 @@ public class UserResource {
      * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
      */
     private boolean verifyRole(String sessionToken, Role role) {
-        Integer id = Integer.valueOf(sessionToken);
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findBySessionUUID(sessionToken);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
