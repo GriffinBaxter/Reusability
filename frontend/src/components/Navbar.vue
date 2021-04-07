@@ -5,7 +5,7 @@
 <!--<link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">-->
 
 <template>
-  <nav class="navbar sticky-top  navbar-expand-lg navbar-light shadow" style="background-color: white">
+  <nav class="navbar sticky-top navbar-expand-lg navbar-light shadow" style="background-color: white">
 
       <div class="container mt-2 my-lg-3 mx-auto">
 
@@ -17,26 +17,25 @@
         </router-link>
 
         <!-- hamburger icon -->
-        <button class="navbar-toggler" type="button" @click="showNavbar = !showNavbar">
+        <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <!-- Navbar links -->
-        <div :class="['navbar-collapse', 'collapse', toggleNavbar()]" id="navbarId">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <router-link :class="['nav-link', isActivePath('Home')]" aria-current="page" to="">Home</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link :class="['nav-link', isActivePath('Profile')]" to="/profile">Profile</router-link>
-            </li>
-
-          </ul>
-          <ul class="nav navbar-nav ">
-            <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
-            </li>
-          </ul>
+        <div class="navbar-collapse" id="navbarId">
+          <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <router-link :class="['nav-link', isActivePath('Home')]" aria-current="page" to="">Home</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link :class="['nav-link', isActivePath('Profile')]" to="/profile">Profile</router-link>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
+              </li>
+            </ul>
+          </div>
         </div>
 
       </div>
@@ -51,11 +50,9 @@ export default {
   data() {
     return {
       showNavbar: false,
-      prevShowNavbar: false,
-      navbarMaxHeight: null, // max hieght of the navbar pixels
-      navbarMinHeight: 0,    // min hieght of the navbar pixels
-      transitionDelay: 350,  // transition delay in ms
-      transitioning: false
+      navbarMaxHeight: null,  // max hieght of the navbar pixels
+      navbarMinHeight: 0   ,  // min hieght of the navbar pixels
+      STYLE_DEFAULT: `transition: height ease-in-out 300ms; overflow: hidden`
     }
   },
   methods: {
@@ -65,16 +62,10 @@ export default {
     getNavbarMaxHeight() {
       let result = null;
 
-      // Ensures that the navbar is actually there
-      if (document.getElementById("navbarId")) {
-        // Shows the navbar just so we can sample the height.
-        document.getElementById("navbarId").classList.add("show")
-
-        // Stores the result
-        result = document.getElementById("navbarId").clientHeight
-
-        // Hides the navbar quickly
-        document.getElementById("navbarId").classList.remove("show")
+      // Only runs if there is a navbar item existing. Otherwise we return null to avoid accessing
+      // a non existant attribute
+      if (document.getElementById("navbarInnerId")) {
+        result = document.getElementById("navbarInnerId").offsetHeight
       }
       return result
     },
@@ -82,53 +73,33 @@ export default {
      *
      * @return
      */
-    toggleNavbar() {
+    toggleNavbar(initCall = false) {
 
-      const STYLE_DEFAULT = `; transition: height ease ${this.transitionDelay}`;
-      const HEIGHT_CHANGE_OFFSET = 20 // ms
+      // Only if the element exists
+      if (document.getElementById("navbarId")) {
 
-      if (!document.getElementById("navbarId")) {
-        // Are we transitiong
-        if (this.prevShowNavbar !== this.showNavbar) {
-          this.transitioning = true
-          // Are we transition from max --> min or min --> max
-          if (this.showNavbar) {
-            // min --> max
-            document.getElementById("navbarId").setAttribute("style", `height: ${this.navbarMinHeight}${STYLE_DEFAULT}`)
+        // Update the max height before applying any transitions
+        this.navbarMaxHeight = this.getNavbarMaxHeight()
 
-            setTimeout( () => {
-              document.getElementById("navbarId").setAttribute("style", `height: ${this.navbarMaxHeight}${STYLE_DEFAULT}`)
-            }, HEIGHT_CHANGE_OFFSET)
-
-            setTimeout( () => {
-              return  this.showNavbar ? "show" : "";
-            })
-          } else {
-            // max --> min
-            return  this.showNavbar ? "show" : "";
-          }
-        } else {
-          return  this.showNavbar ? "show" : "";
+        // If init call don't toggle the height
+        if (!initCall) {
+          this.showNavbar = !this.showNavbar
         }
-      } else {
-        // Designate whether or not to show the navbar
-        return this.showNavbar ? "show" : "";
+        // Determine the target height
+        let targetHeight = this.navbarMinHeight
+        if (this.showNavbar) targetHeight = this.navbarMaxHeight
+
+        // Assign the target height to the navbar
+        document.getElementById("navbarId").setAttribute("style", `height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
       }
-
-
     },
-
     /**
      *
      * @param pathName -
      * @return
      */
     isActivePath(pathName) {
-      if (this.$route.name === pathName) {
-        return "active"
-      } else {
-        return ""
-      }
+      return this.$route.name === pathName ? "active" : ""
     },
     /**
      *
@@ -139,7 +110,7 @@ export default {
       Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
        */
       event.preventDefault();
-      Cookies.remove('name', { path: '/' }); // removed!
+      Cookies.remove('name', {path: '/'}); // removed!
       Cookies.remove('userID');
       await this.$router.push({name: 'Login'});
     }
@@ -152,6 +123,16 @@ export default {
     if (this.navbarMaxHeight == null) {
       while (this.navbarMaxHeight == null) this.navbarMaxHeight = this.getNavbarMaxHeight();
     }
+
+    // Set navbar to inital height!
+    this.toggleNavbar(true)
+  },
+  created() {
+    window.onresize = () => {
+      if (window.innerWidth >= 992) {
+        document.getElementById("navbarId").setAttribute("style", `height: 100%; ${this.STYLE_DEFAULT}`)
+      }
+    }
   }
 }
 </script>
@@ -161,7 +142,7 @@ export default {
     max-width: 200px;
   }
 
-
+  
   .company-name-main {
     font-family: 'Oswald', sans-serif;
   }
