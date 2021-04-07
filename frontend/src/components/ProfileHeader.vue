@@ -23,12 +23,12 @@ export default {
       if (event.keyCode === 13) {
         // Enter pressed
         const inputQuery = this.$refs.searchInput.value;
-        this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}` }})
+        this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1" }})
       }
     },
     searchClicked() {
       const inputQuery = this.$refs.searchInput.value;
-      this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}` }})
+      this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}})
     }
   }
 }

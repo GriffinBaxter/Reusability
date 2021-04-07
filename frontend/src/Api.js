@@ -168,6 +168,8 @@ export class User{
 
 }
 
+
+
 export default {
 
   // Sends a post request to the backend with a new user object to store

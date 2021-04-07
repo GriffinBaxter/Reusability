@@ -90,7 +90,8 @@ export default {
       maxPage: 2,
       userList: [],
       small: false,
-      totalRows: 0
+      totalRows: 0,
+      orderBy: "fullNameASC"
     }
   },
   methods: {
@@ -117,6 +118,7 @@ export default {
     updatePage(event, newPageNum) {
       event.preventDefault();
       this.currentPage = newPageNum;
+      history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`)
       this.requestUsers().then(() => this.buildRows())
     },
     /**
@@ -139,7 +141,9 @@ export default {
 
       const urlParams = new URLSearchParams(window.location.search);
       const query = urlParams.get('searchQuery');
-      await Api.searchUsers(query, "fullNameASC", this.currentPage-1).then(response => {
+      const ordering = urlParams.get('orderBy');
+      const pageNum = parseInt(urlParams.get('page'))-1;
+      await Api.searchUsers(query, ordering, pageNum).then(response => {
 
         // TODO should we allow users to input a url with pages/order/filtering
         this.userList = [...response.data];
@@ -172,7 +176,7 @@ export default {
     search(event) {
       if (event.keyCode === 13) {
         const inputQuery = this.$refs.searchBar.value;
-        history.pushState({}, null, this.$route.path + `?searchQuery=${inputQuery}`);
+        history.pushState({}, null,  `/search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
         this.requestUsers().then(() => this.buildRows()).catch(
             (e) => console.log(e)
         );
@@ -183,8 +187,9 @@ export default {
      *
      */
     searchClicked() {
+      console.log('test');
       const inputQuery = this.$refs.searchBar.value;
-      history.pushState({}, null, this.$route.path + `?searchQuery=${inputQuery}`);
+      history.pushState({}, null, `/search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
       this.requestUsers().then(() => this.buildRows()).catch(
           (e) => console.log(e)
       );
@@ -196,7 +201,8 @@ export default {
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
-        this.buildRows()
+        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.requestUsers().then(() => this.buildRows())
       }
     },
     /*
@@ -206,7 +212,8 @@ export default {
     nextPage() {
       if (this.currentPage < this.maxPage) {
         this.currentPage += 1;
-        this.buildRows()
+        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.requestUsers().then(() => this.buildRows())
       }
     },
     /*
@@ -219,127 +226,204 @@ export default {
     orderUsers(nickname, fullName, email, address) {
 
       if (nickname) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.nickAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.nickname > b.nickname) {return -1;}
-            if (a.nickname < b.nickname) {return 1;}
-            return 0;
-          })
+          this.orderBy = "nicknameASC";
           document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-up float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameASC&page=${this.currentPage}`);
         } else {
-          this.userList.sort(function(a, b) {
-            if (a.nickname < b.nickname) {return -1;}
-            if (a.nickname > b.nickname) {return 1;}
-            return 0;
-          })
+          this.orderBy = "nicknameDESC";
           document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-down float-end');
-        }
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameDESC&page=${this.currentPage}`);
 
+        }
         this.nickAscending = !this.nickAscending;
         this.nameAscending = false;
         this.emailAscending = false;
         this.addressAscending = false;
-        this.joinedAscending = false;
+        this.requestUsers().then(() => this.buildRows());
 
-        this.buildRows();
       } else if (fullName) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.nameAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.firstName > b.firstName) {return -1;}
-            if (a.firstName < b.firstName) {return 1;}
-            return 0;
-          })
+          this.orderBy = "fullNameASC";
           document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-up float-end');
-        } else {
-          this.userList.sort(function(a, b) {
-            if (a.firstName < b.firstName) {return -1;}
-            if (a.firstName > b.firstName) {return 1;}
-            return 0;
-          })
-          document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-down float-end');
-        }
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=fullNameASC&page=${this.currentPage}`);
 
+        } else {
+          this.orderBy = "fullNameDESC";
+          document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-down float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=fullNameDESC&page=${this.currentPage}`)
+
+        }
         this.nickAscending = false;
         this.nameAscending = !this.nameAscending;
         this.emailAscending = false;
         this.addressAscending = false;
-        this.joinedAscending = false;
+        this.requestUsers().then(() => this.buildRows());
 
-        this.buildRows();
       } else if (email) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.emailAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.email > b.email) {return -1;}
-            if (a.email < b.email) {return 1;}
-            return 0;
-          })
+          this.orderBy = "emailASC";
           document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-up float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=emailASC&page=${this.currentPage}`);
         } else {
-          this.userList.sort(function(a, b) {
-            if (a.email < b.email) {return -1;}
-            if (a.email > b.email) {return 1;}
-            return 0;
-          })
+          this.orderBy = "emailDESC";
           document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-down float-end');
-        }
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=emailDESC&page=${this.currentPage}`)
 
+        }
         this.nickAscending = false;
         this.nameAscending = false;
         this.emailAscending = !this.emailAscending;
         this.addressAscending = false;
-        this.joinedAscending = false;
+        this.requestUsers().then(() => this.buildRows());
 
-        this.buildRows();
       } else if (address) {
-        this.disableIcons()
-
+        this.disableIcons();
         if (this.addressAscending) {
-          this.userList.sort(function(a, b) {
-
-            let address1 = a.homeAddress.split(';');
-            address1 = address1.slice(2, address.length);
-            address1 = address1.join(", ");
-
-            let address2 = b.homeAddress.split(';');
-            address2 = address2.slice(2, address.length);
-            address2 = address2.join(", ");
-
-            if (address1 > address2) {return -1;}
-            if (address1 < address2) {return 1;}
-            return 0;
-          })
+          this.orderBy = "addressASC";
           document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-up float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressASC&page=${this.currentPage}`);
+
         } else {
-          this.userList.sort(function(a, b) {
-
-            let address1 = a.homeAddress.split(';');
-            address1 = address1.slice(2, address.length);
-            address1 = address1.join(", ");
-
-            let address2 = b.homeAddress.split(';');
-            address2 = address2.slice(2, address.length);
-            address2 = address2.join(", ");
-
-            if (address1 < address2) {return -1;}
-            if (address1 > address2) {return 1;}
-            return 0;
-          })
+          this.orderBy = "addressDESC";
           document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-down float-end');
-        }
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressDESC&page=${this.currentPage}`);
 
+        }
         this.nickAscending = false;
         this.nameAscending = false;
         this.emailAscending = false;
-        this.addressAscending = !this.addressAscending;
-        this.joinedAscending = false;
-
-        this.buildRows();
+        this.addressAscending =  !this.addressAscending;
+        this.requestUsers().then(() => this.buildRows());
       }
 
     },
+
+      // if (nickname) {
+      //   this.disableIcons()
+      //   if (this.nickAscending) {
+      //     this.userList.sort(function(a, b) {
+      //       if (a.nickname > b.nickname) {return -1;}
+      //       if (a.nickname < b.nickname) {return 1;}
+      //       return 0;
+      //     })
+      //     document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-up float-end');
+      //   } else {
+      //     this.userList.sort(function(a, b) {
+      //       if (a.nickname < b.nickname) {return -1;}
+      //       if (a.nickname > b.nickname) {return 1;}
+      //       return 0;
+      //     })
+      //     document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-down float-end');
+      //   }
+      //
+      //   this.nickAscending = !this.nickAscending;
+      //   this.nameAscending = false;
+      //   this.emailAscending = false;
+      //   this.addressAscending = false;
+      //   this.joinedAscending = false;
+      //
+      //   this.buildRows();
+      // } else if (fullName) {
+      //   this.disableIcons()
+      //   if (this.nameAscending) {
+      //     this.userList.sort(function(a, b) {
+      //       if (a.firstName > b.firstName) {return -1;}
+      //       if (a.firstName < b.firstName) {return 1;}
+      //       return 0;
+      //     })
+      //     document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-up float-end');
+      //   } else {
+      //     this.userList.sort(function(a, b) {
+      //       if (a.firstName < b.firstName) {return -1;}
+      //       if (a.firstName > b.firstName) {return 1;}
+      //       return 0;
+      //     })
+      //     document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-down float-end');
+      //   }
+      //
+      //   this.nickAscending = false;
+      //   this.nameAscending = !this.nameAscending;
+      //   this.emailAscending = false;
+      //   this.addressAscending = false;
+      //   this.joinedAscending = false;
+      //
+      //   this.buildRows();
+      // } else if (email) {
+      //   this.disableIcons()
+      //   if (this.emailAscending) {
+      //     this.userList.sort(function(a, b) {
+      //       if (a.email > b.email) {return -1;}
+      //       if (a.email < b.email) {return 1;}
+      //       return 0;
+      //     })
+      //     document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-up float-end');
+      //   } else {
+      //     this.userList.sort(function(a, b) {
+      //       if (a.email < b.email) {return -1;}
+      //       if (a.email > b.email) {return 1;}
+      //       return 0;
+      //     })
+      //     document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-down float-end');
+      //   }
+      //
+      //   this.nickAscending = false;
+      //   this.nameAscending = false;
+      //   this.emailAscending = !this.emailAscending;
+      //   this.addressAscending = false;
+      //   this.joinedAscending = false;
+      //
+      //   this.buildRows();
+      // } else if (address) {
+      //   this.disableIcons()
+      //
+      //   if (this.addressAscending) {
+      //     this.userList.sort(function(a, b) {
+      //
+      //       let address1 = a.homeAddress.split(';');
+      //       address1 = address1.slice(2, address.length);
+      //       address1 = address1.join(", ");
+      //
+      //       let address2 = b.homeAddress.split(';');
+      //       address2 = address2.slice(2, address.length);
+      //       address2 = address2.join(", ");
+      //
+      //       if (address1 > address2) {return -1;}
+      //       if (address1 < address2) {return 1;}
+      //       return 0;
+      //     })
+      //     document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-up float-end');
+      //   } else {
+      //     this.userList.sort(function(a, b) {
+      //
+      //       let address1 = a.homeAddress.split(';');
+      //       address1 = address1.slice(2, address.length);
+      //       address1 = address1.join(", ");
+      //
+      //       let address2 = b.homeAddress.split(';');
+      //       address2 = address2.slice(2, address.length);
+      //       address2 = address2.join(", ");
+      //
+      //       if (address1 < address2) {return -1;}
+      //       if (address1 > address2) {return 1;}
+      //       return 0;
+      //     })
+      //     document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-down float-end');
+      //   }
+      //
+      //   this.nickAscending = false;
+      //   this.nameAscending = false;
+      //   this.emailAscending = false;
+      //   this.addressAscending = !this.addressAscending;
+      //   this.joinedAscending = false;
+      //
+      //   this.buildRows();
+      // }
+
+
     /*
      * Disables all ascending or descending icons in the top column headers.
      */
@@ -357,7 +441,7 @@ export default {
       const self = this;
       this.clearRows();
       let limit = this.rowsPerPage + (this.currentPage-1) * this.rowsPerPage;
-      let endRowNum = limit;
+
 
       let startIndex = 0;
       const outerContainer = document.getElementById('outerContainer');
@@ -366,7 +450,7 @@ export default {
       if (limit > this.userList.length) {
         limit = this.userList.length
       }
-      console.log(startIndex);
+
 
       if (this.userList.length > 0) {
 
@@ -414,9 +498,10 @@ export default {
             const addressCol = document.createElement("div");
             addressCol.setAttribute("class", `${classInput}`);
             addressCol.setAttribute("id", `${i}-address`);
-            let address = this.userList[i].homeAddress.split(';');
-            address = address.slice(2, address.length);
-            address = address.join(", ");
+            let address = this.userList[i].homeAddress
+            //let address = this.userList[i].homeAddress.split(';');
+            // address = address.slice(2, address.length);
+            // address = address.join(", ");
             addressCol.innerText = address
             userRow.appendChild(addressCol);
 
@@ -457,8 +542,9 @@ export default {
 
       let showingStart = this.userList.length ? (this.currentPage*this.rowsPerPage)-this.rowsPerPage+1 : 0;
 
+      let lastEntryOfPage = limit+(this.currentPage-1)*this.rowsPerPage;
 
-      const showingString = `Showing ${showingStart}-${endRowNum} of ${this.totalRows} results`;
+      const showingString = `Showing ${showingStart}-${lastEntryOfPage} of ${this.totalRows} results`;
       const showingRow = document.createElement('div');
       showingRow.setAttribute("class", "row");
       showingRow.setAttribute("id", `showingRow`);
