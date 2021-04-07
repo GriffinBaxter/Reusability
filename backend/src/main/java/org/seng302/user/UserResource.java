@@ -32,14 +32,6 @@ public class UserResource {
     }
 
     /**
-     * Generate a randomised UUID used for a session token.
-     * @return UUID
-     */
-    public String generateSessionUUID() {
-        return UUID.randomUUID().toString();
-    }
-
-    /**
      * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
      * @param sessionToken Session token
      * @return User object
@@ -67,7 +59,7 @@ public class UserResource {
 
         if (user.isPresent()) {
             if (user.get().verifyPassword(login.getPassword())) {
-                String sessionUUID = generateSessionUUID();
+                String sessionUUID = User.generateSessionUUID();
 
                 user.get().setSessionUUID(sessionUUID);
                 userRepository.save(user.get());
@@ -116,17 +108,13 @@ public class UserResource {
                     LocalDateTime.now(),
                     USER);
 
-            String sessionUUID = generateSessionUUID();
-
-            newUser.setSessionUUID(sessionUUID);
             User createdUser = userRepository.save(newUser);
-            int userId = createdUser.getId();
 
-            Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
+            Cookie cookie = new Cookie("JSESSIONID", createdUser.getSessionUUID());
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(userId));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
 
         } catch (Exception e) {
             throw new ResponseStatusException(

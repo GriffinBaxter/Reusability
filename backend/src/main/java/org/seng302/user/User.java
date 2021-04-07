@@ -139,6 +139,7 @@ public class User {
         this.password = encode(password);
         this.created = created;
         this.role = (role.toString().equals("")) ? Role.USER : role;
+        this.sessionUUID = generateSessionUUID();
     }
 
     public int getId() {
@@ -316,6 +317,14 @@ public class User {
             businessesAdministered.add(business.getId());
         }
         return businessesAdministered;
+    }
+
+    /**
+     * Generate a randomised UUID used for a session token.
+     * @return UUID
+     */
+    public static String generateSessionUUID() {
+        return UUID.randomUUID().toString();
     }
 
     @Override
