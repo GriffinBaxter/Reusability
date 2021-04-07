@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 
 /**
  * This spring component runs at application startup to do some initialisation
@@ -72,10 +71,12 @@ public class MainApplicationRunner implements ApplicationRunner {
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
     public void checkDGAAExists() throws Exception {
         if (!(isPresent(dgaaEmail))) {
-            dgaaEmail = "email@email.com";
+            logger.fatal("Environment variable for DGAA email not defined.");
+            logger.info("-- shutting down application --");
         }
         if (!(isPresent(dgaaPassword))) {
-            dgaaPassword = "password";
+            logger.fatal("Environment variable for DGAA password not defined");
+            logger.info("-- shutting down application --");
         }
 
         if (!(userRepository.existsByRole(Role.DEFAULTGLOBALAPPLICATIONADMIN))) {
