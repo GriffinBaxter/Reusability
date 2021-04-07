@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info">
     <!-- see https://logging.apache.org/log4j/2.x/manual/appenders.html -->
     <Appenders>
         <!-- the following defines a log file where application log will be output, it "rolls over" multiple files -->
-        <RollingFile name="errorlog" fileName="logs/error.log" filePattern="log/other-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="errorlog" fileName="logs/error.log" filePattern="logs/other-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="1950KB" />
@@ -10,7 +11,7 @@
             <DefaultRolloverStrategy max="1"/>
         </RollingFile>
 
-        <RollingFile name="eventlog" fileName="logs/event.log" filePattern="log/app-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="eventlog" fileName="logs/event.log" filePattern="logs/app-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n"/>
             <Filters>
                 <!-- Deny warn, error and fatal messages -->
@@ -26,7 +27,7 @@
             <DefaultRolloverStrategy max="1"/>
         </RollingFile>
 
-        <RollingFile name="allother" fileName="logs/other.log" filePattern="log/app-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="allother" fileName="logs/other.log" filePattern="logs/app-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="1950KB" />

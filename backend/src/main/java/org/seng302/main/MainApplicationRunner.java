@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +34,9 @@ public class MainApplicationRunner implements ApplicationRunner {
     @Value("${dgaa.password}")
     private String dgaaPassword;
 
+    @Autowired
+    private ConfigurableApplicationContext context;
+
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
      * annotation). Injected constructors can be supplied with instances of other
@@ -51,10 +55,16 @@ public class MainApplicationRunner implements ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        logger.info("Startup application with {}", args);
+        if (isPresent(dgaaEmail) && isPresent(dgaaPassword)) {
+            logger.info("Startup application with {}", args);
 
-        userRepository.findAll().forEach(logger::info);
-        businessRepository.findAll().forEach(logger::info);
+            userRepository.findAll().forEach(logger::info);
+            businessRepository.findAll().forEach(logger::info);
+        } else {
+            logger.fatal("Environment variables for DGAA email and/or password are not defined.");
+            logger.info("-- shutting down application --");
+            context.close();
+        }
     }
 
 
@@ -70,15 +80,6 @@ public class MainApplicationRunner implements ApplicationRunner {
      */
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
     public void checkDGAAExists() throws Exception {
-        if (!(isPresent(dgaaEmail))) {
-            logger.fatal("Environment variable for DGAA email not defined.");
-            logger.info("-- shutting down application --");
-        }
-        if (!(isPresent(dgaaPassword))) {
-            logger.fatal("Environment variable for DGAA password not defined");
-            logger.info("-- shutting down application --");
-        }
-
         if (!(userRepository.existsByRole(Role.DEFAULTGLOBALAPPLICATIONADMIN))) {
             User dGAA = new User(
                     "John",

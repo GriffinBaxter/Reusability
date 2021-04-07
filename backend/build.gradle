@@ -42,6 +42,9 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
 }
 
 repositories {
@@ -50,20 +53,11 @@ repositories {
 
 dependencies {
     // ability to use JPA in spring
-    implementation ('org.springframework.boot:spring-boot-starter-data-jpa') {
-        exclude module: "spring-boot-starter-logging"
-        exclude module: "logback-classic"
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // ability to expose JPA as REST services (discouraged, but used for example purpose here)
-    implementation ('org.springframework.boot:spring-boot-starter-data-rest') {
-        exclude module: "spring-boot-starter-logging"
-        exclude module: "logback-classic"
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
     // ability to expose RESTFul services (with controllers)
-    implementation ('org.springframework.boot:spring-boot-starter-web') {
-        exclude module: "spring-boot-starter-logging"
-        exclude module: "logback-classic"
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     // security starter package
     //implementation 'org.springframework.boot:spring-boot-starter-security'
     //implementation 'org.springframework.security:spring-security-test'
@@ -73,10 +67,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     // use spring boot mocking test framework
-    testImplementation ('org.springframework.boot:spring-boot-starter-test') {
-        exclude module: "spring-boot-starter-logging"
-        exclude module: "logback-classic"
-    }
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     // Cucumber dependencies
     testImplementation 'io.cucumber:cucumber-java:6.9.1'
     testImplementation 'io.cucumber:cucumber-junit:6.9.1'
@@ -89,8 +80,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
 
     // log4j 2 used for custom logs
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.8'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.8'
+    compile 'org.springframework.boot:spring-boot-starter-log4j2'
 }
 
 // create a specific task to run cucumber tests
