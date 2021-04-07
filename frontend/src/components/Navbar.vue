@@ -7,7 +7,7 @@
 <template>
   <nav class="navbar sticky-top  navbar-expand-lg navbar-light shadow" style="background-color: white">
 
-      <div class="container my-3 mx-auto">
+      <div class="container mt-2 my-lg-3 mx-auto">
 
         <!-- Logo image -->
         <router-link class="navbar-brand " to="/home">
@@ -22,7 +22,7 @@
         </button>
 
         <!-- Navbar links -->
-        <div :class="['navbar-collapse', 'collapse', toggleNavbar()]" style="transition: all ease-in-out 300ms">
+        <div :class="['navbar-collapse', 'collapse', toggleNavbar()]" id="navbarId">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <router-link :class="['nav-link', isActivePath('Home')]" aria-current="page" to="">Home</router-link>
@@ -51,19 +51,71 @@ export default {
   data() {
     return {
       showNavbar: false,
+      prevShowNavbar: false,
+      navbarMaxHeight: null, // max hieght of the navbar pixels
+      navbarMinHeight: 0,    // min hieght of the navbar pixels
+      transitionDelay: 350,  // transition delay in ms
+      transitioning: false
     }
   },
   methods: {
     /**
      *
+     * */
+    getNavbarMaxHeight() {
+      let result = null;
+
+      // Ensures that the navbar is actually there
+      if (document.getElementById("navbarId")) {
+        // Shows the navbar just so we can sample the height.
+        document.getElementById("navbarId").classList.add("show")
+
+        // Stores the result
+        result = document.getElementById("navbarId").clientHeight
+
+        // Hides the navbar quickly
+        document.getElementById("navbarId").classList.remove("show")
+      }
+      return result
+    },
+    /**
+     *
      * @return
      */
     toggleNavbar() {
-      if (this.showNavbar) {
-        return "show"
+
+      const STYLE_DEFAULT = `; transition: height ease ${this.transitionDelay}`;
+      const HEIGHT_CHANGE_OFFSET = 20 // ms
+
+      if (!document.getElementById("navbarId")) {
+        // Are we transitiong
+        if (this.prevShowNavbar !== this.showNavbar) {
+          this.transitioning = true
+          // Are we transition from max --> min or min --> max
+          if (this.showNavbar) {
+            // min --> max
+            document.getElementById("navbarId").setAttribute("style", `height: ${this.navbarMinHeight}${STYLE_DEFAULT}`)
+
+            setTimeout( () => {
+              document.getElementById("navbarId").setAttribute("style", `height: ${this.navbarMaxHeight}${STYLE_DEFAULT}`)
+            }, HEIGHT_CHANGE_OFFSET)
+
+            setTimeout( () => {
+              return  this.showNavbar ? "show" : "";
+            })
+          } else {
+            // max --> min
+            return  this.showNavbar ? "show" : "";
+          }
+        } else {
+          return  this.showNavbar ? "show" : "";
+        }
       } else {
-        return ""
+        // Designate whether or not to show the navbar
+        return this.showNavbar ? "show" : "";
       }
+
+
     },
 
     /**
@@ -89,7 +141,16 @@ export default {
       event.preventDefault();
       Cookies.remove('name', { path: '/' }); // removed!
       Cookies.remove('userID');
-      this.$router.push({name: 'Login'});
+      await this.$router.push({name: 'Login'});
+    }
+  },
+  mounted() {
+    // Sample the navbar max height at mounting
+    this.navbarMaxHeight = this.getNavbarMaxHeight();
+
+    // Otherwise keep sampling until you get a valid result (i.e. not null)
+    if (this.navbarMaxHeight == null) {
+      while (this.navbarMaxHeight == null) this.navbarMaxHeight = this.getNavbarMaxHeight();
     }
   }
 }
@@ -99,6 +160,7 @@ export default {
   #logoImage {
     max-width: 200px;
   }
+
 
   .company-name-main {
     font-family: 'Oswald', sans-serif;
