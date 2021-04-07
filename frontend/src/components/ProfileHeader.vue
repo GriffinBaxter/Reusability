@@ -4,28 +4,24 @@
         <div class="col-md-3 mb-md-0 mb-3">
           <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
         </div>
+
         <div class="col">
           <div class="input-group">
             <input type="text" id="searchBar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
             <button class="btn btn-primary greenButton" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
+
         <div class="col-md-3 btn-group">
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle"
                     type="button" id="dropdownMenu1" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
-              <div class="row">
-                <div class="col-4">
                   <img width="50px" class="rounded-circle img-thumbnail" src="../../public/sample_profile_image.jpg" alt="Acting as image"/>
-                </div>
-                <div class="col">
                   <h6 class="text-center" id="actAsText">{{actAs}}</h6>
-                </div>
-              </div>
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <p class="dropdown-item">No businesses found</p>
+              <button class="dropdown-item" type="button">No businesses found</button>
             </div>
           </div>
         </div>
@@ -39,12 +35,12 @@
 import Api from '../Api';
 import Cookies from "js-cookie";
 
-
 export default {
   name: "ProfileHeader",
   data() {
     return {
-      actAs:""
+      actAs:"",
+      businesses: []
     }
   },
   methods: {
@@ -81,6 +77,7 @@ export default {
       } else {
         this.actAs = response.nickname;
       }
+      this.businesses = response.businessesAdministered;
     }
   },
   mounted() {
@@ -99,7 +96,8 @@ export default {
 }
 
 #dropdownMenu1 {
-  background-color: #77fcd4;
+  background-color: #1EBA8C;
+  width: inherit;
 }
 
 .greenButton {
@@ -113,6 +111,8 @@ export default {
 }
 
 #actAsText {
+  padding-left: 5px;
+  display: inline;
   margin: auto;
 }
 
