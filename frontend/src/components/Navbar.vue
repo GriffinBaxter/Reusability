@@ -1,4 +1,5 @@
 <!--https://stackoverflow.com/questions/45000510/vue-js-error-component-template-should-contain-exactly-one-root-element-->
+<!--https://stackoverflow.com/questions/51516084/how-do-i-add-a-google-font-to-a-vuejs-component/51517799-->
 <!--<link rel="preconnect" href="https://fonts.gstatic.com">-->
 <!--<link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">-->
 <!--<link rel="preconnect" href="https://fonts.gstatic.com">-->
@@ -12,7 +13,7 @@
         <!-- Logo image -->
         <router-link class="navbar-brand " to="/home">
           <img src="../../public/logo.png" alt="Logo" class="img-fluid d-inline-block" id="logoImage">
-<!--          <p class="company-name-main">Reusability</p>-->
+          <p class="company-name-main">Reusability</p>
 <!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
         </router-link>
 
@@ -162,11 +163,8 @@ export default {
   }
 
 
-  .company-name-main {
-    font-family: 'Oswald', sans-serif;
-  }
+  /*.company-name-main {*/
+  /*  font-family: 'New Tegomin', serif;*/
+  /*}*/
 
-  .company-name-sub-heading {
-    font-family: 'Oswald', sans-serif;
-  }
 </style>
