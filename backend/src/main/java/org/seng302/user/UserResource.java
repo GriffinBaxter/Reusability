@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -174,7 +175,7 @@ public class UserResource {
      * @return A list of UserPayload objects matching the search query
      */
     @GetMapping("/users/search")
-    public List<UserPayload> searchUsers(
+    public ResponseEntity<List<UserPayload>> searchUsers(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestParam String searchQuery,
             @RequestParam String orderBy,
@@ -232,12 +233,25 @@ public class UserResource {
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
         Page<User> pagedResult = userRepository.findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCaseOrNicknameContainsIgnoreCase(searchQuery, searchQuery, searchQuery, searchQuery, paging);
         int totalPages = pagedResult.getTotalPages();
-        long totalRows = pagedResult.getTotalElements();
-        // TODO How to send these to front-end? Also why is this a long?
-        return convertToPayload(pagedResult.getContent(), sessionToken);
+        int totalRows = (int) pagedResult.getTotalElements();
 
+       // return convertToPayload(pagedResult.getContent(), sessionToken);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(convertToPayload(pagedResult.getContent(), sessionToken));
     }
 
+    /**
+     * Converts a list of users to a list of userPayloads.
+     * @param userList The given list of users
+     * @param sessionToken The current session token to verify
+     * @return A list of userPayloads.
+     */
     public List<UserPayload> convertToPayload(List<User> userList, String sessionToken) {
         List<UserPayload> payLoads = new ArrayList<>();
         for (User user : userList) {

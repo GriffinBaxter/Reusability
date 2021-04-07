@@ -89,7 +89,8 @@ export default {
       currentPage: 1,
       maxPage: 2,
       userList: [],
-      small: false
+      small: false,
+      totalRows: 0
     }
   },
   methods: {
@@ -116,7 +117,7 @@ export default {
     updatePage(event, newPageNum) {
       event.preventDefault();
       this.currentPage = newPageNum;
-      this.buildRows();
+      this.requestUsers().then(() => this.buildRows())
     },
     /**
      * Emulates a click when the user presses enter on a column header.
@@ -138,15 +139,20 @@ export default {
 
       const urlParams = new URLSearchParams(window.location.search);
       const query = urlParams.get('searchQuery');
-      await Api.searchUsers(query).then(response => {
+      await Api.searchUsers(query, "fullNameASC", this.currentPage-1).then(response => {
+
+        // TODO should we allow users to input a url with pages/order/filtering
         this.userList = [...response.data];
-        // Order by nickname alphabetically by default
-        this.userList.sort(function(a, b) {
-          if (a.nickname < b.nickname) {return -1;}
-          if (a.nickname > b.nickname) {return 1;}
-          return 0;
-          });
-        this.maxPage = Math.ceil(this.userList.length / this.rowsPerPage)
+        // // Order by nickname alphabetically by default
+        // this.userList.sort(function(a, b) {
+        //   if (a.nickname < b.nickname) {return -1;}
+        //   if (a.nickname > b.nickname) {return 1;}
+        //   return 0;
+        //   });
+
+        this.maxPage = parseInt(response.headers['total-pages']);
+        this.totalRows = parseInt(response.headers['total-rows']);
+        //this.maxPage = Math.ceil(this.userList.length / this.rowsPerPage)
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -351,13 +357,16 @@ export default {
       const self = this;
       this.clearRows();
       let limit = this.rowsPerPage + (this.currentPage-1) * this.rowsPerPage;
-      let startIndex = (this.currentPage-1) * this.rowsPerPage;
+      let endRowNum = limit;
+
+      let startIndex = 0;
       const outerContainer = document.getElementById('outerContainer');
       const lastChild = outerContainer.lastChild;
 
       if (limit > this.userList.length) {
         limit = this.userList.length
       }
+      console.log(startIndex);
 
       if (this.userList.length > 0) {
 
@@ -446,9 +455,10 @@ export default {
           }
       }
 
-      let showingStart = this.userList.length ? startIndex+1 : 0;
+      let showingStart = this.userList.length ? (this.currentPage*this.rowsPerPage)-this.rowsPerPage+1 : 0;
 
-      const showingString = `Showing ${showingStart}-${limit} of ${this.userList.length} results`;
+
+      const showingString = `Showing ${showingStart}-${endRowNum} of ${this.totalRows} results`;
       const showingRow = document.createElement('div');
       showingRow.setAttribute("class", "row");
       showingRow.setAttribute("id", `showingRow`);
