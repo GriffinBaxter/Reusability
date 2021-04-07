@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.seng302.user.Role.*;
@@ -28,6 +29,14 @@ public class UserResource {
 
     public UserResource(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    /**
+     * Generate a randomised UUID used for a session token.
+     * @return UUID
+     */
+    public String generateSessionUUID() {
+        return UUID.randomUUID().toString();
     }
 
     /**
@@ -58,9 +67,15 @@ public class UserResource {
 
         if (user.isPresent()) {
             if (user.get().verifyPassword(login.getPassword())) {
-                Cookie cookie = new Cookie("JSESSIONID", user.get().generateAndSetSessionUUID());
+                String sessionUUID = generateSessionUUID();
+
+                user.get().setSessionUUID(sessionUUID);
+                userRepository.save(user.get());
+
+                Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
+
                 return new UserIdPayload(user.get().getId());
             }
         }
@@ -100,10 +115,14 @@ public class UserResource {
                     registration.getPassword(),
                     LocalDateTime.now(),
                     USER);
+
+            String sessionUUID = generateSessionUUID();
+
+            newUser.setSessionUUID(sessionUUID);
             User createdUser = userRepository.save(newUser);
             int userId = createdUser.getId();
 
-            Cookie cookie = new Cookie("JSESSIONID", newUser.generateAndSetSessionUUID());
+            Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 

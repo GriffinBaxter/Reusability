@@ -318,16 +318,6 @@ public class User {
         return businessesAdministered;
     }
 
-    /**
-     * Generate and set a randomised UUID used for a session token.
-     * @return UUID
-     */
-    public String generateAndSetSessionUUID() {
-        String sessionUUID = UUID.randomUUID().toString();
-        this.sessionUUID = sessionUUID;
-        return sessionUUID;
-    }
-
     @Override
     public String toString() {
         return "User(" +
