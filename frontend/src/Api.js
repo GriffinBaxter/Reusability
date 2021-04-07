@@ -227,12 +227,12 @@ export class Business{
     },
   };
 
-  constructor({businessName, description, businessType, businessAddress}) {
+  constructor({businessName, description, businessAddress, businessType}) {
     this.data = {
       businessName,
       description,
-      businessType,
-      businessAddress
+      businessAddress,
+      businessType
     }
 
   }

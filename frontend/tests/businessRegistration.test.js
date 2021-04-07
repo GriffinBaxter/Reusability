@@ -1,6 +1,6 @@
 import {test, expect} from "@jest/globals"
 import reg from '../src/views/BusinessRegistration'
-import {Business, User} from '../src/Api'
+import { Business } from '../src/Api'
 
 /**
  * Jest tests for registration.vue.

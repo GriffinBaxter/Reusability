@@ -26,7 +26,8 @@
         <div class="row my-lg-2">
           <div class="col-lg-4 my-2 my-lg-0">
             <label for="business-type">Type*</label>
-            <select id="business-type" name="business-type" tabindex="2" :class="toggleInvalidClass(businessTypeErrorMsg)" v-model="businessType" required>
+            <select id="business-type" name="business-type" tabindex="2" :class="toggleInvalidSelectClass(businessTypeErrorMsg)"
+                    v-model="businessType" required>
               <option value="" disabled>Select Business Type</option>
               <option v-for="option in types" :key="option.bType" :value="option.value">
                 {{ option.value }}
@@ -40,7 +41,7 @@
           <div class="col my-2 my-lg-0">
             <label for="business-address">Address Autofill (Optional)</label>
             <input id="business-address" name="business-address" ref="businessAddressInput" type="text" tabindex="3"
-                   :class="toggleInvalidClass(businessAddressErrorMsg)"
+                   @input="input()" @keydown="addressKeyDown($event)" :class="toggleInvalidClass(businessAddressErrorMsg)"
                    :maxlength="config.businessAddress.maxLength" autocomplete="off">
             <div class="invalid-feedback">
               {{businessAddressErrorMsg}}
@@ -126,6 +127,11 @@
             </div>
           </div>
 
+          <div class="d-grid gap-2 d-lg-block">
+            <button class="btn btn-lg btn-outline-primary" type="button" tabindex="12" @click="$router.push('/profile')">Back to Account</button>
+            <button id="register-button" tabindex="11" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewBusiness($event)">Register</button>
+          </div>
+
         </form>
       </div>
     </div>
@@ -134,8 +140,9 @@
 </template>
 
 <script>
-import {Business} from "../Api";
+import Api, { Business } from "../Api";
 import Footer from "../components/Footer";
+import AddressAPI from "../addressInstance";
 
 export default {
   name: "BusinessRegistration",
@@ -220,6 +227,21 @@ export default {
     },
 
     /**
+     * This method toggles the appearance of the error message for select boxes, where the is-invalid
+     * class is added to the messages if an error message needs to be presented to the user.
+     *
+     * @param errorMessage, string, the error message relating to invalid input of a field.
+     * @returns {[string]}, classList, a list containing the classes for an invalid message.
+     */
+    toggleInvalidSelectClass(errorMessage) {
+      let classList = ['form-select']
+      if (errorMessage) {
+        classList.push('is-invalid')
+      }
+      return classList
+    },
+
+    /**
      * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
      *
      * @param val, int, the value to be tested for being within the range.
@@ -275,6 +297,7 @@ export default {
      * This method creates a new business.
      * @param e, the current event.
      */
+    //TODO user id for primary id, and authorised
     addNewBusiness(e) {
       // Steps required for the function before starting processing.
       e.preventDefault()  // prevents page from reloading
@@ -282,6 +305,7 @@ export default {
       let requestIsInvalid = false
 
       // ===================================== START OF INPUT FIELDS VALIDATION ========================================
+
 
       // Business name error checking
       this.businesstNameErrorMsg = this.getErrorMessage(
@@ -406,9 +430,310 @@ export default {
       if (requestIsInvalid) {
         return
       }
+
+      let finalBusinessAddress = `${this.$refs.streetAddress.value};${this.$refs.suburb.value};${this.$refs.city.value};${this.$refs.postcode.value};${this.$refs.region.value};${this.$refs.country.value}`;
+
+      // Wrapping up the business submitted fields into a class object (Business).
+      const businessData = {
+        businessName: this.firstName.charAt(0).toUpperCase() + this.businessName.slice(1),
+        description: this.description,
+        /*
+         * NOTE: Using v-model for this address input apparently does not update.
+         *       When we insert from our autocomplete list so it has been changed to use $refs
+         */
+        businessAddress: finalBusinessAddress,
+        businessType: this.businessType
+      }
+
+      const business = new Business(businessData)
+      /*
+       * Add the Business to the database by sending an API request to the backend to store the business' information.
+       * Raise any errors and ensure they are displayed on the UI.
+       */
+      Api.addNewBusiness(business
+      ).then( (res) => {
+            if (res.status === 201) {
+              const {businessId} = res.data;
+              if (businessId) {
+                this.$router.push('/profile'); //TODO update to BusinessProfile when created
+              }
+            }
+          }
+      ).catch((error) => {
+        this.cannotProceed = true;
+        if (error.response) {
+          if (error.response.status === 400) {
+            this.toastErrorMessage = '400 Bad request; invalid business data';
+          } else if (error.response.status === 409) {
+            this.businessNameErrorMsg = 'Business with name already exists';
+          } else {
+            this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
+          }
+        } else if (error.request) {
+          this.toastErrorMessage = 'Timeout occurred';
+        } else {
+          this.toastErrorMessage = 'Unexpected error occurred!';
+        }
+      })
+    },
+    /*
+     * Address API requests
+     */
+    async request() {
+      /*
+      An asynchronous function that calls the Komoot Photon API with the given address input.
+      Upon success, the filterResponse function is called with the response data.
+      */
+      let input = document.getElementById('business-address').value;
+      if (input.length > 4) { // Starts on 5th char
+        await AddressAPI.addressQuery(input).then((response) => {
+          this.addresses = this.filterResponse(response.data);
+        })
+            .catch((error) => console.log(error))
+      } else {
+        this.addresses = [];
+      }
+    },
+
+    /**
+     * Filters the response data from the Komoot API by extracting the relevant fields and storing them
+     * both as a string to be shown in the autocomplete dropdown box, and unchanged in the addressResultProperties
+     * variable to allow for the individual parts of the address to be entered into the correct fields
+     * when a user clicks on an autocomplete option.
+     * @param data The request result from sent back by the Komoot Photon API
+     * @returns {array} A list of addresses to suggest to the user
+     */
+    filterResponse (data) {
+      let {features} = data;
+      let autoCompleteOptions = [];
+      let index = 0;
+      let numInList = 0;
+      let fLength = features.length;
+      // Display the first 5 options returned
+      let maxL = 5;
+      // Clear the list after each request (before filtering)
+      this.addressResultProperties = [];
+
+      while ((numInList < maxL) && (index < fLength)) {
+        let address = "";
+        let { properties } = features[index];
+        if (properties) {
+
+          let {country, city, state, street, housenumber, name} = properties;
+
+          if (name) {
+            address += name + ", ";
+          }
+
+          if (housenumber) {
+            address += housenumber;
+          }
+
+          if (street) {
+            address += " " + street + ", ";
+          }
+
+          if (city) {
+            address += city + ", ";
+          }
+
+          if (state) {
+            address += state + ", ";
+          }
+
+          if (country) {
+            address += country;
+          }
+
+          if (!autoCompleteOptions.includes(address.trim())) {
+            // Add to both the string to display and the variable for later use.
+            autoCompleteOptions.push(address.trim());
+            this.addressResultProperties.push(properties);
+            numInList++;
+          }
+        }
+        index++;
+      }
+      return autoCompleteOptions;
+    },
+
+
+    /**
+     * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
+     * https://www.w3schools.com/howto/howto_js_autocomplete.asp
+     *
+     * An asynchronous function that is called whenever the user enters a character into the address autocomplete
+     * input. It first calls the request function and awaits the response. Then it loops over the filtered result,
+     * creating the custom dropdown menu using each address string in the addresses array.
+     *
+     * It also adds a 'click' event listener to each of the address divs in the dropdown list that enters each part
+     * of the address into the correct input on the page. (Using the addressResultProperties array)
+     *
+     * @returns {Promise<boolean>} Async implied promise
+     */
+    async input() {
+
+      // Populate the addresses array by making a request to the API
+      await this.request();
+      // Get the current address input
+      let inputValue = this.$refs.businessAddressInput.value;
+
+      const self = this;
+      // Close any already open lists of autocompleted values
+      this.closeAllLists();
+      if (!inputValue) { return false;}
+      this.autocompleteFocusIndex = -1;
+      // Create a outer DIV element that will contain the items from the request
+      const outerDiv = document.createElement("div");
+      outerDiv.style.width = this.$refs.businessAddressInput.getBoundingClientRect().width.toString() + 'px';
+      outerDiv.setAttribute("id", this.$refs.businessAddressInput.id + "autocomplete-list");
+      outerDiv.setAttribute("class", "autocomplete-items");
+      // Append the DIV element as a child of the autocomplete container
+      this.$refs.businessAddressInput.parentNode.appendChild(outerDiv);
+
+      for (let i = 0; i < this.addresses.length; i++) {
+        // Check if the input contains one of the return addresses exactly and whether the current address is empty
+        if (!this.addresses.includes(inputValue) && this.addresses[i] !== '') {
+          // Create an inner DIV element to hold the address
+          let innerDiv = document.createElement("div");
+          innerDiv.innerHTML += this.addresses[i];
+          innerDiv.id= i.toString();
+
+          // Insert the value into the input when the user clicks on an item
+          innerDiv.addEventListener("click", function(event) {
+            // Insert the value for the autocomplete text field
+            document.getElementById('business-address').value = "";
+            const id = event.target.id;
+
+            let {country, city, state, district, street, housenumber} = self.addressResultProperties[id];
+
+            if (housenumber) {
+              document.getElementById('streetAddress').value = housenumber;
+            }
+            if (street && housenumber) {
+              document.getElementById('streetAddress').value += " " + street;
+            } else if (street) {
+              document.getElementById('streetAddress').value = street;
+            }
+
+            if (district) {
+              document.getElementById('suburb').value = district;
+            }
+
+            if (city) {
+              document.getElementById('city').value = city;
+            }
+
+            if (state) {
+              document.getElementById('region').value = state;
+            }
+            if (country) {
+              document.getElementById('country').value = country;
+            }
+
+            // Close the list of autocompleted values,
+            // (or any other open lists of autocompleted values:
+            self.closeAllLists();
+          });
+
+          outerDiv.appendChild(innerDiv);
+        }
+      }
+      // Close all lists when the user clicks somewhere else on the document
+      document.addEventListener("click", function (event) {
+        self.closeAllLists(event.target);
+      });
+
+    },
+
+
+    /**
+     * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
+     * https://www.w3schools.com/howto/howto_js_autocomplete.asp
+     *
+     * This function removes all of the autocomplete dropdown items except the one passed to it.
+     * @param DOM Element An optional element that won't be closed if given
+     */
+    closeAllLists(element) {
+      // Close all autocomplete lists in the document, except the one passed as an argument
+      let itemElements = document.getElementsByClassName("autocomplete-items");
+      for (let i = 0; i < itemElements.length; i++) {
+        if (element !== itemElements[i] && element !== this.$refs.businessAddressInput) {
+          itemElements[i].parentNode.removeChild(itemElements[i]);
+        }
+      }
+    },
+
+
+    /**
+     * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
+     * https://www.w3schools.com/howto/howto_js_autocomplete.asp
+     *
+     * This function is an event listener for key-presses to allow for navigation of the dropdown box by keyboard.
+     *
+     * @param event The keydown event
+     */
+    addressKeyDown(event) {
+
+      let elementList = document.getElementById(this.$refs.businessAddressInput.id + "autocomplete-list");
+      if (elementList) elementList = elementList.getElementsByTagName("div");
+      if (event.keyCode === 40) {
+        // If the arrow DOWN key is pressed, increase the autocompleteFocusIndex variable
+        this.autocompleteFocusIndex++;
+        // and mark the new item as active
+        this.addActive(elementList);
+      } else if (event.keyCode === 38) {
+        // If the arrow UP key is pressed, decrease the autocompleteFocus variable
+        this.autocompleteFocusIndex--;
+        // and mark the new item as active
+        this.addActive(elementList);
+      } else if (event.keyCode === 13) {
+        // If the ENTER key is pressed, prevent the form from being submitted
+        event.preventDefault();
+        if (this.autocompleteFocusIndex > -1) {
+          // and simulate a click on the active item (to insert it into the input)
+          if (elementList) elementList[this.autocompleteFocusIndex].click();
+        }
+      }
+    },
+
+
+    /**
+     * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
+     * https://www.w3schools.com/howto/howto_js_autocomplete.asp
+     *
+     * This function marks the currently active item as active with the appropriate CSS.
+     *
+     */
+    addActive(elementList) {
+      // A function to mark an item as active with CSS.
+      if (!elementList) return false;
+      // Start by removing the "active" class on all items
+      this.removeActive(elementList);
+      if (this.autocompleteFocusIndex >= elementList.length) this.autocompleteFocusIndex = 0;
+      if (this.autocompleteFocusIndex < 0) this.autocompleteFocusIndex = (elementList.length - 1);
+      // Add class "autocomplete-active" to the given item
+      elementList[this.autocompleteFocusIndex].classList.add("autocomplete-active");
+    },
+
+
+    /**
+     * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
+     * https://www.w3schools.com/howto/howto_js_autocomplete.asp
+     *
+     * This function removes the 'autocomplete-active' CSS class from all items in the given element list.
+     *
+     * @param elementList A list of elements to remove.
+     */
+    removeActive(elementList) {
+      // A function to remove the "active" class from all autocomplete items
+      for (let i = 0; i < elementList.length; i++) {
+        elementList[i].classList.remove("autocomplete-active");
+      }
     }
   }
 }
+
 </script>
 
 <style scoped>
@@ -426,6 +751,16 @@ label {
   text-align: left;
   display: flex;
   flex-direction: column;
+}
+
+#register-button {
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+}
+
+#register-button:hover {
+  background-color: transparent;
+  color: #1EBA8C;
 }
 
 #register-form {
