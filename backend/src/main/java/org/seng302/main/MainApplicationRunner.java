@@ -64,7 +64,7 @@ public class MainApplicationRunner implements ApplicationRunner {
      * period between checks can be altered by changing the
      * fixed-delay.in.milliseconds section in the application.properties file.
      * The system logs are updated when checked.
-     * @throws Exception
+     * @throws Exception An exception
      */
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
     public void checkDGAAExists() throws Exception {
@@ -192,5 +192,22 @@ public class MainApplicationRunner implements ApplicationRunner {
                 Role.USER);
         newUser6 = userRepository.save(newUser6);
         logger.info("Added sixth test user: {}", newUser6);
+
+        User newUser7 = new User(
+                "Francisca",
+                "Bznitez",
+                "T",
+                "Fran",
+                "Biography",
+                "francisca.benitez@example.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "address",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        newUser7 = userRepository.save(newUser7);
+        logger.info("Added seventh test user: {}", newUser7);
     }
 }

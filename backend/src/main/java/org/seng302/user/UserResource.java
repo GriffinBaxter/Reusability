@@ -191,12 +191,12 @@ public class UserResource {
 
         Sort sortBy = null;
         if (orderBy.equals("fullNameASC")) {
-            // TODO how should we do this? and is ordering optional?
-            sortBy = Sort.by("firstName").ascending();
+
+            sortBy = Sort.by("firstName").ascending().and(Sort.by("middleName")).and(Sort.by("lastName"));
 
         } else if (orderBy.equals("fullNameDESC")) {
 
-            sortBy = Sort.by("firstName").descending();
+            sortBy = Sort.by("firstName").descending().and(Sort.by("middleName")).and(Sort.by("lastName"));
 
         } else if (orderBy.equals("nicknameASC")) {
 
@@ -231,14 +231,11 @@ public class UserResource {
         }
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
-        // TODO Allow searching by more than one name at once
+
         Page<User> pagedResult = userRepository.findAllUsersByNames(searchQuery, paging);
-        //Page<User> pagedResult = userRepository.findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCaseOrNicknameContainsIgnoreCase(searchQuery, searchQuery, searchQuery, searchQuery, paging);
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
-
-       // return convertToPayload(pagedResult.getContent(), sessionToken);
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
