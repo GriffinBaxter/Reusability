@@ -6,12 +6,12 @@
 <!--<link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">-->
 
 <template>
-  <nav class="navbar sticky-top navbar-expand-lg navbar-light shadow" style="background-color: white">
+  <nav class="navbar sticky-top navbar-expand-lg shadow" style="background-color: white">
 
       <div class="container mt-2 my-lg-3 mx-auto">
 
         <!-- Logo image -->
-        <router-link class="navbar-brand " to="/home">
+        <router-link class="navbar-brand" to="/home">
           <img src="../../public/logo.png" alt="Logo" class="img-fluid d-inline-block" id="logoImage">
 <!--          <p class="company-name-main">Reusability</p>-->
 <!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
@@ -141,6 +141,36 @@ export default {
 <style scoped>
   #logoImage {
     max-width: 200px;
+    margin-right: 40px;
+  }
+
+  .nav-link {
+    color: white;
+    background: #56ab2f;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #199164, #24e09a); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    width: 100px;
+    margin: 10px;
+    border-radius: 15px;
+    margin: 10px;
+    width: 120px;
+    text-align: center;
+    font-size: large;
+
+  }
+
+  .nav-link:hover {
+    color: black;
+    background: #56ab2f;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #f7b733, #fc4a1a);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #fc4a1a, #f7b733); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    width: 100px;
+    margin: 10px;
+    border-radius: 15px;
+    margin: 10px;
+    width: 120px;
+    text-align: center;
+    font-size: large;
   }
 
 
