@@ -225,6 +225,7 @@ export default {
      */
     orderUsers(nickname, fullName, email, address) {
 
+
       if (nickname) {
         this.disableIcons();
         if (this.nickAscending) {
@@ -301,128 +302,6 @@ export default {
       }
 
     },
-
-      // if (nickname) {
-      //   this.disableIcons()
-      //   if (this.nickAscending) {
-      //     this.userList.sort(function(a, b) {
-      //       if (a.nickname > b.nickname) {return -1;}
-      //       if (a.nickname < b.nickname) {return 1;}
-      //       return 0;
-      //     })
-      //     document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-up float-end');
-      //   } else {
-      //     this.userList.sort(function(a, b) {
-      //       if (a.nickname < b.nickname) {return -1;}
-      //       if (a.nickname > b.nickname) {return 1;}
-      //       return 0;
-      //     })
-      //     document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-down float-end');
-      //   }
-      //
-      //   this.nickAscending = !this.nickAscending;
-      //   this.nameAscending = false;
-      //   this.emailAscending = false;
-      //   this.addressAscending = false;
-      //   this.joinedAscending = false;
-      //
-      //   this.buildRows();
-      // } else if (fullName) {
-      //   this.disableIcons()
-      //   if (this.nameAscending) {
-      //     this.userList.sort(function(a, b) {
-      //       if (a.firstName > b.firstName) {return -1;}
-      //       if (a.firstName < b.firstName) {return 1;}
-      //       return 0;
-      //     })
-      //     document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-up float-end');
-      //   } else {
-      //     this.userList.sort(function(a, b) {
-      //       if (a.firstName < b.firstName) {return -1;}
-      //       if (a.firstName > b.firstName) {return 1;}
-      //       return 0;
-      //     })
-      //     document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-down float-end');
-      //   }
-      //
-      //   this.nickAscending = false;
-      //   this.nameAscending = !this.nameAscending;
-      //   this.emailAscending = false;
-      //   this.addressAscending = false;
-      //   this.joinedAscending = false;
-      //
-      //   this.buildRows();
-      // } else if (email) {
-      //   this.disableIcons()
-      //   if (this.emailAscending) {
-      //     this.userList.sort(function(a, b) {
-      //       if (a.email > b.email) {return -1;}
-      //       if (a.email < b.email) {return 1;}
-      //       return 0;
-      //     })
-      //     document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-up float-end');
-      //   } else {
-      //     this.userList.sort(function(a, b) {
-      //       if (a.email < b.email) {return -1;}
-      //       if (a.email > b.email) {return 1;}
-      //       return 0;
-      //     })
-      //     document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-down float-end');
-      //   }
-      //
-      //   this.nickAscending = false;
-      //   this.nameAscending = false;
-      //   this.emailAscending = !this.emailAscending;
-      //   this.addressAscending = false;
-      //   this.joinedAscending = false;
-      //
-      //   this.buildRows();
-      // } else if (address) {
-      //   this.disableIcons()
-      //
-      //   if (this.addressAscending) {
-      //     this.userList.sort(function(a, b) {
-      //
-      //       let address1 = a.homeAddress.split(';');
-      //       address1 = address1.slice(2, address.length);
-      //       address1 = address1.join(", ");
-      //
-      //       let address2 = b.homeAddress.split(';');
-      //       address2 = address2.slice(2, address.length);
-      //       address2 = address2.join(", ");
-      //
-      //       if (address1 > address2) {return -1;}
-      //       if (address1 < address2) {return 1;}
-      //       return 0;
-      //     })
-      //     document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-up float-end');
-      //   } else {
-      //     this.userList.sort(function(a, b) {
-      //
-      //       let address1 = a.homeAddress.split(';');
-      //       address1 = address1.slice(2, address.length);
-      //       address1 = address1.join(", ");
-      //
-      //       let address2 = b.homeAddress.split(';');
-      //       address2 = address2.slice(2, address.length);
-      //       address2 = address2.join(", ");
-      //
-      //       if (address1 < address2) {return -1;}
-      //       if (address1 > address2) {return 1;}
-      //       return 0;
-      //     })
-      //     document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-down float-end');
-      //   }
-      //
-      //   this.nickAscending = false;
-      //   this.nameAscending = false;
-      //   this.emailAscending = false;
-      //   this.addressAscending = !this.addressAscending;
-      //   this.joinedAscending = false;
-      //
-      //   this.buildRows();
-      // }
-
 
     /*
      * Disables all ascending or descending icons in the top column headers.
