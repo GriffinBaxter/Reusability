@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -164,63 +165,62 @@ public class UserResource {
     }
 
     /**
-     * Search for users by some criteria, for now using names and nickname.
+     * Search for users by first name, middle name, last name, or nickname.
+     * Returns paginated and ordered results based on input query params.
      * @param sessionToken Session token
      * @param searchQuery Search query
+     * @param orderBy Column to order the results by
+     * @param page Page number to return results from
      * @return A list of UserPayload objects matching the search query
      */
     @GetMapping("/users/search")
     public List<UserPayload> searchUsers(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @RequestParam String searchQuery
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestParam String searchQuery,
+            @RequestParam String orderBy,
+            @RequestParam String page
     ) {
-        //getUserVerifySession(sessionToken);
-        int pageNo = 0;
+        // TODO Add logging
+
+        getUserVerifySession(sessionToken);
+
+        int pageNo = Integer.parseInt(page);
+        // Front-end displays 5 users per page
         int pageSize = 5;
 
-        Pageable paging = PageRequest.of(pageNo, pageSize);
-        Page<User> pagedResult = userRepository.findAll(paging);
+        String sortByValue = null;
+        if (orderBy.equals("fullName")) {
+            // TODO how should we do this? and is ordering optional?
+            // TODO ASC, DESC
+            sortByValue = "firstName";
+        } else if (orderBy.equals("nickname")) {
+            sortByValue = "nickname";
+        } else if (orderBy.equals("email")) {
+            sortByValue = "email";
+        } else if (orderBy.equals("address")) {
+            sortByValue = "homeAddress";
+        } else {
+            // Invalid orderBy input
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "OrderBy Field invalid"
+            );
+        }
 
-        // Convert to payloads
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortByValue));
+        Page<User> pagedResult = userRepository.findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCase(searchQuery, searchQuery, searchQuery, paging);
+
         return convertToPayload(pagedResult.getContent(), sessionToken);
 
-
-//        List<UserPayload> users;
-//
-//        String[] searchQuerySplit = searchQuery.split(" ");
-//        // TODO make any search work for all names.
-//
-//        if (searchQuerySplit.length == 3) {  // Query including the first, middle and last names.
-//            users = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
-//                    searchQuerySplit[0], searchQuerySplit[1], searchQuerySplit[2]
-//            );
-//        } else if (searchQuerySplit.length == 2) {  // Query including the first and last names.
-//            users = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(
-//                    searchQuerySplit[0], searchQuerySplit[1]
-//            );
-//        } else {  // Query including either the nickname, first, middle or last name.
-//            users = new ArrayList<>(userRepository.findByNicknameIgnoreCase(searchQuery));
-//            users.addAll(userRepository.findByFirstNameIgnoreCase(searchQuery));
-//            users.addAll(userRepository.findByLastNameIgnoreCase(searchQuery));
-//            users.addAll(userRepository.findByMiddleNameIgnoreCase(searchQuery));
-//        }
-//
-//        if (!verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-//            for (UserPayload user: users) {
-//                user.setRole(null);
-//            }
-//        }
-
-        //return users.stream().distinct().collect(Collectors.toList());
     }
 
     public List<UserPayload> convertToPayload(List<User> userList, String sessionToken) {
         List<UserPayload> payLoads = new ArrayList<>();
-
         for (User user : userList) {
             Role role = null;
-//            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-//                role = user.getRole();
-//            }
+            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+                role = user.getRole();
+            }
             UserPayload newPayload = new UserPayload(
                     user.getId(),
                     user.getFirstName(),
