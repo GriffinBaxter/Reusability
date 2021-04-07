@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <p class="copyright mt-4">© SENG302 Team 6 2021</p>
+    <p class="copyright mt-4">© SENG302 Team 400 2021</p>
   </footer>
 </template>
 
