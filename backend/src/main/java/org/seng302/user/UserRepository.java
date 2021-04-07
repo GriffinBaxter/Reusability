@@ -83,14 +83,15 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByRole(Role role);
 
     /**
-     * Search for users by their first, middle or last name, ignoring case.
-     * Uses find all for pagination.
+     * Search for users by their first, middle, last name or nick name, ignoring case.
+     * Uses find all for pagination and allows partial matches (not case sensitive).
      * @param firstName First name
      * @param middleName Middle name
      * @param lastName Last name
+     * @param nickname Nickname
      * @param pageable Pageable object for pagination
      * @return A list of matching UserPayload objects
      */
-    Page<User> findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCase(String firstName, String middleName, String lastName, Pageable pageable);
+    Page<User> findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCaseOrNicknameContainsIgnoreCase(String firstName, String middleName, String lastName, String nickname, Pageable pageable);
 
 }

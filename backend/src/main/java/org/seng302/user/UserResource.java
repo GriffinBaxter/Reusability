@@ -188,17 +188,39 @@ public class UserResource {
         // Front-end displays 5 users per page
         int pageSize = 5;
 
-        String sortByValue = null;
-        if (orderBy.equals("fullName")) {
+        Sort sortBy = null;
+        if (orderBy.equals("fullNameASC")) {
             // TODO how should we do this? and is ordering optional?
-            // TODO ASC, DESC
-            sortByValue = "firstName";
-        } else if (orderBy.equals("nickname")) {
-            sortByValue = "nickname";
-        } else if (orderBy.equals("email")) {
-            sortByValue = "email";
-        } else if (orderBy.equals("address")) {
-            sortByValue = "homeAddress";
+            sortBy = Sort.by("firstName").ascending();
+
+        } else if (orderBy.equals("fullNameDESC")) {
+
+            sortBy = Sort.by("firstName").descending();
+
+        } else if (orderBy.equals("nicknameASC")) {
+
+            sortBy = Sort.by("nickname").ascending();
+
+        } else if (orderBy.equals("nicknameDESC")) {
+
+            sortBy = Sort.by("nickname").descending();
+
+        } else if (orderBy.equals("emailASC")) {
+
+            sortBy = Sort.by("email").ascending();
+
+        } else if (orderBy.equals("emailDESC")) {
+
+            sortBy = Sort.by("email").descending();
+
+        } else if (orderBy.equals("addressASC")) {
+
+            sortBy = Sort.by("homeAddress").ascending();
+
+        } else if (orderBy.equals("addressDESC")) {
+
+            sortBy = Sort.by("homeAddress").descending();
+
         } else {
             // Invalid orderBy input
             throw new ResponseStatusException(
@@ -207,9 +229,11 @@ public class UserResource {
             );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortByValue));
-        Page<User> pagedResult = userRepository.findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCase(searchQuery, searchQuery, searchQuery, paging);
-
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Page<User> pagedResult = userRepository.findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCaseOrNicknameContainsIgnoreCase(searchQuery, searchQuery, searchQuery, searchQuery, paging);
+        int totalPages = pagedResult.getTotalPages();
+        long totalRows = pagedResult.getTotalElements();
+        // TODO How to send these to front-end? Also why is this a long?
         return convertToPayload(pagedResult.getContent(), sessionToken);
 
     }
