@@ -10,15 +10,44 @@
             <button class="btn btn-primary greenButton" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
+        <div class="col">
+          <img id="actAsPhoto" src="" alt="User/Business">
+          <div class="mt-2">
+            {{actAs}}
+          </div>
+        </div>
       </div>
     </div>
 </template>
 
 <script>
 
+import Api from '../Api';
+
 export default {
   name: "ProfileHeader",
+  data() {
+    return {
+      actAs:""
+    }
+  },
   methods: {
+    getUserData() {
+      const userID = 1;
+      Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
+
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noUser'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else {
+          this.$router.push({path: '/noUser'});
+          console.log(error.message);
+        }
+      })
+    },
     enterPressed(event) {
       if (event.keyCode === 13) {
         // Enter pressed
@@ -29,7 +58,13 @@ export default {
     searchClicked() {
       const inputQuery = this.$refs.searchInput.value;
       this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}` }})
+    },
+    setCurUser() {
+      this.actAs = "curUser";
     }
+  },
+  mounted() {
+    this.setCurUser();
   }
 }
 </script>
