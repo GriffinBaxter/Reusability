@@ -104,7 +104,8 @@ export default {
 }
 
 .all-but-footer {
-  min-height: calc(100vh - 240px);
+  min-height: calc(100vh - 200px);
+  margin-bottom: 60px;
 }
 
 </style>
