@@ -232,7 +232,9 @@ public class UserResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
         // TODO Allow searching by more than one name at once
-        Page<User> pagedResult = userRepository.findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCaseOrNicknameContainsIgnoreCase(searchQuery, searchQuery, searchQuery, searchQuery, paging);
+        Page<User> pagedResult = userRepository.findAllUsersByNames(searchQuery, paging);
+        //Page<User> pagedResult = userRepository.findAllByFirstNameContainsIgnoreCaseOrMiddleNameContainsIgnoreCaseOrLastNameContainsIgnoreCaseOrNicknameContainsIgnoreCase(searchQuery, searchQuery, searchQuery, searchQuery, paging);
+
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
 
