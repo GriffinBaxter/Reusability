@@ -1,7 +1,7 @@
 <template>
-    <div class="container pt-3" id="searchContainer">
+    <div class="container pt-4" id="searchContainer">
       <div class="row text-center">
-        <div class="col-md-2 mb-md-0 mb-3">
+        <div class="col-md-3 mb-md-0 mb-3">
           <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
         </div>
         <div class="col">
@@ -10,10 +10,23 @@
             <button class="btn btn-primary greenButton" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
-        <div class="col">
-          <img id="actAsPhoto" src="" alt="User/Business">
-          <div class="mt-2">
-            {{actAs}}
+        <div class="col-md-3 btn-group">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle"
+                    type="button" id="dropdownMenu1" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+              <div class="row">
+                <div class="col-4">
+                  <img width="50px" class="rounded-circle img-thumbnail" src="../../public/sample_profile_image.jpg" alt="Acting as image"/>
+                </div>
+                <div class="col">
+                  <h6 class="text-center" id="actAsText">{{actAs}}</h6>
+                </div>
+              </div>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <p class="dropdown-item">No businesses found</p>
+            </div>
           </div>
         </div>
       </div>
@@ -23,6 +36,8 @@
 <script>
 
 import Api from '../Api';
+import Cookies from "js-cookie";
+
 
 export default {
   name: "ProfileHeader",
@@ -33,8 +48,8 @@ export default {
   },
   methods: {
     getUserData() {
-      const userID = 1;
-      Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
+      const currentID = Cookies.get('userID');
+      Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
 
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -59,19 +74,31 @@ export default {
       const inputQuery = this.$refs.searchInput.value;
       this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}` }})
     },
-    setCurUser() {
-      this.actAs = "curUser";
+    setCurUser(response) {
+      if (response.nickname == null) {
+        this.actAs = response.firstName + " " + response.lastName;
+      } else {
+        this.actAs = response.nickname;
+      }
     }
   },
   mounted() {
-    this.setCurUser();
+    this.getUserData();
   }
 }
 </script>
 
 <style scoped>
+#searchContainer {
+  width: 80%;
+}
+
 #logo {
   max-height: 60px
+}
+
+#dropdownMenu1 {
+  background-color: #77fcd4;
 }
 
 .greenButton {
@@ -82,6 +109,10 @@ export default {
 .greenButton:hover {
   background-color: transparent;
   color: #1EBA8C;
+}
+
+#actAsText {
+  margin: auto;
 }
 
 </style>
