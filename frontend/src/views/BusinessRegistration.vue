@@ -52,7 +52,7 @@
           <div class="col-lg-6 my-2 my-lg-0">
             <label for="streetAddress">Street Address</label>
             <input tabindex="4" id="streetAddress" :class="toggleInvalidClass(businessStreetAddressErrorMsg)"
-                   name="streetAddress" ref="streetAddress" required autocomplete="off">
+                   name="streetAddress" ref="streetAddress" autocomplete="off">
             <div class="invalid-feedback">
               {{businessStreetAddressErrorMsg}}
             </div>
@@ -60,7 +60,7 @@
           <div class="col-lg-6 my-2 my-lg-0">
             <label for="suburb">Suburb</label>
             <input :class="toggleInvalidClass(businessSuburbErrorMsg)" tabindex="5" name="suburb" id="suburb" ref="suburb"
-                   autocomplete="off" required>
+                   autocomplete="off">
             <div class="invalid-feedback">
               {{businessSuburbErrorMsg}}
             </div>
@@ -79,7 +79,7 @@
           <div class="col-lg-6 my-2 my-lg-0">
             <label for="region">State/Region</label>
             <input :class="toggleInvalidClass(businessRegionErrorMsg)" tabindex="7" name="region" id="region" ref="region"
-                   autocomplete="off" required>
+                   autocomplete="off">
             <div class="invalid-feedback">
               {{businessRegionErrorMsg}}
             </div>
@@ -99,7 +99,7 @@
           <div class="col-lg-6 my-2 my-lg-0">
             <label for="postcode">Postcode</label>
             <input :class="toggleInvalidClass(businessPostcodeErrorMsg)" tabindex="9" id="postcode" name="postcode"
-                   ref="postcode" autocomplete="off" required>
+                   ref="postcode" autocomplete="off">
             <div class="invalid-feedback">
               {{businessPostcodeErrorMsg}}
             </div>
@@ -143,6 +143,7 @@
 import Api, { Business } from "../Api";
 import Footer from "../components/Footer";
 import AddressAPI from "../addressInstance";
+import Cookies from 'js-cookie';
 
 export default {
   name: "BusinessRegistration",
@@ -306,9 +307,22 @@ export default {
 
       // ===================================== START OF INPUT FIELDS VALIDATION ========================================
 
+      // Business Type error checking
+      const businessTypes = [
+        'ACCOMMODATION AND FOOD SERVICES',
+        'RETAIL TRADE',
+        'CHARITABLE ORGANISATION',
+        'NON-PROFIT ORGANISATION']
+      if (businessTypes.includes(this.businessType.toUpperCase())) {
+        this.businessTypeErrorMsg = "";
+        requestIsInvalid = false
+      } else {
+        this.businessTypeErrorMsg = "This field is required!"
+        requestIsInvalid = true
+      }
 
       // Business name error checking
-      this.businesstNameErrorMsg = this.getErrorMessage(
+      this.businessNameErrorMsg = this.getErrorMessage(
           this.config.businessName.name,
           this.businessName,
           this.config.businessName.minLength,
@@ -323,25 +337,11 @@ export default {
       // Description error checking
       this.descriptionErrorMsg = this.getErrorMessage(
           this.config.description.name,
-          this.bio,
+          this.description,
           this.config.description.minLength,
           this.config.description.maxLength,
       )
       if (this.descriptionErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Business Type error checking
-      const businessTypes = [
-        'ACCOMMODATION AND FOOD SERVICES',
-        'RETAIL TRADE',
-        'CHARITABLE ORGANISATION',
-        'NON-PROFIT ORGANISATION']
-      if (this.businessType in businessTypes) {
-        this.businessTypeErrorMsg = "";
-        requestIsInvalid = false
-      } else {
-        this.businessTypeErrorMsg = "This field is required!"
         requestIsInvalid = true
       }
 
@@ -435,15 +435,17 @@ export default {
 
       // Wrapping up the business submitted fields into a class object (Business).
       const businessData = {
-        businessName: this.firstName.charAt(0).toUpperCase() + this.businessName.slice(1),
+        primaryAdministratorId: Cookies.get('userId'),
+        name: this.businessName.charAt(0).toUpperCase() + this.businessName.slice(1),
         description: this.description,
         /*
          * NOTE: Using v-model for this address input apparently does not update.
          *       When we insert from our autocomplete list so it has been changed to use $refs
          */
-        businessAddress: finalBusinessAddress,
+        address: finalBusinessAddress,
         businessType: this.businessType
       }
+
 
       const business = new Business(businessData)
       /*

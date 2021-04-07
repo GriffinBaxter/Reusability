@@ -227,8 +227,9 @@ export class Business{
     },
   };
 
-  constructor({businessName, description, businessAddress, businessType}) {
+  constructor({primaryAdministratorId, businessName, description, businessAddress, businessType}) {
     this.data = {
+      primaryAdministratorId,
       businessName,
       description,
       businessAddress,
