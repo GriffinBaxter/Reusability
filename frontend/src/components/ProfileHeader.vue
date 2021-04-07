@@ -13,16 +13,14 @@
         </div>
 
         <div class="col-md-3 btn-group">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle"
-                    type="button" id="dropdownMenu1" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                  <img width="50px" class="rounded-circle img-thumbnail" src="../../public/sample_profile_image.jpg" alt="Acting as image"/>
-                  <h6 class="text-center" id="actAsText">{{actAs}}</h6>
+          <div class="dropdown" id="dropDown">
+            <button id="dropDownButton" class="btn btn-success" type="button" @click="showDropMenu">
+              <img src="../../public/sample_profile_image.jpg" width="45px" class="rounded-circle img-thumbnail" alt="Acting as image" id="actAsImg"/>
+              <p id="ActAsTxt">{{actAs}}</p>
             </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <button class="dropdown-item" type="button">No businesses found</button>
-            </div>
+            <ul v-if="showMenu" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li class="list-group-item" v-for="(act, index) in list" :key = "act.id" @click="itemClicked(index)"> {{act.name}} </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -39,8 +37,13 @@ export default {
   name: "ProfileHeader",
   data() {
     return {
-      actAs:"",
-      businesses: []
+      currentUser:"",
+      actAs: "",
+      actAsId: null,
+      list: [],
+      businesses: [],
+      showMenu: false,
+      imgSrc: null
     }
   },
   methods: {
@@ -72,16 +75,57 @@ export default {
       this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}` }})
     },
     setCurUser(response) {
-      if (response.nickname == null) {
-        this.actAs = response.firstName + " " + response.lastName;
+      this.currentUser = response;
+      if (Cookies.get('actAs')) {
+        this.actAsId = Cookies.get('actAs');
       } else {
-        this.actAs = response.nickname;
+        if (response.nickname == null) {
+          this.actAs = response.firstName;
+        } else {
+          this.actAs = response.nickname;
+        }
       }
       this.businesses = response.businessesAdministered;
+      this.refreshDropdown();
+    },
+    showDropMenu() {
+      this.showMenu = !this.showMenu;
+    },
+    refreshDropdown() {
+      if (this.currentUser.nickname == null)
+      {
+        this.list = [ {id:this.currentUser.id, name:this.currentUser.firstName} ];
+      } else {
+        this.list = [ {id:this.currentUser.id, name:this.currentUser.nickname} ];
+      }
+      for (let i=0; i<this.businesses.length; i++) {
+        this.list.push(this.businesses[i]);
+      }
+    },
+    itemClicked(index) {
+      this.showDropMenu();
+      if (index === 0)
+      {
+        // Delete Cookie
+        Cookies.remove('actAs');
+        //
+        this.actAsId = null;
+        if (this.currentUser.nickname) {
+          this.actAs = this.currentUser.nickname;
+        } else {
+          this.actAs = this.currentUser.firstName;
+        }
+      } else {
+        this.thumbnail = null;
+        Cookies.set('actAs', this.list[index].id);
+        this.actAsId = this.list[index].id;
+        this.actAs = this.list[index].name;
+      }
     }
   },
   mounted() {
     this.getUserData();
+    console.log();
   }
 }
 </script>
@@ -95,9 +139,35 @@ export default {
   max-height: 60px
 }
 
-#dropdownMenu1 {
+#dropDownButton {
   background-color: #1EBA8C;
+  height: 60px;
+  width:100%;
+}
+
+#dropDown {
+  width: 100%;
+  max-height:60px;
+  margin-top: 5px;
+  float: right;
+}
+
+#ActAsTxt {
+  margin: 0;
+  text-align: center;
+  line-height: 45px;
+  display: inline-block;
+}
+
+ul {
+  display: block;
   width: inherit;
+  background-color: #1EBA8C;
+}
+li {
+  text-align: center;
+  color: white;
+  background-color: inherit;
 }
 
 .greenButton {
@@ -110,10 +180,8 @@ export default {
   color: #1EBA8C;
 }
 
-#actAsText {
-  padding-left: 5px;
-  display: inline;
-  margin: auto;
+#actAsImg {
+  float: left;
+  display: inline-block;
 }
-
 </style>
