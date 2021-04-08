@@ -1,6 +1,6 @@
 <template>
   <div>
-  <div id="login" class="container all-but-footer">
+  <div id="login" class="container">
     <div class="row justify-content-center">
       <div class="col-3 m-3">
         <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
@@ -34,7 +34,7 @@
             </div>
             <div class="row">
               <div class="col-5">
-                <router-link class="btn btn-lg btn-outline-primary m-sm-4 mb-4" to="/registration" tag="button" type="button" tabindex="4">Register</router-link>
+                <router-link class="btn btn-lg m-sm-4 mb-4 green-button-transparent" to="/registration" tag="button" type="button" tabindex="4" >Register</router-link>
               </div>
               <div class="col">
                 <button class="btn btn-lg float-end m-sm-4 mb-4 green-button" @click="login()" type="submit" id="loginButton" tabindex="3">Sign In</button>
@@ -47,20 +47,17 @@
     </div>
 
   </div>
-    <Footer></Footer>
+
   </div>
 </template>
 
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import Footer from '../components/Footer';
+
 
 export default {
   name: "Login",
-  components: {
-    Footer
-  },
   methods: {
     login() {
       /*
@@ -101,11 +98,6 @@ export default {
 
 #errorLabel {
   visibility: hidden;
-}
-
-.all-but-footer {
-  min-height: calc(100vh - 200px);
-  margin-bottom: 60px;
 }
 
 </style>

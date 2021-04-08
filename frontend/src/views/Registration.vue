@@ -220,8 +220,8 @@
             </div>
 
             <div class="d-grid gap-2 d-lg-block">
-              <button class="btn btn-lg btn-outline-primary" type="button" tabindex="18" @click="$router.push('/')">Back to Login</button>
-              <button id="register-button" tabindex="17" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewUser($event)">Register</button>
+              <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="18" id="backToLoginButton" @click="$router.push('/')">Back to Login</button>
+              <button id="register-button" tabindex="17" class="btn btn-lg btn-primary float-lg-end green-button" type="button" @click="addNewUser($event)">Register</button>
             </div>
 
           </form>
@@ -1061,16 +1061,6 @@ label {
   flex-direction: column;
 }
 
-#register-button {
-  background-color: #1EBA8C;
-  border-color: #1EBA8C;
-}
-
-#register-button:hover {
-  background-color: transparent;
-  color: #1EBA8C;
-}
-
 #register-form {
   border-radius: 2%;
 }
@@ -1093,11 +1083,12 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-input:focus, textarea:focus, #register-button:focus{
+input:focus, textarea:focus, #register-button:focus, #backToLoginButton:focus {
   outline: none;     /* oranges! yey */
-  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
+
 /*------------------------------------------------------------------------*/
 
 .all-but-footer {

@@ -7,7 +7,7 @@
         <div class="col">
           <div class="input-group my-4">
             <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
-            <button class="btn btn-primary green-search-button" tabindex="2"  @click="searchClicked()"><i class="fas fa-search"></i></button>
+            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><i id="searchButtonITag" class="fas fa-search"></i></button>
           </div>
         </div>
       </div>
@@ -518,11 +518,10 @@ export default {
 
 <style scoped>
 
-
-
-.greenButton:hover {
-  background-color: transparent;
-  color: #1EBA8C;
+#searchBar:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
 }
 
 .all-but-footer {

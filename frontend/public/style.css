@@ -43,14 +43,50 @@ body {
   color: white;
 }
 
+.green-button:hover {
+  background-color: transparent;
+  color: #1EBA8C;
+  border-color: #1EBA8C;
+}
+
+.green-button:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
 .green-search-button {
   background-color: #1EBA8C;
   border-color: #1EBA8C;
+  color: white;
 }
 
 .green-search-button:hover {
   background-color: transparent;
   color: #1EBA8C;
+}
+
+.green-search-button:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
+.green-button-transparent {
+  border-color: #1EBA8C;
+  color: black;
+}
+
+.green-button-transparent:hover {
+  color: white;
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+}
+
+.green-button-transparent:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
 }
 
 
@@ -61,23 +97,6 @@ body {
 #formContainer {
   background-color: #fff;
   border-radius: 1rem;
-}
-
-#loginButton {
-  background-color: #1EBA8C;
-  color: white;
-  border-color: #1EBA8C;
-}
-
-#loginButton:hover {
-  background-color: transparent;
-  color: #1EBA8C;
-}
-
-#loginButton:focus{
-  outline: none;     /* oranges! yey */
-  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
-  border: 1px solid #1EBABC;
 }
 
 /****************************************
@@ -96,17 +115,6 @@ body {
 #editProfileButton:hover {
   background-color: #1EBA8C
 }
-
-#logoutButton {
-  border-color: #1EBA8C;
-  color: black;
-}
-
-#logoutButton:hover {
-  color: white;
-  background-color: #1EBA8C;
-}
-
 
 /****************************
    Profile Header Component

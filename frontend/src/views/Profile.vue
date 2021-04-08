@@ -102,7 +102,7 @@
               </div>
             </div>
           </div>
-          <button class="btn btn-outline-primary float-end mt-4" id="logoutButton" @click="logout()">Sign Out</button>
+          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
         </div>
       </div>
 
