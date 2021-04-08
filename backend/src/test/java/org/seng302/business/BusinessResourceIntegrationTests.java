@@ -47,6 +47,8 @@ public class BusinessResourceIntegrationTests {
 
     private Integer id;
 
+    private String sessionToken;
+
     private String expectedJson;
 
     private User user;
@@ -91,7 +93,7 @@ public class BusinessResourceIntegrationTests {
                         "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
                         "\"businessType\": \"Accommodation and Food Services\"\n" +
                         "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
@@ -113,7 +115,7 @@ public class BusinessResourceIntegrationTests {
                         "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
                         "\"businessType\": \"Accommodation and Food Services\"\n" +
                         "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
@@ -132,7 +134,7 @@ public class BusinessResourceIntegrationTests {
                 "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
                 "\"businessType\": \"Accommodation and Food Services\"\n" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(0));
+        Cookie cookie = new Cookie("JSESSIONID", User.generateSessionUUID());
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
@@ -145,6 +147,7 @@ public class BusinessResourceIntegrationTests {
     @Test
     public void canRetrieveBusinessWhenBusinessDoesExist() throws Exception {
         id = business.getId();
+        sessionToken = user.getSessionUUID();
         expectedJson = "{" +
                         "\"id\":" + business.getId() + "," +
                         "\"name\":\"" + business.getName() + "\"," +
@@ -154,7 +157,7 @@ public class BusinessResourceIntegrationTests {
                         "\"created\":\"" + business.getCreated() + ":00\"" +
                         "}";
 
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -169,7 +172,7 @@ public class BusinessResourceIntegrationTests {
         id = business.getId();
         expectedJson = "";
 
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(0));
+        Cookie cookie = new Cookie("JSESSIONID", User.generateSessionUUID());
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
@@ -182,9 +185,10 @@ public class BusinessResourceIntegrationTests {
     @Test
     public void canNotRetrieveBusinessWhenBusinessDoesNotExist() throws Exception {
         id = 0;
+        sessionToken = user.getSessionUUID();
         expectedJson = "";
 
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
