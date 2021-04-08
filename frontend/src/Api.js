@@ -187,8 +187,13 @@ export default {
     return instance.get(`/users/search?searchQuery=${query}`, {
       withCredentials: true
     })
-  }
+  },
 
+  getBusiness: (businessID) => {
+    return instance.get(`/businesses/${businessID}`,{
+      withCredentials: true
+    })
+  }
   // Usage examples from original file:
   //
   // // (C)reate
