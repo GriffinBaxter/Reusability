@@ -173,6 +173,7 @@ export default {
         } else if (error.response.status === 401) {
           this.$router.push({path: '/invalidtoken'});
         } else {
+          //TODO Change these to actually handle 400 responses from backend
           this.$router.push({path: '/timeout'});
           console.log(error.message);
         }
