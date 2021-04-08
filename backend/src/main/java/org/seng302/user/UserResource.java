@@ -184,8 +184,17 @@ public class UserResource {
         // TODO Add logging
 
         getUserVerifySession(sessionToken);
+        int pageNo;
+        try {
+            pageNo = Integer.parseInt(page);
+        } catch (final NumberFormatException e) {
+            // Invalid page input
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Page parameter invalid"
+            );
+        }
 
-        int pageNo = Integer.parseInt(page);
         // Front-end displays 5 users per page
         int pageSize = 5;
 

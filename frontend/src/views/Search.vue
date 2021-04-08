@@ -87,12 +87,12 @@ export default {
       addressAscending: false,
       rowsPerPage: 5,
       currentPage: 1,
-      maxPage: 2,
+      maxPage: 1,
       userList: [],
       small: false,
       totalRows: 0,
       orderBy: "fullNameASC",
-      lastQuery: ""
+      lastQuery: "PAGEHASBEENREFRESHED"
     }
   },
   methods: {
@@ -147,19 +147,25 @@ export default {
       let pageNum = parseInt(urlParams.get('page'))-1;
       this.currentPage = pageNum+1;
 
-      if (this.lastQuery !== query) {
+      if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
         console.log(this.lastQuery);
         this.currentPage = 1;
         pageNum = 0;
-        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=1`)
+        history.pushState({}, null, `/search?searchQuery=${query}&orderBy=${this.orderBy}&page=1`)
       }
       this.lastQuery = query;
 
       await Api.searchUsers(query, ordering, pageNum).then(response => {
 
         this.userList = [...response.data];
-        this.maxPage = parseInt(response.headers['total-pages']);
-        this.totalRows = parseInt(response.headers['total-rows']);
+        if (this.userList.length <= 0) {
+          this.currentPage = 1;
+
+        } else {
+          this.maxPage = parseInt(response.headers['total-pages']);
+          this.totalRows = parseInt(response.headers['total-rows']);
+        }
+
 
       }).catch((error) => {
         if (error.request && !error.response) {
