@@ -507,4 +507,13 @@ export default {
   color: #1EBA8C;
 }
 
+.page-link {
+  color: #1EBA8C;
+}
+
+.page-item.active .page-link {
+  background-color: #1EBA8C;
+  border: 1px solid #1EBA8C;
+}
+
 </style>
