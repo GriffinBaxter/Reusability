@@ -25,7 +25,7 @@ public class BusinessResource {
      * @return User object
      */
     private User getUserVerifySession(String sessionToken) {
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
+        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
         if (sessionToken == null || user.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.seng302.user.Role.*;
@@ -36,7 +37,7 @@ public class UserResource {
      * @return User object
      */
     public User getUserVerifySession(String sessionToken) {
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
+        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
         if (sessionToken == null || user.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
@@ -58,11 +59,16 @@ public class UserResource {
 
         if (user.isPresent()) {
             if (user.get().verifyPassword(login.getPassword())) {
-                int userId = user.get().getId();
-                Cookie cookie = new Cookie("JSESSIONID", String.valueOf(userId));
+                String sessionUUID = User.generateSessionUUID();
+
+                user.get().setSessionUUID(sessionUUID);
+                userRepository.save(user.get());
+
+                Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
-                return new UserIdPayload(userId);
+
+                return new UserIdPayload(user.get().getId());
             }
         }
         throw new ResponseStatusException(
@@ -76,8 +82,9 @@ public class UserResource {
      * @param registration Registration payload
      */
     @PostMapping("/users")
-    public ResponseEntity<UserIdPayload> registerUser(@RequestBody RegistrationPayload registration,
-                                                      HttpServletResponse response) {
+    public ResponseEntity<UserIdPayload> registerUser(
+            @RequestBody RegistrationPayload registration, HttpServletResponse response
+    ) {
 
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
             throw new ResponseStatusException(
@@ -100,14 +107,14 @@ public class UserResource {
                     registration.getPassword(),
                     LocalDateTime.now(),
                     USER);
-            User createdUser = userRepository.save(newUser);
-            int userId = createdUser.getId();
 
-            Cookie cookie = new Cookie("JSESSIONID", String.valueOf(userId));
+            User createdUser = userRepository.save(newUser);
+
+            Cookie cookie = new Cookie("JSESSIONID", createdUser.getSessionUUID());
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(userId));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
 
         } catch (Exception e) {
             throw new ResponseStatusException(
@@ -208,8 +215,7 @@ public class UserResource {
      * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
      */
     private boolean verifyRole(String sessionToken, Role role) {
-        Integer id = Integer.valueOf(sessionToken);
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findBySessionUUID(sessionToken);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
