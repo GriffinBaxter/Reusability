@@ -8,38 +8,38 @@
 <template>
   <nav class="navbar sticky-top navbar-expand-lg shadow" style="background-color: white">
 
-      <div class="container mt-2 my-lg-3 mx-auto">
+    <div class="container mt-2 my-lg-3 mx-auto">
 
-        <!-- Logo image -->
-        <router-link class="navbar-brand" to="/home">
-          <img src="../../public/logo.png" alt="Logo" class="img-fluid d-inline-block" id="logoImage">
-<!--          <p class="company-name-main">Reusability</p>-->
-<!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
-        </router-link>
+      <!-- Logo image -->
+      <router-link class="navbar-brand" to="/home">
+        <img src="../../public/logo.png" alt="Logo" class="img-fluid d-inline-block" id="logoImage">
+        <!--          <p class="company-name-main">Reusability</p>-->
+        <!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
+      </router-link>
 
-        <!-- hamburger icon -->
-        <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+      <!-- hamburger icon -->
+      <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <!-- Navbar links -->
-        <div class="navbar-collapse" id="navbarId">
-          <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <router-link :class="['nav-link', isActivePath('Home')]" aria-current="page" to="">Home</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link :class="['nav-link', isActivePath('Profile')]" to="/profile">Profile</router-link>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
-              </li>
-            </ul>
-          </div>
+      <!-- Navbar links -->
+      <div class="navbar-collapse" id="navbarId">
+        <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <router-link :class="['nav-link', isActivePath('Home')]" aria-current="page" to="">Home</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :class="['nav-link', isActivePath('Profile')]" to="/profile">Profile</router-link>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
+            </li>
+          </ul>
         </div>
-
       </div>
+
+    </div>
   </nav>
 </template>
 
@@ -53,7 +53,7 @@ export default {
       showNavbar: false,
       navbarMaxHeight: null,  // max hieght of the navbar pixels
       navbarMinHeight: 0   ,  // min hieght of the navbar pixels
-      STYLE_DEFAULT: `transition: height ease-in-out 300ms; overflow: hidden`
+      STYLE_DEFAULT: `transition: max-height ease-in-out 300ms;`// overflow: hidden`
     }
   },
   methods: {
@@ -91,7 +91,7 @@ export default {
         if (this.showNavbar) targetHeight = this.navbarMaxHeight
 
         // Assign the target height to the navbar
-        document.getElementById("navbarId").setAttribute("style", `height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
+        document.getElementById("navbarId").setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
       }
     },
     /**
@@ -127,14 +127,8 @@ export default {
 
     // Set navbar to inital height!
     this.toggleNavbar(true)
-  },
-  created() {
-    window.onresize = () => {
-      if (window.innerWidth >= 992) {
-        document.getElementById("navbarId").setAttribute("style", `height: 100%; ${this.STYLE_DEFAULT}`)
-      }
-    }
   }
+
 }
 </script>
 
@@ -172,11 +166,23 @@ export default {
     font-size: large;
   }
 
-  .navbar-toggler {
-    background-color: pink;
+.navbar-toggler {
+  color: rgba(0, 0, 0, 0.55);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+  #navbarId {
+    overflow: hidden;
   }
 
-
+@media(min-width: 992px) {
+  #navbarId {
+    overflow: visible;
+  }
+}
 
 
   /*.company-name-main {*/
