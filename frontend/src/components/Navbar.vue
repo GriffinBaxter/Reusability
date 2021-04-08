@@ -172,6 +172,12 @@ export default {
     font-size: large;
   }
 
+  .navbar-toggler {
+    background-color: pink;
+  }
+
+
+
 
   /*.company-name-main {*/
   /*  font-family: 'Oswald', sans-serif;*/
