@@ -37,6 +37,23 @@ body {
   background: #fafbfc;
 }
 
+.green-button {
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+  color: white;
+}
+
+.green-search-button {
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+}
+
+.green-search-button:hover {
+  background-color: transparent;
+  color: #1EBA8C;
+}
+
+
 /****************************************
                Login Page
  ****************************************/
@@ -73,20 +90,21 @@ body {
 
 #editProfileButton {
   background-color: #fff;
-  border-color: #23d9a3;
+  border-color: #1EBA8C;
 }
 
 #editProfileButton:hover {
-  background-color: #23d9a3
+  background-color: #1EBA8C
 }
 
 #logoutButton {
-  border-color: #23d9a3;
+  border-color: #1EBA8C;
   color: black;
 }
 
 #logoutButton:hover {
-  background-color: #23d9a3;
+  color: white;
+  background-color: #1EBA8C;
 }
 
 

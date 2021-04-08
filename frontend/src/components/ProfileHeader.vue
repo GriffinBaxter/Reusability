@@ -7,7 +7,7 @@
         <div class="col">
           <div class="input-group">
             <input type="text" id="searchBar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
-            <button class="btn btn-primary greenButton" @click="searchClicked()"><i class="fas fa-search"></i></button>
+            <button class="btn btn-primary green-search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
       </div>
@@ -39,14 +39,6 @@ export default {
   max-height: 60px
 }
 
-.greenButton {
-  background-color: #1EBA8C;
-  border-color: #1EBA8C;
-}
 
-.greenButton:hover {
-  background-color: transparent;
-  color: #1EBA8C;
-}
 
 </style>

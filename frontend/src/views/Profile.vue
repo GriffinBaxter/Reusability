@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Navbar></Navbar>
     <ProfileHeader/>
     <div class="container p-5 mt-3 all-but-footer" id="profileContainer">
       <div class="row">
@@ -115,12 +116,14 @@ import ProfileHeader from "@/components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 
 export default {
   name: "Profile",
   components: {
     Footer,
     ProfileHeader,
+    Navbar
   },
   data() {
     return {

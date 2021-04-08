@@ -1,84 +1,91 @@
 <template>
-  <div id="outerContainer" class="container">
-    <div class="row">
-      <div class="col">
-        <div class="input-group my-4">
-          <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
-          <button class="btn btn-primary greenButton" tabindex="2"  @click="searchClicked()"><i class="fas fa-search"></i></button>
+  <div>
+    <Navbar></Navbar>
+    <div id="outerContainer" class="container">
+
+      <div class="row">
+        <div class="col">
+          <div class="input-group my-4">
+            <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
+            <button class="btn btn-primary green-search-button" tabindex="2"  @click="searchClicked()"><i class="fas fa-search"></i></button>
+          </div>
         </div>
       </div>
+
+      <div class="row mb-3">
+        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
+          <b>Nickname</b>
+          <i id="nicknameIcon"></i>
+        </div>
+        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
+          <b>Full name</b>
+          <i id="nameIcon"></i>
+        </div>
+        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
+          <b>Email</b>
+          <i id="emailIcon"></i>
+        </div>
+        <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6" @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
+          <b>Address</b>
+          <i id="addressIcon"></i>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <!-- Avert your eyes for this... -->
+          <nav aria-label="user-table-navigation" id="pagination-nav" class="float-end" v-if="maxPage > 1">
+            <ul class="pagination" id="pagination-ul">
+
+              <li :class="toggleDisableClass('page-item', currentPage-1 <= 0)">
+                <a class="page-link" href="#" @click.prevent="previousPage()">Previous</a>
+              </li>
+
+              <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{currentPage-2}}</a>
+              </li>
+
+              <li class="page-item" v-if="currentPage-1 > 0">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{currentPage-1}}</a>
+              </li>
+
+              <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{currentPage}}</a>
+              </li>
+
+              <li class="page-item" v-if="currentPage+1 <= maxPage">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{currentPage+1}}</a>
+              </li>
+
+              <li class="page-item" v-if="maxPage > 2 && currentPage <= 1">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{currentPage+2}}</a>
+              </li>
+
+              <li :class="toggleDisableClass('page-item', currentPage+1 > maxPage)" id="next-button">
+                <a class="page-link" href="#" @click.prevent="nextPage()">Next</a>
+              </li>
+            </ul>
+
+          </nav>
+
+
+        </div>
+      </div>
+
+
     </div>
-
-    <div class="row mb-3">
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
-        <b>Nickname</b>
-        <i id="nicknameIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
-        <b>Full name</b>
-        <i id="nameIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
-        <b>Email</b>
-        <i id="emailIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6" @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
-        <b>Address</b>
-        <i id="addressIcon"></i>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <!-- Avert your eyes for this... -->
-        <nav aria-label="user-table-navigation" id="pagination-nav" class="float-end" v-if="maxPage > 1">
-          <ul class="pagination" id="pagination-ul">
-
-            <li :class="toggleDisableClass('page-item', currentPage-1 <= 0)">
-              <a class="page-link" href="#" @click.prevent="previousPage()">Previous</a>
-            </li>
-
-            <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{currentPage-2}}</a>
-            </li>
-
-            <li class="page-item" v-if="currentPage-1 > 0">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{currentPage-1}}</a>
-            </li>
-
-            <li class="page-item active" aria-current="page">
-              <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{currentPage}}</a>
-            </li>
-
-            <li class="page-item" v-if="currentPage+1 <= maxPage">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{currentPage+1}}</a>
-            </li>
-
-            <li class="page-item" v-if="maxPage > 2 && currentPage <= 1">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{currentPage+2}}</a>
-            </li>
-
-            <li :class="toggleDisableClass('page-item', currentPage+1 > maxPage)" id="next-button">
-              <a class="page-link" href="#" @click.prevent="nextPage()">Next</a>
-            </li>
-          </ul>
-
-        </nav>
-
-
-      </div>
-    </div>
-
-
   </div>
 </template>
 
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-
+import Navbar from "@/components/Navbar";
 export default {
   name: "Search",
+  components: {
+    Navbar
+  },
   data() {
     return {
       nickAscending: false,
@@ -511,10 +518,7 @@ export default {
 
 <style scoped>
 
-.greenButton {
-  background-color: #1EBA8C;
-  border-color: #1EBA8C;
-}
+
 
 .greenButton:hover {
   background-color: transparent;

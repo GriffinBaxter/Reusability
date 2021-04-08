@@ -37,7 +37,7 @@
                 <router-link class="btn btn-lg btn-outline-primary m-sm-4 mb-4" to="/registration" tag="button" type="button" tabindex="4">Register</router-link>
               </div>
               <div class="col">
-                <button class="btn btn-lg float-end m-sm-4 mb-4" @click="login()" type="submit" id="loginButton" tabindex="3">Sign In</button>
+                <button class="btn btn-lg float-end m-sm-4 mb-4 green-button" @click="login()" type="submit" id="loginButton" tabindex="3">Sign In</button>
               </div>
             </div>
           </form>
