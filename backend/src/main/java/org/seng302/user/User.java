@@ -139,7 +139,6 @@ public class User {
         this.password = encode(password);
         this.created = created;
         this.role = (role.toString().equals("")) ? Role.USER : role;
-        this.sessionUUID = generateSessionUUID();
     }
 
     public int getId() {

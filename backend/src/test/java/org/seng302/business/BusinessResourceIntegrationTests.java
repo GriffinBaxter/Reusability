@@ -70,6 +70,7 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+        user.setSessionUUID(User.generateSessionUUID());
         business = new Business(
                 "name",
                 "some text",
