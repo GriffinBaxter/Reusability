@@ -1,13 +1,10 @@
 <template>
-    <div class="container pt-3" id="searchContainer">
+    <div class="pt-3" id="searchContainer">
       <div class="row text-center">
-        <div class="col-md-2 mb-md-0 mb-3">
-          <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
-        </div>
         <div class="col">
           <div class="input-group">
             <input type="text" id="searchBar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
-            <button class="btn btn-primary green-search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
+            <button class="btn green-search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
       </div>
@@ -39,6 +36,11 @@ export default {
   max-height: 60px
 }
 
+#searchBar:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
 
 
 </style>

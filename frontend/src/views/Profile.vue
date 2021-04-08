@@ -1,7 +1,9 @@
 <template>
   <div>
     <Navbar></Navbar>
-    <ProfileHeader/>
+    <div id="profileHeaderDiv">
+      <ProfileHeader/>
+    </div>
     <div class="container p-5 mt-3 all-but-footer" id="profileContainer">
       <div class="row">
         <div class="col-xl-3 mb-3">
@@ -268,6 +270,10 @@ export default {
 
 .all-but-footer {
   min-height: calc(100vh - 338px);
+}
+#profileHeaderDiv {
+  margin-left: 15%;
+  margin-right: 15%;
 }
 
 </style>
