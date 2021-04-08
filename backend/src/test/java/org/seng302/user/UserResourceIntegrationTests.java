@@ -71,6 +71,8 @@ public class UserResourceIntegrationTests {
 
     private User anotherUser;
 
+    private User user2;
+
     @BeforeAll
     public void setup() throws Exception {
         dGAA = new User(
@@ -116,6 +118,21 @@ public class UserResourceIntegrationTests {
                                             LocalTime.of(0, 0)),
                                 Role.USER);
         anotherUser.setId(3);
+        user2= new User(
+                "Alex",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "test@email.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "address",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user2.setId(4);
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository)).build();
     }
 

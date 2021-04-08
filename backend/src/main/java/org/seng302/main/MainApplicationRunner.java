@@ -94,7 +94,7 @@ public class MainApplicationRunner implements ApplicationRunner {
         User newUser1 = new User(
                 "Alex",
                 "Doe",
-                "S",
+                "Joe",
                 "Generic",
                 "Biography",
                 "test@email.com",

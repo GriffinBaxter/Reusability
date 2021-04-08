@@ -91,7 +91,8 @@ export default {
       userList: [],
       small: false,
       totalRows: 0,
-      orderBy: "fullNameASC"
+      orderBy: "fullNameASC",
+      lastQuery: ""
     }
   },
   methods: {
@@ -140,23 +141,26 @@ export default {
     async requestUsers() {
 
       const urlParams = new URLSearchParams(window.location.search);
-      const query = urlParams.get('searchQuery');
+      const query = urlParams.get('searchQuery').trim();
+
       const ordering = urlParams.get('orderBy');
-      const pageNum = parseInt(urlParams.get('page'))-1;
+      let pageNum = parseInt(urlParams.get('page'))-1;
+      this.currentPage = pageNum+1;
+
+      if (this.lastQuery !== query) {
+        console.log(this.lastQuery);
+        this.currentPage = 1;
+        pageNum = 0;
+        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=1`)
+      }
+      this.lastQuery = query;
+
       await Api.searchUsers(query, ordering, pageNum).then(response => {
 
-        // TODO should we allow users to input a url with pages/order/filtering
         this.userList = [...response.data];
-        // // Order by nickname alphabetically by default
-        // this.userList.sort(function(a, b) {
-        //   if (a.nickname < b.nickname) {return -1;}
-        //   if (a.nickname > b.nickname) {return 1;}
-        //   return 0;
-        //   });
-
         this.maxPage = parseInt(response.headers['total-pages']);
         this.totalRows = parseInt(response.headers['total-rows']);
-        //this.maxPage = Math.ceil(this.userList.length / this.rowsPerPage)
+
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
