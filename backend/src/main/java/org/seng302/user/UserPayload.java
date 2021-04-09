@@ -1,7 +1,13 @@
 package org.seng302.user;
 
+import org.seng302.Address.Address;
+import org.seng302.business.Business;
+import org.seng302.business.BusinessPayload;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Payload for the User (notably excluding the password field, for JSON responses).
@@ -16,9 +22,38 @@ public class UserPayload {
     private String email;
     private String dateOfBirth;
     private String phoneNumber;
-    private String homeAddress;
+    private Address homeAddress;
     private String created;
     private Role role;
+    private List<BusinessPayload> businessesAdministered;
+
+    /**
+     * translate a list of User to a list of UserPayload
+     * @param users a list of User
+     * @return a list of UserPayload
+     */
+    public static List<UserPayload> toUserPayload (List<User> users){
+        List<UserPayload> userPayloads = new ArrayList<>();
+        UserPayload userPayload;
+        for (User user: users){
+            userPayload = new UserPayload(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getMiddleName(),
+                    user.getNickname(),
+                    user.getBio(),
+                    user.getEmail(),
+                    user.getDateOfBirth(),
+                    user.getPhoneNumber(),
+                    user.getHomeAddress(),
+                    user.getCreated(),
+                    user.getRole(),
+                    user.getBusinessesAdministeredObjects());
+            userPayloads.add(userPayload);
+        }
+        return userPayloads;
+    }
 
     public UserPayload(
             int id,
@@ -30,9 +65,10 @@ public class UserPayload {
             String email,
             LocalDate dateOfBirth,
             String phoneNumber,
-            String homeAddress,
+            Address homeAddress,
             LocalDateTime created,
-            Role role
+            Role role,
+            List<Business> businessesAdministeredObject
     ) {
         this.id = id;
         this.firstName = firstName;
@@ -46,6 +82,10 @@ public class UserPayload {
         this.homeAddress = homeAddress;
         this.created = created.toString();
         this.role = role;
+        this.businessesAdministered = BusinessPayload.toBusinessPayload(businessesAdministeredObject);
+        if (this.businessesAdministered.isEmpty()){
+            this.businessesAdministered.add(null);
+        }
     }
 
     public int getId() {
@@ -84,7 +124,7 @@ public class UserPayload {
         return phoneNumber;
     }
 
-    public String getHomeAddress() {
+    public Address getHomeAddress() {
         return homeAddress;
     }
 
@@ -96,7 +136,59 @@ public class UserPayload {
         return role;
     }
 
+    public List<BusinessPayload> getBusinessesAdministered() {
+        return businessesAdministered;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public void setBusinessesAdministered(List<BusinessPayload> businessesAdministered) {
+        this.businessesAdministered = businessesAdministered;
     }
 }

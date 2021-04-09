@@ -1,5 +1,7 @@
 package org.seng302.business;
 
+import org.seng302.Address.Address;
+import org.seng302.Address.Validation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -45,19 +49,61 @@ public class BusinessResource {
     @PostMapping("/businesses")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Business account created successfully")
     public void createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                               @RequestBody BusinessPayload businessPayload) throws Exception {
+                               @RequestBody BusinessRegistrationPayload businessPayload) throws Exception {
         //access token invalid
         User currentUser = getUserVerifySession(sessionToken);
 
-        Business business = new Business(
-                businessPayload.getName(),
-                businessPayload.getDescription(),
-                businessPayload.getAddress(),
-                businessPayload.getBusinessType(),
-                LocalDateTime.now()
-                );
-        business.addAdministrators(currentUser); //add user to administrators list
-        businessRepository.saveAndFlush(business);
+        String name = businessRegistrationPayload.getName();
+        String description = businessRegistrationPayload.getDescription();
+        BusinessType businessType = businessRegistrationPayload.getBusinessType();
+        Address address = businessRegistrationPayload.getAddress();
+
+        //TODO: 400 not in api spec
+        System.out.println(name);
+        if (!Validation.isBusinessName(name)){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal business name"
+            );
+        }
+
+        if (!Validation.isDescription(description)){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal description"
+            );
+        }
+        if (!Validation.isAddress(address)){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal address"
+            );
+        }
+        if (businessType == null){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Illegal business type"
+            );
+        }
+
+        if (Validation.isNewBusiness(businessRepository.findBusinessesByAddress(address.toString()), name, address)){
+            Business business = new Business(
+                    name,
+                    description,
+                    address,
+                    businessType,
+                    LocalDateTime.now(),
+                    currentUser,
+                    currentUser.getId()
+            );
+            business.addAdministrators(currentUser); //add user to administrators list
+            businessRepository.saveAndFlush(business);
+        } else { //TODO: 409 not in api spec
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Name and Address already in use"
+            );
+        }
     }
 
     /**
@@ -81,6 +127,21 @@ public class BusinessResource {
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
-        return business.get();
+
+        List<User> administrators = business.get().getAdministrators();
+        for (User administrator : administrators){
+            administrator.setBusinessesAdministeredObjects(new ArrayList<>());
+        }
+
+        return new BusinessPayload(
+                business.get().getId(),
+                administrators,
+                business.get().getPrimaryAdministratorId(),
+                business.get().getName(),
+                business.get().getDescription(),
+                business.get().getAddress(),
+                business.get().getBusinessType(),
+                business.get().getCreated()
+                );
     }
 }

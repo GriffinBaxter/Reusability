@@ -3,6 +3,7 @@ package org.seng302.business;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.seng302.Address.Address;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -53,8 +54,18 @@ public class BusinessResourceIntegrationTests {
 
     private Business business;
 
+    private Address address;
+
     @BeforeAll
     public void setup() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
         user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -63,7 +74,7 @@ public class BusinessResourceIntegrationTests {
                 "testemail@email.com",
                 LocalDate.of(2020, 2, 2),
                 "0271316",
-                "testaddress",
+                address,
                 "testpassword",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
@@ -71,9 +82,11 @@ public class BusinessResourceIntegrationTests {
         business = new Business(
                 "name",
                 "some text",
-                "92 River Lum Road, Lumbridge, Misthalin",
+                address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0))
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                user.getId()
         );
         userRepository.save(user);
         businessRepository.save(business);
@@ -85,19 +98,26 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void setAdministratorComplete() throws Exception {
-        payloadJson = "{\n" +
-                        "\"name\": \"Lumbridge General Store\",\n" +
-                        "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
-                        "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
-                        "\"businessType\": \"Accommodation and Food Services\"\n" +
+        payloadJson = "{" +
+                        "\"name\": \"Lumbridge General Stores\"," +
+                        "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                        "\"address\": {" +
+                                "\"streetNumber\": \"3/24\"," +
+                                "\"streetName\": \"Ilam Road\"," +
+                                "\"city\": \"Christchurch\"," +
+                                "\"region\": \"Canterbury\"," +
+                                "\"country\": \"New Zealand\"," +
+                                "\"postcode\": \"90210\"" +
+                                "}," +
+                        "\"businessType\": \"Accommodation and Food Services\"" +
                         "}";
         Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        Optional<Business> antherBusiness= businessRepository.findBusinessByName("Lumbridge General Store");
-        assertThat(antherBusiness.get().getAdministrators().get(0).equals(user));
+        Business antherBusiness = businessRepository.findBusinessesByName("Lumbridge General Stores").get(0);
+        assertThat(antherBusiness.getAdministrators().get(0).equals(user));
     }
 
 
@@ -107,12 +127,19 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canCreateWhenDataValidAndCookieExists() throws Exception {
-        payloadJson = "{\n" +
-                        "\"name\": \"Lumbridge General Store\",\n" +
-                        "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
-                        "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
-                        "\"businessType\": \"Accommodation and Food Services\"\n" +
-                        "}";
+        payloadJson = "{" +
+                "\"name\": \"New Lumbridge General Store\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
         Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
@@ -121,22 +148,269 @@ public class BusinessResourceIntegrationTests {
     }
 
     /**
-     * Tests that an UNAUTHORIZED status is received when sending a create payload to the /businesses API endpoint
+     * Tests that an BAD_REQUEST(400) status is received when sending a payload to the /businesses API endpoint
+     * that contains business name(empty), description, address, businessType.
+     */
+    @Test
+    public void canNotCreateWhenNameEmpty() throws Exception {
+        payloadJson = "{" +
+                "\"name\": \"\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
+        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        response = mvc.perform(post("/businesses").cookie(cookie).
+                contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a payload to the /businesses API endpoint
+     * that contains business name(only space), description, address, businessType.
+     */
+    @Test
+    public void canNotCreateWhenNameOnlySpace() throws Exception {
+        payloadJson = "{" +
+                "\"name\": \"   \"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
+        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        response = mvc.perform(post("/businesses").cookie(cookie).
+                contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a payload to the /businesses API endpoint
+     * that contains business name(length = 101), description, address, businessType.
+     */
+    @Test
+    public void canNotCreateWhenNameLengthLagerThen100() throws Exception {
+        String aName = "a";
+        for (int i = 0; i < 10; i++){
+            aName += "aaaaaaaaaa"; // (a * 10)
+        } //length = 101
+
+        payloadJson = "{" +
+                "\"name\": \"" + aName + "\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
+        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        response = mvc.perform(post("/businesses").cookie(cookie).
+                contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a payload to the /businesses API endpoint
+     * that contains business name, description(length = 601), address, businessType.
+     */
+    @Test
+    public void canNotCreateWhenDescriptionLengthLagerThen600() throws Exception {
+        String aDescription = "a";
+        for (int i = 0; i < 12; i++){
+            aDescription += "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; // (a * 50)
+        } //length = 601
+
+        payloadJson = "{" +
+                "\"name\": \"Lumbridge General Store\",\n" +
+                "\"description\": \"" + aDescription + "\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
+        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        response = mvc.perform(post("/businesses").cookie(cookie).
+                contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Illegal description");
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a payload to the /businesses API endpoint
+     * that contains business name, description, address(length = 256), businessType.
+     */
+    @Test
+    public void canNotCreateWhenAddressLengthLagerThen255() throws Exception {
+        String aString = "";
+        for (int i = 0; i < 5; i++){
+            aString += "aaaaaaaaaa"; // (a * 10)
+        } //length = 50
+
+        payloadJson = "{" +
+                "\"name\": \"Lumbridge General Store\",\n" +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"" + aString + "\"," +
+                    "\"streetName\": \"" + aString + "\"," +
+                    "\"city\": \"" + aString + "\"," +
+                    "\"region\": \"" + aString + "\"," +
+                    "\"country\": \"" + aString + "\"," +
+                    "\"postcode\": \"9\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
+        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        response = mvc.perform(post("/businesses").cookie(cookie).
+                contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Illegal address");
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a payload to the /businesses API endpoint
+     * that contains business name, description, address(country = ""), businessType.
+     */
+    @Test
+    public void canNotCreateWhenAddressContainAnEmptyCountry() throws Exception {
+        String aString = "";
+        for (int i = 0; i < 5; i++){
+            aString += "aaaaaaaaaa"; // (a * 10)
+        } //length = 50
+
+        payloadJson = "{" +
+                "\"name\": \"Lumbridge General Store\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
+        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        response = mvc.perform(post("/businesses").cookie(cookie).
+                contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Illegal address");
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a payload to the /businesses API endpoint
+     * that contains business name, description, address, businessType(not exist).
+     */
+    @Test
+    public void canNotCreateWhenBusinessTypeIsNotExist() throws Exception {
+
+        payloadJson = "{" +
+                "\"name\": \"Lumbridge General Store\",\n" +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"example\"" +
+                "}";
+        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        response = mvc.perform(post("/businesses").cookie(cookie).
+                contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Illegal business type");
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED(401) status is received when sending a create payload to the /businesses API endpoint
      * that contains business name, description, address, businessType but a wrong cookie.
      */
     @Test
-    public void canCreateWhenDataValidAndCookieNotExists() throws Exception {
-        payloadJson = "{\n" +
-                "\"name\": \"Lumbridge General Store\",\n" +
-                "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
-                "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
-                "\"businessType\": \"Accommodation and Food Services\"\n" +
+    public void canNotCreateWhenDataValidAndCookieNotExists() throws Exception {
+        payloadJson = "{" +
+                "\"name\": \"Lumbridge General Store\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(0));
+        response = mvc.perform(post("/businesses").contentType(MediaType.APPLICATION_JSON)
+                .content(payloadJson)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an CONFLICT(409) status is received when sending a create payload to the /businesses API endpoint
+     * that contains business name, description, address, businessType and a create cookie belongs to an user, but
+     * twice.
+     */
+    @Test
+    public void canNotCreateWhenDataAlreadyInRepo() throws Exception {
+        payloadJson = "{" +
+                "\"name\": \"Lumbridge General Store\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetName\": \"Ilam Road\"," +
+                    "\"city\": \"Christchurch\"," +
+                    "\"region\": \"Canterbury\"," +
+                    "\"country\": \"New Zealand\"," +
+                    "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
+        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        response = mvc.perform(post("/businesses").cookie(cookie)
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     /**
@@ -146,19 +420,28 @@ public class BusinessResourceIntegrationTests {
     public void canRetrieveBusinessWhenBusinessDoesExist() throws Exception {
         id = business.getId();
         expectedJson = "{" +
-                        "\"id\":" + business.getId() + "," +
-                        "\"name\":\"" + business.getName() + "\"," +
-                        "\"description\":\"" + business.getDescription() + "\"," +
-                        "\"address\":\"" + business.getAddress() + "\"," +
-                        "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                        "\"created\":\"" + business.getCreated() + ":00\"" +
-                        "}";
-
+                "\"id\":" + id + "," +
+                "\"administrators\":[null]," +
+                "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
+                "\"name\":\"" + business.getName() + "\"," +
+                "\"description\":\"" + business.getDescription() + "\"," +
+                "\"address\":{" +
+                    "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
+                    "\"streetName\":\"" + address.getStreetName() + "\"," +
+                    "\"city\":\"" + address.getCity() + "\"," +
+                    "\"region\":\"" + address.getRegion() + "\"," +
+                    "\"country\":\"" + address.getCountry() + "\"," +
+                    "\"postcode\":\"" + address.getPostcode() + "\"" +
+                    "}," +
+                "\"businessType\":\"" + business.getBusinessType() + "\"," +
+                "\"created\":\"" + business.getCreated() + "\"}";
+        System.out.println(expectedJson);
         Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getContentAsString().replace("\\n", "").replace("\\", ""))
+                .isEqualTo(expectedJson);
     }
 
     /**
@@ -169,8 +452,7 @@ public class BusinessResourceIntegrationTests {
         id = business.getId();
         expectedJson = "";
 
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(0));
-        response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(get(String.format("/businesses/%d", id))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);

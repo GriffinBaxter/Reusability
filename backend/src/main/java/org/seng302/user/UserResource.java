@@ -1,5 +1,6 @@
 package org.seng302.user;
 
+import org.seng302.business.Business;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,53 @@ public class UserResource {
             return user.get();
         }
     }
+
+    /**
+     * Checks if the current user's role matches the role parameter.
+     * This method is useful for user authentication/identification.
+     * @param currentUser current user
+     * @param role Role being matched
+     * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
+     */
+    private boolean verifyRole(User currentUser, Role role) {
+        if (currentUser.getRole().equals(role)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * check does the change legality, if is return the user select user
+     * @param id user id of select user
+     * @param request http servlet request
+     * @return select user
+     */
+    private User verifyPermission(int id, HttpServletRequest request){
+        //401
+        User currentUser = getUserVerifySession(request);
+
+        //403
+        if (currentUser.getRole() != DEFAULTGLOBALAPPLICATIONADMIN){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "The user does not have permission to perform the requested action"
+            );
+        }
+
+        //406
+        Optional<User> optionalSelectedUser = userRepository.findById(id);
+        if (optionalSelectedUser.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                            "for example trying to access a resource by an ID that does not exist."
+            );
+        }
+
+        return optionalSelectedUser.get();
+    }
+
+
 
     /**
      * Attempt to authenticate a user account with a username and password.
@@ -151,19 +199,25 @@ public class UserResource {
             role = user.get().getRole();
         }
 
+        List<Business> administrators = selectUser.get().getBusinessesAdministeredObjects();
+        for (Business administrator : administrators) {
+            administrator.setAdministrators(new ArrayList<>());
+        }
+
         return new UserPayload(
-                user.get().getId(),
-                user.get().getFirstName(),
-                user.get().getLastName(),
-                user.get().getMiddleName(),
-                user.get().getNickname(),
-                user.get().getBio(),
-                user.get().getEmail(),
-                user.get().getDateOfBirth(),
-                user.get().getPhoneNumber(),
-                user.get().getHomeAddress(),
-                user.get().getCreated(),
-                role
+                selectUser.get().getId(),
+                selectUser.get().getFirstName(),
+                selectUser.get().getLastName(),
+                selectUser.get().getMiddleName(),
+                selectUser.get().getNickname(),
+                selectUser.get().getBio(),
+                selectUser.get().getEmail(),
+                selectUser.get().getDateOfBirth(),
+                selectUser.get().getPhoneNumber(),
+                selectUser.get().getHomeAddress(),
+                selectUser.get().getCreated(),
+                role,
+                administrators
         );
     }
 
@@ -179,7 +233,7 @@ public class UserResource {
     ) {
         getUserVerifySession(sessionToken);
 
-        List<UserPayload> users;
+        List<User> users;
 
         String[] searchQuerySplit = searchQuery.split(" ");
 
@@ -198,15 +252,15 @@ public class UserResource {
             users.addAll(userRepository.findByMiddleNameIgnoreCase(searchQuery));
         }
 
-        if (!verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            for (UserPayload user: users) {
-                user.setRole(null);
+        List<UserPayload> userPayloads = UserPayload.toUserPayload(users);
+        if (!verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+            for (UserPayload userPayload: userPayloads) {
+                userPayload.setRole(null);
             }
         }
 
-        return users.stream().distinct().collect(Collectors.toList());
+        return userPayloads;
     }
-
     /**
      * Checks if the current user's role matches the role parameter.
      * This method is useful for user authentication/identification.

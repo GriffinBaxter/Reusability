@@ -5,7 +5,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.seng302.main.Validation;
+import org.seng302.Address.Address;
+import org.seng302.Address.Validation;
 import org.seng302.user.User;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,9 @@ public class Business {
     @GeneratedValue//(strategy = GenerationType.IDENTITY) // autoincrement the ID
     @Column(name = "id", nullable = false)
     private int id;
+
+    @Column(name = "primaryAdministratorId")
+    private Integer primaryAdministratorId;
 
 //    include name*, description, address*, type* and registration date*
     @Column(name = "name", nullable = false)
@@ -53,18 +57,25 @@ public class Business {
      */
     public Business(String name,
                     String description,
-                    String address,
+                    Address address,
                     BusinessType businessType,
-                    LocalDateTime created
+                    LocalDateTime created,
+                    User administrator,
+                    Integer primaryAdministratorId
     ) throws Exception{
         if (!Validation.isName(name)){
             throw new Exception("Invalid business name");
         }
+        if (address == null){
+            throw new Exception("Invalid address");
+        }
         this.name = name;
-        this.address = address;
+        this.address = address.toString();
         this.businessType = businessType;
         this.description = (description.equals("")) ? null : description;
         this.created = created;
+        administrators.add(administrator);
+        this.primaryAdministratorId = primaryAdministratorId;
     }
 
     //getter
@@ -97,8 +108,8 @@ public class Business {
      * get address
      * @return address
      */
-    public String getAddress() {
-        return address;
+    public Address getAddress() {
+        return Address.toAddress(address);
     }
 
     /**
@@ -123,6 +134,14 @@ public class Business {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * get primary administrator Id
+     * @return primaryAdministratorId
+     */
+    public Integer getPrimaryAdministratorId() {
+        return primaryAdministratorId;
     }
 
     //setter
@@ -172,6 +191,13 @@ public class Business {
         this.description = description;
     }
 
+    /**
+     * set primaryAdministratorId
+     * @param primaryAdministratorId primary administrator Id
+     */
+    public void setPrimaryAdministratorId(Integer primaryAdministratorId) {
+        this.primaryAdministratorId = primaryAdministratorId;
+    }
 
     /**
      * Returns a list of User objects who are administrators of this business
@@ -197,7 +223,7 @@ public class Business {
      * @param user A user who was an administrator for this business.
      */
     public void removeAdministrators(User user) {
-        this.administrators.remove(user);
+        this.administrators.remove(user.getId());
         user.getBusinessesAdministeredObjects().remove(this);
     }
 

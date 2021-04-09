@@ -13,9 +13,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.seng302.Address.Address;
 import org.seng302.business.Business;
-import net.minidev.json.annotate.JsonIgnore;
-import org.seng302.main.Validation;
+import org.seng302.Address.Validation;
 
 /**
  * Class for individual accounts.
@@ -103,7 +103,7 @@ public class User {
             String email,
             LocalDate dateOfBirth,
             String phoneNumber,
-            String homeAddress,
+            Address homeAddress,
             String password,
             LocalDateTime created,
             Role role
@@ -135,7 +135,7 @@ public class User {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.phoneNumber = (phoneNumber.equals("")) ? null : phoneNumber;
-        this.homeAddress = homeAddress;
+        this.homeAddress = homeAddress.toString();
         this.password = encode(password);
         this.created = created;
         this.role = (role.toString().equals("")) ? Role.USER : role;
@@ -178,8 +178,8 @@ public class User {
         return phoneNumber;
     }
 
-    public String getHomeAddress() {
-        return homeAddress;
+    public Address getHomeAddress() {
+        return Address.toAddress(homeAddress);
     }
 
     public String getPassword() {

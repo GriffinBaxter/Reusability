@@ -1,8 +1,10 @@
 package org.seng302.user;
 
+import org.seng302.Address.Address;
+
 import java.time.LocalDate;
 
-public class RegistrationPayload {
+public class UserRegistrationPayload {
     private String firstName;
     private String lastName;
     private String middleName;
@@ -11,7 +13,7 @@ public class RegistrationPayload {
     private String email;
     private LocalDate dateOfBirth;
     private String phoneNumber;
-    private String homeAddress;
+    private Address homeAddress;
     private String password;
 
     public String getFirstName() {
@@ -46,7 +48,7 @@ public class RegistrationPayload {
         return phoneNumber;
     }
 
-    public String getHomeAddress() {
+    public Address getHomeAddress() {
         return homeAddress;
     }
 
