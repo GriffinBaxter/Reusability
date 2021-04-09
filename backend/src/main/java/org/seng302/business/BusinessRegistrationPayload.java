@@ -1,6 +1,6 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
 
 public class BusinessRegistrationPayload {
     private String name;

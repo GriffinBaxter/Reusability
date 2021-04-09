@@ -64,45 +64,12 @@ public class UserResource {
     }
 
     /**
-     * check does the change legality, if is return the user select user
-     * @param id user id of select user
-     * @param request http servlet request
-     * @return select user
-     */
-    private User verifyPermission(int id, HttpServletRequest request){
-        //401
-        User currentUser = getUserVerifySession(request);
-
-        //403
-        if (currentUser.getRole() != DEFAULTGLOBALAPPLICATIONADMIN){
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The user does not have permission to perform the requested action"
-            );
-        }
-
-        //406
-        Optional<User> optionalSelectedUser = userRepository.findById(id);
-        if (optionalSelectedUser.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
-            );
-        }
-
-        return optionalSelectedUser.get();
-    }
-
-
-
-    /**
      * Attempt to authenticate a user account with a username and password.
      * @param login Login payload
      * @param response HTTP Response
      */
     @PostMapping("/login")
-    public UserIdPayload loginUser(@RequestBody LoginPayload login, HttpServletResponse response) {
+    public UserIdPayload loginUser(@RequestBody UserLoginPayload login, HttpServletResponse response) {
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
         if (user.isPresent()) {
@@ -131,7 +98,7 @@ public class UserResource {
      */
     @PostMapping("/users")
     public ResponseEntity<UserIdPayload> registerUser(
-            @RequestBody RegistrationPayload registration, HttpServletResponse response
+            @RequestBody UserRegistrationPayload registration, HttpServletResponse response
     ) {
 
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
@@ -154,7 +121,7 @@ public class UserResource {
                     registration.getHomeAddress(),
                     registration.getPassword(),
                     LocalDateTime.now(),
-                    USER);
+                    Role.USER);
 
             User createdUser = userRepository.save(newUser);
 
@@ -199,23 +166,23 @@ public class UserResource {
             role = user.get().getRole();
         }
 
-        List<Business> administrators = selectUser.get().getBusinessesAdministeredObjects();
+        List<Business> administrators = user.get().getBusinessesAdministeredObjects();
         for (Business administrator : administrators) {
             administrator.setAdministrators(new ArrayList<>());
         }
 
         return new UserPayload(
-                selectUser.get().getId(),
-                selectUser.get().getFirstName(),
-                selectUser.get().getLastName(),
-                selectUser.get().getMiddleName(),
-                selectUser.get().getNickname(),
-                selectUser.get().getBio(),
-                selectUser.get().getEmail(),
-                selectUser.get().getDateOfBirth(),
-                selectUser.get().getPhoneNumber(),
-                selectUser.get().getHomeAddress(),
-                selectUser.get().getCreated(),
+                user.get().getId(),
+                user.get().getFirstName(),
+                user.get().getLastName(),
+                user.get().getMiddleName(),
+                user.get().getNickname(),
+                user.get().getBio(),
+                user.get().getEmail(),
+                user.get().getDateOfBirth(),
+                user.get().getPhoneNumber(),
+                user.get().getHomeAddress(),
+                user.get().getCreated(),
                 role,
                 administrators
         );
@@ -231,7 +198,7 @@ public class UserResource {
     public List<UserPayload> searchUsers(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @RequestParam String searchQuery
     ) {
-        getUserVerifySession(sessionToken);
+        User currentUser = getUserVerifySession(sessionToken);
 
         List<User> users;
 

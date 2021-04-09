@@ -5,8 +5,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.seng302.Address.Address;
-import org.seng302.Address.Validation;
+import org.seng302.address.Address;
+import org.seng302.validation.Validation;
 import org.seng302.user.User;
 
 import java.time.LocalDateTime;
@@ -108,7 +108,7 @@ public class Business {
      * get address
      * @return address
      */
-    public Address getAddress() {
+    public Address getAddress() throws Exception {
         return Address.toAddress(address);
     }
 

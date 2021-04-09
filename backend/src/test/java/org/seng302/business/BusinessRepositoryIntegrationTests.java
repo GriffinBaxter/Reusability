@@ -3,7 +3,7 @@ package org.seng302.business;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;

@@ -2,7 +2,7 @@ package org.seng302.business;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 
@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertEquals;

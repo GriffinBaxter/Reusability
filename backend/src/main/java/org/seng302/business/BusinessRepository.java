@@ -1,6 +1,5 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

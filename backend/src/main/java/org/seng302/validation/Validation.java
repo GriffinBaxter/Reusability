@@ -1,5 +1,6 @@
-package org.seng302.Address;
+package org.seng302.validation;
 
+import org.seng302.address.Address;
 import org.seng302.business.Business;
 
 import java.util.List;

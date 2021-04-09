@@ -1,6 +1,6 @@
 package org.seng302.user;
 
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
 
 import java.time.LocalDate;
 

@@ -2,7 +2,7 @@ package org.seng302.user;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
 
@@ -10,8 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;

@@ -1,7 +1,7 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
-import org.seng302.Address.Validation;
+import org.seng302.address.Address;
+import org.seng302.validation.Validation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +43,13 @@ public class BusinessResource {
     /**
      * create a new business by info given by businessPayload
      * @param sessionToken value of cookie
-     * @param businessPayload contain new business info
+     * @param businessRegistrationPayload contain new business info
      * @throws Exception Access token is missing or invalid
      */
     @PostMapping("/businesses")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Business account created successfully")
     public void createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                               @RequestBody BusinessRegistrationPayload businessPayload) throws Exception {
+                               @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
         //access token invalid
         User currentUser = getUserVerifySession(sessionToken);
 
@@ -113,8 +113,8 @@ public class BusinessResource {
      * @return business object if it exists
      */
     @GetMapping("/businesses/{id}")
-    public Business retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                     @PathVariable String id){
+    public BusinessPayload retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                            @PathVariable String id){
         //access token invalid
         getUserVerifySession(sessionToken);
 

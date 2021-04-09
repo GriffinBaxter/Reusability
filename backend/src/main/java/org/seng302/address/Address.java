@@ -1,26 +1,80 @@
-package org.seng302.Address;
+package org.seng302.address;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.seng302.validation.AddressValidation;
+import org.seng302.validation.Validation;
 
-import net.minidev.json.JSONObject;
+import javax.persistence.*;
 
-import java.lang.reflect.Array;
-import java.util.List;
-
+/**
+ * Class for Addresses.
+ */
+@Embeddable
+@Data // generate setters and getters for all fields (lombok pre-processor)
+@NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
+@Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class Address {
+
+    @Id // this field (attribute) is the table primary key
+    @GeneratedValue // autoincrement the ID
+    @Column(name = "id", nullable = false)
+    private int id;
+
+    @Column(name = "street_number")
     private String streetNumber;
+
+    @Column(name = "street_name")
     private String streetName;
+
+    @Column(name = "city")
     private String city;
+
+    @Column(name = "region")
     private String region;
+
+    @Column(name = "country", nullable = false)
     private String country;
+
+    @Column(name = "postcode")
     private String postcode;
 
-    public Address(String streetNumber, String streetName, String city, String region, String country, String postcode){
-        this.streetNumber = streetNumber;
-        this.streetName = streetName;
-        this.city = city;
-        this.region = region;
+    /**
+     * Address constructor.
+     * @param streetNumber Street Number (optional)
+     * @param streetName Street Name (optional)
+     * @param city City (optional)
+     * @param region Region (optional)
+     * @param country Country (mandatory)
+     * @param postcode Postcode (optional)
+     * @throws Exception Validation exception
+     */
+    public Address(String streetNumber, String streetName, String city, String region, String country, String postcode) throws Exception {
+        if (!AddressValidation.isValidStreetNumber(streetNumber)) {
+            throw new Exception("Invalid street number");
+        }
+        if (!AddressValidation.isValidStreetName(streetName)) {
+            throw new Exception("Invalid street name");
+        }
+        if (!AddressValidation.isValidCity(city)) {
+            throw new Exception("Invalid city");
+        }
+        if (!AddressValidation.isValidRegion(region)) {
+            throw new Exception("Invalid region");
+        }
+        if (!AddressValidation.isValidCountry(country)) {
+            throw new Exception("Invalid country");
+        }
+        if (!AddressValidation.isValidPostcode(postcode)) {
+            throw new Exception("Invalid postcode");
+        }
+
+        this.streetNumber = (streetNumber.equals("")) ? null : streetNumber;
+        this.streetName = (streetName.equals("")) ? null : streetName;
+        this.city = (city.equals("")) ? null : city;
+        this.region = (region.equals("")) ? null : region;
         this.country = country;
-        this.postcode = postcode;
+        this.postcode = (postcode.equals("")) ? null : postcode;
     }
 
     public String getStreetNumber() {
@@ -76,7 +130,7 @@ public class Address {
      * @param string address in json form
      * @return an address object
      */
-    public static Address toAddress(String string){
+    public static Address toAddress(String string) throws Exception {
         String[] infos = string.replace("{", "").replace("}", "").
                 replace("\"", "").replace("\n","").split(",");
 
@@ -101,7 +155,7 @@ public class Address {
     }
 
     /**
-     * make an address object to json form
+     * Make an address object to json form.
      * @return a string contain address info in json form
      */
     @Override

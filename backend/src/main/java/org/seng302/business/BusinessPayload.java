@@ -1,6 +1,6 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
 import org.seng302.user.User;
 import org.seng302.user.UserPayload;
 
@@ -12,7 +12,6 @@ public class BusinessPayload {
     private Integer primaryAdministratorId;
     private Integer id;
     private List<UserPayload> administrators;
-    private Integer primaryAdministratorId;
     private String name;
     private String description;
     private Address address;
@@ -74,10 +73,6 @@ public class BusinessPayload {
     }
 
     public Integer getPrimaryAdministratorId() {
-        return primaryAdministratorId;
-    }
-
-    public  Integer getPrimaryAdministratorId() {
         return primaryAdministratorId;
     }
 

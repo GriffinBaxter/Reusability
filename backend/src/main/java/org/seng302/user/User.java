@@ -13,9 +13,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
 import org.seng302.business.Business;
-import org.seng302.Address.Validation;
+import org.seng302.validation.Validation;
 
 /**
  * Class for individual accounts.
@@ -178,7 +178,7 @@ public class User {
         return phoneNumber;
     }
 
-    public Address getHomeAddress() {
+    public Address getHomeAddress() throws Exception {
         return Address.toAddress(homeAddress);
     }
 
