@@ -1,7 +1,8 @@
-package org.seng302.business;
+package org.seng302.business.product;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.business.Business;
 import org.seng302.main.Validation;
 
 import javax.persistence.*;
@@ -20,8 +21,8 @@ public class Product {
     @Column(name = "id", nullable = false)
     private String id;
 
-    @ManyToOne(targetEntity=Business.class, fetch = FetchType.LAZY)
-    @JoinColumn(name="business_id", insertable = false, updatable = false)
+    @ManyToOne(targetEntity = Business.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_id", insertable = false, updatable = false)
     private Business business;
 
     @Id
@@ -58,7 +59,7 @@ public class Product {
                    String description,
                    Double recommendedRetailPrice,
                    LocalDateTime created
-    ) throws Exception{
+    ) throws Exception {
         if (!Validation.isProductCode(id)){
             throw new Exception("Invalid product id");
         }

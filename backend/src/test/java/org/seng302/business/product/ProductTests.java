@@ -1,13 +1,14 @@
-package org.seng302.business;
+package org.seng302.business.product;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.seng302.business.Business;
+import org.seng302.business.BusinessType;
+import org.seng302.business.product.Product;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,7 +66,7 @@ public class ProductTests {
      * @throws Exception Exception error
      */
     @Test
-    public void TestOptionalFields() throws Exception {
+    public void TestProductOptionalFields() throws Exception {
         Product product = new Product(
                 "PROD",
                 business,

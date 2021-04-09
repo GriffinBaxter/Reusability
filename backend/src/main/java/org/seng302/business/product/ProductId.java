@@ -1,4 +1,4 @@
-package org.seng302.business;
+package org.seng302.business.product;
 
 import java.io.Serializable;
 

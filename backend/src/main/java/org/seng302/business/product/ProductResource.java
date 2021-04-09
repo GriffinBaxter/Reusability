@@ -1,9 +1,9 @@
-package org.seng302.business;
+package org.seng302.business.product;
 
+import org.seng302.business.BusinessRepository;
 import org.seng302.main.Authorization;
 import org.seng302.user.Role;
 import org.seng302.user.User;
-import org.seng302.user.UserPayload;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
