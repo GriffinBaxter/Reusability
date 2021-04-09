@@ -83,8 +83,8 @@
                   <h6>Address:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
-                    {{homeAddress}}
+                  <div class="text-secondary" v-for="lines in homeAddress" :key="lines.line">
+                    {{lines.line}}
                   </div>
                 </div>
               </div>
@@ -132,7 +132,15 @@ export default {
       email: "",
       dateOfBirth: "",
       phoneNumber: "",
-      homeAddress: "",
+
+      homeAddress: [],
+      streetNumber: "",
+      streetName: "",
+      city: "",
+      region: "",
+      country: "",
+      postcode: "",
+
       created: "",
       joined: "",
       otherUser: false,
@@ -168,7 +176,6 @@ export default {
       If the request was unsuccessful, the page is not populated and appropriate error messages logged.
        */
       Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
-
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 406) {
@@ -196,21 +203,41 @@ export default {
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
+      //address unpack
+      this.streetNumber = data.homeAddress.streetNumber;
+      this.streetName = data.homeAddress.streetName;
+      this.city = data.homeAddress.city;
+      this.region = data.homeAddress.region;
+      this.country = data.homeAddress.country;
+      this.postcode = data.homeAddress.postcode;
+
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
         document.getElementById('dateOfBirthRow').remove();
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
-
-        let address = data.homeAddress.split(';');
-        address = address.slice(2, address.length);
-        address = address.join(", ");
-        this.homeAddress = address;
-
       } else {
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;
-        this.homeAddress = data.homeAddress.replaceAll(";", ", ");
+
+        // address unpack
+        if (this.streetNumber !== "" && this.streetName !== ""){
+          this.homeAddress.push({line: this.streetNumber + " " + this.streetName});
+        } else {
+          this.homeAddress.push({line: this.streetNumber + this.streetName});
+        }
+      }
+
+      // address unpack
+      if (this.city !== "" && this.postcode !== ""){
+        this.homeAddress.push({line: this.city + ", " + this.postcode});
+      } else {
+        this.homeAddress.push({line: this.city + this.postcode});
+      }
+      if (this.region !== "" && this.country !== ""){
+        this.homeAddress.push({line: this.region + ", " + this.country});
+      } else {
+        this.homeAddress.push({line: this.region + this.country});
       }
 
       this.firstName = data.firstName;
@@ -239,11 +266,7 @@ export default {
     If cookies are invalid or not present, redirect to login page.
      */
     const currentID = Cookies.get('userID');
-    // TODO Implement when we agree on a JSESSIONID spec with backend team
-    // Cookies.get('JSESSIONID');
-    const validJSESSIONID = true;
-    if (currentID && validJSESSIONID) {
-
+    if (currentID) {
       const url = document.URL
       const urlID = url.substring(url.lastIndexOf('/') + 1);
       if (currentID === urlID || urlID === 'profile') {
