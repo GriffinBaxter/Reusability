@@ -3,6 +3,8 @@ package org.seng302.main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
+import org.seng302.address.AddressRepository;
 import org.seng302.business.BusinessRepository;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -27,6 +29,7 @@ public class MainApplicationRunner implements ApplicationRunner {
     private static final Logger logger = LogManager.getLogger(MainApplicationRunner.class.getName());
     private UserRepository userRepository;
     private BusinessRepository businessRepository;
+    private AddressRepository addressRepository;
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
@@ -34,9 +37,10 @@ public class MainApplicationRunner implements ApplicationRunner {
      * classes (i.e. dependency injection)
      */
     @Autowired
-    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository) {
+    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
+        this.addressRepository = addressRepository;
     }
 
     /**
@@ -50,6 +54,7 @@ public class MainApplicationRunner implements ApplicationRunner {
 
         userRepository.findAll().forEach(logger::info);
         businessRepository.findAll().forEach(logger::info);
+        addressRepository.findAll().forEach(logger::info);
     }
 
 
@@ -74,6 +79,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "New Zealand",
                     "90210"
             );
+            addressRepository.save(address);
             User dGAA = new User(
                     "John",
                     "Doe",
@@ -88,6 +94,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
                     Role.DEFAULTGLOBALAPPLICATIONADMIN);
+            System.out.println(dGAA);
             dGAA = userRepository.save(dGAA);
             logger.error("DGAA does not exist. New DGAA created {}", dGAA);
         } else {

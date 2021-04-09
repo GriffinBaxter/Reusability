@@ -2,9 +2,12 @@ package org.seng302.address;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.business.Business;
+import org.seng302.user.User;
 import org.seng302.validation.AddressValidation;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Class for Addresses.
@@ -37,6 +40,14 @@ public class Address {
 
     @Column(name = "postcode")
     private String postcode;
+
+    @OneToMany(mappedBy = "homeAddress", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<User> users;
+
+    @OneToMany(mappedBy = "address", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<Business> businesses;
 
     /**
      * Address constructor.
@@ -122,6 +133,47 @@ public class Address {
 
     public void setPostcode(String postcode) {
         this.postcode = postcode;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public List<User> getUsers() {
+        return this.users;
+    }
+
+    public void addUser(User user) {
+        this.users.add(user);
+    }
+
+    public void removeUser(User user) {
+        this.users.remove(user);
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<Business> getBusinesses() {
+        return businesses;
+    }
+
+    public void setBusinesses(List<Business> businesses) {
+        this.businesses = businesses;
+    }
+
+    public void addBusiness(Business business) {
+        this.businesses.add(business);
+    }
+
+    public void removeBusiness(Business business) {
+        this.businesses.remove(business);
     }
 
     /**

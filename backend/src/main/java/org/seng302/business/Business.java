@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data // generate setters and getters for all fields (lombok pre-processor)
 @NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class Business {
@@ -32,8 +31,9 @@ public class Business {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "businessType", nullable = false)
@@ -70,7 +70,7 @@ public class Business {
             throw new Exception("Invalid address");
         }
         this.name = name;
-        this.address = address.toString();
+        this.address = address;
         this.businessType = businessType;
         this.description = (description.equals("")) ? null : description;
         this.created = created;
@@ -109,7 +109,7 @@ public class Business {
      * @return address
      */
     public Address getAddress() throws Exception {
-        return Address.toAddress(address);
+        return address;
     }
 
     /**
@@ -160,10 +160,7 @@ public class Business {
      * set address
      * @param address address
      */
-    public void setAddress(String address) throws Exception {
-        if (Validation.isEmpty(address)){
-            throw new Exception("Invalid address");
-        }
+    public void setAddress(Address address) {
         this.address = address;
     }
 
@@ -227,4 +224,11 @@ public class Business {
         user.getBusinessesAdministeredObjects().remove(this);
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setAdministrators(List<User> administrators) {
+        this.administrators = administrators;
+    }
 }

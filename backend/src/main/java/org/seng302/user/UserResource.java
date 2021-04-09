@@ -1,5 +1,8 @@
 package org.seng302.user;
 
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
+import org.seng302.address.AddressRepository;
 import org.seng302.business.Business;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,8 +31,12 @@ public class UserResource {
     @Autowired
     private UserRepository userRepository;
 
-    public UserResource(UserRepository userRepository) {
+    @Autowired
+    private AddressRepository addressRepository;
+
+    public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
     }
 
     /**
@@ -100,7 +107,6 @@ public class UserResource {
     public ResponseEntity<UserIdPayload> registerUser(
             @RequestBody UserRegistrationPayload registration, HttpServletResponse response
     ) {
-
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
@@ -109,6 +115,18 @@ public class UserResource {
         }
 
         try {
+            AddressPayload addressJSON = registration.getHomeAddress();
+            Address address = new Address(
+                    addressJSON.getStreetNumber(),
+                    addressJSON.getStreetNumber(),
+                    addressJSON.getCity(),
+                    addressJSON.getRegion(),
+                    addressJSON.getCountry(),
+                    addressJSON.getPostcode()
+            );
+
+            addressRepository.save(address);
+
             User newUser = new User(
                     registration.getFirstName(),
                     registration.getLastName(),
@@ -118,7 +136,7 @@ public class UserResource {
                     registration.getEmail(),
                     registration.getDateOfBirth(),
                     registration.getPhoneNumber(),
-                    registration.getHomeAddress(),
+                    address,
                     registration.getPassword(),
                     LocalDateTime.now(),
                     Role.USER);
@@ -147,7 +165,7 @@ public class UserResource {
     @GetMapping("/users/{id}")
     public UserPayload retrieveUser(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
-    ) {
+    ) throws Exception {
         getUserVerifySession(sessionToken);
 
         Optional<User> user = userRepository.findById(id);
@@ -197,7 +215,7 @@ public class UserResource {
     @GetMapping("/users/search")
     public List<UserPayload> searchUsers(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @RequestParam String searchQuery
-    ) {
+    ) throws Exception {
         User currentUser = getUserVerifySession(sessionToken);
 
         List<User> users;

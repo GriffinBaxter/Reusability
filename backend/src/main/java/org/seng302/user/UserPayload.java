@@ -32,7 +32,7 @@ public class UserPayload {
      * @param users a list of User
      * @return a list of UserPayload
      */
-    public static List<UserPayload> toUserPayload (List<User> users){
+    public static List<UserPayload> toUserPayload (List<User> users) throws Exception {
         List<UserPayload> userPayloads = new ArrayList<>();
         UserPayload userPayload;
         for (User user: users){
@@ -69,7 +69,7 @@ public class UserPayload {
             LocalDateTime created,
             Role role,
             List<Business> businessesAdministeredObject
-    ) {
+    ) throws Exception {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

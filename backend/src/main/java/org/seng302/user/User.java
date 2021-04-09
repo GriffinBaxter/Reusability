@@ -21,7 +21,6 @@ import org.seng302.validation.Validation;
  * Class for individual accounts.
  */
 @Embeddable
-@Data // generate setters and getters for all fields (lombok pre-processor)
 @NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class User {
@@ -54,8 +53,9 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "home_address", nullable = false)
-    private String homeAddress;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address homeAddress;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -135,7 +135,7 @@ public class User {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.phoneNumber = (phoneNumber.equals("")) ? null : phoneNumber;
-        this.homeAddress = homeAddress.toString();
+        this.homeAddress = homeAddress;
         this.password = encode(password);
         this.created = created;
         this.role = (role.toString().equals("")) ? Role.USER : role;
@@ -179,7 +179,7 @@ public class User {
     }
 
     public Address getHomeAddress() throws Exception {
-        return Address.toAddress(homeAddress);
+        return homeAddress;
     }
 
     public String getPassword() {
@@ -234,7 +234,7 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setHomeAddress(String homeAddress) {
+    public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
     }
 
@@ -346,4 +346,7 @@ public class User {
                 ')';
     }
 
+    public void setBusinessesAdministeredObjects(List<Business> businessesAdministeredObjects) {
+        this.businessesAdministeredObjects = businessesAdministeredObjects;
+    }
 }

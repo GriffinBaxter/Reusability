@@ -114,7 +114,7 @@ public class BusinessResource {
      */
     @GetMapping("/businesses/{id}")
     public BusinessPayload retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                            @PathVariable String id){
+                                            @PathVariable String id) throws Exception {
         //access token invalid
         getUserVerifySession(sessionToken);
 

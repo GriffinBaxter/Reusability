@@ -2,6 +2,7 @@ package org.seng302.user;
 
 import org.junit.jupiter.api.*;
 import org.seng302.address.Address;
+import org.seng302.address.AddressRepository;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,6 +44,9 @@ public class UserResourceIntegrationTests {
 
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private AddressRepository addressRepository;
 
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
                                         "\"password\": \"%s\"}";
@@ -129,7 +133,7 @@ public class UserResourceIntegrationTests {
                                             LocalTime.of(0, 0)),
                                 Role.USER);
         anotherUser.setId(3);
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
     /**

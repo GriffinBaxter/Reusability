@@ -23,7 +23,7 @@ public class BusinessPayload {
      * @param businesses a list of businesses
      * @return a list of BusinessPayload
      */
-    public static List<BusinessPayload> toBusinessPayload (List<Business> businesses){
+    public static List<BusinessPayload> toBusinessPayload (List<Business> businesses) throws Exception {
         List<BusinessPayload> businessPayloads = new ArrayList<>();
         BusinessPayload businessPayload;
         for (Business business: businesses){
@@ -50,7 +50,7 @@ public class BusinessPayload {
                            Address address,
                            BusinessType businessType,
                            LocalDateTime created
-                           ) {
+                           ) throws Exception {
         this.id = id;
         this.administrators = UserPayload.toUserPayload(administrators);
         if (this.administrators.isEmpty()){
