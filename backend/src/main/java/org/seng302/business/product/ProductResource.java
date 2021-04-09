@@ -20,7 +20,7 @@ import java.util.List;
 public class ProductResource {
 
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Autowired
     private BusinessRepository businessRepository;

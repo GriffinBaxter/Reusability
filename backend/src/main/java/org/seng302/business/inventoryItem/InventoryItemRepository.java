@@ -8,5 +8,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, String> {
-    
+
 }
