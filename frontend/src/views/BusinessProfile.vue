@@ -95,7 +95,7 @@
                     <h6>Administrators:</h6>
                   </div>
                   <div class="col-8">
-                    <h6 v-for="nameOfAdministrator in nameOfAdministrators" :key="nameOfAdministrator.name" align="right">
+                    <h6 v-for="nameOfAdministrator in nameOfAdministrators" :key="nameOfAdministrator.name" align="right" @click="pushToUser(nameOfAdministrator.id)">
                       {{nameOfAdministrator.name}}
                     </h6>
                   </div>
@@ -143,7 +143,6 @@ export default {
       postcode: "",
 
       nameOfAdministrators: [],
-      idOfAdministrators: [],
 
       isAdministrator: false
     }
@@ -214,8 +213,7 @@ export default {
         this.primaryAdministratorId = data.primaryAdministratorId;
         // administrators unpack
         data.administrators.forEach(anUser => {
-          this.nameOfAdministrators.push({name: anUser.firstName + " " + anUser.middleName + " " + anUser.lastName}),
-          this.idOfAdministrators.push(anUser.id)
+          this.nameOfAdministrators.push({name: anUser.firstName + " " + anUser.middleName + " " + anUser.lastName, id: anUser.id})
         })
       }
 
@@ -249,6 +247,9 @@ export default {
         this.address.push({line: this.region + this.country});
       }
     },
+    pushToUser(id){
+      this.$router.push({name:'Profile', params: id})
+    },
     logout(){
       /*
       Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
@@ -264,14 +265,14 @@ export default {
     const url = document.URL;
     const urlID = url.substring(url.lastIndexOf('/') + 1);
 
-    this.idOfAdministrators.forEach(id =>{
+    this.nameOfAdministrators.forEach((name, id) =>{
       if (id === currentID) {
         this.isAdministrator = true;
       }
     })
 
-    if (currentID === urlID || urlID === 'businessProfile') {
-      this.retrieveBusiness(currentID);
+    if (urlID === 'businessProfile') {
+      this.$router.push({path: '/noBusiness'});
     } else {
       this.retrieveBusiness(urlID);
     }
