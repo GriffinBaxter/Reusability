@@ -1,10 +1,15 @@
 package org.seng302.business;
 
 public class BusinessPayload {
+    private Integer primaryAdministratorId;
     private String name;
     private String description;
     private String address;
     private String businessType;
+
+    public  Integer getPrimaryAdministratorId() {
+        return primaryAdministratorId;
+    }
 
     public String getName() {
         return name;

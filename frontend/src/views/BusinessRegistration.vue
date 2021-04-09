@@ -432,11 +432,10 @@ export default {
       }
 
       let finalBusinessAddress = `${this.$refs.streetAddress.value};${this.$refs.suburb.value};${this.$refs.city.value};${this.$refs.postcode.value};${this.$refs.region.value};${this.$refs.country.value}`;
-
       // Wrapping up the business submitted fields into a class object (Business).
       const businessData = {
-        primaryAdministratorId: Cookies.get('userId'),
-        name: this.businessName.charAt(0).toUpperCase() + this.businessName.slice(1),
+        primaryAdministratorId: Cookies.get('userID'),
+        name: this.businessName,
         description: this.description,
         /*
          * NOTE: Using v-model for this address input apparently does not update.
@@ -445,7 +444,6 @@ export default {
         address: finalBusinessAddress,
         businessType: this.businessType
       }
-
 
       const business = new Business(businessData)
       /*

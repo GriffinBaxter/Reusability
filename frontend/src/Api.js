@@ -228,12 +228,12 @@ export class Business{
     },
   };
 
-  constructor({primaryAdministratorId, businessName, description, businessAddress, businessType}) {
+  constructor({primaryAdministratorId, name, description, address, businessType}) {
     this.data = {
       primaryAdministratorId,
-      businessName,
+      name,
       description,
-      businessAddress,
+      address,
       businessType
     }
 
@@ -265,8 +265,6 @@ export default {
 
   // Sends a post request to the backend with a new business object to store
   addNewBusiness: (business) => instance.post('/businesses', {...business.data}, {'headers': {"Access-Control-Allow-Origin": "*"}}),
-
-  },
 
   // The API spec states this should be /users/{id}/makeadmin. But we decided to implement it as
   // /users/{id}/makeAdmin for readability purposes.
