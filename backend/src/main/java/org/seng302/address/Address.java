@@ -3,7 +3,6 @@ package org.seng302.address;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.validation.AddressValidation;
-import org.seng302.validation.Validation;
 
 import javax.persistence.*;
 
