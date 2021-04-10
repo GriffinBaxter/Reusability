@@ -71,7 +71,13 @@ public class UserResourceIntegrationTests {
 
     private User anotherUser;
 
-    private User user2;
+    private User searchUser1;
+    private User searchUser2;
+    private User searchUser3;
+    private User searchUser4;
+    private User searchUser5;
+    private User searchUser6;
+    private User searchUser7;
 
     @BeforeAll
     public void setup() throws Exception {
@@ -84,7 +90,7 @@ public class UserResourceIntegrationTests {
                 "email@email.com",
                 LocalDate.of(2020, 2, 2),
                 "0271316",
-                "address",
+                "325 Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica",
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
@@ -98,7 +104,7 @@ public class UserResourceIntegrationTests {
                         "testemail@email.com",
                         LocalDate.of(2020, 2, 2),
                         "0271316",
-                        "testaddress",
+                        "57 Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands",
                         "testpassword",
                         LocalDateTime.of(LocalDate.of(2021, 2, 2),
                                             LocalTime.of(0, 0)),
@@ -112,13 +118,16 @@ public class UserResourceIntegrationTests {
                                 "example@example.com",
                                 LocalDate.of(2021, 1, 1),
                                 "123456789",
-                                "1 Example Street",
+                                "47993 Norwood Garden, Mambéré-Kadéï, Central African Republic, Africa",
                                 "password",
                                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                             LocalTime.of(0, 0)),
                                 Role.USER);
         anotherUser.setId(3);
-        user2= new User(
+
+        //test users for searching for user by name
+
+        searchUser1= new User(
                 "Alex",
                 "Doe",
                 "S",
@@ -127,13 +136,113 @@ public class UserResourceIntegrationTests {
                 "test@email.com",
                 LocalDate.of(2020, 2, 2),
                 "0271316",
-                "address",
+                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        user2.setId(4);
+        searchUser1.setId(4);
+
+
+        searchUser2 = new User(
+                "Chad",
+                "Taylor",
+                "S",
+                "Cha",
+                "Biography123",
+                "chad.taylor@example.com",
+                LocalDate.of(2008, 2, 2),
+                "0271316678",
+                "80416 Jon Loop, Shaanxi, China",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser1.setId(5);
+
+        searchUser3 = new User(
+                "Naomi",
+                "Wilson",
+                "I",
+                "Gm",
+                "Biography",
+                "naomi.wilson@example.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                "9205 Monique Vista, Bururi, Bigomogomo, Africa",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser3.setId(6);
+
+        searchUser4 = new User(
+                "Seth",
+                "Murphy",
+                "Tea",
+                "S",
+                "Biography",
+                "seth.murphy@example.com",
+                LocalDate.of(2008, 2, 2),
+                "027188316",
+                "240 Bernhard Run, Southland, New Zealand",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser4.setId(7);
+
+        searchUser5 = new User(
+                "Minttu",
+                "Wainio",
+                "A",
+                "Min",
+                "Biography",
+                "minttu.wainio@example.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "186 Simpsons Road, Ashburton, Canterbury, New Zealand",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser5.setId(8);
+
+        searchUser6 = new User(
+                "Francisca",
+                "Benitez",
+                "T",
+                "Fran",
+                "Biography",
+                "francisca.benitez@example.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "14798 Terry Highway, Queenstown-Lakes District, New Zealand",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser6.setId(9);
+
+        searchUser7 = new User(
+                "Francisca",
+                "Bznitez",
+                "T",
+                "Fran",
+                "Biography",
+                "francisca.benitez@example.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "3396 Bertram Parkway, Central Otago, New Zealand",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser7.setId(10);
+
+        // initializes the MockMVC object and tells it to use the userRepository
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository)).build();
+
     }
 
     /**
@@ -450,6 +559,16 @@ public class UserResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
+
+
+    /* ------------------------------------- (New) Tests for Searching for User by Name ----------------------------- */
+
+
+
+
+
+
+    /* ------------------------------------- (Old) Tests for Searching for User by Name ------------------------------*/
 
     /**
      * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
