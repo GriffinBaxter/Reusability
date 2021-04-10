@@ -1,9 +1,9 @@
 <template>
-    <div class="pt-3" id="searchContainer text-font">
+    <div class="pt-3 text-font" id=" search-bar-container">
       <div class="row text-center">
-        <div class="col">
+        <div class="col search-bar-positioning">
           <div class="input-group">
-            <input type="text" id="searchBar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
+            <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
             <button class="btn green-search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
@@ -32,11 +32,12 @@ export default {
 </script>
 
 <style scoped>
-#logo {
-  max-height: 60px
+
+.search-bar-positioning {
+  padding-top: 40px;
 }
 
-#searchBar:focus {
+#search-bar:focus {
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;

@@ -4,7 +4,7 @@
     <div id="outerContainer" class="container text-font">
 
       <div class="row">
-        <div class="col">
+        <div class="col search-bar-positioning">
           <div class="input-group my-4">
             <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
             <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><i id="searchButtonITag" class="fas fa-search"></i></button>
@@ -522,6 +522,10 @@ export default {
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
+}
+
+.search-bar-positioning {
+  padding-top: 40px;
 }
 
 .all-but-footer {
