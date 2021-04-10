@@ -1,6 +1,5 @@
 @import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
-/*@import url('https://fonts.googleapis.com/css2?family=New+Tegomin&display=swap');*/
-
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans&family=Oswald:wght@500&family=Roboto&family=Rochester&display=swap');
 /*
  * Created on Wed Feb 10 2021
  *
@@ -193,6 +192,10 @@ body {
 .autocomplete-active {
   background-color: DodgerBlue !important;
   color: #ffffff;
+}
+
+.text-font {
+  font-family: 'Roboto', sans-serif;
 }
 
 /*****************************************************************/

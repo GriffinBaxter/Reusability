@@ -1,20 +1,16 @@
-<!--https://stackoverflow.com/questions/45000510/vue-js-error-component-template-should-contain-exactly-one-root-element-->
-<!--https://stackoverflow.com/questions/51516084/how-do-i-add-a-google-font-to-a-vuejs-component/51517799-->
-<!--<link rel="preconnect" href="https://fonts.gstatic.com">-->
-<!--<link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">-->
-<!--<link rel="preconnect" href="https://fonts.gstatic.com">-->
-<!--<link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">-->
-
 <template>
   <nav class="navbar sticky-top navbar-expand-lg shadow" style="background-color: white">
       <div class="container mt-2 my-lg-3 mx-auto">
 
         <!-- Logo image -->
-        <router-link class="navbar-brand" to="/home">
-          <img src="../../public/logo.png" alt="Logo" class="img-fluid d-inline-block" id="logoImage">
-          <!--          <p class="company-name-main">Reusability</p>-->
-          <!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
-        </router-link>
+        <div class="logo-container">
+          <router-link class="navbar-brand " to="/home">
+<!--            class="img-fluid d-inline-block"-->
+            <img src="../../public/logo_only_med.png" alt="Logo" id="logoImage">
+          </router-link>
+          <p class="company-name-main">REUSABILITY</p>
+          <p class="company-name-sub-heading"> - Share & Save - </p>
+        </div>
 
         <!-- hamburger icon -->
         <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
@@ -167,9 +163,16 @@ export default {
 </script>
 
 <style scoped>
+
+  .logo-container {
+    position: center;
+  }
+
   #logoImage {
     max-width: 200px;
-    margin-right: 40px;
+    margin-left: 28px;
+    margin-right: 10px;
+    width: 100%;
   }
 
   .nav-link {
@@ -203,7 +206,6 @@ export default {
     overflow: hidden;
   }
 
-
 /*LG Break point*/
 @media(min-width: 992px) {
   #navbarId {
@@ -222,11 +224,25 @@ export default {
   background-color: #2eda77;
 }
 
-  /*.company-name-main {*/
-  /*  font-family: 'Oswald', sans-serif;*/
-  /*}*/
+  .company-name-main {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 40px;
+    margin-top: 0px;
+    padding-top: 0px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+  }
 
-  /*.company-name-sub-heading {*/
-  /*  font-family: 'Oswald', sans-serif;*/
-  /*}*/
+  .company-name-sub-heading {
+    line-height: 50%;
+    font-family: 'Rochester', cursive;
+    font-size: 35px;
+    margin-top: 0px;
+    padding-top: 0px;
+    margin-bottom: 10%;
+    padding-bottom: 0px;
+    margin-left: 18px;
+    margin-right: 10px;
+  }
+
 </style>
