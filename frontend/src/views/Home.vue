@@ -3,7 +3,7 @@
 <template>
 
   <div>
-    <Navbar></Navbar>
+    <Navbar :is-business-account="true"></Navbar>
     <div id="home" class="container all-but-footer">
       <div class="container-news">
 
