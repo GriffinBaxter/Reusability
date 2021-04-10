@@ -228,7 +228,7 @@
         </div>
       </div>
     </div>
-    <Footer/>
+    <FooterSecure></FooterSecure>
   </div>
 </template>
 
@@ -236,12 +236,12 @@
 import Api, {User} from "../Api";
 import Cookies from 'js-cookie';
 import AddressAPI from "../addressInstance"
-import Footer from "../components/Footer";
+import FooterSecure from "../components/FooterSecure";
 
 export default {
   name: "Registration",
   components: {
-    Footer,
+    FooterSecure,
   },
 
   data() {
@@ -1092,7 +1092,7 @@ input:focus, textarea:focus, #register-button:focus, #backToLoginButton:focus {
 /*------------------------------------------------------------------------*/
 
 .all-but-footer {
-  min-height: calc(100vh - 240px);
+  min-height: calc(100vh - 50px);
 }
 
 </style>

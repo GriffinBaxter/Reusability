@@ -271,6 +271,7 @@ export default {
 .all-but-footer {
   min-height: calc(100vh - 338px);
 }
+
 #profileHeaderDiv {
   margin-left: 15%;
   margin-right: 15%;

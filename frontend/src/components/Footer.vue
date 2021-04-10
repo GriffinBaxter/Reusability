@@ -214,6 +214,7 @@
 
     <!-- Copyright -->
     <div class="text-center p-2" id="copyright">
+      <p></p>
       <p class="text-white">© SENG302 Team 400 2021</p>
     </div>
     <!-- Copyright -->

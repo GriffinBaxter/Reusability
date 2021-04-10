@@ -1,6 +1,6 @@
 <template>
   <div>
-  <div id="login" class="container text-font">
+  <div id="login" class="container text-font all-but-footer">
     <div class="row justify-content-center">
       <div class="col-3 m-3">
         <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
@@ -47,17 +47,20 @@
     </div>
 
   </div>
-
+    <FooterSecure></FooterSecure>
   </div>
 </template>
 
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-
+import FooterSecure from "@/components/FooterSecure";
 
 export default {
   name: "Login",
+  components: {
+    FooterSecure,
+  },
   methods: {
     login() {
       /*
@@ -100,4 +103,7 @@ export default {
   visibility: hidden;
 }
 
+.all-but-footer {
+  min-height: calc(100vh - 50px);
+}
 </style>
