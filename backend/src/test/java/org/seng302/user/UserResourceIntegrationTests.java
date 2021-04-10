@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -17,9 +18,7 @@ import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,6 +77,7 @@ public class UserResourceIntegrationTests {
     private User searchUser5;
     private User searchUser6;
     private User searchUser7;
+    private List<User> searchUsers;
 
     @BeforeAll
     public void setup() throws Exception {
@@ -118,7 +118,7 @@ public class UserResourceIntegrationTests {
                                 "example@example.com",
                                 LocalDate.of(2021, 1, 1),
                                 "123456789",
-                                "47993 Norwood Garden, Mambéré-Kadéï, Central African Republic, Africa",
+                                "47993 Norwood Garden, Mambere-Kadei Central African Republic, Africa",
                                 "password",
                                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                             LocalTime.of(0, 0)),
@@ -158,7 +158,7 @@ public class UserResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        searchUser1.setId(5);
+        searchUser2.setId(5);
 
         searchUser3 = new User(
                 "Naomi",
@@ -239,6 +239,9 @@ public class UserResourceIntegrationTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser7.setId(10);
+
+        searchUsers = List.of(dGAA, user, anotherUser, searchUser1, searchUser2, searchUser3, searchUser4,
+                searchUser5, searchUser6, searchUser7);
 
         // initializes the MockMVC object and tells it to use the userRepository
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository)).build();
@@ -563,7 +566,68 @@ public class UserResourceIntegrationTests {
 
     /* ------------------------------------- (New) Tests for Searching for User by Name ----------------------------- */
 
+    /**
+     * Tests that the search functionality will order users by nickname in ascending order i.e. in alphabetical order.
+     * A valid outcome will met the criteria of giving a 200 status code and returns a JSON list of Users.
+     */
+    @Test
+    public void canOrderSearchResultsByNicknameAscending() throws Exception {
+        //given
+        List<String> searchQueryList = List.of(
+                "nickname",
+                "email",
+                "address",
+                "fullName"
+        );
 
+        //when
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+        ArrayList<User> nicknamesSortedAsc = new ArrayList<User>();
+
+        for (User searchUser: searchUsers) {
+            nicknamesSortedAsc.add(new User(searchUser.getFirstName(), searchUser.getLastName(),
+                    searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getDateOfBirth(),
+                    searchUser.getPhoneNumber(), searchUser.getHomeAddress(), "password",searchUser.getCreated(), searchUser.getRole()));
+        }
+
+        Collections.sort(nicknamesSortedAsc, new Comparator<User>() {
+            @Override
+            public int compare(User user, User t1) {
+                return user.getNickname().toUpperCase().compareTo(t1.getNickname().toUpperCase());
+            }
+        });
+
+        String expectedJSON = "[";
+
+        for (User searchUser: nicknamesSortedAsc) {
+            expectedJSON += String.format(expectedUserJson, searchUser.getId(), searchUser.getFirstName(), searchUser.getLastName(),
+                    searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getDateOfBirth(),
+                    searchUser.getPhoneNumber(), searchUser.getHomeAddress(), searchUser.getCreated(), "\"" + searchUser.getRole() + "\"") + ",";
+        }
+
+        expectedJSON = expectedJSON.substring(0, expectedJSON.length() - 1) + "]";
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by("nickname").ascending();
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+
+        Page<User> nicknamePage = new PageImpl<User>(nicknamesSortedAsc, paging, nicknamesSortedAsc.size());
+
+        when(userRepository.findAllUsersByNames("", paging)).thenReturn(nicknamePage);
+        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+
+        responseList.add(mvc.perform(
+                get("/users/search").param("searchQuery", "").param("orderBy", "nicknameASC" ).param("page", "0").cookie(
+                        new Cookie("JSESSIONID", String.valueOf(dGAA.getId())))).andReturn().getResponse());
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+        }
+
+    }
 
 
 
