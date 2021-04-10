@@ -7,39 +7,38 @@
 
 <template>
   <nav class="navbar sticky-top navbar-expand-lg shadow" style="background-color: white">
+      <div class="container mt-2 my-lg-3 mx-auto">
 
-    <div class="container mt-2 my-lg-3 mx-auto">
+        <!-- Logo image -->
+        <router-link class="navbar-brand" to="/home">
+          <img src="../../public/logo.png" alt="Logo" class="img-fluid d-inline-block" id="logoImage">
+          <!--          <p class="company-name-main">Reusability</p>-->
+          <!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
+        </router-link>
 
-      <!-- Logo image -->
-      <router-link class="navbar-brand" to="/home">
-        <img src="../../public/logo.png" alt="Logo" class="img-fluid d-inline-block" id="logoImage">
-        <!--          <p class="company-name-main">Reusability</p>-->
-        <!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
-      </router-link>
+        <!-- hamburger icon -->
+        <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <!-- hamburger icon -->
-      <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <!-- Navbar links -->
-      <div class="navbar-collapse" id="navbarId">
-        <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <router-link :class="['nav-link', isActivePath('Home')]" aria-current="page" to="">Home</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link :class="['nav-link', isActivePath('Profile')]" to="/profile">Profile</router-link>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
-            </li>
-          </ul>
+        <!-- Navbar links -->
+        <div class="navbar-collapse" id="navbarId">
+          <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto">
+            <ul class="navbar-nav nav-fill flex-column flex-lg-row">
+              <li class="nav-item">
+                <router-link :class="['nav-link ', isActivePath('Home')]" to="/home">Home</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link :class="['nav-link', isActivePath('Profile')]" to="/profile">Profile</router-link>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
 
-    </div>
+      </div>
   </nav>
 </template>
 
@@ -143,44 +142,42 @@ export default {
     background: #19b092;  /* fallback for old browsers */
     /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
     /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
-    width: 100px;
-    margin: 10px;
+
+    margin: 10px 0;
     border-radius: 15px;
-    margin: 10px;
-    width: 120px;
     text-align: center;
     font-size: large;
-
+    width: auto;
   }
 
   .nav-link:hover {
-    background: #ef5e33;  /* fallback for old browsers */
-    /*background: -webkit-linear-gradient(to right, #f7b733, #fc4a1a);  !* Chrome 10-25, Safari 5.1-6 *!*/
-    /*background: linear-gradient(to right, #fc4a1a, #f7b733); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
-    width: 100px;
-    margin: 10px;
-    border-radius: 15px;
-    margin: 10px;
-    width: 120px;
-    text-align: center;
-    font-size: large;
+    background: #ef5e33;
   }
 
 .navbar-toggler {
-  color: rgba(0, 0, 0, 0.55);
-  border-color: rgba(0, 0, 0, 0.1);
+  color: rgba(25,176,146, 0.55);
+  border-color: rgba(0, 0, 0, 0.2);
+  border-width: 2px;
+  border-radius: 0.6rem;
 }
 
 .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
   #navbarId {
     overflow: hidden;
   }
 
+
+/*LG Break point*/
 @media(min-width: 992px) {
   #navbarId {
     overflow: visible;
+  }
+
+  .nav-link {
+    width: 120px;
+    margin: 10px;
   }
 }
 
