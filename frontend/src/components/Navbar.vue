@@ -37,20 +37,29 @@
 
               <!--- Business specific account links -->
               <li class="nav-item dropdown" v-if="isBusinessAccount">
-                <a class="nav-link dropdown-toggle" id="navbarDarkDropdownMenuLink" role="button">
+
+                <!-- Navbar togle drop down -->
+                <a class="nav-link dropdown-toggle" role="button" @click="() => {
+                  this.showBusinessDropdown = toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown)
+                }">
                   Business Pages
                 </a>
-                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                  <li class="nav-item">
-                    <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
-                  </li>
-                  <li class="nav-item">
-                    <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
-                  </li>
-                  <li class="nav-item">
-                    <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
-                  </li>
-                </ul>
+
+                <!-- Dropdown links-->
+                <div id="businessDropdownLinksWrapper">
+                 <ul class="dropdown-menu show" id="businessDropdownLinks">
+                      <li class="nav-item">
+                        <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
+                      </li>
+                      <li class="nav-item">
+                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
+                      </li>
+                      <li class="nav-item">
+                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
+                      </li>
+                 </ul>
+                </div>
+
               </li>
 
               <!-- Log out link-->
@@ -71,21 +80,31 @@
 import Cookies from "js-cookie";
 
 export default {
-  name: "individualNavbar",
+  name: "Navbar",
   props: {
     // Defines if to show or hide the business acount specific links
     isBusinessAccount: {
       type: Boolean,
       default: false,
       required: false
+    },
+    msTransitionDelay: {
+      type: Number,
+      default: 300,
+      required: false
     }
   },
   data() {
     return {
+
+      // buisness dropdown variables
+      showBusinessDropdown: false,
+
+      // navbar required variables
       showNavbar: false,
       navbarMaxHeight: null,                                     // max hieght of the navbar pixels
       navbarMinHeight: 0   ,                                     // min hieght of the navbar pixels
-      STYLE_DEFAULT: `transition: max-height ease-in-out 300ms;` // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
+      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;` // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
     }
   },
   methods: {
@@ -103,22 +122,68 @@ export default {
       }
       return result
     },
+
+    /**
+     * Animates a slide up and down on the height of an element and it's wrapper. This is used to make the dropdown
+     * appear more nicely.
+     * @param dropdownId - The id of the dropdown element.
+     * @param dropdownWrapperId - The ide of the dropdown wrapper element.
+     * @param toggleVariable - The varaible that the dropdown depends on.
+     * @param preventToggle - Gives the option to prevent the variable from being toggled. This defaults to false.
+     * @param minHeight - Gives the option to give a custom minimum height. But zero if a good default.
+     *
+     * @return - Returns the new value for the toggle variable so it can be updated (cannot update directly as far as I know).
+     */
+    toggleDropdownAnimated(dropdownId, dropdownWrapperId, toggleVariable,  preventToggle = false, minHeight = 0) {
+      // To save accessing time
+      let dropdownElement =  document.getElementById(dropdownId);
+      let wrapperElement =  document.getElementById(dropdownWrapperId);
+
+      // Only toggle it if you can find it!
+      if (dropdownElement && wrapperElement) {
+        // Gets the maximum height from the offset!
+        const maxHeight = dropdownElement.offsetHeight
+
+        // Toggle the variable unless not instructed to!
+        if (!preventToggle) {
+          toggleVariable = !toggleVariable;
+        }
+
+        // Determining the height we want to reach
+        let targetHeight = minHeight;
+        if (toggleVariable) targetHeight = maxHeight;
+
+        // Update the target height for the component
+        wrapperElement.setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
+
+        // Update the navbar to accomidate the changes
+        this.toggleNavbar(true, targetHeight);
+
+        // So the toggle variable can be updated
+        return toggleVariable;
+      }
+    },
+
     /**
      * Toggles the navbar in mobile form which shows the links to the user. This targets "navbarId".
      * The function also controls the animation for showing and hiding the links in the navbar.
+     *
+     * @param preventToggle - Determines if to prevent the toggling action. This is useful in some cases.
+     * @param extraMaxPixels - Determines additional pixels to add to the maximum height.
      */
-    toggleNavbar(initCall = false) {
+    toggleNavbar(preventToggle = false, extraMaxPixels = 0) {
 
       // Only if the element exists
       if (document.getElementById("navbarId")) {
 
         // Update the max height before applying any transitions
-        this.navbarMaxHeight = this.getNavbarMaxHeight()
+        this.navbarMaxHeight = this.getNavbarMaxHeight() + extraMaxPixels;
 
         // If init call don't toggle the height
-        if (!initCall) {
+        if (!preventToggle) {
           this.showNavbar = !this.showNavbar
         }
+
         // Determine the target height
         let targetHeight = this.navbarMinHeight
         if (this.showNavbar) targetHeight = this.navbarMaxHeight
@@ -159,7 +224,8 @@ export default {
       while (this.navbarMaxHeight == null) this.navbarMaxHeight = this.getNavbarMaxHeight();
     }
 
-    // Set navbar to inital height
+    // Set the inital height for the navbar and the dropdown
+    this.toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown, true);
     this.toggleNavbar(true)
   }
 
@@ -189,44 +255,61 @@ export default {
     background: #ef5e33;
   }
 
-.navbar-toggler {
-  color: rgba(25,176,146, 0.55);
-  border-color: rgba(0, 0, 0, 0.2);
-  border-width: 2px;
-  border-radius: 0.6rem;
-}
+  .navbar-toggler {
+    color: rgba(25,176,146, 0.55);
+    border-color: rgba(0, 0, 0, 0.2);
+    border-width: 2px;
+    border-radius: 0.6rem;
+  }
 
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-}
-  #navbarId {
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+    #navbarId {
+      overflow: hidden;
+    }
+
+  #businessDropdownLinksWrapper{
+    position: relative;
     overflow: hidden;
   }
 
-
-/*LG Break point*/
-@media(min-width: 992px) {
-  #navbarId {
-    overflow: visible;
+  .active {
+    background-color: #2eda77;
   }
 
-  .navbar-expand-lg .navbar-nav .nav-link {
-    margin: 10px;
-    padding-left: 1em;
-    padding-right: 1em;
+
+  .dropdown-menu {
+    border-right-width: 0;
+    border-left-width: 0;
+    padding: 0 5rem;
+    /*margin: 1.2rem 0; Margins cannot be calculated in pxiels :( */
   }
 
-}
+  /*LG Break point*/
+  @media(min-width: 992px) {
+    #navbarId {
+      overflow: visible;
+    }
 
-.active {
-  background-color: #2eda77;
-}
+    #businessDropdownLinksWrapper{
+      position: absolute;
+    }
 
-  /*.company-name-main {*/
-  /*  font-family: 'Oswald', sans-serif;*/
-  /*}*/
+    .navbar-expand-lg .navbar-nav .dropdown-menu {
+      padding: 0;
+      margin: 0;
+      border-right-width: 1px;
+      border-left-width: 1px;
+      position: unset;
+    }
 
-  /*.company-name-sub-heading {*/
-  /*  font-family: 'Oswald', sans-serif;*/
-  /*}*/
+    .navbar-expand-lg .navbar-nav .nav-link {
+      margin: 10px;
+      padding-left: 1em;
+      padding-right: 1em;
+    }
+
+
+  }
 </style>
