@@ -92,4 +92,12 @@ public interface UserRepository extends JpaRepository<User, String> {
      */
     @Query(value="select u from User u where upper(CONCAT(u.firstName, ' ', u.middleName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%') or upper(u.nickname) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.firstName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.firstName, ' ', u.middleName)) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.middleName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%')")
     Page<User> findAllUsersByNames(String searchValue, Pageable pageable);
+
+
+    /**
+     * Search for all users in database.
+     * @param name
+     * @return
+     */
+    List<UserPayload> findAllByFirstNameContains(String name);
 }

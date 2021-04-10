@@ -265,40 +265,44 @@ public class UserRepositoryIntegrationTests {
     }
 
 
-//    /**
-//     * Tests that a (correct) user is returned when calling findByEmail() with an existing email
-//     */
-//    @Test
-//    public void whenFindByExistingEmail_thenReturnUser() throws Exception {
-//        // given
-//        User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-//                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-//                "0271316", "testaddress", "testpassword",
-//                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-//                Role.USER);
-//
-//        entityManager.persist(user);
-//        entityManager.flush();
-//
-//        // when
-//        foundUser = userRepository.findByEmail(user.getEmail());
-//
-//        // then
-//        assertThat(foundUser.isPresent()).isTrue();
-//
-//        assertThat(user.getId()).isEqualTo(foundUser.get().getId());
-//        assertThat(user.getEmail()).isEqualTo(foundUser.get().getEmail());
-//        assertThat(user.getFirstName()).isEqualTo(foundUser.get().getFirstName());
-//        assertThat(user.getMiddleName()).isEqualTo(foundUser.get().getMiddleName());
-//        assertThat(user.getLastName()).isEqualTo(foundUser.get().getLastName());
-//        assertThat(user.getNickname()).isEqualTo(foundUser.get().getNickname());
-//        assertThat(user.getBio()).isEqualTo(foundUser.get().getBio());
-//        assertThat(user.getDateOfBirth()).isEqualTo(foundUser.get().getDateOfBirth());
-//        assertThat(user.getPhoneNumber()).isEqualTo(foundUser.get().getPhoneNumber());
-//        assertThat(user.getHomeAddress()).isEqualTo(foundUser.get().getHomeAddress());
-//        assertThat(user.getCreated()).isEqualTo(foundUser.get().getCreated());
-//        assertThat(user.getPassword()).isEqualTo(foundUser.get().getPassword());
-//    }
+    /**
+     * Tests that a (correct) user is returned when calling findByEmail() with an existing email
+     */
+    @Test
+    public void whenFindByExistingEmail_thenReturnUser() throws Exception {
+        // given
+        User user = new User("testfirst", "testlast", "testmiddle", "testnick",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
+                "0271316", "testaddress", "testpassword",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
+                Role.USER);
+
+        entityManager.persist(user);
+        entityManager.flush();
+
+        // when
+        foundUser = userRepository.findByEmail(user.getEmail());
+
+        // then
+        assertThat(foundUser.isPresent()).isTrue();
+
+
+        assertThat(userRepository.findAllByFirstNameContains("")).isEqualTo(0);
+
+
+        assertThat(user.getId()).isEqualTo(foundUser.get().getId());
+        assertThat(user.getEmail()).isEqualTo(foundUser.get().getEmail());
+        assertThat(user.getFirstName()).isEqualTo(foundUser.get().getFirstName());
+        assertThat(user.getMiddleName()).isEqualTo(foundUser.get().getMiddleName());
+        assertThat(user.getLastName()).isEqualTo(foundUser.get().getLastName());
+        assertThat(user.getNickname()).isEqualTo(foundUser.get().getNickname());
+        assertThat(user.getBio()).isEqualTo(foundUser.get().getBio());
+        assertThat(user.getDateOfBirth()).isEqualTo(foundUser.get().getDateOfBirth());
+        assertThat(user.getPhoneNumber()).isEqualTo(foundUser.get().getPhoneNumber());
+        assertThat(user.getHomeAddress()).isEqualTo(foundUser.get().getHomeAddress());
+        assertThat(user.getCreated()).isEqualTo(foundUser.get().getCreated());
+        assertThat(user.getPassword()).isEqualTo(foundUser.get().getPassword());
+    }
 //
 //    /**
 //     * Tests that no user is returned when calling findByEmail() with a non-existing email

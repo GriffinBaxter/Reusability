@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
+;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
@@ -16,10 +17,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -233,7 +237,13 @@ public class SearchUserByNameTests {
     @Test
     public void whenFindAllUsersByNames_thenReturnNicknameOrderedUsers_2() throws Exception {
 
-        this.entityManager.clear();
+//        entityManager.getEntityManager().getTransaction().begin();
+//
+//        Query query1 = entityManager.getEntityManager().createQuery("delete from User");
+//        query1.executeUpdate();
+//
+//        entityManager.getEntityManager().getTransaction().commit();
+
 
         // given
 
@@ -294,16 +304,18 @@ public class SearchUserByNameTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-
+//        entityManager.getEntityManager().getTransaction().begin();
         entityManager.persist(dGAA);
         entityManager.persist(user);
+        entityManager.persist(anotherUser);
         entityManager.persist(user2);
+//        entityManager.getEntityManager().getTransaction().commit();
         entityManager.flush();
 
 
-        this.entityManager.clear();
-
-
+//
+//        User someUser = entityManager.find(User.class, 3);
+//        entityManager.remove(someUser);
 
 
         int pageNo = 0;
@@ -324,11 +336,11 @@ public class SearchUserByNameTests {
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        assertThat(userPage.getContent()).isEqualTo(0);
+//        assertThat(userPage.getContent()).isEqualTo(0);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
-            assertThat(userPage.getContent().get(6).getNickname()).isEqualTo(orderedNicknames.get(6));
+            assertThat(userPage.getContent().get(i).getNickname()).isEqualTo(orderedNicknames.get(i));
         }
 
     }
