@@ -11,18 +11,25 @@
         </div>
       </div>
 
-        <!-- These messages will appear for DGAA accounts -->
-        <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
-          <div class="col-xl-12 mb-5 text-center mx-auto">
-            <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
-            <div class="display-5" v-else>You have default application admin rights!</div>
-          </div>
+      <!-- These messages will appear for DGAA accounts -->
+      <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
+        <div class="col-xl-12 mb-5 text-center mx-auto">
+          <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
+          <div class="display-5" v-else>You have default application admin rights!</div>
         </div>
+      </div>
+
       <div class="row">
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
-                <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+              <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" @click="showFileUpload(true)" id="UploadButton">
+                Upload Image
+              </button>
+
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
               </div>
@@ -56,6 +63,7 @@
               </div>
             </div>
           </div>
+        </div>
 
           <!--             For later use:-->
           <!--          <div class="card text-center shadow-sm mt-3">-->
@@ -64,7 +72,6 @@
           <!--            </div>-->
           <!--          </div>-->
 
-        </div>
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
@@ -149,9 +156,28 @@
           <button class="btn btn-outline-primary float-end mt-4" id="logoutButton" @click="logout()">Sign Out</button>
         </div>
       </div>
-      <Footer></Footer>
     </div>
+    <Footer></Footer>
+
+    <!-- File Upload -->
+    <div v-if="showUpload" id="FileUpload" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Upload Image</h5>
+          <button type="button" class="btn-close" @click="showFileUpload(false)"></button>
+        </div>
+        <div class="modal-body">
+          <input type="file">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="showFileUpload(false)">Close</button>
+          <button type="button" class="btn btn-primary" @click="showFileUpload(false)">Save changes</button>
+        </div>
+      </div>
+    </div>
+
   </div>
+
 </template>
 
 <script>
@@ -185,7 +211,8 @@ export default {
       created: "",
       joined: "",
       otherUser: false,
-      role: null
+      role: null,
+      showUpload: false
     }
   },
   methods: {
@@ -434,7 +461,10 @@ export default {
       Cookies.remove('userID');
       Cookies.remove('JSESSIONID');
       this.$router.push({name: 'Login'});
-    }
+    },
+    showFileUpload(x) {
+      this.showUpload = x;
+    },
   },
   mounted() {
     /*
@@ -461,10 +491,32 @@ export default {
     } else {
       this.$router.push({name: 'Login'});
     }
-    }
+  }
 }
 </script>
 
 <style scoped>
+
+#UploadButton {
+  margin: 5px 0;
+}
+
+.modal {
+  display: block; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  width: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 60%; /* Could be more or less, depending on screen size */
+}
 
 </style>
