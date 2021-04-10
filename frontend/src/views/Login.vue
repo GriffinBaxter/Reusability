@@ -106,4 +106,10 @@ export default {
 .all-but-footer {
   min-height: calc(100vh - 50px);
 }
+
+input:focus, textarea:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
 </style>
