@@ -567,17 +567,17 @@ public class UserResourceIntegrationTests {
     /* ------------------------------------- (New) Tests for Searching for User by Name ----------------------------- */
 
     /**
-     * Tests that the search functionality will order users by nickname in ascending order i.e. in alphabetical order.
+     * Tests that the search functionality will order users by a given attribute in e.g. ascending order i.e. in alphabetical order.
      * A valid outcome will met the criteria of giving a 200 status code and returns a JSON list of Users.
+     * For this example, it sorts by nickname, in ascending order but the outcome would be similar for another type of
+     * sort query.
+     * The query itself is tested in UserRepositoryIntegrationTests.
      */
     @Test
-    public void canOrderSearchResultsByNicknameAscending() throws Exception {
+    public void canOrderSearchResults() throws Exception {
         //given
         List<String> searchQueryList = List.of(
-                "nickname",
-                "email",
-                "address",
-                "fullName"
+                "nickname"
         );
 
         //when
