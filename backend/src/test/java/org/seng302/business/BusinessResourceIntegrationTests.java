@@ -10,11 +10,13 @@ import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
 import java.time.LocalDate;
@@ -23,6 +25,8 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -35,10 +39,10 @@ public class BusinessResourceIntegrationTests {
     @Autowired
     private MockMvc mvc;
 
-    @Autowired
+    @MockBean
     private BusinessRepository businessRepository;
 
-    @Autowired
+    @MockBean
     private UserRepository userRepository;
 
     private String payloadJson;
@@ -70,6 +74,7 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+        user.setId(1);
         user.setSessionUUID(User.generateSessionUUID());
         business = new Business(
                 "name",
@@ -78,8 +83,8 @@ public class BusinessResourceIntegrationTests {
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0))
         );
-        userRepository.save(user);
-        businessRepository.save(business);
+        business.setId(2);
+        this.mvc = MockMvcBuilders.standaloneSetup(new BusinessResource(businessRepository, userRepository)).build();
     }
 
     /**
@@ -88,21 +93,36 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void setAdministratorComplete() throws Exception {
+        // given
+        Business newBusiness = new Business(
+                "Lumbridge General Store",
+                "A one-stop shop for all your adventuring needs",
+                "92 River Lum Road, Lumbridge, Misthalin",
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.now()
+        );
+        newBusiness.setId(3);
+        newBusiness.addAdministrators(user);
+
         payloadJson = "{\n" +
                         "\"name\": \"Lumbridge General Store\",\n" +
                         "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
                         "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
                         "\"businessType\": \"Accommodation and Food Services\"\n" +
                         "}";
-        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(businessRepository.save(any(Business.class))).thenReturn(newBusiness);
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        Optional<Business> antherBusiness= businessRepository.findBusinessByName("Lumbridge General Store");
-        assertThat(antherBusiness.get().getAdministrators().get(0).equals(user));
+        assertThat(newBusiness.getAdministrators().get(0)).isEqualTo(user);
     }
-
 
     /**
      * Tests that an CREATED(201) status is received when sending a create payload to the /businesses API endpoint
@@ -110,16 +130,22 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canCreateWhenDataValidAndCookieExists() throws Exception {
+        // given
         payloadJson = "{\n" +
                         "\"name\": \"Lumbridge General Store\",\n" +
                         "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
                         "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
                         "\"businessType\": \"Accommodation and Food Services\"\n" +
                         "}";
-        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -129,16 +155,22 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canCreateWhenDataValidAndCookieNotExists() throws Exception {
+        // given
         payloadJson = "{\n" +
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"A one-stop shop for all your adventuring needs\",\n" +
                 "\"address\": \"92 River Lum Road, Lumbridge, Misthalin\",\n" +
                 "\"businessType\": \"Accommodation and Food Services\"\n" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", User.generateSessionUUID());
+        sessionToken = User.generateSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.empty());
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
@@ -147,20 +179,25 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canRetrieveBusinessWhenBusinessDoesExist() throws Exception {
+        // given
         id = business.getId();
         sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         expectedJson = "{" +
                         "\"id\":" + business.getId() + "," +
                         "\"name\":\"" + business.getName() + "\"," +
                         "\"description\":\"" + business.getDescription() + "\"," +
                         "\"address\":\"" + business.getAddress() + "\"," +
                         "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                        "\"created\":\"" + business.getCreated() + ":00\"" +
+                        "\"created\":\"" + business.getCreated() + "\"" +
                         "}";
 
-        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
@@ -170,30 +207,44 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canNotRetrieveBusinessWhenCookieNotExist() throws Exception {
-        id = business.getId();
+        // given
+        String nonExistingSessionUUID = User.generateSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", nonExistingSessionUUID);
         expectedJson = "";
 
-        Cookie cookie = new Cookie("JSESSIONID", User.generateSessionUUID());
-        response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
+        // when
+        when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        response = mvc.perform(
+                get(String.format("/businesses/%d", business.getId())).cookie(cookie)
+        ).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     /**
-     * Tests that a NOT_ACCEPTABLE(406) status is received when the user id in the /businesses/{id} API endpoint does exist
+     * Tests that a NOT_ACCEPTABLE(406) status is received when the user id in the /businesses/{id} API endpoint does
+     * exist
      */
     @Test
     public void canNotRetrieveBusinessWhenBusinessDoesNotExist() throws Exception {
-        id = 0;
+        // given
+        int nonExistentBusinessId = 0;
         sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         expectedJson = "";
 
-        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
-        response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(nonExistentBusinessId)).thenReturn(Optional.empty());
+        response = mvc.perform(
+                get(String.format("/businesses/%d", nonExistentBusinessId)).cookie(cookie)
+        ).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
-
 }

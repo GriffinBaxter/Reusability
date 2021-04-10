@@ -19,6 +19,11 @@ public class BusinessResource {
     @Autowired
     private UserRepository userRepository;
 
+    public BusinessResource(BusinessRepository businessRepository, UserRepository userRepository) {
+        this.businessRepository = businessRepository;
+        this.userRepository = userRepository;
+    }
+
     /**
      * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
      * @param sessionToken Session token
