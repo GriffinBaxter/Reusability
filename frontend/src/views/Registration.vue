@@ -99,7 +99,7 @@
                 <label for="password">Password*</label>
                 <div class="input-group">
                   <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" :maxlength="config.password.maxLength" required>
-                  <span class="input-group-text" @click="showPassword = !showPassword"
+                  <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                         @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                         tabindex="8">
                     <i v-if="!showPassword" class="fas fa-eye"></i>
