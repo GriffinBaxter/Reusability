@@ -5,7 +5,7 @@
   <div>
     <Navbar :is-business-account="true"></Navbar>
     <div id="home" class="container all-but-footer">
-      <div class="container-news">
+      <div class="container-news text-font">
 
         <div class="post shadow py-5 px-4">
           <div class="post-header">

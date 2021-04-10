@@ -113,7 +113,7 @@
 
 <template>
   <!-- Footer -->
-  <footer class=" text-center text-white" id="footer">
+  <footer class=" text-center text-white text-font" id="footer">
     <!-- Grid container -->
     <div class="container p-4">
 

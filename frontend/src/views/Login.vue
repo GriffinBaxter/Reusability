@@ -1,6 +1,6 @@
 <template>
   <div>
-  <div id="login" class="container">
+  <div id="login" class="container text-font">
     <div class="row justify-content-center">
       <div class="col-3 m-3">
         <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">

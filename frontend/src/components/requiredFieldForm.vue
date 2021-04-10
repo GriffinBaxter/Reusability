@@ -1,5 +1,5 @@
 <template>
-  <div class="validation-message-wrap" v-if="customMessage">
+  <div class="validation-message-wrap text-font" v-if="customMessage">
     <div class="validation-message">
       {{ customMessage }}
     </div>

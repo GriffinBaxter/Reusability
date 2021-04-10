@@ -1,7 +1,7 @@
 <template>
   <div>
     <Navbar></Navbar>
-    <div id="outerContainer" class="container">
+    <div id="outerContainer" class="container text-font">
 
       <div class="row">
         <div class="col">

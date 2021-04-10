@@ -194,7 +194,7 @@ body {
   color: #ffffff;
 }
 
-.text-font {
+.text-font, p, h{
   font-family: 'Roboto', sans-serif;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar sticky-top navbar-expand-lg shadow" style="background-color: white">
+  <nav class="navbar sticky-top navbar-expand-lg shadow text-font" style="background-color: white">
       <div class="container mt-2 my-lg-3 mx-auto">
 
         <!-- Logo image -->

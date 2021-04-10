@@ -1,5 +1,5 @@
 <template>
-    <div class="pt-3" id="searchContainer">
+    <div class="pt-3" id="searchContainer text-font">
       <div class="row text-center">
         <div class="col">
           <div class="input-group">
