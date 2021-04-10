@@ -7,25 +7,28 @@
           <div class="card text-center shadow-sm">
             <div class="card-body">
               <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+              <div class="mt-3">
+                <h5>{{name}}</h5>
+                <div class="text-secondary">{{description}}</div>
+              </div>
             </div>
-<!--            <div class="card text-center shadow-sm-3">-->
-<!--              <div class="card-body">-->
-<!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-<!--              </div>-->
-<!--            </div>-->
+            <!--            <div class="card text-center shadow-sm-3">-->
+            <!--              <div class="card-body">-->
+            <!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
+            <!--              </div>-->
+            <!--            </div>-->
           </div>
         </div>
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
-              <hr>
               <div class="container">
                 <div class="row justify-content-between">
                   <div class="col-4 -align-left">
                     <h6>Name:</h6>
                   </div>
                   <div class="col-8">
-                    <h6 align="right">{{name}}</h6>
+                    <div class="text-secondary" align="right">{{name}}</div>
                   </div>
                 </div>
               </div>
@@ -36,7 +39,7 @@
                     <h6>Business Type:</h6>
                   </div>
                   <div class="col-8">
-                    <h6 align="right">{{businessType}}</h6>
+                    <div class="text-secondary" align="right">{{businessType}}</div>
                   </div>
                 </div>
               </div>
@@ -47,7 +50,7 @@
                     <h6>Created Time:</h6>
                   </div>
                   <div class="col-8 -align-right">
-                    <h6 align="right">{{created}}</h6>
+                    <div class="text-secondary" align="right">{{created}}</div>
                   </div>
                 </div>
               </div>
@@ -59,21 +62,10 @@
                   </div>
                   <div class="col-8" >
                     <div class="row">
-                      <h6 v-for="lines in address" :key="lines.line" align="right">
+                      <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
                         {{lines.line}}
-                      </h6>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Description:</h6>
-                  </div>
-                  <div class="col-8">
-                    <h6 align="right">{{description}}</h6>
                   </div>
                 </div>
               </div>
@@ -84,7 +76,9 @@
                     <h6>Primary Administrator:</h6>
                   </div>
                   <div class="col-8">
-                    <h6 align="right">{{primaryAdministratorId}}</h6>
+                    <div class="text-secondary" align="right" @click="pushToUser(primaryAdministratorId)">
+                      {{primaryAdministrator}}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -95,13 +89,13 @@
                     <h6>Administrators:</h6>
                   </div>
                   <div class="col-8">
-                    <h6 v-for="nameOfAdministrator in nameOfAdministrators" :key="nameOfAdministrator.name" align="right" @click="pushToUser(nameOfAdministrator.id)">
+                    <div class="text-secondary" v-for="nameOfAdministrator in nameOfAdministrators" :key="nameOfAdministrator.name"
+                         align="right" @click="pushToUser(nameOfAdministrator.id)">
                       {{nameOfAdministrator.name}}
-                    </h6>
+                    </div>
                   </div>
                 </div>
               </div>
-              <hr>
             </div>
           </div>
           <div align="right" id="signOutRow">
@@ -132,6 +126,7 @@ export default {
       description: "",
       businessType: "",
       created: "",
+      primaryAdministrator: "",
       primaryAdministratorId: "",
 
       address: [],
@@ -189,9 +184,9 @@ export default {
           .catch((error) =>{
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
-        } else if (error.response.status == 401) {
+        } else if (error.response.status === 401) {
           this.$router.push({path: '/invalidtoken'});
-        } else if (error.response.status == 406) {
+        } else if (error.response.status === 406) {
           this.$router.push({path: '/noBusiness'});
         } else {
           this.$router.push({path: '/noBusiness'});
@@ -210,9 +205,12 @@ export default {
         document.getElementById('administratorsRow').remove();
         document.getElementById('signOutRow').remove();
       } else {
-        this.primaryAdministratorId = data.primaryAdministratorId;
         // administrators unpack
+        this.primaryAdministratorId = data.primaryAdministratorId;
         data.administrators.forEach(anUser => {
+          if (anUser.id === this.primaryAdministratorId){
+            this.primaryAdministrator = anUser.firstName + " " + anUser.middleName + " " + anUser.lastName;
+          }
           this.nameOfAdministrators.push({name: anUser.firstName + " " + anUser.middleName + " " + anUser.lastName, id: anUser.id})
         })
       }
@@ -220,8 +218,7 @@ export default {
       //basic data unpack
       this.name = data.name;
       this.description = data.description;
-      this.businessType = data.businessType;
-      // this.created = data.created;
+      this.businessType = data.businessType.replaceAll("_", " ");
       this.getCreatedDate(data.created);
 
       // address unpack
@@ -248,7 +245,7 @@ export default {
       }
     },
     pushToUser(id){
-      this.$router.push({name:'Profile', params: id})
+      this.$router.push({name:'Profile', params: {id}});
     },
     logout(){
       /*
@@ -280,6 +277,6 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

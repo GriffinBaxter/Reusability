@@ -10,6 +10,7 @@
                 <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
+                <div class="text-secondary">{{bio}}</div>
               </div>
             </div>
           </div>
@@ -23,23 +24,23 @@
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Bio: </h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{bio}}
-                  </div>
-                </div>
-              </div>
-              <hr>
+<!--              <div class="row">-->
+<!--                <div class="col-md-3">-->
+<!--                  <h6>Bio: </h6>-->
+<!--                </div>-->
+<!--                <div class="col">-->
+<!--                  <div class="text-secondary" align="right">-->
+<!--                    {{bio}}-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <hr>-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Name:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
+                  <div class="text-secondary" align="right">
                     {{firstName}} {{middleName}} {{lastName}}
                   </div>
                 </div>
@@ -50,7 +51,7 @@
                   <h6>Email:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
+                  <div class="text-secondary" align="right">
                     {{email}}
                   </div>
                 </div>
@@ -61,7 +62,7 @@
                   <h6>Date of Birth:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
+                  <div class="text-secondary" align="right">
                     {{dateOfBirth}}
                   </div>
                 </div>
@@ -72,7 +73,7 @@
                   <h6>Phone number:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
+                  <div class="text-secondary" align="right">
                     {{phoneNumber}}
                   </div>
                 </div>
@@ -83,7 +84,7 @@
                   <h6>Address:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary" v-for="lines in homeAddress" :key="lines.line">
+                  <div class="text-secondary" v-for="lines in homeAddress" :key="lines.line" align="right">
                     {{lines.line}}
                   </div>
                 </div>
@@ -94,8 +95,20 @@
                   <h6>Joined:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
+                  <div class="text-secondary" align="right">
                     {{joined}}
+                  </div>
+                </div>
+              </div>
+              <hr id="businessAdministeredHR">
+              <div class="row" id="businessAdministeredRow">
+                <div class="col-md-3">
+                  <h6>Businesses Administered:</h6>
+                </div>
+                <div class="col">
+                  <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
+                       align="right" @click="pushToUser(business.id)">
+                    {{business.name}}
                   </div>
                 </div>
               </div>
@@ -143,6 +156,7 @@ export default {
 
       created: "",
       joined: "",
+      businessesAdministered: [],
       otherUser: false,
     }
   },
@@ -214,6 +228,8 @@ export default {
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
         document.getElementById('dateOfBirthRow').remove();
+        document.getElementById('businessAdministeredRow').remove();
+        document.getElementById('businessAdministeredHR').remove();
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
       } else {
@@ -225,6 +241,13 @@ export default {
           this.homeAddress.push({line: this.streetNumber + " " + this.streetName});
         } else {
           this.homeAddress.push({line: this.streetNumber + this.streetName});
+        }
+
+        // businesses administered unpack
+        if (data.businessesAdministered === null){
+          data.businessesAdministered.forEach(business => {
+            this.businessesAdministered.push({name: business.name, id: business.id});
+          })
         }
       }
 
@@ -250,6 +273,9 @@ export default {
 
 
       this.getCreatedDate(data.created);
+    },
+    pushToUser(id){
+      this.$router.push({name:'BusinessProfile', params: {id}});
     },
     logout() {
       /*
