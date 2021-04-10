@@ -1,12 +1,12 @@
 <template>
-    <div class="container pt-4" id="searchContainer">
+    <div class="container pt-4" id="header">
       <div class="row text-center">
         <div class="col-md-3 mb-md-0 mb-3">
           <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
         </div>
 
         <div class="col">
-          <div class="input-group">
+          <div class="input-group" id="searchContainer">
             <input type="text" id="searchBar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
             <button class="btn btn-primary greenButton" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
@@ -16,10 +16,11 @@
           <div class="dropdown" id="dropDown">
             <button id="dropDownButton" class="btn btn-success" type="button" @click="showDropMenu">
               <img src="../../public/sample_profile_image.jpg" width="45px" class="rounded-circle img-thumbnail" alt="Acting as image" id="actAsImg"/>
-              <p id="ActAsTxt">{{actAs}}</p>
+              <div id="ActAsTxt">{{actAs}}</div>
             </button>
             <ul v-if="showMenu" class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <li class="list-group-item" v-for="(act, index) in list" :key = "act.id" @click="itemClicked(index)"> {{act.name}} </li>
+              <div id="InteractText"> Interact as: </div>
+              <li id="dropListItems" class="list-group-item" v-for="(act, index) in list" :key = "act.id" @click="itemClicked(index)"> {{act.name}} </li>
             </ul>
           </div>
         </div>
@@ -131,25 +132,38 @@ export default {
 </script>
 
 <style scoped>
-#searchContainer {
+#header {
   width: 80%;
 }
 
+#searchContainer {
+  vertical-align: middle;
+  padding: 15px;
+  width: 100%;
+}
+
 #logo {
-  max-height: 60px
+  max-height: 60px;
 }
 
 #dropDownButton {
   background-color: #1EBA8C;
   height: 60px;
-  width:100%;
+  width: 100%;
 }
 
 #dropDown {
-  width: 100%;
+  padding-left: 10%;
+  width: 90%;
   max-height:60px;
   margin-top: 5px;
-  float: right;
+}
+
+#InteractText {
+  margin: 0;
+  padding: 1px;
+  color: white;
+  text-align: center;
 }
 
 #ActAsTxt {
@@ -163,11 +177,18 @@ ul {
   display: block;
   width: inherit;
   background-color: #1EBA8C;
+  padding: 0;
+  margin-top: 1px;
+  border: 1px solid #17946f;
 }
-li {
+
+#dropListItems {
   text-align: center;
   color: white;
   background-color: inherit;
+  padding: 4px;
+  width: 100%;
+  cursor: pointer;
 }
 
 .greenButton {
