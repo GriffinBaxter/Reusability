@@ -244,11 +244,11 @@ export default {
         }
 
         // businesses administered unpack
-        if (data.businessesAdministered === null){
-          data.businessesAdministered.forEach(business => {
+        data.businessesAdministered.forEach(business => {
+          if (business !== null) {
             this.businessesAdministered.push({name: business.name, id: business.id});
-          })
-        }
+          }
+        })
       }
 
       // address unpack
