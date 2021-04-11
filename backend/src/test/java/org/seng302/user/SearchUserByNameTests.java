@@ -58,10 +58,10 @@ public class SearchUserByNameTests {
     public void setup() throws Exception {
 
         dGAA = new User(
-                "John",
+                "Johnny",
                 "Doe",
-                "S",
-                "Generic",
+                "Pete",
+                "Aldeniz",
                 "Biography",
                 "email@email.com",
                 LocalDate.of(2020, 2, 2),
@@ -73,7 +73,7 @@ public class SearchUserByNameTests {
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
 
         user = new User("testfirst",
-                "testlast",
+                "Dentri",
                 "testmiddle",
                 "testnick",
                 "testbiography",
@@ -86,7 +86,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
 
-        anotherUser = new User ("first",
+        anotherUser = new User ("Caedence",
                 "last",
                 "middle",
                 "nick",
@@ -102,8 +102,8 @@ public class SearchUserByNameTests {
 
         searchUser1= new User(
                 "Alex",
-                "Doe",
-                "S",
+                "Hine",
+                "Ben",
                 "Generic",
                 "Biography",
                 "test@email.com",
@@ -116,10 +116,10 @@ public class SearchUserByNameTests {
                 Role.USER);
 
         searchUser2 = new User(
-                "Chad",
+                "Crad",
                 "Taylor",
-                "S",
-                "Cha",
+                "Barth",
+                "Cra",
                 "Biography123",
                 "chad.taylor@example.com",
                 LocalDate.of(2008, 2, 2),
@@ -146,10 +146,10 @@ public class SearchUserByNameTests {
                 Role.USER);
 
         searchUser4 = new User(
-                "Seth",
-                "Murphy",
+                "Seti",
+                "Rodger",
                 "Tea",
-                "S",
+                "Murphy",
                 "Biography",
                 "seth.murphy@example.com",
                 LocalDate.of(2008, 2, 2),
@@ -162,7 +162,7 @@ public class SearchUserByNameTests {
 
         searchUser5 = new User(
                 "Minttu",
-                "Wainio",
+                "Rine",
                 "A",
                 "Min",
                 "Biography",
@@ -193,7 +193,7 @@ public class SearchUserByNameTests {
         searchUser7 = new User(
                 "Francisca",
                 "Bznitez",
-                "T",
+                "Denali",
                 "Fran",
                 "Biography",
                 "francisca.benitez@example.com",
@@ -227,15 +227,15 @@ public class SearchUserByNameTests {
         Sort sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase());
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedNicknames = new ArrayList<>();
-        orderedNicknames.add("Cha");
+        orderedNicknames.add("Aldeniz");
+        orderedNicknames.add("Cra");
         orderedNicknames.add("Fran");
         orderedNicknames.add("Fran");
-        orderedNicknames.add("Generic");
         orderedNicknames.add("Generic");
         orderedNicknames.add("Gm");
         orderedNicknames.add("Min");
+        orderedNicknames.add("Murphy");
         orderedNicknames.add("nick");
-        orderedNicknames.add("S");
         orderedNicknames.add("testnick");
 
         // when
@@ -261,15 +261,16 @@ public class SearchUserByNameTests {
         ArrayList<String> orderedNicknames = new ArrayList<>();
 
         orderedNicknames.add("testnick");
-        orderedNicknames.add("S");
         orderedNicknames.add("nick");
+        orderedNicknames.add("Murphy");
         orderedNicknames.add("Min");
         orderedNicknames.add("Gm");
         orderedNicknames.add("Generic");
-        orderedNicknames.add("Generic");
         orderedNicknames.add("Fran");
         orderedNicknames.add("Fran");
-        orderedNicknames.add("Cha");
+        orderedNicknames.add("Cra");
+        orderedNicknames.add("Aldeniz");
+
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
@@ -289,17 +290,6 @@ public class SearchUserByNameTests {
     address ascending/descending
     Ordering is consistent with duplicate values (secondary order by needed)
 
-    Filter by firstname
-    Filter by middlename
-    Filter by lastname
-    Filter by firstname and middlename
-    Filter by firstname and lastname
-    Filter by middlename and lastname
-    Filter by all three
-    Filter by nickname
-    Filter by empty string gives all users
-    Filter by non-existent input
-
     Pagination test half full page
     Pagination test that we receive page 2 or later
     Pagination test empty page
@@ -307,5 +297,188 @@ public class SearchUserByNameTests {
     Pagination test ordering works across pages, not just within a page
 
      */
+
+
+
+
+
+//    Filter by empty string gives all users
+//    Filter by non-existent input
+
+
+    /**
+     * Tests that the filter functionality will give all Users when the search value is the empty string.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFilteredNoMatch() throws Exception {
+
+        //given
+        int pageNo = 0;
+        int pageSize = 11;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("nothing", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(0);
+    }
+
+    /**
+     * Tests that the filter functionality will give all Users when the search value is the empty string.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFilteredNoSearchValue() throws Exception {
+
+        //given
+        int pageNo = 0;
+        int pageSize = 11;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(10);
+    }
+
+
+    /**
+     * Tests that the filter functionality will filter users by a given letter that appears in any of their first, middle, last
+     * or nick names.
+     * This particular test tests that all Users which contain an "H" or "h" in their first, middle, last or nick names
+     * are returned when the search value is "h".
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFilteredSingleLetter() throws Exception {
+
+        //given
+        int pageNo = 0;
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("h", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(4);
+        assertThat(userPage.getContent().get(0).getFirstName()).isEqualTo("Johnny");
+        assertThat(userPage.getContent().get(1).getLastName()).isEqualTo("Hine");
+        assertThat(userPage.getContent().get(2).getMiddleName()).isEqualTo("Barth");
+        assertThat(userPage.getContent().get(3).getNickname()).isEqualTo("Murphy");
+
+    }
+
+    /**
+     * Tests that the filter functionality will filter users by a given substring that appears in any of their first, middle, last
+     * or nick names.
+     * This particular test tests that all Users which contain "den", regardless of letter case, in their first, middle, last or nick names
+     * are returned when the search value is "den".
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFilteredSubstring() throws Exception {
+
+        //given
+        int pageNo = 0;
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("den", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(4);
+        assertThat(userPage.getContent().get(0).getNickname()).isEqualTo("Aldeniz");
+        assertThat(userPage.getContent().get(1).getLastName()).isEqualTo("Dentri");
+        assertThat(userPage.getContent().get(2).getFirstName()).isEqualTo("Caedence");
+        assertThat(userPage.getContent().get(3).getMiddleName()).isEqualTo("Denali");
+
+    }
+
+
+    /**
+     * Tests that the filter functionality will filter users by a given string that appears in their first name.
+     * This particular test tests that all Users which contain "Johnny", regardless of letter case, in their first name
+     * are returned when the search value is "johnny".
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFilteredFirstName() throws Exception {
+
+        //given
+        int pageNo = 0;
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("Johnny", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(1);
+        assertThat(userPage.getContent().get(0).getFirstName()).isEqualTo("Johnny");
+    }
+
+    /**
+     * Tests that the filter functionality will filter users by a given string that appears in their middle name.
+     * This particular test tests that all Users which contain "Tea", regardless of letter case, in their middle name
+     * are returned when the search value is "tea".
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFilteredMiddleName() throws Exception {
+
+        //given
+        int pageNo = 0;
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("tea", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(1);
+        assertThat(userPage.getContent().get(0).getMiddleName()).isEqualTo("Tea");
+    }
+
+
+    /**
+     * Tests that the filter functionality will filter users by a given string that appears in their last name.
+     * This particular test tests that all Users which contain "Hine", regardless of letter case, in their last name
+     * are returned when the search value is "hine".
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFilteredLastName() throws Exception {
+
+        //given
+        int pageNo = 0;
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("hine", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(1);
+        assertThat(userPage.getContent().get(0).getLastName()).isEqualTo("Hine");
+    }
+
+    /**
+     * Tests that the filter functionality will filter users by a given string that appears in their nickname.
+     * This particular test tests that all Users which contain "Min", regardless of letter case, in their last name
+     * are returned when the search value is "Min".
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFilteredNickname() throws Exception {
+
+        //given
+        int pageNo = 0;
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("Min", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(1);
+        assertThat(userPage.getContent().get(0).getNickname()).isEqualTo("Min");
+    }
 
 }
