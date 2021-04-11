@@ -136,7 +136,7 @@ public class UserValidation {
     public static boolean isValidPassword(String password) {
         return (password.length() >= PASSWORD_MIN_LENGTH) &&
                 (password.length() <= PASSWORD_MAX_LENGTH) &&
-                (password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=\\S+$).{8,30}$"));
+                (password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,30}$"));
     }
 
 }

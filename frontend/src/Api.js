@@ -104,27 +104,33 @@ export class User{
 
     },
 
-    streetAddress: {
-      name: "Street address",
-      minLength: 1,
+    streetNumber: {
+      name: "Street number",
+      minLength: 0,
+      maxLength: 255
+    },
+
+    streetName: {
+      name: "Street name",
+      minLength: 0,
       maxLength: 255
     },
 
     city: {
       name: "City",
-      minLength: 1,
+      minLength: 0,
       maxLength: 255
     },
 
-    suburb: {
-      name: "Suburb",
+    postcode: {
+      name: "Postcode",
       minLength: 0,
       maxLength: 255
     },
 
     region: {
       name: "Region",
-      minLength: 1,
+      minLength: 0,
       maxLength: 255
     },
 

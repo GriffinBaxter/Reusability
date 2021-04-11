@@ -404,15 +404,21 @@ export default {
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
+      if (data.homeAddress.city) {
+        this.city = data.homeAddress.city;
+      }
+      if (data.homeAddress.region) {
+        this.region = data.homeAddress.region;
+      }
+      if (data.homeAddress.country) {
+        this.country = data.homeAddress.country;
+      }
+
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
         document.getElementById('dateOfBirthRow').remove();
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
-
-        this.city = data.homeAddress.city;
-        this.region = data.homeAddress.region;
-        this.country = data.homeAddress.country;
 
         if (this.city !== "") {
           this.address.push({line: this.city});
@@ -423,16 +429,22 @@ export default {
           this.address.push({line: this.region + this.country});
         }
 
-
       } else {
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;
-        this.streetNumber = data.homeAddress.streetNumber;
-        this.streetName = data.homeAddress.streetName;
-        this.city = data.homeAddress.city;
-        this.postcode = data.homeAddress.postcode;
-        this.region = data.homeAddress.region;
-        this.country = data.homeAddress.country;
+
+        if (data.homeAddress.streetNumber) {
+          this.streetNumber = data.homeAddress.streetNumber;
+        }
+        if (data.homeAddress.streetName) {
+          this.streetName = data.homeAddress.streetName;
+        }
+        if (data.homeAddress.city) {
+          this.city = data.homeAddress.city;
+        }
+        if (data.homeAddress.postcode) {
+          this.postcode = data.homeAddress.postcode;
+        }
 
         if (this.streetNumber !== "" && this.streetName !== ""){
           this.address.push({line: this.streetNumber + " " + this.streetName});

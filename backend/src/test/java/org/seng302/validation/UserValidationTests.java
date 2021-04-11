@@ -640,14 +640,14 @@ public class UserValidationTests {
     }
 
     /**
-     * Test to see whether false (i.e invalid) is returned when password
-     * length is within range, contains all required fields but contains
+     * Test to see whether true (i.e invalid) is returned when password
+     * length is within range, contains all required fields and contains
      * a space.
      */
     @Test
-    public void isValidPasswordContainsSpaceOtherwiseValid() {
+    public void isValidPasswordContainsSpace() {
         String password = "1AD!@#asaa aaa";
-        assertEquals(false, UserValidation.isValidPassword(password));
+        assertEquals(true, UserValidation.isValidPassword(password));
     }
 
     /**

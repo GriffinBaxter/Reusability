@@ -55,4 +55,11 @@ public class UserRegistrationPayload {
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public String toString() {
+        return "User(" +
+                "homeAddress=" + homeAddress +
+                ')';
+    }
 }

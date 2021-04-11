@@ -73,5 +73,17 @@ public class AddressPayload {
     public void setPostcode(String postcode) {
         this.postcode = postcode;
     }
+
+    @Override
+    public String toString() {
+        return "Address(" +
+                "streetNumber=" + streetNumber +
+                ", streetName=" + streetName +
+                ", city=" + city +
+                ", postcode=" + postcode +
+                ", region=" + region +
+                ", country=" + country +
+                ')';
+    }
 }
 
