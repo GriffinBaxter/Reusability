@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
+import org.seng302.validation.UserValidation;
 import org.seng302.validation.Validation;
 
 /**
@@ -108,23 +109,32 @@ public class User {
             LocalDateTime created,
             Role role
     ) throws Exception {
-        if (!Validation.isEmail(email, false)) {
-            throw new Exception("Invalid email address");
-        }
-        if (!Validation.isPassword(password)){
-            throw new Exception("Invalid password");
-        }
-        if (!Validation.isAlpha(firstName, false)){
+        if (!UserValidation.isValidFirstName(firstName)) {
             throw new Exception("Invalid first name");
         }
-        if (!Validation.isAlpha(lastName, false)){
+        if (!UserValidation.isValidMiddleName(middleName)) {
+            throw new Exception("Invalid middle name");
+        }
+        if (!UserValidation.isValidLastName(lastName)){
             throw new Exception("Invalid last name");
         }
-        if (!Validation.isAlphanumeric(nickname, true)) {
+        if (!UserValidation.isValidNickname(nickname)) {
             throw new Exception("Invalid nickname");
         }
-        if (!Validation.isPhoneNumber(phoneNumber, false)) {
+        if (!UserValidation.isValidBio(bio)) {
+            throw new Exception("Invalid bio");
+        }
+        if (!UserValidation.isValidEmail(email)) {
+            throw new Exception("Invalid email address");
+        }
+        if (!UserValidation.isValidDOB(dateOfBirth)) {
+            throw new Exception("Invalid date of birth");
+        }
+        if (!UserValidation.isValidPhoneNumber(phoneNumber)) {
             throw new Exception("Invalid phone number");
+        }
+        if (!UserValidation.isValidPassword(password)){
+            throw new Exception("Invalid password");
         }
 
         this.firstName = firstName;
