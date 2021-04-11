@@ -87,10 +87,10 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "Generic",
                     "Biography",
                     "email@email.com",
-                    LocalDate.of(2020, 2, 2),
+                    LocalDate.of(2000, 2, 2),
                     "0271316",
                     address,
-                    "password",
+                    "Password123!",
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
                     Role.DEFAULTGLOBALAPPLICATIONADMIN);

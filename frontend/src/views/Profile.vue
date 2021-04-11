@@ -128,8 +128,8 @@
                   <h6>Address:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
-                    {{homeAddress}}
+                  <div class="text-secondary" v-for="lines in address" :key="lines.line">
+                    {{lines.line}}
                   </div>
                 </div>
               </div>
@@ -181,7 +181,15 @@ export default {
       email: "",
       dateOfBirth: "",
       phoneNumber: "",
-      homeAddress: "",
+
+      address: [],
+      streetNumber: "",
+      streetName: "",
+      city: "",
+      postcode: "",
+      region: "",
+      country: "",
+
       created: "",
       joined: "",
       otherUser: false,
@@ -402,15 +410,46 @@ export default {
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
 
-        let address = data.homeAddress.split(';');
-        address = address.slice(2, address.length);
-        address = address.join(", ");
-        this.homeAddress = address;
+        this.city = data.homeAddress.city;
+        this.region = data.homeAddress.region;
+        this.country = data.homeAddress.country;
+
+        if (this.city !== "") {
+          this.address.push({line: this.city});
+        }
+        if (this.region !== "" && this.country !== ""){
+          this.address.push({line: this.region + ", " + this.country});
+        } else {
+          this.address.push({line: this.region + this.country});
+        }
+
 
       } else {
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;
-        this.homeAddress = data.homeAddress.replaceAll(";", ", ");
+        this.streetNumber = data.homeAddress.streetNumber;
+        this.streetName = data.homeAddress.streetName;
+        this.city = data.homeAddress.city;
+        this.postcode = data.homeAddress.postcode;
+        this.region = data.homeAddress.region;
+        this.country = data.homeAddress.country;
+
+        if (this.streetNumber !== "" && this.streetName !== ""){
+          this.address.push({line: this.streetNumber + " " + this.streetName});
+        } else {
+          this.address.push({line: this.streetNumber + this.streetName});
+        }
+        if (this.city !== "" && this.postcode !== ""){
+          this.address.push({line: this.city + ", " + this.postcode});
+        } else {
+          this.address.push({line: this.city + this.postcode});
+        }
+        if (this.region !== "" && this.country !== ""){
+          this.address.push({line: this.region + ", " + this.country});
+        } else {
+          this.address.push({line: this.region + this.country});
+        }
+
       }
 
       this.firstName = data.firstName;
