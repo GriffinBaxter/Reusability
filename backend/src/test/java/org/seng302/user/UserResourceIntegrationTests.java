@@ -565,7 +565,9 @@ public class UserResourceIntegrationTests {
 
 
     /* ------------------------------------- (New) Tests for Searching for User by Name ----------------------------- */
-
+    // TODO Add more tests to handle error cases (e.g. bad data input)
+    // The sorting done in this is entirely unneeded, this has been moved to SearchUserByNameTests.
+    // TODO Test bad URL params
     /**
      * Tests that the search functionality will order users by a given attribute in e.g. ascending order i.e. in alphabetical order.
      * A valid outcome will met the criteria of giving a 200 status code and returns a JSON list of Users.

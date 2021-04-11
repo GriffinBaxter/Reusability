@@ -1,15 +1,12 @@
 package org.seng302.user;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
-;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,20 +14,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * SearchUserByName test class - specifically for testing the searching user by name feature of the UserRepository class
  */
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
@@ -55,6 +48,12 @@ public class SearchUserByNameTests {
     private User searchUser7;
     private List<User> searchUsers;
 
+    /**
+     * Creates and inserts all users for testing.
+     * Ideally this would be BeforeAll.
+     * BeforeEach works but will replace all users before each test. Only functional difference when testing is that they will have new IDs.
+     * @throws Exception Any exception.
+     */
     @BeforeEach
     public void setup() throws Exception {
 
@@ -221,7 +220,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by nickname in ascending order i.e. in alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnNicknameOrderedUsers_2() throws Exception {
+    public void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersAscending() throws Exception {
 
         int pageNo = 0;
         int pageSize = 11;
@@ -249,6 +248,64 @@ public class SearchUserByNameTests {
 
     }
 
+    /**
+     * Tests that the search functionality will order users by nickname in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersDescending() throws Exception {
 
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedNicknames = new ArrayList<>();
+
+        orderedNicknames.add("testnick");
+        orderedNicknames.add("S");
+        orderedNicknames.add("nick");
+        orderedNicknames.add("Min");
+        orderedNicknames.add("Gm");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Fran");
+        orderedNicknames.add("Fran");
+        orderedNicknames.add("Cha");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+//        assertThat(userPage.getContent()).isEqualTo(0);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getNickname()).isEqualTo(orderedNicknames.get(i));
+        }
+
+    }
+
+    /*
+
+    Full name ascending/descending
+    email ascending/descending
+    address ascending/descending
+    Ordering is consistent with duplicate values (secondary order by needed)
+
+    Filter by firstname
+    Filter by middlename
+    Filter by lastname
+    Filter by firstname and middlename
+    Filter by firstname and lastname
+    Filter by middlename and lastname
+    Filter by all three
+    Filter by nickname
+    Filter by empty string gives all users
+    Filter by non-existent input
+
+    Pagination test half full page
+    Pagination test that we receive page 2 or later
+    Pagination test empty page
+    Pagination test full page
+    Pagination test ordering works across pages, not just within a page
+
+     */
 
 }
