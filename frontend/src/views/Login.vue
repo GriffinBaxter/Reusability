@@ -2,8 +2,10 @@
   <div>
   <div id="login" class="container text-font all-but-footer">
     <div class="row justify-content-center">
-      <div class="col-3 m-3">
+      <div class="col-3 m-3 text-center">
         <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
+        <p class="company-name-main">REUSABILITY</p>
+        <p class="company-name-sub-heading"> - Share & Save - </p>
       </div>
     </div>
     <div class="row justify-content-center">

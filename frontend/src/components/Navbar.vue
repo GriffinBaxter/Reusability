@@ -3,7 +3,7 @@
       <div class="container mt-2 my-lg-3 mx-auto">
 
         <!-- Logo image -->
-        <div class="logo-container">
+        <div class="logo-container text-center">
           <router-link class="navbar-brand " to="/home">
 <!--            class="img-fluid d-inline-block"-->
             <img src="../../public/logo_only_med.png" alt="Logo" id="logoImage">
@@ -319,25 +319,6 @@ export default {
   background-color: #2eda77;
 }
 
-  .company-name-main {
-    font-family: 'Merriweather Sans', sans-serif;
-    font-size: 40px;
-    margin-top: 0px;
-    padding-top: 0px;
-    margin-bottom: 0px;
-    padding-bottom: 0px;
-  }
 
-  .company-name-sub-heading {
-    line-height: 50%;
-    font-family: 'Rochester', cursive;
-    font-size: 35px;
-    margin-top: 0px;
-    padding-top: 0px;
-    margin-bottom: 10%;
-    padding-bottom: 0px;
-    margin-left: 22px;
-    margin-right: 10px;
-  }
 
 </style>

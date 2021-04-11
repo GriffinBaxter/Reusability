@@ -116,13 +116,28 @@ body {
 }
 
 /****************************
-   Profile Header Component
+            Logo
  ****************************/
 
-/*#searchContainer {*/
-/*  width: 45%;*/
-/*}*/
+.company-name-main {
+  font-family: 'Merriweather Sans', sans-serif;
+  font-size: 40px;
+  margin-top: 0px;
+  padding-top: 0px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
 
+.company-name-sub-heading {
+  line-height: 50%;
+  font-family: 'Rochester', cursive;
+  font-size: 35px;
+  margin-top: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-left: auto;
+  margin-right: auto;
+}
 /****************************************
               Search Page
  ****************************************/
