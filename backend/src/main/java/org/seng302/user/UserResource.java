@@ -199,37 +199,39 @@ public class UserResource {
         int pageSize = 5;
 
         Sort sortBy = null;
+        // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
+        // Normally all upper case letters come before any lower case ones.
         if (orderBy.equals("fullNameASC")) {
 
-            sortBy = Sort.by("firstName").ascending().and(Sort.by("middleName")).and(Sort.by("lastName"));
+            sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase()));
 
         } else if (orderBy.equals("fullNameDESC")) {
 
-            sortBy = Sort.by("firstName").descending().and(Sort.by("middleName")).and(Sort.by("lastName"));
+            sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase()));
 
         } else if (orderBy.equals("nicknameASC")) {
 
-            sortBy = Sort.by("nickname").ascending();
+            sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase());
 
         } else if (orderBy.equals("nicknameDESC")) {
 
-            sortBy = Sort.by("nickname").descending();
+            sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase());
 
         } else if (orderBy.equals("emailASC")) {
 
-            sortBy = Sort.by("email").ascending();
+            sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
 
         } else if (orderBy.equals("emailDESC")) {
 
-            sortBy = Sort.by("email").descending();
+            sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
 
         } else if (orderBy.equals("addressASC")) {
 
-            sortBy = Sort.by("homeAddress").ascending();
+            sortBy = Sort.by(Sort.Order.asc("homeAddress").ignoreCase());
 
         } else if (orderBy.equals("addressDESC")) {
 
-            sortBy = Sort.by("homeAddress").descending();
+            sortBy = Sort.by(Sort.Order.desc("homeAddress").ignoreCase());
 
         } else {
             // Invalid orderBy input
