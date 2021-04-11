@@ -118,7 +118,7 @@ public class UserResource {
             AddressPayload addressJSON = registration.getHomeAddress();
             Address address = new Address(
                     addressJSON.getStreetNumber(),
-                    addressJSON.getStreetNumber(),
+                    addressJSON.getStreetName(),
                     addressJSON.getCity(),
                     addressJSON.getRegion(),
                     addressJSON.getCountry(),
@@ -189,6 +189,15 @@ public class UserResource {
             administrator.setAdministrators(new ArrayList<>());
         }
 
+        Address address = user.get().getHomeAddress();
+        AddressPayload addressPayload = new AddressPayload(
+                address.getStreetNumber(),
+                address.getStreetName(),
+                address.getCity(),
+                address.getRegion(),
+                address.getCountry(),
+                address.getPostcode()
+        );
         return new UserPayload(
                 user.get().getId(),
                 user.get().getFirstName(),
@@ -199,7 +208,7 @@ public class UserResource {
                 user.get().getEmail(),
                 user.get().getDateOfBirth(),
                 user.get().getPhoneNumber(),
-                user.get().getHomeAddress(),
+                addressPayload,
                 user.get().getCreated(),
                 role,
                 administrators
