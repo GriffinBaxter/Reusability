@@ -422,8 +422,8 @@ public class SearchUserByNameTests {
         assertThat(userPage.getTotalPages()).isEqualTo(4);
         assertThat(userPage.getSize()).isEqualTo(3);
         assertThat(userPage.getContent().get(0).getNickname()).isEqualTo("Min");
-        assertThat(userPage.getContent().get(1).getNickname()).isEqualTo("nick");
-        assertThat(userPage.getContent().get(2).getNickname()).isEqualTo("S");
+        assertThat(userPage.getContent().get(1).getNickname()).isEqualTo("Murphy");
+        assertThat(userPage.getContent().get(2).getNickname()).isEqualTo("nick");
 
     }
 
