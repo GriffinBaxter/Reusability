@@ -97,10 +97,10 @@ public class UserResourceIntegrationTests {
                 "Generic",
                 "Biography",
                 "email@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
                 address,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
@@ -111,10 +111,10 @@ public class UserResourceIntegrationTests {
                         "testnick",
                         "testbiography",
                         "testemail@email.com",
-                        LocalDate.of(2020, 2, 2),
+                        LocalDate.of(2020, 2, 2).minusYears(13),
                         "0271316",
                         address,
-                        "testpassword",
+                        "Testpassword123!",
                         LocalDateTime.of(LocalDate.of(2021, 2, 2),
                                             LocalTime.of(0, 0)),
                         Role.GLOBALAPPLICATIONADMIN);
@@ -125,10 +125,10 @@ public class UserResourceIntegrationTests {
                                 "nick",
                                 "bio",
                                 "example@example.com",
-                                LocalDate.of(2021, 1, 1),
+                                LocalDate.of(2021, 1, 1).minusYears(13),
                                 "123456789",
                                 address,
-                                "password",
+                                "Password123!",
                                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                             LocalTime.of(0, 0)),
                                 Role.USER);
@@ -146,7 +146,7 @@ public class UserResourceIntegrationTests {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(String.format(loginPayloadJson, user.getEmail(), "testpassword")))
+                .content(String.format(loginPayloadJson, user.getEmail(), "Testpassword123!")))
                 .andReturn().getResponse();
 
         // then
@@ -207,7 +207,7 @@ public class UserResourceIntegrationTests {
         // given
         User newUser = new User("Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
                           "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()), "01234567",
-                     address, "testpassword", LocalDateTime.now(), Role.USER);
+                     address, "Testpassword123!", LocalDateTime.now(), Role.USER);
         newUser.setId(4);
         given(userRepository.findByEmail(newUser.getEmail())).willReturn(java.util.Optional.empty());
 
@@ -227,7 +227,7 @@ public class UserResourceIntegrationTests {
                         "\"country\": \"New Zealand\"," +
                         "\"postcode\": \"90210\"" +
                 " }, " +
-                "\"password\": \"testpassword\"}";
+                "\"password\": \"Testpassword123!\"}";
 
         // when
         when(userRepository.save(any(User.class))).thenReturn(newUser);

@@ -45,28 +45,28 @@ export class User{
     firstName: {
       name: "First name",
       minLength: 2,
-      maxLength: 20,
+      maxLength: 255,
       regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
       regex: /^[a-zA-Z '-]+$/
     },
     middleName: {
       name: "Middle name",
       minLength: 0,
-      maxLength: 20,
+      maxLength: 255,
       regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
       regex: /^[a-zA-Z '-]*$/
     },
     lastName: {
       name: "Last name",
       minLength: 2,
-      maxLength: 20,
+      maxLength: 255,
       regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
       regex: /^[a-zA-Z '-]+$/
     },
     nickname: {
       name: "Nickname",
       minLength: 0,
-      maxLength: 20,
+      maxLength: 255,
       regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
       regex: /^[a-zA-Z '-]*$/
     },
@@ -77,7 +77,7 @@ export class User{
     },
     email: {
       name: "Email",
-      minLength: 3,
+      minLength: 5,
       maxLength: 30,
       regex: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
       regexMessage: "Invalid email. Expected format is example123@gmail.com."

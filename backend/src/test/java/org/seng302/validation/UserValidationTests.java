@@ -28,7 +28,7 @@ public class UserValidationTests {
     @Test
     public void isValidFirstNameGreaterThanMaxLength() {
         String string = "A";
-        String firstName = string.repeat(25); //maxLength = 20
+        String firstName = string.repeat(260); //maxLength = 255
         assertEquals(false, UserValidation.isValidFirstName(firstName));
     }
 
@@ -74,10 +74,10 @@ public class UserValidationTests {
 
     /**
      * Test to see whether true (i.e valid) is returned when first name
-     * is of the right length.
+     * is of the correct length.
      */
     @Test
-    public void isValidFirstNameRightLength() {
+    public void isValidFirstNameCorrectLength() {
         String firstName = "Zachary";
         assertEquals(true, UserValidation.isValidFirstName(firstName));
     }
@@ -99,7 +99,7 @@ public class UserValidationTests {
     @Test
     public void isValidFirstNameEqualMaxLength() {
         String string = "Z";
-        String firstName = string.repeat(20); //maxLength = 20
+        String firstName = string.repeat(255); //maxLength = 255
         assertEquals(true, UserValidation.isValidFirstName(firstName));
     }
 
@@ -112,7 +112,7 @@ public class UserValidationTests {
     @Test
     public void isValidMiddleNameGreaterThanMaxLength() {
         String string = "F";
-        String middleName = string.repeat(25); //maxLength = 20
+        String middleName = string.repeat(260); //maxLength = 255
         assertEquals(false, UserValidation.isValidMiddleName(middleName));
     }
 
@@ -158,10 +158,10 @@ public class UserValidationTests {
 
     /**
      * Test to see whether true (i.e valid) is returned when middle name
-     * is of the right length.
+     * is of the correct length.
      */
     @Test
-    public void isValidMiddleNameRightLength() {
+    public void isValidMiddleNameCorrectLength() {
         String middleName = "Finlay";
         assertEquals(true, UserValidation.isValidMiddleName(middleName));
     }
@@ -183,7 +183,7 @@ public class UserValidationTests {
     @Test
     public void isValidMiddleNameEqualMaxLength() {
         String string = "Z";
-        String middleName = string.repeat(20); //maxLength = 20
+        String middleName = string.repeat(255); //maxLength = 255
         assertEquals(true, UserValidation.isValidMiddleName(middleName));
     }
 
@@ -206,7 +206,7 @@ public class UserValidationTests {
     @Test
     public void isValidLastNameGreaterThanMaxLength() {
         String string = "A";
-        String lastName = string.repeat(25); //maxLength = 20
+        String lastName = string.repeat(260); //maxLength = 255
         assertEquals(false, UserValidation.isValidLastName(lastName));
     }
 
@@ -252,10 +252,10 @@ public class UserValidationTests {
 
     /**
      * Test to see whether true (i.e valid) is returned when last name
-     * is of the right length.
+     * is of the correct length.
      */
     @Test
-    public void isValidLastNameRightLength() {
+    public void isValidLastNameCorrectLength() {
         String lastName = "Jones";
         assertEquals(true, UserValidation.isValidLastName(lastName));
     }
@@ -276,8 +276,8 @@ public class UserValidationTests {
      */
     @Test
     public void isValidLastNameEqualMaxLength() {
-        String string = "J"; // minLength = 2
-        String lastName = string.repeat(20); //maxLength = 20
+        String string = "J";
+        String lastName = string.repeat(255); //maxLength = 255
         assertEquals(true, UserValidation.isValidLastName(lastName));
     }
 
@@ -290,7 +290,7 @@ public class UserValidationTests {
     @Test
     public void isValidNicknameGreaterThanMaxLength() {
         String string = "A";
-        String nickname = string.repeat(25); //maxLength = 20
+        String nickname = string.repeat(260); //maxLength = 255
         assertEquals(false, UserValidation.isValidNickname(nickname));
     }
 
@@ -336,10 +336,10 @@ public class UserValidationTests {
 
     /**
      * Test to see whether true (i.e valid) is returned when nickname
-     * is of the right length.
+     * is of the correct length.
      */
     @Test
-    public void isValidNicknameRightLength() {
+    public void isValidNicknameCorrectLength() {
         String nickname = "Peps";
         assertEquals(true, UserValidation.isValidNickname(nickname));
     }
@@ -361,7 +361,7 @@ public class UserValidationTests {
     @Test
     public void isValidNicknameEqualMaxLength() {
         String string = "Z";
-        String nickname = string.repeat(20); //maxLength = 20
+        String nickname = string.repeat(255); //maxLength = 255
         assertEquals(true, UserValidation.isValidNickname(nickname));
     }
 
@@ -438,7 +438,7 @@ public class UserValidationTests {
      */
     @Test
     public void isValidEmailEqualToMinLength() {
-        String email = "z@c.a"; // minLength = 3
+        String email = "z@c.a"; // minLength = 5
         assertEquals(true, UserValidation.isValidEmail(email));
     }
 
@@ -546,8 +546,148 @@ public class UserValidationTests {
         assertEquals(true, UserValidation.isValidPhoneNumber(phoneNumber));
     }
 
-    // euqal max length
-    // greater max length
-    // invalid syntax
-    // valid
+    /**
+     * Test to see whether false (i.e invalid) is returned when phone number
+     * has a length greater than max length.
+     */
+    @Test
+    public void isValidPhoneNumberGreaterThanMaxLength() {
+        String phoneNumber = "123 456 789 102 345"; // maxLength = 15
+        assertEquals(false, UserValidation.isValidPhoneNumber(phoneNumber));
+    }
+
+    /**
+     * Test to see whether false (i.e invalid) is returned when phone number
+     * has invalid syntax
+     */
+    @Test
+    public void isValidPhoneNumberInvalidSyntax() {
+        String phoneNumber = "111-222-333%!@#";
+        assertEquals(false, UserValidation.isValidPhoneNumber(phoneNumber));
+    }
+
+    /**
+     * Test to see whether true (i.e valid) is returned when phone number
+     * has valid syntax
+     */
+    @Test
+    public void isValidPhoneNumberValidSyntax() {
+        String phoneNumber = "+64 3 555 0129";
+        assertEquals(true, UserValidation.isValidPhoneNumber(phoneNumber));
+    }
+
+    /**
+     * Test to see whether true (i.e valid) is returned when phone number
+     * has valid syntax and length is equal to max length.
+     */
+    @Test
+    public void isValidPhoneNumberValidSyntaxAndEqualToMaxLength() {
+        String phoneNumber = "+64 32 555 0129"; // maxLength = 15
+        assertEquals(true, UserValidation.isValidPhoneNumber(phoneNumber));
+    }
+
+    // ********************************* PASSWORD ************************************
+
+    /**
+     * Test to see whether false (i.e invalid) is returned when password
+     * length is less than the min length
+     */
+    @Test
+    public void isValidPasswordLessThanMinLength() {
+        String password = "1234567"; // minLength = 8
+        assertEquals(false, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether false (i.e invalid) is returned when password
+     * length is greater than the max length
+     */
+    @Test
+    public void isValidPasswordGreaterThanMaxLength() {
+        String string = "1234567";
+        String password = string.repeat(5); // maxLength = 30
+        assertEquals(false, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether true (i.e valid) is returned when password
+     * length is within range and password contains all required fields.
+     */
+    @Test
+    public void isValidPasswordCorrectLengthAndAllFields() {
+        String password = "123ASD!@#asd";
+        assertEquals(true, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether true (i.e valid) is returned when password
+     * length equals min length and password contains all required fields.
+     */
+    @Test
+    public void isValidPasswordEqualToMinLengthAndAllFields() {
+        String password = "1AD!@#as";
+        assertEquals(true, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether true (i.e valid) is returned when password
+     * length equals max length and password contains all required fields.
+     */
+    @Test
+    public void isValidPasswordEqualToMaxLengthAndAllFields() {
+        String password = "1AD!@#asaaaaaaaaaaaaaaaaaaaaaa"; // maxLength = 30
+        assertEquals(true, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether false (i.e invalid) is returned when password
+     * length is within range, contains all required fields but contains
+     * a space.
+     */
+    @Test
+    public void isValidPasswordContainsSpaceOtherwiseValid() {
+        String password = "1AD!@#asaa aaa";
+        assertEquals(false, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether false (i.e invalid) is returned when password
+     * length is within range, but uppercase letter missing.
+     */
+    @Test
+    public void isValidPasswordCorrectLengthNoUppercase() {
+        String password = "123!@#asd";
+        assertEquals(false, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether false (i.e invalid) is returned when password
+     * length is within range, but number missing.
+     */
+    @Test
+    public void isValidPasswordCorrectLengthNoNumber() {
+        String password = "ASD!@#asd";
+        assertEquals(false, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether false (i.e invalid) is returned when password
+     * length is within range, but symbol missing.
+     */
+    @Test
+    public void isValidPasswordCorrectLengthNoSymbol() {
+        String password = "ASD124asd";
+        assertEquals(false, UserValidation.isValidPassword(password));
+    }
+
+    /**
+     * Test to see whether false (i.e invalid) is returned when password
+     * length is within range, but lowercase letter missing.
+     */
+    @Test
+    public void isValidPasswordCorrectLengthNoLowerCase() {
+        String password = "ASD124#!";
+        assertEquals(false, UserValidation.isValidPassword(password));
+    }
+
 }

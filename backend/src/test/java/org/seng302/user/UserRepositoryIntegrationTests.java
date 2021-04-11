@@ -57,8 +57,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByExistingEmail_thenReturnUser() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -92,8 +92,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByNonExistingEmail_thenDontReturnUser() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -114,8 +114,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByExistingId_thenReturnUser() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -163,8 +163,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByExistingFirstMiddleLastIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -199,8 +199,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByNonExistingFirstMiddleLast_thenDontReturnUserPayload() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -223,8 +223,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByExistingFirstLastIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -256,8 +256,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByNonExistingFirstLast_thenDontReturnUserPayload() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -279,8 +279,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByExistingNicknameOrFirstOrLastOrMiddleIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
@@ -328,8 +328,8 @@ public class UserRepositoryIntegrationTests {
     public void whenFindByNonExistingNicknameOrFirstOrLastOrMiddle_thenDontReturnUserPayload() throws Exception {
         // given
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", address, "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);

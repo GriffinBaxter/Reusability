@@ -40,10 +40,10 @@ public class UserTests {
                 "testnick",
                 "testbiography",
                 "testemail@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
                 address,
-                "testpassword",
+                "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -103,7 +103,7 @@ public class UserTests {
                     "nick",
                     "bio",
                     "test@example.com",
-                    LocalDate.of(2021, Month.JANUARY, 1),
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                     "123456789",
                     address,
                     "",
@@ -128,7 +128,7 @@ public class UserTests {
                     "nick",
                     "bio",
                     "test@example.com",
-                    LocalDate.of(2021, Month.JANUARY, 1),
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                     "123456789",
                     address,
                     "   ",
@@ -178,7 +178,7 @@ public class UserTests {
                     "nick",
                     "bio",
                     "test@example.com",
-                    LocalDate.of(2021, Month.JANUARY, 1),
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                     "123456789abc",
                     address,
                     "password",
@@ -202,10 +202,10 @@ public class UserTests {
                 "",
                 "",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
                 address,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 Role.USER
         );
@@ -226,10 +226,10 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
                 address,
-                "password",
+                "Password123!",
                 LocalDateTime.now().minusMonths(2),
                 Role.USER
         );
@@ -249,10 +249,10 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
                 address,
-                "password",
+                "Password123!",
                 LocalDateTime.now().minusYears(1).minusMonths(2),
                 Role.USER
         );
@@ -271,10 +271,10 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
                 address,
-                "password",
+                "Password123!",
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
@@ -293,14 +293,14 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
                 address,
-                "qaz123...",
+                "Password123!",
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
-        assertEquals("cWF6MTIzLi4u", user.getPassword());
+        assertEquals("UGFzc3dvcmQxMjMh", user.getPassword());
     }
 
     /**
@@ -315,14 +315,14 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
                 address,
-                "qaz123...",
+                "Password123!",
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
-        assertTrue(user.verifyPassword("qaz123..."));
+        assertTrue(user.verifyPassword("Password123!"));
     }
 
     /**

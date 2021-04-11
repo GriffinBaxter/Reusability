@@ -7,21 +7,21 @@ public class UserValidation {
 
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
-    private static final Integer FIRST_NAME_MAX_LENGTH = 20;
+    private static final Integer FIRST_NAME_MAX_LENGTH = 255;
 
     private static final Integer MIDDLE_NAME_MIN_LENGTH = 0;
-    private static final Integer MIDDLE_NAME_MAX_LENGTH = 20;
+    private static final Integer MIDDLE_NAME_MAX_LENGTH = 255;
 
     private static final Integer LAST_NAME_MIN_LENGTH = 2;
-    private static final Integer LAST_NAME_MAX_LENGTH = 20;
+    private static final Integer LAST_NAME_MAX_LENGTH = 255;
 
     private static final Integer NICKNAME_MIN_LENGTH = 0;
-    private static final Integer NICKNAME_MAX_LENGTH = 20;
+    private static final Integer NICKNAME_MAX_LENGTH = 255;
 
     private static final Integer BIO_MIN_LENGTH = 0;
     private static final Integer BIO_MAX_LENGTH = 600;
 
-    private static final Integer EMAIL_MIN_LENGTH = 3;
+    private static final Integer EMAIL_MIN_LENGTH = 5;
     private static final Integer EMAIL_MAX_LENGTH = 30;
 
     private static final Integer MIN_AGE = 13;
@@ -136,7 +136,7 @@ public class UserValidation {
     public static boolean isValidPassword(String password) {
         return (password.length() >= PASSWORD_MIN_LENGTH) &&
                 (password.length() <= PASSWORD_MAX_LENGTH) &&
-                (password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,30})"));
+                (password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=\\S+$).{8,30}$"));
     }
 
 }
