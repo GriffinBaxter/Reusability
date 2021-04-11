@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -46,6 +48,9 @@ public class SearchUserByNameTests {
     private User searchUser5;
     private User searchUser6;
     private User searchUser7;
+    private User searchUser8;
+    private User searchUser9;
+    private User searchUser10;
     private List<User> searchUsers;
 
     /**
@@ -205,8 +210,53 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
+        searchUser8 = new User(
+                "Alex",
+                "Hine",
+                "Toal",
+                "Generic",
+                "Biography",
+                "test@email.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+
+        searchUser9 = new User(
+                "Alex",
+                "Hasdsadine",
+                "Ben",
+                "Generic",
+                "Biography",
+                "test@email.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+
+        searchUser10 = new User(
+                "Alex",
+                "Hine",
+                "Ben",
+                "Generic",
+                "Biography",
+                "testaa@email.com",
+                LocalDate.of(2020, 2, 2),
+                "0271316",
+                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
+                "password",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+
         searchUsers = List.of(dGAA, user, anotherUser, searchUser1, searchUser2, searchUser3, searchUser4,
-                searchUser5, searchUser6, searchUser7);
+                searchUser5, searchUser6, searchUser7, searchUser8, searchUser9, searchUser10);
 
         for (User searchUser: searchUsers) {
             entityManager.persist(searchUser);
@@ -232,14 +282,19 @@ public class SearchUserByNameTests {
         orderedNicknames.add("Fran");
         orderedNicknames.add("Fran");
         orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
         orderedNicknames.add("Gm");
         orderedNicknames.add("Min");
         orderedNicknames.add("Murphy");
         orderedNicknames.add("nick");
         orderedNicknames.add("testnick");
 
+
         // when
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        //assertThat(userPage.getContent()).isEqualTo(0);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -266,6 +321,9 @@ public class SearchUserByNameTests {
         orderedNicknames.add("Min");
         orderedNicknames.add("Gm");
         orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
         orderedNicknames.add("Fran");
         orderedNicknames.add("Fran");
         orderedNicknames.add("Cra");
@@ -283,12 +341,241 @@ public class SearchUserByNameTests {
 
     }
 
+    /**
+     * Tests that the search functionality will order users by email in ascending order i.e. in alphabetical order.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnEmailOrderedUsersAscending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedEmail = new ArrayList<>();
+        orderedEmail.add("chad.taylor@example.com");
+        orderedEmail.add("email@email.com");
+        orderedEmail.add("example@example.com");
+        orderedEmail.add("francisca.benitez@example.com");
+        orderedEmail.add("francisca.benitez@example.com");
+        orderedEmail.add("minttu.wainio@example.com");
+        orderedEmail.add("naomi.wilson@example.com");
+        orderedEmail.add("seth.murphy@example.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("testaa@email.com");
+        orderedEmail.add("testemail@email.com");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+       // assertThat(userPage.getContent()).isEqualTo(90);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getEmail()).isEqualTo(orderedEmail.get(i));
+        }
+
+    }
+
+    /**
+     * Tests that the search functionality will order users by email in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnEmailOrderedUsersDescending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedEmail = new ArrayList<>();
+
+        orderedEmail.add("testemail@email.com");
+        orderedEmail.add("testaa@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("seth.murphy@example.com");
+        orderedEmail.add("naomi.wilson@example.com");
+        orderedEmail.add("minttu.wainio@example.com");
+        orderedEmail.add("francisca.benitez@example.com");
+        orderedEmail.add("francisca.benitez@example.com");
+        orderedEmail.add("example@example.com");
+        orderedEmail.add("email@email.com");
+        orderedEmail.add("chad.taylor@example.com");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        //assertThat(userPage.getContent()).isEqualTo(90);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getEmail()).isEqualTo(orderedEmail.get(i));
+        }
+
+    }
+
+    /**
+     * Tests that the search functionality will order users by address in ascending order i.e. in alphabetical order.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnAddressOrderedUsersAscending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.asc("homeAddress").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedAddress = new ArrayList<>();
+        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+        orderedAddress.add("14798 Terry Highway, Queenstown-Lakes District, New Zealand");
+        orderedAddress.add("186 Simpsons Road, Ashburton, Canterbury, New Zealand");
+        orderedAddress.add("240 Bernhard Run, Southland, New Zealand");
+        orderedAddress.add("325 Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("3396 Bertram Parkway, Central Otago, New Zealand");
+        orderedAddress.add("47993 Norwood Garden, Mambere-Kadei Central African Republic, Africa");
+        orderedAddress.add("57 Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands");
+        orderedAddress.add("80416 Jon Loop, Shaanxi, China");
+        orderedAddress.add("9205 Monique Vista, Bururi, Bigomogomo, Africa");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        // assertThat(userPage.getContent()).isEqualTo(90);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getHomeAddress()).isEqualTo(orderedAddress.get(i));
+        }
+
+    }
+
+    /**
+     * Tests that the search functionality will order users by address in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnAddressOrderedUsersDescending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.desc("homeAddress").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedAddress = new ArrayList<>();
+
+        orderedAddress.add("9205 Monique Vista, Bururi, Bigomogomo, Africa");
+        orderedAddress.add("80416 Jon Loop, Shaanxi, China");
+        orderedAddress.add("57 Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands");
+        orderedAddress.add("47993 Norwood Garden, Mambere-Kadei Central African Republic, Africa");
+        orderedAddress.add("3396 Bertram Parkway, Central Otago, New Zealand");
+        orderedAddress.add("325 Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("240 Bernhard Run, Southland, New Zealand");
+        orderedAddress.add("186 Simpsons Road, Ashburton, Canterbury, New Zealand");
+        orderedAddress.add("14798 Terry Highway, Queenstown-Lakes District, New Zealand");
+        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        //assertThat(userPage.getContent()).isEqualTo(90);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getHomeAddress()).isEqualTo(orderedAddress.get(i));
+        }
+
+    }
+
+    /**
+     * Tests that the search functionality will order users by their full name (first+middle+last) in ascending order i.e. in alphabetical order.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFullNameOrderedUsersAscending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 14;
+        Sort sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedFullName = new ArrayList<>();
+        orderedFullName.add("Alex Ben Hasdsadine");
+        orderedFullName.add("Alex Ben Hine");
+        orderedFullName.add("Alex Ben Hine");
+        orderedFullName.add("Alex Toal Hine");
+        orderedFullName.add("Caedence middle last");
+        orderedFullName.add("Crad Barth Taylor");
+        orderedFullName.add("Francisca Denali Bznitez");
+        orderedFullName.add("Francisca T Benitez");
+        orderedFullName.add("Johnny Pete Doe");
+        orderedFullName.add("Minttu A Rine");
+        orderedFullName.add("Naomi I Wilson");
+        orderedFullName.add("Seti Tea Rodger");
+        orderedFullName.add("testfirst testmiddle Dentri");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        //assertThat(userPage.getContent()).isEqualTo(90);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            String fullName = userPage.getContent().get(i).getFirstName() + " " + userPage.getContent().get(i).getMiddleName() + " " + userPage.getContent().get(i).getLastName();
+            assertThat(fullName).isEqualTo(orderedFullName.get(i));
+        }
+
+    }
+
+    /**
+     * Tests that the search functionality will order users by their full name (first+middle+last) in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFullNameOrderedUsersDescending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 14;
+        Sort sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.desc("email").ignoreCase()));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedFullName = new ArrayList<>();
+
+        orderedFullName.add("testfirst testmiddle Dentri");
+        orderedFullName.add("Seti Tea Rodger");
+        orderedFullName.add("Naomi I Wilson");
+        orderedFullName.add("Minttu A Rine");
+        orderedFullName.add("Johnny Pete Doe");
+        orderedFullName.add("Francisca T Benitez");
+        orderedFullName.add("Francisca Denali Bznitez");
+        orderedFullName.add("Crad Barth Taylor");
+        orderedFullName.add("Caedence middle last");
+        orderedFullName.add("Alex Toal Hine");
+        orderedFullName.add("Alex Ben Hine");
+        orderedFullName.add("Alex Ben Hine");
+        orderedFullName.add("Alex Ben Hasdsadine");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        //assertThat(userPage.getContent()).isEqualTo(90);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            String fullName = userPage.getContent().get(i).getFirstName() + " " + userPage.getContent().get(i).getMiddleName() + " " + userPage.getContent().get(i).getLastName();
+            assertThat(fullName).isEqualTo(orderedFullName.get(i));
+        }
+
+    }
+
     /*
 
-    Full name ascending/descending
+    Full name ascending/descending:
+    Sort by name in general (simple case)
+    Check sort with same firstname, different middle
+    Check sort with same firstname, different last
+    Check sort with same firstname, same middle, different last
+
+    Ordering is consistent with duplicate values (secondary order by needed)
+
+
     email ascending/descending
     address ascending/descending
-    Ordering is consistent with duplicate values (secondary order by needed)
+    nickname asc/desc
 
     Filter by firstname
     Filter by middlename
@@ -316,7 +603,7 @@ public class SearchUserByNameTests {
     public void whenFindAllUsersByNames_thenReturnPageHalfFull() throws Exception {
         // given
         int pageNo = 0;
-        // Page size 20 means page will be half full with the default 10 users inserted
+        // Page size 20 means page will be half full with the default 13 users inserted
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
@@ -324,7 +611,7 @@ public class SearchUserByNameTests {
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
 
         // then
-        assertThat(userPage.getTotalElements()).isEqualTo(10);
+        assertThat(userPage.getTotalElements()).isEqualTo(13);
         for (int i = 0; i < searchUsers.size(); i++) {
             assertThat(userPage.getContent().get(i)).isEqualTo(searchUsers.get(i));
         }
@@ -346,7 +633,7 @@ public class SearchUserByNameTests {
         Page<User> userPage5 = userRepository.findAllUsersByNames("", PageRequest.of(4, pageSize));
 
         // then
-        assertThat(userPage2.getTotalPages()).isEqualTo(5);
+        assertThat(userPage2.getTotalPages()).isEqualTo(7);
         assertThat(userPage2.getContent().get(0)).isEqualTo(searchUsers.get(2));
         assertThat(userPage2.getContent().get(1)).isEqualTo(searchUsers.get(3));
         assertThat(userPage3.getContent().get(0)).isEqualTo(searchUsers.get(4));
@@ -385,7 +672,7 @@ public class SearchUserByNameTests {
     public void whenFindAllUsersByNames_thenReturnFullPage() throws Exception {
         // given
         int pageNo = 0;
-        // Page size 8 means tested page will be full as there are 10 total values
+        // Page size 8 means tested page will be full as there are 13 total values
         int pageSize = 8;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
@@ -410,16 +697,16 @@ public class SearchUserByNameTests {
     @Test
     public void whenFindAllUsersByNames_thenReturnGloballyOrderedUsers() throws Exception {
         // given
-        int pageNo = 2;
+        int pageNo = 3;
         int pageSize = 3;
         Sort sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase());
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-
+        //assertThat(userPage.getContent()).isEqualTo(0);
         // then
-        assertThat(userPage.getTotalPages()).isEqualTo(4);
+        assertThat(userPage.getTotalPages()).isEqualTo(5);
         assertThat(userPage.getSize()).isEqualTo(3);
         assertThat(userPage.getContent().get(0).getNickname()).isEqualTo("Min");
         assertThat(userPage.getContent().get(1).getNickname()).isEqualTo("Murphy");
@@ -462,7 +749,7 @@ public class SearchUserByNameTests {
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
 
         // then
-        assertThat(userPage.getTotalElements()).isEqualTo(10);
+        assertThat(userPage.getTotalElements()).isEqualTo(13);
     }
 
 
@@ -484,11 +771,12 @@ public class SearchUserByNameTests {
         Page<User> userPage = userRepository.findAllUsersByNames("h", pageable);
 
         // then
-        assertThat(userPage.getTotalElements()).isEqualTo(4);
+        assertThat(userPage.getSize()).isEqualTo(5);
         assertThat(userPage.getContent().get(0).getFirstName()).isEqualTo("Johnny");
         assertThat(userPage.getContent().get(1).getLastName()).isEqualTo("Hine");
         assertThat(userPage.getContent().get(2).getMiddleName()).isEqualTo("Barth");
         assertThat(userPage.getContent().get(3).getNickname()).isEqualTo("Murphy");
+        assertThat(userPage.getContent().get(4).getLastName()).isEqualTo("Hine");
 
     }
 
@@ -579,8 +867,10 @@ public class SearchUserByNameTests {
         Page<User> userPage = userRepository.findAllUsersByNames("hine", pageable);
 
         // then
-        assertThat(userPage.getTotalElements()).isEqualTo(1);
+        assertThat(userPage.getTotalElements()).isEqualTo(3);
         assertThat(userPage.getContent().get(0).getLastName()).isEqualTo("Hine");
+        assertThat(userPage.getContent().get(1).getLastName()).isEqualTo("Hine");
+        assertThat(userPage.getContent().get(2).getLastName()).isEqualTo("Hine");
     }
 
     /**
