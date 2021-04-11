@@ -145,12 +145,13 @@ public class Address {
 
     public void addUser(User user) {
         this.users.add(user);
+        user.setHomeAddress(this);
     }
 
     public void removeUser(User user) {
         this.users.remove(user);
+        user.setHomeAddress(null);
     }
-
 
     public int getId() {
         return id;
@@ -170,10 +171,12 @@ public class Address {
 
     public void addBusiness(Business business) {
         this.businesses.add(business);
+        business.setAddress(this);
     }
 
     public void removeBusiness(Business business) {
         this.businesses.remove(business);
+        business.setAddress(null);
     }
 
     /**
@@ -204,6 +207,22 @@ public class Address {
 
         return new Address(streetNumber, streetName, city, region, country, postcode);
     }
+
+    /**
+     * Convert an Address object into an AddressPayload
+     * @return an AddressPayload object
+     */
+    public AddressPayload toAddressPayload() throws Exception {
+        return new AddressPayload(
+                this.streetNumber,
+                this.streetName,
+                this.city,
+                this.region,
+                this.country,
+                this.postcode
+        );
+    }
+
 
     /**
      * Make an address object to json form.
