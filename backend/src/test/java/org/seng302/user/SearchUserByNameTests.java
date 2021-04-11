@@ -221,7 +221,7 @@ public class SearchUserByNameTests {
      */
     @Test
     public void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersAscending() throws Exception {
-
+        // given
         int pageNo = 0;
         int pageSize = 11;
         Sort sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase());
@@ -253,7 +253,7 @@ public class SearchUserByNameTests {
      */
     @Test
     public void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersDescending() throws Exception {
-
+        // given
         int pageNo = 0;
         int pageSize = 11;
         Sort sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase());
@@ -290,20 +290,143 @@ public class SearchUserByNameTests {
     address ascending/descending
     Ordering is consistent with duplicate values (secondary order by needed)
 
-    Pagination test half full page
-    Pagination test that we receive page 2 or later
-    Pagination test empty page
-    Pagination test full page
-    Pagination test ordering works across pages, not just within a page
+    Filter by firstname
+    Filter by middlename
+    Filter by lastname
+    Filter by firstname and middlename
+    Filter by firstname and lastname
+    Filter by middlename and lastname
+    Filter by all three
+    Filter by nickname
+    Filter by empty string gives all users
+    Filter by non-existent input
+
+    Pagination test half full page |
+    Pagination test that we receive page 2 or later |
+    Pagination test empty page |
+    Pagination test full page |
+    Pagination test ordering works across pages, not just within a page |
 
      */
 
+    /**
+     * Tests that the search functionality will return paginated results correctly when the page is not full with users.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnPageHalfFull() throws Exception {
+        // given
+        int pageNo = 0;
+        // Page size 20 means page will be half full with the default 10 users inserted
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(10);
+        for (int i = 0; i < searchUsers.size(); i++) {
+            assertThat(userPage.getContent().get(i)).isEqualTo(searchUsers.get(i));
+        }
+
+    }
+
+    /**
+     * Tests that the search functionality will return pages other than the first one with correct users.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnPagesFromTwoOnward() throws Exception {
+        // given
+        int pageSize = 2;
+
+        // when
+        Page<User> userPage2 = userRepository.findAllUsersByNames("", PageRequest.of(1, pageSize));
+        Page<User> userPage3 = userRepository.findAllUsersByNames("", PageRequest.of(2, pageSize));
+        Page<User> userPage4 = userRepository.findAllUsersByNames("", PageRequest.of(3, pageSize));
+        Page<User> userPage5 = userRepository.findAllUsersByNames("", PageRequest.of(4, pageSize));
+
+        // then
+        assertThat(userPage2.getTotalPages()).isEqualTo(5);
+        assertThat(userPage2.getContent().get(0)).isEqualTo(searchUsers.get(2));
+        assertThat(userPage2.getContent().get(1)).isEqualTo(searchUsers.get(3));
+        assertThat(userPage3.getContent().get(0)).isEqualTo(searchUsers.get(4));
+        assertThat(userPage3.getContent().get(1)).isEqualTo(searchUsers.get(5));
+        assertThat(userPage4.getContent().get(0)).isEqualTo(searchUsers.get(6));
+        assertThat(userPage4.getContent().get(1)).isEqualTo(searchUsers.get(7));
+        assertThat(userPage5.getContent().get(0)).isEqualTo(searchUsers.get(8));
+        assertThat(userPage5.getContent().get(1)).isEqualTo(searchUsers.get(9));
+
+    }
+
+    /**
+     * Tests that the search functionality will return an empty page when given a filter value
+     * that does not match anything in the database.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnEmptyPage() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("ThisValueDoesNotExist", pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(0);
+        assertThat(userPage.getTotalPages()).isEqualTo(0);
+
+    }
+
+    /**
+     * Tests that the search functionality will return the page correctly when the page is full.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnFullPage() throws Exception {
+        // given
+        int pageNo = 0;
+        // Page size 8 means tested page will be full as there are 10 total values
+        int pageSize = 8;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+
+        // then
+        assertThat(userPage.getTotalPages()).isEqualTo(2);
+        assertThat(userPage.getSize()).isEqualTo(8);
+        for (int i = 0; i < userPage.getSize(); i++) {
+            assertThat(userPage.getContent().get(i)).isEqualTo(searchUsers.get(i));
+        }
 
 
+    }
 
+    /**
+     * Tests that the search functionality ordering works across pages, not just within a single page.
+     *  I.e. That data is ordered 'globally' from all results in the database,
+     *      not just the few values that are returned are correctly ordered.
+     */
+    @Test
+    public void whenFindAllUsersByNames_thenReturnGloballyOrderedUsers() throws Exception {
+        // given
+        int pageNo = 2;
+        int pageSize = 3;
+        Sort sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
-//    Filter by empty string gives all users
-//    Filter by non-existent input
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+
+        // then
+        assertThat(userPage.getTotalPages()).isEqualTo(4);
+        assertThat(userPage.getSize()).isEqualTo(3);
+        assertThat(userPage.getContent().get(0).getNickname()).isEqualTo("Min");
+        assertThat(userPage.getContent().get(1).getNickname()).isEqualTo("nick");
+        assertThat(userPage.getContent().get(2).getNickname()).isEqualTo("S");
+
+    }
+
 
 
     /**
