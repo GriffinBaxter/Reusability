@@ -201,7 +201,6 @@ public class UserResource {
         Sort sortBy = null;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
-        // TODO add secondary sort for consistency with duplicate values
         if (orderBy.equals("fullNameASC")) {
 
             sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
