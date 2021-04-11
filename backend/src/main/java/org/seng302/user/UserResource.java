@@ -204,19 +204,19 @@ public class UserResource {
         // TODO add secondary sort for consistency with duplicate values
         if (orderBy.equals("fullNameASC")) {
 
-            sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase()));
+            sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
         } else if (orderBy.equals("fullNameDESC")) {
 
-            sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase()));
+            sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
         } else if (orderBy.equals("nicknameASC")) {
 
-            sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase());
+            sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
         } else if (orderBy.equals("nicknameDESC")) {
 
-            sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase());
+            sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
         } else if (orderBy.equals("emailASC")) {
 
@@ -228,11 +228,11 @@ public class UserResource {
 
         } else if (orderBy.equals("addressASC")) {
 
-            sortBy = Sort.by(Sort.Order.asc("homeAddress").ignoreCase());
+            sortBy = Sort.by(Sort.Order.asc("homeAddress").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
         } else if (orderBy.equals("addressDESC")) {
 
-            sortBy = Sort.by(Sort.Order.desc("homeAddress").ignoreCase());
+            sortBy = Sort.by(Sort.Order.desc("homeAddress").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
         } else {
             // Invalid orderBy input
