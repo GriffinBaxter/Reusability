@@ -49,7 +49,7 @@
     </div>
 
   </div>
-    <FooterSecure></FooterSecure>
+    <FooterSecure class="footer"></FooterSecure>
   </div>
 </template>
 
@@ -105,8 +105,10 @@ export default {
   visibility: hidden;
 }
 
-.all-but-footer {
-  min-height: calc(100vh - 50px);
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 
 input:focus, textarea:focus {
