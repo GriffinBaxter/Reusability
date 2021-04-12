@@ -327,13 +327,67 @@ export default {
         if (this.addressAscending) {
           this.userList.sort(function (a, b) {
 
-            let address1 = a.homeAddress.split(';');
-            address1 = address1.slice(2, address.length);
-            address1 = address1.join(", ");
+            let city = "";
+            if (a.homeAddress.city) {
+              city = a.homeAddress.city;
+            }
+            let region = "";
+            if (a.homeAddress.region) {
+              region = a.homeAddress.region;
+            }
+            let country = "";
+            if (a.homeAddress.country) {
+              country = a.homeAddress.country;
+            }
 
-            let address2 = b.homeAddress.split(';');
-            address2 = address2.slice(2, address.length);
-            address2 = address2.join(", ");
+            let address1 = "";
+            if (city !== "") {
+              address1 = address1.concat(city);
+            }
+            if (city !== "" && region !== "") {
+              address1 = address1.concat(", ", region);
+            } else {
+              address1 = address1.concat(region);
+            }
+
+            if (region !== "" && country !== "") {
+              address1 = address1.concat(", ", country);
+            } else if (city !== "" && country !== "") {
+              address1 = address1.concat(", ", country);
+            } else {
+              address1 = address1.concat(country);
+            }
+
+            city = "";
+            if (b.homeAddress.city) {
+              city = b.homeAddress.city;
+            }
+            region = "";
+            if (b.homeAddress.region) {
+              region = b.homeAddress.region;
+            }
+            country = "";
+            if (b.homeAddress.country) {
+              country = b.homeAddress.country;
+            }
+
+            let address2 = "";
+            if (city !== "") {
+              address2 = address2.concat(city);
+            }
+            if (city !== "" && region !== "") {
+              address2 = address2.concat(", ", region);
+            } else {
+              address2 = address2.concat(region);
+            }
+
+            if (region !== "" && country !== "") {
+              address2 = address2.concat(", ", country);
+            } else if (city !== "" && country !== "") {
+              address2 = address2.concat(", ", country);
+            } else {
+              address2 = address2.concat(country);
+            }
 
             if (address1 > address2) {
               return -1;
@@ -347,13 +401,67 @@ export default {
         } else {
           this.userList.sort(function (a, b) {
 
-            let address1 = a.homeAddress.split(';');
-            address1 = address1.slice(2, address.length);
-            address1 = address1.join(", ");
+            let city = "";
+            if (a.homeAddress.city) {
+              city = a.homeAddress.city;
+            }
+            let region = "";
+            if (a.homeAddress.region) {
+              region = a.homeAddress.region;
+            }
+            let country = "";
+            if (a.homeAddress.country) {
+              country = a.homeAddress.country;
+            }
 
-            let address2 = b.homeAddress.split(';');
-            address2 = address2.slice(2, address.length);
-            address2 = address2.join(", ");
+            let address1 = "";
+            if (city !== "") {
+              address1 = address1.concat(city);
+            }
+            if (city !== "" && region !== "") {
+              address1 = address1.concat(", ", region);
+            } else {
+              address1 = address1.concat(region);
+            }
+
+            if (region !== "" && country !== "") {
+              address1 = address1.concat(", ", country);
+            } else if (city !== "" && country !== "") {
+              address1 = address1.concat(", ", country);
+            } else {
+              address1 = address1.concat(country);
+            }
+
+            city = "";
+            if (b.homeAddress.city) {
+              city = b.homeAddress.city;
+            }
+            region = "";
+            if (b.homeAddress.region) {
+              region = b.homeAddress.region;
+            }
+            country = "";
+            if (b.homeAddress.country) {
+              country = b.homeAddress.country;
+            }
+
+            let address2 = "";
+            if (city !== "") {
+              address2 = address2.concat(city);
+            }
+            if (city !== "" && region !== "") {
+              address2 = address2.concat(", ", region);
+            } else {
+              address2 = address2.concat(region);
+            }
+
+            if (region !== "" && country !== "") {
+              address2 = address2.concat(", ", country);
+            } else if (city !== "" && country !== "") {
+              address2 = address2.concat(", ", country);
+            } else {
+              address2 = address2.concat(country);
+            }
 
             if (address1 < address2) {
               return -1;
@@ -452,36 +560,8 @@ export default {
           const addressCol = document.createElement("div");
           addressCol.setAttribute("class", `${classInput}`);
           addressCol.setAttribute("id", `${i}-address`);
-          let city = "";
-          if (this.userList[i].homeAddress.city) {
-            city = this.userList[i].homeAddress.city;
-          }
-          let region = "";
-          if (this.userList[i].homeAddress.region) {
-            region = this.userList[i].homeAddress.region;
-          }
-          let country = "";
-          if (this.userList[i].homeAddress.country) {
-            country = this.userList[i].homeAddress.country;
-          }
 
-          let address = "";
-          if (city !== "") {
-            address = address.concat(city);
-          }
-          if (city !== "" && region !== "") {
-            address = address.concat(", ", region);
-          } else {
-            address = address.concat(region);
-          }
-
-          if (region !== "" && country !== "") {
-            address = address.concat(", ", country);
-          } else if (city !== "" && country !== "") {
-            address = address.concat(", ", country);
-          } else {
-            address = address.concat(country);
-          }
+          const address = this.getAddress(this.userList[i]);
 
           addressCol.innerText = address
           userRow.appendChild(addressCol);
@@ -544,8 +624,46 @@ export default {
       if (document.contains(document.getElementById('showingRow'))) {
         document.getElementById('showingRow').remove();
       }
-
     },
+
+    /*
+     * Creates a string which represents a user's address.
+     */
+    getAddress(user) {
+      let city = "";
+      if (user.homeAddress.city) {
+        city = user.homeAddress.city;
+      }
+      let region = "";
+      if (user.homeAddress.region) {
+        region = user.homeAddress.region;
+      }
+      let country = "";
+      if (user.homeAddress.country) {
+        country = user.homeAddress.country;
+      }
+
+      let address = "";
+      if (city !== "") {
+        address = address.concat(city);
+      }
+      if (city !== "" && region !== "") {
+        address = address.concat(", ", region);
+      } else {
+        address = address.concat(region);
+      }
+
+      if (region !== "" && country !== "") {
+        address = address.concat(", ", country);
+      } else if (city !== "" && country !== "") {
+        address = address.concat(", ", country);
+      } else {
+        address = address.concat(country);
+      }
+
+      return address;
+    },
+
   },
   mounted() {
     /*
