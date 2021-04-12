@@ -34,7 +34,7 @@
               <!--- Business specific account links -->
               <li class="nav-item dropdown" v-if="isBusinessAccount">
 
-                <!-- Navbar togle drop down -->
+                <!-- Navbar toggle drop down -->
                 <a class="nav-link dropdown-toggle" role="button" @click="() => {
                   this.showBusinessDropdown = toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown)
                 }">
@@ -58,6 +58,25 @@
 
               </li>
 
+              <!-- Interact As -->
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" role="button" @click="() => {
+                  this.showInteractMenu = toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu)
+                  }">
+
+                  <img src="../../public/sample_profile_image.jpg" width="30px" class="rounded-circle img-thumbnail" alt="Acting as image" id="actAsImg"/>
+                  {{actAs}}
+                </a>
+
+                <div id="interactDropdownLinksWrapper">
+                  <ul class="dropdown-menu show" id="interactDropdownLinks" >
+                    <li class="nav-item" v-for="(act, index) in interactAs" :key = "index" @click="itemClicked(index)" >
+                      <a class="nav-link">{{act.name}}</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
               <!-- Log out link-->
               <li class="nav-item">
                 <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
@@ -74,6 +93,7 @@
 
 <script>
 import Cookies from "js-cookie";
+import Api from "@/Api";
 
 export default {
   name: "Navbar",
@@ -93,9 +113,15 @@ export default {
   data() {
     return {
 
-      // buisness dropdown variables
+      // business dropdown variables
       showBusinessDropdown: false,
-
+      // Interact as Menu
+      showInteractMenu: false,
+      businesses: [],
+      interactAs: [],
+      actAsId: null,
+      actAs: "",
+      currentUser:"",
       // navbar required variables
       showNavbar: false,
       navbarMaxHeight: null,                                     // max hieght of the navbar pixels
@@ -104,6 +130,25 @@ export default {
     }
   },
   methods: {
+    /**
+     * Gets information about the current logged in user
+     */
+    getUserData() {
+      const currentID = Cookies.get('userID');
+      Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
+
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noUser'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else {
+          this.$router.push({path: '/noUser'});
+          console.log(error.message);
+        }
+      })
+    },
     /**
      * Calculates the target maximum height for the navbar once it needs to open.
      * @return Returns the max-height in pixels that is required for the links to appear on the screen.
@@ -209,9 +254,68 @@ export default {
       Cookies.remove('name', {path: '/'}); // removed!
       Cookies.remove('userID');
       await this.$router.push({name: 'Login'});
+    },
+    /**
+     * Shows Interact As Dropdown menu
+     */
+    showInteract() {
+      this.showInteractMenu = !this.showInteractMenu;
+    },
+    /**
+     * Refreshes dropdown list for interact as
+     */
+    refreshDropdown() {
+      if (this.currentUser.nickname == null)
+      {
+        this.interactAs = [ {id:this.currentUser.id, name:this.currentUser.firstName} ];
+      } else {
+        this.interactAs = [ {id:this.currentUser.id, name:this.currentUser.nickname} ];
+      }
+      for (let i=0; i<this.businesses.length; i++) {
+        this.interactAs.push(this.businesses[i]);
+      }
+    },
+    /**
+     * Sets who the user is interacting as
+     * @param index of dropdown clicked
+     */
+    itemClicked(index) {
+      this.showInteractMenu = this.toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu)
+      if (index === 0)
+      {
+        // Delete Cookie
+        Cookies.remove('actAs');
+        //
+        this.actAsId = null;
+        if (this.currentUser.nickname) {
+          this.actAs = this.currentUser.nickname;
+        } else {
+          this.actAs = this.currentUser.firstName;
+        }
+      } else {
+        this.thumbnail = null;
+        Cookies.set('actAs', this.interactAs[index].id);
+        this.actAsId = this.interactAs[index].id;
+        this.actAs = this.interactAs[index].name;
+      }
+    },
+    setCurUser(response) {
+      this.currentUser = response;
+      if (Cookies.get('actAs')) {
+        this.actAsId = Cookies.get('actAs');
+      } else {
+        if (response.nickname == null) {
+          this.actAs = response.firstName;
+        } else {
+          this.actAs = response.nickname;
+        }
+      }
+      this.businesses = response.businessesAdministered;
+      this.refreshDropdown();
     }
   },
   mounted() {
+    this.getUserData();
     // Sample the navbar max height at mounting
     this.navbarMaxHeight = this.getNavbarMaxHeight();
 
@@ -222,6 +326,7 @@ export default {
 
     // Set the inital height for the navbar and the dropdown
     this.toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown, true);
+    this.toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu, true);
     this.toggleNavbar(true)
   }
 
@@ -232,6 +337,10 @@ export default {
 
   .logo-container {
     position: center;
+  }
+
+  #interactDropdownLinksWrapper {
+    width:100%;
   }
 
   #logoImage {
@@ -272,7 +381,7 @@ export default {
       overflow: hidden;
     }
 
-  #businessDropdownLinksWrapper{
+  #businessDropdownLinksWrapper, #interactDropdownLinksWrapper{
     position: relative;
     overflow: hidden;
   }
@@ -295,7 +404,7 @@ export default {
       overflow: visible;
     }
 
-    #businessDropdownLinksWrapper{
+    #businessDropdownLinksWrapper, #interactDropdownLinksWrapper{
       position: absolute;
     }
 
@@ -318,7 +427,6 @@ export default {
 .active {
   background-color: #2eda77;
 }
-
 
 
 </style>

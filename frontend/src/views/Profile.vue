@@ -141,7 +141,6 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import {UserRole} from '../components/User'
 
 export default {
   name: "Profile",
