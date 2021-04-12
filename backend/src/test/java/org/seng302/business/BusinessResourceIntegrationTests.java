@@ -69,6 +69,7 @@ public class BusinessResourceIntegrationTests {
                 "New Zealand",
                 "90210"
         );
+        addressRepository.save(address);
         user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -91,7 +92,6 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
                 user
         );
-        addressRepository.save(address);
         userRepository.save(user);
         businessRepository.save(business);
     }

@@ -263,6 +263,21 @@ public class BusinessRepositoryIntegrationTests {
                 "90210"
         );
 
+        entityManager.persist(address);
+        entityManager.flush();
+
+        Address nonExistentAddress = new Address(
+                "2/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+
+        entityManager.persist(nonExistentAddress);
+        entityManager.flush();
+
         Business business = new Business(user.getId(),
                 "example name",
                 "some text",
@@ -276,7 +291,7 @@ public class BusinessRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        listFound = businessRepository.findBusinessesByAddress(address);
+        listFound = businessRepository.findBusinessesByAddress(nonExistentAddress);
 
         // then
         assertThat(listFound.isEmpty()).isTrue();
