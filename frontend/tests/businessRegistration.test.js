@@ -393,86 +393,137 @@ test('Business address with input that contains the sample data\'s business addr
     ).toBe(expectedMessage);
 })
 
-// ************************************************ Street Address Tests ***********************************************
+// ************************************************ Street Number Tests ************************************************
 
 /**
- * Testing that an error message is returned when the inputted street address is greater than the maximum length
+ * Testing that an error message is returned when the inputted street number is greater than the maximum length
  * of 255 characters.
  *  @result message raised is "Input must be between 0 and 255 characters long.".
  */
-test( 'Test for the street address for the max length', () => {
+test( 'Test for the street number for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
 
     expect(reg.methods.getErrorMessage(
-        Business.config.streetAddress.name,
+        Business.config.streetNumber.name,
         inputValue,
-        Business.config.streetAddress.minLength,
-        Business.config.streetAddress.maxLength
+        Business.config.streetNumber.minLength,
+        Business.config.streetNumber.maxLength
     )).toBe(expectedValue)
 })
 
 /**
- * Testing that no error message is returned when we submit the empty string into the street address.
+ * Testing that no error message is returned when we submit the empty string into the street number.
  * @result No messages should be raised.
  */
-test( 'Test for the street address for empty string', () => {
+test( 'Test for the street number for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
 
     expect(reg.methods.getErrorMessage(
-        Business.config.streetAddress.name,
+        Business.config.streetNumber.name,
         inputValue,
-        Business.config.streetAddress.minLength,
-        Business.config.streetAddress.maxLength
+        Business.config.streetNumber.minLength,
+        Business.config.streetNumber.maxLength
     )).toBe(expectedValue)
 })
 
 /**
- * Testing for valid input of a street address.
+ * Testing for valid input of a street number.
  * @result No messages should be raised.
  */
-test( 'Testing for a valid street address', () => {
-    const inputValue = "Some Street address"
+test( 'Testing for a valid street number', () => {
+    const inputValue = "10"
     const expectedValue = ""
 
     expect(reg.methods.getErrorMessage(
-        Business.config.streetAddress.name,
+        Business.config.streetNumber.name,
         inputValue,
-        Business.config.streetAddress.minLength,
-        Business.config.streetAddress.maxLength
+        Business.config.streetNumber.minLength,
+        Business.config.streetNumber.maxLength
     )).toBe(expectedValue)
 })
 
 /**
- * Testing for street address with numbers
- * @result No messages should be raised
- */
-test( 'Testing for street address with numbers', () => {
-    const inputValue = "6 Seven Kings"
-    const expectedValue = ""
-
-    expect(reg.methods.getErrorMessage(
-        Business.config.streetAddress.name,
-        inputValue,
-        Business.config.streetAddress.minLength,
-        Business.config.streetAddress.maxLength
-    )).toBe(expectedValue)
-})
-
-/**
- * Testing for street address with symbols.
+ * Testing for street number with symbols.
  * @result No messages should be raised.
  */
-test( 'Testing for the street address with symbols', () => {
-    const inputValue = "!@#!@ 2 Street"
+test( 'Testing for the street number with symbols', () => {
+    const inputValue = "2/24"
     const expectedValue = ""
 
     expect(reg.methods.getErrorMessage(
-        Business.config.streetAddress.name,
+        Business.config.streetNumber.name,
         inputValue,
-        Business.config.streetAddress.minLength,
-        Business.config.streetAddress.maxLength
+        Business.config.streetNumber.minLength,
+        Business.config.streetNumber.maxLength
+    )).toBe(expectedValue)
+})
+
+// ************************************************ Street Name Tests **************************************************
+
+/**
+ * Testing that an error message is returned when the inputted street name is greater than the maximum length
+ * of 255 characters.
+ *  @result message raised is "Input must be between 0 and 255 characters long.".
+ */
+test( 'Test for the street name for the max length', () => {
+    const inputValue = "2555"*255
+    const expectedValue = `Input must be between 0 and 255 characters long.`;
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.streetName.name,
+        inputValue,
+        Business.config.streetName.minLength,
+        Business.config.streetName.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing that no error message is returned when we submit the empty string into the street name.
+ * @result No messages should be raised.
+ */
+test( 'Test for the street name for empty string', () => {
+    const inputValue = ""
+    const expectedValue = "";
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.streetName.name,
+        inputValue,
+        Business.config.streetName.minLength,
+        Business.config.streetName.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for valid input of a street name.
+ * @result No messages should be raised.
+ */
+test( 'Testing for a valid street name', () => {
+    const inputValue = "East Street"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.streetName.name,
+        inputValue,
+        Business.config.streetName.minLength,
+        Business.config.streetName.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for street name with symbols.
+ * @result No messages should be raised.
+ */
+test( 'Testing for the street name with symbols', () => {
+    const inputValue = "#!& Street"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        Business.config.streetName.name,
+        inputValue,
+        Business.config.streetName.minLength,
+        Business.config.streetName.maxLength
     )).toBe(expectedValue)
 })
 
@@ -752,12 +803,13 @@ test( 'Testing for the country with symbols', () => {
 })
 
 // ************************************************ Suburb Tests *******************************************************
+// Waiting for approval from PO
 
-/**
+/*/!**
  * Testing that an error message is returned when the suburb has a length greater than the maximum length of 255
  * characters.
  *  @result message raised is Input must be between 0 and 255.
- */
+ *!/
 test( 'Test for the suburb for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
@@ -770,10 +822,10 @@ test( 'Test for the suburb for the max length', () => {
     )).toBe(expectedValue)
 })
 
-/**
+/!**
  * Testing that an error message is returned when we submit the empty string.
  * @result No messages should be raised.
- */
+ *!/
 test( 'Test for the suburb for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
@@ -786,10 +838,10 @@ test( 'Test for the suburb for empty string', () => {
     )).toBe(expectedValue)
 })
 
-/**
+/!**
  * Testing for valid input of suburb.
  * @result No messages should be raised.
- */
+ *!/
 test( 'Testing for a valid suburb', () => {
     const inputValue = "Ilam"
     const expectedValue = ""
@@ -802,10 +854,10 @@ test( 'Testing for a valid suburb', () => {
     )).toBe(expectedValue)
 })
 
-/**
+/!**
  * Testing for suburb with numbers.
  * @result No messages should be raised.
- */
+ *!/
 test( 'Testing for suburb with numbers', () => {
     const inputValue = "suburb 13"
     const expectedValue = ""
@@ -818,10 +870,10 @@ test( 'Testing for suburb with numbers', () => {
     )).toBe(expectedValue)
 })
 
-/**
+/!**
  * Testing for suburb with symbols.
  * @result No messages should be raised.
- */
+ *!/
 test( 'Testing for the suburb with symbols', () => {
     const inputValue = "!@#!@ suburb"
     const expectedValue = ""
@@ -836,11 +888,11 @@ test( 'Testing for the suburb with symbols', () => {
 
 // *********************************************** Postcode Tests ******************************************************
 
-/**
+/!**
  * Testing that an error message is returned when the postcode has a length greater than the maximum length of 255
  * characters.
  *  @result message raised is Input must be between 0 and 255.
- */
+ *!/
 test( 'Test for the postcode for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
@@ -853,10 +905,10 @@ test( 'Test for the postcode for the max length', () => {
     )).toBe(expectedValue)
 })
 
-/**
+/!**
  * Testing that an error message is returned when we submit the empty string.
  * @result No messages should be raised.
- */
+ *!/
 test( 'Test for the postcode for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
@@ -869,10 +921,10 @@ test( 'Test for the postcode for empty string', () => {
     )).toBe(expectedValue)
 })
 
-/**
+/!**
  * Testing for valid input of postcode.
  * @result No messages should be raised.
- */
+ *!/
 test( 'Testing for a valid postcode', () => {
     const inputValue = "8014"
     const expectedValue = ""
@@ -885,10 +937,10 @@ test( 'Testing for a valid postcode', () => {
     )).toBe(expectedValue)
 })
 
-/**
+/!**
  * Testing for postcode with numbers.
  * @result No messages should be raised.
- */
+ *!/
 test( 'Testing for postcode with numbers', () => {
     const inputValue = "1111"
     const expectedValue = ""
@@ -901,10 +953,10 @@ test( 'Testing for postcode with numbers', () => {
     )).toBe(expectedValue)
 })
 
-/**
+/!**
  * Testing for postcode with symbols.
  * @result No messages should be raised.
- */
+ *!/
 test( 'Testing for the postcode with symbols', () => {
     const inputValue = "!@#!@ suburb"
     const expectedValue = ""
@@ -915,7 +967,7 @@ test( 'Testing for the postcode with symbols', () => {
         Business.config.postcode.minLength,
         Business.config.postcode.maxLength
     )).toBe(expectedValue)
-})
+})*/
 
 // ************************************************ between() Tests ****************************************************
 /**
