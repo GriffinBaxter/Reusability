@@ -41,10 +41,10 @@ public class BusinessTest {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
                 address,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 Role.USER
         );
@@ -54,16 +54,16 @@ public class BusinessTest {
     public void TestInvalidName(){
         try{
             Business businessAccount = new Business(
+                    user.getId(),
                     "",
                     "some text",
                     address,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                     LocalDateTime.now(),
-                    user,
-                    user.getId()
+                    user
             );
         }catch (Exception e){
-            assertEquals("Invalid business name", e.getMessage());
+            assertEquals("Invalid business name.", e.getMessage());
         }
     }
 
@@ -71,13 +71,13 @@ public class BusinessTest {
     public void TestInvalidAddress(){
         try{
             Business businessAccount = new Business(
+                    user.getId(),
                     "name",
                     "some text",
                     null,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                     LocalDateTime.now(),
-                    user,
-                    user.getId()
+                    user
             );
         }catch (Exception e){
             assertEquals("Invalid address", e.getMessage());
@@ -87,13 +87,13 @@ public class BusinessTest {
     @Test
     public void TestOptionalFields() throws Exception {
         Business businessAccount = new Business(
+                user.getId(),
                 "name",
                 "",
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user,
-                user.getId()
+                user
         );
         assertNull(businessAccount.getDescription());
     }
@@ -105,24 +105,26 @@ public class BusinessTest {
      */
     @Test
     public void testAddAdministrators() throws Exception {
-        Business business = new Business("name",
+        Business business = new Business(
+                user.getId(),
+                "name",
                 "description",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user,
-                user.getId());
+                user
+        );
         User user = new User("first",
                 "last",
                 "middle",
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, 1, 1),
+                LocalDate.of(2021, 1, 1).minusYears(13),
                 "123456789",
                 address,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -137,24 +139,26 @@ public class BusinessTest {
      */
     @Test
     public void testRemoveAdministrators() throws Exception {
-        Business business = new Business("name",
+        Business business = new Business(
+                user.getId(),
+                "name",
                 "description",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user,
-                user.getId());
+                user
+        );
         User user = new User("first",
                 "last",
                 "middle",
                 "nick",
                 "biography",
                 "email@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
                 address,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);

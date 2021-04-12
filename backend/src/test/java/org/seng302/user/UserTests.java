@@ -55,14 +55,16 @@ public class UserTests {
      */
     @Test
     public void testAddAdministrators() throws Exception {
-        Business business = new Business("name",
+        Business business = new Business(
+                user.getId(),
+                "name",
                 "description",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user,
-                user.getId());
+                user
+        );
     }
 
     /**
@@ -332,14 +334,16 @@ public class UserTests {
      */
     @Test
     public void testGetBusinessesAdministered() throws Exception {
-        Business business = new Business("name",
+        Business business = new Business(
+                user.getId(),
+                "name",
                 "description",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user,
-                user.getId());
+                user
+        );
 
         business.addAdministrators(user);
 

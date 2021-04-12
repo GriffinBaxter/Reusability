@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.seng302.address.Address;
+import org.seng302.address.AddressRepository;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -41,6 +42,9 @@ public class BusinessResourceIntegrationTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AddressRepository addressRepository;
+
     private String payloadJson;
 
     private MockHttpServletResponse response;
@@ -71,22 +75,23 @@ public class BusinessResourceIntegrationTests {
                 "testnick",
                 "testbiography",
                 "testemail@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
                 address,
-                "testpassword",
+                "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         business = new Business(
+                user.getId(),
                 "name",
                 "some text",
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user,
-                user.getId()
+                user
         );
+        addressRepository.save(address);
         userRepository.save(user);
         businessRepository.save(business);
     }

@@ -9,7 +9,7 @@ public class BusinessValidation {
 
     // Values need for validation.
     private static final Integer NAME_MIN_LENGTH = 1;
-    private static final Integer NAME_MAX_LENGTH = 255;
+    private static final Integer NAME_MAX_LENGTH = 100;
 
     private static final Integer DESCRIPTION_MIN_LENGTH = 0;
     private static final Integer DESCRIPTION_MAX_LENGTH = 600;
@@ -36,20 +36,6 @@ public class BusinessValidation {
         return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
-    /**
-     * Checks to see whether business type is valid based on its constraints.
-     * This method can be updated in the future if there is additional constraints.
-     * @param type The type to be checked.
-     * @return true when the type is valid
-     */
-    public static boolean isValidBusinessType(BusinessType type) {
-        for (BusinessType validType : BusinessType.values()) {
-            if (validType.name().equals(type)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Checks to see whether a business already exists (i.e the business is in the business repository)

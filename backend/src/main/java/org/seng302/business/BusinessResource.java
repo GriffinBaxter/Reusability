@@ -62,13 +62,13 @@ public class BusinessResource {
 
         if (!BusinessValidation.isNewBusiness(businesses, name)){
             Business business = new Business(
+                    currentUser.getId(),
                     name,
                     description,
                     address,
                     businessType,
                     LocalDateTime.now(),
-                    currentUser,
-                    currentUser.getId()
+                    currentUser
             );
             business.addAdministrators(currentUser); //add user to administrators list
             businessRepository.saveAndFlush(business);

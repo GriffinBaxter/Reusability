@@ -71,9 +71,6 @@ public class Business {
         if (!BusinessValidation.isValidDescription(name)){
             throw new Exception("Invalid business description.");
         }
-        if (!BusinessValidation.isValidBusinessType(businessType)){
-            throw new Exception("Invalid business type.");
-        }
 
         this.primaryAdministratorId = primaryAdministratorId;
         this.name = name;

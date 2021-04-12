@@ -43,24 +43,16 @@ public class BusinessRepositoryIntegrationTests {
 
     @BeforeAll
     public static void before() throws Exception {
-        address = new Address(
-                "3/24",
-                "Ilam Road",
-                "Christchurch",
-                "Canterbury",
-                "New Zealand",
-                "90210"
-        );
         user = new User("testfirst",
                 "testlast",
                 "testmiddle",
                 "testnick",
                 "testbiography",
                 "testemail@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
                 address,
-                "testpassword",
+                "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -72,13 +64,26 @@ public class BusinessRepositoryIntegrationTests {
     @Test
     public void whenFindByExistingId_thenReturnABusiness() throws Exception {
         // given
-        Business business = new Business("example name",
-                                        "some text",
-                                        address,
-                                        BusinessType.RETAIL_TRADE,
-                                        LocalDateTime.now(),
-                                        user,
-                                        user.getId());
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
+        Business business = new Business
+                (user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
 
         entityManager.persist(business);
         entityManager.flush();
@@ -102,13 +107,25 @@ public class BusinessRepositoryIntegrationTests {
     @Test
     public void whenFindByNonExistingId_thenDontReturnBusiness() throws Exception {
         // given
-        Business business = new Business("example name",
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
+        Business business = new Business(user.getId(),
+                "example name",
                 "some text",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user,
-                user.getId());
+                user
+        );
 
         entityManager.persist(business);
         entityManager.flush();
@@ -126,13 +143,26 @@ public class BusinessRepositoryIntegrationTests {
     @Test
     public void whenFindByExistingName_thenReturnAListContainBusinesses() throws Exception {
         // given
-        Business business = new Business("example name",
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
+        Business business = new Business(
+                user.getId(),
+                "example name",
                 "some text",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user,
-                user.getId());
+                user
+        );
 
         entityManager.persist(business);
         entityManager.flush();
@@ -150,13 +180,25 @@ public class BusinessRepositoryIntegrationTests {
     @Test
     public void whenFindByNonExistingName_thenReturnAEmptyList() throws Exception {
         // given
-        Business business = new Business("example name",
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
+        Business business = new Business(user.getId(),
+                "example name",
                 "some text",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user,
-                user.getId());
+                user
+        );
 
         entityManager.persist(business);
         entityManager.flush();
@@ -175,19 +217,31 @@ public class BusinessRepositoryIntegrationTests {
     @Test
     public void whenFindByExistingAddress_thenReturnAListContainBusinesses() throws Exception {
         // given
-        Business business = new Business("example name",
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
+        Business business = new Business(user.getId(),
+                "example name",
                 "some text",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user,
-                user.getId());
+                user
+        );
 
         entityManager.persist(business);
         entityManager.flush();
 
         // when
-        listFound = businessRepository.findBusinessesByAddress(address.toString());
+        listFound = businessRepository.findBusinessesByAddress(address);
 
         // then
         assertThat(business.equals(listFound.get(0))).isTrue();
@@ -200,19 +254,29 @@ public class BusinessRepositoryIntegrationTests {
     @Test
     public void whenFindByNonExistingAddress_thenReturnAEmptyList() throws Exception {
         // given
-        Business business = new Business("example name",
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+
+        Business business = new Business(user.getId(),
+                "example name",
                 "some text",
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user,
-                user.getId());
+                user
+        );
 
         entityManager.persist(business);
         entityManager.flush();
 
         // when
-        listFound = businessRepository.findBusinessesByAddress("");
+        listFound = businessRepository.findBusinessesByAddress(address);
 
         // then
         assertThat(listFound.isEmpty()).isTrue();
