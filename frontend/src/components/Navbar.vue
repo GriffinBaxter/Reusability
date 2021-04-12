@@ -121,7 +121,7 @@ export default {
       interactAs: [],
       actAsId: null,
       actAs: "",
-      currentUser:"",
+      currentUser: null,
       // navbar required variables
       showNavbar: false,
       navbarMaxHeight: null,                                     // max hieght of the navbar pixels
