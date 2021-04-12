@@ -59,6 +59,8 @@ public class BusinessResourceIntegrationTests {
 
     private Address address;
 
+    private String sessionToken;
+
     @BeforeAll
     public void setup() throws Exception {
         address = new Address(
@@ -106,7 +108,7 @@ public class BusinessResourceIntegrationTests {
                         "\"name\": \"Lumbridge General Stores\"," +
                         "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                         "\"address\": {" +
-                                "\"streetNumber\": \"3/24\"," +
+                                "\"streetNumber\": \"2/24\"," +
                                 "\"streetName\": \"Ilam Road\"," +
                                 "\"city\": \"Christchurch\"," +
                                 "\"region\": \"Canterbury\"," +
@@ -115,7 +117,9 @@ public class BusinessResourceIntegrationTests {
                                 "}," +
                         "\"businessType\": \"Accommodation and Food Services\"" +
                         "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
@@ -135,7 +139,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"New Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -144,7 +148,8 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
@@ -161,7 +166,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -170,12 +175,13 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business name");
     }
 
     /**
@@ -188,7 +194,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"   \"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -197,12 +203,13 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business name");
     }
 
     /**
@@ -220,7 +227,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"" + aName + "\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -229,12 +236,13 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business name");
     }
 
     /**
@@ -252,7 +260,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"" + aDescription + "\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -261,12 +269,13 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal description");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid description");
     }
 
     /**
@@ -276,7 +285,7 @@ public class BusinessResourceIntegrationTests {
     @Test
     public void canNotCreateWhenAddressLengthLagerThen255() throws Exception {
         String aString = "";
-        for (int i = 0; i < 5; i++){
+        for (int i = 0; i < 30; i++){
             aString += "aaaaaaaaaa"; // (a * 10)
         } //length = 50
 
@@ -293,12 +302,13 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal address");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business address");
     }
 
     /**
@@ -316,7 +326,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -325,12 +335,13 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal address");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business address");
     }
 
     /**
@@ -344,7 +355,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -353,12 +364,13 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"example\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal business type");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business type");
     }
 
     /**
@@ -371,7 +383,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -397,7 +409,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -406,7 +418,8 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -439,8 +452,8 @@ public class BusinessResourceIntegrationTests {
                     "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
-        System.out.println(expectedJson);
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -470,7 +483,8 @@ public class BusinessResourceIntegrationTests {
         id = 0;
         expectedJson = "";
 
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());

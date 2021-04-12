@@ -17,8 +17,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.seng302.user.Role.*;
 
@@ -35,6 +33,7 @@ public class UserResource {
     private AddressRepository addressRepository;
 
     private Address address;
+    private List<Business> businesses;
 
     public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
@@ -130,8 +129,11 @@ public class UserResource {
                     streetNumber, streetName, city, region, country, postcode);
 
             // If address already exists it is retrieved.
+            // The businesses already existing are also retrieved. These businesses will be
+            // used to determine if a business hasn't already been created.
             if (storedAddress.isPresent()) {
                 address = storedAddress.get();
+                businesses = address.getBusinesses();
             } else {
                 // Otherwise a new address is created and saved.
                 address = new Address(
@@ -143,6 +145,8 @@ public class UserResource {
                         postcode
                 );
                 addressRepository.save(address);
+                // No businesses will exist at new address.
+                businesses = new ArrayList<>();
             }
 
             User newUser = new User(

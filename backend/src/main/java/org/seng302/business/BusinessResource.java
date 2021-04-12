@@ -6,6 +6,7 @@ import org.seng302.address.AddressRepository;
 import org.seng302.validation.BusinessValidation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
+import org.seng302.validation.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +66,28 @@ public class BusinessResource {
         String description = businessRegistrationPayload.getDescription();
         BusinessType businessType = businessRegistrationPayload.getBusinessType();
 
+        //TODO: 400 not in api spec
+        if (!BusinessValidation.isValidName(name.trim())){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid business name"
+            );
+        }
+
+        if (!BusinessValidation.isValidDescription(description)){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid description"
+            );
+        }
+
+        if (businessType == null){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid business type"
+            );
+        }
+
         AddressPayload addressJSON = businessRegistrationPayload.getAddress();
         String streetNumber = addressJSON.getStreetNumber();
         String streetName = addressJSON.getStreetName();
@@ -85,31 +108,47 @@ public class BusinessResource {
             businesses = address.getBusinesses();
         } else {
             // Otherwise a new address is created and saved.
-            address = new Address(
-                    streetNumber,
-                    streetName,
-                    city,
-                    region,
-                    country,
-                    postcode
-            );
-            addressRepository.save(address);
-            // No businesses will exist at new address.
-            businesses = new ArrayList<>();
+            try {
+                address = new Address(
+                        streetNumber,
+                        streetName,
+                        city,
+                        region,
+                        country,
+                        postcode
+                );
+                addressRepository.save(address);
+                // No businesses will exist at new address.
+                businesses = new ArrayList<>();
+            } catch (Exception e) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid business address"
+                );
+            }
+
         }
 
         if (BusinessValidation.isNewBusiness(businesses, name)){
-            Business business = new Business(
-                    currentUser.getId(),
-                    name,
-                    description,
-                    address,
-                    businessType,
-                    LocalDateTime.now(),
-                    currentUser
-            );
-            business.addAdministrators(currentUser); //add user to administrators list
-            businessRepository.saveAndFlush(business);
+            try {
+                Business business = new Business(
+                        currentUser.getId(),
+                        name,
+                        description,
+                        address,
+                        businessType,
+                        LocalDateTime.now(),
+                        currentUser
+                );
+                business.addAdministrators(currentUser); //add user to administrators list
+                businessRepository.saveAndFlush(business);
+            } catch (Exception e) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid business"
+                );
+            }
+
         } else { //TODO: 409 not in api spec
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
