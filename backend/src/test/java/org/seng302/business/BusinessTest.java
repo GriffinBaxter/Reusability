@@ -13,8 +13,7 @@ import java.time.Month;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * BusinessAccount test class
@@ -113,5 +112,30 @@ public class BusinessTest {
 
         assertThat(business.getAdministrators().isEmpty()).isTrue();
         assertThat(user.getBusinessesAdministeredObjects().isEmpty()).isTrue();
+    }
+
+    /**
+     * Test to see when a user is one of administrator, the function return true
+     * @throws Exception business or user creat fail
+     */
+    @Test
+    public void testAnUserIsAdministrator() throws Exception {
+        Business business = new Business("name", "description", "address", BusinessType.RETAIL_TRADE, LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)));
+        User user = new User("first", "last", "middle", "nick", "biography", "email@email.com", LocalDate.of(2020, 2, 2), "0271316", "address", "password", LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
+
+        business.addAdministrators(user);
+        assertTrue(business.isAnAdministratorOfThisBusiness(user));
+    }
+
+    /**
+     * Test to see when a user is not one of administrator, the function return false
+     * @throws Exception business or user creat fail
+     */
+    @Test
+    public void testAnUserIsNotAdministrator() throws Exception {
+        Business business = new Business("name", "description", "address", BusinessType.RETAIL_TRADE, LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)));
+        User user = new User("first", "last", "middle", "nick", "biography", "email@email.com", LocalDate.of(2020, 2, 2), "0271316", "address", "password", LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
+
+        assertFalse(business.isAnAdministratorOfThisBusiness(user));
     }
 }

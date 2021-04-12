@@ -1,7 +1,6 @@
 package org.seng302.business;
 
-import org.seng302.user.User;
-import org.seng302.user.UserRepository;
+import org.seng302.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -88,4 +87,137 @@ public class BusinessResource {
         }
         return business.get();
     }
+
+    @PutMapping("/businesses/{id}/makeAdministrator")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Individual added as an administrator successfully")
+    public void makeAdministrator(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                  @RequestBody UserIdPayload userIdPayload, @PathVariable String id){
+        //TODO:delete manual test stuff after merge
+
+        //401
+        User currentUser = getUserVerifySession(sessionToken);
+        Business selectBusiness = businessRepository.findBusinessById(Integer.valueOf(id)).get();
+        User selectUser= userRepository.findById(userIdPayload.getUserId()).get();
+
+        //Manual test
+        //System.out.println(selectBusiness.getAdministrators());
+
+        //406
+        if (selectBusiness == null){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Select business not exist"
+            );
+        }
+
+        //403
+        if (currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN &&
+                !selectBusiness.isAnAdministratorOfThisBusiness(currentUser)){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Current user is not DGAA or an administrator of this business"
+            );
+        }
+
+        //400
+        if (selectUser == null){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Select user not exist"
+            );
+        } else if (selectBusiness.isAnAdministratorOfThisBusiness(selectUser)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Select user already is an administrator of this business"
+            );
+        }
+
+        //200
+        selectBusiness.addAdministrators(selectUser);
+        //Manual test
+        System.out.println(selectBusiness.getAdministrators());
+    }
+
+    @PutMapping("/businesses/{id}/removeAdministrator")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Individual added as an administrator successfully")
+    public void removeAdministrator(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                  @RequestBody UserIdPayload userIdPayload, @PathVariable String id){
+        //TODO:delete manual test stuff after merge
+
+        //401
+        User currentUser = getUserVerifySession(sessionToken);
+        Business selectBusiness = businessRepository.findBusinessById(Integer.valueOf(id)).get();
+        User selectUser= userRepository.findById(userIdPayload.getUserId()).get();
+
+        //Manual test
+        //System.out.println(selectBusiness.getAdministrators());
+
+        //406
+        if (selectBusiness == null){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Select business not exist"
+            );
+        }
+
+        //403
+        if (currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN &&
+                !selectBusiness.isAnAdministratorOfThisBusiness(currentUser)){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Current user is not DGAA or an administrator of this business"
+            );
+        }
+
+        //400
+        if (selectUser == null){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Select user not exist"
+            );
+        } else if (!selectBusiness.isAnAdministratorOfThisBusiness(selectUser)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Select user already is an administrator of this business"
+            );
+        }
+
+        //200
+        selectBusiness.removeAdministrators(selectUser);
+        //Manual test
+        System.out.println(selectBusiness.getAdministrators());
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

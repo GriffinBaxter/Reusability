@@ -245,8 +245,7 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/makeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
-    public void setGAA(@PathVariable int id, HttpServletRequest request,
-                       @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
+    public void setGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
         User currentUser = getUserVerifySession(sessionToken);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
@@ -278,8 +277,7 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/revokeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
-    public void revokeGAA(@PathVariable int id, HttpServletRequest request,
-                          @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+    public void revokeGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
         User currentUser = getUserVerifySession(sessionToken);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
