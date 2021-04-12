@@ -45,7 +45,7 @@ public class Address {
             cascade = CascadeType.ALL)
     private List<User> users;
 
-    @OneToMany(mappedBy = "address", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "businessAddress", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private List<Business> businesses;
 

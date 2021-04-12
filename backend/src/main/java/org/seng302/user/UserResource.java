@@ -107,7 +107,6 @@ public class UserResource {
     public ResponseEntity<UserIdPayload> registerUser(
             @RequestBody UserRegistrationPayload registration, HttpServletResponse response
     ) {
-        System.out.println(registration);
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,

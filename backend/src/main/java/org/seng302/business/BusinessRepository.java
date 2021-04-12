@@ -1,5 +1,6 @@
 package org.seng302.business;
 
+import org.seng302.address.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -24,10 +25,11 @@ public interface BusinessRepository extends JpaRepository<Business, String> {
     List<Business> findBusinessesByName(String name);
 
     /**
-     * Search for a list of business account by a address
+     * Search for a list of business account by an address
      * @param address address
      * @return a list of business object
      */
-    List<Business> findBusinessesByAddress(String address);
+    List<Business> findBusinessesByAddress(Address address);
+
 }
 

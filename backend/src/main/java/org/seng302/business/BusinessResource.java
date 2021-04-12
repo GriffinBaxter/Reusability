@@ -1,7 +1,7 @@
 package org.seng302.business;
 
 import org.seng302.address.Address;
-import org.seng302.validation.Validation;
+import org.seng302.validation.BusinessValidation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,35 +58,9 @@ public class BusinessResource {
         BusinessType businessType = businessRegistrationPayload.getBusinessType();
         Address address = businessRegistrationPayload.getAddress();
 
-        //TODO: 400 not in api spec
-        System.out.println(name);
-        if (!Validation.isBusinessName(name)){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Illegal business name"
-            );
-        }
+        List<Business> businesses = businessRepository.findBusinessesByAddress(address);
 
-        if (!Validation.isDescription(description)){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Illegal description"
-            );
-        }
-        if (!Validation.isAddress(address)){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Illegal address"
-            );
-        }
-        if (businessType == null){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Illegal business type"
-            );
-        }
-
-        if (Validation.isNewBusiness(businessRepository.findBusinessesByAddress(address.toString()), name, address)){
+        if (!BusinessValidation.isNewBusiness(businesses, name)){
             Business business = new Business(
                     name,
                     description,

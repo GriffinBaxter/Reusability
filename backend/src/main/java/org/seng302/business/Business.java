@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.address.Address;
+import org.seng302.validation.BusinessValidation;
 import org.seng302.validation.Validation;
 import org.seng302.user.User;
 
@@ -20,6 +21,10 @@ public class Business {
     @GeneratedValue//(strategy = GenerationType.IDENTITY) // autoincrement the ID
     @Column(name = "id", nullable = false)
     private int id;
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.EAGER)
+    private List<User> administrators = new ArrayList<User>();
 
     @Column(name = "primaryAdministratorId")
     private Integer primaryAdministratorId;
@@ -42,9 +47,6 @@ public class Business {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
-    @JsonBackReference
-    @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.EAGER)
-    private List<User> administrators = new ArrayList<User>();
 
 
     /**
@@ -55,27 +57,32 @@ public class Business {
      * @param businessType
      * @throws Exception
      */
-    public Business(String name,
+    public Business(Integer primaryAdministratorId,
+                    String name,
                     String description,
                     Address address,
                     BusinessType businessType,
                     LocalDateTime created,
-                    User administrator,
-                    Integer primaryAdministratorId
+                    User administrator
     ) throws Exception{
-        if (!Validation.isName(name)){
-            throw new Exception("Invalid business name");
+        if (!BusinessValidation.isValidName(name)){
+            throw new Exception("Invalid business name.");
         }
-        if (address == null){
-            throw new Exception("Invalid address");
+        if (!BusinessValidation.isValidDescription(name)){
+            throw new Exception("Invalid business description.");
         }
+        if (!BusinessValidation.isValidBusinessType(businessType)){
+            throw new Exception("Invalid business type.");
+        }
+
+        this.primaryAdministratorId = primaryAdministratorId;
         this.name = name;
+        this.description = (description.equals("")) ? null : description;
         this.address = address;
         this.businessType = businessType;
-        this.description = (description.equals("")) ? null : description;
         this.created = created;
         administrators.add(administrator);
-        this.primaryAdministratorId = primaryAdministratorId;
+
     }
 
     //getter
