@@ -49,20 +49,21 @@
           </div>
         </div>
         <div class="row my-lg-2">
-          <div class="col-lg-6 my-2 my-lg-0">
-            <label for="streetAddress">Street Address</label>
-            <input tabindex="4" id="streetAddress" :class="toggleInvalidClass(businessStreetAddressErrorMsg)"
-                   name="streetAddress" ref="streetAddress" autocomplete="off">
+          <div class="col my-2 my-lg-0">
+            <label for="streetNumber">Street Number</label>
+            <input :class="toggleInvalidClass(businessStreetNumberErrorMsg)" tabindex="4" id="streetNumber"
+                   name="streetNumber" ref="streetNumber" autocomplete="off">
             <div class="invalid-feedback">
-              {{businessStreetAddressErrorMsg}}
+              {{businessStreetNumberErrorMsg}}
             </div>
           </div>
-          <div class="col-lg-6 my-2 my-lg-0">
-            <label for="suburb">Suburb</label>
-            <input :class="toggleInvalidClass(businessSuburbErrorMsg)" tabindex="5" name="suburb" id="suburb" ref="suburb"
-                   autocomplete="off">
+
+          <div class="col my-2 my-lg-0">
+            <label for="streetName">Street Name</label>
+            <input :class="toggleInvalidClass(businessStreetNameErrorMsg)" tabindex="5" id="streetName"
+                   name="streetName" ref="streetName" autocomplete="off">
             <div class="invalid-feedback">
-              {{businessSuburbErrorMsg}}
+              {{businessStreetNumberErrorMsg}}
             </div>
           </div>
         </div>
@@ -77,31 +78,31 @@
           </div>
 
           <div class="col-lg-6 my-2 my-lg-0">
-            <label for="region">State/Region</label>
-            <input :class="toggleInvalidClass(businessRegionErrorMsg)" tabindex="7" name="region" id="region" ref="region"
-                   autocomplete="off">
+            <label for="postcode">Postcode</label>
+            <input :class="toggleInvalidClass(businessPostcodeErrorMsg)" tabindex="9" id="postcode" name="postcode"
+                   ref="postcode" autocomplete="off">
             <div class="invalid-feedback">
-              {{businessRegionErrorMsg}}
+              {{businessPostcodeErrorMsg}}
             </div>
           </div>
         </div>
 
         <div class="row my-lg-2">
+            <div class="col-lg-6 my-2 my-lg-0">
+              <label for="region">State/Region</label>
+              <input :class="toggleInvalidClass(businessRegionErrorMsg)" tabindex="7" name="region" id="region" ref="region"
+                     autocomplete="off">
+              <div class="invalid-feedback">
+                {{businessRegionErrorMsg}}
+              </div>
+            </div>
+
           <div class="col-lg-6 my-2 my-lg-0">
             <label for="country">Country*</label>
             <input :class="toggleInvalidClass(businessCountryErrorMsg)" tabindex="8" id="country" name="country"
                    ref="country" autocomplete="off" required>
             <div class="invalid-feedback">
               {{businessCountryErrorMsg}}
-            </div>
-          </div>
-
-          <div class="col-lg-6 my-2 my-lg-0">
-            <label for="postcode">Postcode</label>
-            <input :class="toggleInvalidClass(businessPostcodeErrorMsg)" tabindex="9" id="postcode" name="postcode"
-                   ref="postcode" autocomplete="off">
-            <div class="invalid-feedback">
-              {{businessPostcodeErrorMsg}}
             </div>
           </div>
         </div>
@@ -177,23 +178,23 @@ export default {
       // Business address related variables
       businessAddressErrorMsg: "",
 
-      // Business street address related variables
-      businessStreetAddressErrorMsg: "",
+      // Business street number related variables
+      businessStreetNumberErrorMsg: "",
 
-      // Business suburb related variables
-      businessSuburbErrorMsg: "",
+      // Business street name related variables
+      businessStreetNameErrorMsg: "",
 
       // Business city related variables
       businessCityErrorMsg: "",
+
+      // Business Postcode related variables
+      businessPostcodeErrorMsg: "",
 
       // Business State/ region related variables
       businessRegionErrorMsg: "",
 
       // Business Country related variables
       businessCountryErrorMsg: "",
-
-      // Business Postcode related variables
-      businessPostcodeErrorMsg: "",
 
       // Description related variables
       description: "",
@@ -288,10 +289,10 @@ export default {
       this.description = this.description.trim();
       this.$refs.country.value = this.$refs.country.value.trim();
       this.$refs.city.value = this.$refs.city.value.trim();
-      this.$refs.suburb.value = this.$refs.suburb.value.trim();
-      this.$refs.region.value = this.$refs.region.value.trim();
-      this.$refs.streetAddress.value = this.$refs.streetAddress.value.trim();
       this.$refs.postcode.value = this.$refs.postcode.value.trim();
+      this.$refs.region.value = this.$refs.region.value.trim();
+      this.$refs.streetNumber.value = this.$refs.streetNumber.value.trim();
+      this.$refs.streetName.value = this.$refs.streetName.value.trim();
     },
 
     /**
@@ -356,27 +357,40 @@ export default {
         requestIsInvalid = true
       }
 
-      // Street address error checking
-      this.businessStreetAddressErrorMsg = this.getErrorMessage(
-          this.config.streetAddress.name,
+      // Street number error checking
+      this.businessStreetNumberErrorMsg = this.getErrorMessage(
+          this.config.streetNumber.name,
           // Using v-model for this address input apparently does not update
           // when we insert from our autocomplete list so it has been changed to use $refs
-          this.$refs.streetAddress.value,
-          this.config.streetAddress.minLength,
-          this.config.streetAddress.maxLength
+          this.$refs.streetNumber.value,
+          this.config.streetNumber.minLength,
+          this.config.streetNumber.maxLength
       )
-      if (this.businessStreetAddressErrorMsg) {
+      if (this.businessStreetNumberErrorMsg) {
         requestIsInvalid = true
       }
 
-      // Suburb error checking
-      this.businessSuburbErrorMsg = this.getErrorMessage(
-          this.config.suburb.name,
-          this.$refs.suburb.value,
-          this.config.suburb.minLength,
-          this.config.suburb.maxLength
+      // Street name error checking
+      this.businessStreetNameErrorMsg = this.getErrorMessage(
+          this.config.streetName.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetName.value,
+          this.config.streetName.minLength,
+          this.config.streetName.maxLength
       )
-      if (this.businessSuburbErrorMsg) {
+      if (this.businessStreetNameErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Postcode error checking
+      this.businessPostcodeErrorMsg = this.getErrorMessage(
+          this.config.postcode.name,
+          this.$refs.postcode.value,
+          this.config.postcode.minLength,
+          this.config.postcode.maxLength
+      )
+      if (this.businessPostcodeErrorMsg) {
         requestIsInvalid = true
       }
 
@@ -413,17 +427,6 @@ export default {
         requestIsInvalid = true
       }
 
-      // Postcode error checking
-      this.businessPostcodeErrorMsg = this.getErrorMessage(
-          this.config.postcode.name,
-          this.$refs.postcode.value,
-          this.config.postcode.minLength,
-          this.config.postcode.maxLength
-      )
-      if (this.businessPostcodeErrorMsg) {
-        requestIsInvalid = true
-      }
-
       // ====================================== END OF INPUT FIELDS VALIDATION =========================================
 
       // If at any stage an error has been discovered we cancel the procedure
@@ -431,17 +434,25 @@ export default {
         return
       }
 
-      let finalBusinessAddress = `${this.$refs.streetAddress.value};${this.$refs.suburb.value};${this.$refs.city.value};${this.$refs.postcode.value};${this.$refs.region.value};${this.$refs.country.value}`;
+      const addressData = {
+        streetNumber: this.$refs.streetNumber.value,
+        streetName: this.$refs.streetName.value,
+        city: this.$refs.city.value,
+        region: this.$refs.region.value,
+        country: this.$refs.country.value,
+        postcode: this.$refs.postcode.value
+      }
+
       // Wrapping up the business submitted fields into a class object (Business).
       const businessData = {
-        primaryAdministratorId: Cookies.get('userID'),
+        primaryAdministratorId: Cookies.get('userID'), //TODO change when session token is set up.
         name: this.businessName,
         description: this.description,
         /*
          * NOTE: Using v-model for this address input apparently does not update.
          *       When we insert from our autocomplete list so it has been changed to use $refs
          */
-        address: finalBusinessAddress,
+        address: addressData,
         businessType: this.businessType
       }
 
@@ -519,7 +530,7 @@ export default {
         let { properties } = features[index];
         if (properties) {
 
-          let {country, city, state, street, housenumber, name} = properties;
+          let {country, city, postcode, state, street, housenumber, name} = properties;
 
           if (name) {
             address += name + ", ";
@@ -535,6 +546,10 @@ export default {
 
           if (city) {
             address += city + ", ";
+          }
+
+          if (postcode) {
+            address += postcode + ", ";
           }
 
           if (state) {
@@ -605,25 +620,20 @@ export default {
             document.getElementById('business-address').value = "";
             const id = event.target.id;
 
-            let {country, city, state, district, street, housenumber} = self.addressResultProperties[id];
+            let {country, city, state, postcode, street, housenumber} = self.addressResultProperties[id];
 
             if (housenumber) {
-              document.getElementById('streetAddress').value = housenumber;
+              document.getElementById('streetNumber').value = housenumber;
             }
-            if (street && housenumber) {
-              document.getElementById('streetAddress').value += " " + street;
-            } else if (street) {
-              document.getElementById('streetAddress').value = street;
+            if (street) {
+              document.getElementById('streetName').value = street;
             }
-
-            if (district) {
-              document.getElementById('suburb').value = district;
-            }
-
             if (city) {
               document.getElementById('city').value = city;
             }
-
+            if (postcode) {
+              document.getElementById('postcode').value = postcode;
+            }
             if (state) {
               document.getElementById('region').value = state;
             }

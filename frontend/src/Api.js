@@ -200,8 +200,13 @@ export class Business{
       regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
       regexMessage: "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$",
     },
-    streetAddress: {
-      name: "Street address",
+    streetNumber: {
+      name: "Street number",
+      minLength: 0,
+      maxLength: 255
+    },
+    streetName: {
+      name: "Street name",
       minLength: 0,
       maxLength: 255
     },
@@ -210,8 +215,8 @@ export class Business{
       minLength: 0,
       maxLength: 255,
     },
-    suburb: {
-      name: "Suburb",
+    postcode: {
+      name: "Postcode",
       minLength: 0,
       maxLength: 255
     },
@@ -226,11 +231,6 @@ export class Business{
       maxLength: 255,
       regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
       regex: /^[a-zA-Z '-]+$/
-    },
-    postcode: {
-      name: "Postcode",
-      minLength: 0,
-      maxLength: 255
     },
   };
 

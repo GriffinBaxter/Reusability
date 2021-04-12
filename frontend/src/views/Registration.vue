@@ -157,7 +157,7 @@
             </div>
 
             <div class="col my-2 my-lg-0">
-              <label for="streetAddress">Street Name</label>
+              <label for="streetName">Street Name</label>
               <input :class="toggleInvalidClass(streetNameErrorMsg)" tabindex="13" id="streetName"
                      name="streetName" ref="streetName" autocomplete="off">
               <div class="invalid-feedback">
@@ -783,7 +783,6 @@ export default {
 
 
       const user = new User(userData)
-      console.log(user);
       /*
        * Add the User to the database by sending an API request to the backend to store the user's information.
        * Raise any errors and ensure they are displayed on the UI.
