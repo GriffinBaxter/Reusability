@@ -84,9 +84,16 @@ export default {
       default: false,
       required: false
     },
+    // Dectates the transition animation time
     msTransitionDelay: {
       type: Number,
       default: 300,
+      required: false
+    },
+    // Determines if you are required to be logged in to view the current page.
+    loginRequired: {
+      type: Boolean,
+      default: true,
       required: false
     }
   },
@@ -206,12 +213,38 @@ export default {
       Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
        */
       event.preventDefault();
-      Cookies.remove('name', {path: '/'}); // removed!
+
+      // Reason for this not working is because it is HttpOnly, which doesn't allow the browser/ JS to
+      // delete this cookie.
+      Cookies.remove('JSESSIONID', {path: '/'});
       Cookies.remove('userID');
       await this.$router.push({name: 'Login'});
+    },
+    /**
+     * The function when called ensure the user is logged in. Otherwise takes you to the login page.
+     */
+    ensureLoggedIn() {
+      const userIdCookie = Cookies.get('UserId');
+      const JsessionIdCookie = Cookies.get('JSESSIONID');
+
+      // If either of the cookies are missing this means that the user is not logged in.
+      // Then we logout the user, which takes them to the login page and deletes their cookies.
+      if (userIdCookie === undefined || JsessionIdCookie === undefined) {
+        this.logout(new Event("Not logged in"));
+      }
     }
   },
+
+  created() {
+
+    // If it is required to be logged in. The user will be checked.
+    if (this.loginRequired) {
+      this.ensureLoggedIn();
+    }
+
+  },
   mounted() {
+
     // Sample the navbar max height at mounting
     this.navbarMaxHeight = this.getNavbarMaxHeight();
 
