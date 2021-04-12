@@ -59,12 +59,12 @@
               </li>
 
               <!-- Interact As -->
-              <li class="nav-item dropdown">
+              <li class="nav-item dropdown" id="interactDrop">
                 <a class="nav-link dropdown-toggle" role="button" @click="() => {
                   this.showInteractMenu = toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu)
                   }">
 
-                  <img src="../../public/sample_profile_image.jpg" width="30px" class="rounded-circle img-thumbnail" alt="Acting as image" id="actAsImg"/>
+                  <img src="../../public/sample_profile_image.jpg" width="27px" class="rounded-circle img-fluid" alt="Acting as image" id="actAsImg"/>
                   {{actAs}}
                 </a>
 
@@ -343,6 +343,14 @@ export default {
     width:100%;
   }
 
+  #interactDrop {
+    min-width: 180px;
+  }
+
+  #actAsImg {
+    float: none;
+  }
+
   #logoImage {
     max-width: 200px;
     margin-left: 28px;
@@ -403,7 +411,9 @@ export default {
     #navbarId {
       overflow: visible;
     }
-
+    #actAsImg {
+      float: left;
+    }
     #businessDropdownLinksWrapper, #interactDropdownLinksWrapper{
       position: absolute;
     }
@@ -427,6 +437,5 @@ export default {
 .active {
   background-color: #2eda77;
 }
-
 
 </style>

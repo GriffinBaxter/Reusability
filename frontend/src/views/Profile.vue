@@ -9,10 +9,12 @@
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
-              <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
-
+              <!-- Profile Image -->
+              <div id="imageDiv">
+                <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+              </div>
               <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" @click="showFileUpload(true)" id="UploadButton">
+              <button type="button" class="btn btn-primary" @click="showFileUpload(true)" id="UploadButton" v-if="!otherUser">
                 Upload Image
               </button>
 
@@ -323,6 +325,11 @@ export default {
 #profileHeaderDiv {
   margin-left: 15%;
   margin-right: 15%;
+}
+
+#imageDiv {
+  width:100%;
+  padding: 2px;
 }
 
 </style>

@@ -33,19 +33,6 @@ export default {
 </script>
 
 <style scoped>
-#header {
-  width: 80%;
-}
-
-#searchContainer {
-  vertical-align: middle;
-  padding: 15px;
-  width: 100%;
-}
-
-#logo {
-  max-height: 60px;
-}
 
 .search-bar-positioning {
   padding-top: 40px;
