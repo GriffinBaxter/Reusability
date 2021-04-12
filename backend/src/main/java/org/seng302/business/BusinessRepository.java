@@ -31,5 +31,6 @@ public interface BusinessRepository extends JpaRepository<Business, String> {
      */
     List<Business> findBusinessesByAddress(Address address);
 
+
 }
 

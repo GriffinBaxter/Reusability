@@ -237,6 +237,7 @@ public class Address {
                 "\"region\":\""       + region       + "\"," +
                 "\"country\":\""      + country      + "\"," +
                 "\"postcode\":\""     + postcode     + "\"" +
+                "\"businesses\":\""     + businesses     + "\"" +
                 "}";
     }
 }

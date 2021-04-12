@@ -1,6 +1,8 @@
 package org.seng302.business;
 
 import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
+import org.seng302.address.AddressRepository;
 import org.seng302.validation.BusinessValidation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -22,6 +24,12 @@ public class BusinessResource {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
+
+    private Address address;
+    private List<Business> businesses;
 
     /**
      * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
@@ -56,11 +64,41 @@ public class BusinessResource {
         String name = businessRegistrationPayload.getName();
         String description = businessRegistrationPayload.getDescription();
         BusinessType businessType = businessRegistrationPayload.getBusinessType();
-        Address address = businessRegistrationPayload.getAddress();
 
-        List<Business> businesses = businessRepository.findBusinessesByAddress(address);
+        AddressPayload addressJSON = businessRegistrationPayload.getAddress();
+        String streetNumber = addressJSON.getStreetNumber();
+        String streetName = addressJSON.getStreetName();
+        String city = addressJSON.getCity();
+        String region = addressJSON.getRegion();
+        String country = addressJSON.getCountry();
+        String postcode = addressJSON.getPostcode();
 
-        if (!BusinessValidation.isNewBusiness(businesses, name)){
+        // Check to see if address already exists.
+        Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcode(
+                streetNumber, streetName, city, region, country, postcode);
+
+        // If address already exists it is retrieved.
+        // The businesses already existing are also retrieved. These businesses will be
+        // used to determine if a business hasn't already been created.
+        if (storedAddress.isPresent()) {
+            address = storedAddress.get();
+            businesses = address.getBusinesses();
+        } else {
+            // Otherwise a new address is created and saved.
+            address = new Address(
+                    streetNumber,
+                    streetName,
+                    city,
+                    region,
+                    country,
+                    postcode
+            );
+            addressRepository.save(address);
+            // No businesses will exist at new address.
+            businesses = new ArrayList<>();
+        }
+
+        if (BusinessValidation.isNewBusiness(businesses, name)){
             Business business = new Business(
                     currentUser.getId(),
                     name,
@@ -107,13 +145,22 @@ public class BusinessResource {
             administrator.setBusinessesAdministeredObjects(new ArrayList<>());
         }
 
+        address = business.get().getAddress();
+        AddressPayload addressPayload = new AddressPayload(
+                address.getStreetNumber(),
+                address.getStreetName(),
+                address.getCity(),
+                address.getRegion(),
+                address.getCountry(),
+                address.getPostcode()
+        );
         return new BusinessPayload(
                 business.get().getId(),
                 administrators,
                 business.get().getPrimaryAdministratorId(),
                 business.get().getName(),
                 business.get().getDescription(),
-                business.get().getAddress(),
+                addressPayload,
                 business.get().getBusinessType(),
                 business.get().getCreated()
                 );

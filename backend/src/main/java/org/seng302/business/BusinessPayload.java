@@ -1,6 +1,7 @@
 package org.seng302.business;
 
 import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
 import org.seng302.user.User;
 import org.seng302.user.UserPayload;
 
@@ -9,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BusinessPayload {
-    private Integer primaryAdministratorId;
     private Integer id;
     private List<UserPayload> administrators;
+    private Integer primaryAdministratorId;
     private String name;
     private String description;
-    private Address address;
+    private AddressPayload address;
     private String businessType;
     private String created;
 
@@ -27,13 +28,22 @@ public class BusinessPayload {
         List<BusinessPayload> businessPayloads = new ArrayList<>();
         BusinessPayload businessPayload;
         for (Business business: businesses){
+            Address address = business.getAddress();
+            AddressPayload addressPayload = new AddressPayload(
+                    address.getStreetNumber(),
+                    address.getStreetName(),
+                    address.getCity(),
+                    address.getRegion(),
+                    address.getCountry(),
+                    address.getPostcode()
+            );
             businessPayload = new BusinessPayload(
                     business.getId(),
                     business.getAdministrators(),
                     business.getPrimaryAdministratorId(),
                     business.getName(),
                     business.getDescription(),
-                    business.getAddress(),
+                    addressPayload,
                     business.getBusinessType(),
                     business.getCreated()
             );
@@ -47,7 +57,7 @@ public class BusinessPayload {
                            Integer primaryAdministratorId,
                            String name,
                            String description,
-                           Address address,
+                           AddressPayload address,
                            BusinessType businessType,
                            LocalDateTime created
                            ) throws Exception {
@@ -84,7 +94,7 @@ public class BusinessPayload {
         return description;
     }
 
-    public Address getAddress() {
+    public AddressPayload getAddress() {
         return address;
     }
 

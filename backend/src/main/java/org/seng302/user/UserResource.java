@@ -34,6 +34,8 @@ public class UserResource {
     @Autowired
     private AddressRepository addressRepository;
 
+    private Address address;
+
     public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
@@ -116,16 +118,32 @@ public class UserResource {
 
         try {
             AddressPayload addressJSON = registration.getHomeAddress();
-            Address address = new Address(
-                    addressJSON.getStreetNumber(),
-                    addressJSON.getStreetName(),
-                    addressJSON.getCity(),
-                    addressJSON.getRegion(),
-                    addressJSON.getCountry(),
-                    addressJSON.getPostcode()
-            );
+            String streetNumber = addressJSON.getStreetNumber();
+            String streetName = addressJSON.getStreetName();
+            String city = addressJSON.getCity();
+            String region = addressJSON.getRegion();
+            String country = addressJSON.getCountry();
+            String postcode = addressJSON.getPostcode();
 
-            addressRepository.save(address);
+            // Check to see if address already exists.
+            Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcode(
+                    streetNumber, streetName, city, region, country, postcode);
+
+            // If address already exists it is retrieved.
+            if (storedAddress.isPresent()) {
+                address = storedAddress.get();
+            } else {
+                // Otherwise a new address is created and saved.
+                address = new Address(
+                        streetNumber,
+                        streetName,
+                        city,
+                        region,
+                        country,
+                        postcode
+                );
+                addressRepository.save(address);
+            }
 
             User newUser = new User(
                     registration.getFirstName(),

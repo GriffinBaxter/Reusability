@@ -1,11 +1,12 @@
 package org.seng302.business;
 
 import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
 
 public class BusinessRegistrationPayload {
     private String name;
     private String description;
-    private Address address;
+    private AddressPayload address;
     private String businessType;
 
     public String getName() {
@@ -16,7 +17,7 @@ public class BusinessRegistrationPayload {
         return description;
     }
 
-    public Address getAddress() {
+    public AddressPayload getAddress() {
         return address;
     }
 
