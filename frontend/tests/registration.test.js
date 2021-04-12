@@ -1526,7 +1526,7 @@ test('Test for boundary date', () => {
  * @result true.
  */
 test('Test for random early allowable date', () => {
-    const testInput = reg.methods.getMaxDateOfBirth().slice(1, -1)
+    const testInput = reg.methods.getMaxDateOfBirth().substring(1)
     const expectedValue = true
 
     expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue)

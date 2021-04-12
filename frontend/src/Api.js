@@ -37,6 +37,7 @@ const instance = axios.create({
   timeout: 3000
 });
 
+// TODO: Only for registration --- NEEDS ADAPATION FOR FUTURE STORIES
 export class User{
 
   // This is a config for the user requirement details
@@ -189,6 +190,23 @@ export default {
     return instance.get(`/users/search?searchQuery=${query}`, {
       withCredentials: true
     })
+  },
+
+  // The API spec states this should be /users/{id}/makeadmin. But we decided to implement it as
+  // /users/{id}/makeAdmin for readability purposes.
+  makeAdmin: (userId) => {
+    return instance.put(`/users/${userId}/makeAdmin`, {}, {
+      withCredentials: true
+    })
+  },
+
+  // The API spec states this should be /users/{id}/revokeadmin. But we decided to implement it as
+  // /users/{id}/revokeAdmin for readability purposes.
+  revokeAdmin: (userId) => {
+    return instance.put(`/users/${userId}/revokeAdmin`, {}, {
+    withCredentials: true
+  })
+
   }
 
   // Usage examples from original file:
