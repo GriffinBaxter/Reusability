@@ -3,26 +3,32 @@
     <div class="row">
       <div class="col">
         <div class="input-group my-4">
-          <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
-          <button class="btn btn-primary greenButton" tabindex="2"  @click="searchClicked()"><i class="fas fa-search"></i></button>
+          <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1"
+                 placeholder="Search all users">
+          <button class="btn btn-primary greenButton" tabindex="2" @click="searchClicked()"><i
+              class="fas fa-search"></i></button>
         </div>
       </div>
     </div>
 
     <div class="row mb-3">
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
+      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)"
+           @click="orderUsers(true, false , false, false, false)">
         <b>Nickname</b>
         <i id="nicknameIcon"></i>
       </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
+      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)"
+           @click="orderUsers(false, true , false, false, false)">
         <b>Full name</b>
         <i id="nameIcon"></i>
       </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
+      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)"
+           @click="orderUsers(false, false , true, false, false)">
         <b>Email</b>
         <i id="emailIcon"></i>
       </div>
-      <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6" @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
+      <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6" @keydown="orderEnter($event)"
+           @click="orderUsers(false, false , false, true, false)">
         <b>Address</b>
         <i id="addressIcon"></i>
       </div>
@@ -39,23 +45,23 @@
             </li>
 
             <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{currentPage-2}}</a>
+              <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{ currentPage - 2 }}</a>
             </li>
 
             <li class="page-item" v-if="currentPage-1 > 0">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{currentPage-1}}</a>
+              <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{ currentPage - 1 }}</a>
             </li>
 
             <li class="page-item active" aria-current="page">
-              <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{currentPage}}</a>
+              <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{ currentPage }}</a>
             </li>
 
             <li class="page-item" v-if="currentPage+1 <= maxPage">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{currentPage+1}}</a>
+              <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{ currentPage + 1 }}</a>
             </li>
 
             <li class="page-item" v-if="maxPage > 2 && currentPage <= 1">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{currentPage+2}}</a>
+              <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{ currentPage + 2 }}</a>
             </li>
 
             <li :class="toggleDisableClass('page-item', currentPage+1 > maxPage)" id="next-button">
@@ -141,11 +147,15 @@ export default {
       await Api.searchUsers(query).then(response => {
         this.userList = [...response.data];
         // Order by nickname alphabetically by default
-        this.userList.sort(function(a, b) {
-          if (a.nickname < b.nickname) {return -1;}
-          if (a.nickname > b.nickname) {return 1;}
+        this.userList.sort(function (a, b) {
+          if (a.nickname < b.nickname) {
+            return -1;
+          }
+          if (a.nickname > b.nickname) {
+            return 1;
+          }
           return 0;
-          });
+        });
         this.maxPage = Math.ceil(this.userList.length / this.rowsPerPage)
       }).catch((error) => {
         if (error.request && !error.response) {
@@ -215,19 +225,27 @@ export default {
       if (nickname) {
         this.disableIcons()
         if (this.nickAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.nickname > b.nickname) {return -1;}
-            if (a.nickname < b.nickname) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.nickname > b.nickname) {
+              return -1;
+            }
+            if (a.nickname < b.nickname) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('nicknameIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function(a, b) {
-            if (a.nickname < b.nickname) {return -1;}
-            if (a.nickname > b.nickname) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.nickname < b.nickname) {
+              return -1;
+            }
+            if (a.nickname > b.nickname) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('nicknameIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.nickAscending = !this.nickAscending;
@@ -240,19 +258,27 @@ export default {
       } else if (fullName) {
         this.disableIcons()
         if (this.nameAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.firstName > b.firstName) {return -1;}
-            if (a.firstName < b.firstName) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.firstName > b.firstName) {
+              return -1;
+            }
+            if (a.firstName < b.firstName) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function(a, b) {
-            if (a.firstName < b.firstName) {return -1;}
-            if (a.firstName > b.firstName) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.firstName < b.firstName) {
+              return -1;
+            }
+            if (a.firstName > b.firstName) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.nickAscending = false;
@@ -265,19 +291,27 @@ export default {
       } else if (email) {
         this.disableIcons()
         if (this.emailAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.email > b.email) {return -1;}
-            if (a.email < b.email) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.email > b.email) {
+              return -1;
+            }
+            if (a.email < b.email) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('emailIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function(a, b) {
-            if (a.email < b.email) {return -1;}
-            if (a.email > b.email) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.email < b.email) {
+              return -1;
+            }
+            if (a.email > b.email) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('emailIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.nickAscending = false;
@@ -291,7 +325,7 @@ export default {
         this.disableIcons()
 
         if (this.addressAscending) {
-          this.userList.sort(function(a, b) {
+          this.userList.sort(function (a, b) {
 
             let address1 = a.homeAddress.split(';');
             address1 = address1.slice(2, address.length);
@@ -301,13 +335,17 @@ export default {
             address2 = address2.slice(2, address.length);
             address2 = address2.join(", ");
 
-            if (address1 > address2) {return -1;}
-            if (address1 < address2) {return 1;}
+            if (address1 > address2) {
+              return -1;
+            }
+            if (address1 < address2) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function(a, b) {
+          this.userList.sort(function (a, b) {
 
             let address1 = a.homeAddress.split(';');
             address1 = address1.slice(2, address.length);
@@ -317,11 +355,15 @@ export default {
             address2 = address2.slice(2, address.length);
             address2 = address2.join(", ");
 
-            if (address1 < address2) {return -1;}
-            if (address1 > address2) {return 1;}
+            if (address1 < address2) {
+              return -1;
+            }
+            if (address1 > address2) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.nickAscending = false;
@@ -338,10 +380,10 @@ export default {
      * Disables all ascending or descending icons in the top column headers.
      */
     disableIcons() {
-      document.getElementById('nicknameIcon').setAttribute('class','');
-      document.getElementById('nameIcon').setAttribute('class','');
-      document.getElementById('emailIcon').setAttribute('class','');
-      document.getElementById('addressIcon').setAttribute('class','');
+      document.getElementById('nicknameIcon').setAttribute('class', '');
+      document.getElementById('nameIcon').setAttribute('class', '');
+      document.getElementById('emailIcon').setAttribute('class', '');
+      document.getElementById('addressIcon').setAttribute('class', '');
 
     },
     /*
@@ -350,8 +392,8 @@ export default {
     buildRows() {
       const self = this;
       this.clearRows();
-      let limit = this.rowsPerPage + (this.currentPage-1) * this.rowsPerPage;
-      let startIndex = (this.currentPage-1) * this.rowsPerPage;
+      let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
+      let startIndex = (this.currentPage - 1) * this.rowsPerPage;
       const outerContainer = document.getElementById('outerContainer');
       const lastChild = outerContainer.lastChild;
 
@@ -365,88 +407,118 @@ export default {
         let tabIndex = 7;
 
 
-        for (let i = startIndex; i < limit; i++)  {
-            // Check breakpoint
-            // let width = window.innerWidth;
+        for (let i = startIndex; i < limit; i++) {
+          // Check breakpoint
+          // let width = window.innerWidth;
 
-            let classInput = 'row mb-2 justify-content-center';
-            let t = true;
-            if (t) {
-              classInput = 'col text-center';
-            }
-
-            const userRow = document.createElement("div");
-            if (i % 2 === 0) {
-              userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour userRows");
-            } else {
-              userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour-dark userRows");
-            }
-            userRow.setAttribute("tabIndex", `${tabIndex}`);
-            userRow.setAttribute("id", `${this.userList[i].id}`);
-
-            const nickCol = document.createElement("div");
-            nickCol.setAttribute("class", `${classInput}`);
-            nickCol.setAttribute("id", `${i}-nick`);
-            nickCol.innerHTML = this.userList[i].nickname;
-            userRow.appendChild(nickCol);
-
-            const nameCol = document.createElement("div");
-            nameCol.setAttribute("class", `${classInput}`);
-            nameCol.setAttribute("id", `${i}-name`);
-            nameCol.innerText = this.userList[i].firstName + " " + this.userList[i].middleName + " " + this.userList[i].lastName;
-            userRow.appendChild(nameCol);
-
-            const emailCol = document.createElement("div");
-            emailCol.setAttribute("class", `${classInput}`);
-            emailCol.setAttribute("id", `${i}-email`);
-            emailCol.innerText = this.userList[i].email;
-            userRow.appendChild(emailCol);
-
-            const addressCol = document.createElement("div");
-            addressCol.setAttribute("class", `${classInput}`);
-            addressCol.setAttribute("id", `${i}-address`);
-            let address = this.userList[i].homeAddress.split(';');
-            address = address.slice(2, address.length);
-            address = address.join(", ");
-            addressCol.innerText = address
-            userRow.appendChild(addressCol);
-
-
-
-
-
-            userRow.addEventListener("click", function(event) {
-              let path;
-
-              if (event.target.id.includes('-')) {
-                const row = event.target.parentNode;
-                path = `/profile/${row.id}`
-              } else {
-                path = `/profile/${event.target.id}`
-              }
-
-              if (self.$route.path !== path) {
-                self.$router.push({path});
-              }
-
-            });
-
-            userRow.addEventListener('keydown', function (event) {
-              // TODO replace all deprecated keyCode uses
-              if (event.keyCode === 13) {
-                event.target.click();
-              }
-            })
-
-              outerContainer.insertBefore(userRow, lastChild);
-
-              tabIndex += 1;
-
-
+          let classInput = 'row mb-2 justify-content-center';
+          let t = true;
+          if (t) {
+            classInput = 'col text-center';
           }
+
+          const userRow = document.createElement("div");
+          if (i % 2 === 0) {
+            userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour userRows");
+          } else {
+            userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour-dark userRows");
+          }
+          userRow.setAttribute("tabIndex", `${tabIndex}`);
+          userRow.setAttribute("id", `${this.userList[i].id}`);
+
+          const nickCol = document.createElement("div");
+          nickCol.setAttribute("class", `${classInput}`);
+          nickCol.setAttribute("id", `${i}-nick`);
+          nickCol.innerHTML = this.userList[i].nickname;
+          userRow.appendChild(nickCol);
+
+          const nameCol = document.createElement("div");
+          nameCol.setAttribute("class", `${classInput}`);
+          nameCol.setAttribute("id", `${i}-name`);
+          if (this.userList[i].middleName) {
+            nameCol.innerText = this.userList[i].firstName + " " + this.userList[i].middleName + " " + this.userList[i].lastName;
+          } else {
+            nameCol.innerText = this.userList[i].firstName + " " + this.userList[i].lastName;
+          }
+
+          userRow.appendChild(nameCol);
+
+          const emailCol = document.createElement("div");
+          emailCol.setAttribute("class", `${classInput}`);
+          emailCol.setAttribute("id", `${i}-email`);
+          emailCol.innerText = this.userList[i].email;
+          userRow.appendChild(emailCol);
+
+          const addressCol = document.createElement("div");
+          addressCol.setAttribute("class", `${classInput}`);
+          addressCol.setAttribute("id", `${i}-address`);
+          let city = "";
+          if (this.userList[i].homeAddress.city) {
+            city = this.userList[i].homeAddress.city;
+          }
+          let region = "";
+          if (this.userList[i].homeAddress.region) {
+            region = this.userList[i].homeAddress.region;
+          }
+          let country = "";
+          if (this.userList[i].homeAddress.country) {
+            country = this.userList[i].homeAddress.country;
+          }
+
+          let address = "";
+          if (city !== "") {
+            address = address.concat(city);
+          }
+          if (city !== "" && region !== "") {
+            address = address.concat(", ", region);
+          } else {
+            address = address.concat(region);
+          }
+
+          if (region !== "" && country !== "") {
+            address = address.concat(", ", country);
+          } else if (city !== "" && country !== "") {
+            address = address.concat(", ", country);
+          } else {
+            address = address.concat(country);
+          }
+
+          addressCol.innerText = address
+          userRow.appendChild(addressCol);
+
+
+          userRow.addEventListener("click", function (event) {
+            let path;
+
+            if (event.target.id.includes('-')) {
+              const row = event.target.parentNode;
+              path = `/profile/${row.id}`
+            } else {
+              path = `/profile/${event.target.id}`
+            }
+
+            if (self.$route.path !== path) {
+              self.$router.push({path});
+            }
+
+          });
+
+          userRow.addEventListener('keydown', function (event) {
+            // TODO replace all deprecated keyCode uses
+            if (event.keyCode === 13) {
+              event.target.click();
+            }
+          })
+
+          outerContainer.insertBefore(userRow, lastChild);
+
+          tabIndex += 1;
+
+
+        }
       }
 
-      let showingStart = this.userList.length ? startIndex+1 : 0;
+      let showingStart = this.userList.length ? startIndex + 1 : 0;
 
       const showingString = `Showing ${showingStart}-${limit} of ${this.userList.length} results`;
       const showingRow = document.createElement('div');
@@ -466,7 +538,7 @@ export default {
     clearRows() {
       let allRows = document.getElementsByClassName("userRows");
       // Not sure why i-->0 works when i >0; i-- doesn't
-      for (let i = allRows.length; i-->0;) {
+      for (let i = allRows.length; i-- > 0;) {
         allRows[i].parentNode.removeChild(allRows[i]);
       }
       if (document.contains(document.getElementById('showingRow'))) {
