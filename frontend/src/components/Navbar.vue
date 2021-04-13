@@ -108,7 +108,7 @@ export default {
     // Determines if you are required to be logged in to view the current page.
     loginRequired: {
       type: Boolean,
-      default: false,
+      default: true,
       required: false
     }
   },
@@ -241,26 +241,25 @@ export default {
     /**
      * The function when called ensure the user is logged in. Otherwise takes you to the login page.
      */
-    ensureLoggedIn() {
-      const userIdCookie = Cookies.get('UserId');
-      const jSessionIdCookie = Cookies.get('JSESSIONID');
+    async ensureLoggedIn() {
+      const userIdCookie = await Cookies.get('userID');
+      // There is no way to check the JSESSIONID cookie without having an API call. This is because this is
+      // a HttpOnly cookie, which means we cannot do anything with it on the client side via Javascript.
+      //const jSessionIdCookie = await Cookies.get('JSESSIONID');
 
       // If either of the cookies are missing this means that the user is not logged in.
       // Then we logout the user, which takes them to the login page and deletes their cookies.
-      if (userIdCookie === undefined || jSessionIdCookie === undefined) {
-        this.logout(new Event("Not logged in"));
+      if (userIdCookie === undefined) {
+        await this.logout(new Event("Not logged in"));
       }
     }
   },
 
-  created() {
-
-    //TODO fix bug
+  beforeMount() {
     // If it is required to be logged in. The user will be checked.
-    // if (this.loginRequired) {
-    //   this.ensureLoggedIn();
-    // }
-
+    if (this.loginRequired) {
+      this.ensureLoggedIn();
+    }
   },
   mounted() {
 
