@@ -93,7 +93,7 @@ export default {
     // Determines if you are required to be logged in to view the current page.
     loginRequired: {
       type: Boolean,
-      default: true,
+      default: false,
       required: false
     }
   },
@@ -237,10 +237,12 @@ export default {
 
   created() {
 
+
+    //TODO fix bug
     // If it is required to be logged in. The user will be checked.
-    if (this.loginRequired) {
-      this.ensureLoggedIn();
-    }
+    // if (this.loginRequired) {
+    //   this.ensureLoggedIn();
+    // }
 
   },
   mounted() {

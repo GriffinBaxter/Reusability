@@ -1,3 +1,9 @@
+<!--This file contains the footer that is used at the bottom of every page, except the login and register page.-->
+<!--There is a dark mode footer and a light mode footer. The dark mode footer is currently commented out for future use.-->
+<!--The footer contains links that the nav bar contains as well as copyright information for Team 400.-->
+
+<!-------------------------------------------------- Dark Mode -------------------------------------------------------->
+
 <!--<template>-->
 <!--  &lt;!&ndash; Footer &ndash;&gt;-->
 <!--  <footer class="bg-dark text-center text-white footer-styling">-->
@@ -109,7 +115,7 @@
 <!--  &lt;!&ndash; Footer &ndash;&gt;-->
 <!--</template>-->
 
-<!-----------------------------------------------------------OR-------------------------------------------------------->
+<!----------------------------------------------------------- Light Mode -------------------------------------------------------->
 
 <template>
   <!-- Footer -->
@@ -223,7 +229,11 @@
   <!-- Footer -->
 </template>
 
+<!-------------------------------------------- Navigation Bar Styling ------------------------------------------------->
+
 <style scoped>
+
+/* styling for dark mode */
   .footer-styling {
     bottom: 0;
     width: 100%;
