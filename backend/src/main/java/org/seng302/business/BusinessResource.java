@@ -74,6 +74,13 @@ public class BusinessResource {
         String description = businessRegistrationPayload.getDescription();
         BusinessType businessType = businessRegistrationPayload.getBusinessType();
 
+        //403
+        if (currentUser.getId() != businessRegistrationPayload.getPrimaryAdministratorId()){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Invalid Primary Administrator Id"
+            );        }
+
         //TODO: 400 not in api spec
         if (!BusinessValidation.isValidName(name.trim())){
             throw new ResponseStatusException(
@@ -140,7 +147,7 @@ public class BusinessResource {
         if (BusinessValidation.isNewBusiness(businesses, name)){
             try {
                 Business business = new Business(
-                        businessRegistrationPayload.getPrimaryAdministratorId(),
+                        currentUser.getId(),
                         name,
                         description,
                         address,
