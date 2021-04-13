@@ -32,6 +32,14 @@ public class BusinessResource {
     private Address address;
     private List<Business> businesses;
 
+    public BusinessResource(
+            BusinessRepository businessRepository, UserRepository userRepository, AddressRepository addressRepository
+    ) {
+        this.businessRepository = businessRepository;
+        this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
+    }
+
     /**
      * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
      * @param sessionToken Session token

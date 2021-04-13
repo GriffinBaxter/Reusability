@@ -12,11 +12,13 @@ import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
 import java.time.LocalDate;
@@ -24,6 +26,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -36,10 +40,10 @@ public class BusinessResourceIntegrationTests {
     @Autowired
     private MockMvc mvc;
 
-    @Autowired
+    @MockBean
     private BusinessRepository businessRepository;
 
-    @Autowired
+    @MockBean
     private UserRepository userRepository;
 
     @Autowired
@@ -50,6 +54,8 @@ public class BusinessResourceIntegrationTests {
     private MockHttpServletResponse response;
 
     private Integer id;
+
+    private String sessionToken;
 
     private String expectedJson;
 
@@ -85,6 +91,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
         business = new Business(
                 user.getId(),
                 "name",
@@ -94,6 +102,7 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
                 user
         );
+        business.setId(2);
         userRepository.save(user);
         businessRepository.save(business);
     }

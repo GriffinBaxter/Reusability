@@ -105,6 +105,7 @@ public class UserResourceIntegrationTests {
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
         dGAA.setId(1);
+        dGAA.setSessionUUID(User.generateSessionUUID());
         user = new User("testfirst",
                         "testlast",
                         "testmiddle",
@@ -119,6 +120,7 @@ public class UserResourceIntegrationTests {
                                             LocalTime.of(0, 0)),
                         Role.GLOBALAPPLICATIONADMIN);
         user.setId(2);
+        user.setSessionUUID(User.generateSessionUUID());
         anotherUser = new User ("first",
                                 "last",
                                 "middle",
@@ -133,6 +135,7 @@ public class UserResourceIntegrationTests {
                                             LocalTime.of(0, 0)),
                                 Role.USER);
         anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
@@ -209,6 +212,7 @@ public class UserResourceIntegrationTests {
                           "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()), "01234567",
                      address, "Testpassword123!", LocalDateTime.now(), Role.USER);
         newUser.setId(4);
+        newUser.setSessionUUID(User.generateSessionUUID());
         given(userRepository.findByEmail(newUser.getEmail())).willReturn(java.util.Optional.empty());
 
         String registerJson = "{\"firstName\": \"Bob\", " +

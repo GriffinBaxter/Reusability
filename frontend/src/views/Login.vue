@@ -72,7 +72,6 @@ export default {
       // Backend will hash + salt password before storing it.
       Api.signIn(email, pass).then((response) => {
         Cookies.set('userID', response.data.userId)
-        // Also grab JSESSIONID when we have agreed on an implementation with the backend team.
         this.$router.push({ name: 'Profile' })
         this.$refs.errorLbl.style.visibility = "hidden";
       })

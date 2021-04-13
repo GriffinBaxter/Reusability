@@ -72,6 +72,18 @@ public class UserResource {
     }
 
     /**
+     * Gets a unique session UUID, by generating until a session token is generated that does not already exist.
+     * @return Unique session UUID
+     */
+    public String getUniqueSessionUUID() {
+        String sessionUUID = User.generateSessionUUID();
+        while (userRepository.findBySessionUUID(sessionUUID).isPresent()) {
+            sessionUUID = User.generateSessionUUID();
+        }
+        return sessionUUID;
+    }
+
+    /**
      * Attempt to authenticate a user account with a username and password.
      * @param login Login payload
      * @param response HTTP Response
@@ -82,7 +94,7 @@ public class UserResource {
 
         if (user.isPresent()) {
             if (user.get().verifyPassword(login.getPassword())) {
-                String sessionUUID = User.generateSessionUUID();
+                String sessionUUID = getUniqueSessionUUID();
 
                 user.get().setSessionUUID(sessionUUID);
                 userRepository.save(user.get());
@@ -163,6 +175,7 @@ public class UserResource {
                     LocalDateTime.now(),
                     Role.USER);
 
+            newUser.setSessionUUID(getUniqueSessionUUID());
             User createdUser = userRepository.save(newUser);
 
             Cookie cookie = new Cookie("JSESSIONID", createdUser.getSessionUUID());

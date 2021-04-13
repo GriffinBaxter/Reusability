@@ -483,7 +483,6 @@ export default {
       Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
        */
       Cookies.remove('userID');
-      Cookies.remove('JSESSIONID');
       this.$router.push({name: 'Login'});
     }
   },
@@ -493,10 +492,7 @@ export default {
     If cookies are invalid or not present, redirect to login page.
      */
     const currentID = Cookies.get('userID');
-    // TODO Implement when we agree on a JSESSIONID spec with backend team
-    // Cookies.get('JSESSIONID');
-    const validJSESSIONID = true;
-    if (currentID && validJSESSIONID) {
+    if (currentID) {
 
       const url = document.URL
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
