@@ -30,9 +30,9 @@
         </button>
 
         <!-- Navbar links -->
-        <div class="navbar-collapse" id="nav-bar-id">
+        <div class="navbar-collapse" id="navbar-id">
           <!-- navbar inner is required for the animation -->
-          <div id="nav-bar-inner-iId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto">
+          <div id="navbar-inner-id" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto">
             <ul class="navbar-nav nav-fill flex-column flex-lg-row">
 
               <!-- default page links -->
@@ -48,14 +48,14 @@
 
                 <!-- Navbar toggle drop down -->
                 <a class="nav-link dropdown-toggle" role="button" @click="() => {
-                  this.showBusinessDropdown = toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown)
+                  this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown)
                 }">
                   Business Pages
                 </a>
 
                 <!-- Dropdown links-->
-                <div id="business-drop-down-links-wrapper">
-                 <ul class="dropdown-menu show" id="business-drop-down-links">
+                <div id="business-dropdown-links-wrapper">
+                 <ul class="dropdown-menu show" id="business-dropdown-links">
                       <li class="nav-item">
                         <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
                       </li>
@@ -138,8 +138,8 @@ export default {
 
       // Only runs if there is a navbar item existing. Otherwise we return null to avoid accessing
       // a non-existent attribute
-      if (document.getElementById("navbarInnerId")) {
-        result = document.getElementById("navbarInnerId").offsetHeight
+      if (document.getElementById("navbar-inner-id")) {
+        result = document.getElementById("navbar-inner-id").offsetHeight
       }
       return result
     },
@@ -195,7 +195,7 @@ export default {
     toggleNavbar(preventToggle = false, extraMaxPixels = 0) {
 
       // Only if the element exists
-      if (document.getElementById("nav-bar-id")) {
+      if (document.getElementById("navbar-id")) {
 
         // Update the max height before applying any transitions
         this.navbarMaxHeight = this.getNavbarMaxHeight() + extraMaxPixels;
@@ -210,7 +210,7 @@ export default {
         if (this.showNavbar) targetHeight = this.navbarMaxHeight
 
         // Assign the target height to the navbar
-        document.getElementById("nav-bar-id").setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
+        document.getElementById("navbar-id").setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
       }
     },
     /**
@@ -273,7 +273,7 @@ export default {
     }
 
     // Set the inital height for the navbar and the dropdown
-    this.toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown, true);
+    this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown, true);
     this.toggleNavbar(true)
   }
 
@@ -324,11 +324,11 @@ export default {
   .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   }
-    #nav-bar-id {
+    #navbar-id {
       overflow: hidden;
     }
 
-  #business-drop-down-links-wrapper{
+  #business-dropdown-links-wrapper{
     position: relative;
     overflow: hidden;
   }
@@ -346,11 +346,11 @@ export default {
 
   /*LG Break point*/
   @media(min-width: 992px) {
-    #nav-bar-id {
+    #navbar-id {
       overflow: visible;
     }
 
-    #business-drop-down-links-wrapper{
+    #business-dropdown-links-wrapper{
       position: absolute;
     }
 
