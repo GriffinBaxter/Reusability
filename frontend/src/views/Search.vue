@@ -160,7 +160,8 @@ export default {
         this.userList = [...response.data];
         if (this.userList.length <= 0) {
           this.currentPage = 1;
-
+          this.maxPage = 1;
+          this.totalRows = 0;
         } else {
           this.maxPage = parseInt(response.headers['total-pages']);
           this.totalRows = parseInt(response.headers['total-rows']);
