@@ -1,3 +1,15 @@
+<!--This file creates the navigation (nav) bar. It is used on all pages, excluding the login page and registration
+    page.-->
+<!--There is a navigation bar specific for an individual and a business.-->
+<!--The individual nav bar contains links to the Home, Profile, and Logout pages.-->
+<!--The business nav bar contains the same links as the individual page with the addition of a drop down menu which
+    contains-->
+<!--links to the business' listings, inventory and catalogue pages.-->
+<!--Bootstrap has been used to build these nav bars.-->
+
+
+<!-------------------------------------------- Navigation Bar --------------------------------------------------------->
+
 <template>
   <nav class="navbar sticky-top navbar-expand-lg shadow text-font" style="background-color: white">
       <div class="container mt-2 my-lg-3 mx-auto">
@@ -6,21 +18,21 @@
         <div class="logo-container text-center">
           <router-link class="navbar-brand " to="/home">
 <!--            class="img-fluid d-inline-block"-->
-            <img src="../../public/logo_only_med.png" alt="Logo" id="logoImage">
+            <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image">
           </router-link>
           <p class="company-name-main">REUSABILITY</p>
           <p class="company-name-sub-heading"> - Share & Save - </p>
         </div>
 
-        <!-- hamburger icon -->
+        <!-- Hamburger icon -->
         <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <!-- Navbar links -->
-        <div class="navbar-collapse" id="navbarId">
+        <div class="navbar-collapse" id="nav-bar-id">
           <!-- navbar inner is required for the animation -->
-          <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto">
+          <div id="nav-bar-inner-iId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto">
             <ul class="navbar-nav nav-fill flex-column flex-lg-row">
 
               <!-- default page links -->
@@ -34,7 +46,7 @@
               <!--- Business specific account links -->
               <li class="nav-item dropdown" v-if="isBusinessAccount">
 
-                <!-- Navbar togle drop down -->
+                <!-- Navbar toggle drop down -->
                 <a class="nav-link dropdown-toggle" role="button" @click="() => {
                   this.showBusinessDropdown = toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown)
                 }">
@@ -42,8 +54,8 @@
                 </a>
 
                 <!-- Dropdown links-->
-                <div id="businessDropdownLinksWrapper">
-                 <ul class="dropdown-menu show" id="businessDropdownLinks">
+                <div id="business-drop-down-links-wrapper">
+                 <ul class="dropdown-menu show" id="business-drop-down-links">
                       <li class="nav-item">
                         <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
                       </li>
@@ -78,18 +90,21 @@ import Cookies from "js-cookie";
 export default {
   name: "Navbar",
   props: {
-    // Defines if to show or hide the business acount specific links
+
+    // Defines if to show or hide the business account specific links
     isBusinessAccount: {
       type: Boolean,
       default: false,
       required: false
     },
-    // Dectates the transition animation time
+
+    // Dictates the transition animation time
     msTransitionDelay: {
       type: Number,
       default: 300,
       required: false
     },
+
     // Determines if you are required to be logged in to view the current page.
     loginRequired: {
       type: Boolean,
@@ -97,19 +112,22 @@ export default {
       required: false
     }
   },
+
   data() {
     return {
 
-      // buisness dropdown variables
+      // business dropdown variables
       showBusinessDropdown: false,
 
       // navbar required variables
       showNavbar: false,
-      navbarMaxHeight: null,                                     // max hieght of the navbar pixels
-      navbarMinHeight: 0   ,                                     // min hieght of the navbar pixels
-      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;` // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
+      navbarMaxHeight: null,                                     // max height of the navbar pixels
+      navbarMinHeight: 0   ,                                     // min height of the navbar pixels
+      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`
+      // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
     }
   },
+
   methods: {
     /**
      * Calculates the target maximum height for the navbar once it needs to open.
@@ -119,7 +137,7 @@ export default {
       let result = null;
 
       // Only runs if there is a navbar item existing. Otherwise we return null to avoid accessing
-      // a non existant attribute
+      // a non-existent attribute
       if (document.getElementById("navbarInnerId")) {
         result = document.getElementById("navbarInnerId").offsetHeight
       }
@@ -131,7 +149,7 @@ export default {
      * appear more nicely.
      * @param dropdownId - The id of the dropdown element.
      * @param dropdownWrapperId - The ide of the dropdown wrapper element.
-     * @param toggleVariable - The varaible that the dropdown depends on.
+     * @param toggleVariable - The variable that the dropdown depends on.
      * @param preventToggle - Gives the option to prevent the variable from being toggled. This defaults to false.
      * @param minHeight - Gives the option to give a custom minimum height. But zero if a good default.
      *
@@ -159,7 +177,7 @@ export default {
         // Update the target height for the component
         wrapperElement.setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
 
-        // Update the navbar to accomidate the changes
+        // Update the navbar to accommodate the changes
         this.toggleNavbar(true, targetHeight);
 
         // So the toggle variable can be updated
@@ -177,7 +195,7 @@ export default {
     toggleNavbar(preventToggle = false, extraMaxPixels = 0) {
 
       // Only if the element exists
-      if (document.getElementById("navbarId")) {
+      if (document.getElementById("nav-bar-id")) {
 
         // Update the max height before applying any transitions
         this.navbarMaxHeight = this.getNavbarMaxHeight() + extraMaxPixels;
@@ -192,7 +210,7 @@ export default {
         if (this.showNavbar) targetHeight = this.navbarMaxHeight
 
         // Assign the target height to the navbar
-        document.getElementById("navbarId").setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
+        document.getElementById("nav-bar-id").setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
       }
     },
     /**
@@ -225,18 +243,17 @@ export default {
      */
     ensureLoggedIn() {
       const userIdCookie = Cookies.get('UserId');
-      const JsessionIdCookie = Cookies.get('JSESSIONID');
+      const jSessionIdCookie = Cookies.get('JSESSIONID');
 
       // If either of the cookies are missing this means that the user is not logged in.
       // Then we logout the user, which takes them to the login page and deletes their cookies.
-      if (userIdCookie === undefined || JsessionIdCookie === undefined) {
+      if (userIdCookie === undefined || jSessionIdCookie === undefined) {
         this.logout(new Event("Not logged in"));
       }
     }
   },
 
   created() {
-
 
     //TODO fix bug
     // If it is required to be logged in. The user will be checked.
@@ -263,13 +280,15 @@ export default {
 }
 </script>
 
+<!-------------------------------------------- Navigation Bar Styling ------------------------------------------------->
+
 <style scoped>
 
   .logo-container {
     position: center;
   }
 
-  #logoImage {
+  #logo-image {
     max-width: 200px;
     margin-left: 28px;
     margin-right: 10px;
@@ -278,9 +297,11 @@ export default {
 
   .nav-link {
     color: white;
-    background: #19b092;  /* fallback for old browsers */
-    /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
-    /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+    background: #19b092;
+
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #199164, #24e09a); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
     margin: 10px 0;
     border-radius: 15px;
@@ -303,11 +324,11 @@ export default {
   .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   }
-    #navbarId {
+    #nav-bar-id {
       overflow: hidden;
     }
 
-  #businessDropdownLinksWrapper{
+  #business-drop-down-links-wrapper{
     position: relative;
     overflow: hidden;
   }
@@ -316,21 +337,20 @@ export default {
     background-color: #2eda77;
   }
 
-
   .dropdown-menu {
     border-right-width: 0;
     border-left-width: 0;
     padding: 0 5rem;
-    /*margin: 1.2rem 0; Margins cannot be calculated in pxiels :( */
+    /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
   }
 
   /*LG Break point*/
   @media(min-width: 992px) {
-    #navbarId {
+    #nav-bar-id {
       overflow: visible;
     }
 
-    #businessDropdownLinksWrapper{
+    #business-drop-down-links-wrapper{
       position: absolute;
     }
 
@@ -349,11 +369,5 @@ export default {
     }
 
 }
-
-.active {
-  background-color: #2eda77;
-}
-
-
 
 </style>
