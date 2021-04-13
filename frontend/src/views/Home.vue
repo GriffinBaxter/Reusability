@@ -1,13 +1,22 @@
-<!--<link rel="preconnect" href="https://fonts.gstatic.com">-->
-<!--<link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">-->
+<!--This file creates the Home page.-->
+<!--It current contains the navigation bar, a news feed and a footer.-->
+<!--Bootstrap has been used for creating and styling the elements.-->
+
 <template>
 
   <div>
+
+    <!--Nav bar; displays either business account or individual account nav bar-->
     <Navbar :is-business-account="true"></Navbar>
+
     <div id="home" class="container all-but-footer">
+
+      <!--News feed-->
       <div class="container-news text-font">
 
+        <!--Post 1 for news feed-->
         <div class="post shadow py-5 px-4">
+          <!--Post header-->
           <div class="post-header">
             <div>
               <img id="profile-image-1" src="../../public/profile_icon_1.jpg" alt="profile image">
@@ -16,16 +25,20 @@
               <span>Apr 6</span>
             </div>
           </div>
+          <!--Post description-->
           <div>
             <p class="post-description"> This is the first photo of the feed. This is a multi-lined comment for testing purposes.</p>
           </div>
-          <p></p>
+          <p></p>'
+          <!--Post image-->
           <div>
             <img class="post-image" src="../../public/apples.jpg" alt="image 2">
           </div>
         </div>
 
+        <!--Post 2 for news feed-->
         <div class="post shadow py-5 px-4">
+          <!--Post header-->
           <div class="post-header">
             <div>
               <img id="profile-image-2" src="../../public/profile_icon_2.jpg" alt="profile image">
@@ -34,16 +47,20 @@
             <span>Apr 4</span>
           </div>
           </div>
+          <!--Post description-->
           <div>
             <p class="post-description"> This is the second photo of the feed. This is a multi-lined comment for testing purposes.</p>
           </div>
           <p></p>
+          <!--Post image-->
           <div>
             <img class="post-image" src="../../public/cans.jpg" alt="image 2">
           </div>
         </div>
 
+        <!--Post 3 for news feed-->
         <div class="post shadow py-5 px-4">
+          <!--Post header-->
           <div class="post-header">
             <div>
               <img id="profile-image-3" src="../../public/profile_icon_3.jpg" alt="profile image">
@@ -52,10 +69,12 @@
             <span>Apr 3</span>
           </div>
           </div>
+          <!--Post description-->
           <div>
             <p class="post-description"> This is the third photo of the feed. This is a multi-lined comment for testing purposes.</p>
           </div>
           <p></p>
+          <!--Post image-->
           <div>
             <img class="post-image" src="../../public/clothes.jpg" alt="image 2">
           </div>
@@ -63,7 +82,10 @@
 
       </div>
     </div>
+
+    <!--Footer contains links that are the same as those in the nav bar-->
     <Footer></Footer>
+
   </div>
 </template>
 
@@ -84,6 +106,8 @@ export default {
   }
 }
 </script>
+
+<!------------------------------------------------- Home Page Styling ------------------------------------------------->
 
 <style scoped>
 
@@ -135,7 +159,7 @@ div.post img {
 }
 
 /*
- * styling for header of the post. This will later be change to be the business icon of the owner of the post.
+ * Styling for header of the post.
  */
 div.post .post-header div:first-child{
   display: inline-block;
@@ -143,15 +167,7 @@ div.post .post-header div:first-child{
 }
 
 /*
- * styling for header of the post. This will later be change to be the business icon of the owner of the post.
- */
-div.post .post-header div:first-child{
-  display: inline-block;
-  width: 80%;
-}
-
-/*
- * styling for date
+ * Styling for date in header of the post.
  */
 div.post .post-header div:last-child{
   display: inline-block;
@@ -167,13 +183,17 @@ div.post h2, div.post p {
 }
 
 /*
- * width is 624px since news feed item is 600px and then 12px margin each side.
+ * Width is 524px since news feed item is 500px and then 12px margin each side.
  */
 div.container{
   width: 524px;
   margin: auto;
 }
 
+/**
+ * Styling for profile images for each post. Makes image into circle.
+ * TODO make DRY
+ */
 #profile-image-1, #profile-image-2, #profile-image-3{
   height: 50px;
   width: auto;
@@ -193,6 +213,10 @@ div.container{
   margin-bottom: 30px;
 }
 
+/**
+ * TODO remove once footer is sticky
+ * Calculates where footer should be.
+ */
 .all-but-footer {
   min-height: calc(100vh - 240px);
 }
