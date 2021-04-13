@@ -88,6 +88,7 @@ public class UserResourceIntegrationTests {
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
         dGAA.setId(1);
+        dGAA.setSessionUUID(User.generateSessionUUID());
         user = new User("testfirst",
                         "testlast",
                         "testmiddle",
@@ -102,6 +103,7 @@ public class UserResourceIntegrationTests {
                                             LocalTime.of(0, 0)),
                         Role.GLOBALAPPLICATIONADMIN);
         user.setId(2);
+        user.setSessionUUID(User.generateSessionUUID());
         anotherUser = new User ("first",
                                 "last",
                                 "middle",
@@ -116,6 +118,7 @@ public class UserResourceIntegrationTests {
                                             LocalTime.of(0, 0)),
                                 Role.USER);
         anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository)).build();
     }
 
@@ -134,7 +137,7 @@ public class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, user.getId()));
-        assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(String.valueOf(user.getId()));
+        assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -192,6 +195,7 @@ public class UserResourceIntegrationTests {
                           "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()), "01234567",
                      "testaddress", "testpassword", LocalDateTime.now(), Role.USER);
         newUser.setId(4);
+        newUser.setSessionUUID(User.generateSessionUUID());
         given(userRepository.findByEmail(newUser.getEmail())).willReturn(java.util.Optional.empty());
 
         String registerJson = "{\"firstName\": \"Bob\", " +
@@ -212,7 +216,7 @@ public class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, 4));
-        assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(String.valueOf(4));
+        assertThat(response.getCookie("JSESSIONID").getValue()).isNotNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -319,10 +323,10 @@ public class UserResourceIntegrationTests {
                 user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"");
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))))
+                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -342,9 +346,10 @@ public class UserResourceIntegrationTests {
                 user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null);
 
         // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -364,10 +369,10 @@ public class UserResourceIntegrationTests {
                 user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null);
 
         // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", String.valueOf(anotherUser.getId()))))
+                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -382,12 +387,14 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantRetrieveUserWhenUserExistsWithNonExistingIdCookie() throws Exception {
         // given
+        String nonExistingSessionUUID = User.generateSessionUUID();
         expectedJson = "";
 
         // when
+        when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", "0")))
+                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", nonExistingSessionUUID)))
                 .andReturn().getResponse();
 
         // then
@@ -423,10 +430,10 @@ public class UserResourceIntegrationTests {
         expectedJson = "";
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(0)).thenReturn(Optional.empty());
         response = mvc.perform(
-                get(String.format("/users/%d", 0)).cookie(new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))))
+                get(String.format("/users/%d", 0)).cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -470,12 +477,12 @@ public class UserResourceIntegrationTests {
         when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
                                                 firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
         when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", String.valueOf(dGAA.getId())))).andReturn().getResponse());
+                            new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
         }
 
         // then
@@ -521,12 +528,12 @@ public class UserResourceIntegrationTests {
         when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
                 firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
         when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
-        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", String.valueOf(user.getId())))).andReturn().getResponse());
+                            new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse());
         }
 
         // then
@@ -572,12 +579,12 @@ public class UserResourceIntegrationTests {
         when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
                 firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
         when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
-        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
 
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", String.valueOf(anotherUser.getId())))).andReturn().getResponse());
+                            new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
         }
 
         // then
@@ -607,11 +614,11 @@ public class UserResourceIntegrationTests {
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))
+                            new Cookie("JSESSIONID", dGAA.getSessionUUID())
                     )).andReturn().getResponse());
         }
 
@@ -629,6 +636,7 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantSearchUsersWithNonExistingIdCookie() throws Exception {
         // given
+        String nonExistingSessionUUID = User.generateSessionUUID();
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
                 "TESTLAST",
@@ -654,12 +662,12 @@ public class UserResourceIntegrationTests {
         when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
                 firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
         when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
-        when(userRepository.findById(0)).thenReturn(Optional.empty());
+        when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
 
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", "0"))).andReturn().getResponse());
+                            new Cookie("JSESSIONID", nonExistingSessionUUID))).andReturn().getResponse());
         }
 
         // then
@@ -722,10 +730,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void canChangeUserToGaaWithDgaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(dGAA.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(put(String.format("/users/%d/makeAdmin", anotherUser.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -746,10 +754,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeUserToGaaWithGaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
 
         // when
-        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(put(String.format("/users/%d/makeAdmin", anotherUser.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -767,9 +775,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeUserToGaaWithUserCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(anotherUser.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
 
         // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(put(String.format("/users/%d/makeAdmin", anotherUser.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -787,10 +796,11 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeUserToGaaWithNonExistingIdCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", "0");
+        String nonExistingSessionUUID = User.generateSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", nonExistingSessionUUID);
 
         // when
-        when(userRepository.findById(0)).thenReturn(Optional.empty());
+        when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
         when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(put(String.format("/users/%d/makeAdmin", anotherUser.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -824,10 +834,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeUserToGaaWithNonExistingUserAndDgaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(dGAA.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(0)).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/users/%d/makeAdmin", 0))
                 .cookie(cookie)).andReturn().getResponse();
@@ -844,10 +854,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeGaaToGaaWithDgaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(dGAA.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(put(String.format("/users/%d/makeAdmin", user.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -865,9 +875,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeDgaaToGaaWithDgaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(dGAA.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(put(String.format("/users/%d/makeAdmin", dGAA.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -885,10 +896,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void canChangeGaaToUserWithDgaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(dGAA.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(put(String.format("/users/%d/revokeAdmin", user.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -909,9 +920,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeGaaToUserWithGaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
 
         // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(put(String.format("/users/%d/revokeAdmin", user.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -929,11 +941,11 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeGaaToUserWithUserCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(anotherUser.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
 
         // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(put(String.format("/users/%d/revokeAdmin", user.getId()))
                 .cookie(cookie)).andReturn().getResponse();
 
@@ -950,9 +962,11 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeGaaToUserWithNonExistingIdCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", "0");
+        String nonExistingSessionUUID = User.generateSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", nonExistingSessionUUID);
 
         // when
+        when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(put(String.format("/users/%d/revokeAdmin", user.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -986,10 +1000,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeGaaToUserWithNonExistingGaaAndDgaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(dGAA.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(0)).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/users/%d/revokeAdmin", 0))
                 .cookie(cookie)).andReturn().getResponse();
@@ -1006,10 +1020,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeUserToUserWithDgaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(dGAA.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(put(String.format("/users/%d/revokeAdmin", anotherUser.getId()))
                 .cookie(cookie)).andReturn().getResponse();
@@ -1027,9 +1041,10 @@ public class UserResourceIntegrationTests {
     @Test
     public void cantChangeDgaaToUserWithDgaaCookie() throws Exception {
         // given
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(dGAA.getId()));
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(put(String.format("/users/%d/revokeAdmin", dGAA.getId()))
                 .cookie(cookie)).andReturn().getResponse();

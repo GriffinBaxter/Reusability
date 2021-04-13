@@ -481,10 +481,7 @@ export default {
     If cookies are invalid or not present, redirect to login page.
      */
     const currentID = Cookies.get('userID');
-    // TODO Implement when we agree on a JSESSIONID spec with backend team
-    // Cookies.get('JSESSIONID');
-    const validJSESSIONID = true;
-    if (currentID && validJSESSIONID) {
+    if (currentID) {
       this.requestUsers().then(
           () => this.buildRows()
       ).catch(

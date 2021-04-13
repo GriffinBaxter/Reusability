@@ -19,13 +19,18 @@ public class BusinessResource {
     @Autowired
     private UserRepository userRepository;
 
+    public BusinessResource(BusinessRepository businessRepository, UserRepository userRepository) {
+        this.businessRepository = businessRepository;
+        this.userRepository = userRepository;
+    }
+
     /**
      * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
      * @param sessionToken Session token
      * @return User object
      */
     private User getUserVerifySession(String sessionToken) {
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
+        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
         if (sessionToken == null || user.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
