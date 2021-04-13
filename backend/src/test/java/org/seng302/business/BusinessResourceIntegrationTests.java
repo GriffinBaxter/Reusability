@@ -423,7 +423,7 @@ public class BusinessResourceIntegrationTests {
 
     /**
      * Tests that an BAD_REQUEST(400) status is received when sending a payload to the /businesses API endpoint
-     * that contains business name, description, address(country = "Actually if your son is not the work we"), businessType.
+     * that contains business name, description, address(country = ""), businessType.
      */
     @Test
     public void canNotCreateWhenAddressContainAnEmptyCountry() throws Exception {
