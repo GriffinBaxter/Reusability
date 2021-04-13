@@ -140,7 +140,7 @@ public class BusinessResource {
         if (BusinessValidation.isNewBusiness(businesses, name)){
             try {
                 Business business = new Business(
-                        currentUser.getId(),
+                        businessRegistrationPayload.getPrimaryAdministratorId(),
                         name,
                         description,
                         address,

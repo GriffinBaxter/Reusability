@@ -4,10 +4,15 @@ import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 
 public class BusinessRegistrationPayload {
+    private Integer primaryAdministratorId;
     private String name;
     private String description;
     private AddressPayload address;
     private String businessType;
+
+    public Integer getPrimaryAdministratorId() {
+        return primaryAdministratorId;
+    }
 
     public String getName() {
         return name;
