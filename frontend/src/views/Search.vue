@@ -1,39 +1,59 @@
+<!--This file creates the Search page.-->
+<!--It current contains the navigation bar, a search results table and a footer.-->
+<!--Bootstrap has been used for creating and styling the elements.-->
+
 <template>
   <div>
-    <Navbar></Navbar>
-    <div id="outerContainer" class="container text-font">
 
+    <!--nav bar-->
+    <Navbar></Navbar>
+
+    <!--search container-->
+    <div id="outer-container" class="container text-font">
+
+      <!--search bar-->
       <div class="row">
         <div class="col search-bar-positioning">
           <div class="input-group my-4">
             <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
-            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><i id="searchButtonITag" class="fas fa-search"></i></button>
+            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><i id="search-button-i-tag"
+                                                                                             class="fas fa-search"></i></button>
           </div>
         </div>
       </div>
 
       <div class="row mb-3">
+
+        <!--order by nickname-->
         <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
           <b>Nickname</b>
-          <i id="nicknameIcon"></i>
+          <i id="nickname-icon"></i>
         </div>
+
+        <!--order by full name-->
         <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
           <b>Full name</b>
-          <i id="nameIcon"></i>
+          <i id="name-icon"></i>
         </div>
+
+        <!--order by email-->
         <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
           <b>Email</b>
-          <i id="emailIcon"></i>
+          <i id="email-icon"></i>
         </div>
+
+        <!--order by address-->
         <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6" @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
           <b>Address</b>
-          <i id="addressIcon"></i>
+          <i id="address-icon"></i>
         </div>
+
       </div>
 
       <div class="row">
         <div class="col">
-          <!-- Avert your eyes for this... -->
+
+          <!--page number buttons' navigation-->
           <nav aria-label="user-table-navigation" id="pagination-nav" class="float-end" v-if="maxPage > 1">
             <ul class="pagination" id="pagination-ul">
 
@@ -99,10 +119,10 @@ export default {
       small: false
     }
   },
+
   methods: {
     /**
      * Toggles the disabling of pagination buttons.
-     *
      * @param baseClasses Base classes to add
      * @param condition Given condition for toggling
      * @returns {array} A list classes to apply
@@ -114,9 +134,9 @@ export default {
       }
       return classList
     },
+
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
-     *
      * @param event The click event
      * @param newPageNum The page to move to
      */
@@ -125,9 +145,9 @@ export default {
       this.currentPage = newPageNum;
       this.buildRows();
     },
+
     /**
      * Emulates a click when the user presses enter on a column header.
-     *
      * @param event The keydown event
      */
     orderEnter(event) {
@@ -135,10 +155,10 @@ export default {
         event.target.click();
       }
     },
-    /*
+
+    /**
      * Requests a list of users matching the given query from the back-end.
      * If successful it sets the userList variable to the response data.
-     *
      * @return {Promise}
      */
     async requestUsers() {
@@ -165,9 +185,9 @@ export default {
         }
       })
     },
-    /*
+
+    /**
      * Handles the user pressing enter with the search bar focused. Updates the search if they do.
-     *
      * @param event The keydown event
      */
     search(event) {
@@ -179,9 +199,9 @@ export default {
         );
       }
     },
-    /*
+
+    /**
      * Handles the user pressing clicking on the search button. Completes a search when they do.
-     *
      */
     searchClicked() {
       const inputQuery = this.$refs.searchBar.value;
@@ -190,9 +210,9 @@ export default {
           (e) => console.log(e)
       );
     },
-    /*
+
+    /**
      * Goes to the previous page and updates the rows.
-     *
      */
     previousPage() {
       if (this.currentPage > 1) {
@@ -200,9 +220,9 @@ export default {
         this.buildRows()
       }
     },
-    /*
+
+    /**
      * Goes to the next page and updates the rows.
-     *
      */
     nextPage() {
       if (this.currentPage < this.maxPage) {
@@ -210,7 +230,8 @@ export default {
         this.buildRows()
       }
     },
-    /*
+
+    /**
      * Orders the users based on the given booleans for each column, and updates the display
      * @param nickname Boolean, whether to order by nickname
      * @param fullName Boolean, whether to order by full name
@@ -341,7 +362,8 @@ export default {
       }
 
     },
-    /*
+
+    /**
      * Disables all ascending or descending icons in the top column headers.
      */
     disableIcons() {
@@ -351,7 +373,8 @@ export default {
       document.getElementById('addressIcon').setAttribute('class','');
 
     },
-    /*
+
+    /**
      * Dynamically builds the rows of users from the stored userList.
      */
     buildRows() {
@@ -419,9 +442,6 @@ export default {
             userRow.appendChild(addressCol);
 
 
-
-
-
             userRow.addEventListener("click", function(event) {
               let path;
 
@@ -449,7 +469,6 @@ export default {
 
               tabIndex += 1;
 
-
           }
       }
 
@@ -467,12 +486,13 @@ export default {
       outerContainer.insertBefore(showingRow, lastChild);
 
     },
-    /*
+
+    /**
      * Removes all rows of users from the page.
      */
     clearRows() {
       let allRows = document.getElementsByClassName("userRows");
-      // Not sure why i-->0 works when i >0; i-- doesn't
+      //TODO Not sure why i-->0 works when i >0; i-- doesn't
       for (let i = allRows.length; i-->0;) {
         allRows[i].parentNode.removeChild(allRows[i]);
       }
@@ -482,11 +502,12 @@ export default {
 
     },
   },
+
+  /**
+   * When mounted, initiate population of page.
+   * If cookies are invalid or not present, redirect to login page.
+   */
   mounted() {
-    /*
-    When mounted, initiate population of page.
-    If cookies are invalid or not present, redirect to login page.
-     */
     const currentID = Cookies.get('userID');
     // TODO Implement when we agree on a JSESSIONID spec with backend team
     // Cookies.get('JSESSIONID');
@@ -502,6 +523,9 @@ export default {
       this.$router.push({name: 'Login'});
     }
 
+
+    //TODO what is the purpose of this? Is it needed still?
+
     // let self = this;
     // this.$nextTick(function() {
     //   window.addEventListener('resize', function() {
@@ -516,6 +540,8 @@ export default {
 }
 </script>
 
+<!--------------------------------------- Search User by Name Page Styling -------------------------------------------->
+
 <style scoped>
 
 #searchBar:focus {
@@ -528,6 +554,10 @@ export default {
   padding-top: 40px;
 }
 
+/**
+ * TODO remove once footer is sticky
+ * Calculates where footer should be.
+ */
 .all-but-footer {
   min-height: calc(100vh - 240px);
 }
