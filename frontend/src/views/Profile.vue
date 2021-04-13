@@ -1,31 +1,54 @@
+<!--This file creates the Profile page.-->
+<!--It contains the container displaying the user's details.-->
+<!--This file creates the Home page.-->
+<!--It current contains the navigation bar, a news feed and a footer.-->
+<!--Bootstrap has been used for creating and styling the elements.-->
+<!--It is currently fully responsive.-->
+
 <template>
   <div>
+
+    <!--nav bar-->
     <Navbar></Navbar>
+
+    <!--profile header, contains user search bar-->
     <div id="profileHeaderDiv">
       <ProfileHeader/>
     </div>
+
+    <!--profile container-->
     <div class="container p-5 mt-3 all-but-footer text-font" id="profileContainer">
       <div class="row">
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
+
+              <!--user's profile image--> <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
               <div></div>
                 <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+
+              <!--user's nickname-->
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
               </div>
+
             </div>
           </div>
+
           <!--   For later use:   -->
 <!--          <div class="card text-center shadow-sm mt-3">-->
 <!--            <div class="card-body">-->
 <!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
 <!--            </div>-->
 <!--          </div>-->
+
         </div>
+
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
+
+              <!--user's bio-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Bio: </h6>
@@ -36,6 +59,8 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's name-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -47,6 +72,8 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's email-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -58,8 +85,10 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's date of birth-->
               <hr>
-              <div class="row" id="dateOfBirthRow">
+              <div class="row" id="date-of-birth-row">
                 <div class="col-md-3">
                   <h6>Date of Birth:</h6>
                 </div>
@@ -69,7 +98,9 @@
                   </div>
                 </div>
               </div>
-              <hr id="dateHR">
+
+              <!--user's phone number-->
+              <hr id="date-header">                <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="row" id="phoneRow">
                 <div class="col-md-3">
                   <h6>Phone number:</h6>
@@ -80,7 +111,9 @@
                   </div>
                 </div>
               </div>
-              <hr id="phoneHR">
+
+              <!--user's home address-->
+              <hr id="phone-header">               <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Address:</h6>
@@ -91,6 +124,8 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's joined date-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -102,14 +137,21 @@
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
+
+          <!--logout button-->
           <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
+
         </div>
       </div>
 
     </div>
+
+    <!--footer-->
     <Footer></Footer>
+
   </div>
 </template>
 
@@ -144,12 +186,13 @@ export default {
     }
   },
   methods: {
-    getCreatedDate(createdDate) {
-      /*
-      Calculates the months between the given date and the current date, then formats the given date and months.
-      Finally it sets the join date on the page to the formatted string.
-       */
 
+    /**
+     * Calculates the months between the given date and the current date, then formats the given date and months.
+     * Finally it sets the join date on the page to the formatted string.
+     * @param createdDate
+     */
+    getCreatedDate(createdDate) {
       const dateJoined = new Date(createdDate);
 
       const currentDate = new Date();
@@ -167,11 +210,13 @@ export default {
       const finalDate = this.formatAge(createdDate);
       this.joined = `${finalDate} (${months} months ago)`;
     },
+
+    /**
+     * Sends a get request to the backend, calling populatePage upon success with the returned data.
+     * If the request was unsuccessful, the page is not populated and appropriate error messages logged.
+     * @param userID
+     */
     retrieveUser(userID) {
-      /*
-      Sends a get request to the backend, calling populatePage upon success with the returned data.
-      If the request was unsuccessful, the page is not populated and appropriate error messages logged.
-       */
       Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
 
         if (error.request && !error.response) {
@@ -186,21 +231,26 @@ export default {
         }
       })
     },
+
+    /**
+     * Formats the given age string using a Date object and removes the day from the result.
+     * Returns a formatted string.
+     * @param ageString
+     * @returns {string}
+     */
     formatAge(ageString) {
-      /*
-      Formats the given age string using a Date object and removes the day from the result.
-      Returns a formatted string.
-       */
       let array = (new Date(ageString)).toDateString().split(" ");
       array.shift();
       return array.join(' ')
     },
+
+    /**
+     * Populates all display fields on the profile page with the given data.
+     The address is a special case as its components are stored semi-colon separated,
+     so it must be 'unpacked' and formatted.
+     */
     populatePage(data) {
-      /*
-      Populates all display fields on the profile page with the given data.
-      The address is a special case as its components are stored semi-colon separated,
-      so it must be 'unpacked' and formatted.
-       */
+
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
         document.getElementById('dateOfBirthRow').remove();
@@ -225,24 +275,25 @@ export default {
       this.bio = data.bio;
       this.email = data.email;
 
-
-
       this.getCreatedDate(data.created);
     },
+
+    /**
+     * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
+     */
     logout() {
-      /*
-      Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
-       */
       Cookies.remove('userID');
       Cookies.remove('JSESSIONID');
       this.$router.push({name: 'Login'});
     }
   },
+
+  /**
+   * When mounted, initiate population of page.
+   * If cookies are invalid or not present, redirect to login page.
+   */
   mounted() {
-    /*
-    When mounted, initiate population of page.
-    If cookies are invalid or not present, redirect to login page.
-     */
+
     const currentID = Cookies.get('userID');
     // TODO Implement when we agree on a JSESSIONID spec with backend team
     // Cookies.get('JSESSIONID');
@@ -262,12 +313,18 @@ export default {
     } else {
       this.$router.push({name: 'Login'});
     }
-    }
+  }
 }
 </script>
 
+<!----------------------------------------------- Profile Page Styling ------------------------------------------------>
+
 <style scoped>
 
+/**
+ * TODO remove once footer is sticky
+ * Calculates where footer should be.
+ */
 .all-but-footer {
   min-height: calc(100vh - 338px);
 }
