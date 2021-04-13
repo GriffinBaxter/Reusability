@@ -14,7 +14,7 @@
         <line num="175" count="0" type="stmt"/>
         <line num="179" count="0" type="stmt"/>
       </file>
-      <file name="addressInstance.js" path="C:\Dan\git_repositories\seng302_team6_project\team-6\frontend\src\addressInstance.js">
+      <file name="AddressInstance.js" path="C:\Dan\git_repositories\seng302_team6_project\team-6\frontend\src\AddressInstance.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="3" count="1" type="stmt"/>
         <line num="10" count="0" type="stmt"/>

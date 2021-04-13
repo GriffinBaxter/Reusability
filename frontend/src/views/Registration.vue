@@ -235,7 +235,7 @@
 <script>
 import Api, {User} from "../Api";
 import Cookies from 'js-cookie';
-import AddressAPI from "../addressInstance"
+import AddressAPI from "../AddressInstance"
 import FooterSecure from "../components/FooterSecure";
 
 export default {
