@@ -338,21 +338,20 @@ public class User {
 
     @Override
     public String toString() {
-        return "User(" +
-                "id=" + id +
-                ", firstName=" + firstName +
-                ", lastName=" + lastName +
-                ", middleName=" + middleName +
-                ", nickname=" + nickname +
-                ", bio=" + bio +
-                ", email=" + email +
-                ", dateOfBirth=" + dateOfBirth +
-                ", phoneNumber=" + phoneNumber +
-                ", homeAddress=" + homeAddress +
-                ", password=" + password +
-                ", created=" + created +
-                ", businessesAdministered=" + getBusinessesAdministered() +
-                ')';
+        return "{\"id\":" + id +
+                ",\"firstName\":\"" + firstName + "\"" +
+                ",\"lastName\":\"" + lastName + "\"" +
+                ",\"middleName\":\"" + middleName + "\"" +
+                ",\"nickname\":\"" + nickname + "\"" +
+                ",\"bio\":\"" + bio + "\"" +
+                ",\"email\":\"" + email + "\"" +
+                ",\"dateOfBirth\":\"" + dateOfBirth + "\"" +
+                ",\"phoneNumber\":\"" + phoneNumber + "\"" +
+                ",\"homeAddress\":" + homeAddress +
+                ",\"created\":\"" + created + "\"" +
+                ",\"role\":\"" + role + "\"" +
+                ",\"businessesAdministered\":[null]" +
+                "}";
     }
 
     public void setBusinessesAdministeredObjects(List<Business> businessesAdministeredObjects) {

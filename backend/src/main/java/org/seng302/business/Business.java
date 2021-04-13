@@ -128,8 +128,8 @@ public class Business {
      * get registration date
      * @return registrationDate
      */
-    public String getCreated() {
-        return created.toString();
+    public LocalDateTime getCreated() {
+        return created;
     }
 
     /**
