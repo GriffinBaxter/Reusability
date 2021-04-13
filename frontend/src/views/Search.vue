@@ -523,7 +523,6 @@ export default {
       this.$router.push({name: 'Login'});
     }
 
-
     //TODO what is the purpose of this? Is it needed still?
 
     // let self = this;
