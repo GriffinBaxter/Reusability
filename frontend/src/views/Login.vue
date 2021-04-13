@@ -12,7 +12,7 @@
     <!--login container-->
     <div id="login" class="container text-font all-but-footer">
 
-      <!--logo-->
+      <!--logo, with text-->
       <div class="row justify-content-center">
         <div class="col-3 m-3 text-center">
           <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">

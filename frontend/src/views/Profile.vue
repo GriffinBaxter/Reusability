@@ -1,7 +1,7 @@
 <!--This file creates the Profile page.-->
 <!--It contains the container displaying the user's details.-->
-<!--This file creates the Home page.-->
-<!--It current contains the navigation bar, a news feed and a footer.-->
+<!--It current contains the navigation bar, container displaying the user's details, a user profile and nickname as well
+    as a footer.-->
 <!--Bootstrap has been used for creating and styling the elements.-->
 <!--It is currently fully responsive.-->
 

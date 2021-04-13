@@ -1,30 +1,50 @@
+<!--This file creates the Registration page.-->
+<!--It contains the container displaying the mandatory and optional fields that a person must submit to register an
+    account with the app, provided in the form.-->
+<!--Bootstrap has been used for creating and styling the elements.-->
+<!--It is currently fully responsive.-->
+
 <template>
   <div>
+
+    <!--body excluding footer-->
     <div class="container all-but-footer text-font">
+
+      <!--logo without text, centred above form-->
       <div class="row justify-content-center">
         <div class="col-3 m-3">
           <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
         </div>
       </div>
+
       <div class="col-lg-8 mx-auto">
+
+        <!-- registration form's container-->
         <div class="container shadow py-5 px-4 bg-white mb-5" id="register-form">
           <div class="row">
             <div class="col">
               <h3 class="display-6 m-2 mb-5 text-center">Register</h3>
             </div>
           </div>
+
+          <!--registration form, needs validation-->
           <form id="registration" class="needs-validation mb-3 px-5" novalidate @submit.prevent>
+
+            <!--first row of form-->
             <div class="row my-lg-2">
+
+              <!--first name input field-->
               <div class="col-lg-4 my-2 my-lg-0">
-              <label for="first-name">First Name*</label>
-              <input id="first-name" name="first-name" tabindex="1" type="text" v-model="firstName"
-                     :class="toggleInvalidClass(firstNameErrorMsg)" :maxlength="config.firstName.maxLength"
-                     required> <!-- Add max length attached to the max length in the config-->
-              <div class="invalid-feedback">
-                {{firstNameErrorMsg}}
-              </div>
+                <label for="first-name">First Name*</label>
+                <input id="first-name" name="first-name" tabindex="1" type="text" v-model="firstName"
+                       :class="toggleInvalidClass(firstNameErrorMsg)" :maxlength="config.firstName.maxLength"
+                       required> <!-- Add max length attached to the max length in the config-->
+                <div class="invalid-feedback">
+                  {{firstNameErrorMsg}}
+                </div>
               </div>
 
+              <!--middle name input field-->
               <div class="col-lg-4 my-2 my-lg-0">
                 <label for="middle-name">Middle Name</label>
                 <input id="middle-name" name="middle-name" tabindex="2" type="text" v-model="middleName"
@@ -34,6 +54,7 @@
                 </div>
               </div>
 
+              <!--last name input field-->
               <div class="col-lg-4 my-2 my-lg-0">
                 <label for="last-name">Last Name*</label>
                 <input id="last-name" name="last-name" tabindex="3" type="text" v-model="lastName"
@@ -42,19 +63,23 @@
                   {{lastNameErrorMsg}}
                 </div>
               </div>
+
             </div>
 
-
+            <!--second row of form-->
             <div class="row my-lg-2">
+
+              <!--date of birth input field-->
               <div class="col-lg-4 my-2 my-lg-0">
-                <label for="date-Of-Birth">Date of Birth*</label>
-                <input id="date-Of-Birth" name="date-of-birth" tabindex="4" type="date" v-model="dateOfBirth"
+                <label for="date-of-birth">Date of Birth*</label>
+                <input id="date-of-birth" name="date-of-birth" tabindex="4" type="date" v-model="dateOfBirth"
                        :max="getMaxDateOfBirth()" :class="toggleInvalidClass(dateOfBirthErrorMsg)" required>
                 <div class="invalid-feedback">
                   {{dateOfBirthErrorMsg}}
                 </div>
               </div>
 
+              <!--nickname input field-->
               <div class="col-lg my-2 my-lg-0">
                 <label for="nickname">Nickname</label>
                 <input id="nickname" name="nickname" type="text" tabindex="5" v-model="nickname"
@@ -65,7 +90,11 @@
               </div>
 
             </div>
+
+            <!--third row of form-->
             <div class="row my-lg-2 ">
+
+              <!--email input field-->
               <div class="col my-2 my-lg-0">
                 <label for="email">Email*</label>
                 <input id="email" name="email" type="email" tabindex="6" v-model="email"
@@ -74,9 +103,13 @@
                   {{emailErrorMsg}}
                 </div>
               </div>
+
             </div>
 
+            <!--fourth row of form-->
             <div class="row my-lg-2">
+
+              <!--password validation information-->
               <div class="col my-2 my-lg-0">
                 <h6>Password must meet the following conditions:</h6>
                 <ul>
@@ -92,27 +125,39 @@
                     At least 8 characters in length</li>
                 </ul>
               </div>
+
             </div>
 
+            <!--fifth row of form-->
             <div class="row my-lg-2">
+
+              <!--password input field-->
               <div class="col my-2 my-lg-0">
                 <label for="password">Password*</label>
                 <div class="input-group">
                   <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" :maxlength="config.password.maxLength" required>
+
+                  <!--toggle password visibility-->
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                         @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                         tabindex="8">
                     <i v-if="!showPassword" class="fas fa-eye"></i>
                     <i v-else class="fas fa-eye-slash"></i>
                     </span>
+
                   <div class="invalid-feedback">
                     {{passwordErrorMsg}}
                   </div>
+
                 </div>
               </div>
+
             </div>
 
+            <!--sixth row of form-->
             <div class="row my-lg-2">
+
+              <!--confirm password input field-->
               <div class="col my-2 my-lg-0">
                 <label for="confirm-password">Confirm Password*</label>
                 <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
@@ -122,10 +167,13 @@
                   {{confirmPasswordErrorMsg}}
                 </div>
               </div>
+
             </div>
 
+            <!--seventh row of form-->
             <div class="row my-lg-2">
 
+              <!--phone number input field-->
               <div class="col-lg-4 my-2 my-lg-0">
                 <label for="phone-number">Phone Number</label>
                 <input id="phone-number" name="phone-number" tabindex="10" type="text" placeholder="+64 123 132 132" v-model="phoneNumber"
@@ -135,7 +183,7 @@
                 </div>
               </div>
 
-
+              <!--home address input field, allows for autocompletion via prompt-->
               <div class="col my-2 my-lg-0">
               <label for="home-address">Address Autofill (Optional)</label>
                 <input id="home-address" name="home-address" ref="homeAddressInput" type="text" @input="input()"
@@ -145,20 +193,28 @@
                 {{homeAddressErrorMsg}}
                 </div>
               </div>
+
             </div>
 
+            <!--eighth row of form-->
             <div class="row my-lg-2">
+
+              <!--street input field-->
               <div class="col my-2 my-lg-0">
-                <label for="streetAddress">Street Address*</label>
-                <input :class="toggleInvalidClass(streetAddressErrorMsg)" tabindex="11" id="streetAddress"
+                <label for="street-address">Street Address*</label>
+                <input :class="toggleInvalidClass(streetAddressErrorMsg)" tabindex="11" id="street-address"
                        name="streetAddress" ref="streetAddress" required autocomplete="off">
                 <div class="invalid-feedback">
                   {{streetAddressErrorMsg}}
                 </div>
               </div>
+
             </div>
 
+            <!--ninth row of form-->
             <div class="row my-lg-2">
+
+              <!--suburb input field-->
               <div class="col-lg-6 my-2 my-lg-0">
                 <label for="suburb">Suburb</label>
                 <input :class="toggleInvalidClass(suburbErrorMsg)" tabindex="12" name="suburb" id="suburb" ref="suburb"
@@ -168,6 +224,7 @@
                 </div>
               </div>
 
+              <!--city input field-->
               <div class="col-lg-6 my-2 my-lg-0">
                 <label for="city">City*</label>
                 <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="13" name="city" id="city" ref="city"
@@ -176,9 +233,13 @@
                   {{cityErrorMsg}}
                 </div>
               </div>
+
             </div>
 
+            <!--tenth row of form-->
             <div class="row my-lg-2">
+
+              <!--state input field-->
               <div class="col-lg-6 my-2 my-lg-0">
                 <label for="region">State/Region*</label>
                 <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="14" name="region" id="region" ref="region"
@@ -188,6 +249,7 @@
                 </div>
               </div>
 
+              <!--country input field-->
               <div class="col-lg-6 my-2 my-lg-0">
                 <label for="country">Country*</label>
                 <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="15" id="country" name="country"
@@ -198,7 +260,10 @@
               </div>
             </div>
 
+            <!--eleventh row of form-->
             <div class="row my-lg-2">
+
+              <!--bio field-->
               <div class="col my-2 my-lg-0">
                 <label for="bio">Bio</label>
                 <textarea id="bio" name="bio" tabindex="16" rows="5" cols="70" v-model="bio"
@@ -210,25 +275,35 @@
               </div>
             </div>
 
+            <!--twelfth row of form-->
             <div class="row my-lg-2">
+
+              <!--error message field-->
               <div class="col-lg-12 mt-2 my-lg-0 mx-auto">
-                <div id="registration-error" ref="registration-error" v-if="toastErrorMessage" class="alert alert-danger"
+                <div id="registration-error" ref="registration-error" v-if="errorMessageBubble" class="alert alert-danger"
                      role="alert">
-                  <label>{{ toastErrorMessage }}</label>
+                  <label>{{ errorMessageBubble }}</label>
                 </div>
               </div>
             </div>
 
+            <!--register button-->
             <div class="d-grid gap-2 d-lg-block">
-              <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="18" id="backToLoginButton" @click="$router.push('/')">Back to Login</button>
+              <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="18" id="back-to-login-button" @click="$router.push('/')">Back to Login</button>
               <button id="register-button" tabindex="17" class="btn btn-lg btn-primary float-lg-end green-button" type="button" @click="addNewUser($event)">Register</button>
             </div>
 
           </form>
+
         </div>
+
       </div>
+
     </div>
+
+    <!--footer-->
     <FooterSecure></FooterSecure>
+
   </div>
 </template>
 
@@ -315,7 +390,7 @@ export default {
       countryErrorMsg: "",
 
       // Toast related variables
-      toastErrorMessage: "",
+      errorMessageBubble: "",
       cannotProceed: false,
 
       // Address autocompletion related variables
@@ -326,7 +401,7 @@ export default {
     }
   },
 
-  /*
+  /**
    * This is used for creating a prefilled user for testing and bypassing manually filling in the registration page
    */
   created() {
@@ -753,6 +828,7 @@ export default {
 
 
       const user = new User(userData)
+
       /*
        * Add the User to the database by sending an API request to the backend to store the user's information.
        * Raise any errors and ensure they are displayed on the UI.
@@ -771,27 +847,26 @@ export default {
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
-            this.toastErrorMessage = '400 Bad request; invalid user data';
+            this.errorMessageBubble = '400 Bad request; invalid user data';
           } else if (error.response.status === 409) {
             this.emailErrorMsg = 'Email already in use'
           } else {
-            this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
+            this.errorMessageBubble = `${error.response.status} Unexpected error occurred!`;
           }
         } else if (error.request) {
-          this.toastErrorMessage = 'Timeout occurred';
+          this.errorMessageBubble = 'Timeout occurred';
         } else {
-          this.toastErrorMessage = 'Unexpected error occurred!';
+          this.errorMessageBubble = 'Unexpected error occurred!';
         }
       })
     },
-    /*
-     * Address API requests
+
+    /**
+     * Address API requests.
+     * An asynchronous function that calls the Komoot Photon API with the given address input.
+     * Upon success, the filterResponse function is called with the response data.
      */
     async request() {
-      /*
-      An asynchronous function that calls the Komoot Photon API with the given address input.
-      Upon success, the filterResponse function is called with the response data.
-      */
       let input = document.getElementById('home-address').value;
       if (input.length > 4) { // Starts on 5th char
         await AddressAPI.addressQuery(input).then((response) => {
@@ -1044,6 +1119,8 @@ export default {
 
 </script>
 
+<!------------------------------------------ Registration Page Styling ------------------------------------------------>
+
 <style scoped>
 form {
   display: flex;
@@ -1065,12 +1142,12 @@ label {
   border-radius: 2%;
 }
 
-/* IntellaJ doesn't highlight this one as used even though it is used in toggle checkPasswordCriteria*/
+/* NOTE: IntelliJ doesn't highlight this one as used even though it is used in toggle checkPasswordCriteria */
 .text-red {
   color: red;
 }
 
-/*------------------ Hide arrows from input numbers ---------------------*/
+/*--------------------- Hide arrows from input numbers ---------------------*/
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -1083,14 +1160,18 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-input:focus, textarea:focus, #register-button:focus, #backToLoginButton:focus {
-  outline: none;     /* oranges! yey */
+input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus {
+  outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
 
 /*------------------------------------------------------------------------*/
 
+/**
+ * TODO remove once footer is sticky
+ * Calculates where footer should be.
+ */
 .all-but-footer {
   min-height: calc(100vh - 50px);
 }
