@@ -1,6 +1,8 @@
 package org.seng302.user;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
 
@@ -8,8 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -19,6 +19,53 @@ import static org.junit.Assert.assertEquals;
  * Individual test class.
  */
 public class UserTests {
+
+    private static Address address;
+
+    private static User user;
+
+    @BeforeAll
+    public static void before() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+    }
+
+    /**
+     * initialize
+     * @throws Exception business object create fail
+     */
+    @Test
+    public void testAddAdministrators() throws Exception {
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "description",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                user
+        );
+    }
 
     /**
      * Tests that an invalid email address throws an error.
@@ -35,7 +82,7 @@ public class UserTests {
                     "",
                     LocalDate.of(2021, Month.JANUARY, 1),
                     "123456789",
-                    "1 Example Street",
+                    address,
                     "password",
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                     Role.USER
@@ -58,9 +105,9 @@ public class UserTests {
                     "nick",
                     "bio",
                     "test@example.com",
-                    LocalDate.of(2021, Month.JANUARY, 1),
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                     "123456789",
-                    "1 Example Street",
+                    address,
                     "",
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                     Role.USER
@@ -83,9 +130,9 @@ public class UserTests {
                     "nick",
                     "bio",
                     "test@example.com",
-                    LocalDate.of(2021, Month.JANUARY, 1),
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                     "123456789",
-                    "1 Example Street",
+                    address,
                     "   ",
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                     Role.USER
@@ -110,7 +157,7 @@ public class UserTests {
                     "test@example.com",
                     LocalDate.of(2021, Month.JANUARY, 1),
                     "123456789",
-                    "1 Example Street",
+                    address,
                     "password",
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                     Role.USER
@@ -133,9 +180,9 @@ public class UserTests {
                     "nick",
                     "bio",
                     "test@example.com",
-                    LocalDate.of(2021, Month.JANUARY, 1),
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                     "123456789abc",
-                    "1 Example Street",
+                    address,
                     "password",
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                     Role.USER
@@ -157,10 +204,10 @@ public class UserTests {
                 "",
                 "",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
-                "1 Example Street",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 Role.USER
         );
@@ -181,10 +228,10 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
-                "1 Example Street",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.now().minusMonths(2),
                 Role.USER
         );
@@ -204,10 +251,10 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
-                "1 Example Street",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.now().minusYears(1).minusMonths(2),
                 Role.USER
         );
@@ -226,10 +273,10 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
-                "1 Example Street",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
@@ -248,14 +295,14 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
-                "1 Example Street",
-                "qaz123...",
+                address,
+                "Password123!",
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
-        assertEquals("cWF6MTIzLi4u", user.getPassword());
+        assertEquals("UGFzc3dvcmQxMjMh", user.getPassword());
     }
 
     /**
@@ -270,14 +317,14 @@ public class UserTests {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
-                "1 Example Street",
-                "qaz123...",
+                address,
+                "Password123!",
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
-        assertTrue(user.verifyPassword("qaz123..."));
+        assertTrue(user.verifyPassword("Password123!"));
     }
 
     /**
@@ -287,15 +334,20 @@ public class UserTests {
      */
     @Test
     public void testGetBusinessesAdministered() throws Exception {
-        Business business = new Business("name", "description", "address", BusinessType.RETAIL_TRADE, LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)));
-        User user = new User("first", "last", "middle", "nick", "biography", "email@email.com", LocalDate.of(2020, 2, 2), "0271316", "address", "password", LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "description",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                user
+        );
 
         business.addAdministrators(user);
 
-        List<Integer> ids = new ArrayList<>();
-        ids.add(business.getId());
-
-        assertEquals(ids, user.getBusinessesAdministered());
+        assertEquals(user, business.getAdministrators().get(0));
     }
 
 

@@ -25,6 +25,7 @@
                 <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
+                <div class="text-secondary">{{bio}}</div>
               </div>
             </div>
           </div>
@@ -68,79 +69,94 @@
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Bio: </h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{bio}}
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-4 -align-left">
+                    <h6>Name:</h6>
+                  </div>
+                  <div class="col-8">
+                    <div class="text-secondary" align="right">
+                      {{firstName}} {{middleName}} {{lastName}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr>
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Name:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{firstName}} {{middleName}} {{lastName}}
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Email:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{email}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr>
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Email:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{email}}
+              <div class="container" id="dateOfBirthRow">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Date of Birth:</h6>
                   </div>
-                </div>
-              </div>
-              <hr>
-              <div class="row" id="dateOfBirthRow">
-                <div class="col-md-3">
-                  <h6>Date of Birth:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{dateOfBirth}}
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{dateOfBirth}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr id="dateHR">
-              <div class="row" id="phoneRow">
-                <div class="col-md-3">
-                  <h6>Phone number:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{phoneNumber}}
+              <div class="container" id="phoneRow">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Phone number:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{phoneNumber}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr id="phoneHR">
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Address:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{homeAddress}}
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Address:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" v-for="lines in homeAddress" :key="lines.line" align="right">
+                      {{lines.line}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr>
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Joined:</h6>
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Joined:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{joined}}
+                    </div>
+                  </div>
                 </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{joined}}
+              </div>
+              <hr id="businessAdministeredHR">
+              <div class="container" id="businessAdministeredRow">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Businesses Administered:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
+                        align="right" @click="pushToUser(business.id)">
+                      {{business.name}}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -181,9 +197,18 @@ export default {
       email: "",
       dateOfBirth: "",
       phoneNumber: "",
-      homeAddress: "",
+
+      homeAddress: [],
+      streetNumber: "",
+      streetName: "",
+      city: "",
+      region: "",
+      country: "",
+      postcode: "",
+
       created: "",
       joined: "",
+      businessesAdministered: [],
       otherUser: false,
       role: null
     }
@@ -368,7 +393,6 @@ export default {
       If the request was unsuccessful, the page is not populated and appropriate error messages logged.
        */
       Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
-
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 406) {
@@ -396,36 +420,89 @@ export default {
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
+      //address unpack
+      if (data.homeAddress.city) {
+        this.city = data.homeAddress.city;
+      }
+
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
         document.getElementById('dateOfBirthRow').remove();
+        document.getElementById('businessAdministeredRow').remove();
+        document.getElementById('businessAdministeredHR').remove();
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
 
-        let address = data.homeAddress.split(';');
-        address = address.slice(2, address.length);
-        address = address.join(", ");
-        this.homeAddress = address;
+        //address unpack
+        if (this.city !== "") {
+          this.homeAddress.push({line: this.city});
+        }
 
       } else {
+        //basic unpack
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;
-        this.homeAddress = data.homeAddress.replaceAll(";", ", ");
+
+        //address unpack
+        if (data.homeAddress.streetNumber) {
+          this.streetNumber = data.homeAddress.streetNumber;
+        }
+        if (data.homeAddress.streetName) {
+          this.streetName = data.homeAddress.streetName;
+        }
+        if (data.homeAddress.city) {
+          this.city = data.homeAddress.city;
+        }
+        if (data.homeAddress.postcode) {
+          this.postcode = data.homeAddress.postcode;
+        }
+        if (this.streetNumber !== "" && this.streetName !== ""){
+          this.homeAddress.push({line: this.streetNumber + " " + this.streetName});
+        } else {
+          this.homeAddress.push({line: this.streetNumber + this.streetName});
+        }
+        if (this.city !== "" && this.postcode !== ""){
+          this.homeAddress.push({line: this.city + ", " + this.postcode});
+        } else {
+          this.homeAddress.push({line: this.city + this.postcode});
+        }
+
+        // businesses administered unpack
+        data.businessesAdministered.forEach(business => {
+          if (business !== null) {
+            this.businessesAdministered.push({name: business.name, id: business.id});
+          }
+        })
       }
 
+      //basic unpack
       this.firstName = data.firstName;
       this.middleName = data.middleName;
       this.lastName = data.lastName;
       this.nickname = data.nickname;
       this.bio = data.bio;
       this.email = data.email;
-
       if (data.role) {
         this.role = data.role;
       }
 
+      //address unpack
+      if (data.homeAddress.region) {
+        this.region = data.homeAddress.region;
+      }
+      if (data.homeAddress.country) {
+        this.country = data.homeAddress.country;
+      }
+      if (this.region !== "" && this.country !== ""){
+        this.homeAddress.push({line: this.region + ", " + this.country});
+      } else {
+        this.homeAddress.push({line: this.region + this.country});
+      }
 
       this.getCreatedDate(data.created);
+    },
+    pushToUser(id){
+      this.$router.push({name:'BusinessProfile', params: {id}});
     },
     logout() {
       /*
@@ -442,7 +519,6 @@ export default {
      */
     const currentID = Cookies.get('userID');
     if (currentID) {
-
       const url = document.URL
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
 
@@ -453,11 +529,10 @@ export default {
         this.retrieveUser(this.urlID);
         this.otherUser = true;
       }
-
     } else {
       this.$router.push({name: 'Login'});
     }
-    }
+  }
 }
 </script>
 

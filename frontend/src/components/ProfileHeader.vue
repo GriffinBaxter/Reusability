@@ -7,7 +7,7 @@
         <div class="col">
           <div class="input-group">
             <input type="text" id="searchBar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
-            <button class="btn btn-primary greenButton" @click="searchClicked()"><i class="fas fa-search"></i></button>
+            <button class="btn btn-primary greenButton" @click="searchClicked()"><font-awesome-icon icon="search" /></button>
           </div>
         </div>
       </div>
