@@ -2,8 +2,11 @@ package org.seng302.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -34,15 +37,28 @@ public class UserRepositoryIntegrationTests {
     private Optional<User> foundUser;
     private List<UserPayload> foundUserPayloadList;
 
+    private static Address address;
+
     /**
      * Tests that a (correct) user is returned when calling findByEmail() with an existing email
      */
     @Test
     public void whenFindByExistingEmail_thenReturnUser() throws Exception {
         // given
+        address = new Address(
+                "1/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -64,7 +80,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUser.get().getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUser.get().getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUser.get().getPhoneNumber());
-        assertThat(user.getHomeAddress()).isEqualTo(foundUser.get().getHomeAddress());
+        assertThat(user.getHomeAddress().toString()).isEqualTo(foundUser.get().getHomeAddress().toString());
         assertThat(user.getCreated()).isEqualTo(foundUser.get().getCreated());
         assertThat(user.getPassword()).isEqualTo(foundUser.get().getPassword());
     }
@@ -75,9 +91,20 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void whenFindByNonExistingEmail_thenDontReturnUser() throws Exception {
         // given
+        address = new Address(
+                "2/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -97,9 +124,20 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void whenFindByExistingId_thenReturnUser() throws Exception {
         // given
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER);
 
@@ -121,7 +159,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUser.get().getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUser.get().getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUser.get().getPhoneNumber());
-        assertThat(user.getHomeAddress()).isEqualTo(foundUser.get().getHomeAddress());
+        assertThat(user.getHomeAddress().toString()).isEqualTo(foundUser.get().getHomeAddress().toString());
         assertThat(user.getCreated()).isEqualTo(foundUser.get().getCreated());
         assertThat(user.getPassword()).isEqualTo(foundUser.get().getPassword());
     }
@@ -146,18 +184,29 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void whenFindByExistingFirstMiddleLastIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
+        address = new Address(
+                "4/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
         entityManager.flush();
 
         // when
-        foundUserPayloadList = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
+        foundUserPayloadList = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
                 "TESTFIRST", "TESTMIDDLE", "TESTLAST"
-        );
+        ));
 
         // then
         assertThat(foundUserPayloadList.size() == 1).isTrue();
@@ -170,7 +219,16 @@ public class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUserPayloadList.get(0).getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUserPayloadList.get(0).getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUserPayloadList.get(0).getPhoneNumber());
-        assertThat(user.getHomeAddress()).isEqualTo(foundUserPayloadList.get(0).getHomeAddress());
+
+        AddressPayload foundAddress = foundUserPayloadList.get(0).getHomeAddress();
+        AddressPayload userAddress = user.getHomeAddress().toAddressPayload();
+        assertThat(userAddress.getStreetNumber()).isEqualTo(foundAddress.getStreetNumber());
+        assertThat(userAddress.getStreetName()).isEqualTo(foundAddress.getStreetName());
+        assertThat(userAddress.getCity()).isEqualTo(foundAddress.getCity());
+        assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
+        assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
+        assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+
         assertThat(user.getCreated()).isEqualTo(foundUserPayloadList.get(0).getCreated());
     }
 
@@ -182,18 +240,29 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void whenFindByNonExistingFirstMiddleLast_thenDontReturnUserPayload() throws Exception {
         // given
+        address = new Address(
+                "5/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
         entityManager.flush();
 
         // when
-        foundUserPayloadList = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
+        foundUserPayloadList = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
                 "not first", "not middle", "not last"
-        );
+        ));
 
         // then
         assertThat(foundUserPayloadList.isEmpty()).isTrue();
@@ -206,16 +275,27 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void whenFindByExistingFirstLastIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
+        address = new Address(
+                "6/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
         entityManager.flush();
 
         // when
-        foundUserPayloadList = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("TESTFIRST", "TESTLAST");
+        foundUserPayloadList = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("TESTFIRST", "TESTLAST"));
 
         // then
         assertThat(foundUserPayloadList.size() == 1).isTrue();
@@ -228,7 +308,16 @@ public class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUserPayloadList.get(0).getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUserPayloadList.get(0).getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUserPayloadList.get(0).getPhoneNumber());
-        assertThat(user.getHomeAddress()).isEqualTo(foundUserPayloadList.get(0).getHomeAddress());
+
+        AddressPayload foundAddress = foundUserPayloadList.get(0).getHomeAddress();
+        AddressPayload userAddress = user.getHomeAddress().toAddressPayload();
+        assertThat(userAddress.getStreetNumber()).isEqualTo(foundAddress.getStreetNumber());
+        assertThat(userAddress.getStreetName()).isEqualTo(foundAddress.getStreetName());
+        assertThat(userAddress.getCity()).isEqualTo(foundAddress.getCity());
+        assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
+        assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
+        assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+
         assertThat(user.getCreated()).isEqualTo(foundUserPayloadList.get(0).getCreated());
     }
 
@@ -239,16 +328,27 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void whenFindByNonExistingFirstLast_thenDontReturnUserPayload() throws Exception {
         // given
+        address = new Address(
+                "7/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
         entityManager.flush();
 
         // when
-        foundUserPayloadList = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("not first", "not last");
+        foundUserPayloadList = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("not first", "not last"));
 
         // then
         assertThat(foundUserPayloadList.isEmpty()).isTrue();
@@ -262,19 +362,30 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void whenFindByExistingNicknameOrFirstOrLastOrMiddleIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
+        address = new Address(
+                "8/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
         entityManager.flush();
 
         // when
-        List<UserPayload> foundUserPayloadListNickname = userRepository.findByNicknameIgnoreCase("TESTNICK");
-        List<UserPayload> foundUserPayloadListFirst = userRepository.findByFirstNameIgnoreCase("TESTFIRST");
-        List<UserPayload> foundUserPayloadListLast = userRepository.findByLastNameIgnoreCase("TESTLAST");
-        List<UserPayload> foundUserPayloadListMiddle = userRepository.findByMiddleNameIgnoreCase("TESTMIDDLE");
+        List<UserPayload> foundUserPayloadListNickname = UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase("TESTNICK"));
+        List<UserPayload> foundUserPayloadListFirst = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase("TESTFIRST"));
+        List<UserPayload> foundUserPayloadListLast = UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase("TESTLAST"));
+        List<UserPayload> foundUserPayloadListMiddle = UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase("TESTMIDDLE"));
         List<UserPayload> foundUserPayloads = List.of(
                 foundUserPayloadListNickname.get(0),
                 foundUserPayloadListFirst.get(0),
@@ -298,7 +409,16 @@ public class UserRepositoryIntegrationTests {
             assertThat(user.getBio()).isEqualTo(foundUserPayload.getBio());
             assertThat(user.getDateOfBirth()).isEqualTo(foundUserPayload.getDateOfBirth());
             assertThat(user.getPhoneNumber()).isEqualTo(foundUserPayload.getPhoneNumber());
-            assertThat(user.getHomeAddress()).isEqualTo(foundUserPayload.getHomeAddress());
+
+            AddressPayload foundAddress = foundUserPayload.getHomeAddress();
+            Address userAddress = user.getHomeAddress();
+            assertThat(userAddress.getStreetNumber()).isEqualTo(foundAddress.getStreetNumber());
+            assertThat(userAddress.getStreetName()).isEqualTo(foundAddress.getStreetName());
+            assertThat(userAddress.getCity()).isEqualTo(foundAddress.getCity());
+            assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
+            assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
+            assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+
             assertThat(user.getCreated()).isEqualTo(foundUserPayload.getCreated());
         }
     }
@@ -311,19 +431,30 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void whenFindByNonExistingNicknameOrFirstOrLastOrMiddle_thenDontReturnUserPayload() throws Exception {
         // given
+        address = new Address(
+                "9/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
-                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2),
-                "0271316", "testaddress", "testpassword",
+                "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316", address, "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
 
         entityManager.persist(user);
         entityManager.flush();
 
         // when
-        List<UserPayload> foundUserPayloadListNickname = userRepository.findByNicknameIgnoreCase("not nickname");
-        List<UserPayload> foundUserPayloadListFirst = userRepository.findByFirstNameIgnoreCase("not first");
-        List<UserPayload> foundUserPayloadListLast = userRepository.findByLastNameIgnoreCase("not last");
-        List<UserPayload> foundUserPayloadListMiddle = userRepository.findByMiddleNameIgnoreCase("not middle");
+        List<UserPayload> foundUserPayloadListNickname = UserPayload.toUserPayload(userRepository.findByNicknameIgnoreCase("not nickname"));
+        List<UserPayload> foundUserPayloadListFirst = UserPayload.toUserPayload(userRepository.findByFirstNameIgnoreCase("not first"));
+        List<UserPayload> foundUserPayloadListLast = UserPayload.toUserPayload(userRepository.findByLastNameIgnoreCase("not last"));
+        List<UserPayload> foundUserPayloadListMiddle = UserPayload.toUserPayload(userRepository.findByMiddleNameIgnoreCase("not middle"));
 
         // then
         assertThat(foundUserPayloadListNickname.isEmpty()).isTrue();

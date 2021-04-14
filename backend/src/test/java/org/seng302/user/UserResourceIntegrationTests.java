@@ -1,6 +1,8 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
+import org.seng302.address.Address;
+import org.seng302.address.AddressRepository;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,6 +45,9 @@ public class UserResourceIntegrationTests {
     @MockBean
     private UserRepository userRepository;
 
+    @MockBean
+    private AddressRepository addressRepository;
+
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
                                         "\"password\": \"%s\"}";
 
@@ -55,9 +60,11 @@ public class UserResourceIntegrationTests {
                                     "\"email\":\"%s\"," +
                                     "\"dateOfBirth\":\"%s\"," +
                                     "\"phoneNumber\":\"%s\"," +
-                                    "\"homeAddress\":\"%s\"," +
+                                    "\"homeAddress\":%s,"+
                                     "\"created\":\"%s" + "\"," +
-                                    "\"role\":%s}";
+                                    "\"role\":%s," +
+                                    "\"businessesAdministered\":%s" +
+            "}";
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
@@ -71,8 +78,18 @@ public class UserResourceIntegrationTests {
 
     private User anotherUser;
 
+    private Address address;
+
     @BeforeAll
     public void setup() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
         dGAA = new User(
                 "John",
                 "Doe",
@@ -80,10 +97,10 @@ public class UserResourceIntegrationTests {
                 "Generic",
                 "Biography",
                 "email@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
-                "address",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
@@ -95,10 +112,10 @@ public class UserResourceIntegrationTests {
                         "testnick",
                         "testbiography",
                         "testemail@email.com",
-                        LocalDate.of(2020, 2, 2),
+                        LocalDate.of(2020, 2, 2).minusYears(13),
                         "0271316",
-                        "testaddress",
-                        "testpassword",
+                        address,
+                        "Testpassword123!",
                         LocalDateTime.of(LocalDate.of(2021, 2, 2),
                                             LocalTime.of(0, 0)),
                         Role.GLOBALAPPLICATIONADMIN);
@@ -110,16 +127,16 @@ public class UserResourceIntegrationTests {
                                 "nick",
                                 "bio",
                                 "example@example.com",
-                                LocalDate.of(2021, 1, 1),
+                                LocalDate.of(2021, 1, 1).minusYears(13),
                                 "123456789",
-                                "1 Example Street",
-                                "password",
+                                address,
+                                "Password123!",
                                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                             LocalTime.of(0, 0)),
                                 Role.USER);
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
     /**
@@ -132,7 +149,7 @@ public class UserResourceIntegrationTests {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(String.format(loginPayloadJson, user.getEmail(), "testpassword")))
+                .content(String.format(loginPayloadJson, user.getEmail(), "Testpassword123!")))
                 .andReturn().getResponse();
 
         // then
@@ -193,7 +210,7 @@ public class UserResourceIntegrationTests {
         // given
         User newUser = new User("Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
                           "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()), "01234567",
-                     "testaddress", "testpassword", LocalDateTime.now(), Role.USER);
+                     address, "Testpassword123!", LocalDateTime.now(), Role.USER);
         newUser.setId(4);
         newUser.setSessionUUID(User.generateSessionUUID());
         given(userRepository.findByEmail(newUser.getEmail())).willReturn(java.util.Optional.empty());
@@ -206,8 +223,15 @@ public class UserResourceIntegrationTests {
                 "\"email\": \"bob@email.com\", " +
                 "\"dateOfBirth\": \"2000-02-01\", " +
                 "\"phoneNumber\": \"01234567\", " +
-                "\"homeAddress\": \"testaddress\", " +
-                "\"password\": \"testpassword\"}";
+                "\"homeAddress\": {" +
+                        "\"streetNumber\": \"3/24\"," +
+                        "\"streetName\": \"Ilam Road\"," +
+                        "\"city\": \"Christchurch\"," +
+                        "\"region\": \"Canterbury\"," +
+                        "\"country\": \"New Zealand\"," +
+                        "\"postcode\": \"90210\"" +
+                " }, " +
+                "\"password\": \"Testpassword123!\"}";
 
         // when
         when(userRepository.save(any(User.class))).thenReturn(newUser);
@@ -235,7 +259,14 @@ public class UserResourceIntegrationTests {
                 "\"email\": \"%s\", " +
                 "\"dateOfBirth\": \"2000-02-01\", " +
                 "\"phoneNumber\": \"01234567\", " +
-                "\"homeAddress\": \"testaddress\", " +
+                "\"homeAddress\": {" +
+                        "\"streetNumber\": \"3/24\"," +
+                        "\"streetName\": \"Ilam Road\"," +
+                        "\"city\": \"Christchurch\"," +
+                        "\"region\": \"Canterbury\"," +
+                        "\"country\": \"New Zealand\"," +
+                        "\"postcode\": \"90210\"" +
+                " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
 
@@ -266,7 +297,14 @@ public class UserResourceIntegrationTests {
                 "\"email\": \"test@email.com\", " +
                 "\"dateOfBirth\": \"2000-02-01\", " +
                 "\"phoneNumber\": \"01234567\", " +
-                "\"homeAddress\": \"testaddress\", " +
+                "\"homeAddress\": {" +
+                        "\"streetNumber\": \"3/24\"," +
+                        "\"streetName\": \"Ilam Road\"," +
+                        "\"city\": \"Christchurch\"," +
+                        "\"region\": \"Canterbury\"," +
+                        "\"country\": \"New Zealand\"," +
+                        "\"postcode\": \"90210\"" +
+                " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
 
@@ -295,7 +333,14 @@ public class UserResourceIntegrationTests {
                 "\"email\": \"%s\", " +
                 "\"dateOfBirth\": \"2000-02-01\", " +
                 "\"phoneNumber\": \"01234567\", " +
-                "\"homeAddress\": \"testaddress\", " +
+                "\"homeAddress\": {" +
+                        "\"streetNumber\": \"3/24\"," +
+                        "\"streetName\": \"Ilam Road\"," +
+                        "\"city\": \"Christchurch\"," +
+                        "\"region\": \"Canterbury\"," +
+                        "\"country\": \"New Zealand\"," +
+                        "\"postcode\": \"90210\"" +
+                " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
 
@@ -320,7 +365,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"");
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]");
 
         // when
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
@@ -343,7 +388,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null);
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]");
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -366,7 +411,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null);
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]");
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
@@ -448,7 +493,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the user searching for a user is a DGAA.
      */
     @Test
-    public void canSearchUsersWhenUserExistsWithDgaaCookie() throws Exception {
+    public void canSearchUsersWhenUserExistsAsDgaa() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -462,14 +507,12 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"") + "]";
+                user.getPhoneNumber(), user.getHomeAddress().toString(), user.getCreated(), "\"" + user.getRole() + "\"",
+                "[null]") + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
-        List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
-                                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), user.getRole()));
-
+        List<User> list = List.of(user);
         when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
         when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
         when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
@@ -513,14 +556,11 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                     user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                    user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null) + "]";
+                    user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]") + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
-        List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null));
-
+        List<User> list = List.of(user);
         when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
         when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
         when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
@@ -564,14 +604,11 @@ public class UserResourceIntegrationTests {
         String[] firstNameLastName = searchQueryList.get(5).split(" ");
         expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null) + "]";
+                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]") + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
-        List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null));
-
+        List<User> list = List.of(user);
         when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
         when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
         when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
@@ -651,10 +688,7 @@ public class UserResourceIntegrationTests {
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
-        List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null));
-
+        List<User> list = List.of(user);
         when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
         when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
         when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
@@ -698,10 +732,7 @@ public class UserResourceIntegrationTests {
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
-        List<UserPayload> list = List.of(new UserPayload(user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null));
-
+        List<User> list = List.of(user);
         when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
         when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
         when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);

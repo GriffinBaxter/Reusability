@@ -128,8 +128,8 @@
                   <h6>Address:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
-                    {{homeAddress}}
+                  <div class="text-secondary" v-for="lines in address" :key="lines.line">
+                    {{lines.line}}
                   </div>
                 </div>
               </div>
@@ -181,7 +181,15 @@ export default {
       email: "",
       dateOfBirth: "",
       phoneNumber: "",
-      homeAddress: "",
+
+      address: [],
+      streetNumber: "",
+      streetName: "",
+      city: "",
+      postcode: "",
+      region: "",
+      country: "",
+
       created: "",
       joined: "",
       otherUser: false,
@@ -396,21 +404,64 @@ export default {
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
+      if (data.homeAddress.city) {
+        this.city = data.homeAddress.city;
+      }
+      if (data.homeAddress.region) {
+        this.region = data.homeAddress.region;
+      }
+      if (data.homeAddress.country) {
+        this.country = data.homeAddress.country;
+      }
+
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
         document.getElementById('dateOfBirthRow').remove();
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
 
-        let address = data.homeAddress.split(';');
-        address = address.slice(2, address.length);
-        address = address.join(", ");
-        this.homeAddress = address;
+        if (this.city !== "") {
+          this.address.push({line: this.city});
+        }
+        if (this.region !== "" && this.country !== ""){
+          this.address.push({line: this.region + ", " + this.country});
+        } else {
+          this.address.push({line: this.region + this.country});
+        }
 
       } else {
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;
-        this.homeAddress = data.homeAddress.replaceAll(";", ", ");
+
+        if (data.homeAddress.streetNumber) {
+          this.streetNumber = data.homeAddress.streetNumber;
+        }
+        if (data.homeAddress.streetName) {
+          this.streetName = data.homeAddress.streetName;
+        }
+        if (data.homeAddress.city) {
+          this.city = data.homeAddress.city;
+        }
+        if (data.homeAddress.postcode) {
+          this.postcode = data.homeAddress.postcode;
+        }
+
+        if (this.streetNumber !== "" && this.streetName !== ""){
+          this.address.push({line: this.streetNumber + " " + this.streetName});
+        } else {
+          this.address.push({line: this.streetNumber + this.streetName});
+        }
+        if (this.city !== "" && this.postcode !== ""){
+          this.address.push({line: this.city + ", " + this.postcode});
+        } else {
+          this.address.push({line: this.city + this.postcode});
+        }
+        if (this.region !== "" && this.country !== ""){
+          this.address.push({line: this.region + ", " + this.country});
+        } else {
+          this.address.push({line: this.region + this.country});
+        }
+
       }
 
       this.firstName = data.firstName;

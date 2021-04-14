@@ -1,10 +1,90 @@
 package org.seng302.business;
 
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
+import org.seng302.user.User;
+import org.seng302.user.UserPayload;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 public class BusinessPayload {
+    private Integer id;
+    private List<UserPayload> administrators;
+    private Integer primaryAdministratorId;
     private String name;
     private String description;
-    private String address;
+    private AddressPayload address;
     private String businessType;
+    private String created;
+
+    /**
+     * translate a list of Business to a list of BusinessPayload
+     * @param businesses a list of businesses
+     * @return a list of BusinessPayload
+     */
+    public static List<BusinessPayload> toBusinessPayload (List<Business> businesses) throws Exception {
+        List<BusinessPayload> businessPayloads = new ArrayList<>();
+        BusinessPayload businessPayload;
+        for (Business business: businesses){
+            Address address = business.getAddress();
+            AddressPayload addressPayload = new AddressPayload(
+                    address.getStreetNumber(),
+                    address.getStreetName(),
+                    address.getCity(),
+                    address.getRegion(),
+                    address.getCountry(),
+                    address.getPostcode()
+            );
+            businessPayload = new BusinessPayload(
+                    business.getId(),
+                    business.getAdministrators(),
+                    business.getPrimaryAdministratorId(),
+                    business.getName(),
+                    business.getDescription(),
+                    addressPayload,
+                    business.getBusinessType(),
+                    business.getCreated()
+            );
+            businessPayloads.add(businessPayload);
+        }
+        return businessPayloads;
+    }
+
+    public BusinessPayload(int id,
+                           List<User> administrators,
+                           Integer primaryAdministratorId,
+                           String name,
+                           String description,
+                           AddressPayload address,
+                           BusinessType businessType,
+                           LocalDateTime created
+                           ) throws Exception {
+        this.id = id;
+        this.administrators = UserPayload.toUserPayload(administrators);
+        if (this.administrators.isEmpty()){
+            this.administrators.add(null);
+        }
+        this.primaryAdministratorId = primaryAdministratorId;
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.businessType = businessType.toString();
+        this.created = created.toString();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public List<UserPayload> getAdministrators() {
+        return administrators;
+    }
+
+    public Integer getPrimaryAdministratorId() {
+        return primaryAdministratorId;
+    }
 
     public String getName() {
         return name;
@@ -14,25 +94,15 @@ public class BusinessPayload {
         return description;
     }
 
-    public String getAddress() {
+    public AddressPayload getAddress() {
         return address;
     }
 
-    public BusinessType getBusinessType() {
-        return businessTypeTranslate(businessType);
+    public String getBusinessType() {
+        return businessType;
     }
 
-    private BusinessType businessTypeTranslate(String string){
-        BusinessType businessType;
-        if (string.toUpperCase().equals("ACCOMMODATION AND FOOD SERVICES")){
-            businessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
-        }else if (string.toUpperCase().equals("RETAIL TRADE")){
-            businessType = BusinessType.RETAIL_TRADE;
-        }else if (string.toUpperCase().equals("CHARITABLE ORGANISATION")){
-            businessType = BusinessType.CHARITABLE_ORGANISATION;
-        }else{
-            businessType = BusinessType.NON_PROFIT_ORGANISATION;
-        }
-        return businessType;
+    public String getCreated() {
+        return created;
     }
 }
