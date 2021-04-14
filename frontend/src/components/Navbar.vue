@@ -346,7 +346,6 @@ export default {
 
   /*-------------------------------------------- Medium break point styling ------------------------------------------*/
 
-  /*Medium break point*/
   @media(min-width: 992px) {
 
     #logo-image-nav {

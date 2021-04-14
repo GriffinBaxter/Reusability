@@ -186,7 +186,7 @@ div.post h2, div.post p {
  * Width is 524px since news feed item is 600px and then 12px margin each side.
  */
 div.container{
-  width: 624px;
+  width: 424px;
   margin: auto;
 }
 
@@ -219,6 +219,30 @@ div.container{
  */
 .all-but-footer {
   min-height: calc(100vh - 240px);
+}
+
+/*-------------------------------------------- Medium break point styling -------------------------------------------*/
+
+/*Medium break point*/
+@media(min-width: 692px) {
+
+  div.container {
+    width: 524px;
+    margin: auto;
+  }
+}
+
+
+/*-------------------------------------------- Large break point styling -------------------------------------------*/
+
+@media(min-width: 800px) {
+  /*
+ * Width is 524px since news feed item is 600px and then 12px margin each side.
+ */
+  div.container {
+    width: 624px;
+    margin: auto;
+  }
 }
 
 </style>
