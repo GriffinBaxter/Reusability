@@ -13,14 +13,15 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.seng302.address.Address;
 import org.seng302.business.Business;
-import org.seng302.main.Validation;
+import org.seng302.validation.UserValidation;
+import org.seng302.validation.Validation;
 
 /**
  * Class for user accounts
  */
 @Embeddable
-@Data // generate setters and getters for all fields (lombok pre-processor)
 @NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class User {
@@ -54,8 +55,9 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "home_address", nullable = false)
-    private String homeAddress;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address homeAddress;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -73,6 +75,9 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "businesses_id") })
     private List<Business> businessesAdministeredObjects = new ArrayList<>();
+
+    @Column(name = "session_uuid")
+    private String sessionUUID;
 
 
     /**
@@ -100,28 +105,37 @@ public class User {
             String email,
             LocalDate dateOfBirth,
             String phoneNumber,
-            String homeAddress,
+            Address homeAddress,
             String password,
             LocalDateTime created,
             Role role
     ) throws Exception {
-        if (!Validation.isEmail(email, false)) {
-            throw new Exception("Invalid email address");
-        }
-        if (!Validation.isPassword(password)){
-            throw new Exception("Invalid password");
-        }
-        if (!Validation.isAlpha(firstName, false)){
+        if (!UserValidation.isValidFirstName(firstName)) {
             throw new Exception("Invalid first name");
         }
-        if (!Validation.isAlpha(lastName, false)){
+        if (!UserValidation.isValidMiddleName(middleName)) {
+            throw new Exception("Invalid middle name");
+        }
+        if (!UserValidation.isValidLastName(lastName)){
             throw new Exception("Invalid last name");
         }
-        if (!Validation.isAlphanumeric(nickname, true)) {
+        if (!UserValidation.isValidNickname(nickname)) {
             throw new Exception("Invalid nickname");
         }
-        if (!Validation.isPhoneNumber(phoneNumber, false)) {
+        if (!UserValidation.isValidBio(bio)) {
+            throw new Exception("Invalid bio");
+        }
+        if (!UserValidation.isValidEmail(email)) {
+            throw new Exception("Invalid email address");
+        }
+        if (!UserValidation.isValidDOB(dateOfBirth)) {
+            throw new Exception("Invalid date of birth");
+        }
+        if (!UserValidation.isValidPhoneNumber(phoneNumber)) {
             throw new Exception("Invalid phone number");
+        }
+        if (!UserValidation.isValidPassword(password)){
+            throw new Exception("Invalid password");
         }
 
         this.firstName = firstName;
@@ -174,7 +188,7 @@ public class User {
         return phoneNumber;
     }
 
-    public String getHomeAddress() {
+    public Address getHomeAddress() throws Exception {
         return homeAddress;
     }
 
@@ -188,6 +202,10 @@ public class User {
 
     public Role getRole() {
         return role;
+    }
+
+    public String getSessionUUID() {
+        return sessionUUID;
     }
 
     public void setId(int id) {
@@ -226,7 +244,7 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setHomeAddress(String homeAddress) {
+    public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
     }
 
@@ -240,6 +258,10 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public void setSessionUUID(String sessionUUID) {
+        this.sessionUUID = sessionUUID;
     }
 
     /**
@@ -307,23 +329,33 @@ public class User {
         return businessesAdministered;
     }
 
-    @Override
-    public String toString() {
-        return "User(" +
-                "id=" + id +
-                ", firstName=" + firstName +
-                ", lastName=" + lastName +
-                ", middleName=" + middleName +
-                ", nickname=" + nickname +
-                ", bio=" + bio +
-                ", email=" + email +
-                ", dateOfBirth=" + dateOfBirth +
-                ", phoneNumber=" + phoneNumber +
-                ", homeAddress=" + homeAddress +
-                ", password=" + password +
-                ", created=" + created +
-                ", businessesAdministered=" + getBusinessesAdministered() +
-                ')';
+    /**
+     * Generate a randomised UUID used for a session token.
+     * @return UUID
+     */
+    public static String generateSessionUUID() {
+        return UUID.randomUUID().toString();
     }
 
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"firstName\":\"" + firstName + "\"" +
+                ",\"lastName\":\"" + lastName + "\"" +
+                ",\"middleName\":\"" + middleName + "\"" +
+                ",\"nickname\":\"" + nickname + "\"" +
+                ",\"bio\":\"" + bio + "\"" +
+                ",\"email\":\"" + email + "\"" +
+                ",\"dateOfBirth\":\"" + dateOfBirth + "\"" +
+                ",\"phoneNumber\":\"" + phoneNumber + "\"" +
+                ",\"homeAddress\":" + homeAddress +
+                ",\"created\":\"" + created + "\"" +
+                ",\"role\":\"" + role + "\"" +
+                ",\"businessesAdministered\":[null]" +
+                "}";
+    }
+
+    public void setBusinessesAdministeredObjects(List<Business> businessesAdministeredObjects) {
+        this.businessesAdministeredObjects = businessesAdministeredObjects;
+    }
 }

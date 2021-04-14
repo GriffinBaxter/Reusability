@@ -2,6 +2,7 @@ package org.seng302.business;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.seng302.address.Address;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 
@@ -21,9 +22,18 @@ import static org.junit.Assert.assertNull;
 public class BusinessTest {
 
     private static User user;
+    private static Address address;
 
     @BeforeAll
     public static void before() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
         user = new User(
                 "first",
                 "last",
@@ -31,10 +41,10 @@ public class BusinessTest {
                 "nick",
                 "bio",
                 "test@example.com",
-                LocalDate.of(2021, Month.JANUARY, 1),
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
                 "123456789",
-                "1 Example Street",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 Role.USER
         );
@@ -44,14 +54,16 @@ public class BusinessTest {
     public void TestInvalidName(){
         try{
             Business businessAccount = new Business(
+                    user.getId(),
                     "",
                     "some text",
-                    "92 River Lum Road, Lumbridge, Misthalin",
+                    address,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
+                    user
             );
         }catch (Exception e){
-            assertEquals("Invalid business name", e.getMessage());
+            assertEquals("Invalid business name.", e.getMessage());
         }
     }
 
@@ -59,11 +71,13 @@ public class BusinessTest {
     public void TestInvalidAddress(){
         try{
             Business businessAccount = new Business(
+                    user.getId(),
                     "name",
                     "some text",
-                    "",
+                    null,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
+                    user
             );
         }catch (Exception e){
             assertEquals("Invalid address", e.getMessage());
@@ -73,11 +87,13 @@ public class BusinessTest {
     @Test
     public void TestOptionalFields() throws Exception {
         Business businessAccount = new Business(
+                user.getId(),
                 "name",
                 "",
-                "92 River Lum Road, Lumbridge, Misthalin",
+                address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         assertNull(businessAccount.getDescription());
     }
@@ -89,11 +105,30 @@ public class BusinessTest {
      */
     @Test
     public void testAddAdministrators() throws Exception {
-        Business business = new Business("name", "description", "address", BusinessType.RETAIL_TRADE, LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)));
-        User user = new User("first", "last", "middle", "nick", "biography", "email@email.com", LocalDate.of(2020, 2, 2), "0271316", "address", "password", LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
-
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "description",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                user
+        );
+        User user = new User("first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, 1, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.USER);
         business.addAdministrators(user);
-        assertEquals(user, business.getAdministrators().get(0));
         assertEquals(business, user.getBusinessesAdministeredObjects().get(0));
     }
 
@@ -104,10 +139,30 @@ public class BusinessTest {
      */
     @Test
     public void testRemoveAdministrators() throws Exception {
-        Business business = new Business("name", "description", "address", BusinessType.RETAIL_TRADE, LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)));
-        User user = new User("first", "last", "middle", "nick", "biography", "email@email.com", LocalDate.of(2020, 2, 2), "0271316", "address", "password", LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)), Role.USER);
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "description",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                user
+        );
+        User user = new User("first",
+                "last",
+                "middle",
+                "nick",
+                "biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
 
-        business.addAdministrators(user);
         business.removeAdministrators(user);
 
         assertThat(business.getAdministrators().isEmpty()).isTrue();

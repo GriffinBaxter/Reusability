@@ -5,14 +5,15 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.seng302.main.Validation;
+import org.seng302.address.Address;
+import org.seng302.validation.BusinessValidation;
+import org.seng302.validation.Validation;
 import org.seng302.user.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data // generate setters and getters for all fields (lombok pre-processor)
 @NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class Business {
@@ -21,6 +22,13 @@ public class Business {
     @Column(name = "id", nullable = false)
     private int id;
 
+    @JsonBackReference
+    @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.EAGER)
+    private List<User> administrators = new ArrayList<User>();
+
+    @Column(name = "primaryAdministratorId")
+    private Integer primaryAdministratorId;
+
 //    include name*, description, address*, type* and registration date*
     @Column(name = "name", nullable = false)
     private String name;
@@ -28,8 +36,9 @@ public class Business {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "businessType", nullable = false)
@@ -38,9 +47,6 @@ public class Business {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
-    @JsonBackReference
-    @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.EAGER)
-    private List<User> administrators = new ArrayList<User>();
 
 
     /**
@@ -51,20 +57,29 @@ public class Business {
      * @param businessType
      * @throws Exception
      */
-    public Business(String name,
+    public Business(Integer primaryAdministratorId,
+                    String name,
                     String description,
-                    String address,
+                    Address address,
                     BusinessType businessType,
-                    LocalDateTime created
+                    LocalDateTime created,
+                    User administrator
     ) throws Exception{
-        if (!Validation.isName(name)){
-            throw new Exception("Invalid business name");
+        if (!BusinessValidation.isValidName(name)){
+            throw new Exception("Invalid business name.");
         }
+        if (!BusinessValidation.isValidDescription(name)){
+            throw new Exception("Invalid business description.");
+        }
+
+        this.primaryAdministratorId = primaryAdministratorId;
         this.name = name;
+        this.description = (description.equals("")) ? null : description;
         this.address = address;
         this.businessType = businessType;
-        this.description = (description.equals("")) ? null : description;
         this.created = created;
+        administrators.add(administrator);
+
     }
 
     //getter
@@ -97,7 +112,7 @@ public class Business {
      * get address
      * @return address
      */
-    public String getAddress() {
+    public Address getAddress() throws Exception {
         return address;
     }
 
@@ -125,6 +140,14 @@ public class Business {
         return description;
     }
 
+    /**
+     * get primary administrator Id
+     * @return primaryAdministratorId
+     */
+    public Integer getPrimaryAdministratorId() {
+        return primaryAdministratorId;
+    }
+
     //setter
 
     /**
@@ -150,10 +173,7 @@ public class Business {
      * set address
      * @param address address
      */
-    public void setAddress(String address) throws Exception {
-        if (Validation.isEmpty(address)){
-            throw new Exception("Invalid address");
-        }
+    public void setAddress(Address address) {
         this.address = address;
     }
 
@@ -181,6 +201,13 @@ public class Business {
         this.description = description;
     }
 
+    /**
+     * set primaryAdministratorId
+     * @param primaryAdministratorId primary administrator Id
+     */
+    public void setPrimaryAdministratorId(Integer primaryAdministratorId) {
+        this.primaryAdministratorId = primaryAdministratorId;
+    }
 
     /**
      * Returns a list of User objects who are administrators of this business
@@ -206,8 +233,15 @@ public class Business {
      * @param user A user who was an administrator for this business.
      */
     public void removeAdministrators(User user) {
-        this.administrators.remove(user);
+        this.administrators.remove(user.getId());
         user.getBusinessesAdministeredObjects().remove(this);
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setAdministrators(List<User> administrators) {
+        this.administrators = administrators;
+    }
 }
