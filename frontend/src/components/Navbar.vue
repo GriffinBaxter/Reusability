@@ -73,8 +73,7 @@
                     this.showInteractMenu = toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu)
                     }">
 
-                    <img src="../../public/profile_icon_default.png" width="27px" class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
-                    {{actAs}}
+                    <img src="../../public/profile_icon_default.png" width="27px" class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{actAs}}
                   </a>
 
                   <div id="interactDropdownLinksWrapper">
@@ -346,31 +345,32 @@ export default {
   }
 
   #interactDropdownLinksWrapper {
-    margin-top: 50px;
+    margin-top: 60px; /* height between profile image and drop down buttons*/
     width: auto;
   }
 
   #interactDrop {
     display: flex;
     flex-flow: column wrap;
-    justify-content: center;
     align-items: center;
     max-width: 180px;
     height: auto;
+    margin-left: 50px;
     padding-left: 1em;
   }
 
   #interactDrop a {
     display: flex;
-    flex-flow: column wrap;
+    flex-flow: row wrap;
     justify-content: center;
     align-items: center;
   }
 
   .act-as-image {
-    height: 80px;
+    height: 55px;
     width: auto;
     border: 1px lightgrey solid;
+    margin-right: 15px;
   }
 
   #actAsImg {
