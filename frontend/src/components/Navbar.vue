@@ -17,12 +17,10 @@
         <!-- Logo image -->
         <div class="logo-container text-center">
           <router-link class="navbar-brand " to="/home">
-<!--            class="img-fluid d-inline-block"-->
             <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
           </router-link>
-          <span class="company-name-main">REUSABILITY</span>
+          <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
 
-<!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
         </div>
 
         <!-- Hamburger icon -->
@@ -295,6 +293,21 @@ export default {
     width: 100%;
   }
 
+  .company-name-main-position-nav {
+
+    /* centre text */
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+
+    /* align to bottom of logo */
+    /*vertical-align: bottom;*/
+    /*line-height: 90%;*/
+
+  }
+
   .nav-link {
     color: white;
     background: #19b092;
@@ -355,7 +368,7 @@ export default {
       width: 100%;
     }
 
-    .company-name-main {
+    .company-name-main-font {
       font-family: 'Merriweather Sans', sans-serif;
       font-size: 32px;
 
@@ -407,7 +420,7 @@ export default {
       width: 100%;
     }
 
-    .company-name-main {
+    .company-name-main-font {
       font-family: 'Merriweather Sans', sans-serif;
       font-size: 50px;
 

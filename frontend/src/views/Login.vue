@@ -13,10 +13,10 @@
     <div id="login" class="container text-font all-but-footer">
 
       <!--logo, with text-->
-      <div class="row justify-content-center">
-        <div class="col-3 m-3 text-center">
+      <div class="row justify-content-center ">
+        <div class="col-3 m-3 text-center logo-container">
           <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
-          <p class="company-name-main">REUSABILITY</p>
+          <p class="company-name-main-login company-name-main-font">REUSABILITY</p>
           <p class="company-name-sub-heading"> - Share & Save - </p>
         </div>
       </div>
@@ -127,9 +127,24 @@ export default {
 
 </script>
 
-<!-------------------------------------------- Invalid Token Page Styling --------------------------------------------->
+<!------------------------------------------------ Login Page Styling --------------------------------------------->
 
 <style scoped>
+
+.logo-container{
+  width: 400px;
+
+}
+
+#logo {
+  width: 200px;
+
+}
+
+.company-name-main-font {
+  font-size: 40px;
+  margin-bottom: 0;
+}
 
 /**
  * Makes error message invisible

@@ -119,21 +119,9 @@ body {
             Logo
  ****************************/
 
-.company-name-main {
+.company-name-main-font {
   font-family: 'Merriweather Sans', sans-serif;
   font-size: 30px;
-
-  /* centre text */
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
-
-  /* align to bottom of logo */
-  /*vertical-align: bottom;*/
-  /*line-height: 90%;*/
-
 }
 
 .company-name-sub-heading {
