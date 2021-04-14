@@ -69,91 +69,94 @@
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
-<!--              <div class="row">-->
-<!--                <div class="col-md-3">-->
-<!--                  <h6>Bio: </h6>-->
-<!--                </div>-->
-<!--                <div class="col">-->
-<!--                  <div class="text-secondary" align="right">-->
-<!--                    {{bio}}-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <hr>-->
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Name:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary" align="right">
-                    {{firstName}} {{middleName}} {{lastName}}
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-4 -align-left">
+                    <h6>Name:</h6>
+                  </div>
+                  <div class="col-8">
+                    <div class="text-secondary" align="right">
+                      {{firstName}} {{middleName}} {{lastName}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr>
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Email:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary" align="right">
-                    {{email}}
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Email:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{email}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr>
-              <div class="row" id="dateOfBirthRow">
-                <div class="col-md-3">
-                  <h6>Date of Birth:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary" align="right">
-                    {{dateOfBirth}}
+              <div class="container" id="dateOfBirthRow">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Date of Birth:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{dateOfBirth}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr id="dateHR">
-              <div class="row" id="phoneRow">
-                <div class="col-md-3">
-                  <h6>Phone number:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary" align="right">
-                    {{phoneNumber}}
+              <div class="container" id="phoneRow">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Phone number:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{phoneNumber}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr id="phoneHR">
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Address:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary" v-for="lines in homeAddress" :key="lines.line" align="right">
-                    {{lines.line}}
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Address:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" v-for="lines in homeAddress" :key="lines.line" align="right">
+                      {{lines.line}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr>
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Joined:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary" align="right">
-                    {{joined}}
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Joined:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{joined}}
+                    </div>
                   </div>
                 </div>
               </div>
               <hr id="businessAdministeredHR">
-              <div class="row" id="businessAdministeredRow">
-                <div class="col-md-3">
-                  <h6>Businesses Administered:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
-                       align="right" @click="pushToUser(business.id)">
-                    {{business.name}}
+              <div class="container" id="businessAdministeredRow">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Businesses Administered:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
+                        align="right" @click="pushToUser(business.id)">
+                      {{business.name}}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -421,12 +424,6 @@ export default {
       if (data.homeAddress.city) {
         this.city = data.homeAddress.city;
       }
-      if (data.homeAddress.region) {
-        this.region = data.homeAddress.region;
-      }
-      if (data.homeAddress.country) {
-        this.country = data.homeAddress.country;
-      }
 
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
@@ -436,19 +433,17 @@ export default {
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
 
+        //address unpack
         if (this.city !== "") {
-          this.address.push({line: this.city});
-        }
-        if (this.region !== "" && this.country !== ""){
-          this.address.push({line: this.region + ", " + this.country});
-        } else {
-          this.address.push({line: this.region + this.country});
+          this.homeAddress.push({line: this.city});
         }
 
       } else {
+        //basic unpack
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;
 
+        //address unpack
         if (data.homeAddress.streetNumber) {
           this.streetNumber = data.homeAddress.streetNumber;
         }
@@ -461,36 +456,48 @@ export default {
         if (data.homeAddress.postcode) {
           this.postcode = data.homeAddress.postcode;
         }
-
         if (this.streetNumber !== "" && this.streetName !== ""){
-          this.address.push({line: this.streetNumber + " " + this.streetName});
+          this.homeAddress.push({line: this.streetNumber + " " + this.streetName});
         } else {
-          this.address.push({line: this.streetNumber + this.streetName});
+          this.homeAddress.push({line: this.streetNumber + this.streetName});
         }
         if (this.city !== "" && this.postcode !== ""){
-          this.address.push({line: this.city + ", " + this.postcode});
+          this.homeAddress.push({line: this.city + ", " + this.postcode});
         } else {
-          this.address.push({line: this.city + this.postcode});
-        }
-        if (this.region !== "" && this.country !== ""){
-          this.address.push({line: this.region + ", " + this.country});
-        } else {
-          this.address.push({line: this.region + this.country});
+          this.homeAddress.push({line: this.city + this.postcode});
         }
 
+        // businesses administered unpack
+        data.businessesAdministered.forEach(business => {
+          if (business !== null) {
+            this.businessesAdministered.push({name: business.name, id: business.id});
+          }
+        })
       }
 
+      //basic unpack
       this.firstName = data.firstName;
       this.middleName = data.middleName;
       this.lastName = data.lastName;
       this.nickname = data.nickname;
       this.bio = data.bio;
       this.email = data.email;
-
       if (data.role) {
         this.role = data.role;
       }
 
+      //address unpack
+      if (data.homeAddress.region) {
+        this.region = data.homeAddress.region;
+      }
+      if (data.homeAddress.country) {
+        this.country = data.homeAddress.country;
+      }
+      if (this.region !== "" && this.country !== ""){
+        this.homeAddress.push({line: this.region + ", " + this.country});
+      } else {
+        this.homeAddress.push({line: this.region + this.country});
+      }
 
       this.getCreatedDate(data.created);
     },
@@ -522,11 +529,10 @@ export default {
         this.retrieveUser(this.urlID);
         this.otherUser = true;
       }
-
     } else {
       this.$router.push({name: 'Login'});
     }
-    }
+  }
 }
 </script>
 

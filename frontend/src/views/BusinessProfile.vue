@@ -49,7 +49,7 @@
                   <div class="col-4 -align-left">
                     <h6>Created Time:</h6>
                   </div>
-                  <div class="col-8 -align-right">
+                  <div class="col-8">
                     <div class="text-secondary" align="right">{{created}}</div>
                   </div>
                 </div>
@@ -180,8 +180,7 @@ export default {
       try to send a request to backend, and use populatePage() function to unpack data returned,
       if fail, push to a page show the error.
       */
-      Api.getBusiness(businessID).then(response => (this.populatePage(response.data)))
-          .catch((error) =>{
+      Api.getBusiness(businessID).then(response => (this.populatePage(response.data))).catch((error) =>{
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 401) {
@@ -258,20 +257,21 @@ export default {
   },
   mounted() {
     const currentID = Cookies.get('userID');
+    if (currentID) {
+      const url = document.URL;
+      const urlID = url.substring(url.lastIndexOf('/') + 1);
 
-    const url = document.URL;
-    const urlID = url.substring(url.lastIndexOf('/') + 1);
+      this.nameOfAdministrators.forEach((name, id) =>{
+        if (id === currentID) {
+          this.isAdministrator = true;
+        }
+      })
 
-    this.nameOfAdministrators.forEach((name, id) =>{
-      if (id === currentID) {
-        this.isAdministrator = true;
+      if (urlID === 'businessProfile') {
+        this.$router.push({path: '/noBusiness'});
+      } else {
+        this.retrieveBusiness(urlID);
       }
-    })
-
-    if (urlID === 'businessProfile') {
-      this.$router.push({path: '/noBusiness'});
-    } else {
-      this.retrieveBusiness(urlID);
     }
   }
 }
