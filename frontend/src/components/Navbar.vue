@@ -21,7 +21,7 @@
           <!-- Navbar links -->
           <div class="navbar-collapse" id="navbarId">
             <!-- navbar inner is required for the animation -->
-            <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto align-items-center justify-content-center">
+            <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto align-items-center justify-content-center flex-column-reverse flex-lg-row">
               <ul class="navbar-nav nav-fill flex-column flex-lg-row">
 
                 <!-- default page links -->
