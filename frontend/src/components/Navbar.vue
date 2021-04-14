@@ -1,94 +1,100 @@
 <template>
-  <nav class="navbar sticky-top navbar-expand-lg shadow text-font" style="background-color: white">
-      <div class="container mt-2 my-lg-3 mx-auto">
+  <div>
+    <nav class="navbar sticky-top navbar-expand-lg shadow text-font" style="background-color: white">
+        <div class="container mt-2 my-lg-3 mx-auto">
 
-        <!-- Logo image -->
-        <div class="logo-container text-center">
-          <router-link class="navbar-brand " to="/home">
-<!--            class="img-fluid d-inline-block"-->
-            <img src="../../public/logo_only_med.png" alt="Logo" id="logoImage">
-          </router-link>
-          <p class="company-name-main">REUSABILITY</p>
-          <p class="company-name-sub-heading"> - Share & Save - </p>
-        </div>
-
-        <!-- hamburger icon -->
-        <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- Navbar links -->
-        <div class="navbar-collapse" id="navbarId">
-          <!-- navbar inner is required for the animation -->
-          <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto">
-            <ul class="navbar-nav nav-fill flex-column flex-lg-row">
-
-              <!-- default page links -->
-              <li class="nav-item">
-                <router-link :class="['nav-link ', isActivePath('/home')]" to="/home">Home</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile">Profile</router-link>
-              </li>
-
-              <!--- Business specific account links -->
-              <li class="nav-item dropdown" v-if="isBusinessAccount">
-
-                <!-- Navbar toggle drop down -->
-                <a class="nav-link dropdown-toggle" role="button" @click="() => {
-                  this.showBusinessDropdown = toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown)
-                }">
-                  Business Pages
-                </a>
-
-                <!-- Dropdown links-->
-                <div id="businessDropdownLinksWrapper">
-                 <ul class="dropdown-menu show" id="businessDropdownLinks">
-                      <li class="nav-item">
-                        <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
-                      </li>
-                      <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
-                      </li>
-                      <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
-                      </li>
-                 </ul>
-                </div>
-
-              </li>
-
-              <!-- Interact As -->
-              <li class="nav-item dropdown" id="interactDrop">
-                <a class="nav-link dropdown-toggle" role="button" @click="() => {
-                  this.showInteractMenu = toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu)
-                  }">
-
-                  <img src="../../public/sample_profile_image.jpg" width="27px" class="rounded-circle img-fluid" alt="Acting as image" id="actAsImg"/>
-                  {{actAs}}
-                </a>
-
-                <div id="interactDropdownLinksWrapper">
-                  <ul class="dropdown-menu show" id="interactDropdownLinks" >
-                    <li class="nav-item" v-for="(act, index) in interactAs" :key = "index" @click="itemClicked(index)" >
-                      <a class="nav-link">{{act.name}}</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-
-              <!-- Log out link-->
-              <li class="nav-item">
-                <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
-              </li>
-
-            </ul>
+          <!-- Logo image -->
+          <div class="logo-container text-center">
+            <router-link class="navbar-brand " to="/home">
+  <!--            class="img-fluid d-inline-block"-->
+              <img src="../../public/logo_only_med.png" alt="Logo" id="logoImage">
+            </router-link>
+            <p class="company-name-main">REUSABILITY</p>
+            <p class="company-name-sub-heading"> - Share & Save - </p>
           </div>
 
+          <!-- hamburger icon -->
+          <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <!-- Navbar links -->
+          <div class="navbar-collapse" id="navbarId">
+            <!-- navbar inner is required for the animation -->
+            <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto align-items-center justify-content-center">
+              <ul class="navbar-nav nav-fill flex-column flex-lg-row">
+
+                <!-- default page links -->
+                <li class="nav-item">
+                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home">Home</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile">Profile</router-link>
+                </li>
+
+                <!--- Business specific account links -->
+                <li class="nav-item dropdown" v-if="isBusinessAccount">
+
+                  <!-- Navbar toggle drop down -->
+                  <a class="nav-link dropdown-toggle" role="button" @click="() => {
+                    this.showBusinessDropdown = toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown)
+                  }">
+                    Business Pages
+                  </a>
+
+                  <!-- Dropdown links-->
+                  <div id="businessDropdownLinksWrapper">
+                   <ul class="dropdown-menu show" id="businessDropdownLinks">
+                        <li class="nav-item">
+                          <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
+                        </li>
+                        <li class="nav-item">
+                          <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
+                        </li>
+                        <li class="nav-item">
+                          <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
+                        </li>
+                   </ul>
+                  </div>
+
+                </li>
+
+                <!-- Log out link-->
+                <li class="nav-item">
+                  <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
+                </li>
+
+              </ul>
+
+              <ul class="navbar-nav nav-fill flex-column flex-lg-row">
+                <!-- Interact As -->
+                <li id="interactDrop">
+                  <a role="button" @click="() => {
+                    this.showInteractMenu = toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu)
+                    }">
+
+                    <img src="../../public/profile_icon_default.png" width="27px" class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
+                    {{actAs}}
+                  </a>
+
+                  <div id="interactDropdownLinksWrapper">
+                    <ul class="dropdown-menu show" id="interactDropdownLinks" >
+                      <li class="nav-item" v-for="(act, index) in interactAs" :key = "index" @click="itemClicked(index)" >
+                        <a class="nav-link">{{act.name}}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+
+
+
+            </div>
+          </div>
         </div>
 
-      </div>
-  </nav>
+    </nav>
+  </div>
 </template>
 
 <script>
@@ -340,11 +346,31 @@ export default {
   }
 
   #interactDropdownLinksWrapper {
-    width:100%;
+    margin-top: 50px;
+    width: auto;
   }
 
   #interactDrop {
-    min-width: 180px;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 180px;
+    height: auto;
+    padding-left: 1em;
+  }
+
+  #interactDrop a {
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .act-as-image {
+    height: 80px;
+    width: auto;
+    border: 1px lightgrey solid;
   }
 
   #actAsImg {

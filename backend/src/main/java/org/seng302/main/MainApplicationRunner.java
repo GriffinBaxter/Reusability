@@ -70,7 +70,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "John",
                     "Doe",
                     "S",
-                    "Generic",
+                    "Johnny",
                     "Biography",
                     "email@email.com",
                     LocalDate.of(2020, 2, 2),
