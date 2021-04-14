@@ -1,6 +1,7 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
 import org.seng302.user.User;
 import org.seng302.user.UserPayload;
 
@@ -14,7 +15,7 @@ public class BusinessPayload {
     private Integer primaryAdministratorId;
     private String name;
     private String description;
-    private Address address;
+    private AddressPayload address;
     private String businessType;
     private String created;
 
@@ -23,17 +24,26 @@ public class BusinessPayload {
      * @param businesses a list of businesses
      * @return a list of BusinessPayload
      */
-    public static List<BusinessPayload> toBusinessPayload (List<Business> businesses){
+    public static List<BusinessPayload> toBusinessPayload (List<Business> businesses) throws Exception {
         List<BusinessPayload> businessPayloads = new ArrayList<>();
         BusinessPayload businessPayload;
         for (Business business: businesses){
+            Address address = business.getAddress();
+            AddressPayload addressPayload = new AddressPayload(
+                    address.getStreetNumber(),
+                    address.getStreetName(),
+                    address.getCity(),
+                    address.getRegion(),
+                    address.getCountry(),
+                    address.getPostcode()
+            );
             businessPayload = new BusinessPayload(
                     business.getId(),
                     business.getAdministrators(),
                     business.getPrimaryAdministratorId(),
                     business.getName(),
                     business.getDescription(),
-                    business.getAddress(),
+                    addressPayload,
                     business.getBusinessType(),
                     business.getCreated()
             );
@@ -47,10 +57,10 @@ public class BusinessPayload {
                            Integer primaryAdministratorId,
                            String name,
                            String description,
-                           Address address,
+                           AddressPayload address,
                            BusinessType businessType,
                            LocalDateTime created
-                           ) {
+                           ) throws Exception {
         this.id = id;
         this.administrators = UserPayload.toUserPayload(administrators);
         if (this.administrators.isEmpty()){
@@ -84,7 +94,7 @@ public class BusinessPayload {
         return description;
     }
 
-    public Address getAddress() {
+    public AddressPayload getAddress() {
         return address;
     }
 

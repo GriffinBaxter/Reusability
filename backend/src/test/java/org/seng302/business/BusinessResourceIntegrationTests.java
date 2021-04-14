@@ -3,7 +3,8 @@ package org.seng302.business;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
+import org.seng302.address.AddressRepository;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -11,11 +12,13 @@ import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
 import java.time.LocalDate;
@@ -24,6 +27,8 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -36,17 +41,22 @@ public class BusinessResourceIntegrationTests {
     @Autowired
     private MockMvc mvc;
 
-    @Autowired
+    @MockBean
     private BusinessRepository businessRepository;
 
-    @Autowired
+    @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private AddressRepository addressRepository;
 
     private String payloadJson;
 
     private MockHttpServletResponse response;
 
     private Integer id;
+
+    private String sessionToken;
 
     private String expectedJson;
 
@@ -72,24 +82,28 @@ public class BusinessResourceIntegrationTests {
                 "testnick",
                 "testbiography",
                 "testemail@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
                 address,
-                "testpassword",
+                "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
         business = new Business(
+                user.getId(),
                 "name",
                 "some text",
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user,
-                user.getId()
+                user
         );
-        userRepository.save(user);
-        businessRepository.save(business);
+        business.setId(2);
+        this.mvc = MockMvcBuilders.standaloneSetup(
+                new BusinessResource(businessRepository, userRepository, addressRepository)
+        ).build();
     }
 
     /**
@@ -98,11 +112,32 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void setAdministratorComplete() throws Exception {
+        // given
+        Business newBusiness = new Business(
+                user.getId(),
+                "Lumbridge General Store",
+                "A one-stop shop for all your adventuring needs",
+                new Address(
+                        "2/24",
+                        "Ilam Road",
+                        "Christchurch",
+                        "Canterbury",
+                        "New Zealand",
+                        "90210"
+                ),
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.now(),
+                user
+        );
+        newBusiness.setId(3);
+        newBusiness.addAdministrators(user);
+
         payloadJson = "{" +
+                        "\"primaryAdministratorId\": " + user.getId() + "," +
                         "\"name\": \"Lumbridge General Stores\"," +
                         "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                         "\"address\": {" +
-                                "\"streetNumber\": \"3/24\"," +
+                                "\"streetNumber\": \"2/24\"," +
                                 "\"streetName\": \"Ilam Road\"," +
                                 "\"city\": \"Christchurch\"," +
                                 "\"region\": \"Canterbury\"," +
@@ -111,15 +146,74 @@ public class BusinessResourceIntegrationTests {
                                 "}," +
                         "\"businessType\": \"Accommodation and Food Services\"" +
                         "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(businessRepository.save(any(Business.class))).thenReturn(newBusiness);
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        Business antherBusiness = businessRepository.findBusinessesByName("Lumbridge General Stores").get(0);
-        assertThat(antherBusiness.getAdministrators().get(0).equals(user));
+        assertThat(newBusiness.getAdministrators().get(0)).isEqualTo(user);
     }
 
+    /**
+     * test when business has been create, current user has been add to business's administrators
+     * @throws Exception
+     */
+    @Test
+    public void setPrimaryAdministratorComplete() throws Exception {
+        // given
+        Business newBusiness = new Business(
+                user.getId(),
+                "Lumbridge General Store",
+                "A one-stop shop for all your adventuring needs",
+                new Address(
+                        "2/24",
+                        "Ilam Road",
+                        "Christchurch",
+                        "Canterbury",
+                        "New Zealand",
+                        "90210"
+                ),
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.now(),
+                user
+        );
+        newBusiness.setId(3);
+        newBusiness.addAdministrators(user);
+
+        payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
+                "\"name\": \"Lumbridge General Stores\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(businessRepository.save(any(Business.class))).thenReturn(newBusiness);
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(post("/businesses").cookie(cookie)
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        // then
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(newBusiness.getPrimaryAdministratorId()).isEqualTo(user.getId());
+    }
 
     /**
      * Tests that an CREATED(201) status is received when sending a create payload to the /businesses API endpoint
@@ -127,11 +221,13 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canCreateWhenDataValidAndCookieExists() throws Exception {
+        // given
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"New Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -140,10 +236,15 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -153,11 +254,13 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canNotCreateWhenNameEmpty() throws Exception {
+        // given
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -166,12 +269,17 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business name");
     }
 
     /**
@@ -180,11 +288,13 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canNotCreateWhenNameOnlySpace() throws Exception {
+        // given
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"   \"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -193,12 +303,17 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business name");
     }
 
     /**
@@ -206,17 +321,15 @@ public class BusinessResourceIntegrationTests {
      * that contains business name(length = 101), description, address, businessType.
      */
     @Test
-    public void canNotCreateWhenNameLengthLagerThen100() throws Exception {
-        String aName = "a";
-        for (int i = 0; i < 10; i++){
-            aName += "aaaaaaaaaa"; // (a * 10)
-        } //length = 101
-
+    public void canNotCreateWhenNameLengthLargerThan100() throws Exception {
+        // given
+        String aName = "a".repeat(101);
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"" + aName + "\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -225,12 +338,17 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal business name");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business name");
     }
 
     /**
@@ -238,17 +356,15 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description(length = 601), address, businessType.
      */
     @Test
-    public void canNotCreateWhenDescriptionLengthLagerThen600() throws Exception {
-        String aDescription = "a";
-        for (int i = 0; i < 12; i++){
-            aDescription += "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; // (a * 50)
-        } //length = 601
-
+    public void canNotCreateWhenDescriptionLengthLargerThan600() throws Exception {
+        // given
+        String aDescription = "a".repeat(601);
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"" + aDescription + "\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -257,12 +373,17 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal description");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid description");
     }
 
     /**
@@ -270,13 +391,11 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description, address(length = 256), businessType.
      */
     @Test
-    public void canNotCreateWhenAddressLengthLagerThen255() throws Exception {
-        String aString = "";
-        for (int i = 0; i < 5; i++){
-            aString += "aaaaaaaaaa"; // (a * 10)
-        } //length = 50
-
+    public void canNotCreateWhenAddressLengthLargerThan255() throws Exception {
+        // given
+        String aString = "a".repeat(256);
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
@@ -289,12 +408,17 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal address");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business address");
     }
 
     /**
@@ -303,16 +427,13 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canNotCreateWhenAddressContainAnEmptyCountry() throws Exception {
-        String aString = "";
-        for (int i = 0; i < 5; i++){
-            aString += "aaaaaaaaaa"; // (a * 10)
-        } //length = 50
-
+        // given
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -321,12 +442,17 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal address");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business address");
     }
 
     /**
@@ -335,12 +461,13 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canNotCreateWhenBusinessTypeIsNotExist() throws Exception {
-
+        // given
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -349,12 +476,17 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"example\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie).
                 contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Illegal business type");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid business type");
     }
 
     /**
@@ -363,11 +495,13 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canNotCreateWhenDataValidAndCookieNotExists() throws Exception {
+        // given
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + user.getId() + "," +
                 "\"name\": \"Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
+                    "\"streetNumber\": \"2/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
@@ -376,41 +510,47 @@ public class BusinessResourceIntegrationTests {
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.empty());
         response = mvc.perform(post("/businesses").contentType(MediaType.APPLICATION_JSON)
                 .content(payloadJson)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
     /**
-     * Tests that an CONFLICT(409) status is received when sending a create payload to the /businesses API endpoint
-     * that contains business name, description, address, businessType and a create cookie belongs to an user, but
-     * twice.
+     * Tests that an Forbidden(403) status is received when sending a create payload to the /businesses API endpoint
+     * that contains business name, description, address, businessType but a wrong primaryAdministratorId.
      */
     @Test
-    public void canNotCreateWhenDataAlreadyInRepo() throws Exception {
+    public void canNotCreateWhenDataValidAndPrimaryAdministratorIdDifferent() throws Exception {
+        // given
         payloadJson = "{" +
+                "\"primaryAdministratorId\": " + (user.getId()+1) + "," +
                 "\"name\": \"Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"3/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(user.getId()));
-        response = mvc.perform(post("/businesses").cookie(cookie)
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
-        response = mvc.perform(post("/businesses").cookie(cookie)
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(post("/businesses").cookie(cookie).
+                contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     /**
@@ -418,10 +558,11 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canRetrieveBusinessWhenBusinessDoesExist() throws Exception {
+        // given
         id = business.getId();
         expectedJson = "{" +
                 "\"id\":" + id + "," +
-                "\"administrators\":[null]," +
+                "\"administrators\":" + business.getAdministrators() + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
                 "\"name\":\"" + business.getName() + "\"," +
                 "\"description\":\"" + business.getDescription() + "\"," +
@@ -435,10 +576,16 @@ public class BusinessResourceIntegrationTests {
                     "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
-        System.out.println(expectedJson);
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        //when(business.getAdministrators()).thenReturn(List.of(user));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString().replace("\\n", "").replace("\\", ""))
                 .isEqualTo(expectedJson);
@@ -449,11 +596,19 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canNotRetrieveBusinessWhenCookieNotExist() throws Exception {
-        id = business.getId();
+        // given
+        String nonExistingSessionUUID = User.generateSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", nonExistingSessionUUID);
         expectedJson = "";
 
-        response = mvc.perform(get(String.format("/businesses/%d", id))).andReturn().getResponse();
+        // when
+        when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        response = mvc.perform(
+                get(String.format("/businesses/%d", business.getId())).cookie(cookie)
+        ).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
@@ -463,14 +618,21 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void canNotRetrieveBusinessWhenBusinessDoesNotExist() throws Exception {
-        id = 0;
+        // given
+        int nonExistentBusinessId = 0;
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         expectedJson = "";
 
-        Cookie cookie = new Cookie("JSESSIONID", String.valueOf(1));
-        response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(nonExistentBusinessId)).thenReturn(Optional.empty());
+        response = mvc.perform(
+                get(String.format("/businesses/%d", nonExistentBusinessId)).cookie(cookie)
+        ).andReturn().getResponse();
 
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
-
 }

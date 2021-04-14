@@ -27,6 +27,13 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findById(Integer id);
 
     /**
+     * Search for a user account by its session UUID.
+     * @param sessionUUID Session UUID
+     * @return A user matching the session UUID
+     */
+    Optional<User> findBySessionUUID(String sessionUUID);
+
+    /**
      * Search for a user account by their first, middle and last name, ignoring case.
      * @param firstName First name
      * @param middleName Middle name

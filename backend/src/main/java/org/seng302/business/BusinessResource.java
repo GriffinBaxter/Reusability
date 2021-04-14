@@ -1,16 +1,17 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
-import org.seng302.Address.Validation;
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
+import org.seng302.address.AddressRepository;
+import org.seng302.validation.BusinessValidation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
+import org.seng302.validation.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,33 +26,28 @@ public class BusinessResource {
     @Autowired
     private UserRepository userRepository;
 
-    /**
-     * Verifies the cookie(its self and the value its contain), throws an error if it does not exist, and if it does,
-     * returns the User object.
-     * @param request http servlet request
-     * @return current select user object
-     */
-    private User getUserVerifySession(HttpServletRequest request) {
-        String sessionToken = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null){ //Cookie not exist
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Access token is missing or invalid");
-        }
-        for (Cookie cookie: cookies) {
-            if (cookie.getName().equals("JSESSIONID")){
-                sessionToken = cookie.getValue();
-            }
-        }
-        if (sessionToken == null){ //Cookie value not exist
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Access token is missing or invalid");
-        }
+    @Autowired
+    private AddressRepository addressRepository;
 
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
-        if (sessionToken == null || user.isEmpty()) { //Cookie not contain an user
+    private Address address;
+    private List<Business> businesses;
+
+    public BusinessResource(
+            BusinessRepository businessRepository, UserRepository userRepository, AddressRepository addressRepository
+    ) {
+        this.businessRepository = businessRepository;
+        this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
+    }
+
+    /**
+     * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
+     * @param sessionToken Session token
+     * @return User object
+     */
+    private User getUserVerifySession(String sessionToken) {
+        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
+        if (sessionToken == null || user.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Access token is missing or invalid"
@@ -62,63 +58,112 @@ public class BusinessResource {
     }
 
     /**
-     * create a new business by info given by businessRegistrationPayload
+     * create a new business by info given by businessPayload
+     * @param sessionToken value of cookie
      * @param businessRegistrationPayload contain new business info
-     * @param response http servlet response
      * @throws Exception Access token is missing or invalid
      */
     @PostMapping("/businesses")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Business account created successfully")
-    public void createBusiness(@RequestBody BusinessRegistrationPayload businessRegistrationPayload,
-                               HttpServletRequest response) throws Exception {
+    public void createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                               @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
         //access token invalid
-        User currentUser = getUserVerifySession(response);
+        User currentUser = getUserVerifySession(sessionToken);
 
         String name = businessRegistrationPayload.getName();
         String description = businessRegistrationPayload.getDescription();
         BusinessType businessType = businessRegistrationPayload.getBusinessType();
-        Address address = businessRegistrationPayload.getAddress();
+
+        //403
+        if (currentUser.getId() != businessRegistrationPayload.getPrimaryAdministratorId()){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Invalid Primary Administrator Id"
+            );        }
 
         //TODO: 400 not in api spec
-        System.out.println(name);
-        if (!Validation.isBusinessName(name)){
+        if (!BusinessValidation.isValidName(name.trim())){
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Illegal business name"
+                    "Invalid business name"
             );
         }
 
-        if (!Validation.isDescription(description)){
+        if (!BusinessValidation.isValidDescription(description)){
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Illegal description"
+                    "Invalid description"
             );
         }
-        if (!Validation.isAddress(address)){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Illegal address"
-            );
-        }
+
         if (businessType == null){
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Illegal business type"
+                    "Invalid business type"
             );
         }
 
-        if (Validation.isNewBusiness(businessRepository.findBusinessesByAddress(address.toString()), name, address)){
-            Business business = new Business(
-                    name,
-                    description,
-                    address,
-                    businessType,
-                    LocalDateTime.now(),
-                    currentUser,
-                    currentUser.getId()
-            );
-            business.addAdministrators(currentUser); //add user to administrators list
-            businessRepository.saveAndFlush(business);
+        AddressPayload addressJSON = businessRegistrationPayload.getAddress();
+        String streetNumber = addressJSON.getStreetNumber();
+        String streetName = addressJSON.getStreetName();
+        String city = addressJSON.getCity();
+        String region = addressJSON.getRegion();
+        String country = addressJSON.getCountry();
+        String postcode = addressJSON.getPostcode();
+
+        // Check to see if address already exists.
+        Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcode(
+                streetNumber, streetName, city, region, country, postcode);
+
+        // If address already exists it is retrieved.
+        // The businesses already existing are also retrieved. These businesses will be
+        // used to determine if a business hasn't already been created.
+        if (storedAddress.isPresent()) {
+            address = storedAddress.get();
+            businesses = address.getBusinesses();
+        } else {
+            // Otherwise a new address is created and saved.
+            try {
+                address = new Address(
+                        streetNumber,
+                        streetName,
+                        city,
+                        region,
+                        country,
+                        postcode
+                );
+                addressRepository.save(address);
+                // No businesses will exist at new address.
+                businesses = new ArrayList<>();
+            } catch (Exception e) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid business address"
+                );
+            }
+
+        }
+
+        if (BusinessValidation.isNewBusiness(businesses, name)){
+            try {
+                Business business = new Business(
+                        currentUser.getId(),
+                        name,
+                        description,
+                        address,
+                        businessType,
+                        LocalDateTime.now(),
+                        currentUser
+                );
+                business.addAdministrators(currentUser); //add user to administrators list
+                businessRepository.saveAndFlush(business);
+            } catch (Exception e) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid business"
+                );
+            }
+
         } else { //TODO: 409 not in api spec
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
@@ -129,14 +174,15 @@ public class BusinessResource {
 
     /**
      * get method for retrieving a specific business account.
+     * @param sessionToken value of cookie
      * @param id user id
-     * @param response http servlet request
      * @return business object if it exists
      */
     @GetMapping("/businesses/{id}")
-    public BusinessPayload retrieveBusiness(@PathVariable String id, HttpServletRequest response){
+    public BusinessPayload retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                            @PathVariable String id) throws Exception {
         //access token invalid
-        getUserVerifySession(response);
+        getUserVerifySession(sessionToken);
 
         Optional<Business> business = businessRepository.findBusinessById(Integer.valueOf(id));
 
@@ -153,13 +199,22 @@ public class BusinessResource {
             administrator.setBusinessesAdministeredObjects(new ArrayList<>());
         }
 
+        address = business.get().getAddress();
+        AddressPayload addressPayload = new AddressPayload(
+                address.getStreetNumber(),
+                address.getStreetName(),
+                address.getCity(),
+                address.getRegion(),
+                address.getCountry(),
+                address.getPostcode()
+        );
         return new BusinessPayload(
                 business.get().getId(),
                 administrators,
                 business.get().getPrimaryAdministratorId(),
                 business.get().getName(),
                 business.get().getDescription(),
-                business.get().getAddress(),
+                addressPayload,
                 business.get().getBusinessType(),
                 business.get().getCreated()
                 );

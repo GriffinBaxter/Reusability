@@ -1,14 +1,13 @@
 package org.seng302.address;
 
 import org.junit.jupiter.api.Test;
-import org.seng302.Address.Address;
 
 import static org.junit.Assert.assertEquals;
 
 public class AddressTest {
 
     @Test
-    public void testToString(){
+    public void testToString() throws Exception {
         String expected = "{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +
@@ -29,7 +28,7 @@ public class AddressTest {
     }
 
     @Test
-    public void testToAddressWithJsonFormat(){
+    public void testToAddressWithJsonFormat() throws Exception {
         String string = "{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +
@@ -49,7 +48,7 @@ public class AddressTest {
     }
 
     @Test
-    public void testToAddressWithoutJsonFormat(){
+    public void testToAddressWithoutJsonFormat() throws Exception {
         String string = "{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +

@@ -2,11 +2,26 @@
   <div>
     <ProfileHeader/>
     <div class="container p-5 mt-3" id="profileContainer">
+
+      <!-- These messages will appear for GAA accounts -->
+      <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
+        <div class="col-xl-12 mb-5 text-center mx-auto">
+          <div class="display-5" v-if="otherUser">This user has application admin rights!</div>
+          <div class="display-5" v-else>You have application admin rights!</div>
+        </div>
+      </div>
+
+        <!-- These messages will appear for DGAA accounts -->
+        <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
+          <div class="col-xl-12 mb-5 text-center mx-auto">
+            <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
+            <div class="display-5" v-else>You have default application admin rights!</div>
+          </div>
+        </div>
       <div class="row">
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
-              <div></div>
                 <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
@@ -14,12 +29,42 @@
               </div>
             </div>
           </div>
-          <!--   For later use:   -->
-<!--          <div class="card text-center shadow-sm mt-3">-->
-<!--            <div class="card-body">-->
-<!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-<!--            </div>-->
-<!--          </div>-->
+
+          <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
+            <div class="card-header">Something went wrong with your action...</div>
+            <div class="card-body">{{actionErrorMessage}}</div>
+          </div>
+
+          <!--
+          This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
+          because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
+          but the backend will prevent this from occuring.
+
+          The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
+          another user's id.
+          -->
+          <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
+            <div class="card-body">
+              <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
+              <div v-if="isGAA(role)">
+                <div class="spinner-border spinner-border-sm text-danger" v-if="loadingGaaAction"></div>
+                <button type="button" class="btn btn-lg btn-outline-danger" v-else @click="revokeUserGAA">Revoke admin rights</button>
+              </div>
+
+              <div v-else>
+                <div class="spinner-border spinner-border-sm text-success" v-if="loadingGaaAction"></div>
+                <button type="button" class="btn btn-lg btn-outline-success" v-else @click="grantUserGAA">Grant admin rights</button>
+              </div>
+            </div>
+          </div>
+
+          <!--             For later use:-->
+          <!--          <div class="card text-center shadow-sm mt-3">-->
+          <!--            <div class="card-body">-->
+          <!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
+          <!--            </div>-->
+          <!--          </div>-->
+
         </div>
         <div class="col">
           <div class="card shadow-sm">
@@ -119,24 +164,28 @@
       </div>
       <Footer></Footer>
     </div>
-
   </div>
 </template>
 
 <script>
-import ProfileHeader from "@/components/ProfileHeader";
+import ProfileHeader from "../components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import Footer from "@/components/Footer";
+import Footer from "../components/Footer";
+import {UserRole} from '../components/User'
 
 export default {
   name: "Profile",
   components: {
     Footer,
     ProfileHeader,
+
   },
   data() {
     return {
+      actionErrorMessage: "",
+      loadingGaaAction: false,
+      urlID: null,
       firstName: "",
       lastName: "",
       middleName: "",
@@ -158,9 +207,43 @@ export default {
       joined: "",
       businessesAdministered: [],
       otherUser: false,
+      role: null
     }
   },
   methods: {
+    // ---------------------------------------- These functions probably belong in User.js But then they can't easily be used with the profile --------------------------
+    /**
+     * Determines if the role is of a valid type (e.g. not null, some other invalid string, etc).
+     * @param role - Some role.
+     * @return {boolean} Returns true if the role of the user is of the expected possible roles. Otherwise false.
+     */
+    isValidRole(role) {
+      return role in UserRole;
+    },
+    /** Given a role we test it against two of the possible admin roles. To determine if the role is of type admin.
+     * @param role - A given role of some user.
+     * @return {boolean} Returns true if the role is of type admin. Otherwise false.
+     */
+    hasAdminRights(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * Determines whether a role is DGAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a DGAA. Otherwise return false.
+     */
+    isDGAA(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * Determines whether a role is GAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a GAA. Otherwise return false.
+     */
+    isGAA(role) {
+      return role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    // --------------------------------------------------------------------------------------------------------------------
     getCreatedDate(createdDate) {
       /*
       Calculates the months between the given date and the current date, then formats the given date and months.
@@ -183,6 +266,123 @@ export default {
 
       const finalDate = this.formatAge(createdDate);
       this.joined = `${finalDate} (${months} months ago)`;
+    },
+    /**
+     * Performs the action that grants GAA to the (page) user and handles all errors
+     * specified in the API spec.
+     */
+    async grantUserGAA() {
+
+      // If the process is already running return.
+      if (this.loadingGaaAction) return;
+
+      if (this.urlID == null) {
+        this.actionErrorMessage = "Sorry, but something went wrong..."
+        return
+      }
+
+      this.loadingGaaAction = true;
+
+      await Api.makeAdmin(this.urlID).then(
+        data => {
+          if (data.status === 200) {
+            // successful grant of admin rights!
+            this.role = UserRole.GLOBALAPPLICATIONADMIN
+          } else {
+            this.actionErrorMessage = "Sorry, but something went wrong..."
+          }
+        }
+      ).catch(error => {
+        if (error.response) {
+          // Code is not 2xx
+          if (error.response.status === 401) {
+            // Missing or invalid token
+            this.$router.push({path: '/invalidtoken'});
+          }
+
+          if (error.response.status === 403) {
+            // Lacks permissions
+            this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+          }
+
+          if (error.response.status === 406) {
+            // Something is wrong with the requested route (not a 404).
+            this.actionErrorMessage = "Sorry, but something went wrong..."
+          }
+
+        } else if (error.request) {
+          // No response received. Timeout occurs
+          this.$router.push({path: '/timeout'});
+        } else {
+          // Something went wrong with the request setup...
+          this.actionErrorMessage = "Sorry, but something went wrong..."
+        }
+      })
+
+
+      this.loadingGaaAction = false;
+
+    },
+    /**
+     * Performs the action that revokes GAA from the (page) user and handles all errors
+     * specified in the API spec.
+     */
+    async revokeUserGAA() {
+
+      // If the process is already running return.
+      if (this.loadingGaaAction) return;
+
+      if (this.urlID == null) {
+        this.actionErrorMessage = "Sorry, but something went wrong..."
+        return
+      }
+
+      this.loadingGaaAction = true;
+
+      await Api.revokeAdmin(this.urlID).then(
+          data => {
+            if (data.status === 200) {
+              // successful revoke of admin rights!
+              this.role = UserRole.USER
+            } else {
+              this.actionErrorMessage = "Sorry, but something went wrong..."
+            }
+          }
+      ).catch(error => {
+
+        if (error.response) {
+          // Code is not 2xx
+          if (error.response.status === 401) {
+            // Missing or invalid token
+            this.$router.push({path: '/invalidtoken'});
+          }
+
+          if (error.response.status === 403) {
+            // Lacks permissions
+            this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+          }
+
+          if (error.response.status === 406) {
+            // Something is wrong with the requested route (not a 404).
+            this.actionErrorMessage = "Sorry, but something went wrong..."
+          }
+
+          if (error.response.status === 409) {
+            // DGAA attempting to remove his admin status
+            this.actionErrorMessage = "Sorry, but as DGAA you cannot remove your admin status."
+          }
+
+        } else if (error.request) {
+          // No response received. Timeout occurs
+          this.$router.push({path: '/timeout'});
+        } else {
+          // Something went wrong with the request setup...
+          this.actionErrorMessage = "Sorry, but something went wrong..."
+        }
+      })
+
+      this.loadingGaaAction = false;
+
     },
     retrieveUser(userID) {
       /*
@@ -218,12 +418,15 @@ export default {
       so it must be 'unpacked' and formatted.
        */
       //address unpack
-      this.streetNumber = data.homeAddress.streetNumber;
-      this.streetName = data.homeAddress.streetName;
-      this.city = data.homeAddress.city;
-      this.region = data.homeAddress.region;
-      this.country = data.homeAddress.country;
-      this.postcode = data.homeAddress.postcode;
+      if (data.homeAddress.city) {
+        this.city = data.homeAddress.city;
+      }
+      if (data.homeAddress.region) {
+        this.region = data.homeAddress.region;
+      }
+      if (data.homeAddress.country) {
+        this.country = data.homeAddress.country;
+      }
 
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
@@ -232,35 +435,49 @@ export default {
         document.getElementById('businessAdministeredHR').remove();
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
+
+        if (this.city !== "") {
+          this.address.push({line: this.city});
+        }
+        if (this.region !== "" && this.country !== ""){
+          this.address.push({line: this.region + ", " + this.country});
+        } else {
+          this.address.push({line: this.region + this.country});
+        }
+
       } else {
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;
 
-        // address unpack
-        if (this.streetNumber !== "" && this.streetName !== ""){
-          this.homeAddress.push({line: this.streetNumber + " " + this.streetName});
-        } else {
-          this.homeAddress.push({line: this.streetNumber + this.streetName});
+        if (data.homeAddress.streetNumber) {
+          this.streetNumber = data.homeAddress.streetNumber;
+        }
+        if (data.homeAddress.streetName) {
+          this.streetName = data.homeAddress.streetName;
+        }
+        if (data.homeAddress.city) {
+          this.city = data.homeAddress.city;
+        }
+        if (data.homeAddress.postcode) {
+          this.postcode = data.homeAddress.postcode;
         }
 
-        // businesses administered unpack
-        data.businessesAdministered.forEach(business => {
-          if (business !== null) {
-            this.businessesAdministered.push({name: business.name, id: business.id});
-          }
-        })
-      }
+        if (this.streetNumber !== "" && this.streetName !== ""){
+          this.address.push({line: this.streetNumber + " " + this.streetName});
+        } else {
+          this.address.push({line: this.streetNumber + this.streetName});
+        }
+        if (this.city !== "" && this.postcode !== ""){
+          this.address.push({line: this.city + ", " + this.postcode});
+        } else {
+          this.address.push({line: this.city + this.postcode});
+        }
+        if (this.region !== "" && this.country !== ""){
+          this.address.push({line: this.region + ", " + this.country});
+        } else {
+          this.address.push({line: this.region + this.country});
+        }
 
-      // address unpack
-      if (this.city !== "" && this.postcode !== ""){
-        this.homeAddress.push({line: this.city + ", " + this.postcode});
-      } else {
-        this.homeAddress.push({line: this.city + this.postcode});
-      }
-      if (this.region !== "" && this.country !== ""){
-        this.homeAddress.push({line: this.region + ", " + this.country});
-      } else {
-        this.homeAddress.push({line: this.region + this.country});
       }
 
       this.firstName = data.firstName;
@@ -270,6 +487,9 @@ export default {
       this.bio = data.bio;
       this.email = data.email;
 
+      if (data.role) {
+        this.role = data.role;
+      }
 
 
       this.getCreatedDate(data.created);
@@ -282,7 +502,6 @@ export default {
       Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
        */
       Cookies.remove('userID');
-      Cookies.remove('JSESSIONID');
       this.$router.push({name: 'Login'});
     }
   },
@@ -294,12 +513,13 @@ export default {
     const currentID = Cookies.get('userID');
     if (currentID) {
       const url = document.URL
-      const urlID = url.substring(url.lastIndexOf('/') + 1);
-      if (currentID === urlID || urlID === 'profile') {
+      this.urlID = url.substring(url.lastIndexOf('/') + 1);
+
+      if (currentID === this.urlID || this.urlID === 'profile') {
         this.retrieveUser(currentID);
       } else {
         // Another user
-        this.retrieveUser(urlID);
+        this.retrieveUser(this.urlID);
         this.otherUser = true;
       }
 

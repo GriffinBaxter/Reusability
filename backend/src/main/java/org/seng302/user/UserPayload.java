@@ -1,6 +1,7 @@
 package org.seng302.user;
 
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessPayload;
 
@@ -22,7 +23,7 @@ public class UserPayload {
     private String email;
     private String dateOfBirth;
     private String phoneNumber;
-    private Address homeAddress;
+    private AddressPayload homeAddress;
     private String created;
     private Role role;
     private List<BusinessPayload> businessesAdministered;
@@ -32,10 +33,19 @@ public class UserPayload {
      * @param users a list of User
      * @return a list of UserPayload
      */
-    public static List<UserPayload> toUserPayload (List<User> users){
+    public static List<UserPayload> toUserPayload (List<User> users) throws Exception {
         List<UserPayload> userPayloads = new ArrayList<>();
         UserPayload userPayload;
         for (User user: users){
+            Address address = user.getHomeAddress();
+            AddressPayload addressPayload = new AddressPayload(
+                    address.getStreetNumber(),
+                    address.getStreetName(),
+                    address.getCity(),
+                    address.getRegion(),
+                    address.getCountry(),
+                    address.getPostcode()
+            );
             userPayload = new UserPayload(
                     user.getId(),
                     user.getFirstName(),
@@ -46,7 +56,7 @@ public class UserPayload {
                     user.getEmail(),
                     user.getDateOfBirth(),
                     user.getPhoneNumber(),
-                    user.getHomeAddress(),
+                    addressPayload,
                     user.getCreated(),
                     user.getRole(),
                     user.getBusinessesAdministeredObjects());
@@ -65,11 +75,11 @@ public class UserPayload {
             String email,
             LocalDate dateOfBirth,
             String phoneNumber,
-            Address homeAddress,
+            AddressPayload homeAddress,
             LocalDateTime created,
             Role role,
             List<Business> businessesAdministeredObject
-    ) {
+    ) throws Exception {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -124,7 +134,7 @@ public class UserPayload {
         return phoneNumber;
     }
 
-    public Address getHomeAddress() {
+    public AddressPayload getHomeAddress() {
         return homeAddress;
     }
 
@@ -176,7 +186,7 @@ public class UserPayload {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setHomeAddress(Address homeAddress) {
+    public void setHomeAddress(AddressPayload homeAddress) {
         this.homeAddress = homeAddress;
     }
 

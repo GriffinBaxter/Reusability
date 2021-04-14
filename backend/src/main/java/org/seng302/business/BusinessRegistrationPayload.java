@@ -1,12 +1,18 @@
 package org.seng302.business;
 
-import org.seng302.Address.Address;
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
 
 public class BusinessRegistrationPayload {
+    private Integer primaryAdministratorId;
     private String name;
     private String description;
-    private Address address;
+    private AddressPayload address;
     private String businessType;
+
+    public Integer getPrimaryAdministratorId() {
+        return primaryAdministratorId;
+    }
 
     public String getName() {
         return name;
@@ -16,7 +22,7 @@ public class BusinessRegistrationPayload {
         return description;
     }
 
-    public Address getAddress() {
+    public AddressPayload getAddress() {
         return address;
     }
 
