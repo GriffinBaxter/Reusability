@@ -34,6 +34,7 @@ const app = {
   },
   watch: {
     '$route'(to) {
+      document.title = to.meta.title || "Team 400";
       if (to.name === 'NoUser' || to.name === 'ServerTimeout' || to.name === 'InvalidToken') this.transitionName = "";
     }
   }
