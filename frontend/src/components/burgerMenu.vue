@@ -3,7 +3,7 @@
 
       <div class="col">
         <div class="row ">
-          <div class="fas fa-bars px-0" @click="showMenu = !showMenu"/>
+          <div class="fas fa-bars px-0" @click="showMenu = !showMenu"><font-awesome-icon icon="bars" /></div>
         </div>
 
         <div class="row">

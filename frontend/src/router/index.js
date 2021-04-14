@@ -85,11 +85,15 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/BusinessRegistration.vue')
     },
+    {
+        path: '*',
+        name: 'catchAll',
+        component: () => import('../views/Login')
+    }
 ]
 
 const router = new VueRouter({
-    mode: 'history',
-    base: process.env.BASE_URL,
+    base: process.env.VUE_APP_BASE_URL,
     routes
 })
 

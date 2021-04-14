@@ -5,8 +5,7 @@
         <div class="input-group my-4">
           <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1"
                  placeholder="Search all users">
-          <button class="btn btn-primary greenButton" tabindex="2" @click="searchClicked()"><i
-              class="fas fa-search"></i></button>
+          <button class="btn btn-primary greenButton" tabindex="2" @click="searchClicked()"><font-awesome-icon icon="search" /></button>
         </div>
       </div>
     </div>
