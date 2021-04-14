@@ -101,8 +101,8 @@
                 <span class="input-group-text" @click="showPassword = !showPassword"
                       @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                       tabindex="8">
-                  <i v-if="!showPassword" class="fas fa-eye"></i>
-                  <i v-else class="fas fa-eye-slash"></i>
+                  <font-awesome-icon v-if="!showPassword" icon="eye" />
+                  <font-awesome-icon v-else icon="eye-slash" />
                   </span>
                 <div class="invalid-feedback">
                   {{passwordErrorMsg}}

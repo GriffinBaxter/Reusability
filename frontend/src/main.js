@@ -31,8 +31,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import '@fortawesome/fontawesome-free'
 import 'bootstrap'
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faEye, faEyeSlash, faSearch, faBars } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faEye, faEyeSlash, faSearch, faBars)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
 
