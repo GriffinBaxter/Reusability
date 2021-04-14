@@ -29,7 +29,7 @@
           <div>
             <p class="post-description"> This is the first photo of the feed. This is a multi-lined comment for testing purposes.</p>
           </div>
-          <p></p>'
+          <p></p>
           <!--Post image-->
           <div>
             <img class="post-image" src="../../public/apples.jpg" alt="image 2">
@@ -183,10 +183,10 @@ div.post h2, div.post p {
 }
 
 /*
- * Width is 524px since news feed item is 500px and then 12px margin each side.
+ * Width is 524px since news feed item is 600px and then 12px margin each side.
  */
 div.container{
-  width: 524px;
+  width: 624px;
   margin: auto;
 }
 

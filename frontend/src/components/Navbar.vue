@@ -18,10 +18,11 @@
         <div class="logo-container text-center">
           <router-link class="navbar-brand " to="/home">
 <!--            class="img-fluid d-inline-block"-->
-            <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image">
+            <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
           </router-link>
-          <p class="company-name-main">REUSABILITY</p>
-          <p class="company-name-sub-heading"> - Share & Save - </p>
+          <span class="company-name-main">REUSABILITY</span>
+
+<!--          <p class="company-name-sub-heading"> - Share & Save - </p>-->
         </div>
 
         <!-- Hamburger icon -->
@@ -271,7 +272,7 @@ export default {
       while (this.navbarMaxHeight == null) this.navbarMaxHeight = this.getNavbarMaxHeight();
     }
 
-    // Set the inital height for the navbar and the dropdown
+    // Set the initial height for the navbar and the dropdown
     this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown, true);
     this.toggleNavbar(true)
   }
@@ -287,8 +288,8 @@ export default {
     position: center;
   }
 
-  #logo-image {
-    max-width: 200px;
+  #logo-image-nav {
+    max-width: 90px;
     margin-left: 28px;
     margin-right: 10px;
     width: 100%;
@@ -343,8 +344,35 @@ export default {
     /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
   }
 
-  /*LG Break point*/
+  /*-------------------------------------------- Medium break point styling ------------------------------------------*/
+
+  /*Medium break point*/
   @media(min-width: 992px) {
+
+    #logo-image-nav {
+      max-width: 120px;
+      margin-left: 28px;
+      margin-right: 10px;
+      width: 100%;
+    }
+
+    .company-name-main {
+      font-family: 'Merriweather Sans', sans-serif;
+      font-size: 32px;
+
+      /* centre text */
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+
+      /* align to bottom of logo */
+      /*vertical-align: bottom;*/
+      /*line-height: 90%;*/
+
+    }
+
     #navbar-id {
       overflow: visible;
     }
@@ -368,5 +396,33 @@ export default {
     }
 
 }
+
+  /*-------------------------------------------- Large break point styling -------------------------------------------*/
+
+  @media(min-width: 1200px) {
+
+    #logo-image-nav {
+      max-width: 140px;
+      margin-left: 28px;
+      margin-right: 10px;
+      width: 100%;
+    }
+
+    .company-name-main {
+      font-family: 'Merriweather Sans', sans-serif;
+      font-size: 50px;
+
+      /* centre text */
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+
+      /* align to bottom of logo */
+      /*vertical-align: bottom;*/
+      /*line-height: 90%;*/
+    }
+  }
 
 </style>
