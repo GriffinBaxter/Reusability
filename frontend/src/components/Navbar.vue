@@ -340,23 +340,25 @@ export default {
 
 <style scoped>
 
+/* Styling for smaller screen sizes begins */
+
   .logo-container {
     position: center;
   }
 
   #interactDropdownLinksWrapper {
-    margin-top: 60px; /* height between profile image and drop down buttons*/
-    width: auto;
+    margin-top: 6px; /* height between profile image and drop down buttons*/
+    width: unset;
   }
 
   #interactDrop {
     display: flex;
     flex-flow: column wrap;
     align-items: center;
-    max-width: 180px;
+    max-width: 100%;
     height: auto;
-    margin-left: 50px;
-    padding-left: 1em;
+    margin-left: 0px;
+    padding-left: 0px;
   }
 
   #interactDrop a {
@@ -364,6 +366,7 @@ export default {
     flex-flow: row wrap;
     justify-content: center;
     align-items: center;
+    padding: 10px 40px;
   }
 
   .act-as-image {
@@ -424,7 +427,6 @@ export default {
     background-color: #2eda77;
   }
 
-
   .dropdown-menu {
     border-right-width: 0;
     border-left-width: 0;
@@ -432,7 +434,10 @@ export default {
     /*margin: 1.2rem 0; Margins cannot be calculated in pxiels :( */
   }
 
-  /*LG Break point*/
+/* Styling for smaller screen sizes ends */
+
+/* Styling for larger screen sizes begins */
+/*LG Break point*/
   @media(min-width: 992px) {
     #navbarId {
       overflow: visible;
@@ -458,10 +463,24 @@ export default {
       padding-right: 1em;
     }
 
-}
+    #interactDropdownLinksWrapper {
+      margin-top: 64px; /* height between profile image and drop down buttons*/
+      width: auto;
+    }
 
-.active {
-  background-color: #2eda77;
+    #interactDrop {
+      max-width: 180px;
+      margin-left: 50px;
+      padding-left: 1em;
+    }
+
+    #interactDrop a {
+      padding: unset;
+      padding: 0.5rem 1rem
+    }
+
+    .act-as-image {
+    }
 }
 
 </style>
