@@ -77,7 +77,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-    base: './test/',
+    base: process.env.VUE_APP_BASE_URL,
     routes
 })
 
