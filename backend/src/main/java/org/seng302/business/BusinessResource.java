@@ -268,6 +268,12 @@ public class BusinessResource {
                         "Select user is not an administrator of this business"
                 );
             }
+            if (currentUser == selectUser){
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Administrator can not remove administrator self"
+                );
+            }
         } else {
             if (selectBusiness.isAnAdministratorOfThisBusiness(selectUser)){
                 throw new ResponseStatusException(

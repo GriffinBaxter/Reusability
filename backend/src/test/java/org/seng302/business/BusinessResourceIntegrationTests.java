@@ -1626,6 +1626,61 @@ public class BusinessResourceIntegrationTests {
     }
 
     /**
+     * Tests that an FORBIDDEN(403) status is received when sending a userId payload to the
+     * /businesses/{id}/removeAdministrator API endpoint. But select user is it's self.
+     * @throws Exception
+     */
+    @Test
+    public void aAdministratorCanNotRemoveItsSelf() throws Exception {
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + user.getId() +
+                "}";
+        sessionToken = another.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //delete 'user' in 'business'
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(business.getAdministrators().size()).isEqualTo(1);
+    }
+
+    /**
      * Tests that an NOT_ACCEPTABLE(406) status is received when sending a non-administrator(for this business) userId payload to
      * the /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of this
      * business. But given business not exist.
