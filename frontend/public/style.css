@@ -106,12 +106,12 @@ body {
 /*  width: 60%;*/
 /*}*/
 
-#editProfileButton {
+#edit-profile-button {
   background-color: #fff;
   border-color: #1EBA8C;
 }
 
-#editProfileButton:hover {
+#edit-profile-button:hover {
   background-color: #1EBA8C
 }
 

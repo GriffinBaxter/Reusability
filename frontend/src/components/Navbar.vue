@@ -11,7 +11,7 @@
 <!-------------------------------------------- Navigation Bar --------------------------------------------------------->
 
 <template>
-  <nav class="navbar sticky-top navbar-expand-lg shadow text-font" style="background-color: white">
+  <nav class="navbar sticky-top navbar-expand-lg shadow-sm text-font" style="background-color: white">
       <div class="container mt-2 my-lg-3 mx-auto">
 
         <!-- Logo image -->
@@ -100,7 +100,7 @@ export default {
     // Dictates the transition animation time
     msTransitionDelay: {
       type: Number,
-      default: 300,
+      default: 100,
       required: false
     },
 

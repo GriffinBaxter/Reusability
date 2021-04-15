@@ -35,6 +35,8 @@
           </div>
         </div>
 
+      <div class="row">
+
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
@@ -54,7 +56,7 @@
           <!--   For later use:   -->
 <!--          <div class="card text-center shadow-sm mt-3">-->
 <!--            <div class="card-body">-->
-<!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
+<!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
 <!--            </div>-->
 <!--          </div>-->
 
@@ -190,7 +192,7 @@
 
         </div>
       </div>
-
+    </div>
     <!--footer-->
     <Footer></Footer>
 
