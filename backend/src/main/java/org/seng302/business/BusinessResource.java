@@ -3,10 +3,11 @@ package org.seng302.business;
 import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
+import org.seng302.user.Role;
+import org.seng302.user.UserIdPayload;
 import org.seng302.validation.BusinessValidation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
-import org.seng302.validation.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -220,136 +221,98 @@ public class BusinessResource {
                 );
     }
 
+    /**
+     * check permission of make/remove business Administrator
+     * @param sessionToken session token
+     * @param optionalBusiness selected business
+     * @param optionalUser selected user
+     * @param isRemove is remove Administrator
+     */
+    private void checkBusinessPermission(String sessionToken,
+                                         Optional<Business> optionalBusiness,
+                                         Optional<User> optionalUser,
+                                         boolean isRemove){
+        //401
+        User currentUser = getUserVerifySession(sessionToken);
+
+        //406
+        if (optionalBusiness.isEmpty()){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Select business not exist"
+            );
+        }
+        Business selectBusiness = optionalBusiness.get();
+
+        //403
+        if (currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN &&
+                !selectBusiness.isAnAdministratorOfThisBusiness(currentUser)){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Current user is not DGAA or an administrator of this business"
+            );
+        }
+
+        //400
+        if (optionalUser.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Select user not exist"
+            );
+        }
+        User selectUser = optionalUser.get();
+        if ((selectBusiness.isAnAdministratorOfThisBusiness(selectUser) && !isRemove) ||
+                (!selectBusiness.isAnAdministratorOfThisBusiness(selectUser) && isRemove)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Select user already is an administrator of this business"
+            );
+        }
+    }
+
+    /**
+     * make a non-administrator user(for selected business) become administrator
+     * @param sessionToken session token
+     * @param userIdPayload selected user id payload
+     * @param id selected business id
+     */
     @PutMapping("/businesses/{id}/makeAdministrator")
     @ResponseStatus(value = HttpStatus.OK, reason = "Individual added as an administrator successfully")
     public void makeAdministrator(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                   @RequestBody UserIdPayload userIdPayload, @PathVariable String id){
-        //TODO:delete manual test stuff after merge
 
-        //401
-        User currentUser = getUserVerifySession(sessionToken);
-        Business selectBusiness = businessRepository.findBusinessById(Integer.valueOf(id)).get();
-        User selectUser= userRepository.findById(userIdPayload.getUserId()).get();
+        Optional<Business> optionalBusiness = businessRepository.findBusinessById(Integer.valueOf(id));
+        Optional<User> optionalUser = userRepository.findById(userIdPayload.getUserId());
 
-        //Manual test
-        //System.out.println(selectBusiness.getAdministrators());
-
-        //406
-        if (selectBusiness == null){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "Select business not exist"
-            );
-        }
-
-        //403
-        if (currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN &&
-                !selectBusiness.isAnAdministratorOfThisBusiness(currentUser)){
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Current user is not DGAA or an administrator of this business"
-            );
-        }
-
-        //400
-        if (selectUser == null){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Select user not exist"
-            );
-        } else if (selectBusiness.isAnAdministratorOfThisBusiness(selectUser)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Select user already is an administrator of this business"
-            );
-        }
+        //Permission check
+        checkBusinessPermission(sessionToken, optionalBusiness, optionalUser, false);
 
         //200
-        selectBusiness.addAdministrators(selectUser);
-        //Manual test
-        System.out.println(selectBusiness.getAdministrators());
+        optionalBusiness.get().addAdministrators(optionalUser.get());
+        userRepository.flush();
+        businessRepository.flush();
     }
 
+    /**
+     * remove a administrator user(for selected business) become non-administrator
+     * @param sessionToken session token
+     * @param userIdPayload selected user id payload
+     * @param id selected business id
+     */
     @PutMapping("/businesses/{id}/removeAdministrator")
     @ResponseStatus(value = HttpStatus.OK, reason = "Individual added as an administrator successfully")
     public void removeAdministrator(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                   @RequestBody UserIdPayload userIdPayload, @PathVariable String id){
-        //TODO:delete manual test stuff after merge
 
-        //401
-        User currentUser = getUserVerifySession(sessionToken);
-        Business selectBusiness = businessRepository.findBusinessById(Integer.valueOf(id)).get();
-        User selectUser= userRepository.findById(userIdPayload.getUserId()).get();
+        Optional<Business> optionalBusiness = businessRepository.findBusinessById(Integer.valueOf(id));
+        Optional<User> optionalUser = userRepository.findById(userIdPayload.getUserId());
 
-        //Manual test
-        //System.out.println(selectBusiness.getAdministrators());
-
-        //406
-        if (selectBusiness == null){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "Select business not exist"
-            );
-        }
-
-        //403
-        if (currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN &&
-                !selectBusiness.isAnAdministratorOfThisBusiness(currentUser)){
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Current user is not DGAA or an administrator of this business"
-            );
-        }
-
-        //400
-        if (selectUser == null){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Select user not exist"
-            );
-        } else if (!selectBusiness.isAnAdministratorOfThisBusiness(selectUser)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Select user already is an administrator of this business"
-            );
-        }
+        //Permission check
+        checkBusinessPermission(sessionToken, optionalBusiness, optionalUser, true);
 
         //200
-        selectBusiness.removeAdministrators(selectUser);
-        //Manual test
-        System.out.println(selectBusiness.getAdministrators());
+        optionalBusiness.get().removeAdministrators(optionalUser.get());
+        userRepository.flush();
+        businessRepository.flush();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

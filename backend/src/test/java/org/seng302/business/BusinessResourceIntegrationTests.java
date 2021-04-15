@@ -24,13 +24,14 @@ import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
@@ -61,6 +62,8 @@ public class BusinessResourceIntegrationTests {
     private String expectedJson;
 
     private User user;
+
+    private User another;
 
     private Business business;
 
@@ -101,6 +104,22 @@ public class BusinessResourceIntegrationTests {
                 user
         );
         business.setId(2);
+        another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
         this.mvc = MockMvcBuilders.standaloneSetup(
                 new BusinessResource(businessRepository, userRepository, addressRepository)
         ).build();
@@ -214,6 +233,8 @@ public class BusinessResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(newBusiness.getPrimaryAdministratorId()).isEqualTo(user.getId());
     }
+
+//--------------------------------------------------/businesses--------------------------------------------------
 
     /**
      * Tests that an CREATED(201) status is received when sending a create payload to the /businesses API endpoint
@@ -553,6 +574,8 @@ public class BusinessResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+//--------------------------------------------------/businesses/{id}--------------------------------------------------
+
     /**
      * Tests that a OK(200) status is received when the user id in the /businesses/{id} API endpoint does exist
      */
@@ -587,8 +610,7 @@ public class BusinessResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString().replace("\\n", "").replace("\\", ""))
-                .isEqualTo(expectedJson);
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     /**
@@ -634,5 +656,1042 @@ public class BusinessResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+//-----------------------------------------/businesses/{id}/makeAdministrator-----------------------------------------
+
+    /**
+     * Tests that an OK(200) status is received when sending a non-administrator(for this business) userId payload to
+     * the /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of this
+     * business.
+     * @throws Exception
+     */
+    @Test
+    public void anBusinessAdministratorCanMakeUserBecomeAdministrator() throws Exception {
+        // given
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //add business to user object()
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        System.out.println(response.getErrorMessage());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an OK(200) status is received when sending a non-administrator(for this business) userId payload to
+     * the /businesses/{id}/makeAdministrator API endpoint. And current session token is for a DGAA.
+     * @throws Exception
+     */
+    @Test
+    public void aDGAACanMakeUserBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        user.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a not exist userId payload to the
+     * /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of this
+     * business.
+     * @throws Exception
+     */
+    @Test
+    public void anBusinessAdministratorCanNotMakeANotExistUserBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":0" +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //add business to user object()
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a administrator(for this business) userId payload
+     * to the /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of
+     * this business.
+     * @throws Exception
+     */
+    @Test
+    public void anBusinessAdministratorCanNotMakeOtherAdministratorBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //add otherUser to administrator of business
+        business.addAdministrators(another);
+
+        //add business to user and otherUser
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        another.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED(401) status is received when sending a non-administrator(for this business) userId
+     * payload to the /businesses/{id}/makeAdministrator API endpoint. But session token is missing.
+     * @throws Exception
+     */
+    @Test
+    public void whenSessionTokenMissing_MakingUserBecomeAdministratorNotWork() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+
+        //add business to user object()
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id))
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an FORBIDDEN(403) status is received when sending a userId payload to the
+     * /businesses/{id}/makeAdministrator API endpoint. But current session token is for an normal user.
+     * @throws Exception
+     */
+    @Test
+    public void aNormalUserCanNotMakeUserBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = another.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //delete 'user' in 'business'
+        business.setAdministrators(new ArrayList<>());
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(business.getAdministrators().size()).isEqualTo(0);
+    }
+
+    /**
+     * Tests that an NOT_ACCEPTABLE(406) status is received when sending a non-administrator(for this business) userId payload to
+     * the /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of this
+     * business. But given business not exist.
+     * @throws Exception
+     */
+    @Test
+    public void CanNotMakeUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = 0;
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //add business to user object()
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+//-----------------------------------------/businesses/{id}/removeAdministrator-----------------------------------------
+
+    /**
+     * Tests that an OK(200) status is received when sending a non-administrator(for this business) userId payload to
+     * the /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of this
+     * business.
+     * @throws Exception
+     */
+    @Test
+    public void aBusinessAdministratorCanRemoveUserBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        business.setId(2);
+
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //add business to user object()
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        System.out.println(response.getErrorMessage());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an OK(200) status is received when sending a non-administrator(for this business) userId payload to
+     * the /businesses/{id}/removeAdministrator API endpoint. And current session token is for a DGAA.
+     * @throws Exception
+     */
+    @Test
+    public void aDGAACanRemoveUserBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        user.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a not exist userId payload to the
+     * /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of this
+     * business.
+     * @throws Exception
+     */
+    @Test
+    public void anBusinessAdministratorCanNotRemoveANotExistUserBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":0" +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //add business to user object()
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that an BAD_REQUEST(400) status is received when sending a administrator(for this business) userId payload
+     * to the /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of
+     * this business.
+     * @throws Exception
+     */
+    @Test
+    public void anBusinessAdministratorCanNotRemoveOtherAdministratorBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //add otherUser to administrator of business
+//        business.removeAdministrators(user);
+
+        //add business to user and otherUser
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        another.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED(401) status is received when sending a non-administrator(for this business) userId
+     * payload to the /businesses/{id}/removeAdministrator API endpoint. But session token is missing.
+     * @throws Exception
+     */
+    @Test
+    public void whenSessionTokenMissing_RemovingUserBecomeAdministratorNotWork() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+
+        //add business to user object()
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id))
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an FORBIDDEN(403) status is received when sending a userId payload to the
+     * /businesses/{id}/removeAdministrator API endpoint. But current session token is for an normal user.
+     * @throws Exception
+     */
+    @Test
+    public void aNormalUserCanNotRemoveUserBecomeAdministrator() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = another.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //delete 'user' in 'business'
+        business.setAdministrators(new ArrayList<>());
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(business.getAdministrators().size()).isEqualTo(0);
+    }
+
+    /**
+     * Tests that an NOT_ACCEPTABLE(406) status is received when sending a non-administrator(for this business) userId payload to
+     * the /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of this
+     * business. But given business not exist.
+     * @throws Exception
+     */
+    @Test
+    public void CanNotRemoveUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
+        User another = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        another.setId(3);
+        another.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user
+        );
+        business.setId(2);
+        // given
+        id = 0;
+        expectedJson = "{" +
+                "\"userId\":" + another.getId() +
+                "}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        //add business to user object()
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 }

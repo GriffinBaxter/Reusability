@@ -316,19 +316,6 @@ public class User {
     }
 
     /**
-     * Loops through a list of businesses administered by the user and
-     * gets the businesses ids' and adds them to a list of integers.
-     * @return businessesAdministered A list of business ids' administered by the user.
-     */
-    public List<Integer> getBusinessesAdministered() {
-        List<Integer> businessesAdministered = new ArrayList<>();
-        for (Business business: businessesAdministeredObjects) {
-            businessesAdministered.add(business.getId());
-        }
-        return businessesAdministered;
-    }
-
-    /**
      * Generate a randomised UUID used for a session token.
      * @return UUID
      */

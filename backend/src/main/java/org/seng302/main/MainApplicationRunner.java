@@ -94,7 +94,6 @@ public class MainApplicationRunner implements ApplicationRunner {
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
                     Role.DEFAULTGLOBALAPPLICATIONADMIN);
-            System.out.println(dGAA);
             dGAA = userRepository.save(dGAA);
             logger.error("DGAA does not exist. New DGAA created {}", dGAA);
         } else {
