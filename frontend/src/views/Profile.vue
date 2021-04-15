@@ -12,12 +12,12 @@
     <Navbar></Navbar>
 
     <!--profile header, contains user search bar-->
-    <div id="profileHeaderDiv">
+    <div id="profile-header-div">
       <ProfileHeader/>
     </div>
 
     <!--profile container-->
-    <div class="container p-5 mt-3 all-but-footer text-font" id="profileContainer">
+    <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
       <!-- These messages will appear for GAA accounts -->
       <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
@@ -57,7 +57,6 @@
 <!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
 <!--            </div>-->
 <!--          </div>-->
-
 
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>
@@ -191,8 +190,6 @@
 
         </div>
       </div>
-
-    </div>
 
     <!--footer-->
     <Footer></Footer>
@@ -592,12 +589,16 @@ export default {
  * Calculates where footer should be.
  */
 .all-but-footer {
-  min-height: calc(100vh - 338px);
+  min-height: calc(100vh - 738px);
 }
 
-#profileHeaderDiv {
+#profile-header-div {
   margin-left: 15%;
   margin-right: 15%;
+}
+
+#profile-container {
+  margin-bottom: 10%;
 }
 
 </style>
