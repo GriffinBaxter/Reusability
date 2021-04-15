@@ -191,7 +191,7 @@
                   </div>
                   <div class="col">
                     <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
-                        align="right" @click="pushToUser(business.id)">
+                        align="right" @click="pushToBusiness(business.id)">
                       {{business.name}}
                     </div>
                   </div>
@@ -576,7 +576,7 @@ export default {
     /**
      * push user to an business profile page
      */
-    pushToUser(id){//TODO:change name
+    pushToBusiness(id){//TODO:change name
       this.$router.push({name:'BusinessProfile', params: {id}});
     },
     /**
