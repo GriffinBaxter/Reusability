@@ -203,7 +203,7 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "../components/Footer";
 import {UserRole} from '../components/User'
-import Navbar from "@/components/Navbar";
+import Navbar from "../components/Navbar";
 
 export default {
   name: "Profile",
