@@ -22,7 +22,7 @@
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
-                <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+                <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
               </div>
