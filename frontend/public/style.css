@@ -166,6 +166,15 @@ body {
   background-color: lightgrey;
 }
 
+/****************************************
+         Business Registration Page
+ ****************************************/
+
+.form-select:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
 
 /*****************************************************************
                   Autocomplete Dropdown Styling

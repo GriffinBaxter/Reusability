@@ -91,12 +91,25 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/InvalidToken.vue')
+    },
+    {
+        path: '/businessRegistration',
+        name: 'BusinessRegistration',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/BusinessRegistration.vue')
+    },
+    {
+        path: '*',
+        name: 'catchAll',
+        component: () => import('../views/Login')
     }
 ]
 
 const router = new VueRouter({
     mode: 'history',
-    base: process.env.BASE_URL,
+    base: process.env.VUE_APP_BASE_URL,
     routes
 })
 

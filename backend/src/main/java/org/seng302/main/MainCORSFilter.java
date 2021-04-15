@@ -42,7 +42,7 @@ import java.io.IOException;
 @Component
 public class MainCORSFilter implements Filter {
 
-  private final String[] allowedOrigins = new String[] {"http://localhost:9500", "https://localhost:9500", "https://csse-s302g12.canterbury.ac.nz"};
+  private final String[] allowedOrigins = new String[] {"http://localhost:9500", "https://localhost:9500", "https://csse-s302g4.canterbury.ac.nz"};
   private final String defaultAllowedOrigin = "http://localhost:9500";
 
   @Override

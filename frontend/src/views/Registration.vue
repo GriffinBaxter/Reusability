@@ -141,8 +141,8 @@
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                         @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                         tabindex="8">
-                    <i v-if="!showPassword" class="fas fa-eye"></i>
-                    <i v-else class="fas fa-eye-slash"></i>
+                    <font-awesome-icon v-if="!showPassword" icon="eye" />
+                    <font-awesome-icon v-else icon="eye-slash" />
                     </span>
 
                   <div class="invalid-feedback">
@@ -186,7 +186,7 @@
               <!--home address input field, allows for autocompletion via prompt-->
               <div class="col my-2 my-lg-0">
               <label for="home-address">Address Autofill (Optional)</label>
-                <input id="home-address" name="home-address" ref="homeAddressInput" type="text" @input="input()"
+                <input id="home-address" name="home-address" tabindex ="11" ref="homeAddressInput" type="text" @input="input()"
                        @keydown="addressKeyDown($event)" :class="toggleInvalidClass(homeAddressErrorMsg)"
                        :maxlength="config.homeAddress.maxLength" autocomplete="off">
                 <div class="invalid-feedback">
@@ -199,81 +199,93 @@
             <!--eighth row of form-->
             <div class="row my-lg-2">
 
-              <!--street input field-->
-              <div class="col my-2 my-lg-0">
-                <label for="street-address">Street Address*</label>
-                <input :class="toggleInvalidClass(streetAddressErrorMsg)" tabindex="11" id="street-address"
-                       name="streetAddress" ref="streetAddress" required autocomplete="off">
+                <!--street input field-->
+                <div class="col my-2 my-lg-0">
+                  <label for="streetNumber">Street Number</label>
+                  <input :class="toggleInvalidClass(streetNumberErrorMsg)" tabindex="12" id="streetNumber"
+                          name="streetNumber" ref="streetNumber" autocomplete="off">
                 <div class="invalid-feedback">
-                  {{streetAddressErrorMsg}}
+                  {{streetNumberErrorMsg}}
                 </div>
               </div>
 
+              <!--suburb input field-->
+              <div class="col my-2 my-lg-0">
+                <label for="streetName">Street Name</label>
+              <input :class="toggleInvalidClass(streetNameErrorMsg)" tabindex="13" id="streetName"
+                     name="streetName" ref="streetName" autocomplete="off">
+              <div class="invalid-feedback">
+                {{streetNameErrorMsg}}
+              </div>
             </div>
+          </div>
+
 
             <!--ninth row of form-->
             <div class="row my-lg-2">
 
-              <!--suburb input field-->
-              <div class="col-lg-6 my-2 my-lg-0">
-                <label for="suburb">Suburb</label>
-                <input :class="toggleInvalidClass(suburbErrorMsg)" tabindex="12" name="suburb" id="suburb" ref="suburb"
-                       autocomplete="off" required>
-                <div class="invalid-feedback">
-                  {{suburbErrorMsg}}
-                </div>
-              </div>
-
               <!--city input field-->
               <div class="col-lg-6 my-2 my-lg-0">
-                <label for="city">City*</label>
-                <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="13" name="city" id="city" ref="city"
-                       autocomplete="off" required>
+                <label for="city">City</label>
+                <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="14" name="city" id="city" ref="city"
+                       autocomplete="off">
                 <div class="invalid-feedback">
                   {{cityErrorMsg}}
                 </div>
               </div>
 
-            </div>
-
-            <!--tenth row of form-->
-            <div class="row my-lg-2">
-
-              <!--state input field-->
+              <!--postcode input field-->
               <div class="col-lg-6 my-2 my-lg-0">
-                <label for="region">State/Region*</label>
-                <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="14" name="region" id="region" ref="region"
-                       autocomplete="off" required>
-                <div class="invalid-feedback">
-                  {{regionErrorMsg}}
-                </div>
-              </div>
-
-              <!--country input field-->
-              <div class="col-lg-6 my-2 my-lg-0">
-                <label for="country">Country*</label>
-                <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="15" id="country" name="country"
-                       ref="country" autocomplete="off" required>
-                <div class="invalid-feedback">
-                  {{countryErrorMsg}}
-                </div>
+              <label for="postcode">Postcode</label>
+              <input :class="toggleInvalidClass(postcodeErrorMsg)" tabindex="15" name="postcode" id="postcode" ref="postcode"
+                     autocomplete="off">
+              <div class="invalid-feedback">
+                {{postcodeErrorMsg}}
               </div>
             </div>
 
-            <!--eleventh row of form-->
-            <div class="row my-lg-2">
+          </div>
 
-              <!--bio field-->
-              <div class="col my-2 my-lg-0">
-                <label for="bio">Bio</label>
-                <textarea id="bio" name="bio" tabindex="16" rows="5" cols="70" v-model="bio"
-                          :class="toggleInvalidClass(bioErrorMsg)" :maxlength="config.bio.maxLength"
-                          style="resize: none"/>
-                <div class="invalid-feedback">
-                  {{bioErrorMsg}}
-                </div>
+          <!--tenth row of form-->
+          <div class="row my-lg-2">
+
+            <!--state input field-->
+            <div class="col-lg-6 my-2 my-lg-0">
+              <label for="region">State/Region</label>
+              <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="16" name="region" id="region" ref="region"
+                     autocomplete="off">
+              <div class="invalid-feedback">
+                {{regionErrorMsg}}
               </div>
             </div>
+
+            <!--country input field-->
+            <div class="col-lg-6 my-2 my-lg-0">
+              <label for="country">Country*</label>
+              <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="17" id="country" name="country"
+                     ref="country" autocomplete="off" required>
+              <div class="invalid-feedback">
+                {{countryErrorMsg}}
+              </div>
+            </div>
+
+          </div>
+
+          <!--eleventh row of form-->
+          <div class="row my-lg-2">
+
+            <!--bio field-->
+            <div class="col my-2 my-lg-0">
+              <label for="bio">Bio</label>
+              <textarea id="bio" name="bio" tabindex="18" rows="5" cols="70" v-model="bio"
+                        :class="toggleInvalidClass(bioErrorMsg)" :maxlength="config.bio.maxLength"
+                        style="resize: none"/>
+              <div class="invalid-feedback">
+                {{bioErrorMsg}}
+              </div>
+            </div>
+
+          </div>
 
             <!--twelfth row of form-->
             <div class="row my-lg-2">
@@ -310,8 +322,8 @@
 <script>
 import Api, {User} from "../Api";
 import Cookies from 'js-cookie';
-import AddressAPI from "../AddressInstance"
 import FooterSecure from "../components/FooterSecure";
+import AddressAPI from "../addressInstance";
 
 export default {
   name: "Registration",
@@ -323,7 +335,7 @@ export default {
     return {
 
       // Used for having pre-filled input fields
-      DEBUG_MODE: true,
+      DEBUG_MODE: false,
 
       // A copy of the user config file for error checking.
       config: User.config,
@@ -374,11 +386,14 @@ export default {
       // Home address related variables
       homeAddressErrorMsg: "",
 
-      // Street address related variables
-      streetAddressErrorMsg: "",
+      // Street number related variables
+      streetNumberErrorMsg: "",
 
-      // Suburb related variables
-      suburbErrorMsg: "",
+      // Street name related variables
+      streetNameErrorMsg: "",
+
+      // Postcode related variables
+      postcodeErrorMsg: "",
 
       // City related variables
       cityErrorMsg: "",
@@ -389,7 +404,7 @@ export default {
       // Country related variables
       countryErrorMsg: "",
 
-      // Toast related variables
+      // Error message related variables
       errorMessageBubble: "",
       cannotProceed: false,
 
@@ -583,14 +598,13 @@ export default {
       this.lastName = this.lastName.trim();
       this.nickname = this.nickname.trim();
       this.bio = this.bio.trim();
-      this.password = this.password.trim();
-      this.confirmPassword = this.confirmPassword.trim();
       this.email = this.email.trim();
       this.$refs.country.value = this.$refs.country.value.trim();
       this.$refs.city.value = this.$refs.city.value.trim();
-      this.$refs.suburb.value = this.$refs.suburb.value.trim();
+      this.$refs.postcode.value = this.$refs.postcode.value.trim();
       this.$refs.region.value = this.$refs.region.value.trim();
-      this.$refs.streetAddress.value = this.$refs.streetAddress.value.trim();
+      this.$refs.streetNumber.value = this.$refs.streetNumber.value.trim();
+      this.$refs.streetName.value = this.$refs.streetName.value.trim();
     },
 
     /**
@@ -740,27 +754,40 @@ export default {
         requestIsInvalid = true
       }
 
-      // Street address error checking
-      this.streetAddressErrorMsg = this.getErrorMessage(
-          this.config.streetAddress.name,
+      // Street number error checking
+      this.streetNumberErrorMsg = this.getErrorMessage(
+          this.config.streetNumber.name,
           // Using v-model for this address input apparently does not update
           // when we insert from our autocomplete list so it has been changed to use $refs
-          this.$refs.streetAddress.value,
-          this.config.streetAddress.minLength,
-          this.config.streetAddress.maxLength
+          this.$refs.streetNumber.value,
+          this.config.streetNumber.minLength,
+          this.config.streetNumber.maxLength
       )
-      if (this.streetAddressErrorMsg) {
+      if (this.streetNumberErrorMsg) {
         requestIsInvalid = true
       }
 
-      // Suburb error checking
-      this.suburbErrorMsg = this.getErrorMessage(
-          this.config.suburb.name,
-          this.$refs.suburb.value,
-          this.config.suburb.minLength,
-          this.config.suburb.maxLength
+      // Street name error checking
+      this.streetNameErrorMsg = this.getErrorMessage(
+          this.config.streetName.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetName.value,
+          this.config.streetName.minLength,
+          this.config.streetName.maxLength
       )
-      if (this.suburbErrorMsg) {
+      if (this.streetNameErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Postcode error checking
+      this.postcodeErrorMsg = this.getErrorMessage(
+          this.config.postcode.name,
+          this.$refs.postcode.value,
+          this.config.postcode.minLength,
+          this.config.postcode.maxLength
+      )
+      if (this.postcodeErrorMsg) {
         requestIsInvalid = true
       }
 
@@ -804,7 +831,15 @@ export default {
         return
       }
 
-      let finalHomeAddress = `${this.$refs.streetAddress.value};${this.$refs.suburb.value};${this.$refs.city.value};${this.$refs.region.value};${this.$refs.country.value}`;
+      const addressData = {
+        streetNumber: this.$refs.streetNumber.value,
+        streetName: this.$refs.streetName.value,
+        city: this.$refs.city.value,
+        region: this.$refs.region.value,
+        country: this.$refs.country.value,
+        postcode: this.$refs.postcode.value
+      }
+
 
       // Wrapping up the user submitted fields into a class object (User).
       const userData = {
@@ -822,7 +857,7 @@ export default {
          *       When we insert from our autocomplete list so it has been changed to use $refs
          */
 
-        homeAddress: finalHomeAddress,
+        homeAddress: addressData,
         password: this.password
       }
 
@@ -902,7 +937,7 @@ export default {
         let { properties } = features[index];
         if (properties) {
 
-          let {country, city, state, street, housenumber, name} = properties;
+          let {country, city, postcode, state, street, housenumber, name} = properties;
 
           if (name) {
             address += name + ", ";
@@ -918,6 +953,10 @@ export default {
 
           if (city) {
             address += city + ", ";
+          }
+
+          if (postcode) {
+            address += postcode + ", ";
           }
 
           if (state) {
@@ -988,28 +1027,27 @@ export default {
             document.getElementById('home-address').value = "";
             const id = event.target.id;
 
-            let {country, city, state, district, street, housenumber} = self.addressResultProperties[id];
+            let {country, city, postcode, state, street, housenumber} = self.addressResultProperties[id];
 
             if (housenumber) {
-              document.getElementById('streetAddress').value = housenumber;
+              document.getElementById('streetNumber').value = housenumber;
             }
-            if (street && housenumber) {
-              document.getElementById('streetAddress').value += " " + street;
-            } else if (street) {
-              document.getElementById('streetAddress').value = street;
-            }
-
-            if (district) {
-              document.getElementById('suburb').value = district;
+            if (street) {
+              document.getElementById('streetName').value = street;
             }
 
             if (city) {
               document.getElementById('city').value = city;
             }
 
+            if (postcode) {
+              document.getElementById('postcode').value = postcode;
+            }
+
             if (state) {
               document.getElementById('region').value = state;
             }
+
             if (country) {
               document.getElementById('country').value = country;
             }
