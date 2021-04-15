@@ -1228,8 +1228,6 @@ public class BusinessResourceIntegrationTests {
         );
         business.setId(2);
         // given
-        business.setId(2);
-
         id = business.getId();
         expectedJson = "{" +
                 "\"userId\":" + another.getId() +
@@ -1237,10 +1235,13 @@ public class BusinessResourceIntegrationTests {
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
-        //add business to user object()
+        //add business to user and another
         List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
         businessesAdministeredObjects.add(business);
         user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        another.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        //add user and another to business
+        business.addAdministrators(another);
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
@@ -1251,7 +1252,6 @@ public class BusinessResourceIntegrationTests {
                 .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         // then
-        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -1312,6 +1312,12 @@ public class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         user.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        //add business to user and another
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        another.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        //add user and another to business
+        business.addAdministrators(another);
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
@@ -1322,6 +1328,7 @@ public class BusinessResourceIntegrationTests {
                 .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         // then
+        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 

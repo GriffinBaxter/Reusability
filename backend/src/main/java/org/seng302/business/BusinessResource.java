@@ -261,12 +261,20 @@ public class BusinessResource {
             );
         }
         User selectUser = optionalUser.get();
-        if ((selectBusiness.isAnAdministratorOfThisBusiness(selectUser) && !isRemove) ||
-                (!selectBusiness.isAnAdministratorOfThisBusiness(selectUser) && isRemove)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Select user already is an administrator of this business"
-            );
+        if (isRemove){
+            if (!selectBusiness.isAnAdministratorOfThisBusiness(selectUser)){
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Select user is not an administrator of this business"
+                );
+            }
+        } else {
+            if (selectBusiness.isAnAdministratorOfThisBusiness(selectUser)){
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Select user already is an administrator of this business"
+                );
+            }
         }
     }
 
@@ -311,6 +319,8 @@ public class BusinessResource {
         checkBusinessPermission(sessionToken, optionalBusiness, optionalUser, true);
 
         //200
+        System.out.println(optionalBusiness.get().getAdministrators());
+        System.out.println(optionalUser.get());
         optionalBusiness.get().removeAdministrators(optionalUser.get());
         userRepository.flush();
         businessRepository.flush();
