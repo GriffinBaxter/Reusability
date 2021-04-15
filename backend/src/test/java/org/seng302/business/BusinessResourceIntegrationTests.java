@@ -1463,9 +1463,6 @@ public class BusinessResourceIntegrationTests {
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
-        //add otherUser to administrator of business
-//        business.removeAdministrators(user);
-
         //add business to user and otherUser
         List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
         businessesAdministeredObjects.add(business);
