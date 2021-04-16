@@ -47,18 +47,24 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(8, 50, 37, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+
 .modal {
-  background: #FFFFFF;
-  box-shadow: 2px 2px 20px 1px;
+  max-width: 600px;
+  max-height: 600px;
+  position: relative;
   overflow-x: auto;
   display: flex;
   flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  align-content: center;
+  justify-content: center;
 }
 
 .modal-body {

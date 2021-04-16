@@ -9,9 +9,7 @@
     <button id="create-product-button" type="button" class="btn btn-lg btn-primary float-lg-end" @click="showModal">Create Product</button>
 
     <Modal v-show="isModalVisible" @close="closeModal">
-      <template v-slot:header> This is a new modal header.</template>
-      <template v-slot:body>This is a new modal body.</template>
-      <template v-slot:footer>This is a new modal footer.</template>
+      <template v-slot:body>Modal body.</template>
     </Modal>
   </div>
 </template>
