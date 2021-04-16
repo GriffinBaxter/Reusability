@@ -247,6 +247,46 @@ export class Business{
 
 }
 
+export class Product{
+
+  // This is a config for the product requirement details
+  static config = {
+    productID: {
+      name: "Product ID",
+      minLength: 1,
+      maxLength: 15,
+      regex: /^[A-Z0-9-]+$/,
+      regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
+    },
+    description: {
+      name: "Description",
+      minLength: 0,
+      maxLength: 600
+    },
+    productName: {
+      name: "Product name",
+      minLength: 1,
+      maxLength: 50,
+    },
+    recommendedRetailPrice: {
+      name: "Recommended retail price",
+      minLength: 0,
+      maxLength: 255,
+    },
+  };
+
+  constructor({productID, name, description, recommendedRetailPrice}) {
+    this.data = {
+      productID,
+      name,
+      description,
+      recommendedRetailPrice,
+    }
+
+  }
+
+}
+
 export default {
 
   // Sends a post request to the backend with a new user object to store

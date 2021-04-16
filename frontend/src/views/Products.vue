@@ -8,19 +8,19 @@
 
     <button id="create-product-button" type="button" class="btn btn-lg btn-primary float-lg-end" @click="showModal">Create Product</button>
 
-    <Modal v-show="isModalVisible" @close="closeModal">
-      <template v-slot:body>Modal body.</template>
-    </Modal>
+    <CreateProductModal v-show="isModalVisible" @close="closeModal">
+    </CreateProductModal>
+
   </div>
 </template>
 
 <script>
-import Modal from '../components/Modal.vue';
+import CreateProductModal from "@/components/CreateProductModal";
 
 export default {
-  name: 'App',
+  name: 'Products',
   components: {
-    Modal,
+    CreateProductModal,
   },
   data() {
     return {
