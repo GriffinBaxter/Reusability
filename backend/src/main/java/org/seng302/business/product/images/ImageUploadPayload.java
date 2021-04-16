@@ -8,13 +8,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ImageUploadPayload {
 
-    private MultipartFile[] images;
-
-    public MultipartFile[] getImages() {
-        return images;
-    }
-
-    public void setImages(MultipartFile[] images) {
-        this.images = images;
-    }
+    // Multipart Files cannot be used in requestBody payloads... :(
+//    private MultipartFile[] images;
+//
+//    public MultipartFile[] getImages() {
+//        return images;
+//    }
 }

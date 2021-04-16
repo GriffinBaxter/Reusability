@@ -1,18 +1,23 @@
 package org.seng302.business.product;
 
+import jdk.jfr.ContentType;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.product.images.ImageUploadPayload;
-import org.seng302.business.product.images.storageService;
+import org.seng302.business.product.images.StorageService;
 import org.seng302.main.Authorization;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,6 +28,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RestController
 public class ProductResource {
 
+    public final boolean DEBUG_MODE = true;
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -32,8 +39,8 @@ public class ProductResource {
     @Autowired
     private UserRepository userRepository;
 
-    //@Autowired Need to create the class first!
-    //private storageService storageService;
+    @Autowired
+    private StorageService storageService;
 
     /**
      * Constructor used to insert mocked repositories for testing.
@@ -134,47 +141,62 @@ public class ProductResource {
         return productRepository.findProductsByBusinessId(id);
     }
 
+    // TODO AGREE on maximum image size.
+    /**
+     *
+     * @param images
+     * @param sessionToken
+     * @param businessId
+     * @param productId
+     */
     @PostMapping("/businesses/{businessId}/products/{productId}/images")
+    @ResponseStatus(value = HttpStatus.CREATED, reason = "Image successfully created")
     public void uploadImage(
-            @RequestBody ImageUploadPayload imageUploadRequest,
+            @RequestParam("images") MultipartFile[] images,
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer businessId,
             @PathVariable String productId
     ) {
 
-        // Get the current user to verify his session token
-        User requestingUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        // Disables safety checks for the data before creation of the files
+        if (!DEBUG_MODE) {
 
-        // Verify the business and product exists within the database.
-        if (!Authorization.verifyProductExists(productId, businessId, productRepository)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+            // Get the current user to verify his session token
+            User requestingUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+            // Verify the business and product exists within the database.
+            if (!Authorization.verifyProductExists(productId, businessId, productRepository)) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_ACCEPTABLE,
+                        "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                                "for example trying to access a resource by an ID that does not exist."
+                );
+            }
+
+            // Verify if the user has permissions to upload images to this product
+            if (requestingUser.getRole() == Role.USER && !requestingUser.getBusinessesAdministered().contains(businessId)) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "The account performing the request is neither an administrator of the business, nor a global application admin."
+                );
+            }
+
+            // Verify it is the correct file type.
+            Arrays.stream(images).forEach(
+                    file -> {
+                        // TODO Check file type
+                    }
             );
         }
-
-        // Verify if the user has permissions to upload images to this product
-        if (requestingUser.getRole() == Role.USER && !requestingUser.getBusinessesAdministered().contains(businessId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The account performing the request is neither an administrator of the business, nor a global application admin."
-            );
-        }
-
-        // Verify it is the correct file type.
-        Arrays.stream(imageUploadRequest.getImages()).forEach(
-                file -> {
-                    // TODO Check file type
-                }
-        );
 
         // Store the file & Create the thumbnail for the primary image
         AtomicBoolean needToCreateThumbnail = new AtomicBoolean(true);
-        Arrays.stream(imageUploadRequest.getImages()).forEach(
+        ArrayList<String> fileNamesAdded = new ArrayList<String>();
+        Arrays.stream(images).forEach(
                 image -> {
 
                     // Create thumbnail for primary image.
+                    // TODO Not specified yet. So for now will create an exact copy labeled with "*-thumbnail.*"
                     if (needToCreateThumbnail.get()) {
 
                         // Generate image
@@ -187,8 +209,17 @@ public class ProductResource {
                     }
 
                     // Store the image locally
+                    try {
+                        storageService.storeFile(image, "test");
+                        fileNamesAdded.add("test");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                     // Add path to database
+                    // TODO Perform a transation to the DB creating a file path for each image in the Image table
+                    // TODO This means that if any of the images fails we can perform a rollback, and also delete the images from the file system.
+                    // TODO The creation of images should be atomic.
                 }
         );
 
