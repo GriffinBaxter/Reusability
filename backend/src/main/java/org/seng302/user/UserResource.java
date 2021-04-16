@@ -254,7 +254,6 @@ public class UserResource {
                 address.getCountry(),
                 postCode
         );
-        System.out.println(selectUser);
         return new UserPayload(
                 selectUser.getId(),
                 selectUser.getFirstName(),

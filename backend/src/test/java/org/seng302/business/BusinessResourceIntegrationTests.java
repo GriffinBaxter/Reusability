@@ -63,7 +63,7 @@ public class BusinessResourceIntegrationTests {
 
     private User user;
 
-    private User another;
+    private User anotherUser;
 
     private Business business;
 
@@ -104,7 +104,7 @@ public class BusinessResourceIntegrationTests {
                 user
         );
         business.setId(2);
-        another = new User(
+        anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -118,8 +118,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         this.mvc = MockMvcBuilders.standaloneSetup(
                 new BusinessResource(businessRepository, userRepository, addressRepository)
         ).build();
@@ -577,10 +577,11 @@ public class BusinessResourceIntegrationTests {
 //--------------------------------------------------/businesses/{id}--------------------------------------------------
 
     /**
-     * Tests that a OK(200) status is received when the user id in the /businesses/{id} API endpoint does exist
+     * Tests that a OK(200) status is received when the user id in the /businesses/{id} API endpoint does exist, and
+     * primary administrator id will be display(As current user is administrator of this business).
      */
     @Test
-    public void canRetrieveBusinessWhenBusinessDoesExist() throws Exception {
+    public void administratorCanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
         // given
         id = business.getId();
         expectedJson = "{" +
@@ -597,6 +598,98 @@ public class BusinessResourceIntegrationTests {
                     "\"country\":\"" + address.getCountry() + "\"," +
                     "\"postcode\":\"" + address.getPostcode() + "\"" +
                     "}," +
+                "\"businessType\":\"" + business.getBusinessType() + "\"," +
+                "\"created\":\"" + business.getCreated() + "\"}";
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        //when(business.getAdministrators()).thenReturn(List.of(user));
+        response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a OK(200) status is received when the user id in the /businesses/{id} API endpoint does exist, and
+     * primary administrator id will be display(As current user is not administrator of this business and not a DGAA).
+     */
+    @Test
+    public void nonAdministratorCanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"id\":" + id + "," +
+                "\"administrators\":" + business.getAdministrators() + "," +
+                "\"primaryAdministratorId\":null," +
+                "\"name\":\"" + business.getName() + "\"," +
+                "\"description\":\"" + business.getDescription() + "\"," +
+                "\"address\":{" +
+                "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
+                "\"streetName\":\"" + address.getStreetName() + "\"," +
+                "\"city\":\"" + address.getCity() + "\"," +
+                "\"region\":\"" + address.getRegion() + "\"," +
+                "\"country\":\"" + address.getCountry() + "\"," +
+                "\"postcode\":\"" + address.getPostcode() + "\"" +
+                "}," +
+                "\"businessType\":\"" + business.getBusinessType() + "\"," +
+                "\"created\":\"" + business.getCreated() + "\"}";
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        //when(business.getAdministrators()).thenReturn(List.of(user));
+        response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a OK(200) status is received when the user id in the /businesses/{id} API endpoint does exist, and
+     * primary administrator id will be display(As current user is DGAA).
+     */
+    @Test
+    public void DGAACanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"id\":" + id + "," +
+                "\"administrators\":" + business.getAdministrators() + "," +
+                "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
+                "\"name\":\"" + business.getName() + "\"," +
+                "\"description\":\"" + business.getDescription() + "\"," +
+                "\"address\":{" +
+                "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
+                "\"streetName\":\"" + address.getStreetName() + "\"," +
+                "\"city\":\"" + address.getCity() + "\"," +
+                "\"region\":\"" + address.getRegion() + "\"," +
+                "\"country\":\"" + address.getCountry() + "\"," +
+                "\"postcode\":\"" + address.getPostcode() + "\"" +
+                "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
         sessionToken = user.getSessionUUID();
@@ -669,7 +762,7 @@ public class BusinessResourceIntegrationTests {
     @Test
     public void anBusinessAdministratorCanMakeUserBecomeAdministrator() throws Exception {
         // given
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -683,8 +776,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -713,7 +806,7 @@ public class BusinessResourceIntegrationTests {
 
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -725,7 +818,7 @@ public class BusinessResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
@@ -743,7 +836,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void aDGAACanMakeUserBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -757,8 +850,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -787,7 +880,7 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -796,7 +889,7 @@ public class BusinessResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
@@ -814,7 +907,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void anBusinessAdministratorCanNotMakeANotExistUserBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -828,8 +921,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -870,7 +963,7 @@ public class BusinessResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
@@ -888,7 +981,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void anBusinessAdministratorCanNotMakeOtherAdministratorBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -902,8 +995,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -932,23 +1025,23 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         //add otherUser to administrator of business
-        business.addAdministrators(another);
+        business.addAdministrators(anotherUser);
 
         //add business to user and otherUser
         List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
         businessesAdministeredObjects.add(business);
         user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
-        another.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        anotherUser.setBusinessesAdministeredObjects(businessesAdministeredObjects);
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
@@ -965,7 +1058,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void whenSessionTokenMissing_MakingUserBecomeAdministratorNotWork() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -979,8 +1072,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1009,7 +1102,7 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
 
@@ -1020,7 +1113,7 @@ public class BusinessResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id))
@@ -1037,7 +1130,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void aNormalUserCanNotMakeUserBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1051,8 +1144,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1081,16 +1174,16 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
-        sessionToken = another.getSessionUUID();
+        sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         //delete 'user' in 'business'
         business.setAdministrators(new ArrayList<>());
 
         // when
-        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
@@ -1110,7 +1203,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void CanNotMakeUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1124,8 +1217,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1154,7 +1247,7 @@ public class BusinessResourceIntegrationTests {
         // given
         id = 0;
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -1166,7 +1259,7 @@ public class BusinessResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
@@ -1186,7 +1279,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void aBusinessAdministratorCanRemoveUserBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1200,8 +1293,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1230,22 +1323,22 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
-        //add business to user and another
+        //add business to user and anotherUser
         List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
         businessesAdministeredObjects.add(business);
         user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
-        another.setBusinessesAdministeredObjects(businessesAdministeredObjects);
-        //add user and another to business
-        business.addAdministrators(another);
+        anotherUser.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        //add user and anotherUser to business
+        business.addAdministrators(anotherUser);
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
@@ -1262,7 +1355,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void aDGAACanRemoveUserBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1276,8 +1369,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1306,22 +1399,22 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         user.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
-        //add business to user and another
+        //add business to user and anotherUser
         List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
         businessesAdministeredObjects.add(business);
-        another.setBusinessesAdministeredObjects(businessesAdministeredObjects);
-        //add user and another to business
-        business.addAdministrators(another);
+        anotherUser.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        //add user and anotherUser to business
+        business.addAdministrators(anotherUser);
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
@@ -1340,7 +1433,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void anBusinessAdministratorCanNotRemoveANotExistUserBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1354,8 +1447,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1396,7 +1489,7 @@ public class BusinessResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
@@ -1414,7 +1507,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void anBusinessAdministratorCanNotRemoveOtherAdministratorBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1428,8 +1521,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1458,7 +1551,7 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -1467,11 +1560,11 @@ public class BusinessResourceIntegrationTests {
         List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
         businessesAdministeredObjects.add(business);
         user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
-        another.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        anotherUser.setBusinessesAdministeredObjects(businessesAdministeredObjects);
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
@@ -1488,7 +1581,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void whenSessionTokenMissing_RemovingUserBecomeAdministratorNotWork() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1502,8 +1595,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1532,7 +1625,7 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
 
@@ -1543,7 +1636,7 @@ public class BusinessResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id))
@@ -1560,7 +1653,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void aNormalUserCanNotRemoveUserBecomeAdministrator() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1574,8 +1667,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1604,16 +1697,16 @@ public class BusinessResourceIntegrationTests {
         // given
         id = business.getId();
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
-        sessionToken = another.getSessionUUID();
+        sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         //delete 'user' in 'business'
         business.setAdministrators(new ArrayList<>());
 
         // when
-        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
@@ -1662,7 +1755,7 @@ public class BusinessResourceIntegrationTests {
         expectedJson = "{" +
                 "\"userId\":" + user.getId() +
                 "}";
-        sessionToken = another.getSessionUUID();
+        sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         //delete 'user' in 'business'
@@ -1688,7 +1781,7 @@ public class BusinessResourceIntegrationTests {
      */
     @Test
     public void CanNotRemoveUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
-        User another = new User(
+        User anotherUser = new User(
                 "John",
                 "Doe",
                 "S",
@@ -1702,8 +1795,8 @@ public class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        another.setId(3);
-        another.setSessionUUID(User.generateSessionUUID());
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1732,7 +1825,7 @@ public class BusinessResourceIntegrationTests {
         // given
         id = 0;
         expectedJson = "{" +
-                "\"userId\":" + another.getId() +
+                "\"userId\":" + anotherUser.getId() +
                 "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -1744,7 +1837,7 @@ public class BusinessResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findById(another.getId())).thenReturn(Optional.ofNullable(another));
+        when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
 
         response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)

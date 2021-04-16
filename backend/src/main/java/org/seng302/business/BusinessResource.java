@@ -183,24 +183,24 @@ public class BusinessResource {
     public BusinessPayload retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                             @PathVariable String id) throws Exception {
         //access token invalid
-        getUserVerifySession(sessionToken);
+        User currentUser = getUserVerifySession(sessionToken);
 
-        Optional<Business> business = businessRepository.findBusinessById(Integer.valueOf(id));
-
-        if (business.isEmpty()){
+        Optional<Business> optionalSelectBusiness = businessRepository.findBusinessById(Integer.valueOf(id));
+        if (optionalSelectBusiness.isEmpty()){
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
+        Business selectBusiness = optionalSelectBusiness.get();
 
-        List<User> administrators = business.get().getAdministrators();
+        List<User> administrators = selectBusiness.getAdministrators();
         for (User administrator : administrators){
             administrator.setBusinessesAdministeredObjects(new ArrayList<>());
         }
 
-        address = business.get().getAddress();
+        address = selectBusiness.getAddress();
         AddressPayload addressPayload = new AddressPayload(
                 address.getStreetNumber(),
                 address.getStreetName(),
@@ -209,15 +209,21 @@ public class BusinessResource {
                 address.getCountry(),
                 address.getPostcode()
         );
+
+        Integer primaryAdministratorId = null;
+        if (selectBusiness.isAnAdministratorOfThisBusiness(currentUser) ||
+                currentUser.getRole() == Role.DEFAULTGLOBALAPPLICATIONADMIN){
+            primaryAdministratorId = selectBusiness.getPrimaryAdministratorId();
+        }
         return new BusinessPayload(
-                business.get().getId(),
+                selectBusiness.getId(),
                 administrators,
-                business.get().getPrimaryAdministratorId(),
-                business.get().getName(),
-                business.get().getDescription(),
+                primaryAdministratorId,
+                selectBusiness.getName(),
+                selectBusiness.getDescription(),
                 addressPayload,
-                business.get().getBusinessType(),
-                business.get().getCreated()
+                selectBusiness.getBusinessType(),
+                selectBusiness.getCreated()
                 );
     }
 
