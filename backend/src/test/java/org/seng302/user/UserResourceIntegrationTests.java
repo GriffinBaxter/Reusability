@@ -408,10 +408,35 @@ public class UserResourceIntegrationTests {
      */
     @Test
     public void canRetrieveUserWhenUserExistsWithUserCookie() throws Exception {
+        Address address = user.getHomeAddress();
+        address.setStreetNumber(null);
+        address.setStreetName(null);
+        address.setPostcode(null);
         // given
+        String expectedUserJson = "{\"id\":%d," +
+                "\"firstName\":\"%s\"," +
+                "\"lastName\":\"%s\"," +
+                "\"middleName\":\"%s\"," +
+                "\"nickname\":\"%s\"," +
+                "\"bio\":\"%s\"," +
+                "\"email\":\"%s\"," +
+                "\"dateOfBirth\":%s," +
+                "\"phoneNumber\":%s," +
+                "\"homeAddress\":{" +
+                        "\"streetNumber\":null," +
+                        "\"streetName\":null," +
+                        "\"city\":\"%s\"," +
+                        "\"region\":\"%s\"," +
+                        "\"country\":\"%s\"," +
+                        "\"postcode\":null" +
+                "},"+
+                "\"created\":\"%s" + "\"," +
+                "\"role\":%s," +
+                "\"businessesAdministered\":%s" +
+                "}";
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]");
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), null, null,
+                address.getCity(), address.getRegion(), address.getCountry(), user.getCreated(), null, "[null]");
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));

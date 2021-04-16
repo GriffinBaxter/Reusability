@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,50 +202,71 @@ public class UserResource {
     public UserPayload retrieveUser(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
     ) throws Exception {
-        getUserVerifySession(sessionToken);
-
-        Optional<User> user = userRepository.findById(id);
-
-        if (user.isEmpty()) {
+        Optional<User> optionalSelectUser = userRepository.findById(id);
+        if (optionalSelectUser.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
+        User currentUser = getUserVerifySession(sessionToken);
+        User selectUser = optionalSelectUser.get();
 
+        //base info
         Role role = null;
+        LocalDate dateOfBirth = null;
+        String phoneNumber = null;
+        List<Business> administrators = new ArrayList<>();
 
-        if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            role = user.get().getRole();
+        //address
+        String streetNumber = null;
+        String streetName = null;
+        String postCode = null;
+        Address address = selectUser.getHomeAddress();
+
+        if (currentUser.getId() == id || verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
+            //base info
+            dateOfBirth = selectUser.getDateOfBirth();
+            phoneNumber = selectUser.getPhoneNumber();
+            administrators = selectUser.getBusinessesAdministeredObjects();
+            for (Business administrator : administrators) {
+                administrator.setAdministrators(new ArrayList<>());    //stop payload loop
+            }
+
+            //address
+            streetNumber = address.getStreetNumber();
+            streetName = address.getStreetName();
+            postCode = address.getPostcode();
+
+            //role
+            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+                role = selectUser.getRole();
+            }
         }
 
-        List<Business> administrators = user.get().getBusinessesAdministeredObjects();
-        for (Business administrator : administrators) {
-            administrator.setAdministrators(new ArrayList<>());
-        }
-
-        Address address = user.get().getHomeAddress();
+        //address
         AddressPayload addressPayload = new AddressPayload(
-                address.getStreetNumber(),
-                address.getStreetName(),
+                streetNumber,
+                streetName,
                 address.getCity(),
                 address.getRegion(),
                 address.getCountry(),
-                address.getPostcode()
+                postCode
         );
+        System.out.println(selectUser);
         return new UserPayload(
-                user.get().getId(),
-                user.get().getFirstName(),
-                user.get().getLastName(),
-                user.get().getMiddleName(),
-                user.get().getNickname(),
-                user.get().getBio(),
-                user.get().getEmail(),
-                user.get().getDateOfBirth(),
-                user.get().getPhoneNumber(),
+                selectUser.getId(),
+                selectUser.getFirstName(),
+                selectUser.getLastName(),
+                selectUser.getMiddleName(),
+                selectUser.getNickname(),
+                selectUser.getBio(),
+                selectUser.getEmail(),
+                dateOfBirth,
+                phoneNumber,
                 addressPayload,
-                user.get().getCreated(),
+                selectUser.getCreated(),
                 role,
                 administrators
         );

@@ -87,7 +87,7 @@ public class UserPayload {
         this.nickname = nickname;
         this.bio = bio;
         this.email = email;
-        this.dateOfBirth = dateOfBirth.toString();
+        this.dateOfBirth = (dateOfBirth==null) ? null : dateOfBirth.toString();
         this.phoneNumber = phoneNumber;
         this.homeAddress = homeAddress;
         this.created = created.toString();
