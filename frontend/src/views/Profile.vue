@@ -46,7 +46,7 @@
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
               </div>
               <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" @click="showFileUpload(true)" id="UploadButton" v-if="!otherUser">
+              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">
                 Upload Image
               </button>
 
@@ -138,33 +138,37 @@
               </div>
 
               <!--user's date of birth-->
-              <hr>
-              <div class="row" id="date-of-birth-row">
-                <div class="col-md-3">
-                  <h6>Date of Birth:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{dateOfBirth}}
+              <div id="date-of-birth-row">
+                <hr>
+                <div class="row">
+                  <div class="col-md-3">
+                    <h6>Date of Birth:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary">
+                      {{dateOfBirth}}
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!--user's phone number-->
-              <hr id="date-header">                <!--TODO not sure if this should be called phoneHR as address section-->
-              <div class="row" id="phoneRow">
-                <div class="col-md-3">
-                  <h6>Phone number:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{phoneNumber}}
+              <div id="phone-row">
+                <hr>                <!--TODO not sure if this should be called phoneHR as address section-->
+                <div class="row" >
+                  <div class="col-md-3">
+                    <h6>Phone number:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary">
+                      {{phoneNumber}}
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!--user's home address-->
-              <hr id="phone-header">               <!--TODO not sure if this should be called phoneHR as address section-->
+              <hr>               <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Address:</h6>
@@ -202,7 +206,7 @@
     <div v-if="showUpload" id="FileUpload" class="modal">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Upload Image</h5>
+          <h5 class="modal-title">Upload Image</h5>
           <button type="button" class="btn-close" @click="showFileUpload(false)"></button>
         </div>
         <div class="modal-body">
@@ -210,7 +214,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" @click="showFileUpload(false)">Close</button>
-          <button type="button" class="btn btn-primary" @click="showFileUpload(false)">Save changes</button>
+          <button type="button" class="btn green-button" @click="showFileUpload(false)">Save changes</button>
         </div>
       </div>
     </div>
@@ -505,10 +509,8 @@ export default {
       }
 
       if (this.otherUser) {
-        document.getElementById('phoneRow').remove();
-        document.getElementById('dateOfBirthRow').remove();
-        document.getElementById('phoneHR').remove();
-        document.getElementById('dateHR').remove();
+        document.getElementById('phone-row').remove();
+        document.getElementById('date-of-birth-row').remove();
 
         if (this.city !== "") {
           this.address.push({line: this.city});
@@ -611,7 +613,7 @@ export default {
 
 <style scoped>
 
-#UploadButton {
+#upload-button {
   margin: 5px 0;
 }
 

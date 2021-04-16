@@ -80,14 +80,14 @@
                 <!-- Interact As -->
                 <li id="interactDrop">
                   <a role="button" @click="() => {
-                    this.showInteractMenu = toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu)
+                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper', this.showInteractMenu)
                     }">
 
                     <img src="../../public/profile_icon_default.png" width="27px" class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{actAs}}
                   </a>
 
-                  <div id="interactDropdownLinksWrapper">
-                    <ul class="dropdown-menu show" id="interactDropdownLinks" >
+                  <div id="interact-dropdown-links-wrapper">
+                    <ul class="dropdown-menu show" id="interact-dropdown-links" >
                       <li class="nav-item" v-for="(act, index) in interactAs" :key = "index" @click="itemClicked(index)" >
                         <a class="nav-link">{{act.name}}</a>
                       </li>
@@ -107,7 +107,7 @@
 
 <script>
 import Cookies from "js-cookie";
-import Api from "@/Api";
+import Api from "../Api"
 
 export default {
   name: "Navbar",
@@ -299,13 +299,6 @@ export default {
       if (userIdCookie === undefined) {
         await this.logout(new Event("Not logged in"));
       }
-    }
-  },
-
-  beforeMount() {
-    // If it is required to be logged in. The user will be checked.
-    if (this.loginRequired) {
-      this.ensureLoggedIn();
     },
     /**
      * Shows Interact As Dropdown menu
@@ -323,6 +316,8 @@ export default {
       } else {
         this.interactAs = [ {id:this.currentUser.id, name:this.currentUser.nickname} ];
       }
+
+
       for (let i=0; i<this.businesses.length; i++) {
         this.interactAs.push(this.businesses[i]);
       }
@@ -332,7 +327,7 @@ export default {
      * @param index of dropdown clicked
      */
     itemClicked(index) {
-      this.showInteractMenu = this.toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu)
+      this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper', this.showInteractMenu)
       if (index === 0)
       {
         // Delete Cookie
@@ -362,8 +357,19 @@ export default {
           this.actAs = response.nickname;
         }
       }
-      this.businesses = response.businessesAdministered;
+
+      // Filters out the null businesses
+      this.businesses = response.businessesAdministered.filter(
+          (business) => business !== null
+      )
+
       this.refreshDropdown();
+    }
+  },
+  beforeMount() {
+    // If it is required to be logged in. The user will be checked.
+    if (this.loginRequired) {
+      this.ensureLoggedIn();
     }
   },
   mounted() {
@@ -379,10 +385,9 @@ export default {
 
     // Set the initial height for the navbar and the dropdown
     this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown, true);
-    this.toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu, true);
+    this.toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper', this.showInteractMenu, true);
     this.toggleNavbar(true)
   }
-
 }
 </script>
 
@@ -403,7 +408,7 @@ export default {
     width: 100%;
   }
 
-  #interactDropdownLinksWrapper {
+  #interact-dropdown-links-wrapper {
     margin-top: 6px; /* height between profile image and drop down buttons*/
     width: unset;
   }
@@ -439,6 +444,7 @@ export default {
 
   #logoImage {
     max-width: 200px;
+  }
 
 .company-name-main-position-nav {
 
@@ -486,7 +492,7 @@ export default {
   overflow: hidden;
 }
 
-#business-dropdown-links-wrapper, #interactDropdownLinksWrapper {
+#business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {
   position: relative;
   overflow: hidden;
 }
@@ -542,7 +548,7 @@ export default {
     float: left;
   }
 
-  #business-dropdown-links-wrapper, #interactDropdownLinksWrapper {
+  #business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {
     position: absolute;
   }
 
@@ -560,7 +566,7 @@ export default {
     padding-right: 1em;
   }
 
-  #interactDropdownLinksWrapper {
+  #interact-dropdown-links-wrapper {
     margin-top: 64px; /* height between profile image and drop down buttons*/
     width: auto;
   }

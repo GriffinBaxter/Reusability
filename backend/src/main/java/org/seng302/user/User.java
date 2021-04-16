@@ -324,6 +324,8 @@ public class User {
         List<Integer> businessesAdministered = new ArrayList<>();
         for (Business business: businessesAdministeredObjects) {
             businessesAdministered.add(business.getId());
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            System.out.println(business.getId());
         }
         return businessesAdministered;
     }
@@ -350,6 +352,7 @@ public class User {
                 ",\"homeAddress\":" + homeAddress +
                 ",\"created\":\"" + created + "\"" +
                 ",\"role\":\"" + role + "\"" +
+//      TODO This might get changed in the future due to the recursive nature of the API seems wrong.
                 ",\"businessesAdministered\":[null]" +
                 "}";
     }
