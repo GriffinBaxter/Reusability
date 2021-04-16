@@ -21,7 +21,7 @@ public class Authorization {
      * @return User object
      */
     public static User getUserVerifySession(String sessionToken, UserRepository userRepository) {
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
+        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
         if (sessionToken == null || user.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
@@ -35,21 +35,16 @@ public class Authorization {
     /**
      * Checks if the current user's role matches the role parameter.
      * This method is useful for user authentication/identification.
-     * @param sessionToken Session token
+     * @param currentUser current user
      * @param role Role being matched
      * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
      */
-    public static boolean verifyRole(String sessionToken, Role role, UserRepository userRepository) {
-        Integer id = Integer.valueOf(sessionToken);
-        Optional<User> userOptional = userRepository.findById(id);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (user.getRole().equals(role)) {
-                return true;
-            }
+    public static boolean verifyRole(User currentUser, Role role) {
+        if (currentUser.getRole().equals(role)) {
+            return true;
         }
         return false;
+
     }
 
     /**

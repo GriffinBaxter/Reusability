@@ -3,7 +3,7 @@ package org.seng302.business.product;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.business.Business;
-import org.seng302.main.Validation;
+import org.seng302.validation.ProductValidation;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -60,15 +60,21 @@ public class Product {
                    Double recommendedRetailPrice,
                    LocalDateTime created
     ) throws Exception {
-        if (!Validation.isProductCode(id)){
-            throw new Exception("Invalid product id");
+        if (!ProductValidation.isValidProductId(id)){
+            throw new Exception("Invalid product ID");
         }
         if (business == null) {
             throw new Exception("Invalid business");
         }
-        if (!Validation.isName(name)){
+        if (!ProductValidation.isValidName(name)){
             throw new Exception("Invalid product name");
         }
+        if (!ProductValidation.isValidDescription(name)){
+            throw new Exception("Invalid product description");
+        }
+//        if (recommendedRetailPrice < 0) {
+//            throw new Exception("Invalid recommended retail price, cannot be negative");
+//        }
         if (created == null) {
             throw new Exception("Invalid date");
         }

@@ -2,13 +2,17 @@ package org.seng302.business.inventoryItem;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
 import org.seng302.business.product.Product;
+import org.seng302.user.Role;
+import org.seng302.user.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -18,18 +22,47 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 public class InventoryItemTests {
 
+    private Address address;
+
+    private User user;
+
     private Business business;
 
     private Product product;
 
     @BeforeEach
     public void setup() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+
         business = new Business(
+                user.getId(),
                 "name",
                 "description",
-                "92 River Lum Road, Lumbridge, Misthalin",
+                address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         business.setId(1);
 

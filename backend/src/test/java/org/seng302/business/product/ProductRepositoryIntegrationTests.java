@@ -2,12 +2,15 @@ package org.seng302.business.product;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
 import org.seng302.business.product.Product;
 import org.seng302.business.product.ProductPayload;
 import org.seng302.business.product.ProductRepository;
 import org.seng302.main.Main;
+import org.seng302.user.Role;
+import org.seng302.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -17,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,11 +52,40 @@ public class ProductRepositoryIntegrationTests {
     @Test
     public void whenFindExistingProductsByExistingBusinessIdThenReturnProductList() throws Exception {
         // given
-        Business business = new Business("example name",
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
                 "some text",
-                "11 example rd",
+                address,
                 BusinessType.RETAIL_TRADE,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -92,11 +125,40 @@ public class ProductRepositoryIntegrationTests {
     @Test
     public void whenFindNonExistingProductsByExistingBusinessIdThenReturnEmptyProductList() throws Exception {
         // given
-        Business business = new Business("example name",
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
                 "some text",
-                "11 example rd",
+                address,
                 BusinessType.RETAIL_TRADE,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -130,11 +192,40 @@ public class ProductRepositoryIntegrationTests {
     @Test
     public void whenFindExistingProductByExistingIdAndExistingBusinessIdThenReturnProduct() throws Exception {
         // given
-        Business business = new Business("example name",
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
                 "some text",
-                "11 example rd",
+                address,
                 BusinessType.RETAIL_TRADE,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -174,11 +265,40 @@ public class ProductRepositoryIntegrationTests {
     @Test
     public void whenFindExistingProductByExistingIdAndNonExistingBusinessIdThenDontReturnProduct() throws Exception {
         // given
-        Business business = new Business("example name",
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
                 "some text",
-                "11 example rd",
+                address,
                 BusinessType.RETAIL_TRADE,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -211,11 +331,40 @@ public class ProductRepositoryIntegrationTests {
     @Test
     public void whenFindExistingProductByNonExistingIdAndExistingBusinessIdThenDontReturnProduct() throws Exception {
         // given
-        Business business = new Business("example name",
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
                 "some text",
-                "11 example rd",
+                address,
                 BusinessType.RETAIL_TRADE,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         entityManager.persist(business);
         entityManager.flush();

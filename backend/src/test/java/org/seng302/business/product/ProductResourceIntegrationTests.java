@@ -3,6 +3,7 @@ package org.seng302.business.product;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.BusinessType;
@@ -85,17 +86,25 @@ public class ProductResourceIntegrationTests {
 
     private User anotherUser;
 
+    private Address address;
+
     private Business business;
 
     private Business anotherBusiness;
 
     private Product product;
 
-    private Product anotherProduct;
-
-
     @BeforeAll
     public void setup() throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+
         dGAA = new User(
                 "John",
                 "Doe",
@@ -103,76 +112,82 @@ public class ProductResourceIntegrationTests {
                 "Generic",
                 "Biography",
                 "email@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "address",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
         dGAA.setId(1);
+        dGAA.setSessionUUID(User.generateSessionUUID());
         gAA = new User("testfirst",
                 "testlast",
                 "testmiddle",
                 "testnick",
                 "testbiography",
                 "testemail@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "testaddress",
-                "testpassword",
+                address,
+                "Testpassword123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
         gAA.setId(2);
+        gAA.setSessionUUID(User.generateSessionUUID());
         user = new User ("first",
                 "last",
                 "middle",
                 "nick",
                 "bio",
                 "example@example.com",
-                LocalDate.of(2021, 1, 1),
+                LocalDate.of(2000, 1, 1),
                 "123456789",
-                "1 Example Street",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0)),
                 Role.USER);
         user.setId(3);
+        user.setSessionUUID(User.generateSessionUUID());
         anotherUser = new User ("first",
                 "last",
                 "middle",
                 "nick",
                 "bio",
                 "example@example.com",
-                LocalDate.of(2021, 1, 1),
+                LocalDate.of(2000, 1, 1),
                 "123456789",
-                "1 Example Street",
-                "password",
+                address,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0)),
                 Role.USER);
         anotherUser.setId(4);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
 
         business = new Business(
+                user.getId(),
                 "name",
                 "some text",
-                "92 River Lum Road, Lumbridge, Misthalin",
+                address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0))
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
+                user
         );
         business.setId(1);
-        business.addAdministrators(user);
 
         anotherBusiness = new Business(
+                user.getId(),
                 "anotherName",
                 "some text",
-                "95 River Lum Road, Lumbridge, Misthalin",
+                address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0))
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
+                user
         );
         anotherBusiness.setId(2);
-        anotherBusiness.addAdministrators(user);
 
         product = new Product(
                 "PROD",
@@ -218,10 +233,11 @@ public class ProductResourceIntegrationTests {
                 .willReturn(Optional.empty());
 
         // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(productRepository.save(any(Product.class))).thenReturn(newProduct);
         response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -257,10 +273,11 @@ public class ProductResourceIntegrationTests {
                 .willReturn(Optional.empty());
 
         // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(productRepository.save(any(Product.class))).thenReturn(newProduct);
         response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))))
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -296,10 +313,11 @@ public class ProductResourceIntegrationTests {
                 .willReturn(Optional.empty());
 
         // when
+        when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         when(productRepository.save(any(Product.class))).thenReturn(newProduct);
         response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", String.valueOf(gAA.getId()))))
+                .cookie(new Cookie("JSESSIONID", gAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -338,10 +356,11 @@ public class ProductResourceIntegrationTests {
                 .willReturn(Optional.empty());
 
         // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(productRepository.save(any(Product.class))).thenReturn(newProduct);
         response = mvc.perform(post(String.format("/businesses/%d/products", anotherBusiness.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -366,9 +385,10 @@ public class ProductResourceIntegrationTests {
                                     product.getDescription(), product.getRecommendedRetailPrice());
 
         // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -392,9 +412,10 @@ public class ProductResourceIntegrationTests {
                 product.getDescription(), product.getRecommendedRetailPrice());
 
         // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -428,9 +449,10 @@ public class ProductResourceIntegrationTests {
                 .willReturn(Optional.empty());
 
         // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", String.valueOf(anotherUser.getId()))))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -484,9 +506,10 @@ public class ProductResourceIntegrationTests {
         payloadJson = String.format(productPayloadJson, "PRO", "name", "desc", 30.00);
 
         // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(post(String.format("/businesses/%d/products", 0))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))))
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -515,8 +538,9 @@ public class ProductResourceIntegrationTests {
                                             product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                                .cookie(new Cookie("JSESSIONID", String.valueOf(user.getId()))))
+                                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                                 .andReturn().getResponse();
 
         // then
@@ -545,8 +569,9 @@ public class ProductResourceIntegrationTests {
                 product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .cookie(new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))))
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -575,8 +600,9 @@ public class ProductResourceIntegrationTests {
                 product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
+        when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .cookie(new Cookie("JSESSIONID", String.valueOf(gAA.getId()))))
+                .cookie(new Cookie("JSESSIONID", gAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -597,9 +623,10 @@ public class ProductResourceIntegrationTests {
         expectedJson = "";
 
         // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(businessRepository.findBusinessById(0)).thenReturn(Optional.empty());
         response = mvc.perform(get(String.format("/businesses/%d/products", 0))
-                .cookie(new Cookie("JSESSIONID", String.valueOf(dGAA.getId()))))
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -643,8 +670,9 @@ public class ProductResourceIntegrationTests {
         expectedJson = "";
 
         // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .cookie(new Cookie("JSESSIONID", String.valueOf(anotherUser.getId()))))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then

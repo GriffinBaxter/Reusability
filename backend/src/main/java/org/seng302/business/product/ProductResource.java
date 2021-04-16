@@ -1,5 +1,6 @@
 package org.seng302.business.product;
 
+import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.main.Authorization;
 import org.seng302.user.Role;
@@ -12,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ProductResource class
@@ -65,7 +67,11 @@ public class ProductResource {
             );
         }
 
-        if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(id)) {
+        Optional<Business> currentBusiness = businessRepository.findBusinessById(id);
+
+        System.out.println(currentBusiness);
+
+        if (currentUser.getRole() == Role.USER && !(currentBusiness.get().getAdministrators().contains(currentUser))) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Forbidden: Returned when a user tries to add a product to business they do not administer " +
