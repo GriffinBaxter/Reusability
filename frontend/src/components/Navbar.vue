@@ -11,8 +11,8 @@
 <!-------------------------------------------- Navigation Bar --------------------------------------------------------->
 
 <template>
-  <nav class="navbar sticky-top navbar-expand-lg shadow-sm text-font" style="background-color: white">
-      <div class="container mt-2 my-lg-3 mx-auto">
+  <nav class="navbar sticky-top navbar-expand-xl shadow-sm text-font" style="background-color: white">
+      <div class="container mt-2 my-xl-3 mx-auto">
 
         <!-- Logo image -->
         <div class="logo-container text-center">
@@ -31,8 +31,8 @@
         <!-- Navbar links -->
         <div class="navbar-collapse" id="navbar-id">
           <!-- navbar inner is required for the animation -->
-          <div id="navbar-inner-id" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto">
-            <ul class="navbar-nav nav-fill flex-column flex-lg-row">
+          <div id="navbar-inner-id" class="navbar-nav mb-2 mb-xl-0   py-3   mx-auto me-xl-0 ms-xl-auto">
+            <ul class="navbar-nav nav-fill flex-column flex-xl-row">
 
                 <!-- default page links -->
                 <li class="nav-item">
@@ -76,7 +76,7 @@
 
               </ul>
 
-              <ul class="navbar-nav nav-fill flex-column flex-lg-row">
+              <ul class="navbar-nav nav-fill flex-column flex-xl-row">
                 <!-- Interact As -->
                 <li id="interactDrop">
                   <a role="button" @click="() => {
@@ -507,14 +507,13 @@ export default {
   padding: 0 5rem;
   /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
-
-/*-------------------------------------------- Medium break point styling ------------------------------------------*/
+/*-------------------------------------------- Large break point styling ------------------------------------------*/
 
 /* Styling for smaller screen sizes ends */
 
 /* Styling for larger screen sizes begins */
-/*LG Break point*/
-@media (min-width: 992px) {
+/*xl Break point*/
+@media (min-width: 1200px) {
 
   #logo-image-nav {
     max-width: 120px;
@@ -552,7 +551,7 @@ export default {
     position: absolute;
   }
 
-  .navbar-expand-lg .navbar-nav .dropdown-menu {
+  .navbar-expand-xl .navbar-nav .dropdown-menu {
     padding: 0;
     margin: 0;
     border-right-width: 1px;
@@ -560,7 +559,7 @@ export default {
     position: unset;
   }
 
-  .navbar-expand-lg .navbar-nav .nav-link {
+  .navbar-expand-xl .navbar-nav .nav-link {
     margin: 10px;
     padding-left: 1em;
     padding-right: 1em;
@@ -574,7 +573,7 @@ export default {
 
   #interactDrop {
     max-width: 180px;
-    margin-left: 50px;
+    /*margin-left: 50px;*/
     padding-left: 1em;
   }
 
@@ -586,9 +585,9 @@ export default {
 
 }
 
-/*-------------------------------------------- Large break point styling -------------------------------------------*/
+/*-------------------------------------------- Extra Large break point styling -------------------------------------------*/
 
-@media(min-width: 1200px) {
+@media(min-width: 1400px) {
 
   #logo-image-nav {
     max-width: 140px;
