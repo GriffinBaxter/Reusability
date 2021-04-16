@@ -1,3 +1,6 @@
+<!--This file creates the Vue app instance-->
+<!--The page transition is also created here.-->
+<!--The app instance watches for error routes and routes to the error page one occurs.-->
 
 <template>
   <div id="app">
@@ -31,6 +34,7 @@ const app = {
   },
   watch: {
     '$route'(to) {
+      document.title = to.meta.title || "Team 400";
       if (to.name === 'NoUser' || to.name === 'ServerTimeout' || to.name === 'InvalidToken') this.transitionName = "";
     }
   }
@@ -39,6 +43,8 @@ const app = {
 // make the 'app' available
 export default app;
 </script>
+
+<!---------------------------------------------------- App Styling ---------------------------------------------------->
 
 <style>
 [v-cloak] {

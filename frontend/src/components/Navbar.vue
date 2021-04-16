@@ -1,28 +1,38 @@
+<!--This file creates the navigation (nav) bar. It is used on all pages, excluding the login page and registration
+    page.-->
+<!--There is a navigation bar specific for an individual and a business.-->
+<!--The individual nav bar contains links to the Home, Profile, and Logout pages.-->
+<!--The business nav bar contains the same links as the individual page with the addition of a drop down menu which
+    contains-->
+<!--links to the business' listings, inventory and catalogue pages.-->
+<!--Bootstrap has been used to build these nav bars.-->
+
+
+<!-------------------------------------------- Navigation Bar --------------------------------------------------------->
+
 <template>
-  <div>
-    <nav class="navbar sticky-top navbar-expand-lg shadow text-font" style="background-color: white">
-        <div class="container mt-2 my-lg-3 mx-auto">
+  <nav class="navbar sticky-top navbar-expand-lg shadow-sm text-font" style="background-color: white">
+      <div class="container mt-2 my-lg-3 mx-auto">
 
-          <!-- Logo image -->
-          <div class="logo-container text-center">
-            <router-link class="navbar-brand " to="/home">
-  <!--            class="img-fluid d-inline-block"-->
-              <img src="../../public/logo_only_med.png" alt="Logo" id="logoImage">
-            </router-link>
-            <p class="company-name-main">REUSABILITY</p>
-            <p class="company-name-sub-heading"> - Share & Save - </p>
-          </div>
+        <!-- Logo image -->
+        <div class="logo-container text-center">
+          <router-link class="navbar-brand " to="/home">
+            <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
+          </router-link>
+          <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
 
-          <!-- hamburger icon -->
-          <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+        </div>
 
-          <!-- Navbar links -->
-          <div class="navbar-collapse" id="navbarId">
-            <!-- navbar inner is required for the animation -->
-            <div id="navbarInnerId" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto align-items-center justify-content-center flex-column-reverse flex-lg-row">
-              <ul class="navbar-nav nav-fill flex-column flex-lg-row">
+        <!-- Hamburger icon -->
+        <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar links -->
+        <div class="navbar-collapse" id="navbar-id">
+          <!-- navbar inner is required for the animation -->
+          <div id="navbar-inner-id" class="navbar-nav mb-2 mb-lg-0   py-3   mx-auto me-lg-0 ms-lg-auto">
+            <ul class="navbar-nav nav-fill flex-column flex-lg-row">
 
                 <!-- default page links -->
                 <li class="nav-item">
@@ -35,27 +45,27 @@
                 <!--- Business specific account links -->
                 <li class="nav-item dropdown" v-if="isBusinessAccount">
 
-                  <!-- Navbar toggle drop down -->
-                  <a class="nav-link dropdown-toggle" role="button" @click="() => {
-                    this.showBusinessDropdown = toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown)
-                  }">
-                    Business Pages
-                  </a>
+                <!-- Navbar toggle drop down -->
+                <a class="nav-link dropdown-toggle" role="button" @click="() => {
+                  this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown)
+                }">
+                  Business Pages
+                </a>
 
-                  <!-- Dropdown links-->
-                  <div id="businessDropdownLinksWrapper">
-                   <ul class="dropdown-menu show" id="businessDropdownLinks">
-                        <li class="nav-item">
-                          <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
-                        </li>
-                        <li class="nav-item">
-                          <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
-                        </li>
-                        <li class="nav-item">
-                          <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
-                        </li>
-                   </ul>
-                  </div>
+                <!-- Dropdown links-->
+                <div id="business-dropdown-links-wrapper">
+                 <ul class="dropdown-menu show" id="business-dropdown-links">
+                      <li class="nav-item">
+                        <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
+                      </li>
+                      <li class="nav-item">
+                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
+                      </li>
+                      <li class="nav-item">
+                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
+                      </li>
+                 </ul>
+                </div>
 
                 </li>
 
@@ -93,7 +103,6 @@
         </div>
 
     </nav>
-  </div>
 </template>
 
 <script>
@@ -103,18 +112,29 @@ import Api from "@/Api";
 export default {
   name: "Navbar",
   props: {
-    // Defines if to show or hide the business acount specific links
+
+    // Defines if to show or hide the business account specific links
     isBusinessAccount: {
       type: Boolean,
       default: false,
       required: false
     },
+
+    // Dictates the transition animation time
     msTransitionDelay: {
       type: Number,
-      default: 300,
+      default: 100,
+      required: false
+    },
+
+    // Determines if you are required to be logged in to view the current page.
+    loginRequired: {
+      type: Boolean,
+      default: true,
       required: false
     }
   },
+
   data() {
     return {
 
@@ -129,11 +149,13 @@ export default {
       currentUser: null,
       // navbar required variables
       showNavbar: false,
-      navbarMaxHeight: null,                                     // max hieght of the navbar pixels
-      navbarMinHeight: 0   ,                                     // min hieght of the navbar pixels
-      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;` // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
+      navbarMaxHeight: null,                                     // max height of the navbar pixels
+      navbarMinHeight: 0   ,                                     // min height of the navbar pixels
+      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`
+      // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
     }
   },
+
   methods: {
     /**
      * Gets information about the current logged in user
@@ -162,9 +184,9 @@ export default {
       let result = null;
 
       // Only runs if there is a navbar item existing. Otherwise we return null to avoid accessing
-      // a non existant attribute
-      if (document.getElementById("navbarInnerId")) {
-        result = document.getElementById("navbarInnerId").offsetHeight
+      // a non-existent attribute
+      if (document.getElementById("navbar-inner-id")) {
+        result = document.getElementById("navbar-inner-id").offsetHeight
       }
       return result
     },
@@ -174,7 +196,7 @@ export default {
      * appear more nicely.
      * @param dropdownId - The id of the dropdown element.
      * @param dropdownWrapperId - The ide of the dropdown wrapper element.
-     * @param toggleVariable - The varaible that the dropdown depends on.
+     * @param toggleVariable - The variable that the dropdown depends on.
      * @param preventToggle - Gives the option to prevent the variable from being toggled. This defaults to false.
      * @param minHeight - Gives the option to give a custom minimum height. But zero if a good default.
      *
@@ -202,7 +224,7 @@ export default {
         // Update the target height for the component
         wrapperElement.setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
 
-        // Update the navbar to accomidate the changes
+        // Update the navbar to accommodate the changes
         this.toggleNavbar(true, targetHeight);
 
         // So the toggle variable can be updated
@@ -220,7 +242,7 @@ export default {
     toggleNavbar(preventToggle = false, extraMaxPixels = 0) {
 
       // Only if the element exists
-      if (document.getElementById("navbarId")) {
+      if (document.getElementById("navbar-id")) {
 
         // Update the max height before applying any transitions
         this.navbarMaxHeight = this.getNavbarMaxHeight() + extraMaxPixels;
@@ -235,7 +257,7 @@ export default {
         if (this.showNavbar) targetHeight = this.navbarMaxHeight
 
         // Assign the target height to the navbar
-        document.getElementById("navbarId").setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
+        document.getElementById("navbar-id").setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
       }
     },
     /**
@@ -256,9 +278,34 @@ export default {
       Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
        */
       event.preventDefault();
-      Cookies.remove('name', {path: '/'}); // removed!
+
+      // Reason for this not working is because it is HttpOnly, which doesn't allow the browser/ JS to
+      // delete this cookie.
+      Cookies.remove('JSESSIONID', {path: '/'});
       Cookies.remove('userID');
       await this.$router.push({name: 'Login'});
+    },
+    /**
+     * The function when called ensure the user is logged in. Otherwise takes you to the login page.
+     */
+    async ensureLoggedIn() {
+      const userIdCookie = await Cookies.get('userID');
+      // There is no way to check the JSESSIONID cookie without having an API call. This is because this is
+      // a HttpOnly cookie, which means we cannot do anything with it on the client side via Javascript.
+      //const jSessionIdCookie = await Cookies.get('JSESSIONID');
+
+      // If either of the cookies are missing this means that the user is not logged in.
+      // Then we logout the user, which takes them to the login page and deletes their cookies.
+      if (userIdCookie === undefined) {
+        await this.logout(new Event("Not logged in"));
+      }
+    }
+  },
+
+  beforeMount() {
+    // If it is required to be logged in. The user will be checked.
+    if (this.loginRequired) {
+      this.ensureLoggedIn();
     },
     /**
      * Shows Interact As Dropdown menu
@@ -321,6 +368,7 @@ export default {
   },
   mounted() {
     this.getUserData();
+
     // Sample the navbar max height at mounting
     this.navbarMaxHeight = this.getNavbarMaxHeight();
 
@@ -329,8 +377,8 @@ export default {
       while (this.navbarMaxHeight == null) this.navbarMaxHeight = this.getNavbarMaxHeight();
     }
 
-    // Set the inital height for the navbar and the dropdown
-    this.toggleDropdownAnimated('businessDropdownLinks', 'businessDropdownLinksWrapper', this.showBusinessDropdown, true);
+    // Set the initial height for the navbar and the dropdown
+    this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown, true);
     this.toggleDropdownAnimated('interactDropdownLinks', 'interactDropdownLinksWrapper', this.showInteractMenu, true);
     this.toggleNavbar(true)
   }
@@ -338,12 +386,21 @@ export default {
 }
 </script>
 
+<!-------------------------------------------- Navigation Bar Styling ------------------------------------------------->
+
 <style scoped>
 
 /* Styling for smaller screen sizes begins */
 
   .logo-container {
     position: center;
+  }
+
+  #logo-image-nav {
+    max-width: 90px;
+    margin-left: 28px;
+    margin-right: 10px;
+    width: 100%;
   }
 
   #interactDropdownLinksWrapper {
@@ -382,105 +439,173 @@ export default {
 
   #logoImage {
     max-width: 200px;
-    margin-left: 28px;
-    margin-right: 10px;
-    width: 100%;
-  }
 
-  .nav-link {
-    color: white;
-    background: #19b092;  /* fallback for old browsers */
-    /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
-    /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+.company-name-main-position-nav {
 
-    margin: 10px 0;
-    border-radius: 15px;
-    text-align: center;
-    font-size: large;
-    width: auto;
-  }
+  /* centre text */
+  margin: 0;
+  position: absolute;
 
-  .nav-link:hover {
-    background: #ef5e33;
-  }
+  /* align to bottom of logo */
+  /*vertical-align: bottom;*/
+  /*line-height: 90%;*/
 
-  .navbar-toggler {
-    color: rgba(25,176,146, 0.55);
-    border-color: rgba(0, 0, 0, 0.2);
-    border-width: 2px;
-    border-radius: 0.6rem;
-  }
+}
 
-  .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-  }
-    #navbarId {
-      overflow: hidden;
-    }
+.nav-link {
+  color: white;
+  background: #19b092;
 
-  #businessDropdownLinksWrapper, #interactDropdownLinksWrapper{
-    position: relative;
-    overflow: hidden;
-  }
+  /* fallback for old browsers */
+  /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
+  /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
 
-  .active {
-    background-color: #2eda77;
-  }
+  margin: 10px 0;
+  border-radius: 15px;
+  text-align: center;
+  font-size: large;
+  width: auto;
+}
 
-  .dropdown-menu {
-    border-right-width: 0;
-    border-left-width: 0;
-    padding: 0 5rem;
-    /*margin: 1.2rem 0; Margins cannot be calculated in pxiels :( */
-  }
+.nav-link:hover {
+  background: #ef5e33;
+}
+
+.navbar-toggler {
+  color: rgba(25, 176, 146, 0.55);
+  border-color: rgba(0, 0, 0, 0.2);
+  border-width: 2px;
+  border-radius: 0.6rem;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+#navbar-id {
+  overflow: hidden;
+}
+
+#business-dropdown-links-wrapper, #interactDropdownLinksWrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.active {
+  background-color: #2eda77;
+}
+
+.dropdown-menu {
+  border-right-width: 0;
+  border-left-width: 0;
+  padding: 0 5rem;
+  /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
+}
+
+/*-------------------------------------------- Medium break point styling ------------------------------------------*/
 
 /* Styling for smaller screen sizes ends */
 
 /* Styling for larger screen sizes begins */
 /*LG Break point*/
-  @media(min-width: 992px) {
-    #navbarId {
-      overflow: visible;
-    }
-    #actAsImg {
-      float: left;
-    }
-    #businessDropdownLinksWrapper, #interactDropdownLinksWrapper{
-      position: absolute;
-    }
+@media (min-width: 992px) {
 
-    .navbar-expand-lg .navbar-nav .dropdown-menu {
-      padding: 0;
-      margin: 0;
-      border-right-width: 1px;
-      border-left-width: 1px;
-      position: unset;
-    }
+  #logo-image-nav {
+    max-width: 120px;
+    margin-left: 28px;
+    margin-right: 10px;
+    width: 100%;
+  }
 
-    .navbar-expand-lg .navbar-nav .nav-link {
-      margin: 10px;
-      padding-left: 1em;
-      padding-right: 1em;
-    }
+  .company-name-main-font {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 32px;
 
-    #interactDropdownLinksWrapper {
-      margin-top: 64px; /* height between profile image and drop down buttons*/
-      width: auto;
-    }
+    /* centre text */
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
 
-    #interactDrop {
-      max-width: 180px;
-      margin-left: 50px;
-      padding-left: 1em;
-    }
+    /* align to bottom of logo */
+    /*vertical-align: bottom;*/
+    /*line-height: 90%;*/
 
-    #interactDrop a {
-      padding: unset;
-      padding: 0.5rem 1rem
-    }
+  }
 
-    .act-as-image {
-    }
+  #navbar-id {
+    overflow: visible;
+  }
+
+  #actAsImg {
+    float: left;
+  }
+
+  #business-dropdown-links-wrapper, #interactDropdownLinksWrapper {
+    position: absolute;
+  }
+
+  .navbar-expand-lg .navbar-nav .dropdown-menu {
+    padding: 0;
+    margin: 0;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    position: unset;
+  }
+
+  .navbar-expand-lg .navbar-nav .nav-link {
+    margin: 10px;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  #interactDropdownLinksWrapper {
+    margin-top: 64px; /* height between profile image and drop down buttons*/
+    width: auto;
+  }
+
+
+  #interactDrop {
+    max-width: 180px;
+    margin-left: 50px;
+    padding-left: 1em;
+  }
+
+  #interactDrop a {
+    padding: unset;
+    padding: 0.5rem 1rem
+  }
+
+
+}
+
+/*-------------------------------------------- Large break point styling -------------------------------------------*/
+
+@media(min-width: 1200px) {
+
+  #logo-image-nav {
+    max-width: 140px;
+    margin-left: 28px;
+    margin-right: 10px;
+    width: 100%;
+  }
+
+  .company-name-main-font {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 50px;
+
+    /* centre text */
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+
+    /* align to bottom of logo */
+    /*vertical-align: bottom;*/
+    /*line-height: 90%;*/
+  }
 }
 
 </style>

@@ -1,3 +1,8 @@
+<!--This file contains the footer that is used at the bottom of the login and register page.-->
+<!--There is currently only a light mode footer.-->
+<!--The footer contains copyright information for Team 400. It does not contain links to other pages that an -->
+<!--authenticated user would have access to as the is no cookie yet as the user is not logged in.-->
+
 <template>
   <!-- Footer -->
   <footer class=" text-center text-white text-font" id="footer">
@@ -13,11 +18,9 @@
   <!-- Footer -->
 </template>
 
+<!---------------------------------------------------- Footer Styling ------------------------------------------------->
+
 <style scoped>
-  .footer-styling {
-    bottom: 0;
-    width: 100%;
-  }
 
   #footer {
     background-color: #189570;
@@ -26,4 +29,5 @@
     padding-top: 50px;
     background-color: rgba(0, 0, 0, 0.5);
   }
+
 </style>

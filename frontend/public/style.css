@@ -93,7 +93,7 @@ body {
                Login Page
  ****************************************/
 
-#formContainer {
+#form-container {
   background-color: #fff;
   border-radius: 1rem;
 }
@@ -106,12 +106,12 @@ body {
 /*  width: 60%;*/
 /*}*/
 
-#editProfileButton {
+#edit-profile-button {
   background-color: #fff;
   border-color: #1EBA8C;
 }
 
-#editProfileButton:hover {
+#edit-profile-button:hover {
   background-color: #1EBA8C
 }
 
@@ -119,13 +119,9 @@ body {
             Logo
  ****************************/
 
-.company-name-main {
+.company-name-main-font {
   font-family: 'Merriweather Sans', sans-serif;
-  font-size: 40px;
-  margin-top: 0px;
-  padding-top: 0px;
-  margin-bottom: 0px;
-  padding-bottom: 0px;
+  font-size: 30px;
 }
 
 .company-name-sub-heading {
@@ -170,6 +166,15 @@ body {
   background-color: lightgrey;
 }
 
+/****************************************
+         Business Registration Page
+ ****************************************/
+
+.form-select:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
 
 /*****************************************************************
                   Autocomplete Dropdown Styling

@@ -2250,7 +2250,7 @@
         &lt;form id="registration" class="needs-validation mb-3 px-5" novalidate @submit.prevent&gt;
           &lt;div class="row my-lg-2"&gt;
             &lt;div class="col-lg-4 my-2 my-lg-0"&gt;
-              &lt;div id="registration-error" ref="registration-error" v-if="toastErrorMessage" class="alert alert-danger"
+              &lt;div id="registration-error" ref="registration-error" v-if="errorMessageBubble" class="alert alert-danger"
                    role="alert"&gt;
                 &lt;label&gt;{{ toastErrorMessage }}&lt;/label&gt;
               &lt;/div&gt;
@@ -2552,7 +2552,7 @@ export default {
       countryErrorMsg: "",
 &nbsp;
       // Toast related variables
-      toastErrorMessage: "",
+      errorMessageBubble: "",
       cannotProceed: false,
 &nbsp;
       // Address autocompletion related variables
@@ -3004,16 +3004,16 @@ export default {
 <span class="cstat-no" title="statement not covered" >        this.cannotProceed = true;</span>
 <span class="cstat-no" title="statement not covered" >        if (error.response) {</span>
 <span class="cstat-no" title="statement not covered" >          if (error.response.status === 400) {</span>
-<span class="cstat-no" title="statement not covered" >            this.toastErrorMessage = '400 Bad request; invalid user data';</span>
+<span class="cstat-no" title="statement not covered" >            this.errorMessageBubble = '400 Bad request; invalid user data';</span>
 <span class="cstat-no" title="statement not covered" >          } else if (error.response.status === 409) {</span>
 <span class="cstat-no" title="statement not covered" >            this.emailErrorMsg = 'Email already in use'</span>
           } else {
-<span class="cstat-no" title="statement not covered" >            this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;</span>
+<span class="cstat-no" title="statement not covered" >            this.errorMessageBubble = `${error.response.status} Unexpected error occurred!`;</span>
           }
 <span class="cstat-no" title="statement not covered" >        } else if (error.request) {</span>
-<span class="cstat-no" title="statement not covered" >          this.toastErrorMessage = 'Timeout occurred';</span>
+<span class="cstat-no" title="statement not covered" >          this.errorMessageBubble = 'Timeout occurred';</span>
         } else {
-<span class="cstat-no" title="statement not covered" >          this.toastErrorMessage = 'Unexpected error occurred!';</span>
+<span class="cstat-no" title="statement not covered" >          this.errorMessageBubble = 'Unexpected error occurred!';</span>
         }
       })
 &nbsp;

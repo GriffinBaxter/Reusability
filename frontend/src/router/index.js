@@ -7,6 +7,9 @@ const routes = [
     {
         path: '/',
         name: 'Login',
+        meta: {
+            title: 'Login'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -15,6 +18,9 @@ const routes = [
     {
         path: '/registration',
         name: 'Registration',
+        meta: {
+            title: 'Registration'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -23,6 +29,9 @@ const routes = [
     {
         path: '/home',
         name: 'Home',
+        meta: {
+            title: 'Home'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -31,7 +40,9 @@ const routes = [
     {
         path: '/profile/:id?',
         name: 'Profile',
-
+        meta: {
+            title: 'Profile'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -40,6 +51,9 @@ const routes = [
     {
         path: '/search',
         name: 'Search',
+        meta: {
+            title: 'Search'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -48,6 +62,9 @@ const routes = [
     {
         path: '/noUser',
         name: 'NoUser',
+        meta: {
+            title: 'Error'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -56,6 +73,9 @@ const routes = [
     {
         path: '/timeout',
         name: 'ServerTimeout',
+        meta: {
+            title: 'Error'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -64,16 +84,32 @@ const routes = [
     {
         path: '/invalidtoken',
         name: 'InvalidToken',
+        meta: {
+            title: 'Error'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/InvalidToken.vue')
+    },
+    {
+        path: '/businessRegistration',
+        name: 'BusinessRegistration',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/BusinessRegistration.vue')
+    },
+    {
+        path: '*',
+        name: 'catchAll',
+        component: () => import('../views/Login')
     }
 ]
 
 const router = new VueRouter({
     mode: 'history',
-    base: process.env.BASE_URL,
+    base: process.env.VUE_APP_BASE_URL,
     routes
 })
 

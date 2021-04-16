@@ -1,30 +1,50 @@
+<!--This file creates the Registration page.-->
+<!--It contains the container displaying the mandatory and optional fields that a person must submit to register an
+    account with the app, provided in the form.-->
+<!--Bootstrap has been used for creating and styling the elements.-->
+<!--It is currently fully responsive.-->
+
 <template>
   <div>
+
+    <!--body excluding footer-->
     <div class="container all-but-footer text-font">
+
+      <!--logo without text, centred above form-->
       <div class="row justify-content-center">
         <div class="col-3 m-3">
           <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
         </div>
       </div>
+
       <div class="col-lg-8 mx-auto">
+
+        <!-- registration form's container-->
         <div class="container shadow py-5 px-4 bg-white mb-5" id="register-form">
           <div class="row">
             <div class="col">
               <h3 class="display-6 m-2 mb-5 text-center">Register</h3>
             </div>
           </div>
+
+          <!--registration form, needs validation-->
           <form id="registration" class="needs-validation mb-3 px-5" novalidate @submit.prevent>
+
+            <!--first row of form-->
             <div class="row my-lg-2">
+
+              <!--first name input field-->
               <div class="col-lg-4 my-2 my-lg-0">
-              <label for="first-name">First Name*</label>
-              <input id="first-name" name="first-name" tabindex="1" type="text" v-model="firstName"
-                     :class="toggleInvalidClass(firstNameErrorMsg)" :maxlength="config.firstName.maxLength"
-                     required> <!-- Add max length attached to the max length in the config-->
-              <div class="invalid-feedback">
-                {{firstNameErrorMsg}}
-              </div>
+                <label for="first-name">First Name*</label>
+                <input id="first-name" name="first-name" tabindex="1" type="text" v-model="firstName"
+                       :class="toggleInvalidClass(firstNameErrorMsg)" :maxlength="config.firstName.maxLength"
+                       required> <!-- Add max length attached to the max length in the config-->
+                <div class="invalid-feedback">
+                  {{firstNameErrorMsg}}
+                </div>
               </div>
 
+              <!--middle name input field-->
               <div class="col-lg-4 my-2 my-lg-0">
                 <label for="middle-name">Middle Name</label>
                 <input id="middle-name" name="middle-name" tabindex="2" type="text" v-model="middleName"
@@ -34,6 +54,7 @@
                 </div>
               </div>
 
+              <!--last name input field-->
               <div class="col-lg-4 my-2 my-lg-0">
                 <label for="last-name">Last Name*</label>
                 <input id="last-name" name="last-name" tabindex="3" type="text" v-model="lastName"
@@ -42,19 +63,23 @@
                   {{lastNameErrorMsg}}
                 </div>
               </div>
+
             </div>
 
-
+            <!--second row of form-->
             <div class="row my-lg-2">
+
+              <!--date of birth input field-->
               <div class="col-lg-4 my-2 my-lg-0">
-                <label for="date-Of-Birth">Date of Birth*</label>
-                <input id="date-Of-Birth" name="date-of-birth" tabindex="4" type="date" v-model="dateOfBirth"
+                <label for="date-of-birth">Date of Birth*</label>
+                <input id="date-of-birth" name="date-of-birth" tabindex="4" type="date" v-model="dateOfBirth"
                        :max="getMaxDateOfBirth()" :class="toggleInvalidClass(dateOfBirthErrorMsg)" required>
                 <div class="invalid-feedback">
                   {{dateOfBirthErrorMsg}}
                 </div>
               </div>
 
+              <!--nickname input field-->
               <div class="col-lg my-2 my-lg-0">
                 <label for="nickname">Nickname</label>
                 <input id="nickname" name="nickname" type="text" tabindex="5" v-model="nickname"
@@ -65,7 +90,11 @@
               </div>
 
             </div>
+
+            <!--third row of form-->
             <div class="row my-lg-2 ">
+
+              <!--email input field-->
               <div class="col my-2 my-lg-0">
                 <label for="email">Email*</label>
                 <input id="email" name="email" type="email" tabindex="6" v-model="email"
@@ -74,9 +103,13 @@
                   {{emailErrorMsg}}
                 </div>
               </div>
+
             </div>
 
+            <!--fourth row of form-->
             <div class="row my-lg-2">
+
+              <!--password validation information-->
               <div class="col my-2 my-lg-0">
                 <h6>Password must meet the following conditions:</h6>
                 <ul>
@@ -92,27 +125,39 @@
                     At least 8 characters in length</li>
                 </ul>
               </div>
+
             </div>
 
+            <!--fifth row of form-->
             <div class="row my-lg-2">
+
+              <!--password input field-->
               <div class="col my-2 my-lg-0">
                 <label for="password">Password*</label>
                 <div class="input-group">
                   <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" :maxlength="config.password.maxLength" required>
+
+                  <!--toggle password visibility-->
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                         @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                         tabindex="8">
-                    <i v-if="!showPassword" class="fas fa-eye"></i>
-                    <i v-else class="fas fa-eye-slash"></i>
+                    <font-awesome-icon v-if="!showPassword" icon="eye" />
+                    <font-awesome-icon v-else icon="eye-slash" />
                     </span>
+
                   <div class="invalid-feedback">
                     {{passwordErrorMsg}}
                   </div>
+
                 </div>
               </div>
+
             </div>
 
+            <!--sixth row of form-->
             <div class="row my-lg-2">
+
+              <!--confirm password input field-->
               <div class="col my-2 my-lg-0">
                 <label for="confirm-password">Confirm Password*</label>
                 <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
@@ -122,10 +167,13 @@
                   {{confirmPasswordErrorMsg}}
                 </div>
               </div>
+
             </div>
 
+            <!--seventh row of form-->
             <div class="row my-lg-2">
 
+              <!--phone number input field-->
               <div class="col-lg-4 my-2 my-lg-0">
                 <label for="phone-number">Phone Number</label>
                 <input id="phone-number" name="phone-number" tabindex="10" type="text" placeholder="+64 123 132 132" v-model="phoneNumber"
@@ -135,108 +183,147 @@
                 </div>
               </div>
 
-
+              <!--home address input field, allows for autocompletion via prompt-->
               <div class="col my-2 my-lg-0">
               <label for="home-address">Address Autofill (Optional)</label>
-                <input id="home-address" name="home-address" ref="homeAddressInput" type="text" @input="input()"
+                <input id="home-address" name="home-address" tabindex ="11" ref="homeAddressInput" type="text" @input="input()"
                        @keydown="addressKeyDown($event)" :class="toggleInvalidClass(homeAddressErrorMsg)"
                        :maxlength="config.homeAddress.maxLength" autocomplete="off">
                 <div class="invalid-feedback">
                 {{homeAddressErrorMsg}}
                 </div>
               </div>
+
             </div>
 
+            <!--eighth row of form-->
             <div class="row my-lg-2">
+
+                <!--street input field-->
+                <div class="col my-2 my-lg-0">
+                  <label for="streetNumber">Street Number</label>
+                  <input :class="toggleInvalidClass(streetNumberErrorMsg)" tabindex="12" id="streetNumber"
+                          name="streetNumber" ref="streetNumber" autocomplete="off">
+                <div class="invalid-feedback">
+                  {{streetNumberErrorMsg}}
+                </div>
+              </div>
+
+              <!--suburb input field-->
               <div class="col my-2 my-lg-0">
-                <label for="streetAddress">Street Address*</label>
-                <input :class="toggleInvalidClass(streetAddressErrorMsg)" tabindex="11" id="streetAddress"
-                       name="streetAddress" ref="streetAddress" required autocomplete="off">
-                <div class="invalid-feedback">
-                  {{streetAddressErrorMsg}}
-                </div>
+                <label for="streetName">Street Name</label>
+              <input :class="toggleInvalidClass(streetNameErrorMsg)" tabindex="13" id="streetName"
+                     name="streetName" ref="streetName" autocomplete="off">
+              <div class="invalid-feedback">
+                {{streetNameErrorMsg}}
               </div>
             </div>
+          </div>
 
+
+            <!--ninth row of form-->
             <div class="row my-lg-2">
-              <div class="col-lg-6 my-2 my-lg-0">
-                <label for="suburb">Suburb</label>
-                <input :class="toggleInvalidClass(suburbErrorMsg)" tabindex="12" name="suburb" id="suburb" ref="suburb"
-                       autocomplete="off" required>
-                <div class="invalid-feedback">
-                  {{suburbErrorMsg}}
-                </div>
-              </div>
 
+              <!--city input field-->
               <div class="col-lg-6 my-2 my-lg-0">
-                <label for="city">City*</label>
-                <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="13" name="city" id="city" ref="city"
-                       autocomplete="off" required>
+                <label for="city">City</label>
+                <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="14" name="city" id="city" ref="city"
+                       autocomplete="off">
                 <div class="invalid-feedback">
                   {{cityErrorMsg}}
                 </div>
               </div>
-            </div>
 
-            <div class="row my-lg-2">
+              <!--postcode input field-->
               <div class="col-lg-6 my-2 my-lg-0">
-                <label for="region">State/Region*</label>
-                <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="14" name="region" id="region" ref="region"
-                       autocomplete="off" required>
-                <div class="invalid-feedback">
-                  {{regionErrorMsg}}
-                </div>
-              </div>
-
-              <div class="col-lg-6 my-2 my-lg-0">
-                <label for="country">Country*</label>
-                <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="15" id="country" name="country"
-                       ref="country" autocomplete="off" required>
-                <div class="invalid-feedback">
-                  {{countryErrorMsg}}
-                </div>
+              <label for="postcode">Postcode</label>
+              <input :class="toggleInvalidClass(postcodeErrorMsg)" tabindex="15" name="postcode" id="postcode" ref="postcode"
+                     autocomplete="off">
+              <div class="invalid-feedback">
+                {{postcodeErrorMsg}}
               </div>
             </div>
 
-            <div class="row my-lg-2">
-              <div class="col my-2 my-lg-0">
-                <label for="bio">Bio</label>
-                <textarea id="bio" name="bio" tabindex="16" rows="5" cols="70" v-model="bio"
-                          :class="toggleInvalidClass(bioErrorMsg)" :maxlength="config.bio.maxLength"
-                          style="resize: none"/>
-                <div class="invalid-feedback">
-                  {{bioErrorMsg}}
-                </div>
+          </div>
+
+          <!--tenth row of form-->
+          <div class="row my-lg-2">
+
+            <!--state input field-->
+            <div class="col-lg-6 my-2 my-lg-0">
+              <label for="region">State/Region</label>
+              <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="16" name="region" id="region" ref="region"
+                     autocomplete="off">
+              <div class="invalid-feedback">
+                {{regionErrorMsg}}
               </div>
             </div>
 
+            <!--country input field-->
+            <div class="col-lg-6 my-2 my-lg-0">
+              <label for="country">Country*</label>
+              <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="17" id="country" name="country"
+                     ref="country" autocomplete="off" required>
+              <div class="invalid-feedback">
+                {{countryErrorMsg}}
+              </div>
+            </div>
+
+          </div>
+
+          <!--eleventh row of form-->
+          <div class="row my-lg-2">
+
+            <!--bio field-->
+            <div class="col my-2 my-lg-0">
+              <label for="bio">Bio</label>
+              <textarea id="bio" name="bio" tabindex="18" rows="5" cols="70" v-model="bio"
+                        :class="toggleInvalidClass(bioErrorMsg)" :maxlength="config.bio.maxLength"
+                        style="resize: none"/>
+              <div class="invalid-feedback">
+                {{bioErrorMsg}}
+              </div>
+            </div>
+
+          </div>
+
+            <!--twelfth row of form-->
             <div class="row my-lg-2">
+
+              <!--error message field-->
               <div class="col-lg-12 mt-2 my-lg-0 mx-auto">
-                <div id="registration-error" ref="registration-error" v-if="toastErrorMessage" class="alert alert-danger"
+                <div id="registration-error" ref="registration-error" v-if="errorMessageBubble" class="alert alert-danger"
                      role="alert">
-                  <label>{{ toastErrorMessage }}</label>
+                  <label>{{ errorMessageBubble }}</label>
                 </div>
               </div>
             </div>
 
+            <!--register button-->
             <div class="d-grid gap-2 d-lg-block">
-              <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="18" id="backToLoginButton" @click="$router.push('/')">Back to Login</button>
+              <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="18" id="back-to-login-button" @click="$router.push('/')">Back to Login</button>
               <button id="register-button" tabindex="17" class="btn btn-lg btn-primary float-lg-end green-button" type="button" @click="addNewUser($event)">Register</button>
             </div>
 
           </form>
+
         </div>
+
       </div>
+
     </div>
+
+    <!--footer-->
     <FooterSecure></FooterSecure>
+
   </div>
 </template>
 
 <script>
 import Api, {User} from "../Api";
 import Cookies from 'js-cookie';
-import AddressAPI from "../addressInstance"
 import FooterSecure from "../components/FooterSecure";
+import AddressAPI from "../addressInstance";
 
 export default {
   name: "Registration",
@@ -248,7 +335,7 @@ export default {
     return {
 
       // Used for having pre-filled input fields
-      DEBUG_MODE: true,
+      DEBUG_MODE: false,
 
       // A copy of the user config file for error checking.
       config: User.config,
@@ -299,11 +386,14 @@ export default {
       // Home address related variables
       homeAddressErrorMsg: "",
 
-      // Street address related variables
-      streetAddressErrorMsg: "",
+      // Street number related variables
+      streetNumberErrorMsg: "",
 
-      // Suburb related variables
-      suburbErrorMsg: "",
+      // Street name related variables
+      streetNameErrorMsg: "",
+
+      // Postcode related variables
+      postcodeErrorMsg: "",
 
       // City related variables
       cityErrorMsg: "",
@@ -314,8 +404,8 @@ export default {
       // Country related variables
       countryErrorMsg: "",
 
-      // Toast related variables
-      toastErrorMessage: "",
+      // Error message related variables
+      errorMessageBubble: "",
       cannotProceed: false,
 
       // Address autocompletion related variables
@@ -326,7 +416,7 @@ export default {
     }
   },
 
-  /*
+  /**
    * This is used for creating a prefilled user for testing and bypassing manually filling in the registration page
    */
   created() {
@@ -508,14 +598,13 @@ export default {
       this.lastName = this.lastName.trim();
       this.nickname = this.nickname.trim();
       this.bio = this.bio.trim();
-      this.password = this.password.trim();
-      this.confirmPassword = this.confirmPassword.trim();
       this.email = this.email.trim();
       this.$refs.country.value = this.$refs.country.value.trim();
       this.$refs.city.value = this.$refs.city.value.trim();
-      this.$refs.suburb.value = this.$refs.suburb.value.trim();
+      this.$refs.postcode.value = this.$refs.postcode.value.trim();
       this.$refs.region.value = this.$refs.region.value.trim();
-      this.$refs.streetAddress.value = this.$refs.streetAddress.value.trim();
+      this.$refs.streetNumber.value = this.$refs.streetNumber.value.trim();
+      this.$refs.streetName.value = this.$refs.streetName.value.trim();
     },
 
     /**
@@ -665,27 +754,40 @@ export default {
         requestIsInvalid = true
       }
 
-      // Street address error checking
-      this.streetAddressErrorMsg = this.getErrorMessage(
-          this.config.streetAddress.name,
+      // Street number error checking
+      this.streetNumberErrorMsg = this.getErrorMessage(
+          this.config.streetNumber.name,
           // Using v-model for this address input apparently does not update
           // when we insert from our autocomplete list so it has been changed to use $refs
-          this.$refs.streetAddress.value,
-          this.config.streetAddress.minLength,
-          this.config.streetAddress.maxLength
+          this.$refs.streetNumber.value,
+          this.config.streetNumber.minLength,
+          this.config.streetNumber.maxLength
       )
-      if (this.streetAddressErrorMsg) {
+      if (this.streetNumberErrorMsg) {
         requestIsInvalid = true
       }
 
-      // Suburb error checking
-      this.suburbErrorMsg = this.getErrorMessage(
-          this.config.suburb.name,
-          this.$refs.suburb.value,
-          this.config.suburb.minLength,
-          this.config.suburb.maxLength
+      // Street name error checking
+      this.streetNameErrorMsg = this.getErrorMessage(
+          this.config.streetName.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetName.value,
+          this.config.streetName.minLength,
+          this.config.streetName.maxLength
       )
-      if (this.suburbErrorMsg) {
+      if (this.streetNameErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Postcode error checking
+      this.postcodeErrorMsg = this.getErrorMessage(
+          this.config.postcode.name,
+          this.$refs.postcode.value,
+          this.config.postcode.minLength,
+          this.config.postcode.maxLength
+      )
+      if (this.postcodeErrorMsg) {
         requestIsInvalid = true
       }
 
@@ -729,7 +831,15 @@ export default {
         return
       }
 
-      let finalHomeAddress = `${this.$refs.streetAddress.value};${this.$refs.suburb.value};${this.$refs.city.value};${this.$refs.region.value};${this.$refs.country.value}`;
+      const addressData = {
+        streetNumber: this.$refs.streetNumber.value,
+        streetName: this.$refs.streetName.value,
+        city: this.$refs.city.value,
+        region: this.$refs.region.value,
+        country: this.$refs.country.value,
+        postcode: this.$refs.postcode.value
+      }
+
 
       // Wrapping up the user submitted fields into a class object (User).
       const userData = {
@@ -747,12 +857,13 @@ export default {
          *       When we insert from our autocomplete list so it has been changed to use $refs
          */
 
-        homeAddress: finalHomeAddress,
+        homeAddress: addressData,
         password: this.password
       }
 
 
       const user = new User(userData)
+
       /*
        * Add the User to the database by sending an API request to the backend to store the user's information.
        * Raise any errors and ensure they are displayed on the UI.
@@ -771,27 +882,26 @@ export default {
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
-            this.toastErrorMessage = '400 Bad request; invalid user data';
+            this.errorMessageBubble = '400 Bad request; invalid user data';
           } else if (error.response.status === 409) {
             this.emailErrorMsg = 'Email already in use'
           } else {
-            this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
+            this.errorMessageBubble = `${error.response.status} Unexpected error occurred!`;
           }
         } else if (error.request) {
-          this.toastErrorMessage = 'Timeout occurred';
+          this.errorMessageBubble = 'Timeout occurred';
         } else {
-          this.toastErrorMessage = 'Unexpected error occurred!';
+          this.errorMessageBubble = 'Unexpected error occurred!';
         }
       })
     },
-    /*
-     * Address API requests
+
+    /**
+     * Address API requests.
+     * An asynchronous function that calls the Komoot Photon API with the given address input.
+     * Upon success, the filterResponse function is called with the response data.
      */
     async request() {
-      /*
-      An asynchronous function that calls the Komoot Photon API with the given address input.
-      Upon success, the filterResponse function is called with the response data.
-      */
       let input = document.getElementById('home-address').value;
       if (input.length > 4) { // Starts on 5th char
         await AddressAPI.addressQuery(input).then((response) => {
@@ -827,7 +937,7 @@ export default {
         let { properties } = features[index];
         if (properties) {
 
-          let {country, city, state, street, housenumber, name} = properties;
+          let {country, city, postcode, state, street, housenumber, name} = properties;
 
           if (name) {
             address += name + ", ";
@@ -843,6 +953,10 @@ export default {
 
           if (city) {
             address += city + ", ";
+          }
+
+          if (postcode) {
+            address += postcode + ", ";
           }
 
           if (state) {
@@ -913,28 +1027,27 @@ export default {
             document.getElementById('home-address').value = "";
             const id = event.target.id;
 
-            let {country, city, state, district, street, housenumber} = self.addressResultProperties[id];
+            let {country, city, postcode, state, street, housenumber} = self.addressResultProperties[id];
 
             if (housenumber) {
-              document.getElementById('streetAddress').value = housenumber;
+              document.getElementById('streetNumber').value = housenumber;
             }
-            if (street && housenumber) {
-              document.getElementById('streetAddress').value += " " + street;
-            } else if (street) {
-              document.getElementById('streetAddress').value = street;
-            }
-
-            if (district) {
-              document.getElementById('suburb').value = district;
+            if (street) {
+              document.getElementById('streetName').value = street;
             }
 
             if (city) {
               document.getElementById('city').value = city;
             }
 
+            if (postcode) {
+              document.getElementById('postcode').value = postcode;
+            }
+
             if (state) {
               document.getElementById('region').value = state;
             }
+
             if (country) {
               document.getElementById('country').value = country;
             }
@@ -1044,6 +1157,8 @@ export default {
 
 </script>
 
+<!------------------------------------------ Registration Page Styling ------------------------------------------------>
+
 <style scoped>
 form {
   display: flex;
@@ -1065,12 +1180,12 @@ label {
   border-radius: 2%;
 }
 
-/* IntellaJ doesn't highlight this one as used even though it is used in toggle checkPasswordCriteria*/
+/* NOTE: IntelliJ doesn't highlight this one as used even though it is used in toggle checkPasswordCriteria */
 .text-red {
   color: red;
 }
 
-/*------------------ Hide arrows from input numbers ---------------------*/
+/*--------------------- Hide arrows from input numbers ---------------------*/
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -1083,14 +1198,18 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-input:focus, textarea:focus, #register-button:focus, #backToLoginButton:focus {
-  outline: none;     /* oranges! yey */
+input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus {
+  outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
 
 /*------------------------------------------------------------------------*/
 
+/**
+ * TODO remove once footer is sticky
+ * Calculates where footer should be.
+ */
 .all-but-footer {
   min-height: calc(100vh - 50px);
 }
