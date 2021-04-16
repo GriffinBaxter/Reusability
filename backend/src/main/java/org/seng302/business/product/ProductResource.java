@@ -1,6 +1,8 @@
 package org.seng302.business.product;
 
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.product.images.ImageUploadPayload;
+import org.seng302.business.product.images.storageService;
 import org.seng302.main.Authorization;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ProductResource class
@@ -27,6 +31,9 @@ public class ProductResource {
 
     @Autowired
     private UserRepository userRepository;
+
+    //@Autowired Need to create the class first!
+    //private storageService storageService;
 
     /**
      * Constructor used to insert mocked repositories for testing.
@@ -126,4 +133,65 @@ public class ProductResource {
 
         return productRepository.findProductsByBusinessId(id);
     }
+
+    @PostMapping("/businesses/{businessId}/products/{productId}/images")
+    public void uploadImage(
+            @RequestBody ImageUploadPayload imageUploadRequest,
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @PathVariable String productId
+    ) {
+
+        // Get the current user to verify his session token
+        User requestingUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // Verify the business and product exists within the database.
+        if (!Authorization.verifyProductExists(productId, businessId, productRepository)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                            "for example trying to access a resource by an ID that does not exist."
+            );
+        }
+
+        // Verify if the user has permissions to upload images to this product
+        if (requestingUser.getRole() == Role.USER && !requestingUser.getBusinessesAdministered().contains(businessId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "The account performing the request is neither an administrator of the business, nor a global application admin."
+            );
+        }
+
+        // Verify it is the correct file type.
+        Arrays.stream(imageUploadRequest.getImages()).forEach(
+                file -> {
+                    // TODO Check file type
+                }
+        );
+
+        // Store the file & Create the thumbnail for the primary image
+        AtomicBoolean needToCreateThumbnail = new AtomicBoolean(true);
+        Arrays.stream(imageUploadRequest.getImages()).forEach(
+                image -> {
+
+                    // Create thumbnail for primary image.
+                    if (needToCreateThumbnail.get()) {
+
+                        // Generate image
+
+                        // Store the image locally
+
+                        // Add path to database
+
+                        needToCreateThumbnail.set(false);
+                    }
+
+                    // Store the image locally
+
+                    // Add path to database
+                }
+        );
+
+    }
+
 }

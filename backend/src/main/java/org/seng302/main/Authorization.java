@@ -2,6 +2,7 @@ package org.seng302.main;
 
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.product.ProductRepository;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -61,6 +62,18 @@ public class Authorization {
      */
     public static boolean verifyBusinessExists(Integer businessId, BusinessRepository businessRepository) {
         return businessRepository.findBusinessById(businessId).isPresent();
+    }
+
+    /**
+     *  Checks if a product exists given the product ID and business ID within the given product repository.
+     *
+     * @param productId - Id of the product (String).
+     * @param businessId - Id of the business (Integer)
+     * @param productRepository - A product repository
+     * @return Returns true if the product exists with the given IDs (Boolean).
+     */
+    public static boolean verifyProductExists(String productId, Integer businessId, ProductRepository productRepository) {
+        return  productRepository.findProductByIdAndBusinessId(productId, businessId).isPresent();
     }
 
 }
