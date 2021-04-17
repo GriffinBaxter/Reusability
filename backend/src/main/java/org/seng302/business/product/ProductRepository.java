@@ -1,5 +1,7 @@
 package org.seng302.business.product;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -18,7 +20,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
      * @param businessId A business ID.
      * @return A list of products with the given business ID.
      */
-    List<ProductPayload> findProductsByBusinessId(Integer businessId);
+    Page<Product> findProductsByBusinessId(Integer businessId, Pageable paging);
 
     /**
      * Finds a product with the given product ID and business ID if one exists.

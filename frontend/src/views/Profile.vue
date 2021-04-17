@@ -147,6 +147,7 @@
             </div>
           </div>
           <button class="btn btn-outline-primary float-end mt-4" id="logoutButton" @click="logout()">Sign Out</button>
+          <button class="btn btn-outline-primary float-end mt-4" id="testProductButton" @click="testProductNavigate()">Products</button>
         </div>
       </div>
       <Footer></Footer>
@@ -484,6 +485,12 @@ export default {
        */
       Cookies.remove('userID');
       this.$router.push({name: 'Login'});
+    },
+    testProductNavigate() {
+      /*
+      Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
+       */
+      this.$router.push({name: 'Products'});
     }
   },
   mounted() {
