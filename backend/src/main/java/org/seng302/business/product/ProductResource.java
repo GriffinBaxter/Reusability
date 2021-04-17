@@ -2,6 +2,8 @@ package org.seng302.business.product;
 
 import jdk.jfr.ContentType;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.product.images.Image;
+import org.seng302.business.product.images.ImageRepository;
 import org.seng302.business.product.images.ImageUploadPayload;
 import org.seng302.business.product.images.StorageService;
 import org.seng302.main.Authorization;
@@ -38,6 +40,9 @@ public class ProductResource {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Autowired
     private StorageService storageService;
@@ -209,14 +214,18 @@ public class ProductResource {
                     }
 
                     // Store the image locally
-                    try {
-                        storageService.storeFile(image, "test");
-                        fileNamesAdded.add("test");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        storageService.storeFile(image, "test");
+//                        fileNamesAdded.add("test");
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+
+
+                    imageRepository.saveAndFlush(new Image("some path", "filename", "exten"));
 
                     // Add path to database
+                    System.out.println(imageRepository.getAll());
                     // TODO Perform a transation to the DB creating a file path for each image in the Image table
                     // TODO This means that if any of the images fails we can perform a rollback, and also delete the images from the file system.
                     // TODO The creation of images should be atomic.
