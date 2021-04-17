@@ -364,6 +364,9 @@ export default {
       )
 
       this.refreshDropdown();
+    },
+    onResize() {
+      this.toggleNavbar(true);
     }
   },
   beforeMount() {
@@ -387,6 +390,12 @@ export default {
     this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown, true);
     this.toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper', this.showInteractMenu, true);
     this.toggleNavbar(true)
+
+    // Adding an event listener for resizing
+    window.addEventListener("resize", this.onResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize)
   }
 }
 </script>
