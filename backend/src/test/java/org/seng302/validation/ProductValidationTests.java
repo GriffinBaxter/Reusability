@@ -107,7 +107,7 @@ public class ProductValidationTests {
     @Test
     public void isValidNameValidSymbols() {
         String name = "New '#,.&()- 123g";
-        assertTrue(BusinessValidation.isValidName(name));
+        assertTrue(ProductValidation.isValidName(name));
     }
 
     /**
@@ -185,4 +185,57 @@ public class ProductValidationTests {
         assertFalse(ProductValidation.isValidDescription(description));
     }
 
+    // ******************************** MANUFACTURER ***********************************
+
+    /**
+     * Test to see whether true (i.e. valid) is returned when the length of the
+     * manufacturer name is equal to the minimum length.
+     */
+    @Test
+    public void isValidManufacturerMinimumLength() {
+        String manufacturer = "";
+        assertTrue(ProductValidation.isValidManufacturer(manufacturer));
+    }
+
+    /**
+     * Test to see whether true (i.e. valid) is returned when the length of the
+     * manufacturer name is equal to the maximum length.
+     */
+    @Test
+    public void isValidManufacturerMaximumLength() {
+        String string = "A";
+        String manufacturer = string.repeat(100);
+        assertTrue(ProductValidation.isValidManufacturer(manufacturer));
+    }
+
+    /**
+     * Test to see whether true (i.e. valid) is returned when the length of the
+     * manufacturer name is between the maximum and minimum length and contains valid symbols.
+     */
+    @Test
+    public void isValidManufacturerValidSymbols() {
+        String manufacturer = "New '#,.&()- 123g";
+        assertTrue(ProductValidation.isValidManufacturer(manufacturer));
+    }
+
+    /**
+     * Test to see whether false (i.e. invalid) is returned when the length of the
+     * manufacturer name is greater than the maximum length.
+     */
+    @Test
+    public void isValidManufacturerGreaterThanMaximumLength() {
+        String string = "A";
+        String manufacturer = string.repeat(101);
+        assertFalse(ProductValidation.isValidManufacturer(manufacturer));
+    }
+
+    /**
+     * Test to see whether false (i.e. invalid) is returned when the length of the
+     * manufacturer name is between the maximum and minimum length but contains invalid symbols.
+     */
+    @Test
+    public void isValidManufacturerInvalidSymbols() {
+        String manufacturer = "New %@!";
+        assertFalse(ProductValidation.isValidManufacturer(manufacturer));
+    }
 }

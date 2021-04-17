@@ -5,9 +5,6 @@ import org.junit.runner.RunWith;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
-import org.seng302.business.product.Product;
-import org.seng302.business.product.ProductPayload;
-import org.seng302.business.product.ProductRepository;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -95,6 +92,7 @@ public class ProductRepositoryIntegrationTests {
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                                 LocalTime.of(0, 0))
@@ -110,6 +108,7 @@ public class ProductRepositoryIntegrationTests {
         assertThat(foundProductPayloadList.get(0).getId()).isEqualTo("PROD");
         assertThat(foundProductPayloadList.get(0).getName()).isEqualTo("Beans");
         assertThat(foundProductPayloadList.get(0).getDescription()).isEqualTo("Description");
+        assertThat(foundProductPayloadList.get(0).getManufacturer()).isEqualTo("Manufacturer");
         assertThat(foundProductPayloadList.get(0).getRecommendedRetailPrice()).isEqualTo(20.00);
         assertThat(foundProductPayloadList.get(0).getCreated()).isEqualTo(LocalDateTime.of(
                     LocalDate.of(2021, 1, 1),
@@ -235,6 +234,7 @@ public class ProductRepositoryIntegrationTests {
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
@@ -250,6 +250,7 @@ public class ProductRepositoryIntegrationTests {
         assertThat(foundProduct.get().getProductId()).isEqualTo("PROD");
         assertThat(foundProduct.get().getName()).isEqualTo("Beans");
         assertThat(foundProduct.get().getDescription()).isEqualTo("Description");
+        assertThat(foundProduct.get().getManufacturer()).isEqualTo("Manufacturer");
         assertThat(foundProduct.get().getRecommendedRetailPrice()).isEqualTo(20.00);
         assertThat(foundProduct.get().getCreated()).isEqualTo(LocalDateTime.of(
                     LocalDate.of(2021, 1, 1),
@@ -308,6 +309,7 @@ public class ProductRepositoryIntegrationTests {
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
@@ -374,6 +376,7 @@ public class ProductRepositoryIntegrationTests {
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))

@@ -71,6 +71,7 @@ public class InventoryItemTests {
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))

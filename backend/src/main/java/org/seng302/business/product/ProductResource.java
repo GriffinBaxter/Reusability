@@ -88,6 +88,7 @@ public class ProductResource {
                         businessRepository.findBusinessById(id).get(),
                         productPayload.getName(),
                         productPayload.getDescription(),
+                        productPayload.getManufacturer(),
                         productPayload.getRecommendedRetailPrice(),
                         LocalDateTime.now()
                 );

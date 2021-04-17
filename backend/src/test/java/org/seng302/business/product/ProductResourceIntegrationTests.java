@@ -7,10 +7,6 @@ import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.BusinessType;
-import org.seng302.business.product.Product;
-import org.seng302.business.product.ProductPayload;
-import org.seng302.business.product.ProductRepository;
-import org.seng302.business.product.ProductResource;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -66,6 +62,7 @@ public class ProductResourceIntegrationTests {
     private final String productPayloadJson = "{\"id\":\"%s\"," +
                                         "\"name\":\"%s\"," +
                                         "\"description\":\"%s\"," +
+                                        "\"manufacturer\":\"%s\"," +
                                         "\"recommendedRetailPrice\":%.1f}";
 
     private String payloadJson;
@@ -73,6 +70,7 @@ public class ProductResourceIntegrationTests {
     private final String expectedProductJson = "{\"id\":\"%s\"," +
                                         "\"name\":\"%s\"," +
                                         "\"description\":\"%s\"," +
+                                        "\"manufacturer\":\"%s\"," +
                                         "\"recommendedRetailPrice\":%.1f," +
                                         "\"created\":\"%s\"}";
 
@@ -86,8 +84,6 @@ public class ProductResourceIntegrationTests {
 
     private User anotherUser;
 
-    private Address address;
-
     private Business business;
 
     private Business anotherBusiness;
@@ -96,7 +92,7 @@ public class ProductResourceIntegrationTests {
 
     @BeforeAll
     public void setup() throws Exception {
-        address = new Address(
+        Address address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
@@ -188,12 +184,14 @@ public class ProductResourceIntegrationTests {
                 user
         );
         anotherBusiness.setId(2);
+        user.setBusinessesAdministeredObjects(List.of(business, anotherBusiness));
 
         product = new Product(
                 "PROD",
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
@@ -223,12 +221,14 @@ public class ProductResourceIntegrationTests {
                         business,
                         "NewProd",
                         "NewDesc",
+                        "Manufacturer",
                         10.00,
                         LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+                                    newProduct.getDescription(), newProduct.getManufacturer(),
+                                    newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -263,12 +263,14 @@ public class ProductResourceIntegrationTests {
                 business,
                 "NewProd",
                 "NewDesc",
+                "Manufacturer",
                 10.00,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+                                    newProduct.getDescription(), newProduct.getManufacturer(),
+                                    newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -303,12 +305,14 @@ public class ProductResourceIntegrationTests {
                 business,
                 "NewProd",
                 "NewDesc",
+                "Manufacturer",
                 10.00,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+                                    newProduct.getDescription(), newProduct.getManufacturer(),
+                                    newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -346,12 +350,14 @@ public class ProductResourceIntegrationTests {
                 anotherBusiness,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+                                    newProduct.getDescription(), newProduct.getManufacturer(),
+                                    newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), anotherBusiness.getId()))
                 .willReturn(Optional.empty());
 
@@ -382,7 +388,8 @@ public class ProductResourceIntegrationTests {
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
                 .willReturn(Optional.ofNullable(product));
         payloadJson = String.format(productPayloadJson, product.getProductId(), product.getName(),
-                                    product.getDescription(), product.getRecommendedRetailPrice());
+                                    product.getDescription(), product.getManufacturer(),
+                                    product.getRecommendedRetailPrice());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -409,7 +416,8 @@ public class ProductResourceIntegrationTests {
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
         payloadJson = String.format(productPayloadJson, "P", product.getName(),
-                product.getDescription(), product.getRecommendedRetailPrice());
+                                    product.getDescription(), product.getManufacturer(),
+                                    product.getRecommendedRetailPrice());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -439,12 +447,14 @@ public class ProductResourceIntegrationTests {
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+                                    newProduct.getDescription(), newProduct.getManufacturer(),
+                                    newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -475,12 +485,14 @@ public class ProductResourceIntegrationTests {
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                newProduct.getDescription(), newProduct.getRecommendedRetailPrice());
+                                    newProduct.getDescription(), newProduct.getManufacturer(),
+                                    newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -503,7 +515,7 @@ public class ProductResourceIntegrationTests {
     public void cantCreateProductWhenBusinessDoesntExist() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
-        payloadJson = String.format(productPayloadJson, "PRO", "name", "desc", 30.00);
+        payloadJson = String.format(productPayloadJson, "PRO", "name", "desc", "manu", 30.00);
 
         // when
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
@@ -530,12 +542,13 @@ public class ProductResourceIntegrationTests {
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
-                        product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()) + "]";
+                        product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                        product.getCreated()) + "]";
 
         // when
         List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                                            product.getDescription(), product.getRecommendedRetailPrice(),
-                                            product.getCreated()));
+                                            product.getDescription(), product.getManufacturer(),
+                                            product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -562,11 +575,13 @@ public class ProductResourceIntegrationTests {
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
-                product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()) + "]";
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated()) + "]";
 
         // when
         List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()));
+                                            product.getDescription(), product.getManufacturer(),
+                                            product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
@@ -593,11 +608,13 @@ public class ProductResourceIntegrationTests {
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
-                product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()) + "]";
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated()) + "]";
 
         // when
         List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                product.getDescription(), product.getRecommendedRetailPrice(), product.getCreated()));
+                                            product.getDescription(), product.getManufacturer(),
+                                            product.getRecommendedRetailPrice(), product.getCreated()));
         when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
 
         when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));

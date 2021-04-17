@@ -15,8 +15,11 @@ public class ProductValidation {
     private static final Integer DESCRIPTION_MIN_LENGTH = 0;
     private static final Integer DESCRIPTION_MAX_LENGTH = 600;
 
+    private static final Integer MANUFACTURER_MIN_LENGTH = 0;
+    private static final Integer MANUFACTURER_MAX_LENGTH = 100;
+
     /**
-     * Checks to see whether product ID is valid based on its constraints.
+     * Checks to see whether a product ID is valid based on its constraints.
      * This method can be updated in the future if there is additional constraints.
      * @param productId The product ID to be checked.
      * @return true when the product ID is valid
@@ -28,7 +31,7 @@ public class ProductValidation {
     }
 
     /**
-     * Checks to see whether product name is valid based on its constraints.
+     * Checks to see whether a product name is valid based on its constraints.
      * This method can be updated in the future if there is additional constraints.
      * @param productName The product name to be checked.
      * @return true when the product name is valid
@@ -40,12 +43,24 @@ public class ProductValidation {
     }
 
     /**
-     * Checks to see whether description is valid based on its constraints.
+     * Checks to see whether a description is valid based on its constraints.
      * This method can be updated in the future if there is additional constraints.
      * @param description The description to be checked.
      * @return true when the description is valid
      */
     public static boolean isValidDescription(String description) {
         return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether a manufacturer name is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param manufacturer The manufacturer name to be checked.
+     * @return true when the manufacturer name is valid
+     */
+    public static boolean isValidManufacturer(String manufacturer) {
+        return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
+                (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
+                (manufacturer.matches("^[a-zA-Z0-9 '#,.&()-]*$"));
     }
 }

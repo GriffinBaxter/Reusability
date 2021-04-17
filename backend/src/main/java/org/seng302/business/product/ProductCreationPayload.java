@@ -8,6 +8,7 @@ public class ProductCreationPayload {
     private String id;
     private String name;
     private String description;
+    private String manufacturer;
     private Double recommendedRetailPrice;
 
     public String getId() {
@@ -20,6 +21,10 @@ public class ProductCreationPayload {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
     }
 
     public Double getRecommendedRetailPrice() {
