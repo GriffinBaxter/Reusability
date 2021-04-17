@@ -3,7 +3,6 @@ package org.seng302.main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.address.Address;
-import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
 import org.seng302.business.BusinessRepository;
 import org.seng302.user.Role;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 
 /**
  * This spring component runs at application startup to do some initialisation

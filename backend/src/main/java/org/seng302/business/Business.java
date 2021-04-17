@@ -235,4 +235,18 @@ public class Business {
     public void setAdministrators(List<User> administrators) {
         this.administrators = administrators;
     }
+
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"administrators\":[null]" +
+                ",\"primaryAdministratorId\":\"" + primaryAdministratorId + "\"" +
+                ",\"name\":\"" + name + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                ",\"address\":\"" + address + "\"" +
+                ",\"businessType\":\"" + businessType + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                "}";
+    }
+
 }
