@@ -3,7 +3,6 @@ package org.seng302.main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.business.BusinessRepository;
-import org.seng302.business.product.images.StorageService;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -13,7 +12,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -29,9 +27,6 @@ public class MainApplicationRunner implements ApplicationRunner {
     private static final Logger logger = LogManager.getLogger(MainApplicationRunner.class.getName());
     private UserRepository userRepository;
     private BusinessRepository businessRepository;
-
-    @Resource
-    private StorageService storageService;
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
@@ -55,9 +50,6 @@ public class MainApplicationRunner implements ApplicationRunner {
 
         userRepository.findAll().forEach(logger::info);
         businessRepository.findAll().forEach(logger::info);
-
-        // Required for storage service to be initialized
-//        storageService.initialize();
     }
 
 

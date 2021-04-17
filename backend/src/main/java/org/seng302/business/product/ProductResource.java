@@ -2,7 +2,6 @@ package org.seng302.business.product;
 
 import jdk.jfr.ContentType;
 import org.seng302.business.BusinessRepository;
-import org.seng302.business.product.images.ImageRepository;
 import org.seng302.business.product.images.ImageUploadPayload;
 import org.seng302.business.product.images.StorageService;
 import org.seng302.main.Authorization;
@@ -39,9 +38,6 @@ public class ProductResource {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private ImageRepository imageRepository;
 
     @Autowired
     private StorageService storageService;
@@ -221,7 +217,6 @@ public class ProductResource {
                     }
 
                     // Add path to database
-                    System.out.println(imageRepository.findImageById(1));
                     // TODO Perform a transation to the DB creating a file path for each image in the Image table
                     // TODO This means that if any of the images fails we can perform a rollback, and also delete the images from the file system.
                     // TODO The creation of images should be atomic.
