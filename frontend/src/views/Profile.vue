@@ -214,6 +214,7 @@
 </template>
 
 <script>
+
 import ProfileHeader from "../components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
@@ -499,12 +500,12 @@ export default {
       }
 
       if (this.otherUser) {
-        document.getElementById('phoneRow').remove();
-        document.getElementById('dateOfBirthRow').remove();
-        document.getElementById('businessAdministeredRow').remove();
-        document.getElementById('businessAdministeredHR').remove();
-        document.getElementById('phoneHR').remove();
-        document.getElementById('dateHR').remove();
+        document.getElementById('phone-row').remove();
+        document.getElementById('date-of-birth-row').remove();
+        document.getElementById('business-administered-row').remove();
+        document.getElementById('business-administered-header').remove();
+        document.getElementById('phone-header').remove();
+        document.getElementById('date-header').remove();
 
         //address unpack
         if (this.city !== "") {
@@ -598,7 +599,9 @@ export default {
     if (currentID) {
 
       const url = document.URL
+      console.log(url);
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
+      console.log(this.urlID);
 
       if (currentID === this.urlID || this.urlID === 'profile') {
         this.retrieveUser(currentID);
@@ -625,11 +628,6 @@ export default {
  */
 .all-but-footer {
   min-height: calc(100vh - 738px);
-}
-
-#profile-header-div {
-  margin-left: 15%;
-  margin-right: 15%;
 }
 
 #profile-container {

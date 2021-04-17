@@ -1,12 +1,19 @@
 <template>
   <div>
-    <ProfileHeader/>
+    <!--nav bar-->
+    <Navbar></Navbar>
+
+    <!--profile header, contains user search bar-->
+    <div id="profile-header-div">
+      <ProfileHeader/>
+    </div>
+
     <div class="container p-5 mt-3" id="profileContainer">
       <div class="row">
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
-              <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+              <img class="rounded-circle img-fluid" :src="require('../../public/sample_profile_image.jpg')" alt="Profile Image"/>
               <div class="mt-3">
                 <h5>{{name}}</h5>
                 <div class="text-secondary">{{description}}</div>
@@ -111,14 +118,16 @@
 <script>
 import ProfileHeader from "@/components/ProfileHeader";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
 
 export default {
-  name: "Profile",
+  name: "BusinessProfile",
   components: {
     Footer,
     ProfileHeader,
+    Navbar
   },
   data() {
     return {
