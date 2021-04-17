@@ -3,10 +3,12 @@ package org.seng302.business.product;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.business.Business;
+import org.seng302.business.product.images.Image;
 import org.seng302.main.Validation;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Class for products
@@ -28,6 +30,12 @@ public class Product {
     @Id
     @Column(name = "business_id")
     private Integer businessId;
+
+    @OneToMany(targetEntity = Image.class,
+    mappedBy = "product",
+    cascade = CascadeType.ALL,
+    orphanRemoval = false)
+    private List<Image> image;
 
     @Column(name = "name", nullable = false)
     private String name;
