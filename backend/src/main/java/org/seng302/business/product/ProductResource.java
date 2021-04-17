@@ -159,52 +159,43 @@ public class ProductResource {
 
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
-        if (orderBy.equals("productIdASC")) {
-
-            sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
-
-        } else if (orderBy.equals("productIdDESC")) {
-
-            sortBy = Sort.by(Sort.Order.desc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
-
-        } else if (orderBy.equals("nameASC")) {
-
-            sortBy = Sort.by(Sort.Order.asc("name").ignoreCase()).and(Sort.by(Sort.Order.asc("productId").ignoreCase()));
-
-        } else if (orderBy.equals("nameDESC")) {
-
-            sortBy = Sort.by(Sort.Order.desc("name").ignoreCase()).and(Sort.by(Sort.Order.asc("productId").ignoreCase()));
-
-        } else if (orderBy.equals("descriptionASC")) {
-
-            sortBy = Sort.by(Sort.Order.asc("description").ignoreCase()).and(Sort.by(Sort.Order.asc("productId").ignoreCase()));
-
-        } else if (orderBy.equals("descriptionDESC")) {
-
-            sortBy = Sort.by(Sort.Order.asc("description").ignoreCase()).and(Sort.by(Sort.Order.asc("productId").ignoreCase()));
-
-        } else if (orderBy.equals("manufacturerASC")) {
-
-            sortBy = Sort.by(Sort.Order.desc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("productId").ignoreCase()));
-
-        } else if (orderBy.equals("manufacturerDESC")) {
-
-            sortBy = Sort.by(Sort.Order.desc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("productId").ignoreCase()));
-
-        } else if (orderBy.equals("createdASC")) {
-
-            sortBy = Sort.by(Sort.Order.desc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("productId").ignoreCase()));
-
-        } else if (orderBy.equals("createdDESC")) {
-
-            sortBy = Sort.by(Sort.Order.desc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("productId").ignoreCase()));
-
-        } else {
-            // Invalid orderBy input
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "OrderBy Field invalid"
-            );
+        switch (orderBy) {
+            case "productIdASC":
+                sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                break;
+            case "productIdDESC":
+                sortBy = Sort.by(Sort.Order.desc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                break;
+            case "nameASC":
+                sortBy = Sort.by(Sort.Order.asc("name").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "nameDESC":
+                sortBy = Sort.by(Sort.Order.desc("name").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "descriptionASC":
+                sortBy = Sort.by(Sort.Order.asc("description").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "descriptionDESC":
+                sortBy = Sort.by(Sort.Order.desc("description").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "manufacturerASC":
+                sortBy = Sort.by(Sort.Order.asc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "manufacturerDESC":
+                sortBy = Sort.by(Sort.Order.desc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "createdASC":
+                sortBy = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "createdDESC":
+                sortBy = Sort.by(Sort.Order.desc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            default:
+                // Invalid orderBy input
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "OrderBy Field invalid"
+                );
         }
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);

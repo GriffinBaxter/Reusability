@@ -490,7 +490,7 @@ export default {
       /*
       Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
        */
-      this.$router.push({name: 'Products'});
+      this.$router.push({path: '/businesses/3/products'});
     }
   },
   mounted() {

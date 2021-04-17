@@ -149,14 +149,15 @@ export default {
      */
     async requestProducts() {
 
-      await Api.sortProducts().then(response => {
+      await Api.sortProducts(3).then(response => {
         this.productList = [...response.data];
+        console.log(this.productList);
         // Order by productId alphabetically by default
         this.productList.sort(function (a, b) {
-          if (a.productId < b.productId) {
+          if (a.id < b.id) {
             return -1;
           }
-          if (a.productId > b.productId) {
+          if (a.id > b.id) {
             return 1;
           }
           return 0;
@@ -172,33 +173,6 @@ export default {
           console.log(error.message);
         }
       })
-    },
-
-    /**
-     * Handles the product pressing enter with the search bar focused. Updates the search if they do.
-     *
-     * @param event The keydown event
-     */
-    search(event) {
-      if (event.keyCode === 13) {
-        const inputQuery = this.$refs.searchBar.value;
-        history.pushState({}, null, this.$route.path + `?searchQuery=${inputQuery}`);
-        this.requestUsers().then(() => this.buildRows()).catch(
-            (e) => console.log(e)
-        );
-      }
-    },
-
-    /**
-     * Handles the product pressing clicking on the search button. Completes a search when they do.
-     *
-     */
-    searchClicked() {
-      const inputQuery = this.$refs.searchBar.value;
-      history.pushState({}, null, this.$route.path + `?searchQuery=${inputQuery}`);
-      this.requestUsers().then(() => this.buildRows()).catch(
-          (e) => console.log(e)
-      );
     },
 
     /**
@@ -225,23 +199,23 @@ export default {
 
     /**
      * Orders the products based on the given booleans for each column, and updates the display
-     * @param productId Boolean, whether to order by productId
+     * @param id Boolean, whether to order by productId
      * @param name Boolean, whether to order by name
      * @param description Boolean, whether to order by description
      * @param manufacturer Boolean, whether to order by manufacturer
      * @param recommendedRetailPrice Boolean, whether to order by RRP
      * @param created Boolean, whether to order by created date
      */
-    orderProducts(productId, name, description, manufacturer, recommendedRetailPrice, created) {
+    orderProducts(id, name, description, manufacturer, recommendedRetailPrice, created) {
 
-      if (productId) {
+      if (id) {
         this.disableIcons()
         if (this.productIdAscending) {
           this.productList.sort(function (a, b) {
-            if (a.productId > b.productId) {
+            if (a.id > b.id) {
               return -1;
             }
-            if (a.productId < b.productId) {
+            if (a.id < b.id) {
               return 1;
             }
             return 0;
@@ -249,10 +223,10 @@ export default {
           document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
           this.productList.sort(function (a, b) {
-            if (a.productId < b.productId) {
+            if (a.id < b.id) {
               return -1;
             }
-            if (a.productId > b.productId) {
+            if (a.id > b.id) {
               return 1;
             }
             return 0;
@@ -458,7 +432,6 @@ export default {
      * Dynamically builds the rows of products from the stored productList.
      */
     buildRows() {
-      const self = this;
       this.clearRows();
       let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
       let startIndex = (this.currentPage - 1) * this.rowsPerPage;
@@ -497,7 +470,7 @@ export default {
           const productIdCol = document.createElement("div");
           productIdCol.setAttribute("class", `${classInput}`);
           productIdCol.setAttribute("id", `${i}-productId`);
-          productIdCol.innerHTML = this.productList[i].productId;
+          productIdCol.innerHTML = this.productList[i].id;
           productRow.appendChild(productIdCol);
 
           const nameCol = document.createElement("div");
@@ -532,34 +505,9 @@ export default {
           createdCol.innerText = this.productList[i].created;
           productRow.appendChild(createdCol);
 
-
-          productRow.addEventListener("click", function (event) {
-            let path;
-
-            if (event.target.id.includes('-')) {
-              const row = event.target.parentNode;
-              path = `/profile/${row.id}`
-            } else {
-              path = `/profile/${event.target.id}`
-            }
-
-            if (self.$route.path !== path) {
-              self.$router.push({path});
-            }
-
-          });
-
-          productRow.addEventListener('keydown', function (event) {
-            // TODO replace all deprecated keyCode uses
-            if (event.keyCode === 13) {
-              event.target.click();
-            }
-          })
-
           outerContainer.insertBefore(productRow, lastChild);
 
           tabIndex += 1;
-
 
         }
       }
