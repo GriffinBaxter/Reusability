@@ -1,111 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-    <file path="C:\Users\Jack\Documents\SENG302\team-6\frontend\tests\registration.test.js">
-        <testCase name="First name with no input" duration="9"/>
-        <testCase name="First name with less than min length" duration="1"/>
-        <testCase name="First name with more than max length" duration="1"/>
-        <testCase name="First name with correct name syntax and leading spaces" duration="2"/>
-        <testCase name="First name with correct name syntax and trailing spaces" duration="2"/>
-        <testCase name="First name with correct name syntax, including hyphen" duration="1"/>
-        <testCase name="First name with correct name syntax, including space" duration="2"/>
-        <testCase name="First name with incorrect name syntax with numbers" duration="1"/>
-        <testCase name="First name with incorrect name syntax with symbols" duration="1"/>
-        <testCase name="First name with correct name syntax with apostrophes" duration="2"/>
-        <testCase name="Middle name with no input" duration="1"/>
-        <testCase name="Middle name with less than min length" duration="1"/>
-        <testCase name="Middle name with more than max length" duration="1"/>
-        <testCase name="Middle name with correct name syntax and leading spaces" duration="3"/>
-        <testCase name="Middle name with correct name syntax and trailing spaces" duration="2"/>
-        <testCase name="Middle name with correct name syntax, including hyphen" duration="1"/>
-        <testCase name="Middle name with correct name syntax, including space" duration="1"/>
-        <testCase name="Middle name with incorrect name syntax with numbers" duration="1"/>
-        <testCase name="Middle name with incorrect name syntax with symbols" duration="1"/>
-        <testCase name="Middle name with correct name syntax with apostrophes" duration="1"/>
-        <testCase name="Last name with no input" duration="1"/>
-        <testCase name="Last name with less than min length" duration="2"/>
-        <testCase name="Last name with more than max length" duration="2"/>
-        <testCase name="Last name with correct name syntax and leading spaces" duration="2"/>
-        <testCase name="Last name with correct name syntax and trailing spaces" duration="1"/>
-        <testCase name="Last name with correct name syntax, including hyphen" duration="1"/>
-        <testCase name="Last name with correct name syntax, including space" duration="1"/>
-        <testCase name="Last name with incorrect name syntax with numbers" duration="2"/>
-        <testCase name="Last name with incorrect name syntax with symbols" duration="2"/>
-        <testCase name="Last name with correct name syntax with apostrophes" duration="1"/>
-        <testCase name="Nickname with no input" duration="1"/>
-        <testCase name="Nickname with less than min length" duration="2"/>
-        <testCase name="Nickname with more than max length" duration="1"/>
-        <testCase name="Nickname with correct name syntax and leading spaces" duration="1"/>
-        <testCase name="Nickname with correct name syntax and trailing spaces" duration="1"/>
-        <testCase name="Nickname with correct name syntax, including hyphen" duration="0"/>
-        <testCase name="Nickname with correct name syntax, including space" duration="0"/>
-        <testCase name="Nickname with incorrect name syntax with numbers" duration="1"/>
-        <testCase name="Nick name with incorrect name syntax with symbols" duration="0"/>
-        <testCase name="Nickname with correct name syntax with apostrophes" duration="1"/>
-        <testCase name="Bio with no input" duration="1"/>
-        <testCase name="Bio with any input within length" duration="0"/>
-        <testCase name="Bio with any input greater than allowed length" duration="1"/>
-        <testCase name="Email with no input" duration="1"/>
-        <testCase name="Email with input that is too short" duration="1"/>
-        <testCase name="Email with input that is too long" duration="1"/>
-        <testCase name="Email with input that is missing @" duration="0"/>
-        <testCase name="Email with input that contains invalid symbols" duration="1"/>
-        <testCase name="Email with input that space" duration="0"/>
-        <testCase name="Home address with no input" duration="1"/>
-        <testCase name="Home address with no input" duration="1"/>
-        <testCase name="Home address with input that is too long" duration="0"/>
-        <testCase name="Home address with input that contains allowed symbols" duration="1"/>
-        <testCase name="Home address with input that contains invalid symbols" duration="1"/>
-        <testCase name="Home address with input that contains the sample data&apos;s home address" duration="1"/>
-        <testCase name="Testing the password that the error message is thrown when not meeting the minimum length" duration="1"/>
-        <testCase name="Testing the password that an error message is thrown when the maximum length is broken" duration="4"/>
-        <testCase name="Testing the password, such that no error messages are thrown given a valid input" duration="1"/>
-        <testCase name="Testing the password that no error is thrown when using numbers" duration="1"/>
-        <testCase name="Testing the password that no error is thrown when using upper case letters" duration="2"/>
-        <testCase name="Testing the password that no error is thrown when using lower case letters" duration="0"/>
-        <testCase name="Testing the password that no error is thrown when using symbols !@#$%^&amp;*" duration="1"/>
-        <testCase name="Phone number with no input" duration="1"/>
-        <testCase name="Phone number with invalid syntax" duration="0"/>
-        <testCase name="Phone number that is too long" duration="1"/>
-        <testCase name="Phone number with input that contains the sample data&apos;s phone number" duration="0"/>
-        <testCase name="Test that the value returned is indeed the current time minus 13 years." duration="2"/>
-        <testCase name="Testing isValidDateOfBirth with invalid input 1234--65 gives null." duration="1"/>
-        <testCase name="Testing isValidDateOfBirth with invalid input 321E321-546a456-6a54-9874 gives null." duration="1"/>
-        <testCase name="Testing isValidDateOfBirth with invalid input !@#)-!@#-!@ gives null." duration="0"/>
-        <testCase name="Testing isValidDateOfBirth with invalid input 123AASD- gives null." duration="1"/>
-        <testCase name="Testing isValidDateOfBirth with empty string gives null." duration="1"/>
-        <testCase name="Testing isValidDateOfBirth with invalid input gives null." duration="0"/>
-        <testCase name="Test for boundary date" duration="0"/>
-        <testCase name="Test for random early allowable date" duration="1"/>
-        <testCase name="Test the children under 13 aren&apos;t allowed by usValidDateOfBirth" duration="1"/>
-        <testCase name="Future birthday is disallowed" duration="1"/>
-        <testCase name="Test for the street address for the max length" duration="1"/>
-        <testCase name="Test for the street address for the minimum length and empty string" duration="1"/>
-        <testCase name="Testing for a valid street address" duration="1"/>
-        <testCase name="Testing for street address with numbers" duration="0"/>
-        <testCase name="Testing for the street address with symbols" duration="1"/>
-        <testCase name="Test for the city for the max length" duration="1"/>
-        <testCase name="Test for the city for the minimum length and empty string" duration="1"/>
-        <testCase name="Testing for a valid city" duration="0"/>
-        <testCase name="Testing for city with numbers" duration="1"/>
-        <testCase name="Testing for the city with symbols" duration="0"/>
-        <testCase name="Test for the region for the max length" duration="0"/>
-        <testCase name="Test for the region for the minimum length and empty string" duration="0"/>
-        <testCase name="Testing for a valid region" duration="10"/>
-        <testCase name="Testing for region with numbers" duration="1"/>
-        <testCase name="Testing for the region with symbols" duration="0"/>
-        <testCase name="Test for the country for the max length" duration="1"/>
-        <testCase name="Test for the country for the minimum length and empty string" duration="1"/>
-        <testCase name="Testing for a valid country" duration="0"/>
-        <testCase name="Testing for country with numbers" duration="1"/>
-        <testCase name="Testing for the country with symbols" duration="0"/>
-        <testCase name="Test for the suburb for the max length" duration="0"/>
-        <testCase name="Test for the suburb for the minimum length and empty string" duration="1"/>
-        <testCase name="Testing for a valid suburb" duration="1"/>
-        <testCase name="Testing for suburb with numbers" duration="0"/>
-        <testCase name="Testing for the suburb with symbols" duration="1"/>
-        <testCase name="Test if value 1 &lt; value 2 &lt; 3 gives true" duration="1"/>
-        <testCase name="Test if value 1 &gt; value 2 &gt; 3 gives false" duration="0"/>
-        <testCase name="Test if value 1 = value 2 = value 3 gives true" duration="1"/>
-        <testCase name="Test if value 1 &gt; value 2 = value 3 gives false" duration="0"/>
+    <file path="D:\2021\University\Semester_1\SENG302\Project\Full_Team\team-400\frontend\tests\profile.test.js">
+        <testCase name="isValidRole: Testing for that null role gives false" duration="3"/>
+        <testCase name="isValidRole: Testing for that an arbitary string returns false." duration="1"/>
+        <testCase name="isValidRole: Testing for that 0 returns false." duration="0"/>
+        <testCase name="isValidRole: Testing for User is a valid role" duration="1"/>
+        <testCase name="isValidRole: Testing for if Default Global Admin is a valid role" duration="0"/>
+        <testCase name="isValidRole: Testing for if lobal Application Admin is a valid role" duration="1"/>
+        <testCase name="hasAdminRights: Testing for that null role gives false" duration="0"/>
+        <testCase name="hasAdminRights: Testing for that an arbitary string returns false." duration="1"/>
+        <testCase name="hasAdminRights: Testing for that 0 returns false." duration="0"/>
+        <testCase name="hasAdminRights: Testing for User is not a valid role" duration="1"/>
+        <testCase name="hasAdminRights: Testing for if Default Global Admin is a valid role" duration="0"/>
+        <testCase name="hasAdminRights: Testing for if lobal Application Admin is a valid role" duration="1"/>
+        <testCase name="isDGAA: Testing for that null role gives false" duration="0"/>
+        <testCase name="isDGAA: Testing for that an arbitary string returns false." duration="0"/>
+        <testCase name="isDGAA: Testing for that 0 returns false." duration="0"/>
+        <testCase name="isDGAA: Testing for User is not a DGAA role" duration="1"/>
+        <testCase name="isDGAA: Testing for if DGAA is a DGAA role" duration="1"/>
+        <testCase name="isDGAA: Testing for if GAA is not a DGAA role" duration="0"/>
+        <testCase name="isGAA: Testing for that null role gives false" duration="1"/>
+        <testCase name="isGAA: Testing for that an arbitary string returns false." duration="1"/>
+        <testCase name="isGAA: Testing for that 0 returns false." duration="0"/>
+        <testCase name="isGAA: Testing for User is not a GAA role" duration="1"/>
+        <testCase name="isGAA: Testing for if DGAA is not a GAA role" duration="0"/>
+        <testCase name="isGAA: Testing for if GAA is a GAA role" duration="1"/>
     </file>
 </testExecutions>

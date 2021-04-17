@@ -1,5 +1,5 @@
 @import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
-
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans&family=Oswald:wght@500&family=Roboto&family=Rochester&display=swap');
 /*
  * Created on Wed Feb 10 2021
  *
@@ -36,30 +36,66 @@ body {
   background: #fafbfc;
 }
 
-/****************************************
-               Login Page
- ****************************************/
-
-#formContainer {
-  background-color: #fff;
-  border-radius: 1rem;
+.green-button {
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+  color: white;
 }
 
-#loginButton {
-  background-color: #1EBA8C;
-  color: white;
+.green-button:hover {
+  background-color: transparent;
+  color: #1EBA8C;
   border-color: #1EBA8C;
 }
 
-#loginButton:hover {
+.green-button:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
+.green-search-button {
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+  color: white;
+}
+
+.green-search-button:hover {
   background-color: transparent;
   color: #1EBA8C;
 }
 
-#loginButton:focus{
+.green-search-button:focus {
   outline: none;     /* oranges! yey */
-  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
+}
+
+.green-button-transparent {
+  border-color: #1EBA8C;
+  color: black;
+}
+
+.green-button-transparent:hover {
+  color: white;
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+}
+
+.green-button-transparent:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
+
+/****************************************
+               Login Page
+ ****************************************/
+
+#form-container {
+  background-color: #fff;
+  border-radius: 1rem;
 }
 
 /****************************************
@@ -70,33 +106,34 @@ body {
 /*  width: 60%;*/
 /*}*/
 
-#editProfileButton {
+#edit-profile-button {
   background-color: #fff;
-  border-color: #23d9a3;
+  border-color: #1EBA8C;
 }
 
-#editProfileButton:hover {
-  background-color: #23d9a3
+#edit-profile-button:hover {
+  background-color: #1EBA8C
 }
-
-#logoutButton {
-  border-color: #23d9a3;
-  color: black;
-}
-
-#logoutButton:hover {
-  background-color: #23d9a3;
-}
-
 
 /****************************
-   Profile Header Component
+            Logo
  ****************************/
 
-#searchContainer {
-  width: 45%;
+.company-name-main-font {
+  font-family: 'Merriweather Sans', sans-serif;
+  font-size: 30px;
 }
 
+.company-name-sub-heading {
+  line-height: 50%;
+  font-family: 'Rochester', cursive;
+  font-size: 35px;
+  margin-top: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-left: auto;
+  margin-right: auto;
+}
 /****************************************
               Search Page
  ****************************************/
@@ -129,6 +166,15 @@ body {
   background-color: lightgrey;
 }
 
+/****************************************
+         Business Registration Page
+ ****************************************/
+
+.form-select:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
 
 /*****************************************************************
                   Autocomplete Dropdown Styling
@@ -166,6 +212,10 @@ body {
 .autocomplete-active {
   background-color: DodgerBlue !important;
   color: #ffffff;
+}
+
+.text-font, p, h{
+  font-family: 'Roboto', sans-serif;
 }
 
 /*****************************************************************/

@@ -1,84 +1,114 @@
+<!--This file creates the Search page.-->
+<!--It current contains the navigation bar, a search results table and a footer.-->
+<!--Bootstrap has been used for creating and styling the elements.-->
+
 <template>
-  <div id="outerContainer" class="container">
-    <div class="row">
-      <div class="col">
-        <div class="input-group my-4">
-          <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
-          <button class="btn btn-primary greenButton" tabindex="2"  @click="searchClicked()"><i class="fas fa-search"></i></button>
+  <div>
+
+    <!--nav bar-->
+    <Navbar></Navbar>
+
+    <!--search container-->
+    <div id="outer-container" class="container text-font">
+
+      <!--search bar-->
+      <div class="row">
+        <div class="col search-bar-positioning">
+          <div class="input-group my-4">
+            <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
+            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><font-awesome-icon icon="search" /></button>
+          </div>
         </div>
       </div>
+
+      <div class="row mb-3">
+
+        <!--order by nickname-->
+        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3"
+             @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
+          <b>Nickname</b>
+          <i id="nickname-icon"></i>
+        </div>
+
+        <!--order by full name-->
+        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4"
+             @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
+          <b>Full name</b>
+          <i id="name-icon"></i>
+        </div>
+
+        <!--order by email-->
+        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5"
+             @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
+          <b>Email</b>
+          <i id="email-icon"></i>
+        </div>
+
+        <!--order by address-->
+        <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6"
+             @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
+          <b>Address</b>
+          <i id="address-icon"></i>
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col">
+
+          <!--page number buttons' navigation-->
+          <nav aria-label="user-table-navigation" id="pagination-nav" class="float-end" v-if="maxPage > 1">
+            <ul class="pagination" id="pagination-ul">
+
+              <li :class="toggleDisableClass('page-item', currentPage-1 <= 0)">
+                <a class="page-link" href="#" @click.prevent="previousPage()">Previous</a>
+              </li>
+
+              <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{currentPage-2}}</a>
+              </li>
+
+              <li class="page-item" v-if="currentPage-1 > 0">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{currentPage-1}}</a>
+              </li>
+
+              <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{currentPage}}</a>
+              </li>
+
+              <li class="page-item" v-if="currentPage+1 <= maxPage">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{currentPage+1}}</a>
+              </li>
+
+              <li class="page-item" v-if="maxPage > 2 && currentPage <= 1">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{currentPage+2}}</a>
+              </li>
+
+              <li :class="toggleDisableClass('page-item', currentPage+1 > maxPage)" id="next-button">
+                <a class="page-link" href="#" @click.prevent="nextPage()">Next</a>
+              </li>
+            </ul>
+
+          </nav>
+
+
+        </div>
+      </div>
+
+
     </div>
-
-    <div class="row mb-3">
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
-        <b>Nickname</b>
-        <i id="nicknameIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
-        <b>Full name</b>
-        <i id="nameIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
-        <b>Email</b>
-        <i id="emailIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6" @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
-        <b>Address</b>
-        <i id="addressIcon"></i>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <!-- Avert your eyes for this... -->
-        <nav aria-label="user-table-navigation" id="pagination-nav" class="float-end" v-if="maxPage > 1">
-          <ul class="pagination" id="pagination-ul">
-
-            <li :class="toggleDisableClass('page-item', currentPage-1 <= 0)">
-              <a class="page-link" href="#" @click.prevent="previousPage()">Previous</a>
-            </li>
-
-            <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{currentPage-2}}</a>
-            </li>
-
-            <li class="page-item" v-if="currentPage-1 > 0">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{currentPage-1}}</a>
-            </li>
-
-            <li class="page-item active" aria-current="page">
-              <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{currentPage}}</a>
-            </li>
-
-            <li class="page-item" v-if="currentPage+1 <= maxPage">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{currentPage+1}}</a>
-            </li>
-
-            <li class="page-item" v-if="maxPage > 2 && currentPage <= 1">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{currentPage+2}}</a>
-            </li>
-
-            <li :class="toggleDisableClass('page-item', currentPage+1 > maxPage)" id="next-button">
-              <a class="page-link" href="#" @click.prevent="nextPage()">Next</a>
-            </li>
-          </ul>
-
-        </nav>
-
-
-      </div>
-    </div>
-
-
   </div>
 </template>
 
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-
+import Navbar from "@/components/Navbar";
 export default {
   name: "Search",
+  components: {
+    Navbar
+  },
   data() {
     return {
       nickAscending: false,
@@ -92,10 +122,10 @@ export default {
       small: false
     }
   },
+
   methods: {
     /**
      * Toggles the disabling of pagination buttons.
-     *
      * @param baseClasses Base classes to add
      * @param condition Given condition for toggling
      * @returns {array} A list classes to apply
@@ -107,9 +137,9 @@ export default {
       }
       return classList
     },
+
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
-     *
      * @param event The click event
      * @param newPageNum The page to move to
      */
@@ -118,9 +148,9 @@ export default {
       this.currentPage = newPageNum;
       this.buildRows();
     },
+
     /**
      * Emulates a click when the user presses enter on a column header.
-     *
      * @param event The keydown event
      */
     orderEnter(event) {
@@ -128,10 +158,10 @@ export default {
         event.target.click();
       }
     },
-    /*
+
+    /**
      * Requests a list of users matching the given query from the back-end.
      * If successful it sets the userList variable to the response data.
-     *
      * @return {Promise}
      */
     async requestUsers() {
@@ -141,11 +171,15 @@ export default {
       await Api.searchUsers(query).then(response => {
         this.userList = [...response.data];
         // Order by nickname alphabetically by default
-        this.userList.sort(function(a, b) {
-          if (a.nickname < b.nickname) {return -1;}
-          if (a.nickname > b.nickname) {return 1;}
+        this.userList.sort(function (a, b) {
+          if (a.nickname < b.nickname) {
+            return -1;
+          }
+          if (a.nickname > b.nickname) {
+            return 1;
+          }
           return 0;
-          });
+        });
         this.maxPage = Math.ceil(this.userList.length / this.rowsPerPage)
       }).catch((error) => {
         if (error.request && !error.response) {
@@ -158,9 +192,9 @@ export default {
         }
       })
     },
-    /*
+
+    /**
      * Handles the user pressing enter with the search bar focused. Updates the search if they do.
-     *
      * @param event The keydown event
      */
     search(event) {
@@ -172,9 +206,9 @@ export default {
         );
       }
     },
-    /*
+
+    /**
      * Handles the user pressing clicking on the search button. Completes a search when they do.
-     *
      */
     searchClicked() {
       const inputQuery = this.$refs.searchBar.value;
@@ -183,9 +217,9 @@ export default {
           (e) => console.log(e)
       );
     },
-    /*
+
+    /**
      * Goes to the previous page and updates the rows.
-     *
      */
     previousPage() {
       if (this.currentPage > 1) {
@@ -193,9 +227,9 @@ export default {
         this.buildRows()
       }
     },
-    /*
+
+    /**
      * Goes to the next page and updates the rows.
-     *
      */
     nextPage() {
       if (this.currentPage < this.maxPage) {
@@ -203,7 +237,8 @@ export default {
         this.buildRows()
       }
     },
-    /*
+
+    /**
      * Orders the users based on the given booleans for each column, and updates the display
      * @param nickname Boolean, whether to order by nickname
      * @param fullName Boolean, whether to order by full name
@@ -215,19 +250,27 @@ export default {
       if (nickname) {
         this.disableIcons()
         if (this.nickAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.nickname > b.nickname) {return -1;}
-            if (a.nickname < b.nickname) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.nickname > b.nickname) {
+              return -1;
+            }
+            if (a.nickname < b.nickname) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('nicknameIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function(a, b) {
-            if (a.nickname < b.nickname) {return -1;}
-            if (a.nickname > b.nickname) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.nickname < b.nickname) {
+              return -1;
+            }
+            if (a.nickname > b.nickname) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('nicknameIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.nickAscending = !this.nickAscending;
@@ -240,19 +283,27 @@ export default {
       } else if (fullName) {
         this.disableIcons()
         if (this.nameAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.firstName > b.firstName) {return -1;}
-            if (a.firstName < b.firstName) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.firstName > b.firstName) {
+              return -1;
+            }
+            if (a.firstName < b.firstName) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function(a, b) {
-            if (a.firstName < b.firstName) {return -1;}
-            if (a.firstName > b.firstName) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.firstName < b.firstName) {
+              return -1;
+            }
+            if (a.firstName > b.firstName) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.nickAscending = false;
@@ -265,19 +316,27 @@ export default {
       } else if (email) {
         this.disableIcons()
         if (this.emailAscending) {
-          this.userList.sort(function(a, b) {
-            if (a.email > b.email) {return -1;}
-            if (a.email < b.email) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.email > b.email) {
+              return -1;
+            }
+            if (a.email < b.email) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('emailIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function(a, b) {
-            if (a.email < b.email) {return -1;}
-            if (a.email > b.email) {return 1;}
+          this.userList.sort(function (a, b) {
+            if (a.email < b.email) {
+              return -1;
+            }
+            if (a.email > b.email) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('emailIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.nickAscending = false;
@@ -291,37 +350,153 @@ export default {
         this.disableIcons()
 
         if (this.addressAscending) {
-          this.userList.sort(function(a, b) {
+          this.userList.sort(function (a, b) {
 
-            let address1 = a.homeAddress.split(';');
-            address1 = address1.slice(2, address.length);
-            address1 = address1.join(", ");
+            let city = "";
+            if (a.homeAddress.city) {
+              city = a.homeAddress.city;
+            }
+            let region = "";
+            if (a.homeAddress.region) {
+              region = a.homeAddress.region;
+            }
+            let country = "";
+            if (a.homeAddress.country) {
+              country = a.homeAddress.country;
+            }
 
-            let address2 = b.homeAddress.split(';');
-            address2 = address2.slice(2, address.length);
-            address2 = address2.join(", ");
+            let address1 = "";
+            if (city !== "") {
+              address1 = address1.concat(city);
+            }
+            if (city !== "" && region !== "") {
+              address1 = address1.concat(", ", region);
+            } else {
+              address1 = address1.concat(region);
+            }
 
-            if (address1 > address2) {return -1;}
-            if (address1 < address2) {return 1;}
+            if (region !== "" && country !== "") {
+              address1 = address1.concat(", ", country);
+            } else if (city !== "" && country !== "") {
+              address1 = address1.concat(", ", country);
+            } else {
+              address1 = address1.concat(country);
+            }
+
+            city = "";
+            if (b.homeAddress.city) {
+              city = b.homeAddress.city;
+            }
+            region = "";
+            if (b.homeAddress.region) {
+              region = b.homeAddress.region;
+            }
+            country = "";
+            if (b.homeAddress.country) {
+              country = b.homeAddress.country;
+            }
+
+            let address2 = "";
+            if (city !== "") {
+              address2 = address2.concat(city);
+            }
+            if (city !== "" && region !== "") {
+              address2 = address2.concat(", ", region);
+            } else {
+              address2 = address2.concat(region);
+            }
+
+            if (region !== "" && country !== "") {
+              address2 = address2.concat(", ", country);
+            } else if (city !== "" && country !== "") {
+              address2 = address2.concat(", ", country);
+            } else {
+              address2 = address2.concat(country);
+            }
+
+            if (address1 > address2) {
+              return -1;
+            }
+            if (address1 < address2) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function(a, b) {
+          this.userList.sort(function (a, b) {
 
-            let address1 = a.homeAddress.split(';');
-            address1 = address1.slice(2, address.length);
-            address1 = address1.join(", ");
+            let city = "";
+            if (a.homeAddress.city) {
+              city = a.homeAddress.city;
+            }
+            let region = "";
+            if (a.homeAddress.region) {
+              region = a.homeAddress.region;
+            }
+            let country = "";
+            if (a.homeAddress.country) {
+              country = a.homeAddress.country;
+            }
 
-            let address2 = b.homeAddress.split(';');
-            address2 = address2.slice(2, address.length);
-            address2 = address2.join(", ");
+            let address1 = "";
+            if (city !== "") {
+              address1 = address1.concat(city);
+            }
+            if (city !== "" && region !== "") {
+              address1 = address1.concat(", ", region);
+            } else {
+              address1 = address1.concat(region);
+            }
 
-            if (address1 < address2) {return -1;}
-            if (address1 > address2) {return 1;}
+            if (region !== "" && country !== "") {
+              address1 = address1.concat(", ", country);
+            } else if (city !== "" && country !== "") {
+              address1 = address1.concat(", ", country);
+            } else {
+              address1 = address1.concat(country);
+            }
+
+            city = "";
+            if (b.homeAddress.city) {
+              city = b.homeAddress.city;
+            }
+            region = "";
+            if (b.homeAddress.region) {
+              region = b.homeAddress.region;
+            }
+            country = "";
+            if (b.homeAddress.country) {
+              country = b.homeAddress.country;
+            }
+
+            let address2 = "";
+            if (city !== "") {
+              address2 = address2.concat(city);
+            }
+            if (city !== "" && region !== "") {
+              address2 = address2.concat(", ", region);
+            } else {
+              address2 = address2.concat(region);
+            }
+
+            if (region !== "" && country !== "") {
+              address2 = address2.concat(", ", country);
+            } else if (city !== "" && country !== "") {
+              address2 = address2.concat(", ", country);
+            } else {
+              address2 = address2.concat(country);
+            }
+
+            if (address1 < address2) {
+              return -1;
+            }
+            if (address1 > address2) {
+              return 1;
+            }
             return 0;
           })
-          document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.nickAscending = false;
@@ -334,24 +509,26 @@ export default {
       }
 
     },
-    /*
+
+    /**
      * Disables all ascending or descending icons in the top column headers.
      */
     disableIcons() {
-      document.getElementById('nicknameIcon').setAttribute('class','');
-      document.getElementById('nameIcon').setAttribute('class','');
-      document.getElementById('emailIcon').setAttribute('class','');
-      document.getElementById('addressIcon').setAttribute('class','');
+      document.getElementById('nicknameIcon').setAttribute('class', '');
+      document.getElementById('nameIcon').setAttribute('class', '');
+      document.getElementById('emailIcon').setAttribute('class', '');
+      document.getElementById('addressIcon').setAttribute('class', '');
 
     },
-    /*
+
+    /**
      * Dynamically builds the rows of users from the stored userList.
      */
     buildRows() {
       const self = this;
       this.clearRows();
-      let limit = this.rowsPerPage + (this.currentPage-1) * this.rowsPerPage;
-      let startIndex = (this.currentPage-1) * this.rowsPerPage;
+      let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
+      let startIndex = (this.currentPage - 1) * this.rowsPerPage;
       const outerContainer = document.getElementById('outerContainer');
       const lastChild = outerContainer.lastChild;
 
@@ -365,88 +542,89 @@ export default {
         let tabIndex = 7;
 
 
-        for (let i = startIndex; i < limit; i++)  {
-            // Check breakpoint
-            // let width = window.innerWidth;
+        for (let i = startIndex; i < limit; i++) {
+          // Check breakpoint
+          // let width = window.innerWidth;
 
-            let classInput = 'row mb-2 justify-content-center';
-            let t = true;
-            if (t) {
-              classInput = 'col text-center';
-            }
+          let classInput = 'row mb-2 justify-content-center';
+          let t = true;
+          if (t) {
+            classInput = 'col text-center';
+          }
 
-            const userRow = document.createElement("div");
-            if (i % 2 === 0) {
-              userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour userRows");
-            } else {
-              userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour-dark userRows");
-            }
-            userRow.setAttribute("tabIndex", `${tabIndex}`);
-            userRow.setAttribute("id", `${this.userList[i].id}`);
+          const userRow = document.createElement("div");
+          if (i % 2 === 0) {
+            userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour userRows");
+          } else {
+            userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour-dark userRows");
+          }
+          userRow.setAttribute("tabIndex", `${tabIndex}`);
+          userRow.setAttribute("id", `${this.userList[i].id}`);
 
-            const nickCol = document.createElement("div");
-            nickCol.setAttribute("class", `${classInput}`);
-            nickCol.setAttribute("id", `${i}-nick`);
-            nickCol.innerHTML = this.userList[i].nickname;
-            userRow.appendChild(nickCol);
+          const nickCol = document.createElement("div");
+          nickCol.setAttribute("class", `${classInput}`);
+          nickCol.setAttribute("id", `${i}-nick`);
+          nickCol.innerHTML = this.userList[i].nickname;
+          userRow.appendChild(nickCol);
 
-            const nameCol = document.createElement("div");
-            nameCol.setAttribute("class", `${classInput}`);
-            nameCol.setAttribute("id", `${i}-name`);
+          const nameCol = document.createElement("div");
+          nameCol.setAttribute("class", `${classInput}`);
+          nameCol.setAttribute("id", `${i}-name`);
+          if (this.userList[i].middleName) {
             nameCol.innerText = this.userList[i].firstName + " " + this.userList[i].middleName + " " + this.userList[i].lastName;
-            userRow.appendChild(nameCol);
+          } else {
+            nameCol.innerText = this.userList[i].firstName + " " + this.userList[i].lastName;
+          }
 
-            const emailCol = document.createElement("div");
-            emailCol.setAttribute("class", `${classInput}`);
-            emailCol.setAttribute("id", `${i}-email`);
-            emailCol.innerText = this.userList[i].email;
-            userRow.appendChild(emailCol);
+          userRow.appendChild(nameCol);
 
-            const addressCol = document.createElement("div");
-            addressCol.setAttribute("class", `${classInput}`);
-            addressCol.setAttribute("id", `${i}-address`);
-            let address = this.userList[i].homeAddress.split(';');
-            address = address.slice(2, address.length);
-            address = address.join(", ");
-            addressCol.innerText = address
-            userRow.appendChild(addressCol);
+          const emailCol = document.createElement("div");
+          emailCol.setAttribute("class", `${classInput}`);
+          emailCol.setAttribute("id", `${i}-email`);
+          emailCol.innerText = this.userList[i].email;
+          userRow.appendChild(emailCol);
 
+          const addressCol = document.createElement("div");
+          addressCol.setAttribute("class", `${classInput}`);
+          addressCol.setAttribute("id", `${i}-address`);
 
+          const address = this.getAddress(this.userList[i]);
 
+          addressCol.innerText = address
+          userRow.appendChild(addressCol);
 
 
             userRow.addEventListener("click", function(event) {
               let path;
 
-              if (event.target.id.includes('-')) {
-                const row = event.target.parentNode;
-                path = `/profile/${row.id}`
-              } else {
-                path = `/profile/${event.target.id}`
-              }
+            if (event.target.id.includes('-')) {
+              const row = event.target.parentNode;
+              path = `/profile/${row.id}`
+            } else {
+              path = `/profile/${event.target.id}`
+            }
 
-              if (self.$route.path !== path) {
-                self.$router.push({path});
-              }
+            if (self.$route.path !== path) {
+              self.$router.push({path});
+            }
 
-            });
+          });
 
-            userRow.addEventListener('keydown', function (event) {
-              // TODO replace all deprecated keyCode uses
-              if (event.keyCode === 13) {
-                event.target.click();
-              }
-            })
+          userRow.addEventListener('keydown', function (event) {
+            // TODO replace all deprecated keyCode uses
+            if (event.keyCode === 13) {
+              event.target.click();
+            }
+          })
 
-              outerContainer.insertBefore(userRow, lastChild);
+          outerContainer.insertBefore(userRow, lastChild);
 
-              tabIndex += 1;
-
+          tabIndex += 1;
 
           }
       }
 
-      let showingStart = this.userList.length ? startIndex+1 : 0;
+      let showingStart = this.userList.length ? startIndex + 1 : 0;
 
       const showingString = `Showing ${showingStart}-${limit} of ${this.userList.length} results`;
       const showingRow = document.createElement('div');
@@ -460,31 +638,68 @@ export default {
       outerContainer.insertBefore(showingRow, lastChild);
 
     },
-    /*
+
+    /**
      * Removes all rows of users from the page.
      */
     clearRows() {
       let allRows = document.getElementsByClassName("userRows");
-      // Not sure why i-->0 works when i >0; i-- doesn't
+      //TODO Not sure why i-->0 works when i >0; i-- doesn't
       for (let i = allRows.length; i-->0;) {
         allRows[i].parentNode.removeChild(allRows[i]);
       }
       if (document.contains(document.getElementById('showingRow'))) {
         document.getElementById('showingRow').remove();
       }
-
     },
-  },
-  mounted() {
+
     /*
-    When mounted, initiate population of page.
-    If cookies are invalid or not present, redirect to login page.
+     * Creates a string which represents a user's address.
      */
+    getAddress(user) {
+      let city = "";
+      if (user.homeAddress.city) {
+        city = user.homeAddress.city;
+      }
+      let region = "";
+      if (user.homeAddress.region) {
+        region = user.homeAddress.region;
+      }
+      let country = "";
+      if (user.homeAddress.country) {
+        country = user.homeAddress.country;
+      }
+
+      let address = "";
+      if (city !== "") {
+        address = address.concat(city);
+      }
+      if (city !== "" && region !== "") {
+        address = address.concat(", ", region);
+      } else {
+        address = address.concat(region);
+      }
+
+      if (region !== "" && country !== "") {
+        address = address.concat(", ", country);
+      } else if (city !== "" && country !== "") {
+        address = address.concat(", ", country);
+      } else {
+        address = address.concat(country);
+      }
+
+      return address;
+    },
+
+  },
+
+  /**
+   * When mounted, initiate population of page.
+   * If cookies are invalid or not present, redirect to login page.
+   */
+  mounted() {
     const currentID = Cookies.get('userID');
-    // TODO Implement when we agree on a JSESSIONID spec with backend team
-    // Cookies.get('JSESSIONID');
-    const validJSESSIONID = true;
-    if (currentID && validJSESSIONID) {
+    if (currentID) {
       this.requestUsers().then(
           () => this.buildRows()
       ).catch(
@@ -494,6 +709,8 @@ export default {
     } else {
       this.$router.push({name: 'Login'});
     }
+
+    //TODO what is the purpose of this? Is it needed still?
 
     // let self = this;
     // this.$nextTick(function() {
@@ -509,16 +726,26 @@ export default {
 }
 </script>
 
+<!--------------------------------------- Search User by Name Page Styling -------------------------------------------->
+
 <style scoped>
 
-.greenButton {
-  background-color: #1EBA8C;
-  border-color: #1EBA8C;
+#searchBar:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
 }
 
-.greenButton:hover {
-  background-color: transparent;
-  color: #1EBA8C;
+.search-bar-positioning {
+  padding-top: 40px;
+}
+
+/**
+ * TODO remove once footer is sticky
+ * Calculates where footer should be.
+ */
+.all-but-footer {
+  min-height: calc(100vh - 240px);
 }
 
 </style>

@@ -2,6 +2,9 @@ package org.seng302.main;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
+import org.seng302.address.AddressRepository;
 import org.seng302.business.BusinessRepository;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 
 /**
  * This spring component runs at application startup to do some initialisation
@@ -28,6 +32,7 @@ public class MainApplicationRunner implements ApplicationRunner {
     private static final Logger logger = LogManager.getLogger(MainApplicationRunner.class.getName());
     private UserRepository userRepository;
     private BusinessRepository businessRepository;
+    private AddressRepository addressRepository;
 
     @Value("${dgaa.email}")
     private String dgaaEmail;
@@ -43,9 +48,10 @@ public class MainApplicationRunner implements ApplicationRunner {
      * classes (i.e. dependency injection)
      */
     @Autowired
-    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository) {
+    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
+        this.addressRepository = addressRepository;
     }
 
     /**
@@ -58,6 +64,11 @@ public class MainApplicationRunner implements ApplicationRunner {
         if (isPresent(dgaaEmail) && isPresent(dgaaPassword)) {
             logger.info("Startup application with {}", args);
 
+        userRepository.findAll().forEach(logger::info);
+        businessRepository.findAll().forEach(logger::info);
+        addressRepository.findAll().forEach(logger::info);
+
+        addTestUsers();
             userRepository.findAll().forEach(logger::info);
             businessRepository.findAll().forEach(logger::info);
         } else {
@@ -81,15 +92,28 @@ public class MainApplicationRunner implements ApplicationRunner {
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
     public void checkDGAAExists() throws Exception {
         if (!(userRepository.existsByRole(Role.DEFAULTGLOBALAPPLICATIONADMIN))) {
+            Address address = new Address(
+                    "3/24",
+                    "Ilam Road",
+                    "Christchurch",
+                    "Canterbury",
+                    "New Zealand",
+                    "90210"
+            );
+            addressRepository.save(address);
             User dGAA = new User(
                     "John",
                     "Doe",
                     "S",
                     "Generic",
                     "Biography",
+                    "email@email.com",
+                    LocalDate.of(2000, 2, 2),
                     dgaaEmail,
                     LocalDate.of(2020, 2, 2),
                     "0271316",
+                    address,
+                    "Password123!",
                     "address",
                     dgaaPassword,
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
@@ -105,4 +129,9 @@ public class MainApplicationRunner implements ApplicationRunner {
     public boolean isPresent(String dgaaData) {
         return (dgaaData != null) && !(dgaaData.isEmpty());
     }
+
+    public void addTestUsers() throws Exception {
+
+    }
+
 }
