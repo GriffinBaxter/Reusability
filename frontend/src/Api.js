@@ -286,13 +286,26 @@ export default {
   // /users/{id}/revokeAdmin for readability purposes.
   revokeAdmin: (userId) => {
     return instance.put(`/users/${userId}/revokeAdmin`, {}, {
-    withCredentials: true
+      withCredentials: true
   })
-
   },
 
   getBusiness: (businessID) => {
     return instance.get(`/businesses/${businessID}`,{
+      withCredentials: true
+    })
+  },
+
+  makeAdministrator: (businessesId, userId) => {
+    return instance.put(`/businesses/${businessesId}/makeAdministrator`, {
+      userId},{
+      withCredentials: true
+    })
+  },
+
+  removeAdministrator: (businessesId, userId) => {
+    return instance.put(`/businesses/${businessesId}/removeAdministrator`, {
+      userId},{
       withCredentials: true
     })
   }

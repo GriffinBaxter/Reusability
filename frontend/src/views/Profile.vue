@@ -66,6 +66,11 @@
             <div class="card-body">{{actionErrorMessage}}</div>
           </div>
 
+          <div class="card text-center  shadow-sm mt-3">
+            <div class="card-body">
+              <button type="button" class="btn btn-outline-success" @click="activeAsAdministrator()">Active As Administrator</button>
+            </div>
+          </div>
           <!--
           This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
           because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
@@ -586,6 +591,11 @@ export default {
     logout() {
       Cookies.remove('userID');
       this.$router.push({name: 'Login'});
+    },
+    activeAsAdministrator(){
+      if (this.otherUser) {
+        Api.makeAdministrator(Cookies.get("actAs"), this.urlID);
+      }
     }
   },
 
