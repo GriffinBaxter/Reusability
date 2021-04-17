@@ -18,7 +18,7 @@
                 <ThresholdFilter level="warn"  onMatch="DENY" onMismatch="NEUTRAL"/>
                 <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
                 <ThresholdFilter level="fatal" onMatch="DENY" onMismatch="NEUTRAL"/>
-                <!-- Accept info, warn, error, fatal and deny debug/trace -->
+                <!-- Accept info, so only info messages are outputted to file. -->
                 <ThresholdFilter level="info"  onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
             <Policies>
@@ -37,7 +37,7 @@
 
         <!-- the following defines a logger that will output to stdout -->
         <Console name="stdout" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36}:%L - %msg%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n"/>
         </Console>
     </Appenders>
 

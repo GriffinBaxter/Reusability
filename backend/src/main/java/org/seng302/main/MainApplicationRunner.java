@@ -63,14 +63,10 @@ public class MainApplicationRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         if (isPresent(dgaaEmail) && isPresent(dgaaPassword)) {
             logger.info("Startup application with {}", args);
-
-        userRepository.findAll().forEach(logger::info);
-        businessRepository.findAll().forEach(logger::info);
-        addressRepository.findAll().forEach(logger::info);
-
-        addTestUsers();
             userRepository.findAll().forEach(logger::info);
             businessRepository.findAll().forEach(logger::info);
+            addressRepository.findAll().forEach(logger::info);
+            addTestUsers();
         } else {
             logger.fatal("Environment variables for DGAA email and/or password are not defined.");
             logger.info("-- shutting down application --");
@@ -107,14 +103,10 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "S",
                     "Generic",
                     "Biography",
-                    "email@email.com",
-                    LocalDate.of(2000, 2, 2),
                     dgaaEmail,
-                    LocalDate.of(2020, 2, 2),
+                    LocalDate.of(2000, 2, 2),
                     "0271316",
                     address,
-                    "Password123!",
-                    "address",
                     dgaaPassword,
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
