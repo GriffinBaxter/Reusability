@@ -66,9 +66,14 @@
             <div class="card-body">{{actionErrorMessage}}</div>
           </div>
 
-          <div class="card text-center  shadow-sm mt-3">
+          <div class="card text-center  shadow-sm mt-3" v-if="this.acting">
             <div class="card-body">
-              <button type="button" class="btn btn-outline-success" @click="activeAsAdministrator()">Active As Administrator</button>
+              <div v-if="!businessAdministrator">
+                <button type="button" class="btn btn-outline-success" @click="activeAsAdministrator()">Active As Administrator</button>
+              </div>
+              <div v-else>
+                <button type="button" class="btn btn-outline-warning" @click="removeActiveAdministrator()">Remove Administrator</button>
+              </div>
             </div>
           </div>
           <!--
@@ -261,7 +266,10 @@ export default {
       joined: "",
       businessesAdministered: [],
       otherUser: false,
-      role: null
+      role: null,
+
+      businessAdministrator: false,
+      acting: false
     }
   },
   methods: {
@@ -565,6 +573,16 @@ export default {
         })
       }
 
+      const act = Cookies.get("actAs");
+      if (act) {
+        this.acting = true;
+        if (act in this.businessesAdministered) {
+          this.businessAdministrator = true;
+        }
+      } else {
+        this.acting = false;
+      }
+
       //basic unpack
       this.firstName = data.firstName;
       this.middleName = data.middleName;
@@ -595,6 +613,11 @@ export default {
     activeAsAdministrator(){
       if (this.otherUser) {
         Api.makeAdministrator(Cookies.get("actAs"), this.urlID);
+      }
+    },
+    removeActiveAdministrator() {
+      if(this.otherUser) {
+        Api.removeAdministrator(Cookies.get("actAs"), this.urlID)
       }
     }
   },
