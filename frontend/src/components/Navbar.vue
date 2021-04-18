@@ -32,7 +32,7 @@
         <div class="navbar-collapse" id="navbar-id">
           <!-- navbar inner is required for the animation -->
           <div id="navbar-inner-id" class="navbar-nav mb-2 mb-xl-0   py-3   mx-auto me-xl-0 ms-xl-auto">
-            <ul class="navbar-nav nav-fill flex-column flex-xl-row">
+            <ul class="navbar-nav flex-column flex-xl-row">
 
                 <!-- default page links -->
                 <li class="nav-item">
@@ -76,7 +76,7 @@
 
               </ul>
 
-              <ul class="navbar-nav nav-fill flex-column flex-xl-row">
+              <ul class="navbar-nav flex-column flex-xl-row">
                 <!-- Interact As -->
                 <li id="interactDrop">
                   <a role="button" @click="() => {
