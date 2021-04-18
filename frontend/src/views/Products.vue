@@ -2,6 +2,12 @@
   <div id="outerContainer" class="container">
 
     <div class="row mb-3">
+      <div class="col">
+          <button class="btn btn-outline-primary float-end mt-4" tabindex="2" id="createProductButton">Create Product</button>
+      </div>
+    </div>
+
+    <div class="row mb-3">
       <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)"
            @click="orderProducts(true, false , false, false, false, false)">
         <b>ProductID</b>
@@ -445,7 +451,7 @@ export default {
       if (this.productList.length > 0) {
 
         // 6 is the last index of the permanent items
-        let tabIndex = 7;
+        let tabIndex = 8;
 
 
         for (let i = startIndex; i < limit; i++) {
