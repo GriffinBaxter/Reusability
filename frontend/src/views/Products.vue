@@ -9,7 +9,7 @@
     <button id="create-product-button" type="button" class="btn btn-lg btn-primary float-lg-end" @click="modal.show()">Create Product</button>
 
     <div class="modal fade" ref="CreateProductModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h3 class="modal-title" id="createProductModalLabel">Create Product</h3>
@@ -48,8 +48,8 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="modal.hide()" tabindex="7">Cancel</button>
-            <button type="button" class="btn btn-primary" tabindex="6">Save</button>
+            <button type="button" class="btn btn-md btn-outline-secondary green-button-transparent" @click="modal.hide()" tabindex="7">Cancel</button>
+            <button type="button" class="btn btn-md btn-primary float-lg-end green-button" tabindex="6">Save</button>
           </div>
         </div>
       </div>
