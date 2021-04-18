@@ -11,6 +11,7 @@ import org.seng302.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -18,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +38,7 @@ public class ProductRepositoryIntegrationTests {
     @Autowired
     private ProductRepository productRepository;
 
-    private List<ProductPayload> foundProductPayloadList;
+    private Page<Product> foundProductList;
 
     /**
      * Tests that when there are products in the database with the given business ID then
@@ -101,16 +101,16 @@ public class ProductRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundProductPayloadList = productRepository.findProductsByBusinessId(business.getId());
+        foundProductList = productRepository.findProductsByBusinessId(business.getId(), null);
 
         // then
-        assertThat(foundProductPayloadList.isEmpty()).isFalse();
-        assertThat(foundProductPayloadList.get(0).getId()).isEqualTo("PROD");
-        assertThat(foundProductPayloadList.get(0).getName()).isEqualTo("Beans");
-        assertThat(foundProductPayloadList.get(0).getDescription()).isEqualTo("Description");
-        assertThat(foundProductPayloadList.get(0).getManufacturer()).isEqualTo("Manufacturer");
-        assertThat(foundProductPayloadList.get(0).getRecommendedRetailPrice()).isEqualTo(20.00);
-        assertThat(foundProductPayloadList.get(0).getCreated()).isEqualTo(LocalDateTime.of(
+        assertThat(foundProductList.isEmpty()).isFalse();
+        assertThat(foundProductList.get().findFirst().get().getProductId()).isEqualTo("PROD");
+        assertThat(foundProductList.get().findFirst().get().getName()).isEqualTo("Beans");
+        assertThat(foundProductList.get().findFirst().get().getDescription()).isEqualTo("Description");
+        assertThat(foundProductList.get().findFirst().get().getManufacturer()).isEqualTo("Manufacturer");
+        assertThat(foundProductList.get().findFirst().get().getRecommendedRetailPrice()).isEqualTo(20.00);
+        assertThat(foundProductList.get().findFirst().get().getCreated()).isEqualTo(LocalDateTime.of(
                     LocalDate.of(2021, 1, 1),
                     LocalTime.of(0, 0)).toString());
     }
@@ -163,10 +163,10 @@ public class ProductRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundProductPayloadList = productRepository.findProductsByBusinessId(business.getId());
+        foundProductList = productRepository.findProductsByBusinessId(business.getId(), null);
 
         // then
-        assertThat(foundProductPayloadList.isEmpty()).isTrue();
+        assertThat(foundProductList.get().findAny().isEmpty()).isTrue();
     }
 
     /**
@@ -176,10 +176,10 @@ public class ProductRepositoryIntegrationTests {
     @Test
     public void whenFindProductsByNonExistingBusinessIdThenDontReturnProductPayload() {
         // when
-        foundProductPayloadList = productRepository.findProductsByBusinessId(1);
+        foundProductList = productRepository.findProductsByBusinessId(1, null);
 
         // then
-        assertThat(foundProductPayloadList.isEmpty()).isTrue();
+        assertThat(foundProductList.get().findAny().isEmpty()).isTrue();
     }
 
     /**

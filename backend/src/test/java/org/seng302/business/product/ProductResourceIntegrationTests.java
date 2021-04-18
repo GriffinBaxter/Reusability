@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -546,13 +547,16 @@ public class ProductResourceIntegrationTests {
                         product.getCreated()) + "]";
 
         // when
-        List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                                            product.getDescription(), product.getManufacturer(),
-                                            product.getRecommendedRetailPrice(), product.getCreated()));
-        when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
+        List<Product> list = List.of(product);
+        Page<Product> pagedResponse = new PageImpl(list);
+        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                                .param("orderBy", "productIdASC")
+                                .param("page", "0")
                                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                                 .andReturn().getResponse();
 
@@ -579,13 +583,16 @@ public class ProductResourceIntegrationTests {
                 product.getCreated()) + "]";
 
         // when
-        List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                                            product.getDescription(), product.getManufacturer(),
-                                            product.getRecommendedRetailPrice(), product.getCreated()));
-        when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
+        List<Product> list = List.of(product);
+        Page<Product> pagedResponse = new PageImpl(list);
+        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -612,13 +619,16 @@ public class ProductResourceIntegrationTests {
                 product.getCreated()) + "]";
 
         // when
-        List<ProductPayload> list = List.of(new ProductPayload(product.getProductId(), product.getName(),
-                                            product.getDescription(), product.getManufacturer(),
-                                            product.getRecommendedRetailPrice(), product.getCreated()));
-        when(productRepository.findProductsByBusinessId(1)).thenReturn(list);
+        List<Product> list = List.of(product);
+        Page<Product> pagedResponse = new PageImpl(list);
+        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", gAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -643,6 +653,8 @@ public class ProductResourceIntegrationTests {
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(businessRepository.findBusinessById(0)).thenReturn(Optional.empty());
         response = mvc.perform(get(String.format("/businesses/%d/products", 0))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -665,6 +677,8 @@ public class ProductResourceIntegrationTests {
 
         // when
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", String.valueOf(0))))
                 .andReturn().getResponse();
 
@@ -689,6 +703,8 @@ public class ProductResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -710,7 +726,9 @@ public class ProductResourceIntegrationTests {
         expectedJson = "";
 
         // when
-        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId())))
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                    .param("orderBy", "productIdASC")
+                    .param("page", "0"))
                     .andReturn().getResponse();
 
         // then
