@@ -271,7 +271,7 @@ public class UserResource {
             @RequestParam String searchQuery,
             @RequestParam String orderBy,
             @RequestParam String page
-    ) {
+    ) throws Exception {
         // TODO Add logging
 
         getUserVerifySession(sessionToken);
@@ -354,7 +354,7 @@ public class UserResource {
      * @param sessionToken The current session token to verify
      * @return A list of userPayloads.
      */
-    public List<UserPayload> convertToPayload(List<User> userList, String sessionToken) {
+    public List<UserPayload> convertToPayload(List<User> userList, String sessionToken) throws Exception {
         List<UserPayload> payLoads = new ArrayList<>();
         for (User user : userList) {
             Role role = null;
