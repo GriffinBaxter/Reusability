@@ -41,14 +41,16 @@
           <div class="card text-center shadow-sm">
             <div class="card-body">
 
-              <!--user's profile image--> <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
+              <!--user's profile image-->
+              <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
               <div></div>
-              <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+              <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')"
+                   alt="Profile Image"/>
 
               <!--user's nickname and bio-->
               <div class="mt-3">
-                <h4>{{nickname}}</h4>
-                <div class="text-secondary">{{bio}}</div>
+                <h4>{{ nickname }}</h4>
+                <div class="text-secondary">{{ bio }}</div>
               </div>
 
             </div>
@@ -63,16 +65,23 @@
 
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>
-            <div class="card-body">{{actionErrorMessage}}</div>
+            <div class="card-body">{{ actionErrorMessage }}</div>
           </div>
 
-          <div class="card text-center  shadow-sm mt-3" v-if="acting && otherUser">
+          <div class="card text-center  shadow-sm mt-3" v-if="actingBusinessId && otherUser">
             <div class="card-body">
-              <div v-if="!businessAdministrator">
-                <button type="button" class="btn btn-outline-success" @click="activeAsAdministrator()">Active As Administrator</button>
+              <div v-if="!isBusinessAdministrator">
+                <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
+                <button type="button" class="btn btn-outline-primary" v-else @click="activeAsAdministrator()">Active As
+                  Administrator
+                </button>
               </div>
+
               <div v-else>
-                <button type="button" class="btn btn-outline-warning" @click="removeActiveAdministrator()">Remove Administrator</button>
+                <div class="spinner-border spinner-border-sm text-warning" v-if="loadingAction"></div>
+                <button type="button" class="btn btn-outline-warning" v-else @click="removeActiveAdministrator()">Remove
+                  Administrator
+                </button>
               </div>
             </div>
           </div>
@@ -88,13 +97,17 @@
             <div class="card-body">
               <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
               <div v-if="isGAA(role)">
-                <div class="spinner-border spinner-border-sm text-danger" v-if="loadingGaaAction"></div>
-                <button type="button" class="btn btn-lg btn-outline-danger" v-else @click="revokeUserGAA">Revoke admin rights</button>
+                <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
+                <button type="button" class="btn btn-lg btn-outline-danger" v-else @click="revokeUserGAA">Revoke admin
+                  rights
+                </button>
               </div>
 
               <div v-else>
-                <div class="spinner-border spinner-border-sm text-success" v-if="loadingGaaAction"></div>
-                <button type="button" class="btn btn-lg btn-outline-success" v-else @click="grantUserGAA">Grant admin rights</button>
+                <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
+                <button type="button" class="btn btn-lg btn-outline-success" v-else @click="grantUserGAA">Grant admin
+                  rights
+                </button>
               </div>
             </div>
           </div>
@@ -113,7 +126,7 @@
                   </div>
                   <div class="col-8">
                     <div class="text-secondary" align="right">
-                      {{firstName}} {{middleName}} {{lastName}}
+                      {{ firstName }} {{ middleName }} {{ lastName }}
                     </div>
                   </div>
                 </div>
@@ -128,7 +141,7 @@
                   </div>
                   <div class="col">
                     <div class="text-secondary" align="right">
-                      {{email}}
+                      {{ email }}
                     </div>
                   </div>
                 </div>
@@ -143,14 +156,14 @@
                   </div>
                   <div class="col">
                     <div class="text-secondary" align="right">
-                      {{dateOfBirth}}
+                      {{ dateOfBirth }}
                     </div>
                   </div>
                 </div>
               </div>
 
               <!--user's phone number-->
-              <hr id="date-header">                <!--TODO not sure if this should be called phoneHR as address section-->
+              <hr id="date-header"><!--TODO not sure if this should be called phoneHR as address section-->
               <div class="container" id="phone-row">
                 <div class="row justify-content-between">
                   <div class="col-md-3">
@@ -158,14 +171,14 @@
                   </div>
                   <div class="col">
                     <div class="text-secondary" align="right">
-                      {{phoneNumber}}
+                      {{ phoneNumber }}
                     </div>
                   </div>
                 </div>
               </div>
 
               <!--user's home address-->
-              <hr id="phone-header">               <!--TODO not sure if this should be called phoneHR as address section-->
+              <hr id="phone-header"><!--TODO not sure if this should be called phoneHR as address section-->
               <div class="container">
                 <div class="row justify-content-between">
                   <div class="col-md-3">
@@ -173,7 +186,7 @@
                   </div>
                   <div class="col">
                     <div class="text-secondary" v-for="lines in homeAddress" :key="lines.line" align="right">
-                      {{lines.line}}
+                      {{ lines.line }}
                     </div>
                   </div>
                 </div>
@@ -188,7 +201,7 @@
                   </div>
                   <div class="col">
                     <div class="text-secondary" align="right">
-                      {{joined}}
+                      {{ joined }}
                     </div>
                   </div>
                 </div>
@@ -200,10 +213,14 @@
                     <h6>Businesses Administered:</h6>
                   </div>
                   <div class="col">
-                    <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
-                         align="right" @click="pushToBusiness(business.id)">
-                      {{business.name}}
+                    <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
+                    <div v-else>
+                      <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
+                           align="right" @click="pushToBusiness(business.id)">
+                        {{ business.name }}
+                      </div>
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -212,7 +229,8 @@
           </div>
 
           <!--logout button-->
-          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
+          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out
+          </button>
 
         </div>
       </div>
@@ -243,7 +261,7 @@ export default {
   data() {
     return {
       actionErrorMessage: "",
-      loadingGaaAction: false,
+      loadingAction: false,
       urlID: null,
       firstName: "",
       lastName: "",
@@ -268,8 +286,8 @@ export default {
       otherUser: false,
       role: null,
 
-      businessAdministrator: false,
-      acting: false
+      isBusinessAdministrator: false,
+      actingBusinessId: null,
     }
   },
   methods: {
@@ -324,7 +342,7 @@ export default {
 
       const currentDate = new Date();
       let months = (currentDate.getFullYear() - dateJoined.getFullYear()) * 12
-          + (currentDate.getMonth()-dateJoined.getMonth());
+          + (currentDate.getMonth() - dateJoined.getMonth());
 
       // getDate instead of getDay is important
       // "The value returned by getDay
@@ -345,14 +363,14 @@ export default {
     async grantUserGAA() {
 
       // If the process is already running return.
-      if (this.loadingGaaAction) return;
+      if (this.loadingAction) return;
 
       if (this.urlID == null) {
         this.actionErrorMessage = "Sorry, but something went wrong..."
         return
       }
 
-      this.loadingGaaAction = true;
+      this.loadingAction = true;
 
       await Api.makeAdmin(this.urlID).then(
           data => {
@@ -391,7 +409,7 @@ export default {
       })
 
 
-      this.loadingGaaAction = false;
+      this.loadingAction = false;
 
     },
     /**
@@ -401,14 +419,14 @@ export default {
     async revokeUserGAA() {
 
       // If the process is already running return.
-      if (this.loadingGaaAction) return;
+      if (this.loadingAction) return;
 
       if (this.urlID == null) {
         this.actionErrorMessage = "Sorry, but something went wrong..."
         return
       }
 
-      this.loadingGaaAction = true;
+      this.loadingAction = true;
 
       await Api.revokeAdmin(this.urlID).then(
           data => {
@@ -452,7 +470,7 @@ export default {
         }
       })
 
-      this.loadingGaaAction = false;
+      this.loadingAction = false;
 
     },
 
@@ -512,80 +530,81 @@ export default {
         this.country = data.homeAddress.country;
       }
 
-      if (this.otherUser) {
-        document.getElementById('phone-row').remove();
-        document.getElementById('date-of-birth-row').remove();
-        document.getElementById('business-administered-row').remove();
-        document.getElementById('business-administered-header').remove();
-        document.getElementById('phone-header').remove();
-        document.getElementById('date-header').remove();
+      // if (this.otherUser) {
+      //   document.getElementById('phone-row').remove();
+      //   document.getElementById('date-of-birth-row').remove();
+      //   document.getElementById('business-administered-row').remove();
+      //   document.getElementById('business-administered-header').remove();
+      //   document.getElementById('phone-header').remove();
+      //   document.getElementById('date-header').remove();
+      //
+      //   //address unpack
+      //   if (this.city !== "") {
+      //     this.homeAddress.push({line: this.city});
+      //   }
+      //   if (this.region !== "" && this.country !== ""){
+      //     this.homeAddress.push({line: this.region + ", " + this.country});
+      //   } else {
+      //     this.homeAddress.push({line: this.region + this.country});
+      //   }
+      //
+      // } else {
+      //basic unpack
+      this.dateOfBirth = this.formatAge(data.dateOfBirth);
+      this.phoneNumber = data.phoneNumber;
 
-        //address unpack
-        if (this.city !== "") {
-          this.homeAddress.push({line: this.city});
-        }
-        if (this.region !== "" && this.country !== ""){
-          this.homeAddress.push({line: this.region + ", " + this.country});
-        } else {
-          this.homeAddress.push({line: this.region + this.country});
-        }
-
-      } else {
-        //basic unpack
-        this.dateOfBirth = this.formatAge(data.dateOfBirth);
-        this.phoneNumber = data.phoneNumber;
-
-        //address unpack
-        if (data.homeAddress.streetNumber) {
-          this.streetNumber = data.homeAddress.streetNumber;
-        }
-        if (data.homeAddress.streetName) {
-          this.streetName = data.homeAddress.streetName;
-        }
-        if (data.homeAddress.city) {
-          this.city = data.homeAddress.city;
-        }
-        if (data.homeAddress.postcode) {
-          this.postcode = data.homeAddress.postcode;
-        }
-
-        if (this.streetNumber !== "" && this.streetName !== ""){
-          this.homeAddress.push({line: this.streetNumber + " " + this.streetName});
-        } else {
-          this.homeAddress.push({line: this.streetNumber + this.streetName});
-        }
-        if (this.city !== "" && this.postcode !== ""){
-          this.homeAddress.push({line: this.city + ", " + this.postcode});
-        } else {
-          this.homeAddress.push({line: this.city + this.postcode});
-        }
-        if (this.region !== "" && this.country !== ""){
-          this.homeAddress.push({line: this.region + ", " + this.country});
-        } else {
-          this.homeAddress.push({line: this.region + this.country});
-        }
-
-        // businesses administered unpack
-        data.businessesAdministered.forEach(business => {
-          if (business !== null) {
-            this.businessesAdministered.push({name: business.name, id: business.id});
-          }
-        })
+      //address unpack
+      if (data.homeAddress.streetNumber) {
+        this.streetNumber = data.homeAddress.streetNumber;
+      }
+      if (data.homeAddress.streetName) {
+        this.streetName = data.homeAddress.streetName;
+      }
+      if (data.homeAddress.city) {
+        this.city = data.homeAddress.city;
+      }
+      if (data.homeAddress.postcode) {
+        this.postcode = data.homeAddress.postcode;
       }
 
-      const act = Cookies.get("actAs");
-      if (act) {
-        this.acting = true;
-        for (let i = 0; i < this.businessesAdministered.length; i++){
-          console.log(act);
-          if (act === this.businessesAdministered[i].id) {
-            this.businessAdministrator = true;
-          }
-        }
-
+      if (this.streetNumber !== "" && this.streetName !== "") {
+        this.homeAddress.push({line: this.streetNumber + " " + this.streetName});
       } else {
-        this.acting = false;
+        this.homeAddress.push({line: this.streetNumber + this.streetName});
       }
+      if (this.city !== "" && this.postcode !== "") {
+        this.homeAddress.push({line: this.city + ", " + this.postcode});
+      } else {
+        this.homeAddress.push({line: this.city + this.postcode});
+      }
+      if (this.region !== "" && this.country !== "") {
+        this.homeAddress.push({line: this.region + ", " + this.country});
+      } else {
+        this.homeAddress.push({line: this.region + this.country});
+      }
+
+      // businesses administered unpack
+      this.actingBusinessId = Cookies.get("actAs");
+      data.businessesAdministered.forEach(business => {
+        if (business !== null) {
+          if (business.id == this.actingBusinessId) {
+            this.isBusinessAdministrator = true;
+          }
+          this.businessesAdministered.push({name: business.name, id: business.id});
+        }
+      })
+      // }
+
+
+      // if (this.actingBusinessId) {
+      //   for (let i = 0; i < this.businessesAdministered.length; i++){
+      //     if (this.actingBusinessId === this.businessesAdministered[i].id) {
+      //       this.isBusinessAdministrator = true;
+      //     }
+      //   }
+      // } else {
+      //   this.isBusinessAdministrator = false;
+      // }
 
       //basic unpack
       this.firstName = data.firstName;
@@ -604,8 +623,8 @@ export default {
     /**
      * push user to an business profile page
      */
-    pushToBusiness(id){//TODO:change name
-      this.$router.push({name:'BusinessProfile', params: {id}});
+    pushToBusiness(id) {//TODO:change name
+      this.$router.push({name: 'BusinessProfile', params: {id}});
     },
     /**
      * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
@@ -614,27 +633,117 @@ export default {
       Cookies.remove('userID');
       this.$router.push({name: 'Login'});
     },
-    async activeAsAdministrator(){
+
+
+    /**
+     *
+     */
+    async activeAsAdministrator() {
+      // If the process is already running return.
+      if (this.loadingAction) return;
+
+      if (this.urlID == null) {
+        this.actionErrorMessage = "Sorry, but something went wrong..."
+        return
+      }
+
       if (this.otherUser) {
-        console.log(this.businessesAdministered);
+        this.loadingAction = true;
+
         await Api.makeAdministrator(Cookies.get("actAs"), this.urlID).then(response => {
-              if (response.status === 200){
-                this.$router.push({name:'Profile', params: this.urlID})
+              if (response.status !== 200) {
+                this.actionErrorMessage = "Sorry, but something went wrong..."
               }
             }
         ).catch(error => {
-          console.log(error.message);
-          if (error.response){
-            console.log(error);
+          if (error.response) {
+            // Code is not 2xx
+            if (error.response.status === 401) {
+              // Missing or invalid token
+              this.$router.push({path: '/invalidtoken'});
+            }
+
+            if (error.response.status === 403) {
+              // Lacks permissions
+              this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+            }
+
+            if (error.response.status === 406) {
+              // Something is wrong with the requested route (not a 404).
+              this.actionErrorMessage = "Sorry, but something went wrong..."
+            }
+
           } else if (error.request) {
+            // No response received. Timeout occurs
             this.$router.push({path: '/timeout'});
+          } else {
+            // Something went wrong with the request setup...
+            this.actionErrorMessage = "Sorry, but something went wrong..."
           }
         });
+        //add the business
+        Api.getBusiness(this.actingBusinessId).then(response => {
+          this.businessesAdministered.push({name: response.data.name, id: response.data.id});
+        })
+        this.isBusinessAdministrator = true;
+        this.loadingAction = false;
       }
     },
-    removeActiveAdministrator() {
-      if(this.otherUser) {
-        Api.removeAdministrator(Cookies.get("actAs"), this.urlID)
+    async removeActiveAdministrator() {
+      // If the process is already running return.
+      if (this.loadingAction) return;
+
+      if (this.urlID == null) {
+        this.actionErrorMessage = "Sorry, but something went wrong..."
+        return
+      }
+
+      if (this.otherUser) {
+        this.loadingAction = true;
+
+        await Api.removeAdministrator(Cookies.get("actAs"), this.urlID).then(response => {
+              if (response.status !== 200) {
+                this.actionErrorMessage = "Sorry, but something went wrong..."
+              }
+            }
+        ).catch(error => {
+          if (error.response) {
+            // Code is not 2xx
+            if (error.response.status === 401) {
+              // Missing or invalid token
+              this.$router.push({path: '/invalidtoken'});
+            }
+
+            if (error.response.status === 403) {
+              // Lacks permissions
+              this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+            }
+
+            if (error.response.status === 406) {
+              // Something is wrong with the requested route (not a 404).
+              this.actionErrorMessage = "Sorry, but something went wrong..."
+            }
+
+          } else if (error.request) {
+            // No response received. Timeout occurs
+            this.$router.push({path: '/timeout'});
+          } else {
+            // Something went wrong with the request setup...
+            this.actionErrorMessage = "Sorry, but something went wrong..."
+          }
+        });
+        //pop the business which has been removed
+        Api.getBusiness(this.actingBusinessId).then(response => {
+          const newBusinessesAdministered = [];
+          this.businessesAdministered.forEach(business => {
+            if (business.id != response.data.id) {
+              newBusinessesAdministered.push({name: response.data.name, id: response.data.id});
+            }
+          })
+          this.businessesAdministered = newBusinessesAdministered;
+        })
+        this.isBusinessAdministrator = false;
+        this.loadingAction = false;
       }
     }
   },
@@ -649,9 +758,7 @@ export default {
     if (currentID) {
 
       const url = document.URL
-      console.log(url);
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
-      console.log(this.urlID);
 
       if (currentID === this.urlID || this.urlID === 'profile') {
         this.retrieveUser(currentID);
