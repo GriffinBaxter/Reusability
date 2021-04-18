@@ -13,8 +13,8 @@
     <div class="modal fade" ref="CreateProductModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="modal-title" id="createProductModalLabel">Create Product</h3>
+          <div class="modal-header text-center">
+            <h3 class="modal-title w-100" id="createProductModalLabel">Create Product</h3>
             <button type="button" class="btn-close" @click="modal.hide()" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -54,8 +54,8 @@
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-md btn-outline-secondary green-button-transparent" @click="modal.hide()" tabindex="7">Cancel</button>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-md btn-outline-secondary green-button-transparent mr-auto" @click="modal.hide()" tabindex="7">Cancel</button>
             <button type="button" class="btn btn-md btn-primary float-lg-end green-button" tabindex="6">Save</button>
           </div>
         </div>
@@ -143,8 +143,8 @@ export default {
 
 @media only screen and (max-device-width: 600px) {
   .modal-dialog {
-    margin-left: 1%;
-    margin-right: 1%;
+    margin-left: 5%;
+    margin-right: 5%;
   }
 }
 
