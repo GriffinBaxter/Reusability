@@ -93,6 +93,7 @@ public class UserPayload {
         this.created = created.toString();
         this.role = role;
         this.businessesAdministered = BusinessPayload.toBusinessPayload(businessesAdministeredObject);
+//      TODO This might get changed in the future due to the recursive nature of the API seems wrong.
         if (this.businessesAdministered.isEmpty()){
             this.businessesAdministered.add(null);
         }

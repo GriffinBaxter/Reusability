@@ -1,7 +1,23 @@
+<!--This file creates the Profile page.-->
+<!--It contains the container displaying the user's details.-->
+<!--It current contains the navigation bar, container displaying the user's details, a user profile and nickname as well
+    as a footer.-->
+<!--Bootstrap has been used for creating and styling the elements.-->
+<!--It is currently fully responsive.-->
+
 <template>
   <div>
-    <ProfileHeader/>
-    <div class="container p-5 mt-3" id="profileContainer">
+
+    <!--nav bar-->
+    <Navbar></Navbar>
+
+    <!--profile header, contains user search bar-->
+    <div id="profile-header-div">
+      <ProfileHeader/>
+    </div>
+
+    <!--profile container-->
+    <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
       <!-- These messages will appear for GAA accounts -->
       <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
@@ -18,16 +34,36 @@
             <div class="display-5" v-else>You have default application admin rights!</div>
           </div>
         </div>
+
       <div class="row">
+
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
-                <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+
+              <!--user's profile image--> <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
+              <div id="imageDiv">
+                <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+              </div>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">
+                Upload Image
+              </button>
+
+              <!--user's nickname-->
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
               </div>
+
             </div>
           </div>
+
+          <!--   For later use:   -->
+<!--          <div class="card text-center shadow-sm mt-3">-->
+<!--            <div class="card-body">-->
+<!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
+<!--            </div>-->
+<!--          </div>-->
 
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>
@@ -57,17 +93,13 @@
             </div>
           </div>
 
-          <!--             For later use:-->
-          <!--          <div class="card text-center shadow-sm mt-3">-->
-          <!--            <div class="card-body">-->
-          <!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-          <!--            </div>-->
-          <!--          </div>-->
-
         </div>
+
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
+
+              <!--user's bio-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Bio: </h6>
@@ -78,6 +110,8 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's name-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -89,6 +123,8 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's email-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -100,29 +136,39 @@
                   </div>
                 </div>
               </div>
-              <hr>
-              <div class="row" id="dateOfBirthRow">
-                <div class="col-md-3">
-                  <h6>Date of Birth:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{dateOfBirth}}
+
+              <!--user's date of birth-->
+              <div id="date-of-birth-row">
+                <hr>
+                <div class="row">
+                  <div class="col-md-3">
+                    <h6>Date of Birth:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary">
+                      {{dateOfBirth}}
+                    </div>
                   </div>
                 </div>
               </div>
-              <hr id="dateHR">
-              <div class="row" id="phoneRow">
-                <div class="col-md-3">
-                  <h6>Phone number:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{phoneNumber}}
+
+              <!--user's phone number-->
+              <div id="phone-row">
+                <hr>                <!--TODO not sure if this should be called phoneHR as address section-->
+                <div class="row" >
+                  <div class="col-md-3">
+                    <h6>Phone number:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary">
+                      {{phoneNumber}}
+                    </div>
                   </div>
                 </div>
               </div>
-              <hr id="phoneHR">
+
+              <!--user's home address-->
+              <hr>               <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Address:</h6>
@@ -133,6 +179,8 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's joined date-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -144,14 +192,36 @@
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
-          <button class="btn btn-outline-primary float-end mt-4" id="logoutButton" @click="logout()">Sign Out</button>
+
           <button class="btn btn-outline-primary float-end mt-4" id="testProductButton" @click="testProductNavigate()">Products</button>
+          <!--logout button-->
+          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
+
         </div>
       </div>
-      <Footer></Footer>
     </div>
+    <!-- File Upload -->
+    <div v-if="showUpload" id="FileUpload" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Upload Image</h5>
+          <button type="button" class="btn-close" @click="showFileUpload(false)"></button>
+        </div>
+        <div class="modal-body">
+          <input type="file">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="showFileUpload(false)">Close</button>
+          <button type="button" class="btn green-button" @click="showFileUpload(false)">Save changes</button>
+        </div>
+      </div>
+    </div>
+    <!--footer-->
+    <Footer></Footer>
+
   </div>
 </template>
 
@@ -161,14 +231,16 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "../components/Footer";
 import {UserRole} from '../components/User'
+import Navbar from "../components/Navbar";
 
 export default {
   name: "Profile",
   components: {
     Footer,
     ProfileHeader,
-
+    Navbar
   },
+
   data() {
     return {
       actionErrorMessage: "",
@@ -194,10 +266,17 @@ export default {
       created: "",
       joined: "",
       otherUser: false,
-      role: null
+      role: null,
+      showUpload: false
     }
   },
   methods: {
+
+    /**
+     * Calculates the months between the given date and the current date, then formats the given date and months.
+     * Finally it sets the join date on the page to the formatted string.
+     * @param createdDate
+     */
     // ---------------------------------------- These functions probably belong in User.js But then they can't easily be used with the profile --------------------------
     /**
      * Determines if the role is of a valid type (e.g. not null, some other invalid string, etc).
@@ -230,13 +309,15 @@ export default {
     isGAA(role) {
       return role === UserRole.GLOBALAPPLICATIONADMIN;
     },
-    // --------------------------------------------------------------------------------------------------------------------
-    getCreatedDate(createdDate) {
-      /*
-      Calculates the months between the given date and the current date, then formats the given date and months.
-      Finally it sets the join date on the page to the formatted string.
-       */
 
+    // --------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Calculates the months between the given date and the current date, then formats the given date and months.
+     * Finally it sets the join date on the page to the formatted string.
+     * @param createdDate
+     */
+    getCreatedDate(createdDate) {
       const dateJoined = new Date(createdDate);
 
       const currentDate = new Date();
@@ -254,6 +335,7 @@ export default {
       const finalDate = this.formatAge(createdDate);
       this.joined = `${finalDate} (${months} months ago)`;
     },
+
     /**
      * Performs the action that grants GAA to the (page) user and handles all errors
      * specified in the API spec.
@@ -371,11 +453,13 @@ export default {
       this.loadingGaaAction = false;
 
     },
+
+    /**
+     * Sends a get request to the backend, calling populatePage upon success with the returned data.
+     * If the request was unsuccessful, the page is not populated and appropriate error messages logged.
+     * @param userID
+     */
     retrieveUser(userID) {
-      /*
-      Sends a get request to the backend, calling populatePage upon success with the returned data.
-      If the request was unsuccessful, the page is not populated and appropriate error messages logged.
-       */
       Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
 
         if (error.request && !error.response) {
@@ -390,15 +474,25 @@ export default {
         }
       })
     },
+
+    /**
+     * Formats the given age string using a Date object and removes the day from the result.
+     * Returns a formatted string.
+     * @param ageString
+     * @returns {string}
+     */
     formatAge(ageString) {
-      /*
-      Formats the given age string using a Date object and removes the day from the result.
-      Returns a formatted string.
-       */
       let array = (new Date(ageString)).toDateString().split(" ");
       array.shift();
       return array.join(' ')
     },
+
+    /**
+     * Populates all display fields on the profile page with the given data.
+     The address is a special case as its components are stored semi-colon separated,
+     so it must be 'unpacked' and formatted.
+     */
+
     populatePage(data) {
       /*
       Populates all display fields on the profile page with the given data.
@@ -416,10 +510,8 @@ export default {
       }
 
       if (this.otherUser) {
-        document.getElementById('phoneRow').remove();
-        document.getElementById('dateOfBirthRow').remove();
-        document.getElementById('phoneHR').remove();
-        document.getElementById('dateHR').remove();
+        document.getElementById('phone-row').remove();
+        document.getElementById('date-of-birth-row').remove();
 
         if (this.city !== "") {
           this.address.push({line: this.city});
@@ -476,13 +568,13 @@ export default {
         this.role = data.role;
       }
 
-
       this.getCreatedDate(data.created);
     },
+
+    /**
+     * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
+     */
     logout() {
-      /*
-      Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
-       */
       Cookies.remove('userID');
       this.$router.push({name: 'Login'});
     },
@@ -491,13 +583,18 @@ export default {
       Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
        */
       this.$router.push({path: '/businesses/3/products'});
-    }
+    },
+    showFileUpload(x) {
+      this.showUpload = x;
+    },
   },
+
+  /**
+   * When mounted, initiate population of page.
+   * If cookies are invalid or not present, redirect to login page.
+   */
   mounted() {
-    /*
-    When mounted, initiate population of page.
-    If cookies are invalid or not present, redirect to login page.
-     */
+
     const currentID = Cookies.get('userID');
     if (currentID) {
 
@@ -515,10 +612,58 @@ export default {
     } else {
       this.$router.push({name: 'Login'});
     }
-    }
+  }
 }
 </script>
 
+<!----------------------------------------------- Profile Page Styling ------------------------------------------------>
+
 <style scoped>
+
+#upload-button {
+  margin: 5px 0;
+}
+
+.modal {
+  display: block; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  width: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 60%; /* Could be more or less, depending on screen size */
+}
+
+
+/**
+ * TODO remove once footer is sticky
+ * Calculates where footer should be.
+ */
+
+.all-but-footer {
+  min-height: calc(100vh - 738px);
+}
+
+#profile-header-div {
+  margin-left: 15%;
+  margin-right: 15%;
+}
+
+#profile-container {
+  margin-bottom: 10%;
+}
+
+#imageDiv {
+  width:100%;
+  padding: 2px;
+}
 
 </style>

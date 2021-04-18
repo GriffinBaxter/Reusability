@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 
 /**
  * This spring component runs at application startup to do some initialisation
@@ -55,6 +56,8 @@ public class MainApplicationRunner implements ApplicationRunner {
         userRepository.findAll().forEach(logger::info);
         businessRepository.findAll().forEach(logger::info);
         addressRepository.findAll().forEach(logger::info);
+
+        addTestUsers();
     }
 
 
@@ -84,7 +87,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "John",
                     "Doe",
                     "S",
-                    "Generic",
+                    "Johnny",
                     "Biography",
                     "email@email.com",
                     LocalDate.of(2000, 2, 2),
@@ -101,4 +104,9 @@ public class MainApplicationRunner implements ApplicationRunner {
             logger.info("DGGA exists.");
         }
     }
+
+    public void addTestUsers() throws Exception {
+
+    }
+
 }
