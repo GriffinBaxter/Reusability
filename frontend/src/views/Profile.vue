@@ -27,13 +27,13 @@
         </div>
       </div>
 
-        <!-- These messages will appear for DGAA accounts -->
-        <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
-          <div class="col-xl-12 mb-5 text-center mx-auto">
-            <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
-            <div class="display-5" v-else>You have default application admin rights!</div>
-          </div>
+      <!-- These messages will appear for DGAA accounts -->
+      <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
+        <div class="col-xl-12 mb-5 text-center mx-auto">
+          <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
+          <div class="display-5" v-else>You have default application admin rights!</div>
         </div>
+      </div>
 
       <div class="row">
 
@@ -43,7 +43,7 @@
 
               <!--user's profile image--> <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
               <div></div>
-                <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+              <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
 
               <!--user's nickname and bio-->
               <div class="mt-3">
@@ -55,18 +55,18 @@
           </div>
 
           <!--   For later use:   -->
-<!--          <div class="card text-center shadow-sm mt-3">-->
-<!--            <div class="card-body">-->
-<!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
-<!--            </div>-->
-<!--          </div>-->
+          <!--          <div class="card text-center shadow-sm mt-3">-->
+          <!--            <div class="card-body">-->
+          <!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
+          <!--            </div>-->
+          <!--          </div>-->
 
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>
             <div class="card-body">{{actionErrorMessage}}</div>
           </div>
 
-          <div class="card text-center  shadow-sm mt-3" v-if="this.acting">
+          <div class="card text-center  shadow-sm mt-3" v-if="acting && otherUser">
             <div class="card-body">
               <div v-if="!businessAdministrator">
                 <button type="button" class="btn btn-outline-success" @click="activeAsAdministrator()">Active As Administrator</button>
@@ -201,7 +201,7 @@
                   </div>
                   <div class="col">
                     <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
-                        align="right" @click="pushToBusiness(business.id)">
+                         align="right" @click="pushToBusiness(business.id)">
                       {{business.name}}
                     </div>
                   </div>
@@ -355,14 +355,14 @@ export default {
       this.loadingGaaAction = true;
 
       await Api.makeAdmin(this.urlID).then(
-        data => {
-          if (data.status === 200) {
-            // successful grant of admin rights!
-            this.role = UserRole.GLOBALAPPLICATIONADMIN
-          } else {
-            this.actionErrorMessage = "Sorry, but something went wrong..."
+          data => {
+            if (data.status === 200) {
+              // successful grant of admin rights!
+              this.role = UserRole.GLOBALAPPLICATIONADMIN
+            } else {
+              this.actionErrorMessage = "Sorry, but something went wrong..."
+            }
           }
-        }
       ).catch(error => {
         if (error.response) {
           // Code is not 2xx
@@ -576,9 +576,13 @@ export default {
       const act = Cookies.get("actAs");
       if (act) {
         this.acting = true;
-        if (act in this.businessesAdministered) {
-          this.businessAdministrator = true;
+        for (let i = 0; i < this.businessesAdministered.length; i++){
+          console.log(act);
+          if (act === this.businessesAdministered[i].id) {
+            this.businessAdministrator = true;
+          }
         }
+
       } else {
         this.acting = false;
       }
@@ -610,9 +614,22 @@ export default {
       Cookies.remove('userID');
       this.$router.push({name: 'Login'});
     },
-    activeAsAdministrator(){
+    async activeAsAdministrator(){
       if (this.otherUser) {
-        Api.makeAdministrator(Cookies.get("actAs"), this.urlID);
+        console.log(this.businessesAdministered);
+        await Api.makeAdministrator(Cookies.get("actAs"), this.urlID).then(response => {
+              if (response.status === 200){
+                this.$router.push({name:'Profile', params: this.urlID})
+              }
+            }
+        ).catch(error => {
+          console.log(error.message);
+          if (error.response){
+            console.log(error);
+          } else if (error.request) {
+            this.$router.push({path: '/timeout'});
+          }
+        });
       }
     },
     removeActiveAdministrator() {
