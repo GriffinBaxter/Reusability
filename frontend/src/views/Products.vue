@@ -6,8 +6,10 @@
       </div>
     </div>
 
+    <!--button to open create product modal-->
     <button id="create-product-button" type="button" class="btn btn-lg btn-primary float-lg-end" @click="modal.show()">Create Product</button>
 
+    <!--create product modal-->
     <div class="modal fade" ref="CreateProductModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -18,27 +20,32 @@
           <div class="modal-body">
             <!--create product form, needs validation-->
             <form id="create" novalidate @submit.prevent>
+              <!--product id-->
               <div class="form-group">
                 <label for="product-id">Product ID*</label>
                 <input id="product-id" name="product-id" tabindex="1" type="text" v-model="productID"
                        :class="toggleInvalidClass(productIDErrorMsg)" :maxlength="config.productID.maxLength" required>
               </div>
+              <!--product name-->
               <div class="form-group">
                 <label for="product-name">Product Name*</label>
                 <input id="product-name" name="product-name" tabindex="2" type="text" v-model="productName"
                        :class="toggleInvalidClass(productNameErrorMsg)" :maxlength="config.productName.maxLength" required>
               </div>
+              <!--recommended retail price-->
               <div class="form-group">
                 <label for="product-price">Recommended Retail Price(RRP)</label>
                 <input id="product-price" name="product-price" tabindex="3" type="text" v-model="recommendedRetailPrice"
                        :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
                        :maxlength="config.recommendedRetailPrice.maxLength">
               </div>
+              <!--manufacturer-->
               <div class="form-group">
                 <label for="manufacturer">Manufacturer</label>
                 <input id="manufacturer" name="manufacturer" tabindex="4" type="text" v-model="manufacturer"
                        :class="toggleInvalidClass(manufacturerErrorMsg)" :maxlength="config.manufacturer.maxLength" required>
               </div>
+              <!--description-->
               <div class="form-group">
                 <label for="description">Description</label>
                 <textarea id="description" name="description" tabindex="5" rows="5" cols="70" v-model="description"
