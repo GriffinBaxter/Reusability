@@ -6,6 +6,7 @@ import org.seng302.main.Authorization;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
+import org.seng302.validation.ProductValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -234,5 +236,76 @@ public class ProductResource {
         }
         return payloads;
     }
+
+
+    @PutMapping("/businesses/{businessId}/products/{productId}")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Product updated successfully")
+    public void modifyCatalogueItem(@RequestBody productUpdatePayload productUpdate,
+                                    @PathVariable Integer businessId,
+                                    @PathVariable String productId,
+                                    @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+
+        // Get the user object associated with this session token, and ensure the session token is valid.
+        User requestingUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // Check the businessId given is associated with a real business.
+//        Optional<Business> business =  businessRepository.findBusinessById(businessId);
+        if (!Authorization.verifyBusinessExists(businessId, businessRepository)) {
+            System.out.println("Invalid business id");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The business id supplied is invalid.");
+        }
+
+        // Verify that the business has this product with the given productId.
+        Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, businessId);
+        if (product.isEmpty()) {
+            System.out.println("Invalid product id");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The product id supplied is invalid.");
+        }
+
+        // Verify the user has permission to update that product.
+        if (requestingUser.getRole() == Role.USER || !requestingUser.getBusinessesAdministered().contains(businessId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to update a product for a business they do not administer AND the user is not a global application admin.");
+        }
+
+        // Verify the new id is unique are valid
+        if (!productId.equals(productUpdate.getId())) {
+            if (!ProductValidation.isValidProductId(productUpdate.getId()) && productRepository.findProductByIdAndBusinessId(productUpdate.getId(), businessId).isEmpty()) {
+                System.out.println("Invalid id");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product id already exists OR product id is invalid.");
+            }
+        }
+
+        // Verify the name is included!
+        if (productUpdate.getName() == null) {
+            System.out.println("Invalid name -- null");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product must have a name.");
+        }
+
+        // Verify the new name is valid
+        if (!ProductValidation.isValidName(productUpdate.getName())) {
+            System.out.println("Invalid name");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product name is invalid.");
+        }
+
+        // Verify the description is valid
+        if (!ProductValidation.isValidDescription(productUpdate.getDescription())) {
+            System.out.println("Invalid desc");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product description is invalid.");
+        }
+
+        // Verify the recommendedRetailPrice is valid
+        if (!ProductValidation.isValidRecommendeRetailPrice(productUpdate.getRecommendedRetailPrice())) {
+            System.out.println("Invalid retail");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new recommended product retail price is invalid.");
+        }
+
+        // Update the actual data as it has been checked.
+        product.get().setProductId(productUpdate.getId());
+        product.get().setName(productUpdate.getName());
+        product.get().setDescription(productUpdate.getDescription());
+        product.get().setRecommendedRetailPrice(productUpdate.getRecommendedRetailPrice());
+        productRepository.save(product.get()); // Updates the database
+    }
+
 
 }
