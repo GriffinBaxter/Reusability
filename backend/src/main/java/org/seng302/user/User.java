@@ -324,8 +324,6 @@ public class User {
         List<Integer> businessesAdministered = new ArrayList<>();
         for (Business business: businessesAdministeredObjects) {
             businessesAdministered.add(business.getId());
-            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            System.out.println(business.getId());
         }
         return businessesAdministered;
     }
