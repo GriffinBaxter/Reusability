@@ -268,6 +268,11 @@ export class Product{
       minLength: 1,
       maxLength: 50,
     },
+    manufacturer: {
+      name: "manufacturer",
+      minLength: 0,
+      maxLength: 100
+    },
     recommendedRetailPrice: {
       name: "Recommended retail price",
       minLength: 0,
@@ -275,11 +280,12 @@ export class Product{
     },
   };
 
-  constructor({productID, name, description, recommendedRetailPrice}) {
+  constructor({productID, name, description, manufacturer, recommendedRetailPrice}) {
     this.data = {
       productID,
       name,
       description,
+      manufacturer,
       recommendedRetailPrice,
     }
 

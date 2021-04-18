@@ -6,34 +6,114 @@
       </div>
     </div>
 
-    <button id="create-product-button" type="button" class="btn btn-lg btn-primary float-lg-end" @click="showModal">Create Product</button>
+    <button id="create-product-button" type="button" class="btn btn-lg btn-primary float-lg-end" @click="modal.show()">Create Product</button>
 
-    <CreateProductModal v-show="isModalVisible" @close="closeModal">
-    </CreateProductModal>
-
+    <div class="modal fade" ref="CreateProductModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="createProductModalLabel">Create Product</h3>
+            <button type="button" class="btn-close" @click="modal.hide()" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!--create product form, needs validation-->
+            <form id="create" novalidate @submit.prevent>
+              <div class="form-group">
+                <label for="product-id">Product ID*</label>
+                <input id="product-id" name="product-id" tabindex="1" type="text" v-model="productID"
+                       :class="toggleInvalidClass(productIDErrorMsg)" :maxlength="config.productID.maxLength" required>
+              </div>
+              <div class="form-group">
+                <label for="product-name">Product Name*</label>
+                <input id="product-name" name="product-name" tabindex="2" type="text" v-model="productName"
+                       :class="toggleInvalidClass(productNameErrorMsg)" :maxlength="config.productName.maxLength" required>
+              </div>
+              <div class="form-group">
+                <label for="product-price">Recommended Retail Price(RRP)</label>
+                <input id="product-price" name="product-price" tabindex="3" type="text" v-model="recommendedRetailPrice"
+                       :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
+                       :maxlength="config.recommendedRetailPrice.maxLength">
+              </div>
+              <div class="form-group">
+                <label for="manufacturer">Manufacturer</label>
+                <input id="manufacturer" name="manufacturer" tabindex="4" type="text" v-model="manufacturer"
+                       :class="toggleInvalidClass(manufacturerErrorMsg)" :maxlength="config.manufacturer.maxLength" required>
+              </div>
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" tabindex="5" rows="5" cols="70" v-model="description"
+                          :maxlength="config.description.maxLength" :class="toggleInvalidClass(descriptionErrorMsg)"
+                          style="resize: none"/>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="modal.hide()" tabindex="7">Cancel</button>
+            <button type="button" class="btn btn-primary" tabindex="6">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import CreateProductModal from "@/components/CreateProductModal";
+import { Modal } from 'bootstrap'
+import {Product} from "@/Api";
 
 export default {
-  name: 'Products',
-  components: {
-    CreateProductModal,
-  },
-  data() {
-    return {
-      isModalVisible: false,
-    };
-  },
+  name: "Products",
+  data: () => ({
+    modal: null,
+
+    // Used for having pre-filled input fields
+    DEBUG_MODE: false,
+
+    // A copy of the user config file for error checking.
+    config: Product.config,
+
+    // Product id related variables
+    productID: "",
+    productIDErrorMsg: "",
+
+    // Product name related variables
+    productName: "",
+    productNameErrorMsg: "",
+
+    // Recommended retail price related variables
+    recommendedRetailPrice: "",
+    recommendedRetailPriceErrorMsg: "",
+
+    // Product description related variables
+    description: "",
+    descriptionErrorMsg: "",
+
+    // Product manufacturer related variables
+    manufacturer: "",
+    manufacturerErrorMsg: "",
+
+    // Toast related variables
+    toastErrorMessage: "",
+    cannotProceed: false,
+  }),
   methods: {
-    showModal() {
-      this.isModalVisible = true;
+    /**
+     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
+     * if an error message needs to be presented to the user.
+     *
+     * @param errorMessage, string, the error message relating to invalid input of a field.
+     * @returns {[string]}, classList, a list containing the classes for an invalid message.
+     */
+    toggleInvalidClass(errorMessage) {
+      let classList = ['form-control']
+      if (errorMessage) {
+        classList.push('is-invalid')
+      }
+      return classList
     },
-    closeModal() {
-      this.isModalVisible = false;
-    }
+  },
+  mounted() {
+    this.modal = new Modal(this.$refs.CreateProductModal)
   }
 };
 </script>
@@ -49,6 +129,22 @@ export default {
   background-color: transparent;
   color: #1EBA8C;
 }
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  align-content: center;
+  justify-content: center;
+}
+
+label {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
 
 /*------------------ Hide arrows from input numbers ---------------------*/
 /* Chrome, Safari, Edge, Opera */
