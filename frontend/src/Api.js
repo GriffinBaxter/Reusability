@@ -253,25 +253,29 @@ export class Product{
   static config = {
     productID: {
       name: "Product ID",
-      minLength: 1,
+      minLength: 3,
       maxLength: 15,
       regex: /^[A-Z0-9-]+$/,
       regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
+    },
+    productName: {
+      name: "Product name",
+      minLength: 1,
+      maxLength: 100,
+      regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
+      regexMessage: "Must only contain alphanumeric characters, numbers, spaces or '#,.&()-"
     },
     description: {
       name: "Description",
       minLength: 0,
       maxLength: 600
     },
-    productName: {
-      name: "Product name",
-      minLength: 1,
-      maxLength: 50,
-    },
     manufacturer: {
       name: "manufacturer",
       minLength: 0,
-      maxLength: 100
+      maxLength: 100,
+      regex: /^[a-zA-Z0-9 '#,.&()-]*$/,
+      regexMessage: "Must only contain alphanumeric characters, numbers, spaces or '#,.&()-"
     },
     recommendedRetailPrice: {
       name: "Recommended retail price",

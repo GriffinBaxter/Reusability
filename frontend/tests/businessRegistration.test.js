@@ -3,7 +3,7 @@ import reg from '../src/views/BusinessRegistration'
 import { Business } from '../src/Api'
 
 /**
- * Jest tests for registration.vue.
+ * Jest tests for businessRegistration.vue.
  */
 
 // ***************************************** getErrorMessage() Tests ***************************************************
@@ -289,7 +289,7 @@ test('Description with any input greater than allowed length', () => {
     ).toBe(expectedMessage);
 })
 
-// ------------------------------------------------ Business Address Tests -------------------------------------------------
+// ------------------------------------------------ Business Address Tests ---------------------------------------------
 
 /**
  * Test for ensuring no error message is raised when no input is entered into the business address field.

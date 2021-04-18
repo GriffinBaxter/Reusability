@@ -66,7 +66,7 @@
 
 <script>
 import { Modal } from 'bootstrap'
-import Api, {Product} from "@/Api";
+import Api, {Product} from "../Api";
 
 export default {
   name: "Products",
@@ -211,9 +211,7 @@ export default {
           this.config.recommendedRetailPrice.name,
           this.recommendedRetailPrice,
           this.config.recommendedRetailPrice.minLength,
-          this.config.recommendedRetailPrice.maxLength,
-          this.config.recommendedRetailPrice.regexMessage,
-          this.config.recommendedRetailPrice.regex
+          this.config.recommendedRetailPrice.maxLength
       )
       if (this.recommendedRetailPriceErrorMsg) {
         requestIsInvalid = true
