@@ -280,7 +280,9 @@ export class Product{
     recommendedRetailPrice: {
       name: "Recommended retail price",
       minLength: 0,
-      maxLength: 255,
+      maxLength: 16,
+      regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
+      regexMessage: "Must be a positive double precision floating point number e.g 1.00"
     },
   };
 
