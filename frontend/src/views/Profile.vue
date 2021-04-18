@@ -42,8 +42,13 @@
             <div class="card-body">
 
               <!--user's profile image--> <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
-              <div></div>
+              <div id="imageDiv">
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+              </div>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">
+                Upload Image
+              </button>
 
               <!--user's nickname-->
               <div class="mt-3">
@@ -133,33 +138,37 @@
               </div>
 
               <!--user's date of birth-->
-              <hr>
-              <div class="row" id="date-of-birth-row">
-                <div class="col-md-3">
-                  <h6>Date of Birth:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{dateOfBirth}}
+              <div id="date-of-birth-row">
+                <hr>
+                <div class="row">
+                  <div class="col-md-3">
+                    <h6>Date of Birth:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary">
+                      {{dateOfBirth}}
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!--user's phone number-->
-              <hr id="date-header">                <!--TODO not sure if this should be called phoneHR as address section-->
-              <div class="row" id="phoneRow">
-                <div class="col-md-3">
-                  <h6>Phone number:</h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{phoneNumber}}
+              <div id="phone-row">
+                <hr>                <!--TODO not sure if this should be called phoneHR as address section-->
+                <div class="row" >
+                  <div class="col-md-3">
+                    <h6>Phone number:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary">
+                      {{phoneNumber}}
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!--user's home address-->
-              <hr id="phone-header">               <!--TODO not sure if this should be called phoneHR as address section-->
+              <hr>               <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Address:</h6>
@@ -190,6 +199,22 @@
           <!--logout button-->
           <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
 
+        </div>
+      </div>
+    </div>
+    <!-- File Upload -->
+    <div v-if="showUpload" id="FileUpload" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Upload Image</h5>
+          <button type="button" class="btn-close" @click="showFileUpload(false)"></button>
+        </div>
+        <div class="modal-body">
+          <input type="file">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="showFileUpload(false)">Close</button>
+          <button type="button" class="btn green-button" @click="showFileUpload(false)">Save changes</button>
         </div>
       </div>
     </div>
@@ -240,7 +265,8 @@ export default {
       created: "",
       joined: "",
       otherUser: false,
-      role: null
+      role: null,
+      showUpload: false
     }
   },
   methods: {
@@ -483,10 +509,8 @@ export default {
       }
 
       if (this.otherUser) {
-        document.getElementById('phoneRow').remove();
-        document.getElementById('dateOfBirthRow').remove();
-        document.getElementById('phoneHR').remove();
-        document.getElementById('dateHR').remove();
+        document.getElementById('phone-row').remove();
+        document.getElementById('date-of-birth-row').remove();
 
         if (this.city !== "") {
           this.address.push({line: this.city});
@@ -552,7 +576,10 @@ export default {
     logout() {
       Cookies.remove('userID');
       this.$router.push({name: 'Login'});
-    }
+    },
+    showFileUpload(x) {
+      this.showUpload = x;
+    },
   },
 
   /**
@@ -586,10 +613,34 @@ export default {
 
 <style scoped>
 
+#upload-button {
+  margin: 5px 0;
+}
+
+.modal {
+  display: block; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  width: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 60%; /* Could be more or less, depending on screen size */
+}
+
+
 /**
  * TODO remove once footer is sticky
  * Calculates where footer should be.
  */
+
 .all-but-footer {
   min-height: calc(100vh - 738px);
 }
@@ -601,6 +652,11 @@ export default {
 
 #profile-container {
   margin-bottom: 10%;
+}
+
+#imageDiv {
+  width:100%;
+  padding: 2px;
 }
 
 </style>
