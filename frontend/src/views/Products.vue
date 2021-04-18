@@ -118,6 +118,56 @@ export default {
       }
       return classList
     },
+
+    /**
+     * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
+     *
+     * @param val, int, the value to be tested for being within the range.
+     * @param min, int, the minimum value in the range.
+     * @param max, int, the maximum value in the range.
+     * @returns Boolean, true if within range, false is not within range.
+     */
+    between(val, min, max) {
+      return min <= val && val <= max;
+    },
+
+    /**
+     * This method determines the error message to be generated for a given input value based on the field type and
+     * its associated validity (determined by a regex).
+     *
+     * @param name, string, name of the input field.
+     * @param inputVal, string, the value entered in the stated field.
+     * @param minLength, number, the minimum allowed length of the inputVal.
+     * @param maxLength, number, the maximum allowed length of the inputVal.
+     * @param regexMessage, string, the tailored message about the expected syntax for the inputVal if it does not
+     *                              meet the regex given.
+     * @param regex, string, the allowed format for the given input field.
+     * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
+     */
+    getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
+      let errorMessage = ""; //TODO: remove after testing and just have ""
+      if (inputVal === "" && minLength >= 1) {
+        errorMessage = "Please enter input";
+      }
+      else if (!regex.test(inputVal)) {
+        errorMessage = regexMessage;
+      } else if (!this.between(inputVal.length, minLength, maxLength)) {
+        errorMessage = `Input must be between ${minLength} and ${maxLength} characters long.`
+      }
+      return errorMessage;
+    },
+
+    /**
+     * This method removes white space from the beginning and end of all the input field's input values.
+     */
+    trimTextInputFields () {
+      this.productID = this.productID.trim();
+      this.productName = this.productName.trim();
+      this.recommendedRetailPrice = this.recommendedRetailPrice.trim();
+      this.manufacturer= this.manufacturer.trim();
+      this.description = this.description.trim();
+    },
+
   },
   mounted() {
     this.modal = new Modal(this.$refs.CreateProductModal)

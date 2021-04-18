@@ -334,8 +334,7 @@ export default {
     return instance.put(`/users/${userId}/revokeAdmin`, {}, {
     withCredentials: true
   })
-
-  }
+  },
 
   // Usage examples from original file:
   //
