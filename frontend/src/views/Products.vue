@@ -137,6 +137,17 @@ export default {
   color: #1EBA8C;
 }
 
+.modal {
+  background: rgba(17, 78, 60, 0.4);
+}
+
+@media only screen and (max-device-width: 600px) {
+  .modal-dialog {
+    margin-left: 1%;
+    margin-right: 1%;
+  }
+}
+
 form {
   display: flex;
   flex-direction: column;
