@@ -1,5 +1,9 @@
 package org.seng302.user;
 
+import org.seng302.address.Address;
+import org.seng302.address.AddressPayload;
+import org.seng302.address.AddressRepository;
+import org.seng302.business.Business;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,8 +35,15 @@ public class UserResource {
     @Autowired
     private UserRepository userRepository;
 
-    public UserResource(UserRepository userRepository) {
+    @Autowired
+    private AddressRepository addressRepository;
+
+    private Address address;
+    private List<Business> businesses;
+
+    public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
     }
 
     /**
@@ -41,7 +52,7 @@ public class UserResource {
      * @return User object
      */
     public User getUserVerifySession(String sessionToken) {
-        Optional<User> user = userRepository.findById(Integer.valueOf(sessionToken));
+        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
         if (sessionToken == null || user.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
@@ -53,21 +64,52 @@ public class UserResource {
     }
 
     /**
+     * Checks if the current user's role matches the role parameter.
+     * This method is useful for user authentication/identification.
+     * @param currentUser current user
+     * @param role Role being matched
+     * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
+     */
+    private boolean verifyRole(User currentUser, Role role) {
+        if (currentUser.getRole().equals(role)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets a unique session UUID, by generating until a session token is generated that does not already exist.
+     * @return Unique session UUID
+     */
+    public String getUniqueSessionUUID() {
+        String sessionUUID = User.generateSessionUUID();
+        while (userRepository.findBySessionUUID(sessionUUID).isPresent()) {
+            sessionUUID = User.generateSessionUUID();
+        }
+        return sessionUUID;
+    }
+
+    /**
      * Attempt to authenticate a user account with a username and password.
      * @param login Login payload
      * @param response HTTP Response
      */
     @PostMapping("/login")
-    public UserIdPayload loginUser(@RequestBody LoginPayload login, HttpServletResponse response) {
+    public UserIdPayload loginUser(@RequestBody UserLoginPayload login, HttpServletResponse response) {
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
         if (user.isPresent()) {
             if (user.get().verifyPassword(login.getPassword())) {
-                int userId = user.get().getId();
-                Cookie cookie = new Cookie("JSESSIONID", String.valueOf(userId));
+                String sessionUUID = getUniqueSessionUUID();
+
+                user.get().setSessionUUID(sessionUUID);
+                userRepository.save(user.get());
+
+                Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
-                return new UserIdPayload(userId);
+
+                return new UserIdPayload(user.get().getId());
             }
         }
         throw new ResponseStatusException(
@@ -81,9 +123,9 @@ public class UserResource {
      * @param registration Registration payload
      */
     @PostMapping("/users")
-    public ResponseEntity<UserIdPayload> registerUser(@RequestBody RegistrationPayload registration,
-                                                      HttpServletResponse response) {
-
+    public ResponseEntity<UserIdPayload> registerUser(
+            @RequestBody UserRegistrationPayload registration, HttpServletResponse response
+    ) {
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
@@ -92,6 +134,39 @@ public class UserResource {
         }
 
         try {
+            AddressPayload addressJSON = registration.getHomeAddress();
+            String streetNumber = addressJSON.getStreetNumber();
+            String streetName = addressJSON.getStreetName();
+            String city = addressJSON.getCity();
+            String region = addressJSON.getRegion();
+            String country = addressJSON.getCountry();
+            String postcode = addressJSON.getPostcode();
+
+            // Check to see if address already exists.
+            Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcode(
+                    streetNumber, streetName, city, region, country, postcode);
+
+            // If address already exists it is retrieved.
+            // The businesses already existing are also retrieved. These businesses will be
+            // used to determine if a business hasn't already been created.
+            if (storedAddress.isPresent()) {
+                address = storedAddress.get();
+                businesses = address.getBusinesses();
+            } else {
+                // Otherwise a new address is created and saved.
+                address = new Address(
+                        streetNumber,
+                        streetName,
+                        city,
+                        region,
+                        country,
+                        postcode
+                );
+                addressRepository.save(address);
+                // No businesses will exist at new address.
+                businesses = new ArrayList<>();
+            }
+
             User newUser = new User(
                     registration.getFirstName(),
                     registration.getLastName(),
@@ -101,18 +176,19 @@ public class UserResource {
                     registration.getEmail(),
                     registration.getDateOfBirth(),
                     registration.getPhoneNumber(),
-                    registration.getHomeAddress(),
+                    address,
                     registration.getPassword(),
                     LocalDateTime.now(),
-                    USER);
-            User createdUser = userRepository.save(newUser);
-            int userId = createdUser.getId();
+                    Role.USER);
 
-            Cookie cookie = new Cookie("JSESSIONID", String.valueOf(userId));
+            newUser.setSessionUUID(getUniqueSessionUUID());
+            User createdUser = userRepository.save(newUser);
+
+            Cookie cookie = new Cookie("JSESSIONID", createdUser.getSessionUUID());
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(userId));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
 
         } catch (Exception e) {
             throw new ResponseStatusException(
@@ -130,7 +206,7 @@ public class UserResource {
     @GetMapping("/users/{id}")
     public UserPayload retrieveUser(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
-    ) {
+    ) throws Exception {
         getUserVerifySession(sessionToken);
 
         Optional<User> user = userRepository.findById(id);
@@ -149,6 +225,20 @@ public class UserResource {
             role = user.get().getRole();
         }
 
+        List<Business> administrators = user.get().getBusinessesAdministeredObjects();
+        for (Business administrator : administrators) {
+            administrator.setAdministrators(new ArrayList<>());
+        }
+
+        Address address = user.get().getHomeAddress();
+        AddressPayload addressPayload = new AddressPayload(
+                address.getStreetNumber(),
+                address.getStreetName(),
+                address.getCity(),
+                address.getRegion(),
+                address.getCountry(),
+                address.getPostcode()
+        );
         return new UserPayload(
                 user.get().getId(),
                 user.get().getFirstName(),
@@ -159,9 +249,10 @@ public class UserResource {
                 user.get().getEmail(),
                 user.get().getDateOfBirth(),
                 user.get().getPhoneNumber(),
-                user.get().getHomeAddress(),
+                addressPayload,
                 user.get().getCreated(),
-                role
+                role,
+                administrators
         );
     }
 
@@ -297,8 +388,7 @@ public class UserResource {
      * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
      */
     private boolean verifyRole(String sessionToken, Role role) {
-        Integer id = Integer.valueOf(sessionToken);
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findBySessionUUID(sessionToken);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();

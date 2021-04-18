@@ -1,6 +1,6 @@
 package org.seng302.user;
 
-public class LoginPayload {
+public class UserLoginPayload {
     private String email;
     private String password;
 

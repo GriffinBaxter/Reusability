@@ -30,14 +30,20 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findById(Integer id);
 
     /**
+     * Search for a user account by its session UUID.
+     * @param sessionUUID Session UUID
+     * @return A user matching the session UUID
+     */
+    Optional<User> findBySessionUUID(String sessionUUID);
+
+    /**
      * Search for a user account by their first, middle and last name, ignoring case.
      * @param firstName First name
      * @param middleName Middle name
      * @param lastName Last name
      * @return A list of matching UserPayload objects
      */
-    List<UserPayload> findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
-            String firstName, String middleName, String lastName
+    List<User> findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(String firstName, String middleName, String lastName
     );
 
     /**
@@ -46,35 +52,35 @@ public interface UserRepository extends JpaRepository<User, String> {
      * @param lastName Last name
      * @return A list of matching UserPayload objects
      */
-    List<UserPayload> findByFirstNameIgnoreCaseAndLastNameIgnoreCase(String firstName, String lastName);
+    List<User> findByFirstNameIgnoreCaseAndLastNameIgnoreCase(String firstName, String lastName);
 
     /**
      * Search for a user account by their nickname, ignoring case.
      * @param nickname Nickname
      * @return A list of matching UserPayload objects
      */
-    List<UserPayload> findByNicknameIgnoreCase(String nickname);
+    List<User> findByNicknameIgnoreCase(String nickname);
 
     /**
      * Search for a user account by their first name, ignoring case.
      * @param firstName First name
      * @return A list of matching UserPayload objects
      */
-    List<UserPayload> findByFirstNameIgnoreCase(String firstName);
+    List<User> findByFirstNameIgnoreCase(String firstName);
 
     /**
      * Search for a user account by their last name, ignoring case.
      * @param lastName Last name
      * @return A list of matching UserPayload objects
      */
-    List<UserPayload> findByLastNameIgnoreCase(String lastName);
+    List<User> findByLastNameIgnoreCase(String lastName);
 
     /**
      * Search for a user account by their middle name, ignoring case.
      * @param middleName Middle name
      * @return A list of matching UserPayload objects
      */
-    List<UserPayload> findByMiddleNameIgnoreCase(String middleName);
+    List<User> findByMiddleNameIgnoreCase(String middleName);
 
     /**
      * Search for an individual account by their role.

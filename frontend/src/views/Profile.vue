@@ -1,7 +1,23 @@
+<!--This file creates the Profile page.-->
+<!--It contains the container displaying the user's details.-->
+<!--It current contains the navigation bar, container displaying the user's details, a user profile and nickname as well
+    as a footer.-->
+<!--Bootstrap has been used for creating and styling the elements.-->
+<!--It is currently fully responsive.-->
+
 <template>
   <div>
-    <ProfileHeader/>
-    <div class="container p-5 mt-3" id="profileContainer">
+
+    <!--nav bar-->
+    <Navbar></Navbar>
+
+    <!--profile header, contains user search bar-->
+    <div id="profile-header-div">
+      <ProfileHeader/>
+    </div>
+
+    <!--profile container-->
+    <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
       <!-- These messages will appear for GAA accounts -->
       <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
@@ -18,16 +34,31 @@
             <div class="display-5" v-else>You have default application admin rights!</div>
           </div>
         </div>
+
       <div class="row">
+
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
-                <img class="rounded-circle img-fluid" src="../../public/sample_profile_image.jpg" alt="Profile Image"/>
+
+              <!--user's profile image--> <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
+              <div></div>
+                <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+
+              <!--user's nickname-->
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
               </div>
+
             </div>
           </div>
+
+          <!--   For later use:   -->
+<!--          <div class="card text-center shadow-sm mt-3">-->
+<!--            <div class="card-body">-->
+<!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
+<!--            </div>-->
+<!--          </div>-->
 
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>
@@ -57,17 +88,13 @@
             </div>
           </div>
 
-          <!--             For later use:-->
-          <!--          <div class="card text-center shadow-sm mt-3">-->
-          <!--            <div class="card-body">-->
-          <!--              <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-          <!--            </div>-->
-          <!--          </div>-->
-
         </div>
+
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
+
+              <!--user's bio-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Bio: </h6>
@@ -78,6 +105,8 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's name-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -89,6 +118,8 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's email-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -100,8 +131,10 @@
                   </div>
                 </div>
               </div>
+
+              <!--user's date of birth-->
               <hr>
-              <div class="row" id="dateOfBirthRow">
+              <div class="row" id="date-of-birth-row">
                 <div class="col-md-3">
                   <h6>Date of Birth:</h6>
                 </div>
@@ -111,7 +144,9 @@
                   </div>
                 </div>
               </div>
-              <hr id="dateHR">
+
+              <!--user's phone number-->
+              <hr id="date-header">                <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="row" id="phoneRow">
                 <div class="col-md-3">
                   <h6>Phone number:</h6>
@@ -122,17 +157,21 @@
                   </div>
                 </div>
               </div>
-              <hr id="phoneHR">
+
+              <!--user's home address-->
+              <hr id="phone-header">               <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="row">
                 <div class="col-md-3">
                   <h6>Address:</h6>
                 </div>
                 <div class="col">
-                  <div class="text-secondary">
-                    {{homeAddress}}
+                  <div class="text-secondary" v-for="lines in address" :key="lines.line">
+                    {{lines.line}}
                   </div>
                 </div>
               </div>
+
+              <!--user's joined date-->
               <hr>
               <div class="row">
                 <div class="col-md-3">
@@ -144,13 +183,19 @@
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
-          <button class="btn btn-outline-primary float-end mt-4" id="logoutButton" @click="logout()">Sign Out</button>
+
+          <!--logout button-->
+          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
+
         </div>
       </div>
-      <Footer></Footer>
     </div>
+    <!--footer-->
+    <Footer></Footer>
+
   </div>
 </template>
 
@@ -160,14 +205,16 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "../components/Footer";
 import {UserRole} from '../components/User'
+import Navbar from "../components/Navbar";
 
 export default {
   name: "Profile",
   components: {
     Footer,
     ProfileHeader,
-
+    Navbar
   },
+
   data() {
     return {
       actionErrorMessage: "",
@@ -181,7 +228,15 @@ export default {
       email: "",
       dateOfBirth: "",
       phoneNumber: "",
-      homeAddress: "",
+
+      address: [],
+      streetNumber: "",
+      streetName: "",
+      city: "",
+      postcode: "",
+      region: "",
+      country: "",
+
       created: "",
       joined: "",
       otherUser: false,
@@ -189,6 +244,12 @@ export default {
     }
   },
   methods: {
+
+    /**
+     * Calculates the months between the given date and the current date, then formats the given date and months.
+     * Finally it sets the join date on the page to the formatted string.
+     * @param createdDate
+     */
     // ---------------------------------------- These functions probably belong in User.js But then they can't easily be used with the profile --------------------------
     /**
      * Determines if the role is of a valid type (e.g. not null, some other invalid string, etc).
@@ -221,13 +282,15 @@ export default {
     isGAA(role) {
       return role === UserRole.GLOBALAPPLICATIONADMIN;
     },
-    // --------------------------------------------------------------------------------------------------------------------
-    getCreatedDate(createdDate) {
-      /*
-      Calculates the months between the given date and the current date, then formats the given date and months.
-      Finally it sets the join date on the page to the formatted string.
-       */
 
+    // --------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Calculates the months between the given date and the current date, then formats the given date and months.
+     * Finally it sets the join date on the page to the formatted string.
+     * @param createdDate
+     */
+    getCreatedDate(createdDate) {
       const dateJoined = new Date(createdDate);
 
       const currentDate = new Date();
@@ -245,6 +308,7 @@ export default {
       const finalDate = this.formatAge(createdDate);
       this.joined = `${finalDate} (${months} months ago)`;
     },
+
     /**
      * Performs the action that grants GAA to the (page) user and handles all errors
      * specified in the API spec.
@@ -362,11 +426,13 @@ export default {
       this.loadingGaaAction = false;
 
     },
+
+    /**
+     * Sends a get request to the backend, calling populatePage upon success with the returned data.
+     * If the request was unsuccessful, the page is not populated and appropriate error messages logged.
+     * @param userID
+     */
     retrieveUser(userID) {
-      /*
-      Sends a get request to the backend, calling populatePage upon success with the returned data.
-      If the request was unsuccessful, the page is not populated and appropriate error messages logged.
-       */
       Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
 
         if (error.request && !error.response) {
@@ -381,36 +447,89 @@ export default {
         }
       })
     },
+
+    /**
+     * Formats the given age string using a Date object and removes the day from the result.
+     * Returns a formatted string.
+     * @param ageString
+     * @returns {string}
+     */
     formatAge(ageString) {
-      /*
-      Formats the given age string using a Date object and removes the day from the result.
-      Returns a formatted string.
-       */
       let array = (new Date(ageString)).toDateString().split(" ");
       array.shift();
       return array.join(' ')
     },
+
+    /**
+     * Populates all display fields on the profile page with the given data.
+     The address is a special case as its components are stored semi-colon separated,
+     so it must be 'unpacked' and formatted.
+     */
+
     populatePage(data) {
       /*
       Populates all display fields on the profile page with the given data.
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
+      if (data.homeAddress.city) {
+        this.city = data.homeAddress.city;
+      }
+      if (data.homeAddress.region) {
+        this.region = data.homeAddress.region;
+      }
+      if (data.homeAddress.country) {
+        this.country = data.homeAddress.country;
+      }
+
       if (this.otherUser) {
         document.getElementById('phoneRow').remove();
         document.getElementById('dateOfBirthRow').remove();
         document.getElementById('phoneHR').remove();
         document.getElementById('dateHR').remove();
 
-        let address = data.homeAddress.split(';');
-        address = address.slice(2, address.length);
-        address = address.join(", ");
-        this.homeAddress = address;
+        if (this.city !== "") {
+          this.address.push({line: this.city});
+        }
+        if (this.region !== "" && this.country !== ""){
+          this.address.push({line: this.region + ", " + this.country});
+        } else {
+          this.address.push({line: this.region + this.country});
+        }
 
       } else {
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;
-        this.homeAddress = data.homeAddress.replaceAll(";", ", ");
+
+        if (data.homeAddress.streetNumber) {
+          this.streetNumber = data.homeAddress.streetNumber;
+        }
+        if (data.homeAddress.streetName) {
+          this.streetName = data.homeAddress.streetName;
+        }
+        if (data.homeAddress.city) {
+          this.city = data.homeAddress.city;
+        }
+        if (data.homeAddress.postcode) {
+          this.postcode = data.homeAddress.postcode;
+        }
+
+        if (this.streetNumber !== "" && this.streetName !== ""){
+          this.address.push({line: this.streetNumber + " " + this.streetName});
+        } else {
+          this.address.push({line: this.streetNumber + this.streetName});
+        }
+        if (this.city !== "" && this.postcode !== ""){
+          this.address.push({line: this.city + ", " + this.postcode});
+        } else {
+          this.address.push({line: this.city + this.postcode});
+        }
+        if (this.region !== "" && this.country !== ""){
+          this.address.push({line: this.region + ", " + this.country});
+        } else {
+          this.address.push({line: this.region + this.country});
+        }
+
       }
 
       this.firstName = data.firstName;
@@ -424,28 +543,26 @@ export default {
         this.role = data.role;
       }
 
-
       this.getCreatedDate(data.created);
     },
+
+    /**
+     * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
+     */
     logout() {
-      /*
-      Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
-       */
       Cookies.remove('userID');
-      Cookies.remove('JSESSIONID');
       this.$router.push({name: 'Login'});
     }
   },
+
+  /**
+   * When mounted, initiate population of page.
+   * If cookies are invalid or not present, redirect to login page.
+   */
   mounted() {
-    /*
-    When mounted, initiate population of page.
-    If cookies are invalid or not present, redirect to login page.
-     */
+
     const currentID = Cookies.get('userID');
-    // TODO Implement when we agree on a JSESSIONID spec with backend team
-    // Cookies.get('JSESSIONID');
-    const validJSESSIONID = true;
-    if (currentID && validJSESSIONID) {
+    if (currentID) {
 
       const url = document.URL
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
@@ -461,10 +578,29 @@ export default {
     } else {
       this.$router.push({name: 'Login'});
     }
-    }
+  }
 }
 </script>
 
+<!----------------------------------------------- Profile Page Styling ------------------------------------------------>
+
 <style scoped>
+
+/**
+ * TODO remove once footer is sticky
+ * Calculates where footer should be.
+ */
+.all-but-footer {
+  min-height: calc(100vh - 738px);
+}
+
+#profile-header-div {
+  margin-left: 15%;
+  margin-right: 15%;
+}
+
+#profile-container {
+  margin-bottom: 10%;
+}
 
 </style>
