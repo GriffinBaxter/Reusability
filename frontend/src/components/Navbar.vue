@@ -463,6 +463,10 @@ export default {
     max-width: 200px;
   }
 
+.navbar-brand {
+  outline: none;
+}
+
 .company-name-main-position-nav {
 
   /* centre text */
