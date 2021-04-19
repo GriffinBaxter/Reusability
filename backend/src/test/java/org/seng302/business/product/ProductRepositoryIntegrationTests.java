@@ -11,6 +11,7 @@ import org.seng302.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -18,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +38,7 @@ public class ProductRepositoryIntegrationTests {
     @Autowired
     private ProductRepository productRepository;
 
-    private List<ProductPayload> foundProductPayloadList;
+    private Page<Product> foundProductList;
 
     /**
      * Tests that when there are products in the database with the given business ID then
@@ -95,24 +95,24 @@ public class ProductRepositoryIntegrationTests {
                 "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                LocalTime.of(0, 0))
+                        LocalTime.of(0, 0))
         );
         entityManager.persist(product);
         entityManager.flush();
 
         // when
-        foundProductPayloadList = productRepository.findProductsByBusinessId(business.getId());
+        foundProductList = productRepository.findProductsByBusinessId(business.getId(), null);
 
         // then
-        assertThat(foundProductPayloadList.isEmpty()).isFalse();
-        assertThat(foundProductPayloadList.get(0).getId()).isEqualTo("PROD");
-        assertThat(foundProductPayloadList.get(0).getName()).isEqualTo("Beans");
-        assertThat(foundProductPayloadList.get(0).getDescription()).isEqualTo("Description");
-        assertThat(foundProductPayloadList.get(0).getManufacturer()).isEqualTo("Manufacturer");
-        assertThat(foundProductPayloadList.get(0).getRecommendedRetailPrice()).isEqualTo(20.00);
-        assertThat(foundProductPayloadList.get(0).getCreated()).isEqualTo(LocalDateTime.of(
-                    LocalDate.of(2021, 1, 1),
-                    LocalTime.of(0, 0)).toString());
+        assertThat(foundProductList.isEmpty()).isFalse();
+        assertThat(foundProductList.get().findFirst().get().getProductId()).isEqualTo("PROD");
+        assertThat(foundProductList.get().findFirst().get().getName()).isEqualTo("Beans");
+        assertThat(foundProductList.get().findFirst().get().getDescription()).isEqualTo("Description");
+        assertThat(foundProductList.get().findFirst().get().getManufacturer()).isEqualTo("Manufacturer");
+        assertThat(foundProductList.get().findFirst().get().getRecommendedRetailPrice()).isEqualTo(20.00);
+        assertThat(foundProductList.get().findFirst().get().getCreated()).isEqualTo(LocalDateTime.of(
+                LocalDate.of(2021, 1, 1),
+                LocalTime.of(0, 0)).toString());
     }
 
     /**
@@ -163,10 +163,10 @@ public class ProductRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundProductPayloadList = productRepository.findProductsByBusinessId(business.getId());
+        foundProductList = productRepository.findProductsByBusinessId(business.getId(), null);
 
         // then
-        assertThat(foundProductPayloadList.isEmpty()).isTrue();
+        assertThat(foundProductList.get().findAny().isEmpty()).isTrue();
     }
 
     /**
@@ -176,10 +176,10 @@ public class ProductRepositoryIntegrationTests {
     @Test
     public void whenFindProductsByNonExistingBusinessIdThenDontReturnProductPayload() {
         // when
-        foundProductPayloadList = productRepository.findProductsByBusinessId(1);
+        foundProductList = productRepository.findProductsByBusinessId(1, null);
 
         // then
-        assertThat(foundProductPayloadList.isEmpty()).isTrue();
+        assertThat(foundProductList.get().findAny().isEmpty()).isTrue();
     }
 
     /**
@@ -253,8 +253,8 @@ public class ProductRepositoryIntegrationTests {
         assertThat(foundProduct.get().getManufacturer()).isEqualTo("Manufacturer");
         assertThat(foundProduct.get().getRecommendedRetailPrice()).isEqualTo(20.00);
         assertThat(foundProduct.get().getCreated()).isEqualTo(LocalDateTime.of(
-                    LocalDate.of(2021, 1, 1),
-                    LocalTime.of(0, 0)).toString());
+                LocalDate.of(2021, 1, 1),
+                LocalTime.of(0, 0)).toString());
     }
 
     /**
@@ -390,4 +390,74 @@ public class ProductRepositoryIntegrationTests {
         // then
         assertThat(foundProduct.isEmpty()).isTrue();
     }
+
+
+    /**
+     * Tests that when we delete a product by its product ID and business ID the product is deleted from
+     * the database.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void whenDeletingProductWithValidProductAndBusinessIDs() throws Exception {
+        // given
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        entityManager.persist(business);
+        entityManager.flush();
+
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        // when
+        productRepository.deleteByIdAndBusinessId("PROD", business.getId());
+        Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
+
+        // then
+        assertThat(foundProduct.isEmpty()).isFalse();
+    }
+
 }

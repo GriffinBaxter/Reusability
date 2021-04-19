@@ -50,10 +50,12 @@ public class ProductResource {
      */
     public ProductResource(ProductRepository productRepository,
                            BusinessRepository businessRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           ProductUpdateServiceImplementation productUpdateService) {
         this.productRepository = productRepository;
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
+        this.productUpdateService = productUpdateService;
     }
 
     /**
