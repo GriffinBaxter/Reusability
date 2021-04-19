@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,9 @@ public class ProductResource {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProductUpdateServiceImplementation productUpdateService;
 
     /**
      * Constructor used to insert mocked repositories for testing.
@@ -237,10 +239,16 @@ public class ProductResource {
         return payloads;
     }
 
-
+    /**
+     * A PUT request used to update a product given a business ID, product ID and the new updated attributes.
+     * @param productUpdate The product payload containing the new attributes to be changed.
+     * @param businessId The ID of the business of which it's product will be updated.
+     * @param productId The ID of the product to be updated.
+     * @param sessionToken The token used to identify the user.
+     */
     @PutMapping("/businesses/{businessId}/products/{productId}")
     @ResponseStatus(code = HttpStatus.OK, reason = "Product updated successfully")
-    public void modifyCatalogueItem(@RequestBody productUpdatePayload productUpdate,
+    public void modifyCatalogueItem(@RequestBody ProductUpdatePayload productUpdate,
                                     @PathVariable Integer businessId,
                                     @PathVariable String productId,
                                     @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
@@ -267,12 +275,18 @@ public class ProductResource {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to update a product for a business they do not administer AND the user is not a global application admin.");
         }
 
-        // Verify the new id is unique are valid
-        if (!productId.equals(productUpdate.getId())) {
-            if (!ProductValidation.isValidProductId(productUpdate.getId()) && productRepository.findProductByIdAndBusinessId(productUpdate.getId(), businessId).isEmpty()) {
-                System.out.println("Invalid id");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product id already exists OR product id is invalid.");
+        // If the payload includes a new description check if it is valid. Otherwise use the previously defined value.
+        if (productUpdate.getId() != null) {
+            // No point in checking this if it is already the same value.
+            if (!productId.equals(productUpdate.getId())) {
+                // Verify the new id is unique are valid
+                if (!ProductValidation.isValidProductId(productUpdate.getId()) || productRepository.findProductByIdAndBusinessId(productUpdate.getId(), businessId).isPresent()) {
+                    System.out.println("Invalid id");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product id already exists OR product id is invalid.");
+                }
             }
+        } else {
+            productUpdate.setId(product.get().getProductId());
         }
 
         // Verify the name is included!
@@ -281,30 +295,39 @@ public class ProductResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product must have a name.");
         }
 
+
         // Verify the new name is valid
         if (!ProductValidation.isValidName(productUpdate.getName())) {
             System.out.println("Invalid name");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product name is invalid.");
         }
 
-        // Verify the description is valid
-        if (!ProductValidation.isValidDescription(productUpdate.getDescription())) {
-            System.out.println("Invalid desc");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product description is invalid.");
+
+        // If the payload includes a new description check if it is valid. Otherwise use the previously defined value.
+        if (productUpdate.getDescription() != null) {
+            // Verify the description is valid
+            if (!ProductValidation.isValidDescription(productUpdate.getDescription())) {
+                System.out.println("Invalid desc");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product description is invalid.");
+            }
+        } else {
+            productUpdate.setDescription(product.get().getDescription());
         }
 
-        // Verify the recommendedRetailPrice is valid
-        if (!ProductValidation.isValidRecommendeRetailPrice(productUpdate.getRecommendedRetailPrice())) {
-            System.out.println("Invalid retail");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new recommended product retail price is invalid.");
+        // If the payload includes a new recommendedRetailPrice check if it is valid. Otherwise use the previously defined value.
+        if (productUpdate.getRecommendedRetailPrice() != null) {
+            // Verify the recommendedRetailPrice is valid
+            if (!ProductValidation.isValidRecommendeRetailPrice(productUpdate.getRecommendedRetailPrice())) {
+                System.out.println("Invalid retail");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new recommended product retail price is invalid.");
+            }
+        } else {
+            productUpdate.setRecommendedRetailPrice(product.get().getRecommendedRetailPrice());
         }
 
-        // Update the actual data as it has been checked.
-        product.get().setProductId(productUpdate.getId());
-        product.get().setName(productUpdate.getName());
-        product.get().setDescription(productUpdate.getDescription());
-        product.get().setRecommendedRetailPrice(productUpdate.getRecommendedRetailPrice());
-        productRepository.save(product.get()); // Updates the database
+        // Start a transaction to update the product
+        productUpdateService.updateProduct(productId, businessId, productRepository, productUpdate);
+
     }
 
 
