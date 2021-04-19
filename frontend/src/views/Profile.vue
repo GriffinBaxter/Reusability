@@ -611,7 +611,7 @@ export default {
     logout() {
       Cookies.remove('userID');
       Cookies.remove('JSESSIONID');
-      // Cookies.remove('actAs');
+      Cookies.remove('actAs');
       this.$router.push({name: 'Login'});
     },
 
