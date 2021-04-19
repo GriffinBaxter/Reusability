@@ -217,7 +217,13 @@ public class UserResource {
         Role role = null;
         LocalDate dateOfBirth = null;
         String phoneNumber = null;
+
+        //stop payload loop
         List<Business> administrators = new ArrayList<>();
+        administrators = selectUser.getBusinessesAdministeredObjects();
+        for (Business administrator : administrators) {
+            administrator.setAdministrators(new ArrayList<>());
+        }
 
         //address
         String streetNumber = null;
@@ -229,10 +235,7 @@ public class UserResource {
             //base info
             dateOfBirth = selectUser.getDateOfBirth();
             phoneNumber = selectUser.getPhoneNumber();
-            administrators = selectUser.getBusinessesAdministeredObjects();
-            for (Business administrator : administrators) {
-                administrator.setAdministrators(new ArrayList<>());    //stop payload loop
-            }
+
 
             //address
             streetNumber = address.getStreetNumber();

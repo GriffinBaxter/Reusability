@@ -68,6 +68,7 @@
             <div class="card-body">{{ actionErrorMessage }}</div>
           </div>
 
+          <!--make/remove business administrator button-->
           <div class="card text-center  shadow-sm mt-3" v-if="actingBusinessId && otherUser">
             <div class="card-body">
               <div v-if="!isBusinessAdministrator">
@@ -148,8 +149,8 @@
               </div>
 
               <!--user's date of birth-->
-              <hr>
-              <div class="container" id="date-of-birth-row">
+              <hr v-if="!otherUser || isDGAA(loginRole)">
+              <div class="container" v-if="!otherUser || isDGAA(loginRole)">
                 <div class="row justify-content-between">
                   <div class="col-md-3">
                     <h6>Date of Birth:</h6>
@@ -163,8 +164,10 @@
               </div>
 
               <!--user's phone number-->
-              <hr id="date-header"><!--TODO not sure if this should be called phoneHR as address section-->
-              <div class="container" id="phone-row">
+              <hr v-if="!otherUser || isDGAA(loginRole)">
+              <!--TODO not sure if this should be called phoneHR as address section-->
+              <div class="container" v-if="!otherUser || isDGAA(loginRole)">
+
                 <div class="row justify-content-between">
                   <div class="col-md-3">
                     <h6>Phone number:</h6>
@@ -178,7 +181,7 @@
               </div>
 
               <!--user's home address-->
-              <hr id="phone-header"><!--TODO not sure if this should be called phoneHR as address section-->
+              <hr><!--TODO not sure if this should be called phoneHR as address section-->
               <div class="container">
                 <div class="row justify-content-between">
                   <div class="col-md-3">
@@ -206,8 +209,8 @@
                   </div>
                 </div>
               </div>
-              <hr id="business-administered-header">
-              <div class="container" id="business-administered-row">
+              <hr v-if="businessesAdministeredExist()">
+              <div class="container" v-if="businessesAdministeredExist()">
                 <div class="row justify-content-between">
                   <div class="col-md-3">
                     <h6>Businesses Administered:</h6>
@@ -229,8 +232,9 @@
           </div>
 
           <!--logout button-->
-          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out
-          </button>
+          <div align="right" id="signOutRow" v-if="!otherUser">
+          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
+          </div>
 
         </div>
       </div>
@@ -286,6 +290,7 @@ export default {
       otherUser: false,
       role: null,
 
+      loginRole: null,
       isBusinessAdministrator: false,
       actingBusinessId: null,
     }
@@ -328,6 +333,9 @@ export default {
      */
     isGAA(role) {
       return role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    businessesAdministeredExist() {
+      return this.businessesAdministered.length !== 0;
     },
 
     // --------------------------------------------------------------------------------------------------------------------
@@ -407,11 +415,9 @@ export default {
           this.actionErrorMessage = "Sorry, but something went wrong..."
         }
       })
-
-
       this.loadingAction = false;
-
     },
+
     /**
      * Performs the action that revokes GAA from the (page) user and handles all errors
      * specified in the API spec.
@@ -469,9 +475,7 @@ export default {
           this.actionErrorMessage = "Sorry, but something went wrong..."
         }
       })
-
       this.loadingAction = false;
-
     },
 
     /**
@@ -519,36 +523,6 @@ export default {
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
-      //address unpack
-      if (data.homeAddress.city) {
-        this.city = data.homeAddress.city;
-      }
-      if (data.homeAddress.region) {
-        this.region = data.homeAddress.region;
-      }
-      if (data.homeAddress.country) {
-        this.country = data.homeAddress.country;
-      }
-
-      // if (this.otherUser) {
-      //   document.getElementById('phone-row').remove();
-      //   document.getElementById('date-of-birth-row').remove();
-      //   document.getElementById('business-administered-row').remove();
-      //   document.getElementById('business-administered-header').remove();
-      //   document.getElementById('phone-header').remove();
-      //   document.getElementById('date-header').remove();
-      //
-      //   //address unpack
-      //   if (this.city !== "") {
-      //     this.homeAddress.push({line: this.city});
-      //   }
-      //   if (this.region !== "" && this.country !== ""){
-      //     this.homeAddress.push({line: this.region + ", " + this.country});
-      //   } else {
-      //     this.homeAddress.push({line: this.region + this.country});
-      //   }
-      //
-      // } else {
       //basic unpack
       this.dateOfBirth = this.formatAge(data.dateOfBirth);
       this.phoneNumber = data.phoneNumber;
@@ -562,6 +536,12 @@ export default {
       }
       if (data.homeAddress.city) {
         this.city = data.homeAddress.city;
+      }
+      if (data.homeAddress.region) {
+        this.region = data.homeAddress.region;
+      }
+      if (data.homeAddress.country) {
+        this.country = data.homeAddress.country;
       }
       if (data.homeAddress.postcode) {
         this.postcode = data.homeAddress.postcode;
@@ -596,16 +576,6 @@ export default {
       // }
 
 
-      // if (this.actingBusinessId) {
-      //   for (let i = 0; i < this.businessesAdministered.length; i++){
-      //     if (this.actingBusinessId === this.businessesAdministered[i].id) {
-      //       this.isBusinessAdministrator = true;
-      //     }
-      //   }
-      // } else {
-      //   this.isBusinessAdministrator = false;
-      // }
-
       //basic unpack
       this.firstName = data.firstName;
       this.middleName = data.middleName;
@@ -620,23 +590,33 @@ export default {
 
       this.getCreatedDate(data.created);
     },
+
     /**
      * push user to an business profile page
      */
     pushToBusiness(id) {//TODO:change name
       this.$router.push({name: 'BusinessProfile', params: {id}});
     },
+
+    /**
+     * get role of given id
+     */
+    getLoginRole(id) {
+      Api.getUser(id).then(response => (this.loginRole = response.data.role))
+    },
+
     /**
      * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
      */
     logout() {
       Cookies.remove('userID');
+      Cookies.remove('JSESSIONID');
+      // Cookies.remove('actAs');
       this.$router.push({name: 'Login'});
     },
 
-
     /**
-     *
+     * make select user become one of administrator of current active business
      */
     async activeAsAdministrator() {
       // If the process is already running return.
@@ -689,6 +669,10 @@ export default {
         this.loadingAction = false;
       }
     },
+
+    /**
+     * remove select user from administrators of current active business
+     */
     async removeActiveAdministrator() {
       // If the process is already running return.
       if (this.loadingAction) return;
@@ -755,6 +739,8 @@ export default {
   mounted() {
 
     const currentID = Cookies.get('userID');
+    this.getLoginRole(currentID);
+
     if (currentID) {
 
       const url = document.URL
