@@ -2,6 +2,8 @@ package org.seng302.business.product;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.seng302.business.Business;
 import org.seng302.validation.ProductValidation;
 
@@ -44,6 +46,7 @@ public class Product {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
+    private static final Logger logger = LogManager.getLogger(Product.class.getName());
 
     /**
      * Constructor for products.
@@ -66,21 +69,27 @@ public class Product {
                    LocalDateTime created
     ) throws Exception {
         if (!ProductValidation.isValidProductId(id)) {
+            logger.error("Product Creation Error - Product ID {} is not valid", id);
             throw new Exception("Invalid product ID");
         }
         if (business == null) {
+            logger.error("Product Creation Error - Business is null");
             throw new Exception("Invalid business");
         }
         if (!ProductValidation.isValidName(name)) {
+            logger.error("Product Creation Error - Name {} is not valid", name);
             throw new Exception("Invalid product name");
         }
         if (!ProductValidation.isValidDescription(description)) {
+            logger.error("Product Creation Error - Description {} is not valid", description);
             throw new Exception("Invalid product description");
         }
         if (!ProductValidation.isValidManufacturer(manufacturer)) {
+            logger.error("Product Creation Error - Manufacturer {} is not valid", manufacturer);
             throw new Exception("Invalid manufacturer");
         }
         if (created == null) {
+            logger.error("Product Creation Error - Created (Date-Time) is null");
             throw new Exception("Invalid date");
         }
         this.id = id;

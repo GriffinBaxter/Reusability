@@ -153,9 +153,9 @@ export default {
      *
      * @return {Promise}
      */
-    async requestProducts() {
+    async requestProducts(businessID) {
 
-      await Api.sortProducts(3).then(response => {
+      await Api.sortProducts(businessID).then(response => {
         this.productList = [...response.data];
         console.log(this.productList);
         // Order by productId alphabetically by default
@@ -555,8 +555,9 @@ export default {
      * If cookies are invalid or not present, redirect to login page.
      */
     const currentID = Cookies.get('userID');
+    const businessID = this.$route.params.id;
     if (currentID) {
-      this.requestProducts().then(
+      this.requestProducts(businessID).then(
           () => this.buildRows()
       ).catch(
           (e) => console.log(e)
@@ -571,14 +572,6 @@ export default {
 
 <style scoped>
 
-.greenButton {
-  background-color: #1EBA8C;
-  border-color: #1EBA8C;
-}
 
-.greenButton:hover {
-  background-color: transparent;
-  color: #1EBA8C;
-}
 
 </style>

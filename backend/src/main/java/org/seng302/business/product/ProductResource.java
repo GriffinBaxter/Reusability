@@ -1,5 +1,7 @@
 package org.seng302.business.product;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.main.Authorization;
@@ -37,6 +39,8 @@ public class ProductResource {
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger logger = LogManager.getLogger(ProductResource.class.getName());
+
     /**
      * Constructor used to insert mocked repositories for testing.
      *
@@ -64,9 +68,12 @@ public class ProductResource {
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id,
             @RequestBody ProductCreationPayload productPayload
     ) {
+        logger.debug("Product payload received: {}", productPayload);
+
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         if (!Authorization.verifyBusinessExists(id, businessRepository)) {
+            logger.error("Product Creation Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -75,8 +82,10 @@ public class ProductResource {
         }
 
         Optional<Business> currentBusiness = businessRepository.findBusinessById(id);
+        logger.debug("Business found with ID {}: {}", id, currentBusiness);
 
         if (currentUser.getRole() == Role.USER && !(currentBusiness.get().getAdministrators().contains(currentUser))) {
+            logger.error("Product Creation Failure - 403 [FORBIDDEN] - User with ID {} is not an admin of business with ID {}", currentUser.getId(), id);
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Forbidden: Returned when a user tries to add a product to business they do not administer " +
@@ -86,7 +95,8 @@ public class ProductResource {
 
         try {
             if (productRepository.findProductByIdAndBusinessId(productPayload.getId(), id).isPresent()) {
-                throw new Exception("Invalid product id, already in use");
+                logger.error("Product Creation Failure - 400 [BAD REQUEST] - Product with ID {} already exists for business with ID {}", productPayload.getId(), id);
+                throw new Exception("Invalid product ID, already in use");
             } else {
                 Product product = new Product(
                         productPayload.getId(),
@@ -99,8 +109,12 @@ public class ProductResource {
                 );
 
                 productRepository.save(product);
+
+                logger.info("Product Creation Success - 201 [CREATED] - Product created for business {} with ID {}", id, productPayload.getId());
+                logger.debug("Product created for business {} with ID {}: {}", id, productPayload.getId(), product);
             }
         } catch (Exception e) {
+            logger.error("Product Creation Failure - 400 [BAD REQUEST] - Bad data");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     e.getMessage()
@@ -124,9 +138,12 @@ public class ProductResource {
             @RequestParam String orderBy,
             @RequestParam String page
     ) {
+        logger.debug("Product retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
+
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         if (!Authorization.verifyBusinessExists(id, businessRepository)) {
+            logger.error("Product Catalogue Retrieval Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -135,6 +152,7 @@ public class ProductResource {
         }
 
         if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(id)) {
+            logger.error("Product Catalogue Retrieval Failure - 403 [FORBIDDEN] - User with ID {} is not an admin of business with ID {}", currentUser.getId(), id);
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "The account performing the request is neither an administrator of the business, nor a global application admin."
@@ -145,7 +163,7 @@ public class ProductResource {
         try {
             pageNo = Integer.parseInt(page);
         } catch (final NumberFormatException e) {
-            // Invalid page input
+            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Page parameter invalid"
@@ -191,7 +209,7 @@ public class ProductResource {
                 sortBy = Sort.by(Sort.Order.desc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
             default:
-                // Invalid orderBy input
+                logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "OrderBy Field invalid"
@@ -209,9 +227,15 @@ public class ProductResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
+        logger.info("Product Retrieval Success - 200 [OK] -  Products retrieved for business with ID {}", id);
+
+        List<ProductPayload> productPayloads = convertToPayload(pagedResult.getContent());
+
+        logger.debug("Products retrieved for business with ID {}: {}", id, productPayloads);
+
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(convertToPayload(pagedResult.getContent()));
+                .body(productPayloads);
     }
 
     /**
@@ -230,6 +254,7 @@ public class ProductResource {
                     product.getRecommendedRetailPrice(),
                     product.getCreated()
             );
+            logger.debug("Product payload created: {}", newPayload);
             payloads.add(newPayload);
         }
         return payloads;

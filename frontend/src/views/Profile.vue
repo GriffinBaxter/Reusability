@@ -196,7 +196,6 @@
             </div>
           </div>
 
-          <button class="btn btn-outline-primary float-end mt-4" id="testProductButton" @click="testProductNavigate()">Products</button>
           <!--logout button-->
           <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
 
@@ -577,12 +576,6 @@ export default {
     logout() {
       Cookies.remove('userID');
       this.$router.push({name: 'Login'});
-    },
-    testProductNavigate() {
-      /*
-      Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
-       */
-      this.$router.push({path: '/businesses/3/products'});
     },
     showFileUpload(x) {
       this.showUpload = x;

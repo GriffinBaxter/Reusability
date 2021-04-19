@@ -5,7 +5,11 @@ import org.apache.logging.log4j.Logger;
 import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
+import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.BusinessType;
+import org.seng302.business.product.Product;
+import org.seng302.business.product.ProductRepository;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -31,6 +35,7 @@ public class MainApplicationRunner implements ApplicationRunner {
     private UserRepository userRepository;
     private BusinessRepository businessRepository;
     private AddressRepository addressRepository;
+    private ProductRepository productRepository;
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
@@ -38,10 +43,11 @@ public class MainApplicationRunner implements ApplicationRunner {
      * classes (i.e. dependency injection)
      */
     @Autowired
-    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository) {
+    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository, ProductRepository productRepository) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
         this.addressRepository = addressRepository;
+        this.productRepository = productRepository;
     }
 
     /**
@@ -100,6 +106,41 @@ public class MainApplicationRunner implements ApplicationRunner {
             System.out.println(dGAA);
             dGAA = userRepository.save(dGAA);
             logger.error("DGAA does not exist. New DGAA created {}", dGAA);
+
+            // Added for testing purposes, REMOVE BEFORE MERGING
+            Business business = new Business(
+                    2,
+                    "name",
+                    "some text",
+                    address,
+                    BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                    LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
+                    userRepository.findById(2).get()
+            );
+            businessRepository.save(business);
+            Product product = new Product(
+                    "PROD",
+                    businessRepository.findBusinessById(3).get(),
+                    "Beans",
+                    "Description",
+                    "Manufacturer",
+                    20.00,
+                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                            LocalTime.of(0, 0))
+            );
+            productRepository.save(product);
+            Product otherProduct = new Product(
+                    "DUCT",
+                    businessRepository.findBusinessById(3).get(),
+                    "Ice Cream",
+                    "New Desc",
+                    "New Manufactere",
+                    21.00,
+                    LocalDateTime.of(LocalDate.of(2022, 1, 1),
+                            LocalTime.of(0, 0))
+            );
+            productRepository.save(otherProduct);
+            System.out.println(productRepository.findProductsByBusinessId(3, null).getTotalElements());
         } else {
             logger.info("DGGA exists.");
         }
