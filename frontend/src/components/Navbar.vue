@@ -16,7 +16,7 @@
 
         <!-- Logo image -->
         <div class="logo-container text-center">
-          <router-link class="navbar-brand " to="/home">
+          <router-link class="navbar-brand " to="/home" tabindex="-1">
             <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
           </router-link>
           <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
@@ -36,17 +36,19 @@
 
                 <!-- default page links -->
                 <li class="nav-item">
-                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home">Home</router-link>
+                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
                 </li>
                 <li class="nav-item">
-                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile">Profile</router-link>
+                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                    Profile
+                  </router-link>
                 </li>
 
                 <!--- Business specific account links -->
                 <li class="nav-item dropdown" v-if="isBusinessAccount">
 
                 <!-- Navbar toggle drop down -->
-                <a class="nav-link dropdown-toggle" role="button" @click="() => {
+                <a class="nav-link dropdown-toggle" role="button" tabindex="3" @click="() => {
                   this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown)
                 }">
                   Business Pages
@@ -56,13 +58,19 @@
                 <div id="business-dropdown-links-wrapper">
                  <ul class="dropdown-menu show" id="business-dropdown-links">
                       <li class="nav-item">
-                        <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
+                        <router-link :class="['nav-link ', isActivePath('/')]" to="/" tabindex="-1">
+                          Business Listings
+                        </router-link>
                       </li>
                       <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
+                        <router-link :class="['nav-link', isActivePath('/')]" to="/" tabindex="-1">
+                          Inventory
+                        </router-link>
                       </li>
                       <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
+                        <router-link :class="['nav-link', isActivePath('/')]" to="/" tabindex="-1">
+                          Catalogue
+                        </router-link>
                       </li>
                  </ul>
                 </div>
@@ -71,7 +79,7 @@
 
                 <!-- Log out link-->
                 <li class="nav-item">
-                  <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
+                  <a class="nav-link" style="cursor: pointer" tabindex="4" @click="e =>logout(e)">Log out</a>
                 </li>
 
               </ul>
@@ -482,8 +490,9 @@ export default {
   width: auto;
 }
 
-.nav-link:hover {
+.nav-link:hover, .nav-link:focus {
   background: #ef5e33;
+  outline: none;
 }
 
 .navbar-toggler {
