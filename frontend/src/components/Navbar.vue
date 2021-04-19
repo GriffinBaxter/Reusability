@@ -529,6 +529,41 @@ export default {
   padding: 0 5rem;
   /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
+
+.company-name-main-font {
+  font-family: 'Merriweather Sans', sans-serif;
+
+  /* centre text with navbar toggle */
+  margin: 0;
+  position: absolute;
+  top: 35px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+@media (min-width: 250px) {
+  .company-name-main-font {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 350px) {
+  .company-name-main-font {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 400px) {
+  .company-name-main-font {
+    font-size: 22px;
+  }
+}
+
+@media (min-width: 450px) {
+  .company-name-main-font {
+    font-size: 28px;
+  }
+}
 /*-------------------------------------------- Large break point styling ------------------------------------------*/
 
 /* Styling for smaller screen sizes ends */
@@ -545,7 +580,6 @@ export default {
   }
 
   .company-name-main-font {
-    font-family: 'Merriweather Sans', sans-serif;
     font-size: 32px;
 
     /* centre text */
@@ -554,11 +588,6 @@ export default {
     top: 50%;
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
-
-    /* align to bottom of logo */
-    /*vertical-align: bottom;*/
-    /*line-height: 90%;*/
-
   }
 
   #navbar-id {
@@ -619,7 +648,6 @@ export default {
   }
 
   .company-name-main-font {
-    font-family: 'Merriweather Sans', sans-serif;
     font-size: 50px;
 
     /* centre text */
@@ -628,10 +656,6 @@ export default {
     top: 50%;
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
-
-    /* align to bottom of logo */
-    /*vertical-align: bottom;*/
-    /*line-height: 90%;*/
   }
 }
 
