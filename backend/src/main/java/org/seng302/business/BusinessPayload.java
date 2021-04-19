@@ -49,6 +49,8 @@ public class BusinessPayload {
             );
             businessPayloads.add(businessPayload);
         }
+
+
         return businessPayloads;
     }
 
@@ -63,6 +65,7 @@ public class BusinessPayload {
                            ) throws Exception {
         this.id = id;
         this.administrators = UserPayload.toUserPayload(administrators);
+//      TODO This might get changed in the future due to the recursive nature of the API seems wrong.
         if (this.administrators.isEmpty()){
             this.administrators.add(null);
         }
@@ -72,6 +75,7 @@ public class BusinessPayload {
         this.address = address;
         this.businessType = businessType.toString();
         this.created = created.toString();
+
     }
 
     public int getId() {
