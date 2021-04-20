@@ -59,7 +59,7 @@ public class ProductResourceIntegrationTests {
     private ProductRepository productRepository;
 
     @MockBean
-    private ProductUpdateServiceImplementation productUpdateService;
+    private ProductUpdateService productUpdateService;
 
     private MockHttpServletResponse response;
 

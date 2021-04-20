@@ -39,7 +39,7 @@ public class ProductResource {
     private UserRepository userRepository;
 
     @Autowired
-    private ProductUpdateServiceImplementation productUpdateService;
+    private ProductUpdateService productUpdateService;
 
     /**
      * Constructor used to insert mocked repositories for testing.
@@ -51,7 +51,7 @@ public class ProductResource {
     public ProductResource(ProductRepository productRepository,
                            BusinessRepository businessRepository,
                            UserRepository userRepository,
-                           ProductUpdateServiceImplementation productUpdateService) {
+                           ProductUpdateService productUpdateService) {
         this.productRepository = productRepository;
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;

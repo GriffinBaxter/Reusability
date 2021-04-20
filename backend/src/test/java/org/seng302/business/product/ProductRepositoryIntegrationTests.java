@@ -457,7 +457,212 @@ public class ProductRepositoryIntegrationTests {
         Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
 
         // then
+        assertThat(foundProduct.isEmpty()).isTrue();
+    }
+
+
+    /**
+     * Tests that when trying to delete a invalid product id with a valid id. No errors are thrown, and other products are not effected.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void whenDeletingProductWithInvalidProductIdAndValidBusinessId() throws Exception {
+        // given
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        entityManager.persist(business);
+        entityManager.flush();
+
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        // when
+        productRepository.deleteByIdAndBusinessId("PROD1", business.getId());
+        Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
+
+        // then
         assertThat(foundProduct.isEmpty()).isFalse();
     }
+
+
+    /**
+     * Tests when deleting a product with a invalid product id and invalid business id, no errors thrown and other products are not effected.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void whenDeletingProductWithValidProductIdAndInvalidBusinessId() throws Exception {
+        // given
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        entityManager.persist(business);
+        entityManager.flush();
+
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        // when
+        productRepository.deleteByIdAndBusinessId("PROD", business.getId()+1);
+        Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
+
+        // then
+        assertThat(foundProduct.isEmpty()).isFalse();
+    }
+
+
+    /**
+     * Tests that when we delete a product by its invalid product ID and invalid business ID. No errors are thrown and other products are no effected.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void whenDeletingProductWithInvalidProductIdAndInvalidBusinessId() throws Exception {
+        // given
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        entityManager.persist(business);
+        entityManager.flush();
+
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        // when
+        productRepository.deleteByIdAndBusinessId("PROD1", business.getId()+1);
+        Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
+
+        // then
+        assertThat(foundProduct.isEmpty()).isFalse();
+    }
+
 
 }
