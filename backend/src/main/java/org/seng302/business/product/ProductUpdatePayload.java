@@ -8,7 +8,9 @@ public class ProductUpdatePayload {
     private String id;
     private String name;
     private String description;
+    private String manufacturer;
     private Double recommendedRetailPrice;
+
 
     public String getId() {
         return id;
@@ -21,6 +23,8 @@ public class ProductUpdatePayload {
     public String getDescription() {
         return description;
     }
+
+    public String getManufacturer() { return manufacturer; }
 
     public Double getRecommendedRetailPrice() {
         return recommendedRetailPrice;
@@ -36,6 +40,10 @@ public class ProductUpdatePayload {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
     public void setRecommendedRetailPrice(Double recommendedRetailPrice) {
