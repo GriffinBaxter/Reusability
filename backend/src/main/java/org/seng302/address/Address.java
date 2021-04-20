@@ -235,19 +235,4 @@ public class Address {
         );
     }
 
-    /**
-     * Make an address object to json form.
-     * @return a string contain address info in json form
-     */
-    @Override
-    public String toString() {
-        return "{" +
-                "\"streetNumber\":\"" + streetNumber + "\"," +
-                "\"streetName\":\""   + streetName   + "\"," +
-                "\"city\":\""        + city         + "\"," +
-                "\"region\":\""       + region       + "\"," +
-                "\"country\":\""      + country      + "\"," +
-                "\"postcode\":\""     + postcode     + "\"" +
-                "}";
-    }
 }

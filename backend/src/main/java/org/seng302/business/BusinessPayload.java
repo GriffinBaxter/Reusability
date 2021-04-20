@@ -63,7 +63,7 @@ public class BusinessPayload {
                            LocalDateTime created
                            ) throws Exception {
         this.id = id;
-        this.administrators = UserResource.convertToPayload(administrators, "", false);
+        this.administrators = UserPayload.convertToPayload(administrators);
         if (this.administrators.isEmpty()){
             this.administrators.add(null);
         }

@@ -345,49 +345,23 @@ public class UserResource {
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(convertToPayloadSecure(pagedResult.getContent(), sessionToken, true));
+                .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), sessionToken));
     }
 
+    public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, String sessionToken) throws Exception {
+        List<UserPayloadSecure> userPayloadList = new ArrayList<>();
+        userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
 
-
-    /**
-     * Converts a list of users to a list of userPayloadsSecure.
-     * @param userList The given list of users
-     * @param sessionToken The current session token to verify
-     * @param useSessionToken Whether a session token is being passed in or not. If true, the role of the user will be verified.
-     * @return A list of userPayloadsSecure.
-     */
-    public List<UserPayloadSecure> convertToPayloadSecure(List<User> userList, String sessionToken, Boolean useSessionToken) throws Exception {
-        List<UserPayloadSecure> payLoadsSecure = new ArrayList<>();
-        for (User user : userList) {
-
+        for (UserPayloadSecure userPayloadSecure: userPayloadList) {
             Role role = null;
-            if (useSessionToken) {
-                if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-                    role = user.getRole();
-                }
-            } else {
-                role = user.getRole();
+            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+                role = userPayloadSecure.getRole();
             }
-
-            UserPayloadSecure newPayload = new UserPayloadSecure(user.getId(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getMiddleName(),
-                    user.getNickname(),
-                    user.getBio(),
-                    user.getEmail(),
-                    user.getDateOfBirth(),
-                    user.getPhoneNumber(),
-                    user.getHomeAddress().toAddressPayloadSecure(),
-                    user.getCreated(),
-                    role,
-                    user.getBusinessesAdministeredObjects());
-
-            payLoadsSecure.add(newPayload);
+            userPayloadSecure.setRole(role);
         }
-        return payLoadsSecure;
+        return userPayloadList;
     }
+
 
     /**
      * Checks if the current user's role matches the role parameter.

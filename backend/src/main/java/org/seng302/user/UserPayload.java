@@ -47,22 +47,11 @@ public class UserPayload extends UserPayloadParent {
     /**
      * Converts a list of users to a list of userPayloads.
      * @param userList The given list of users
-     * @param sessionToken The current session token to verify
-     * @param useSessionToken Whether a session token is being passed in or not. If true, the role of the user will be verified.
      * @return A list of userPayloads.
      */
-    public List<UserPayload> convertToPayload(List<User> userList, String sessionToken, Boolean useSessionToken) throws Exception {
+    public static List<UserPayload> convertToPayload(List<User> userList) throws Exception {
         List<UserPayload> payLoads = new ArrayList<>();
         for (User user : userList) {
-
-            Role role = null;
-            if (useSessionToken) {
-                if (UserResource.verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-                    role = user.getRole();
-                }
-            } else {
-                role = user.getRole();
-            }
 
             UserPayload newPayload = new UserPayload(user.getId(),
                     user.getFirstName(),
@@ -75,7 +64,7 @@ public class UserPayload extends UserPayloadParent {
                     user.getPhoneNumber(),
                     user.getHomeAddress().toAddressPayload(),
                     user.getCreated(),
-                    role,
+                    user.getRole(),
                     user.getBusinessesAdministeredObjects());
 
             payLoads.add(newPayload);

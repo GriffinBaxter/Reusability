@@ -24,10 +24,9 @@
       <div class="row mb-3">
 
         <!--order by nickname-->
-        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3"
+        <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3"
              @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
           <b>Nickname</b>
-          <i id="nickname-icon"></i>
         </div>
 
         <!--order by full name-->
@@ -104,6 +103,7 @@
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Navbar from "@/components/Navbar";
+
 export default {
   name: "Search",
   components: {
@@ -270,11 +270,20 @@ export default {
         this.disableIcons();
         if (this.nickAscending) {
           this.orderBy = "nicknameASC";
-          document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-up float-end');
+          const icon = document.createElement('font-awesome-icon');
+          //icon.setAttribute('icon', 'search');
+          icon.setAttribute('class', 'float-end');
+          icon.setAttribute(':icon', '[\'fas\', \'search\']')
+          document.getElementById('order-by-nickname-div').appendChild(icon);
+
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameASC&page=${this.currentPage}`);
         } else {
           this.orderBy = "nicknameDESC";
-          document.getElementById('nicknameIcon').setAttribute('class','fas fa-chevron-down float-end');
+          const icon = document.createElement('font-awesome-icon');
+          //icon.setAttribute('icon', 'search');
+          icon.setAttribute('class', 'float-end');
+          icon.setAttribute(':icon', '[\'fas\', \'search\']')
+          document.getElementById('order-by-nickname-div').appendChild(icon);
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameDESC&page=${this.currentPage}`);
 
         }
@@ -288,12 +297,12 @@ export default {
         this.disableIcons();
         if (this.nameAscending) {
           this.orderBy = "fullNameASC";
-          document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('name-icon').setAttribute('class','fas fa-chevron-up float-end');
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=fullNameASC&page=${this.currentPage}`);
 
         } else {
           this.orderBy = "fullNameDESC";
-          document.getElementById('nameIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('name-icon').setAttribute('class','fas fa-chevron-down float-end');
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=fullNameDESC&page=${this.currentPage}`)
 
         }
@@ -307,11 +316,11 @@ export default {
         this.disableIcons();
         if (this.emailAscending) {
           this.orderBy = "emailASC";
-          document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('email-icon').setAttribute('class','fas fa-chevron-up float-end');
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=emailASC&page=${this.currentPage}`);
         } else {
           this.orderBy = "emailDESC";
-          document.getElementById('emailIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('email-icon').setAttribute('class','fas fa-chevron-down float-end');
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=emailDESC&page=${this.currentPage}`)
 
         }
@@ -325,12 +334,12 @@ export default {
         this.disableIcons();
         if (this.addressAscending) {
           this.orderBy = "addressASC";
-          document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-up float-end');
+          document.getElementById('address-icon').setAttribute('class','fas fa-chevron-up float-end');
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressASC&page=${this.currentPage}`);
 
         } else {
           this.orderBy = "addressDESC";
-          document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-down float-end');
+          document.getElementById('address-icon').setAttribute('class','fas fa-chevron-down float-end');
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressDESC&page=${this.currentPage}`);
         }
         this.nickAscending = false;
@@ -346,10 +355,13 @@ export default {
      * Disables all ascending or descending icons in the top column headers.
      */
     disableIcons() {
-      document.getElementById('nicknameIcon').setAttribute('class', '');
-      document.getElementById('nameIcon').setAttribute('class', '');
-      document.getElementById('emailIcon').setAttribute('class', '');
-      document.getElementById('addressIcon').setAttribute('class', '');
+
+      // if (document.getElementById('order-by-nickname-div').childElementCount > 1) {
+      //   document.getElementById('order-by-nickname-div').removeChild(document.getElementById('order-by-nickname-div').lastChild);
+      // }
+      document.getElementById('name-icon').setAttribute('class', '');
+      document.getElementById('email-icon').setAttribute('class', '');
+      document.getElementById('address-icon').setAttribute('class', '');
 
     },
 
@@ -492,7 +504,7 @@ export default {
      * Creates a string which represents a user's address.
      */
     getAddress(user) {
-      console.log(user);
+      console.log(user.homeAddress);
       let city = "";
       if (user.homeAddress.city) {
         city = user.homeAddress.city;

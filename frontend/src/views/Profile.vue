@@ -474,6 +474,7 @@ export default {
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
+
       if (data.homeAddress.city) {
         this.city = data.homeAddress.city;
       }

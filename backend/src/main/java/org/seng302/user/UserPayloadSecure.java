@@ -5,6 +5,7 @@ import org.seng302.business.Business;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +43,35 @@ public class UserPayloadSecure extends UserPayloadParent {
                 businessesAdministeredObject);
 
         this.homeAddress = homeAddress;
+    }
+
+    /**
+     * Converts a list of users to a list of userPayloadsSecure.
+     * @param userList The given list of users
+     * @return A list of userPayloadsSecure.
+     */
+    public static List<UserPayloadSecure> convertToPayloadSecure(List<User> userList) throws Exception {
+        List<UserPayloadSecure> payLoadsSecure = new ArrayList<>();
+        for (User user : userList) {
+
+            UserPayloadSecure newPayload = new UserPayloadSecure(user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getMiddleName(),
+                    user.getNickname(),
+                    user.getBio(),
+                    user.getEmail(),
+                    user.getDateOfBirth(),
+                    user.getPhoneNumber(),
+                    user.getHomeAddress().toAddressPayloadSecure(),
+                    user.getCreated(),
+                    user.getRole(),
+                    user.getBusinessesAdministeredObjects());
+
+            payLoadsSecure.add(newPayload);
+            System.out.println(newPayload);
+        }
+        return payLoadsSecure;
     }
 
     public AddressPayloadSecure getHomeAddress() {
