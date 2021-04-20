@@ -97,7 +97,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
 
-        addressUser = new Address("57", "", "Sydney Highway", "Shire of Cocos Islands", "West Island", "Cocos (Keeling) Islands");
+        addressUser = new Address("57", "Sydney Highway", "Shire of Cocos Islands", "West Island", "Cocos (Keeling) Islands", "9732");
         entityManager.persist(addressUser);
         entityManager.flush();
 
@@ -115,7 +115,8 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
 
-        addressAnotherUser = new Address("47993", "", "Norwood Garden", "Mambere-Kadei", "Central African Republic", "Africa");
+        addressAnotherUser = new Address("47993", "Norwood Garden", "Mambere-Kadei", "Central African Republic", "Africa", "3428");
+
         entityManager.persist(addressAnotherUser);
         entityManager.flush();
 
@@ -133,7 +134,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address1 = new Address("129", "Mastic Trail", "Frank Sound", "Cayman Islands", "Caribbean", "North America");
+        address1 = new Address("129", "Mastic Trail", "Frank Sound Cayman Islands", "Caribbean", "North America", "3442");
         entityManager.persist(address1);
         entityManager.flush();
 
@@ -152,7 +153,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China");
+        address2 = new Address("80416", "Rodney Street", "Jon Loop", "Shaanxi", "China", "2113");
         entityManager.persist(address2);
         entityManager.flush();
 
@@ -171,7 +172,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa");
+        address3 = new Address("9205", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "1000");
         entityManager.persist(address3);
         entityManager.flush();
 
@@ -190,7 +191,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand");
+        address4 = new Address("240", "Newson Street", "Bernhard Run", "Southland", "New Zealand", "2839");
         entityManager.persist(address4);
         entityManager.flush();
 
@@ -209,7 +210,8 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand");
+        address5 = new Address("186", "Simpsons Road",  "Ashburton", "Canterbury", "New Zealand", "2828");
+
         entityManager.persist(address5);
         entityManager.flush();
 
@@ -228,7 +230,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand");
+        address6 = new Address("14798", "Terry Highway", "Queenstown-Lakes", "District", "New Zealand", "2982");
         entityManager.persist(address6);
         entityManager.flush();
 
@@ -247,7 +249,8 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand");
+        address7 = new Address("3396", "Bertram Parkway", "Central", "Central Otago", "New Zealand", "1111");
+
         entityManager.persist(address7);
         entityManager.flush();
 
@@ -461,6 +464,8 @@ public class SearchUserByNameTests {
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+
+
         //assertThat(userPage.getContent()).isEqualTo(90);
 
         // then
@@ -478,26 +483,26 @@ public class SearchUserByNameTests {
         // given
         int pageNo = 0;
         int pageSize = 11;
-        Sort sortBy = Sort.by(Sort.Order.asc("homeAddress").ignoreCase());
+        Sort sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
-        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
-        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
-        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
-        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
-        orderedAddress.add("14798 Terry Highway, Queenstown-Lakes District, New Zealand");
-        orderedAddress.add("186 Simpsons Road, Ashburton, Canterbury, New Zealand");
-        orderedAddress.add("240 Bernhard Run, Southland, New Zealand");
-        orderedAddress.add("325 Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
-        orderedAddress.add("3396 Bertram Parkway, Central Otago, New Zealand");
-        orderedAddress.add("47993 Norwood Garden, Mambere-Kadei Central African Republic, Africa");
-        orderedAddress.add("57 Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands");
-        orderedAddress.add("80416 Jon Loop, Shaanxi, China");
-        orderedAddress.add("9205 Monique Vista, Bururi, Bigomogomo, Africa");
+        orderedAddress.add("186, Simpsons Road, Ashburton, Canterbury, New Zealand, 2828");
+        orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839");
+        orderedAddress.add("9205, Monique Vista, Bururi, Bigomogomo, Africa, 1000");
+        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("80416, Rodney Street, Jon Loop, Shaanxi, China, 2113");
+        orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        // assertThat(userPage.getContent()).isEqualTo(90);
+
+//        assertThat(userPage.getContent()).isEqualTo(90);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -514,23 +519,22 @@ public class SearchUserByNameTests {
         // given
         int pageNo = 0;
         int pageSize = 11;
-        Sort sortBy = Sort.by(Sort.Order.desc("homeAddress").ignoreCase());
+        Sort sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
 
-        orderedAddress.add("9205 Monique Vista, Bururi, Bigomogomo, Africa");
-        orderedAddress.add("80416 Jon Loop, Shaanxi, China");
-        orderedAddress.add("57 Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands");
-        orderedAddress.add("47993 Norwood Garden, Mambere-Kadei Central African Republic, Africa");
-        orderedAddress.add("3396 Bertram Parkway, Central Otago, New Zealand");
-        orderedAddress.add("325 Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
-        orderedAddress.add("240 Bernhard Run, Southland, New Zealand");
-        orderedAddress.add("186 Simpsons Road, Ashburton, Canterbury, New Zealand");
-        orderedAddress.add("14798 Terry Highway, Queenstown-Lakes District, New Zealand");
-        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
-        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
-        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
-        orderedAddress.add("129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America");
+        orderedAddress.add("57, Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands, 9732");
+        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428");
+        orderedAddress.add("80416, Rodney Street, Jon Loop, Shaanxi, China, 2113");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("9205, Monique Vista, Bururi, Bigomogomo, Africa, 1000");
+        orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839");
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
@@ -538,7 +542,7 @@ public class SearchUserByNameTests {
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
-            assertThat(userPage.getContent().get(i).getHomeAddress()).isEqualTo(orderedAddress.get(i));
+            assertThat(userPage.getContent().get(i).getHomeAddress().toString()).isEqualTo(orderedAddress.get(i));
         }
 
     }
@@ -617,40 +621,6 @@ public class SearchUserByNameTests {
         }
 
     }
-
-    /*
-
-    Full name ascending/descending:
-    Sort by name in general (simple case)
-    Check sort with same firstname, different middle
-    Check sort with same firstname, different last
-    Check sort with same firstname, same middle, different last
-
-    Ordering is consistent with duplicate values (secondary order by needed)
-
-
-    email ascending/descending
-    address ascending/descending
-    nickname asc/desc
-
-    Filter by firstname
-    Filter by middlename
-    Filter by lastname
-    Filter by firstname and middlename
-    Filter by firstname and lastname
-    Filter by middlename and lastname
-    Filter by all three
-    Filter by nickname
-    Filter by empty string gives all users
-    Filter by non-existent input
-
-    Pagination test half full page |
-    Pagination test that we receive page 2 or later |
-    Pagination test empty page |
-    Pagination test full page |
-    Pagination test ordering works across pages, not just within a page |
-
-     */
 
     /**
      * Tests that the search functionality will return paginated results correctly when the page is not full with users.
