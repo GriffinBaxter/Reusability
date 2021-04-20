@@ -266,7 +266,7 @@ public class UserResource {
      * @return A list of UserPayload objects matching the search query
      */
     @GetMapping("/users/search")
-    public ResponseEntity<List<UserPayload>> searchUsers(
+    public ResponseEntity<List<UserPayloadSecure>> searchUsers(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestParam String searchQuery,
             @RequestParam String orderBy,
@@ -345,24 +345,32 @@ public class UserResource {
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(convertToPayload(pagedResult.getContent(), sessionToken));
+                .body(convertToPayloadSecure(pagedResult.getContent(), sessionToken, true));
     }
 
+
+
     /**
-     * Converts a list of users to a list of userPayloads.
+     * Converts a list of users to a list of userPayloadsSecure.
      * @param userList The given list of users
      * @param sessionToken The current session token to verify
-     * @return A list of userPayloads.
+     * @param useSessionToken Whether a session token is being passed in or not. If true, the role of the user will be verified.
+     * @return A list of userPayloadsSecure.
      */
-    public List<UserPayload> convertToPayload(List<User> userList, String sessionToken) throws Exception {
-        List<UserPayload> payLoads = new ArrayList<>();
+    public List<UserPayloadSecure> convertToPayloadSecure(List<User> userList, String sessionToken, Boolean useSessionToken) throws Exception {
+        List<UserPayloadSecure> payLoadsSecure = new ArrayList<>();
         for (User user : userList) {
+
             Role role = null;
-            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+            if (useSessionToken) {
+                if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+                    role = user.getRole();
+                }
+            } else {
                 role = user.getRole();
             }
-            UserPayload newPayload = new UserPayload(
-                    user.getId(),
+
+            UserPayloadSecure newPayload = new UserPayloadSecure(user.getId(),
                     user.getFirstName(),
                     user.getLastName(),
                     user.getMiddleName(),
@@ -371,14 +379,14 @@ public class UserResource {
                     user.getEmail(),
                     user.getDateOfBirth(),
                     user.getPhoneNumber(),
-                    user.getHomeAddress().toAddressPayload(),
+                    user.getHomeAddress().toAddressPayloadSecure(),
                     user.getCreated(),
                     role,
-                    user.getBusinessesAdministeredObjects()
-            );
-            payLoads.add(newPayload);
+                    user.getBusinessesAdministeredObjects());
+
+            payLoadsSecure.add(newPayload);
         }
-        return payLoads;
+        return payLoadsSecure;
     }
 
     /**
@@ -388,7 +396,7 @@ public class UserResource {
      * @param role Role being matched
      * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
      */
-    private boolean verifyRole(String sessionToken, Role role) {
+    boolean verifyRole(String sessionToken, Role role) {
         Optional<User> userOptional = userRepository.findBySessionUUID(sessionToken);
 
         if (userOptional.isPresent()) {

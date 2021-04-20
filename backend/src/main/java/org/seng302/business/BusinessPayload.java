@@ -4,6 +4,7 @@ import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 import org.seng302.user.User;
 import org.seng302.user.UserPayload;
+import org.seng302.user.UserResource;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class BusinessPayload {
                            LocalDateTime created
                            ) throws Exception {
         this.id = id;
-        this.administrators = UserPayload.toUserPayload(administrators);
+        this.administrators = UserResource.convertToPayload(administrators, "", false);
         if (this.administrators.isEmpty()){
             this.administrators.add(null);
         }

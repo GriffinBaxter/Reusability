@@ -147,7 +147,7 @@
 
               <!--user's phone number-->
               <hr id="date-header">                <!--TODO not sure if this should be called phoneHR as address section-->
-              <div class="row" id="phoneRow">
+              <div class="row" id="phone-row">
                 <div class="col-md-3">
                   <h6>Phone number:</h6>
                 </div>
@@ -435,6 +435,8 @@ export default {
     retrieveUser(userID) {
       Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
 
+        console.log(error)
+
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 406) {
@@ -482,11 +484,12 @@ export default {
         this.country = data.homeAddress.country;
       }
 
+      // when you are not the actual user, display a reduced version of the address i.e. just the region, country, city
       if (this.otherUser) {
-        document.getElementById('phoneRow').remove();
-        document.getElementById('dateOfBirthRow').remove();
-        document.getElementById('phoneHR').remove();
-        document.getElementById('dateHR').remove();
+        document.getElementById('phone-row').remove();
+        document.getElementById('date-of-birth-row').remove();
+        document.getElementById('phone-header').remove();
+        document.getElementById('date-header').remove();
 
         if (this.city !== "") {
           this.address.push({line: this.city});
@@ -497,6 +500,7 @@ export default {
           this.address.push({line: this.region + this.country});
         }
 
+        // when you are the logged in user, display the whole address
       } else {
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;

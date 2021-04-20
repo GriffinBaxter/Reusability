@@ -223,6 +223,17 @@ public class Address {
         );
     }
 
+    /**
+     * Convert an Address object into an AddressPayloadSecure i.e. no street number, street name or post code
+     * @return an AddressPayloadSecure object
+     */
+    public AddressPayloadSecure toAddressPayloadSecure() throws Exception {
+        return new AddressPayloadSecure(
+                this.city,
+                this.region,
+                this.country
+        );
+    }
 
     /**
      * Make an address object to json form.
