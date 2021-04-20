@@ -371,9 +371,10 @@ public class UserResource {
                     user.getEmail(),
                     user.getDateOfBirth(),
                     user.getPhoneNumber(),
-                    user.getHomeAddress(),
+                    user.getHomeAddress().toAddressPayload(),
                     user.getCreated(),
-                    role
+                    role,
+                    user.getBusinessesAdministeredObjects()
             );
             payLoads.add(newPayload);
         }

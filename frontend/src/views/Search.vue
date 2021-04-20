@@ -332,7 +332,6 @@ export default {
           this.orderBy = "addressDESC";
           document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-down float-end');
           history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressDESC&page=${this.currentPage}`);
-
         }
         this.nickAscending = false;
         this.nameAscending = false;
@@ -343,169 +342,169 @@ export default {
 
       //TODO test address sorting - don't think we need this from dev
       //TODO need to test searching with new address API spec updates
-
+      //
       // } else if (address) {
       //   this.disableIcons();
-      //
-      //
-      //   if (this.addressAscending) {
-      //     this.userList.sort(function (a, b) {
-      //
-      //       let city = "";
-      //       if (a.homeAddress.city) {
-      //         city = a.homeAddress.city;
-      //       }
-      //       let region = "";
-      //       if (a.homeAddress.region) {
-      //         region = a.homeAddress.region;
-      //       }
-      //       let country = "";
-      //       if (a.homeAddress.country) {
-      //         country = a.homeAddress.country;
-      //       }
-      //
-      //       let address1 = "";
-      //       if (city !== "") {
-      //         address1 = address1.concat(city);
-      //       }
-      //       if (city !== "" && region !== "") {
-      //         address1 = address1.concat(", ", region);
-      //       } else {
-      //         address1 = address1.concat(region);
-      //       }
-      //
-      //       if (region !== "" && country !== "") {
-      //         address1 = address1.concat(", ", country);
-      //       } else if (city !== "" && country !== "") {
-      //         address1 = address1.concat(", ", country);
-      //       } else {
-      //         address1 = address1.concat(country);
-      //       }
-      //
-      //       city = "";
-      //       if (b.homeAddress.city) {
-      //         city = b.homeAddress.city;
-      //       }
-      //       region = "";
-      //       if (b.homeAddress.region) {
-      //         region = b.homeAddress.region;
-      //       }
-      //       country = "";
-      //       if (b.homeAddress.country) {
-      //         country = b.homeAddress.country;
-      //       }
-      //
-      //       let address2 = "";
-      //       if (city !== "") {
-      //         address2 = address2.concat(city);
-      //       }
-      //       if (city !== "" && region !== "") {
-      //         address2 = address2.concat(", ", region);
-      //       } else {
-      //         address2 = address2.concat(region);
-      //       }
-      //
-      //       if (region !== "" && country !== "") {
-      //         address2 = address2.concat(", ", country);
-      //       } else if (city !== "" && country !== "") {
-      //         address2 = address2.concat(", ", country);
-      //       } else {
-      //         address2 = address2.concat(country);
-      //       }
-      //
-      //       if (address1 > address2) {
-      //         return -1;
-      //       }
-      //       if (address1 < address2) {
-      //         return 1;
-      //       }
-      //       return 0;
-      //     })
-      //     document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-      //     this.orderBy = "addressASC";
-      //     document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-up float-end');
-      //     history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressASC&page=${this.currentPage}`);
-      //
-      //   } else {
-      //     this.userList.sort(function (a, b) {
-      //
-      //       let city = "";
-      //       if (a.homeAddress.city) {
-      //         city = a.homeAddress.city;
-      //       }
-      //       let region = "";
-      //       if (a.homeAddress.region) {
-      //         region = a.homeAddress.region;
-      //       }
-      //       let country = "";
-      //       if (a.homeAddress.country) {
-      //         country = a.homeAddress.country;
-      //       }
-      //
-      //       let address1 = "";
-      //       if (city !== "") {
-      //         address1 = address1.concat(city);
-      //       }
-      //       if (city !== "" && region !== "") {
-      //         address1 = address1.concat(", ", region);
-      //       } else {
-      //         address1 = address1.concat(region);
-      //       }
-      //
-      //       if (region !== "" && country !== "") {
-      //         address1 = address1.concat(", ", country);
-      //       } else if (city !== "" && country !== "") {
-      //         address1 = address1.concat(", ", country);
-      //       } else {
-      //         address1 = address1.concat(country);
-      //       }
-      //
-      //       city = "";
-      //       if (b.homeAddress.city) {
-      //         city = b.homeAddress.city;
-      //       }
-      //       region = "";
-      //       if (b.homeAddress.region) {
-      //         region = b.homeAddress.region;
-      //       }
-      //       country = "";
-      //       if (b.homeAddress.country) {
-      //         country = b.homeAddress.country;
-      //       }
-      //
-      //       let address2 = "";
-      //       if (city !== "") {
-      //         address2 = address2.concat(city);
-      //       }
-      //       if (city !== "" && region !== "") {
-      //         address2 = address2.concat(", ", region);
-      //       } else {
-      //         address2 = address2.concat(region);
-      //       }
-      //
-      //       if (region !== "" && country !== "") {
-      //         address2 = address2.concat(", ", country);
-      //       } else if (city !== "" && country !== "") {
-      //         address2 = address2.concat(", ", country);
-      //       } else {
-      //         address2 = address2.concat(country);
-      //       }
-      //
-      //       if (address1 < address2) {
-      //         return -1;
-      //       }
-      //       if (address1 > address2) {
-      //         return 1;
-      //       }
-      //       return 0;
-      //     })
+
+
+        // if (this.addressAscending) {
+        //   this.userList.sort(function (a, b) {
+        //
+        //     let city = "";
+        //     if (a.homeAddress.city) {
+        //       city = a.homeAddress.city;
+        //     }
+        //     let region = "";
+        //     if (a.homeAddress.region) {
+        //       region = a.homeAddress.region;
+        //     }
+        //     let country = "";
+        //     if (a.homeAddress.country) {
+        //       country = a.homeAddress.country;
+        //     }
+        //
+        //     let address1 = "";
+        //     if (city !== "") {
+        //       address1 = address1.concat(city);
+        //     }
+        //     if (city !== "" && region !== "") {
+        //       address1 = address1.concat(", ", region);
+        //     } else {
+        //       address1 = address1.concat(region);
+        //     }
+        //
+        //     if (region !== "" && country !== "") {
+        //       address1 = address1.concat(", ", country);
+        //     } else if (city !== "" && country !== "") {
+        //       address1 = address1.concat(", ", country);
+        //     } else {
+        //       address1 = address1.concat(country);
+        //     }
+        //
+        //     city = "";
+        //     if (b.homeAddress.city) {
+        //       city = b.homeAddress.city;
+        //     }
+        //     region = "";
+        //     if (b.homeAddress.region) {
+        //       region = b.homeAddress.region;
+        //     }
+        //     country = "";
+        //     if (b.homeAddress.country) {
+        //       country = b.homeAddress.country;
+        //     }
+        //
+        //     let address2 = "";
+        //     if (city !== "") {
+        //       address2 = address2.concat(city);
+        //     }
+        //     if (city !== "" && region !== "") {
+        //       address2 = address2.concat(", ", region);
+        //     } else {
+        //       address2 = address2.concat(region);
+        //     }
+        //
+        //     if (region !== "" && country !== "") {
+        //       address2 = address2.concat(", ", country);
+        //     } else if (city !== "" && country !== "") {
+        //       address2 = address2.concat(", ", country);
+        //     } else {
+        //       address2 = address2.concat(country);
+        //     }
+        //
+        //     if (address1 > address2) {
+        //       return -1;
+        //     }
+        //     if (address1 < address2) {
+        //       return 1;
+        //     }
+        //     return 0;
+        //   })
+        //   document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        //   this.orderBy = "addressASC";
+        //   document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-up float-end');
+        //   history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressASC&page=${this.currentPage}`);
+        //
+        // } else {
+          // this.userList.sort(function (a, b) {
+          //
+          //   let city = "";
+          //   if (a.homeAddress.city) {
+          //     city = a.homeAddress.city;
+          //   }
+          //   let region = "";
+          //   if (a.homeAddress.region) {
+          //     region = a.homeAddress.region;
+          //   }
+          //   let country = "";
+          //   if (a.homeAddress.country) {
+          //     country = a.homeAddress.country;
+          //   }
+          //
+          //   let address1 = "";
+          //   if (city !== "") {
+          //     address1 = address1.concat(city);
+          //   }
+          //   if (city !== "" && region !== "") {
+          //     address1 = address1.concat(", ", region);
+          //   } else {
+          //     address1 = address1.concat(region);
+          //   }
+          //
+          //   if (region !== "" && country !== "") {
+          //     address1 = address1.concat(", ", country);
+          //   } else if (city !== "" && country !== "") {
+          //     address1 = address1.concat(", ", country);
+          //   } else {
+          //     address1 = address1.concat(country);
+          //   }
+          //
+          //   city = "";
+          //   if (b.homeAddress.city) {
+          //     city = b.homeAddress.city;
+          //   }
+          //   region = "";
+          //   if (b.homeAddress.region) {
+          //     region = b.homeAddress.region;
+          //   }
+          //   country = "";
+          //   if (b.homeAddress.country) {
+          //     country = b.homeAddress.country;
+          //   }
+          //
+          //   let address2 = "";
+          //   if (city !== "") {
+          //     address2 = address2.concat(city);
+          //   }
+          //   if (city !== "" && region !== "") {
+          //     address2 = address2.concat(", ", region);
+          //   } else {
+          //     address2 = address2.concat(region);
+          //   }
+          //
+          //   if (region !== "" && country !== "") {
+          //     address2 = address2.concat(", ", country);
+          //   } else if (city !== "" && country !== "") {
+          //     address2 = address2.concat(", ", country);
+          //   } else {
+          //     address2 = address2.concat(country);
+          //   }
+          //
+          //   if (address1 < address2) {
+          //     return -1;
+          //   }
+          //   if (address1 > address2) {
+          //     return 1;
+          //   }
+          //   return 0;
+      //     // })
       //     document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-down float-end');
       //   }
       //     this.orderBy = "addressDESC";
       //     document.getElementById('addressIcon').setAttribute('class','fas fa-chevron-down float-end');
       //     history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressDESC&page=${this.currentPage}`);
       //
-      //   }
+      //
       //   this.nickAscending = false;
       //   this.nameAscending = false;
       //   this.emailAscending = false;
@@ -534,7 +533,7 @@ export default {
       this.clearRows();
       let limit = this.rowsPerPage + (this.currentPage-1) * this.rowsPerPage;
       let startIndex = 0;
-      const outerContainer = document.getElementById('outerContainer');
+      const outerContainer = document.getElementById('outer-container');
       const lastChild = outerContainer.lastChild;
 
       if (limit > this.userList.length) {
@@ -597,7 +596,7 @@ export default {
 
           const address = this.getAddress(this.userList[i]);
 
-          addressCol.innerText = address
+          addressCol.innerText = address;
           userRow.appendChild(addressCol);
 
             userRow.addEventListener("click", function(event) {
@@ -665,6 +664,7 @@ export default {
      * Creates a string which represents a user's address.
      */
     getAddress(user) {
+      console.log(user);
       let city = "";
       if (user.homeAddress.city) {
         city = user.homeAddress.city;
