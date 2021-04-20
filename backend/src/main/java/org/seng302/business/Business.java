@@ -220,7 +220,7 @@ public class Business {
     /**
      * Adds a new user as an administrator for this business.
      * Also adds this business to the list of businesses administered by the user.
-     * @param user A user which is an administrator for this business.
+     * @param user An user which is an administrator for this business.
      */
     public void addAdministrators(User user) {
         this.administrators.add(user);
@@ -230,11 +230,25 @@ public class Business {
     /**
      * Removes a user from the list of administrators for this business.
      * Also removes this business from the list of businesses administered by the user.
-     * @param user A user who was an administrator for this business.
+     * @param user An user who was an administrator for this business.
      */
     public void removeAdministrators(User user) {
-        this.administrators.remove(user.getId());
+        this.administrators.remove(user);
         user.getBusinessesAdministeredObjects().remove(this);
+    }
+
+    /**
+     * check if a user is an administrator of this business
+     * @param user an user
+     * @return return true when user is a administrator of this business
+     */
+    public boolean isAnAdministratorOfThisBusiness(User user) {
+        for (User administrator : administrators){
+            if (administrator.equals(user)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setId(int id) {

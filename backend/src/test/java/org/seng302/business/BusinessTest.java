@@ -13,8 +13,8 @@ import java.time.LocalTime;
 import java.time.Month;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 /**
  * BusinessAccount test class
@@ -51,8 +51,8 @@ public class BusinessTest {
     }
 
     @Test
-    public void TestInvalidName(){
-        try{
+    public void TestInvalidName() {
+        try {
             Business businessAccount = new Business(
                     user.getId(),
                     "",
@@ -62,14 +62,14 @@ public class BusinessTest {
                     LocalDateTime.now(),
                     user
             );
-        }catch (Exception e){
+        } catch (Exception e) {
             assertEquals("Invalid business name.", e.getMessage());
         }
     }
 
     @Test
-    public void TestInvalidAddress(){
-        try{
+    public void TestInvalidAddress() {
+        try {
             Business businessAccount = new Business(
                     user.getId(),
                     "name",
@@ -79,7 +79,7 @@ public class BusinessTest {
                     LocalDateTime.now(),
                     user
             );
-        }catch (Exception e){
+        } catch (Exception e) {
             assertEquals("Invalid address", e.getMessage());
         }
     }
@@ -101,6 +101,7 @@ public class BusinessTest {
     /**
      * Test to see whether the list of administrators for a business are updated as well as the list of businesses
      * administered by a user are updated when a user becomes a new administrator for that business.
+     *
      * @throws Exception
      */
     @Test
@@ -135,20 +136,11 @@ public class BusinessTest {
     /**
      * Test to see whether the list of administrators for a business are updated as well as the list of businesses
      * administered by a user are updated when a user is removed as an administrator for that business.
+     *
      * @throws Exception
      */
     @Test
     public void testRemoveAdministrators() throws Exception {
-        Business business = new Business(
-                user.getId(),
-                "name",
-                "description",
-                address,
-                BusinessType.RETAIL_TRADE,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)),
-                user
-        );
         User user = new User("first",
                 "last",
                 "middle",
@@ -162,10 +154,98 @@ public class BusinessTest {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "description",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                user
+        );
 
         business.removeAdministrators(user);
 
         assertThat(business.getAdministrators().isEmpty()).isTrue();
         assertThat(user.getBusinessesAdministeredObjects().isEmpty()).isTrue();
+    }
+
+    /**
+     * Test to see when a user is one of administrator, the function return true
+     *
+     * @throws Exception business or user creat fail
+     */
+    @Test
+    public void testAnUserIsAdministrator() throws Exception {
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        Business business = new Business(user.getId(),
+                "name",
+                "description",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2000, 2, 2),
+                        LocalTime.of(0, 0)),
+                user);
+
+        business.addAdministrators(user);
+        assertTrue(business.isAnAdministratorOfThisBusiness(user));
+    }
+
+    /**
+     * Test to see when a user is not one of administrator, the function return false
+     *
+     * @throws Exception business or user creat fail
+     */
+    @Test
+    public void testAnUserIsNotAdministrator() throws Exception {
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        User anotherUser = new User("first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "example@example.com",
+                LocalDate.of(2021, 1, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        Business business = new Business(user.getId(),
+                "name",
+                "description",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2000, 2, 2),
+                        LocalTime.of(0, 0)),
+                user);
+
+        assertFalse(business.isAnAdministratorOfThisBusiness(anotherUser));
     }
 }

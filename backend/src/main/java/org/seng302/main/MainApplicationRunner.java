@@ -75,6 +75,7 @@ public class MainApplicationRunner implements ApplicationRunner {
      * period between checks can be altered by changing the
      * fixed-delay.in.milliseconds section in the application.properties file.
      * The system logs are updated when checked.
+     *
      * @throws Exception
      */
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
@@ -103,7 +104,6 @@ public class MainApplicationRunner implements ApplicationRunner {
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
                     Role.DEFAULTGLOBALAPPLICATIONADMIN);
-            System.out.println(dGAA);
             dGAA = userRepository.save(dGAA);
             logger.error("DGAA does not exist. New DGAA created {}", dGAA);
 
@@ -140,7 +140,6 @@ public class MainApplicationRunner implements ApplicationRunner {
                             LocalTime.of(0, 0))
             );
             productRepository.save(otherProduct);
-            System.out.println(productRepository.findProductsByBusinessId(3, null).getTotalElements());
         } else {
             logger.info("DGGA exists.");
         }
