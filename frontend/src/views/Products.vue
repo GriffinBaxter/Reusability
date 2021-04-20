@@ -89,7 +89,7 @@
         <div class="modal-content">
           <div class="modal-header text-center">
             <h3 class="modal-title w-100" id="createProductModalLabel">Create Product</h3>
-            <button type="button" class="btn-close" @click="modal.hide()" aria-label="Close"></button>
+            <button type="button" class="btn-close" @click="closeCreateProductModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <!--create product form, needs validation-->
@@ -151,8 +151,10 @@
             </form>
           </div>
           <div class="modal-footer justify-content-between">
-            <button id="cancel-button" type="button" class="btn btn-md btn-outline-secondary green-button-transparent mr-auto" @click="modal.hide()" tabindex="7">Cancel</button>
-            <button id="creation-button" type="button" class="btn btn-md btn-primary float-lg-end green-button" tabindex="6" @click="addNewProduct($event)">Save</button>
+            <button id="cancel-button" type="button" class="btn btn-md btn-outline-secondary green-button-transparent mr-auto"
+                    @click="closeCreateProductModal" tabindex="7">Cancel</button>
+            <button id="creation-button" type="button" class="btn btn-md btn-primary float-lg-end green-button" tabindex="6"
+                    @click="addNewProduct($event)">Save</button>
           </div>
         </div>
       </div>
@@ -837,6 +839,40 @@ export default {
           this.toastErrorMessage = 'Unexpected error occurred!';
         }
       })
+    },
+
+    /**
+     * When the cancel or close (x) button are clicked in the create product modal this method is called.
+     * This method resets the error messages and input field values and then closes the modal.
+     * If the values are not reset then next time the modal is opened the modal will still display the error messages,
+     * and currently stored values for the input fields.
+     */
+    closeCreateProductModal(){
+      // Reset product id related variables
+      this.productID = "";
+      this.productIDErrorMsg = "";
+
+      // Reset product name related variables
+      this.productName = "";
+      this.productNameErrorMsg = "";
+
+      // Reset recommended retail price related variables
+      this.recommendedRetailPrice = "";
+      this.recommendedRetailPriceErrorMsg = "";
+
+      // Reset product description related variables
+      this.description = "";
+      this.descriptionErrorMsg = "";
+
+      // Reset product manufacturer related variables
+      this.manufacturer = "";
+      this.manufacturerErrorMsg = "";
+
+      // Reset toast related variables
+      this.toastErrorMessage = "";
+      this.cannotProceed = false;
+
+      this.modal.hide();
     }
   },
 
