@@ -501,7 +501,7 @@ public class SearchUserByNameTests {
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
-            assertThat(userPage.getContent().get(i).getHomeAddress()).isEqualTo(orderedAddress.get(i));
+            assertThat(userPage.getContent().get(i).getHomeAddress().toString()).isEqualTo(orderedAddress.get(i));
         }
 
     }

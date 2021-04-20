@@ -318,11 +318,11 @@ public class UserResource {
 
         } else if (orderBy.equals("addressASC")) {
 
-            sortBy = Sort.by(Sort.Order.asc("homeAddress").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+            sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
 
         } else if (orderBy.equals("addressDESC")) {
 
-            sortBy = Sort.by(Sort.Order.desc("homeAddress").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+            sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
 
         } else {
             // Invalid orderBy input

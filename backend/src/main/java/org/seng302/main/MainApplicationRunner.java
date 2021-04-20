@@ -119,7 +119,50 @@ public class MainApplicationRunner implements ApplicationRunner {
                 "New Zealand",
                 "90210"
         );
+
+        Address address2 = new Address(
+                "3/24",
+                "Ilam Road",
+                "A",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+
+        Address address3 = new Address(
+                "3/24",
+                "Ilam Road",
+                "B",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+
+        Address address4 = new Address(
+                "3/24",
+                "Ilam Road",
+                "C",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+
+        Address address5 = new Address(
+                "3/24",
+                "Ilam Road",
+                "D",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+
+
         addressRepository.save(address1);
+        addressRepository.save(address2);
+        addressRepository.save(address3);
+        addressRepository.save(address4);
+        addressRepository.save(address5);
+
         User newUser1 = new User(
                 "Alex",
                 "Doe",
@@ -146,7 +189,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                 "chad.taylor@example.com",
                 LocalDate.of(2006, 2, 2),
                 "0271316678",
-                address1,
+                address2,
                 "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
@@ -163,7 +206,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                 "naomi.wilson@example.com",
                 LocalDate.of(2006, 2, 2),
                 "0271316",
-                address1,
+                address3,
                 "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
@@ -180,7 +223,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                 "seth.murphy@example.com",
                 LocalDate.of(2006, 2, 2),
                 "027188316",
-                address1,
+                address4,
                 "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
@@ -197,7 +240,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                 "minttu.wainio@example.com",
                 LocalDate.of(2006, 2, 2),
                 "0271316",
-                address1,
+                address5,
                 "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),

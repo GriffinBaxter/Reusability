@@ -235,4 +235,13 @@ public class Address {
         );
     }
 
+    /**
+     * Make an address object to json form.
+     * @return a string contain address info in json form
+     */
+    @Override
+    public String toString() {
+        return streetNumber + ", " + streetName + ", " + city + ", " + region + ", " + country + ", " + postcode;
+    }
+
 }
