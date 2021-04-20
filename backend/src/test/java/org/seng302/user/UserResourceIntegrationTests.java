@@ -87,6 +87,13 @@ public class UserResourceIntegrationTests {
     private User searchUser6;
     private User searchUser7;
     private List<User> searchUsers;
+    private Address address1;
+    private Address address2;
+    private Address address3;
+    private Address address4;
+    private Address address5;
+    private Address address6;
+    private Address address7;
 
     @BeforeAll
     public void setup() throws Exception {
@@ -107,8 +114,6 @@ public class UserResourceIntegrationTests {
                 "email@email.com",
                 LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
-                "325 Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica",
-                "password",
                 address,
                 "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
@@ -116,6 +121,7 @@ public class UserResourceIntegrationTests {
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
         dGAA.setId(1);
         dGAA.setSessionUUID(User.generateSessionUUID());
+
         user = new User("testfirst",
                         "testlast",
                         "testmiddle",
@@ -150,6 +156,13 @@ public class UserResourceIntegrationTests {
 
         //test users for searching for user by name
 
+        address1 = new Address("129",
+                "Mastic Trail",
+                "Frank Sound",
+                "Cayman Islands",
+                "Caribbean",
+                "North America");
+
         searchUser1= new User(
                 "Alex",
                 "Doe",
@@ -159,13 +172,14 @@ public class UserResourceIntegrationTests {
                 "test@email.com",
                 LocalDate.of(2020, 2, 2),
                 "0271316",
-                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
+                address1,
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser1.setId(4);
 
+        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China");
 
         searchUser2 = new User(
                 "Chad",
@@ -176,12 +190,14 @@ public class UserResourceIntegrationTests {
                 "chad.taylor@example.com",
                 LocalDate.of(2008, 2, 2),
                 "0271316678",
-                "80416 Jon Loop, Shaanxi, China",
+                address2,
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser2.setId(5);
+
+        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa");
 
         searchUser3 = new User(
                 "Naomi",
@@ -192,12 +208,14 @@ public class UserResourceIntegrationTests {
                 "naomi.wilson@example.com",
                 LocalDate.of(2000, 2, 2),
                 "0271316",
-                "9205 Monique Vista, Bururi, Bigomogomo, Africa",
+                address3,
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser3.setId(6);
+
+        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand");
 
         searchUser4 = new User(
                 "Seth",
@@ -208,12 +226,14 @@ public class UserResourceIntegrationTests {
                 "seth.murphy@example.com",
                 LocalDate.of(2008, 2, 2),
                 "027188316",
-                "240 Bernhard Run, Southland, New Zealand",
+                address4,
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser4.setId(7);
+
+        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand");
 
         searchUser5 = new User(
                 "Minttu",
@@ -224,12 +244,14 @@ public class UserResourceIntegrationTests {
                 "minttu.wainio@example.com",
                 LocalDate.of(2020, 2, 2),
                 "0271316",
-                "186 Simpsons Road, Ashburton, Canterbury, New Zealand",
+                address5,
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser5.setId(8);
+
+        Address address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand");
 
         searchUser6 = new User(
                 "Francisca",
@@ -240,12 +262,14 @@ public class UserResourceIntegrationTests {
                 "francisca.benitez@example.com",
                 LocalDate.of(2020, 2, 2),
                 "0271316",
-                "14798 Terry Highway, Queenstown-Lakes District, New Zealand",
+                address6,
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser6.setId(9);
+
+        Address address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand");
 
         searchUser7 = new User(
                 "Francisca",
@@ -256,7 +280,7 @@ public class UserResourceIntegrationTests {
                 "francisca.benitez@example.com",
                 LocalDate.of(2020, 2, 2),
                 "0271316",
-                "3396 Bertram Parkway, Central Otago, New Zealand",
+                address7,
                 "password",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
@@ -267,7 +291,7 @@ public class UserResourceIntegrationTests {
                 searchUser5, searchUser6, searchUser7);
 
         // initializes the MockMVC object and tells it to use the userRepository
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
 
     }
 

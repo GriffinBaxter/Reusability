@@ -3,6 +3,8 @@ package org.seng302.user;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.seng302.address.Address;
+import org.seng302.address.AddressRepository;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -38,6 +40,9 @@ public class SearchUserByNameTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AddressRepository addressRepository;
+
     private User dGAA;
     private User user;
     private User anotherUser;
@@ -52,6 +57,17 @@ public class SearchUserByNameTests {
     private User searchUser9;
     private User searchUser10;
     private List<User> searchUsers;
+    private Address address1;
+    private Address address2;
+    private Address address3;
+    private Address address4;
+    private Address address5;
+    private Address address6;
+    private Address address7;
+    private Address addressDGAA;
+    private Address addressUser;
+    private Address addressAnotherUser;
+    private List<Address> addresses;
 
     /**
      * Creates and inserts all users for testing.
@@ -62,6 +78,10 @@ public class SearchUserByNameTests {
     @BeforeEach
     public void setup() throws Exception {
 
+        addressDGAA = new Address("325", "Citlalli Track", "New Lois", "Heard Island and McDonald Islands", "HM", "Antarctica");
+        entityManager.persist(addressDGAA);
+        entityManager.flush();
+
         dGAA = new User(
                 "Johnny",
                 "Doe",
@@ -69,13 +89,17 @@ public class SearchUserByNameTests {
                 "Aldeniz",
                 "Biography",
                 "email@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "325 Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica",
-                "password",
+                addressDGAA,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
+
+        addressUser = new Address("57", "", "Sydney Highway", "Shire of Cocos Islands", "West Island", "Cocos (Keeling) Islands");
+        entityManager.persist(addressUser);
+        entityManager.flush();
 
         user = new User("testfirst",
                 "Dentri",
@@ -83,13 +107,17 @@ public class SearchUserByNameTests {
                 "testnick",
                 "testbiography",
                 "testemail@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "57 Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands",
-                "testpassword",
+                addressUser,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
+
+        addressAnotherUser = new Address("47993", "", "Norwood Garden", "Mambere-Kadei", "Central African Republic", "Africa");
+        entityManager.persist(addressAnotherUser);
+        entityManager.flush();
 
         anotherUser = new User ("Caedence",
                 "last",
@@ -97,13 +125,17 @@ public class SearchUserByNameTests {
                 "nick",
                 "bio",
                 "example@example.com",
-                LocalDate.of(2021, 1, 1),
+                LocalDate.of(2000, 1, 1),
                 "123456789",
-                "47993 Norwood Garden, Mambere-Kadei Central African Republic, Africa",
-                "password",
+                addressAnotherUser,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0)),
                 Role.USER);
+
+        address1 = new Address("129", "Mastic Trail", "Frank Sound", "Cayman Islands", "Caribbean", "North America");
+        entityManager.persist(address1);
+        entityManager.flush();
 
         searchUser1= new User(
                 "Alex",
@@ -112,13 +144,17 @@ public class SearchUserByNameTests {
                 "Generic",
                 "Biography",
                 "test@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
-                "password",
+                address1,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+
+        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China");
+        entityManager.persist(address2);
+        entityManager.flush();
 
         searchUser2 = new User(
                 "Crad",
@@ -127,13 +163,17 @@ public class SearchUserByNameTests {
                 "Cra",
                 "Biography123",
                 "chad.taylor@example.com",
-                LocalDate.of(2008, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316678",
-                "80416 Jon Loop, Shaanxi, China",
-                "password",
+                address2,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+
+        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa");
+        entityManager.persist(address3);
+        entityManager.flush();
 
         searchUser3 = new User(
                 "Naomi",
@@ -144,11 +184,15 @@ public class SearchUserByNameTests {
                 "naomi.wilson@example.com",
                 LocalDate.of(2000, 2, 2),
                 "0271316",
-                "9205 Monique Vista, Bururi, Bigomogomo, Africa",
-                "password",
+                address3,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+
+        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand");
+        entityManager.persist(address4);
+        entityManager.flush();
 
         searchUser4 = new User(
                 "Seti",
@@ -157,13 +201,17 @@ public class SearchUserByNameTests {
                 "Murphy",
                 "Biography",
                 "seth.murphy@example.com",
-                LocalDate.of(2008, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "027188316",
-                "240 Bernhard Run, Southland, New Zealand",
-                "password",
+                address4,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+
+        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand");
+        entityManager.persist(address5);
+        entityManager.flush();
 
         searchUser5 = new User(
                 "Minttu",
@@ -172,13 +220,17 @@ public class SearchUserByNameTests {
                 "Min",
                 "Biography",
                 "minttu.wainio@example.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "186 Simpsons Road, Ashburton, Canterbury, New Zealand",
-                "password",
+                address5,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+
+        address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand");
+        entityManager.persist(address6);
+        entityManager.flush();
 
         searchUser6 = new User(
                 "Francisca",
@@ -187,13 +239,17 @@ public class SearchUserByNameTests {
                 "Fran",
                 "Biography",
                 "francisca.benitez@example.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "14798 Terry Highway, Queenstown-Lakes District, New Zealand",
-                "password",
+                address6,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+
+        address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand");
+        entityManager.persist(address7);
+        entityManager.flush();
 
         searchUser7 = new User(
                 "Francisca",
@@ -202,10 +258,10 @@ public class SearchUserByNameTests {
                 "Fran",
                 "Biography",
                 "francisca.benitez@example.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "3396 Bertram Parkway, Central Otago, New Zealand",
-                "password",
+                address7,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -217,10 +273,10 @@ public class SearchUserByNameTests {
                 "Generic",
                 "Biography",
                 "test@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
-                "password",
+                address1,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -232,10 +288,10 @@ public class SearchUserByNameTests {
                 "Generic",
                 "Biography",
                 "test@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
-                "password",
+                address1,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -247,10 +303,10 @@ public class SearchUserByNameTests {
                 "Generic",
                 "Biography",
                 "testaa@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
-                "129 Mastic Trail, Frank Sound, Cayman Islands, Caribbean, North America",
-                "password",
+                address1,
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
