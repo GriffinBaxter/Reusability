@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class AddressTest {
 
     @Test
-    public void testToString() throws Exception {
+    public void testToStringJSON() throws Exception {
         String expected = "{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +
@@ -24,8 +24,10 @@ public class AddressTest {
                 "New Zealand",
                 "90210"
         );
-        assertEquals(expected, address.toString());
+        assertEquals(expected, address.toStringJSON());
     }
+
+    //TODO write tests that tests toString
 
     @Test
     public void testToAddressWithJsonFormat() throws Exception {

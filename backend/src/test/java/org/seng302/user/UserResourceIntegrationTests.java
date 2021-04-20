@@ -170,11 +170,11 @@ public class UserResourceIntegrationTests {
                 "Generic",
                 "Biography",
                 "test@email.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
                 address1,
-                "password",
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2000, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser1.setId(4);
@@ -191,8 +191,8 @@ public class UserResourceIntegrationTests {
                 LocalDate.of(2008, 2, 2),
                 "0271316678",
                 address2,
-                "password",
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2000, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser2.setId(5);
@@ -209,7 +209,7 @@ public class UserResourceIntegrationTests {
                 LocalDate.of(2000, 2, 2),
                 "0271316",
                 address3,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -227,7 +227,7 @@ public class UserResourceIntegrationTests {
                 LocalDate.of(2008, 2, 2),
                 "027188316",
                 address4,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -242,10 +242,10 @@ public class UserResourceIntegrationTests {
                 "Min",
                 "Biography",
                 "minttu.wainio@example.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
                 address5,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -260,10 +260,10 @@ public class UserResourceIntegrationTests {
                 "Fran",
                 "Biography",
                 "francisca.benitez@example.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
                 address6,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -278,10 +278,10 @@ public class UserResourceIntegrationTests {
                 "Fran",
                 "Biography",
                 "francisca.benitez@example.com",
-                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2000, 2, 2),
                 "0271316",
                 address7,
-                "password",
+                "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
@@ -668,7 +668,7 @@ public class UserResourceIntegrationTests {
         for (User searchUser: searchUsers) {
             nicknamesSortedAsc.add(new User(searchUser.getFirstName(), searchUser.getLastName(),
                     searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getDateOfBirth(),
-                    searchUser.getPhoneNumber(), searchUser.getHomeAddress(), "password",searchUser.getCreated(), searchUser.getRole()));
+                    searchUser.getPhoneNumber(), searchUser.getHomeAddress(), "Password123!",searchUser.getCreated(), searchUser.getRole()));
         }
 
         Collections.sort(nicknamesSortedAsc, new Comparator<User>() {

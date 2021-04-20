@@ -112,7 +112,7 @@ public class UserRepositoryIntegrationTests {
         entityManager.flush();
 
         // when
-        foundUser = userRepository.findByEmail("test@email.com");
+        foundUser = userRepository.findByEmail("123test@email.com");
 
         // then
         assertThat(foundUser.isEmpty()).isTrue();
