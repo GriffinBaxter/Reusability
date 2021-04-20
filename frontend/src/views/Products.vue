@@ -923,6 +923,10 @@ export default {
   background: rgba(17, 78, 60, 0.4);
 }
 
+.modal-content {
+  box-shadow: 0 0 1px 1px #404040;
+}
+
 @media only screen and (max-device-width: 600px) {
   .modal-dialog {
     margin-left: 5%;
