@@ -250,10 +250,11 @@ public class ProductResource {
      */
     @PutMapping("/businesses/{businessId}/products/{productId}")
     @ResponseStatus(code = HttpStatus.OK, reason = "Product updated successfully")
-    public void modifyCatalogueItem(@RequestBody ProductUpdatePayload productUpdate,
+    public void modifyCatalogueItem(@RequestBody(required = false) ProductUpdatePayload productUpdate,
                                     @PathVariable Integer businessId,
                                     @PathVariable String productId,
                                     @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+
 
         // Get the user object associated with this session token, and ensure the session token is valid.
         User requestingUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -261,7 +262,6 @@ public class ProductResource {
 
         // Check the businessId given is associated with a real business.
         if (!Authorization.verifyBusinessExists(businessId, businessRepository)) {
-            System.out.println("Invalid business id");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The business id supplied is invalid.");
         }
 
@@ -269,16 +269,20 @@ public class ProductResource {
         // Verify that the business has this product with the given productId.
         Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, businessId);
         if (product.isEmpty()) {
-            System.out.println("Invalid product id");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The product id supplied is invalid.");
         }
 
 
         // Verify the user has permission to update that product.
-        if (requestingUser.getRole() == Role.USER || !requestingUser.getBusinessesAdministered().contains(businessId)) {
+        if (requestingUser.getRole() == Role.USER && !requestingUser.getBusinessesAdministered().contains(businessId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to update a product for a business they do not administer AND the user is not a global application admin.");
         }
 
+
+        // If the payload is empty we don't have do anything. And therefore we can return
+        if (productUpdate == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload is missing and must be provided.");
+        }
 
         // If the payload includes a new description check if it is valid. Otherwise use the previously defined value.
         if (productUpdate.getId() != null) {

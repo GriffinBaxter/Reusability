@@ -11,6 +11,16 @@ public class ProductUpdatePayload {
     private String manufacturer;
     private Double recommendedRetailPrice;
 
+    @Override
+    public String toString() {
+        return "ProductUpdatePayload{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", recommendedRetailPrice=" + recommendedRetailPrice +
+                '}';
+    }
 
     public String getId() {
         return id;

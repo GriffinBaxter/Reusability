@@ -3,6 +3,7 @@ package org.seng302.business.product;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.MockedStatic;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
@@ -11,6 +12,7 @@ import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
+import org.seng302.validation.ProductValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.event.annotation.PrepareTestInstance;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -33,9 +36,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * ProductResource test class
@@ -93,6 +96,8 @@ public class ProductResourceIntegrationTests {
     private Business anotherBusiness;
 
     private Product product;
+
+    private Product anotherProduct;
 
     @BeforeAll
     public void setup() throws Exception {
@@ -200,6 +205,18 @@ public class ProductResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
         );
+
+        anotherProduct = new Product(
+                "PROD2",
+                business,
+                "AnotherProduct",
+                "Description2",
+                "Manufacturer2",
+                22.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ProductResource(
                 productRepository, businessRepository, userRepository, productUpdateService))
@@ -738,5 +755,398 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
+
+    // ------------------------------------------ /businesses/{businessId}/products/{productId} endpoint tests --------------------------------------
+
+    /**
+     * Tests that a UNAUTHORIZED status is returned when attempting to modify a product without a cookie.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductWithoutASessionCookie() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+
+    /**
+     * Tests that a BAD_REQUEST status is returned when attempting to modify a product with invalid business id (path variable).
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductWithInvalidBusinessId() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(businessRepository.findBusinessById(255)).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", 255, product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+                ).andReturn().getResponse();
+
+        System.out.println(response.getStatus());
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    /**
+     * Tests that a BAD_REQUEST status is returned when attempting to modify a product with invalid product id (path variable).
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductWithInvalidProductId() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(productRepository.findProductByIdAndBusinessId("FAKE", product.getBusinessId())).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), "FAKE"))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    /**
+     * Tests that a OK status is returned when attempting to modify a product with valid details and as DGAA.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canModifyProductAsDGAA() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
+    /**
+     * Tests that a OK status is returned when attempting to modify a product with valid details and as GAA.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canModifyProductAsGAA() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(gAA.getId())).willReturn(Optional.of(gAA));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.of(gAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", gAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
+    /**
+     * Tests that a OK status is returned when attempting to modify a product with valid details and as a USER that is an admin of the business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canModifyProductAsUserAdmin() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
+    /**
+     * Tests that a OK status is returned when attempting to modify a product with valid details and as a USER that is not an admin of the business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canModifyProductAsUserNonAdmin() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(anotherUser.getId())).willReturn(Optional.of(anotherUser));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.of(anotherUser));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+
+    /**
+     * Tests that a OK status is returned and no details have changed when trying to modify a product with an empty payload.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canModifyProductWithEmptyPayloadAndNoEffectsOnProduct() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        Optional<Product> updatedProduct = productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(updatedProduct.isPresent()).isTrue();
+        assertThat(updatedProduct.get()).isEqualTo(product);
+    }
+
+
+    /**
+     * Tests that a BAD_REQUEST status is returned when the new ID provided for the product is already associated with the business and exists.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductIfTheNewIdAlreadyExists() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(productRepository.findProductByIdAndBusinessId(anotherProduct.getProductId(), product.getBusinessId())).willReturn(Optional.of(anotherProduct));
+        given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
+        expectedJson = "";
+        payloadJson = String.format(productPayloadJson, anotherProduct.getProductId(), "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                        .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        Optional<Product> updatedProduct = productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(updatedProduct.isPresent()).isTrue();
+        assertThat(updatedProduct.get()).isEqualTo(product);
+    }
+
+
+    /**
+     * Tests that a BAD_REQUEST status is returned and no details have changed when trying to modify a product with no name included.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductWithMissingNewName() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
+        expectedJson = "";
+        payloadJson = String.format("{\"id\": \"%s\", \"description\": \"%s\", \"manufacturer\": \"%s\", \"recommendedRetailPrice\": %.1f}", "NEW-ID", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        Optional<Product> updatedProduct = productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(updatedProduct.isPresent()).isTrue();
+        assertThat(updatedProduct.get()).isEqualTo(product);
+    }
+
+
+    /**
+     * Tests that a OK status is returned when trying to modify a product with no new id included.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductWithMissingNewId() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
+        expectedJson = "";
+        payloadJson = String.format("{" +
+                "\"name\":\"%s\"," +
+                "\"description\":\"%s\"," +
+                "\"manufacturer\":\"%s\"," +
+                "\"recommendedRetailPrice\":%.1f}", "New name", "New desc", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
+    /**
+     * Tests that a OK status is returned when trying to modify a product with no new description included.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductWithMissingNewDescription() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
+        expectedJson = "";
+        payloadJson = String.format("{" +
+                "\"id\":\"%s\"," +
+                "\"name\":\"%s\"," +
+                "\"manufacturer\":\"%s\"," +
+                "\"recommendedRetailPrice\":%.1f}", "NEW-ID","New name", "New manufacturer", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
+    /**
+     * Tests that a OK status is returned when trying to modify a product with no new manufacturer included.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductWithMissingNewManufacturer() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
+        expectedJson = "";
+        payloadJson = String.format("{" +
+                "\"id\":\"%s\"," +
+                "\"name\":\"%s\"," +
+                "\"description\":\"%s\"," +
+                "\"recommendedRetailPrice\":%.1f}", "NEW-ID","New name", "New desc", 666.0);
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
+    /**
+     * Tests that a OK status is returned when trying to modify a product with no new recommended retail price included.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cannotModifyAProductWithMissingNewRecommendedRetailPrice() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
+        given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
+        expectedJson = "";
+        payloadJson = String.format("{" +
+                "\"id\":\"%s\"," +
+                "\"name\":\"%s\"," +
+                "\"description\":\"%s\"," +
+                "\"manufacturer\":\"%s\"" +
+                "}", "NEW-ID","New name", "New desc", "New manufacturer");
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
+        ).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
 
 }
