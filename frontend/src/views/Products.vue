@@ -97,7 +97,7 @@
               <!--product id-->
               <div class="form-group">
                 <label for="product-id">Product ID*</label>
-                <input id="product-id" name="product-id" tabindex="1" type="text" v-model="productID"
+                <input id="product-id" name="product-id" type="text" v-model="productID"
                        :class="toggleInvalidClass(productIDErrorMsg)" :maxlength="config.productID.maxLength" required>
                 <div class="invalid-feedback">
                   {{productIDErrorMsg}}
@@ -106,7 +106,7 @@
               <!--product name-->
               <div class="form-group">
                 <label for="product-name">Product Name*</label>
-                <input id="product-name" name="product-name" tabindex="2" type="text" v-model="productName"
+                <input id="product-name" name="product-name" type="text" v-model="productName"
                        :class="toggleInvalidClass(productNameErrorMsg)" :maxlength="config.productName.maxLength" required>
                 <div class="invalid-feedback">
                   {{productNameErrorMsg}}
@@ -115,7 +115,7 @@
               <!--recommended retail price-->
               <div class="form-group">
                 <label for="product-price">Recommended Retail Price(RRP)</label>
-                <input id="product-price" name="product-price" tabindex="3" type="text" v-model="recommendedRetailPrice"
+                <input id="product-price" name="product-price" type="text" v-model="recommendedRetailPrice"
                        :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
                        :maxlength="config.recommendedRetailPrice.maxLength">
                 <div class="invalid-feedback">
@@ -125,7 +125,7 @@
               <!--manufacturer-->
               <div class="form-group">
                 <label for="manufacturer">Manufacturer</label>
-                <input id="manufacturer" name="manufacturer" tabindex="4" type="text" v-model="manufacturer"
+                <input id="manufacturer" name="manufacturer" type="text" v-model="manufacturer"
                        :class="toggleInvalidClass(manufacturerErrorMsg)" :maxlength="config.manufacturer.maxLength" required>
                 <div class="invalid-feedback">
                   {{manufacturerErrorMsg}}
@@ -134,7 +134,7 @@
               <!--description-->
               <div class="form-group">
                 <label for="description">Description</label>
-                <textarea id="description" name="description" tabindex="5" rows="5" cols="70" v-model="description"
+                <textarea id="description" name="description" rows="5" cols="70" v-model="description"
                           :maxlength="config.description.maxLength" :class="toggleInvalidClass(descriptionErrorMsg)"
                           style="resize: none"/>
                 <div class="invalid-feedback">
@@ -152,8 +152,8 @@
           </div>
           <div class="modal-footer justify-content-between">
             <button id="cancel-button" type="button" class="btn btn-md btn-outline-secondary green-button-transparent mr-auto"
-                    @click="closeCreateProductModal" tabindex="7">Cancel</button>
-            <button id="creation-button" type="button" class="btn btn-md btn-primary float-lg-end green-button" tabindex="6"
+                    @click="closeCreateProductModal">Cancel</button>
+            <button id="creation-button" type="button" class="btn btn-md btn-outline-primary float-lg-end green-button"
                     @click="addNewProduct($event)">Save</button>
           </div>
         </div>
@@ -914,6 +914,11 @@ export default {
   color: #1EBA8C;
 }
 
+#create-product-button:focus {
+  background-color: transparent;
+  color: #1EBA8C;
+}
+
 .modal {
   background: rgba(17, 78, 60, 0.4);
 }
@@ -954,7 +959,7 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-input:focus, textarea:focus, #create-product-button:focus{
+input:focus, textarea:focus, button:focus, #create-product-button:focus{
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
