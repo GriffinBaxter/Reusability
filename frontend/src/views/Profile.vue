@@ -499,6 +499,8 @@ export default {
       so it must be 'unpacked' and formatted.
        */
 
+      console.log(data.homeAddress);
+
       if (data.homeAddress.city) {
         this.city = data.homeAddress.city;
       }
