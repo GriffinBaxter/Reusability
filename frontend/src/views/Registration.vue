@@ -240,7 +240,8 @@
 </template>
 
 <script>
-import Api, {User} from "../Api";
+import Api from "../Api";
+import User from "../configs/User"
 import Cookies from 'js-cookie';
 import AddressAPI from "../addressInstance";
 import Footer from "../components/Footer";

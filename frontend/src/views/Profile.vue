@@ -70,7 +70,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-3">
-                  <h6>Bio: </h6>
+                    <h6>Bio: </h6>
                 </div>
                 <div class="col">
                   <div class="text-secondary">
@@ -160,7 +160,7 @@ import ProfileHeader from "../components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "../components/Footer";
-import {UserRole} from '../components/User'
+import {UserRole} from '../configs/User'
 
 export default {
   name: "Profile",

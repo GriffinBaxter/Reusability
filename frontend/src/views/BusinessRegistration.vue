@@ -141,7 +141,8 @@
 </template>
 
 <script>
-import Api, { Business } from "../Api";
+import Api from "../Api";
+import Business from "../configs/Business"
 import Footer from "../components/Footer";
 import AddressAPI from "../addressInstance";
 import Cookies from 'js-cookie';
