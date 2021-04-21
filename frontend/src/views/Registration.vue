@@ -302,7 +302,7 @@
             <!--register button-->
             <div class="d-grid gap-2 d-lg-block">
               <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="18" id="back-to-login-button" @click="$router.push('/')">Back to Login</button>
-              <button id="register-button" tabindex="17" class="btn btn-lg btn-primary float-lg-end green-button" type="button" @click="addNewUser($event)">Register</button>
+              <button id="register-button" tabindex="17" class="btn btn-lg float-lg-end green-button" type="button" @click="addNewUser($event)">Register</button>
             </div>
 
           </form>

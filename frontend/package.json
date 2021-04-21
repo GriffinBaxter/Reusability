@@ -1,5 +1,5 @@
 {
-  "name": "team-6",
+  "name": "team-400",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -22,15 +22,17 @@
     "express": "^4.17.1",
     "google-fonts-webpack-plugin": "^0.4.4",
     "js-cookie": "^2.2.1",
+    "popper": "^1.0.1",
     "serve": "^11.3.2",
     "vue": "^2.6.12",
+    "vue-dropdowns": "^1.1.2",
     "vue-router": "^3.5.1",
     "vuejs-logger": "^1.5.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.11",
     "@vue/cli-plugin-eslint": "~4.5.11",
-    "@vue/cli-service": "~4.5.11",
+    "@vue/cli-service": "^3.12.1",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.3",

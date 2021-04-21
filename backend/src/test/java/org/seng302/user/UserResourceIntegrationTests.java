@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -19,9 +20,7 @@ import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,10 +59,10 @@ public class UserResourceIntegrationTests {
                                     "\"email\":\"%s\"," +
                                     "\"dateOfBirth\":\"%s\"," +
                                     "\"phoneNumber\":\"%s\"," +
-                                    "\"homeAddress\":%s,"+
                                     "\"created\":\"%s" + "\"," +
                                     "\"role\":%s," +
-                                    "\"businessesAdministered\":%s" +
+                                    "\"businessesAdministered\":%s," +
+                                    "\"homeAddress\":%s"+
             "}";
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
@@ -79,6 +78,22 @@ public class UserResourceIntegrationTests {
     private User anotherUser;
 
     private Address address;
+
+    private User searchUser1;
+    private User searchUser2;
+    private User searchUser3;
+    private User searchUser4;
+    private User searchUser5;
+    private User searchUser6;
+    private User searchUser7;
+    private List<User> searchUsers;
+    private Address address1;
+    private Address address2;
+    private Address address3;
+    private Address address4;
+    private Address address5;
+    private Address address6;
+    private Address address7;
 
     @BeforeAll
     public void setup() throws Exception {
@@ -106,6 +121,7 @@ public class UserResourceIntegrationTests {
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
         dGAA.setId(1);
         dGAA.setSessionUUID(User.generateSessionUUID());
+
         user = new User("testfirst",
                         "testlast",
                         "testmiddle",
@@ -137,6 +153,146 @@ public class UserResourceIntegrationTests {
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+
+        //test users for searching for user by name
+
+        address1 = new Address("129",
+                "Mastic Trail",
+                "Frank Sound",
+                "Cayman Islands",
+                "Caribbean",
+                "North America");
+
+        searchUser1= new User(
+                "Alex",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "test@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address1,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2000, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser1.setId(4);
+
+        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China");
+
+        searchUser2 = new User(
+                "Chad",
+                "Taylor",
+                "S",
+                "Cha",
+                "Biography123",
+                "chad.taylor@example.com",
+                LocalDate.of(2008, 2, 2),
+                "0271316678",
+                address2,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2000, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser2.setId(5);
+
+        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa");
+
+        searchUser3 = new User(
+                "Naomi",
+                "Wilson",
+                "I",
+                "Gm",
+                "Biography",
+                "naomi.wilson@example.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address3,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser3.setId(6);
+
+        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand");
+
+        searchUser4 = new User(
+                "Seth",
+                "Murphy",
+                "Tea",
+                "S",
+                "Biography",
+                "seth.murphy@example.com",
+                LocalDate.of(2008, 2, 2),
+                "027188316",
+                address4,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser4.setId(7);
+
+        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand");
+
+        searchUser5 = new User(
+                "Minttu",
+                "Wainio",
+                "A",
+                "Min",
+                "Biography",
+                "minttu.wainio@example.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address5,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser5.setId(8);
+
+        Address address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand");
+
+        searchUser6 = new User(
+                "Francisca",
+                "Benitez",
+                "T",
+                "Fran",
+                "Biography",
+                "francisca.benitez@example.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address6,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser6.setId(9);
+
+        Address address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand");
+
+        searchUser7 = new User(
+                "Francisca",
+                "Bznitez",
+                "T",
+                "Fran",
+                "Biography",
+                "francisca.benitez@example.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address7,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        searchUser7.setId(10);
+
+        searchUsers = List.of(dGAA, user, anotherUser, searchUser1, searchUser2, searchUser3, searchUser4,
+                searchUser5, searchUser6, searchUser7);
+
+        // initializes the MockMVC object and tells it to use the userRepository
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+
     }
 
     /**
@@ -365,7 +521,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]");
+                user.getPhoneNumber(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]", user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
@@ -388,7 +544,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]");
+                user.getPhoneNumber(), user.getCreated(), null, "[null]", user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -411,7 +567,7 @@ public class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]");
+                user.getPhoneNumber(), user.getCreated(), null, "[null]", user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
@@ -486,271 +642,74 @@ public class UserResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+
+    /* ------------------------------------- (New) Tests for Searching for User by Name ----------------------------- */
+    // TODO Add more tests to handle error cases (e.g. bad data input)
+    // The sorting done in this is entirely unneeded, this has been moved to SearchUserByNameTests.
+    // TODO Test bad URL params
     /**
-     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
-     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
-     * names: first, last, middle, first middle last, first last.
-     * Test specifically for when the user searching for a user is a DGAA.
+     * Tests that the search functionality will order users by a given attribute in e.g. ascending order i.e. in alphabetical order.
+     * A valid outcome will met the criteria of giving a 200 status code and returns a JSON list of Users.
+     * For this example, it sorts by nickname, in ascending order but the outcome would be similar for another type of
+     * sort query.
+     * The query itself is tested in UserRepositoryIntegrationTests.
      */
     @Test
-    public void canSearchUsersWhenUserExistsAsDgaa() throws Exception {
-        // given
+    public void canOrderSearchResults() throws Exception {
+        //given
         List<String> searchQueryList = List.of(
-                "TESTFIRST",
-                "TESTLAST",
-                "TESTMIDDLE",
-                "TESTNICK",
-                "TESTFIRST TESTMIDDLE TESTLAST",
-                "TESTFIRST TESTLAST"
+                "nickname"
         );
-        String[] firstNameMiddleNameLastName = searchQueryList.get(4).split(" ");
-        String[] firstNameLastName = searchQueryList.get(5).split(" ");
-        expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress().toString(), user.getCreated(), "\"" + user.getRole() + "\"",
-                "[null]") + "]";
-        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
-        // when
-        List<User> list = List.of(user);
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                                                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
+        //when
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+        ArrayList<User> nicknamesSortedAsc = new ArrayList<User>();
+
+        for (User searchUser: searchUsers) {
+            nicknamesSortedAsc.add(new User(searchUser.getFirstName(), searchUser.getLastName(),
+                    searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getDateOfBirth(),
+                    searchUser.getPhoneNumber(), searchUser.getHomeAddress(), "Password123!",searchUser.getCreated(), searchUser.getRole()));
+        }
+
+        Collections.sort(nicknamesSortedAsc, new Comparator<User>() {
+            @Override
+            public int compare(User user, User t1) {
+                return user.getNickname().toUpperCase().compareTo(t1.getNickname().toUpperCase());
+            }
+        });
+
+        String expectedJSON = "[";
+
+        for (User searchUser: nicknamesSortedAsc) {
+            expectedJSON += String.format(expectedUserJson, searchUser.getId(), searchUser.getFirstName(), searchUser.getLastName(),
+                    searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getDateOfBirth(),
+                    searchUser.getPhoneNumber(), searchUser.getCreated(), "\"" + searchUser.getRole() + "\"", "[null]", searchUser.getHomeAddress().toSecureString()) + ",";
+        }
+
+        expectedJSON = expectedJSON.substring(0, expectedJSON.length() - 1) + "]";
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+
+        Page<User> nicknamePage = new PageImpl<User>(nicknamesSortedAsc, paging, nicknamesSortedAsc.size());
+
+
+        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findAllUsersByNames("", paging)).thenReturn(nicknamePage);
 
-        for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
-        }
-
-        // then
-        for (MockHttpServletResponse response: responseList) {
-            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        }
-    }
-
-    /**
-     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
-     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
-     * names: first, last, middle, first middle last, first last.
-     * Test specifically for when the user searching for a user is a GAA.
-     */
-    @Test
-    public void canSearchUsersWhenUserExistsWithGaaCookie() throws Exception {
-        // given
-        List<String> searchQueryList = List.of(
-                "TESTFIRST",
-                "TESTLAST",
-                "TESTMIDDLE",
-                "TESTNICK",
-                "TESTFIRST TESTMIDDLE TESTLAST",
-                "TESTFIRST TESTLAST"
-        );
-        String[] firstNameMiddleNameLastName = searchQueryList.get(4).split(" ");
-        String[] firstNameLastName = searchQueryList.get(5).split(" ");
-        expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                    user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                    user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]") + "]";
-        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
-
-        // when
-        List<User> list = List.of(user);
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
-        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-
-        for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse());
-        }
+        responseList.add(mvc.perform(
+                get("/users/search").param("searchQuery", "").param("orderBy", "nicknameASC" ).param("page", "0").cookie(
+                        new Cookie("JSESSIONID", String.valueOf(dGAA.getSessionUUID())))).andReturn().getResponse());
 
         // then
         for (MockHttpServletResponse response: responseList) {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        }
-    }
-
-    /**
-     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
-     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
-     * names: first, last, middle, first middle last, first last.
-     * Test specifically for when the user searching for a user is a USER.
-     */
-    @Test
-    public void canSearchUsersWhenUserExistsWithUserCookie() throws Exception {
-        // given
-        List<String> searchQueryList = List.of(
-                "TESTFIRST",
-                "TESTLAST",
-                "TESTMIDDLE",
-                "TESTNICK",
-                "TESTFIRST TESTMIDDLE TESTLAST",
-                "TESTFIRST TESTLAST"
-        );
-        String[] firstNameMiddleNameLastName = searchQueryList.get(4).split(" ");
-        String[] firstNameLastName = searchQueryList.get(5).split(" ");
-        expectedJson = "[" + String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress(), user.getCreated(), null, "[null]") + "]";
-        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
-
-        // when
-        List<User> list = List.of(user);
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
-        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
-
-        for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
+            assertThat(response.getContentAsString().replace("city\":null", "city\":\"null\"").replace("region\":null", "region\":\"null\"")).isEqualTo(expectedJSON);
         }
 
-        // then
-        for (MockHttpServletResponse response: responseList) {
-            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        }
-    }
-
-    /**
-     * Tests that an OK status but an empty response is received when searching for a user that does not exist using
-     * the /users/search API endpoint. The user (that does not exist by the names searched for) is searched for using
-     * the following orders of the names: first, last, middle, first middle last, first last.
-     */
-    @Test
-    public void emptySearchUsersWhenUserDoesntExist() throws Exception {
-        // given
-        List<String> searchQueryList = List.of(
-                "notFirst",
-                "notLast",
-                "notMiddle",
-                "notNick",
-                "notFirst notMiddle notLast",
-                "notFirst notLast"
-        );
-        expectedJson = "[]";
-        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
-
-        // when
-        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", dGAA.getSessionUUID())
-                    )).andReturn().getResponse());
-        }
-
-        // then
-        for (MockHttpServletResponse response: responseList) {
-            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        }
-    }
-
-    /**
-     * Tests that an UNAUTHORIZED status is received when searching for a user using the /users/search API endpoint
-     * when the cookie contains a non-existing ID
-     */
-    @Test
-    public void cantSearchUsersWithNonExistingIdCookie() throws Exception {
-        // given
-        String nonExistingSessionUUID = User.generateSessionUUID();
-        List<String> searchQueryList = List.of(
-                "TESTFIRST",
-                "TESTLAST",
-                "TESTMIDDLE",
-                "TESTNICK",
-                "TESTFIRST TESTMIDDLE TESTLAST",
-                "TESTFIRST TESTLAST"
-        );
-        String[] firstNameMiddleNameLastName = searchQueryList.get(4).split(" ");
-        String[] firstNameLastName = searchQueryList.get(5).split(" ");
-        expectedJson = "";
-        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
-
-        // when
-        List<User> list = List.of(user);
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
-        when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
-
-        for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", nonExistingSessionUUID))).andReturn().getResponse());
-        }
-
-        // then
-        for (MockHttpServletResponse response: responseList) {
-            assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        }
-    }
-
-    /**
-     * Tests that an UNAUTHORIZED status is received when searching for a user using the /users/search API endpoint
-     * when there is no cookie
-     */
-    @Test
-    public void cantSearchUsersWithNoCookie() throws Exception {
-        // given
-        List<String> searchQueryList = List.of(
-                "TESTFIRST",
-                "TESTLAST",
-                "TESTMIDDLE",
-                "TESTNICK",
-                "TESTFIRST TESTMIDDLE TESTLAST",
-                "TESTFIRST TESTLAST"
-        );
-        String[] firstNameMiddleNameLastName = searchQueryList.get(4).split(" ");
-        String[] firstNameLastName = searchQueryList.get(5).split(" ");
-        expectedJson = "";
-        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
-
-        // when
-        List<User> list = List.of(user);
-        when(userRepository.findByFirstNameIgnoreCase(searchQueryList.get(0))).thenReturn(list);
-        when(userRepository.findByLastNameIgnoreCase(searchQueryList.get(1))).thenReturn(list);
-        when(userRepository.findByMiddleNameIgnoreCase(searchQueryList.get(2))).thenReturn(list);
-        when(userRepository.findByNicknameIgnoreCase(searchQueryList.get(3))).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstNameMiddleNameLastName[0],
-                firstNameMiddleNameLastName[1], firstNameMiddleNameLastName[2])).thenReturn(list);
-        when(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(firstNameLastName[0], firstNameLastName[1])).thenReturn(list);
-
-        for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery)).andReturn().getResponse());
-        }
-
-        // then
-        for (MockHttpServletResponse response: responseList) {
-            assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        }
     }
 
     /**

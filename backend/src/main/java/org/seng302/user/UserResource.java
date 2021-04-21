@@ -5,6 +5,11 @@ import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
 import org.seng302.business.Business;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.seng302.user.Role.*;
 
@@ -251,45 +257,121 @@ public class UserResource {
     }
 
     /**
-     * Search for users by some criteria, for now using names and nickname.
+     * Search for users by first name, middle name, last name, or nickname.
+     * Returns paginated and ordered results based on input query params.
      * @param sessionToken Session token
      * @param searchQuery Search query
+     * @param orderBy Column to order the results by
+     * @param page Page number to return results from
      * @return A list of UserPayload objects matching the search query
      */
     @GetMapping("/users/search")
-    public List<UserPayload> searchUsers(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @RequestParam String searchQuery
+    public ResponseEntity<List<UserPayloadSecure>> searchUsers(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestParam String searchQuery,
+            @RequestParam String orderBy,
+            @RequestParam String page
     ) throws Exception {
-        User currentUser = getUserVerifySession(sessionToken);
+        // TODO Add logging
 
-        List<User> users;
-
-        String[] searchQuerySplit = searchQuery.split(" ");
-
-        if (searchQuerySplit.length == 3) {  // Query including the first, middle and last names.
-            users = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
-                    searchQuerySplit[0], searchQuerySplit[1], searchQuerySplit[2]
+        getUserVerifySession(sessionToken);
+        int pageNo;
+        try {
+            pageNo = Integer.parseInt(page);
+        } catch (final NumberFormatException e) {
+            // Invalid page input
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Page parameter invalid"
             );
-        } else if (searchQuerySplit.length == 2) {  // Query including the first and last names.
-            users = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(
-                    searchQuerySplit[0], searchQuerySplit[1]
-            );
-        } else {  // Query including either the nickname, first, middle or last name.
-            users = new ArrayList<>(userRepository.findByNicknameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByFirstNameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByLastNameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByMiddleNameIgnoreCase(searchQuery));
         }
 
-        List<UserPayload> userPayloads = UserPayload.toUserPayload(users);
-        if (!verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            for (UserPayload userPayload: userPayloads) {
-                userPayload.setRole(null);
-            }
+        // Front-end displays 5 users per page
+        int pageSize = 5;
+
+        Sort sortBy = null;
+        // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
+        // Normally all upper case letters come before any lower case ones.
+        switch (orderBy) {
+            case "fullNameASC":
+
+                sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+
+                break;
+            case "fullNameDESC":
+
+                sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+
+                break;
+            case "nicknameASC":
+
+                sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+
+                break;
+            case "nicknameDESC":
+
+                sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+
+                break;
+            case "emailASC":
+
+                sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
+
+                break;
+            case "emailDESC":
+
+                sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
+
+                break;
+            case "addressASC":
+
+                sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
+
+                break;
+            case "addressDESC":
+
+                sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
+
+                break;
+            default:
+                // Invalid orderBy input
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "OrderBy Field invalid"
+                );
         }
 
-        return userPayloads;
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+
+        Page<User> pagedResult = userRepository.findAllUsersByNames(searchQuery, paging);
+
+        int totalPages = pagedResult.getTotalPages();
+        int totalRows = (int) pagedResult.getTotalElements();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), sessionToken));
     }
+
+    public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, String sessionToken) throws Exception {
+        List<UserPayloadSecure> userPayloadList = new ArrayList<>();
+        userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
+
+        for (UserPayloadSecure userPayloadSecure: userPayloadList) {
+            Role role = null;
+            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+                role = userPayloadSecure.getRole();
+            }
+            userPayloadSecure.setRole(role);
+        }
+        return userPayloadList;
+    }
+
+
     /**
      * Checks if the current user's role matches the role parameter.
      * This method is useful for user authentication/identification.
@@ -297,7 +379,7 @@ public class UserResource {
      * @param role Role being matched
      * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
      */
-    private boolean verifyRole(String sessionToken, Role role) {
+    boolean verifyRole(String sessionToken, Role role) {
         Optional<User> userOptional = userRepository.findBySessionUUID(sessionToken);
 
         if (userOptional.isPresent()) {
