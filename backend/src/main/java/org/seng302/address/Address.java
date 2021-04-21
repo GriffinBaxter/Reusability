@@ -260,7 +260,7 @@ public class Address {
         return "{" +
                 "\"city\":\""        + city         + "\"," +
                 "\"region\":\""       + region       + "\"," +
-                "\"country\":\""      + country      + "\"," +
+                "\"country\":\""      + country      + "\"" +
                 "}";
     }
 
