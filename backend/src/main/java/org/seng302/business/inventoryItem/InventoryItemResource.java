@@ -58,6 +58,26 @@ public class InventoryItemResource {
         this.userRepository = userRepository;
     }
 
+    @GetMapping("/businesses/{id}/inventory/")
+    public void retrieveAllInventory(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                     @PathVariable String id){
+        //401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        //403
+        //TODO:use function(isAnAdministratorOfThisBusiness) in branch S302T400-153-two-business-admin-manage-API to check permission
+
+        //406
+        Business currentBusiness = businessRepository.findBusinessById(Integer.valueOf(id)).get();
+        if (currentBusiness == null){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Business is not exist"
+            );
+        }
+
+    }
+
     /**
      * Create a new Inventory Item belonging to the business with the given business ID.
      *
