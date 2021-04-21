@@ -69,7 +69,6 @@ public class UserPayloadSecure extends UserPayloadParent {
                     user.getBusinessesAdministeredObjects());
 
             payLoadsSecure.add(newPayload);
-            System.out.println(newPayload);
         }
         return payLoadsSecure;
     }

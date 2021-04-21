@@ -504,7 +504,7 @@ export default {
      * Creates a string which represents a user's address.
      */
     getAddress(user) {
-      console.log(user.homeAddress);
+
       let city = "";
       if (user.homeAddress.city) {
         city = user.homeAddress.city;
