@@ -89,7 +89,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "John",
                     "Doe",
                     "S",
-                    "Generic",
+                    "Johnny",
                     "Biography",
                     "email@email.com",
                     LocalDate.of(2000, 2, 2),
