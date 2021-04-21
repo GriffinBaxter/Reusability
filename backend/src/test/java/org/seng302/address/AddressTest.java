@@ -24,7 +24,7 @@ public class AddressTest {
                 "New Zealand",
                 "90210"
         );
-        assertEquals(expected, address.toStringJSON());
+        assertEquals(expected, address.toString());
     }
 
     //TODO write tests that tests toString

@@ -236,19 +236,11 @@ public class Address {
     }
 
     /**
-     * Make an address object to string form.
-     * @return a string contain address info in string form
+     * Make an address object to JSON string form.
+     * @return a string contain address info in JSON form
      */
     @Override
     public String toString() {
-        return streetNumber + ", " + streetName + ", " + city + ", " + region + ", " + country + ", " + postcode;
-    }
-
-    /**
-     * Make an address object to json form.
-     * @return a string contain address info in json form
-     */
-    public String toStringJSON() {
         return "{" +
                 "\"streetNumber\":\"" + streetNumber + "\"," +
                 "\"streetName\":\""   + streetName   + "\"," +
@@ -257,6 +249,14 @@ public class Address {
                 "\"country\":\""      + country      + "\"," +
                 "\"postcode\":\""     + postcode     + "\"" +
                 "}";
+    }
+
+    /**
+     * Return the object represented in a single line readable string form
+     * @return a string containing address info in string form
+     */
+    public String toOneLineString() {
+        return streetNumber + ", " + streetName + ", " + city + ", " + region + ", " + country + ", " + postcode;
     }
 
 }
