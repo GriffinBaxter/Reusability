@@ -243,14 +243,14 @@ public class ProductResource {
 
     /**
      * A PUT request used to update a product given a business ID, product ID and the new updated attributes.
-     * @param productUpdate The product payload containing the new attributes to be changed.
+     * @param updatedProduct The product payload containing the new attributes to be changed.
      * @param businessId The ID of the business of which it's product will be updated.
      * @param productId The ID of the product to be updated.
      * @param sessionToken The token used to identify the user.
      */
     @PutMapping("/businesses/{businessId}/products/{productId}")
     @ResponseStatus(code = HttpStatus.OK, reason = "Product updated successfully")
-    public void modifyCatalogueItem(@RequestBody(required = false) ProductUpdatePayload productUpdate,
+    public void modifyCatalogueItem(@RequestBody(required = false) ProductUpdatePayload updatedProduct,
                                     @PathVariable Integer businessId,
                                     @PathVariable String productId,
                                     @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
@@ -279,70 +279,84 @@ public class ProductResource {
         }
 
 
-        // If the payload is empty we don't have do anything. And therefore we can return
-        if (productUpdate == null) {
+        // Verify there is a payload. Otherwise we are wasting processing time.
+        if (updatedProduct == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload is missing and must be provided.");
         }
 
+        // Used to see if we can avoid using a transaction & more quickly update the product.
+        boolean idIsUpdated = false;
+
         // If the payload includes a new description check if it is valid. Otherwise use the previously defined value.
-        if (productUpdate.getId() != null) {
+        if (updatedProduct.getId() != null) {
             // No point in checking this if it is already the same value.
-            if (!productId.equals(productUpdate.getId())) {
+            if (!productId.equals(updatedProduct.getId())) {
                 // Verify the new id is unique are valid
-                if (!ProductValidation.isValidProductId(productUpdate.getId()) || productRepository.findProductByIdAndBusinessId(productUpdate.getId(), businessId).isPresent()) {
+                if (!ProductValidation.isValidProductId(updatedProduct.getId()) || productRepository.findProductByIdAndBusinessId(updatedProduct.getId(), businessId).isPresent()) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product id already exists OR product id is invalid.");
                 }
+                // If this line is reached it means that the id is different and is being updated. Therefore we have to use the transaction route.
+                idIsUpdated = true;
             }
         } else {
-            productUpdate.setId(product.get().getProductId());
+            updatedProduct.setId(product.get().getProductId());
         }
 
 
         // Verify the name is included!
-        if (productUpdate.getName() == null) {
+        if (updatedProduct.getName() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product must have a name.");
         }
         // Verify the new name is valid
-        else if (!ProductValidation.isValidName(productUpdate.getName())) {
+        else if (!ProductValidation.isValidName(updatedProduct.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product name is invalid.");
         }
 
 
         // If the payload includes a new description check if it is valid. Otherwise use the previously defined value.
-        if (productUpdate.getDescription() != null) {
+        if (updatedProduct.getDescription() != null) {
             // Verify the description is valid
-            if (!ProductValidation.isValidDescription(productUpdate.getDescription())) {
+            if (!ProductValidation.isValidDescription(updatedProduct.getDescription())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product description is invalid.");
             }
         } else {
-            productUpdate.setDescription(product.get().getDescription());
+            updatedProduct.setDescription(product.get().getDescription());
         }
 
 
         // If the payload includes a new manufacturer check if it is valid. Otherwise use the previously defined value.
-        if (productUpdate.getManufacturer() != null) {
+        if (updatedProduct.getManufacturer() != null) {
             // Verify the manufacturer is valid
-            if (!ProductValidation.isValidManufacturer(productUpdate.getManufacturer())) {
+            if (!ProductValidation.isValidManufacturer(updatedProduct.getManufacturer())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product manufacturer is invalid.");
             }
         } else {
-            productUpdate.setManufacturer(product.get().getManufacturer());
+            updatedProduct.setManufacturer(product.get().getManufacturer());
         }
 
 
         // If the payload includes a new recommendedRetailPrice check if it is valid. Otherwise use the previously defined value.
-        if (productUpdate.getRecommendedRetailPrice() != null) {
+        if (updatedProduct.getRecommendedRetailPrice() != null) {
             // Verify the recommendedRetailPrice is valid
-            if (!ProductValidation.isValidRecommendeRetailPrice(productUpdate.getRecommendedRetailPrice())) {
+            if (!ProductValidation.isValidRecommendeRetailPrice(updatedProduct.getRecommendedRetailPrice())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new recommended product retail price is invalid.");
             }
         } else {
-            productUpdate.setRecommendedRetailPrice(product.get().getRecommendedRetailPrice());
+            updatedProduct.setRecommendedRetailPrice(product.get().getRecommendedRetailPrice());
         }
 
-        // Start a transaction to update the product
-        productUpdateService.updateProduct(productId, businessId, productRepository, productUpdate);
-
+        // Check if we can prevent the transaction, as it is more risky and could take longer.
+        if (idIsUpdated) {
+            // Start a transaction to update the product
+            productUpdateService.updateProduct(productId, businessId, productRepository, updatedProduct);
+        } else {
+            // Update the attributes
+            product.get().setName(updatedProduct.getName());
+            product.get().setDescription(updatedProduct.getDescription());
+            product.get().setManufacturer(updatedProduct.getManufacturer());
+            product.get().setRecommendedRetailPrice(updatedProduct.getRecommendedRetailPrice());
+            productRepository.saveAndFlush(product.get());
+        }
     }
 
 
