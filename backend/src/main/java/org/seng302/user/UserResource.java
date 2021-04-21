@@ -292,44 +292,53 @@ public class UserResource {
         Sort sortBy = null;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
-        if (orderBy.equals("fullNameASC")) {
+        switch (orderBy) {
+            case "fullNameASC":
 
-            sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
-        } else if (orderBy.equals("fullNameDESC")) {
+                break;
+            case "fullNameDESC":
 
-            sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
-        } else if (orderBy.equals("nicknameASC")) {
+                break;
+            case "nicknameASC":
 
-            sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
-        } else if (orderBy.equals("nicknameDESC")) {
+                break;
+            case "nicknameDESC":
 
-            sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
 
-        } else if (orderBy.equals("emailASC")) {
+                break;
+            case "emailASC":
 
-            sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
+                sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
 
-        } else if (orderBy.equals("emailDESC")) {
+                break;
+            case "emailDESC":
 
-            sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
+                sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
 
-        } else if (orderBy.equals("addressASC")) {
+                break;
+            case "addressASC":
 
-            sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
+                sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
 
-        } else if (orderBy.equals("addressDESC")) {
+                break;
+            case "addressDESC":
 
-            sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
+                sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
 
-        } else {
-            // Invalid orderBy input
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "OrderBy Field invalid"
-            );
+                break;
+            default:
+                // Invalid orderBy input
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "OrderBy Field invalid"
+                );
         }
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
