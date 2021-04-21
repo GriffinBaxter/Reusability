@@ -252,6 +252,19 @@ public class Address {
     }
 
     /**
+     * Make an address object to secure JSON string form.
+     * @return a string containing only some address info in JSON form (if you are not that user)
+     */
+
+    public String toSecureString() {
+        return "{" +
+                "\"city\":\""        + city         + "\"," +
+                "\"region\":\""       + region       + "\"," +
+                "\"country\":\""      + country      + "\"," +
+                "}";
+    }
+
+    /**
      * Return the object represented in a single line readable string form
      * @return a string containing address info in string form
      */
