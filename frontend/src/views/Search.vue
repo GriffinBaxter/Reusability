@@ -149,7 +149,8 @@ export default {
     updatePage(event, newPageNum) {
       event.preventDefault();
       this.currentPage = newPageNum;
-      history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`)
+      // history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`)
+      this.$router.push({path: "/search", query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()}})
       this.requestUsers().then(() => this.buildRows())
     },
 
@@ -181,7 +182,8 @@ export default {
         console.log(this.lastQuery);
         this.currentPage = 1;
         pageNum = 0;
-        history.pushState({}, null, `/search?searchQuery=${query}&orderBy=${this.orderBy}&page=1`)
+        // history.pushState({}, null, `/search?searchQuery=${query}&orderBy=${this.orderBy}&page=1`)
+        this.$router.push({path: "/search", query: {"searchQuery": query, "orderBy": this.orderBy, "page": "1"}})
       }
       this.lastQuery = query;
 
@@ -216,7 +218,8 @@ export default {
     search(event) {
       if (event.keyCode === 13) {
         const inputQuery = this.$refs.searchBar.value;
-        history.pushState({}, null,  `/search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        // history.pushState({}, null, process.env.VUE_APP_BASE_URL + `search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.$router.push({path: "/search", query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": this.currentPage.toString()}})
         this.requestUsers().then(() => this.buildRows()).catch(
             (e) => console.log(e)
         );
@@ -228,7 +231,8 @@ export default {
      */
     searchClicked() {
       const inputQuery = this.$refs.searchBar.value;
-      history.pushState({}, null, `/search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+      // history.pushState({}, null, process.env.VUE_APP_BASE_URL + `search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+      this.$router.push({path: "/search", query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": this.currentPage.toString()}})
       this.requestUsers().then(() => this.buildRows()).catch(
           (e) => console.log(e)
       );
@@ -240,7 +244,8 @@ export default {
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
-        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        // history.pushState({}, null, process.env.VUE_APP_BASE_URL + `search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.$router.push({path: "/search", query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()}})
         this.requestUsers().then(() => this.buildRows())
       }
     },
@@ -251,7 +256,8 @@ export default {
     nextPage() {
       if (this.currentPage < this.maxPage) {
         this.currentPage += 1;
-        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        // history.pushState({}, null, process.env.VUE_APP_BASE_URL + `search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.$router.push({path: "/search", query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()}})
         this.requestUsers().then(() => this.buildRows())
       }
     },
@@ -276,7 +282,8 @@ export default {
           icon.setAttribute(':icon', '[\'fas\', \'search\']')
           document.getElementById('order-by-nickname-div').appendChild(icon);
 
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameASC&page=${this.currentPage}`);
+          // history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameASC&page=${this.currentPage}`);
+          this.$router.push({path: "/search", query: {"searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameASC", "page": this.currentPage.toString()}})
         } else {
           this.orderBy = "nicknameDESC";
           const icon = document.createElement('font-awesome-icon');
@@ -284,7 +291,8 @@ export default {
           icon.setAttribute('class', 'float-end');
           icon.setAttribute(':icon', '[\'fas\', \'search\']')
           document.getElementById('order-by-nickname-div').appendChild(icon);
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameDESC&page=${this.currentPage}`);
+          // history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameDESC&page=${this.currentPage}`);
+          this.$router.push({path: "/search", query: {"searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameDESC", "page": this.currentPage.toString()}})
 
         }
         this.nickAscending = !this.nickAscending;
@@ -539,6 +547,15 @@ export default {
       return address;
     },
 
+    something() {
+      console.log("TRIGGER")
+      this.requestUsers().then(
+          () => this.buildRows()
+      ).catch(
+          (e) => console.log(e)
+      )
+    }
+
   },
 
   /**
@@ -558,6 +575,8 @@ export default {
       this.$router.push({name: 'Login'});
     }
 
+    document.addEventListener('page-routing', this.something);
+
     //TODO what is the purpose of this? Is it needed still?
 
     // let self = this;
@@ -570,6 +589,10 @@ export default {
     //     }
     //   });
     // })
+  },
+  beforeDestroy() {
+
+    document.removeEventListener('page-routing', this.something);
   }
 }
 </script>
