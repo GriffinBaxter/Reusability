@@ -13,6 +13,9 @@ import java.util.List;
  */
 public class UserPayload extends UserPayloadParent {
 
+
+    private String dateOfBirth;
+    private String phoneNumber;
     private AddressPayload homeAddress;
 
     public UserPayload(int id,
@@ -35,13 +38,13 @@ public class UserPayload extends UserPayloadParent {
                 nickname,
                 bio,
                 email,
-                dateOfBirth,
-                phoneNumber,
                 created,
                 role,
                 businessesAdministeredObject);
 
         this.homeAddress = homeAddress;
+        this.dateOfBirth = dateOfBirth.toString();
+        this.phoneNumber = phoneNumber;
     }
 
     /**
@@ -78,5 +81,21 @@ public class UserPayload extends UserPayloadParent {
 
     public void setHomeAddress(AddressPayload homeAddress) {
         this.homeAddress = homeAddress;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

@@ -1,6 +1,7 @@
 package org.seng302.user;
 
 import org.seng302.address.Address;
+import org.seng302.main.Authorization;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
 import org.seng302.business.Business;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,14 +177,14 @@ public class UserResource {
      * @return User object if it exists
      */
     @GetMapping("/users/{id}")
-    public UserPayload retrieveUser(
+    public UserPayloadParent retrieveUser(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
     ) throws Exception {
-        User currentUser = getUserVerifySession(sessionToken, userRepository);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> optionalSelectUser = userRepository.findById(id);
 
-        if (user.isEmpty()) {
+        if (optionalSelectUser.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -190,41 +192,60 @@ public class UserResource {
             );
         }
 
+        User selectUser = optionalSelectUser.get();
+
+        //base info
         Role role = null;
+        LocalDate dateOfBirth = null;
+        String phoneNumber = null;
 
-        if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            role = user.get().getRole();
-        }
-
-        List<Business> administrators = user.get().getBusinessesAdministeredObjects();
+        //stop payload loop
+        List<Business> administrators = new ArrayList<>();
+        administrators = selectUser.getBusinessesAdministeredObjects();
         for (Business administrator : administrators) {
             administrator.setAdministrators(new ArrayList<>());
         }
 
-        Address address = user.get().getHomeAddress();
-        AddressPayload addressPayload = new AddressPayload(
-                address.getStreetNumber(),
-                address.getStreetName(),
-                address.getCity(),
-                address.getRegion(),
-                address.getCountry(),
-                address.getPostcode()
-        );
-        return new UserPayload(
-                user.get().getId(),
-                user.get().getFirstName(),
-                user.get().getLastName(),
-                user.get().getMiddleName(),
-                user.get().getNickname(),
-                user.get().getBio(),
-                user.get().getEmail(),
-                user.get().getDateOfBirth(),
-                user.get().getPhoneNumber(),
-                addressPayload,
-                user.get().getCreated(),
-                role,
-                administrators
-        );
+        if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
+
+            // If the current user is a DGAA, show the role of the user
+            if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+                role = selectUser.getRole();
+            }
+            // If the current ID matches the retrieved user's ID or the current user is the DGAA, return a normal UserPayload with everything in it.
+            return new UserPayload(
+                    selectUser.getId(),
+                    selectUser.getFirstName(),
+                    selectUser.getLastName(),
+                    selectUser.getMiddleName(),
+                    selectUser.getNickname(),
+                    selectUser.getBio(),
+                    selectUser.getEmail(),
+                    selectUser.getDateOfBirth(),
+                    selectUser.getPhoneNumber(),
+                    selectUser.getHomeAddress().toAddressPayload(),
+                    selectUser.getCreated(),
+                    role,
+                    administrators
+            );
+        } else {
+            // Otherwise return a UserPayloadSecure without the phone number, date of birth and a secure address with only the city, region, and country.
+            return new UserPayloadSecure(
+                    selectUser.getId(),
+                    selectUser.getFirstName(),
+                    selectUser.getLastName(),
+                    selectUser.getMiddleName(),
+                    selectUser.getNickname(),
+                    selectUser.getBio(),
+                    selectUser.getEmail(),
+                    selectUser.getHomeAddress().toAddressPayloadSecure(),
+                    selectUser.getCreated(),
+                    role,
+                    administrators
+            );
+        }
+
+
     }
 
     /**
@@ -246,7 +267,7 @@ public class UserResource {
         // TODO Add logging
 
         //TODO check this
-        User currentUser = getUserVerifySession(sessionToken, userRepository);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         int pageNo;
         try {
             pageNo = Integer.parseInt(page);
@@ -330,6 +351,7 @@ public class UserResource {
     }
 
     //TODO write unit tests
+    //TODO write comment
     public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
         List<UserPayloadSecure> userPayloadList = new ArrayList<>();
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
@@ -350,9 +372,8 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/makeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
-    public void setGAA(@PathVariable int id, HttpServletRequest request,
-                       @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
-        User currentUser = getUserVerifySession(sessionToken, userRepository);
+    public void setGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
@@ -383,9 +404,8 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/revokeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
-    public void revokeGAA(@PathVariable int id, HttpServletRequest request,
-                          @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
-        User currentUser = getUserVerifySession(sessionToken, userRepository);
+    public void revokeGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
