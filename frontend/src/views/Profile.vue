@@ -60,11 +60,11 @@
           </div>
 
           <!--   For later use:   -->
-          <!--          <div class="card text-center shadow-sm mt-3">-->
-          <!--            <div class="card-body">-->
-          <!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
-          <!--            </div>-->
-          <!--          </div>-->
+<!--          <div class="card text-center shadow-sm mt-3">-->
+<!--            <div class="card-body">-->
+<!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
+<!--            </div>-->
+<!--          </div>-->
 
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>
@@ -295,7 +295,7 @@ export default {
       dateOfBirth: "",
       phoneNumber: "",
 
-      homeAddress: [],
+      address: [],
       streetNumber: "",
       streetName: "",
       city: "",
@@ -593,7 +593,7 @@ export default {
           this.businessesAdministered.push({name: business.name, id: business.id});
         }
       })
-      // }
+
 
 
       //basic unpack

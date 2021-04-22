@@ -62,7 +62,7 @@
                         <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
                       </li>
                       <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
+                        <router-link :class="['nav-link', isActivePath('/')]" to="/businesses/3/products">Catalogue</router-link>
                       </li>
                  </ul>
                 </div>

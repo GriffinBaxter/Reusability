@@ -1,6 +1,9 @@
 package org.seng302.user;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
@@ -85,4 +88,24 @@ public interface UserRepository extends JpaRepository<User, String> {
      * @return A boolean whether a user with the role exists.
      */
     boolean existsByRole(Role role);
+
+    /**
+     * Search for users by their first, middle, last name or nick name, ignoring case.
+     * Takes a pageable object for pagination and allows partial matches (not case sensitive).
+     * @param searchValue The user's inputted search string
+     * @param pageable A pageable object containing the requested page number, the number of results in a page and a sort object.
+     * @return A Page object containing all matching user results
+     */
+    @Query(value="select u from User u where upper(CONCAT(u.firstName, ' ', u.middleName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%') or upper(u.nickname) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.firstName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.firstName, ' ', u.middleName)) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.middleName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%')")
+    Page<User> findAllUsersByNames(String searchValue, Pageable pageable);
+//
+//
+//    /**
+//     * Search for all users in database.
+//     * @param name
+//     * @return
+//     */
+//    List<UserPayload> findAllByFirstNameContains(String name);
+//
+
 }

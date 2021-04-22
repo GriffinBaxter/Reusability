@@ -58,7 +58,16 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/Search.vue')
+        // redirect: () => {
+        //
+        //     return '/search?searchQuery=&orderBy=fullNameASC&page=1';
+        // }
     },
+    // {
+    //     path: '/search?searchQuery=&orderBy=fullNameASC&page=1',
+    //     name: 'FullSearchPath',
+    //
+    // },
     {
         path: '/noUser',
         name: 'NoUser',
@@ -115,6 +124,14 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/BusinessRegistration.vue')
+    },
+    {
+        path: '/businesses/:id?/products',
+        name: 'Products',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/Products')
     },
     {
         path: '*',

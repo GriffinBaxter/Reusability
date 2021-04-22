@@ -129,7 +129,7 @@
           </div>
 
           <div class="d-grid gap-2 d-lg-block">
-            <button class="btn btn-lg btn-outline-primary" type="button" tabindex="12" @click="$router.push('/profile')">Back to Account</button>
+            <button class="btn btn-lg btn-outline-primary" type="button" tabindex="12" @click="$router.push('/profile')">Back to Profile</button>
             <button id="register-button" tabindex="11" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewBusiness($event)">Register</button>
           </div>
 
@@ -737,6 +737,19 @@ export default {
       for (let i = 0; i < elementList.length; i++) {
         elementList[i].classList.remove("autocomplete-active");
       }
+    }
+  },
+
+  /**
+   * When mounted, initiate population of page.
+   * If cookies are invalid or not present, redirect to login page.
+   */
+  mounted() {
+    const currentID = Cookies.get('userID');
+    if (currentID) {
+      this.$router.push({path: '/businessRegistration'});
+    } else {
+      this.$router.push({name: 'Login'});
     }
   }
 }
