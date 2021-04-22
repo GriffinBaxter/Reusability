@@ -296,8 +296,13 @@ export default {
     withCredentials: true
   })
 
-  }
+  },
 
+  getBusiness: (businessID) => {
+    return instance.get(`/businesses/${businessID}`,{
+      withCredentials: true
+    })
+  }
   // Usage examples from original file:
   //
   // // (C)reate

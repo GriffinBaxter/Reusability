@@ -53,6 +53,7 @@
               <!--user's nickname-->
               <div class="mt-3">
                 <h4>{{nickname}}</h4>
+                <div class="text-secondary">{{bio}}</div>
               </div>
 
             </div>
@@ -98,18 +99,6 @@
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
-
-              <!--user's bio-->
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Bio: </h6>
-                </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{bio}}
-                  </div>
-                </div>
-              </div>
 
               <!--user's name-->
               <hr>
@@ -182,13 +171,29 @@
 
               <!--user's joined date-->
               <hr>
-              <div class="row">
-                <div class="col-md-3">
-                  <h6>Joined:</h6>
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Joined:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" align="right">
+                      {{joined}}
+                    </div>
+                  </div>
                 </div>
-                <div class="col">
-                  <div class="text-secondary">
-                    {{joined}}
+              </div>
+              <hr id="businessAdministeredHR">
+              <div class="container" id="businessAdministeredRow">
+                <div class="row justify-content-between">
+                  <div class="col-md-3">
+                    <h6>Businesses Administered:</h6>
+                  </div>
+                  <div class="col">
+                    <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
+                        align="right" @click="pushToUser(business.id)">
+                      {{business.name}}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -264,6 +269,7 @@ export default {
 
       created: "",
       joined: "",
+      businessesAdministered: [],
       otherUser: false,
       role: null,
       showUpload: false
@@ -498,9 +504,6 @@ export default {
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
-
-      console.log(data.homeAddress);
-
       if (data.homeAddress.city) {
         this.city = data.homeAddress.city;
       }
@@ -559,6 +562,12 @@ export default {
           this.address.push({line: this.region + this.country});
         }
 
+        // businesses administered unpack
+        data.businessesAdministered.forEach(business => {
+          if (business !== null) {
+            this.businessesAdministered.push({name: business.name, id: business.id});
+          }
+        })
       }
 
       this.firstName = data.firstName;
@@ -576,8 +585,17 @@ export default {
     },
 
     /**
+     * Push the business id to the url for the business portfolio
+     * @params id The business id*/
+    //TODO: change this function name to be pushToBusinessPortfolio
+    pushToUser(id){
+      this.$router.push({name:'BusinessProfile', params: {id}});
+    },
+
+    /**
      * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
      */
+
     logout() {
       Cookies.remove('userID');
       this.$router.push({name: 'Login'});
