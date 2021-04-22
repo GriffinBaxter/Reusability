@@ -214,8 +214,8 @@ body {
   color: #ffffff;
 }
 
-.text-font, p, h{
+/*****************************************************************/
+
+.text-font, p, h, label, textarea, select, button {
   font-family: 'Roboto', sans-serif;
 }
-
-/*****************************************************************/
