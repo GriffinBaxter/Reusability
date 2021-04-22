@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Individual test class.
+ * User test class.
  */
 public class UserTests {
 

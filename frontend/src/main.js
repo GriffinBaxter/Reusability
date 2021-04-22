@@ -34,10 +34,11 @@ import router from './router'
 import 'bootstrap'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faEye, faEyeSlash, faSearch, faBars } from '@fortawesome/free-solid-svg-icons'
+
+import { faEye, faEyeSlash, faSearch, faBars, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faEye, faEyeSlash, faSearch, faBars)
+library.add(faEye, faEyeSlash, faSearch, faBars, faChevronUp, faChevronDown)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
