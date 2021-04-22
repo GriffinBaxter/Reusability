@@ -26,7 +26,7 @@ import org.seng302.validation.Validation;
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class User {
     @Id // this field (attribute) is the table primary key
-    @GeneratedValue // autoincrement the ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // autoincrement the ID
     @Column(name = "id", nullable = false)
     private int id;
 
@@ -54,7 +54,7 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false) //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
     @JoinColumn(name = "address_id", nullable = false)
     private Address homeAddress;
 
