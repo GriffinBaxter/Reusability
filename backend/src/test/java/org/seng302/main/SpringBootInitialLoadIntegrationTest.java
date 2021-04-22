@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
-@Sql({"../../../resources/scriptsToRun/data.sql"})
+@Sql({"/data.sql"})
 public class SpringBootInitialLoadIntegrationTest {
 
     @Autowired
