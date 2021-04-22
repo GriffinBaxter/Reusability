@@ -76,6 +76,8 @@ public class MainCORSFilter implements Filter {
     response.setHeader("Access-Control-Max-Age", "6000");
     response.setHeader("Access-Control-Allow-Credentials", "true");
     response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    // The following header allows front-end scripts to access custom headers (for now just Total-Rows and Total-Pages for searching)
+    response.setHeader("Access-Control-Expose-Headers", "Total-Rows, Total-Pages");
     chain.doFilter(req, res);
   }
 

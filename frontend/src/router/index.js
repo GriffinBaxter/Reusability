@@ -58,7 +58,16 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/Search.vue')
+        // redirect: () => {
+        //
+        //     return '/search?searchQuery=&orderBy=fullNameASC&page=1';
+        // }
     },
+    // {
+    //     path: '/search?searchQuery=&orderBy=fullNameASC&page=1',
+    //     name: 'FullSearchPath',
+    //
+    // },
     {
         path: '/noUser',
         name: 'NoUser',
@@ -69,6 +78,14 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/NoSuchUser.vue')
+    },
+    {
+        path: '/noBusiness',
+        name: 'NoBusiness',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/NoSuchBusiness.vue')
     },
     {
         path: '/timeout',
@@ -93,12 +110,28 @@ const routes = [
         component: () => import('../views/InvalidToken.vue')
     },
     {
+        path: '/businessProfile/:id?',
+        name: 'BusinessProfile',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/BusinessProfile.vue')
+    },
+    {
         path: '/businessRegistration',
         name: 'BusinessRegistration',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/BusinessRegistration.vue')
+    },
+    {
+        path: '/businesses/:id?/products',
+        name: 'Products',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/Products')
     },
     {
         path: '*',
