@@ -5,7 +5,11 @@ import org.apache.logging.log4j.Logger;
 import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
+import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.BusinessType;
+import org.seng302.business.product.Product;
+import org.seng302.business.product.ProductRepository;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -33,6 +37,7 @@ public class MainApplicationRunner implements ApplicationRunner {
     private UserRepository userRepository;
     private BusinessRepository businessRepository;
     private AddressRepository addressRepository;
+    private ProductRepository productRepository;
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
@@ -40,10 +45,11 @@ public class MainApplicationRunner implements ApplicationRunner {
      * classes (i.e. dependency injection)
      */
     @Autowired
-    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository) {
+    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository, ProductRepository productRepository) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
         this.addressRepository = addressRepository;
+        this.productRepository = productRepository;
     }
 
     /**
