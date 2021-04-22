@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -59,7 +60,9 @@ public class MainApplicationRunner implements ApplicationRunner {
         businessRepository.findAll().forEach(logger::info);
         addressRepository.findAll().forEach(logger::info);
 
-        addTestUsers();
+//        addTestUsers();
+
+
     }
 
 
