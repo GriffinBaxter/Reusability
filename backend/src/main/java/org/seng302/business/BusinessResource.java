@@ -225,7 +225,7 @@ public class BusinessResource {
                                          Optional<User> optionalUser,
                                          boolean isRemove){
         //401
-        User currentUser = getUserVerifySession(sessionToken);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         //406
         if (optionalBusiness.isEmpty()){

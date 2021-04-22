@@ -191,7 +191,7 @@
                     <h6>Address:</h6>
                   </div>
                   <div class="col">
-                    <div class="text-secondary" v-for="lines in homeAddress" :key="lines.line" align="right">
+                    <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
                       {{ lines.line }}
                     </div>
                   </div>
@@ -548,39 +548,39 @@ export default {
       this.phoneNumber = data.phoneNumber;
 
       //address unpack
-      if (data.homeAddress.streetNumber) {
-        this.streetNumber = data.homeAddress.streetNumber;
+      if (data.address.streetNumber) {
+        this.streetNumber = data.address.streetNumber;
       }
-      if (data.homeAddress.streetName) {
-        this.streetName = data.homeAddress.streetName;
+      if (data.address.streetName) {
+        this.streetName = data.address.streetName;
       }
-      if (data.homeAddress.city) {
-        this.city = data.homeAddress.city;
+      if (data.address.city) {
+        this.city = data.address.city;
       }
-      if (data.homeAddress.region) {
-        this.region = data.homeAddress.region;
+      if (data.address.region) {
+        this.region = data.address.region;
       }
-      if (data.homeAddress.country) {
-        this.country = data.homeAddress.country;
+      if (data.address.country) {
+        this.country = data.address.country;
       }
-      if (data.homeAddress.postcode) {
-        this.postcode = data.homeAddress.postcode;
+      if (data.address.postcode) {
+        this.postcode = data.address.postcode;
       }
 
       if (this.streetNumber !== "" && this.streetName !== "") {
-        this.homeAddress.push({line: this.streetNumber + " " + this.streetName});
+        this.address.push({line: this.streetNumber + " " + this.streetName});
       } else {
-        this.homeAddress.push({line: this.streetNumber + this.streetName});
+        this.address.push({line: this.streetNumber + this.streetName});
       }
       if (this.city !== "" && this.postcode !== "") {
-        this.homeAddress.push({line: this.city + ", " + this.postcode});
+        this.address.push({line: this.city + ", " + this.postcode});
       } else {
-        this.homeAddress.push({line: this.city + this.postcode});
+        this.address.push({line: this.city + this.postcode});
       }
       if (this.region !== "" && this.country !== "") {
-        this.homeAddress.push({line: this.region + ", " + this.country});
+        this.address.push({line: this.region + ", " + this.country});
       } else {
-        this.homeAddress.push({line: this.region + this.country});
+        this.address.push({line: this.region + this.country});
       }
 
       // businesses administered unpack

@@ -1,6 +1,7 @@
 package org.seng302.user;
 
 import org.seng302.address.Address;
+import org.seng302.main.Authorization;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
 import org.seng302.business.Business;
@@ -211,7 +212,7 @@ public class UserResource {
         String postCode = null;
         Address address = selectUser.getHomeAddress();
 
-        if (currentUser.getId() == id || verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
+        if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
             //base info
             dateOfBirth = selectUser.getDateOfBirth();
             phoneNumber = selectUser.getPhoneNumber();
@@ -223,7 +224,7 @@ public class UserResource {
             postCode = address.getPostcode();
 
             //role
-            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+            if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
                 role = selectUser.getRole();
             }
         }
@@ -379,7 +380,7 @@ public class UserResource {
     @PutMapping("/users/{id}/makeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
     public void setGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
-        User currentUser = Authorization.getUserVerifySession(sessionToken);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
@@ -411,7 +412,7 @@ public class UserResource {
     @PutMapping("/users/{id}/revokeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
     public void revokeGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
-        User currentUser = Authorization.getUserVerifySession(sessionToken);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
