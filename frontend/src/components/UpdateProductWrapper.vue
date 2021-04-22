@@ -9,17 +9,28 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="updateProductModelTitle">Update Product {{product.data.id}}</h5>
+            <h5 class="modal-title" id="updateProductModelTitle">Update Product {{value.data.id}}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
 
-            <!-- Product ID -->
+            <!-- Modal form content wrapper-->
             <form class="needs-validation mb-3 px-5" novalidate @submit.prevent>
+
+            <!-- Error message card-->
+            <div class="row my-lg-2">
+              <div class="col-12 mx-auto">
+                <div v-if="formErrorModalMessage" class="alert alert-danger">
+                  <label>{{formErrorModalMessage}}</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product ID -->
               <div class="row my-lg-2">
-                <div class="col-lg-4 my-2 my-lg-0">
-                  <label :for="'product-id-'+product.data.id">ID</label>
-                  <input :id="'product-id-'+product.data.id" name="product-id" tabindex="1" type="text" v-model="newProduct.data.id"
+                <div class="col-12 my-2 my-lg-0">
+                  <label :for="'product-id-'+value.data.id">ID</label>
+                  <input :id="'product-id-'+value.data.id" name="product-id" tabindex="1" type="text" v-model="newProduct.data.id"
                          :class="toggleInvalidClass(errorsMessages.id)" :maxlength="config.productID.maxLength">
                   <div class="invalid-feedback">
                     {{errorsMessages.id}}
@@ -29,20 +40,21 @@
 
 <!--              Product Name-->
               <div class="row my-lg-2">
-                <div class="col-lg-4 my-2 my-lg-0">
-                  <label :for="'product-name-'+product.data.id">Name*</label>
-                  <input :id="'product-name-'+product.data.id" name="product-name" tabindex="2" type="text" v-model="newProduct.data.name"
+                <div class="col-12 my-2 my-lg-0">
+                  <label :for="'product-name-'+value.data.id">Name*</label>
+                  <input :id="'product-name-'+value.data.id" name="product-name" tabindex="2" type="text" v-model="newProduct.data.name"
                          :class="toggleInvalidClass(errorsMessages.name)" :maxlength="config.productName.maxLength">
                   <div class="invalid-feedback">
                     {{errorsMessages.name}}
                   </div>
                 </div>
+              </div>
 
 <!--               Product Manufacturer-->
                 <div class="row my-lg-2">
-                  <div class="col-lg-4 my-2 my-lg-0">
-                    <label :for="'product-manufacturer-'+product.data.id">Manufacturer</label>
-                    <input :id="'product-manufacturer-'+product.data.id" name="product-manufacturer" tabindex="3" type="text" v-model="newProduct.data.manufacturer"
+                  <div class="col-12 my-2 my-lg-0">
+                    <label :for="'product-manufacturer-'+value.data.id">Manufacturer</label>
+                    <input :id="'product-manufacturer-'+value.data.id" name="product-manufacturer" tabindex="3" type="text" v-model="newProduct.data.manufacturer"
                            :class="toggleInvalidClass(errorsMessages.manufacturer)" :maxlength="config.manufacturer.maxLength">
                     <div class="invalid-feedback">
                       {{errorsMessages.manufacturer}}
@@ -52,10 +64,10 @@
 
 <!--            Product Recommended Retail Price-->
                 <div class="row my-lg-2">
-                  <div class="col-lg-4 my-2 my-lg-0">
-                    <label :for="'product-price-'+product.data.id">Recommended Retail Price</label>
-                    <input :id="'product-price-'+product.data.id" name="product-price" tabindex="4" type="number" v-model="newProduct.data.recommendedRetailPrice"
-                           :class="toggleInvalidClass(errorsMessages.recommendedRetailPrice)" :maxlength="config.recommendedRetailPrice.maxLength">
+                  <div class="col-12 my-2 my-lg-0">
+                    <label :for="'product-price-'+value.data.id">Recommended Retail Price</label>
+                    <input :id="'product-price-'+value.data.id" name="product-price" tabindex="4" type="number" v-model="newProduct.data.recommendedRetailPrice"
+                           :class="toggleInvalidClass(errorsMessages.recommendedRetailPrice)" min="0">
                     <div class="invalid-feedback">
                       {{errorsMessages.recommendedRetailPrice}}
                     </div>
@@ -64,15 +76,14 @@
 
 <!--                Product Description-->
                 <div class="row my-lg-2">
-                  <div class="col-lg-4 my-2 my-lg-0">
-                    <label :for="'product-description-'+product.data.id">Description</label>
-                    <textarea :id="'product-description-'+product.data.id" name="product-description" tabindex="5" v-model="newProduct.data.description"
+                  <div class="col-12 my-2 my-lg-0">
+                    <label :for="'product-description-'+value.data.id">Description</label>
+                    <textarea :id="'product-description-'+value.data.id" name="product-description" tabindex="5" v-model="newProduct.data.description"
                            :class="toggleInvalidClass(errorsMessages.description)" :maxlength="config.description.maxLength" style="resize: none"/>
                     <div class="invalid-feedback">
                       {{errorsMessages.description}}
                     </div>
                   </div>
-                </div>
               </div>
             </form>
           </div>
@@ -96,8 +107,8 @@ import Api from "@/Api";
 export default {
   name: "UpdateProductWrapper",
   props: {
-    // Product details -- MUST BE V-MODEL
-    productProp: {
+    // Product details -- MUST BE V-MODEL therefore MUST BE NAMED VALUE!
+    value: {
       type: Product,
       required: true
     },
@@ -109,13 +120,13 @@ export default {
     }
 
   },
-  computed: {
-    product: {}
-  },
   data() {
     return {
       // Used to display a modal that contains the form to edit the product
       modal: null,
+
+      // This defines the error message regarding different responses from the request to Axios
+      formErrorModalMessage: "",
 
       // Keeps track if the modal is showing
       isModalShowing: false,
@@ -124,7 +135,7 @@ export default {
       config: Product.config,
 
       // Create the object that will store the data
-      newProduct: new Product(this.product.data),
+      newProduct: new Product(this.value.data),
 
       // Create the object that stores the error messages
       errorsMessages: {
@@ -133,10 +144,17 @@ export default {
         description: "",
         manufacturer: "",
         recommendedRetailPrice: ""
-      }
+      },
+
+      // Keeps track if there is an error or not in the form
+      inputError: false
+
     }
   },
   methods: {
+    updateValue(value) {
+      this.$emit('input', value)
+    },
     /**
      * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
      * if an error message needs to be presented to the user.
@@ -163,11 +181,19 @@ export default {
       // If the modal is already showing prevent the placeholders from being updated.
       if (!this.$refs.updateProductModel.classList.contains("show")) {
         // Update the placeholders
-        this.newProduct.data.id = this.product.data.id;
-        this.newProduct.data.name = this.product.data.name;
-        this.newProduct.data.description = this.product.data.description;
-        this.newProduct.data.manufacturer = this.product.data.manufacturer;
-        this.newProduct.data.recommendedRetailPrice = this.product.data.recommendedRetailPrice;
+        this.newProduct.data.id = this.value.data.id;
+        this.newProduct.data.name = this.value.data.name;
+        this.newProduct.data.description = this.value.data.description;
+        this.newProduct.data.manufacturer = this.value.data.manufacturer;
+        this.newProduct.data.recommendedRetailPrice = this.value.data.recommendedRetailPrice;
+
+        // Reset all the error messages
+        this.errorsMessages.id = "";
+        this.errorsMessages.name = "";
+        this.errorsMessages.manufacturer = "";
+        this.errorsMessages.recommendedRetailPrice = "";
+        this.errorsMessages.description = "";
+
       }
       // Show the modal
       this.modal.show();
@@ -218,21 +244,21 @@ export default {
       this.errorsMessages.id = this.getErrorMessage("Id", this.newProduct.data.id, this.config.productID.minLength,
           this.config.productID.maxLength, this.config.productID.regexMessage, this.config.productID.regex);
       if (this.errorsMessages.id) {
-        return;
+        this.inputError = true;
       }
 
       // Process new name
       this.errorsMessages.name = this.getErrorMessage("Name", this.newProduct.data.name, this.config.productName.minLength,
           this.config.productName.maxLength, this.config.productName.regexMessage, this.config.productName.regex);
       if (this.errorsMessages.name) {
-        return;
+        this.inputError = true;
       }
 
       // Process new manufacturer
       this.errorsMessages.manufacturer = this.getErrorMessage("Manufacturer", this.newProduct.data.manufacturer, this.config.manufacturer.minLength,
           this.config.manufacturer.maxLength, this.config.manufacturer.regexMessage, this.config.productName.regex);
       if (this.errorsMessages.manufacturer) {
-        return;
+        this.inputError = true;
       }
 
       // Process new recommended retail price
@@ -240,6 +266,17 @@ export default {
         this.errorsMessages.recommendedRetailPrice = this.getErrorMessage("Recommended Retail Price", this.newProduct.data.recommendedRetailPrice,
             this.config.recommendedRetailPrice.minLength, this.config.recommendedRetailPrice.maxLength, this.config.recommendedRetailPrice.regexMessage,
             this.config.recommendedRetailPrice.regex);
+
+          // If it is undefined (i.e. it passes regex but is still invalid) throw an error message
+          if (!Number.parseFloat(this.newProduct.data.recommendedRetailPrice)) {
+            this.errorsMessages.recommendedRetailPrice = "Must be a float."
+            this.inputError = true;
+          } else {
+            // This means that it is passable
+            this.newProduct.data.recommendedRetailPrice = Number.parseFloat(this.newProduct.data.recommendedRetailPrice);
+            this.errorsMessages.recommendedRetailPrice = "";
+          }
+
       } else {
         // Check if the recommended retail price is between 0 and positive infinity
         this.errorsMessages.recommendedRetailPrice = this.between(this.newProduct.data.recommendedRetailPrice, 0, Number.POSITIVE_INFINITY)
@@ -248,35 +285,55 @@ export default {
       }
       // Cancel further processing if the price has an error message.
       if (this.errorsMessages.recommendedRetailPrice) {
-        return;
+        this.inputError = true;
       }
 
       // Process new description
       this.errorsMessages.description = this.getErrorMessage("Description", this.newProduct.data.description, this.config.description.minLength,
           this.config.description.maxLength, this.config.description.maxLength);
       if (this.errorsMessages.description) {
+        this.inputError = true;
+      }
+
+
+      // If there is an input don't bother making the request to the backend
+      if (this.inputError) {
         return;
       }
 
+
       // Perfrom the update call
-      Api.modifyProduct(this.product.data.id, this.businessId, this.newProduct)
+      Api.modifyProduct(this.value.data.id, this.businessId, this.newProduct)
         .then(
           res => {
-            // This means that
+            // This means that the modification was successfull
             if (res.data.status === 200) {
-              // TODO Update product. But figure out how computed variables work with V-MODEL!
-              this.$emit("product-update")
+              this.updateValue(new Product(this.newProduct.data));
+              this.modal.hide();
             }
           }
         )
         .catch(
           error => {
             if (error.response) {
-              // TODO Error codes
+              // TODO Error codes handling
+              if (error.data.status === 400) {
+                this.formErrorModalMessage = "Some of the information you have entered is invalid."
+              } else if (error.data.status === 403) {
+                this.formErrorModalMessage = "You do not have permission to perform this action!"
+                this.modal.hide();
+                this.$router.push({path: "/invalidtoken"})
+              } else {
+                this.formErrorModalMessage = "Sorry, something went wrong..."
+              }
             } else if (error.request) {
               // TODO Timeout
+              this.formErrorModalMessage = "Server timeout"
+              // this.modal.hide();
+              // this.$router.push({path: "/timeout"})
             } else {
               // TODO Something went wrong and it ain't good :(
+              this.formErrorModalMessage = "Sorry, something went wrong..."
             }
           }
         )
