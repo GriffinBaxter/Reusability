@@ -498,6 +498,9 @@ export default {
       The address is a special case as its components are stored semi-colon separated,
       so it must be 'unpacked' and formatted.
        */
+
+      console.log(data.homeAddress);
+
       if (data.homeAddress.city) {
         this.city = data.homeAddress.city;
       }
@@ -508,6 +511,7 @@ export default {
         this.country = data.homeAddress.country;
       }
 
+      // when you are not the actual user, display a reduced version of the address i.e. just the region, country, city
       if (this.otherUser) {
         document.getElementById('phone-row').remove();
         document.getElementById('date-of-birth-row').remove();
@@ -521,6 +525,7 @@ export default {
           this.address.push({line: this.region + this.country});
         }
 
+        // when you are the logged in user, display the whole address
       } else {
         this.dateOfBirth = this.formatAge(data.dateOfBirth);
         this.phoneNumber = data.phoneNumber;

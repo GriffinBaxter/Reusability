@@ -265,8 +265,8 @@ export default {
     })
   },
 
-  searchUsers: (query) => {
-    return instance.get(`/users/search?searchQuery=${query}`, {
+  searchUsers: (query, orderBy, page) => {
+    return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}`, {
       withCredentials: true
     })
   },
