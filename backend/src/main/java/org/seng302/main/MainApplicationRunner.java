@@ -108,41 +108,6 @@ public class MainApplicationRunner implements ApplicationRunner {
             System.out.println(dGAA);
             dGAA = userRepository.save(dGAA);
             logger.error("DGAA does not exist. New DGAA created {}", dGAA);
-
-            // Added for testing purposes, REMOVE BEFORE MERGING
-            Business business = new Business(
-                    2,
-                    "name",
-                    "some text",
-                    address,
-                    BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                    LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                    userRepository.findById(2).get()
-            );
-            businessRepository.save(business);
-            Product product = new Product(
-                    "PROD",
-                    businessRepository.findBusinessById(3).get(),
-                    "Beans",
-                    "Description",
-                    "Manufacturer",
-                    20.00,
-                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                            LocalTime.of(0, 0))
-            );
-            productRepository.save(product);
-            Product otherProduct = new Product(
-                    "DUCT",
-                    businessRepository.findBusinessById(3).get(),
-                    "Ice Cream",
-                    "New Desc",
-                    "New Manufactere",
-                    21.00,
-                    LocalDateTime.of(LocalDate.of(2022, 1, 1),
-                            LocalTime.of(0, 0))
-            );
-            productRepository.save(otherProduct);
-            System.out.println(productRepository.findProductsByBusinessId(3, null).getTotalElements());
         } else {
             logger.info("DGGA exists.");
         }

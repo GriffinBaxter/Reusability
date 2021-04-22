@@ -326,16 +326,17 @@ public class UserResource {
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), sessionToken));
+                .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
     }
 
-    public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, String sessionToken) throws Exception {
+    //TODO write unit tests
+    public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
         List<UserPayloadSecure> userPayloadList = new ArrayList<>();
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
 
         for (UserPayloadSecure userPayloadSecure: userPayloadList) {
             Role role = null;
-            if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+            if (verifyRole(user, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
                 role = userPayloadSecure.getRole();
             }
             userPayloadSecure.setRole(role);
