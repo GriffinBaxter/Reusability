@@ -18,8 +18,6 @@ abstract class UserPayloadParent {
     private String nickname;
     private String bio;
     private String email;
-    private String dateOfBirth;
-    private String phoneNumber;
     private String created;
     private Role role;
     private List<BusinessPayload> businessesAdministered;
@@ -33,8 +31,6 @@ abstract class UserPayloadParent {
             String nickname,
             String bio,
             String email,
-            LocalDate dateOfBirth,
-            String phoneNumber,
             LocalDateTime created,
             Role role,
             List<Business> businessesAdministeredObject
@@ -46,8 +42,6 @@ abstract class UserPayloadParent {
         this.nickname = nickname;
         this.bio = bio;
         this.email = email;
-        this.dateOfBirth = dateOfBirth.toString();
-        this.phoneNumber = phoneNumber;
         this.created = created.toString();
         this.role = role;
         this.businessesAdministered = BusinessPayload.toBusinessPayload(businessesAdministeredObject);
@@ -82,14 +76,6 @@ abstract class UserPayloadParent {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
     }
 
     public String getCreated() {
@@ -130,14 +116,6 @@ abstract class UserPayloadParent {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public void setCreated(String created) {

@@ -177,7 +177,7 @@ public class UserResource {
      * @return User object if it exists
      */
     @GetMapping("/users/{id}")
-    public UserPayload retrieveUser(
+    public UserPayloadParent retrieveUser(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
     ) throws Exception {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -206,53 +206,46 @@ public class UserResource {
             administrator.setAdministrators(new ArrayList<>());
         }
 
-        //address
-        String streetNumber = null;
-        String streetName = null;
-        String postCode = null;
-        Address address = selectUser.getHomeAddress();
-
         if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
-            //base info
-            dateOfBirth = selectUser.getDateOfBirth();
-            phoneNumber = selectUser.getPhoneNumber();
 
-
-            //address
-            streetNumber = address.getStreetNumber();
-            streetName = address.getStreetName();
-            postCode = address.getPostcode();
-
-            //role
+            // If the current user is a DGAA, show the role of the user
             if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
                 role = selectUser.getRole();
             }
+            // If the current ID matches the retrieved user's ID or the current user is the DGAA, return a normal UserPayload with everything in it.
+            return new UserPayload(
+                    selectUser.getId(),
+                    selectUser.getFirstName(),
+                    selectUser.getLastName(),
+                    selectUser.getMiddleName(),
+                    selectUser.getNickname(),
+                    selectUser.getBio(),
+                    selectUser.getEmail(),
+                    selectUser.getDateOfBirth(),
+                    selectUser.getPhoneNumber(),
+                    selectUser.getHomeAddress().toAddressPayload(),
+                    selectUser.getCreated(),
+                    role,
+                    administrators
+            );
+        } else {
+            // Otherwise return a UserPayloadSecure without the phone number, date of birth and a secure address with only the city, region, and country.
+            return new UserPayloadSecure(
+                    selectUser.getId(),
+                    selectUser.getFirstName(),
+                    selectUser.getLastName(),
+                    selectUser.getMiddleName(),
+                    selectUser.getNickname(),
+                    selectUser.getBio(),
+                    selectUser.getEmail(),
+                    selectUser.getHomeAddress().toAddressPayloadSecure(),
+                    selectUser.getCreated(),
+                    role,
+                    administrators
+            );
         }
 
-        //address
-        AddressPayload addressPayload = new AddressPayload(
-                streetNumber,
-                streetName,
-                address.getCity(),
-                address.getRegion(),
-                address.getCountry(),
-                postCode
-        );
-        return new UserPayload(
-                selectUser.getId(),
-                selectUser.getFirstName(),
-                selectUser.getLastName(),
-                selectUser.getMiddleName(),
-                selectUser.getNickname(),
-                selectUser.getBio(),
-                selectUser.getEmail(),
-                dateOfBirth,
-                phoneNumber,
-                addressPayload,
-                selectUser.getCreated(),
-                role,
-                administrators
-        );
+
     }
 
     /**
