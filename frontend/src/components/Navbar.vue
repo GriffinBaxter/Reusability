@@ -62,6 +62,7 @@
                         <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
                       </li>
                       <li class="nav-item">
+<!--                        TODO Change this to dynamic ID-->
                         <router-link :class="['nav-link', isActivePath('/')]" to="/businesses/3/products">Catalogue</router-link>
                       </li>
                  </ul>
