@@ -1,5 +1,5 @@
 <template>
-  <div id="outerContainer" class="container">
+  <div id="outerContainer" class="container" style="overflow: scroll">
 
     <div class="row mb-3">
       <div class="col">
@@ -9,32 +9,27 @@
 
     <div class="row mb-3">
       <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)"
-           @click="orderProducts(true, false , false, false, false, false)">
+           @click="orderProducts(true, false , false, false, false)">
         <b>ProductID</b>
         <i id="productIdIcon"></i>
       </div>
       <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)"
-           @click="orderProducts(false, true , false, false, false, false)">
+           @click="orderProducts(false, true , false, false, false)">
         <b>Name</b>
         <i id="nameIcon"></i>
       </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)"
-           @click="orderProducts(false, false , true, false, false, false)">
-        <b>Description</b>
-        <i id="descriptionIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6" @keydown="orderEnter($event)"
-           @click="orderProducts(false, false , false, true, false, false)">
+      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="6" @keydown="orderEnter($event)"
+           @click="orderProducts(false, false , true, false, false)">
         <b>Manufacturer</b>
         <i id="manufacturerIcon"></i>
       </div>
-      <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="7" @keydown="orderEnter($event)"
-           @click="orderProducts(false, false , false, true, false, false)">
+      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="7" @keydown="orderEnter($event)"
+           @click="orderProducts(false, false , false, true, false)">
         <b>Recommended Retail Price</b>
         <i id="recommendedRetailPriceIcon"></i>
       </div>
       <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="8" @keydown="orderEnter($event)"
-           @click="orderProducts(false, false , false, true, false, false)">
+           @click="orderProducts(false, false , false, false, true)">
         <b>Created</b>
         <i id="createdIcon"></i>
       </div>
@@ -96,13 +91,16 @@ export default {
     return {
       productIdAscending: false,
       nameAscending: false,
-      descriptionAscending: false,
       manufacturerAscending: false,
       recommendedRetailPriceAscending: false,
       createdAscending: false,
+
+      businessId: 15,
+      orderBy: "",
       rowsPerPage: 5,
       currentPage: 1,
       maxPage: 2,
+      totalRows: 0,
       productList: [],
       small: false
     }
@@ -133,7 +131,8 @@ export default {
     updatePage(event, newPageNum) {
       event.preventDefault();
       this.currentPage = newPageNum;
-      this.buildRows();
+      this.$router.push({path: `/businesses/${this.businessId}/products`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
+      this.requestProducts();
     },
 
     /**
@@ -153,22 +152,29 @@ export default {
      *
      * @return {Promise}
      */
-    async requestProducts(businessID) {
+    async requestProducts() {
 
-      await Api.sortProducts(businessID).then(response => {
+
+      this.orderBy = this.$route.query["orderBy"] ? this.$route.query["orderBy"] : "productIdASC";
+      this.currentPage = parseInt(this.$route.query["page"]) ? parseInt(this.$route.query["page"]) : 1
+
+      await Api.sortProducts(this.businessId, this.orderBy, this.currentPage-1).then(response => {
+
         this.productList = [...response.data];
-        console.log(this.productList);
-        // Order by productId alphabetically by default
-        this.productList.sort(function (a, b) {
-          if (a.id < b.id) {
-            return -1;
-          }
-          if (a.id > b.id) {
-            return 1;
-          }
-          return 0;
-        });
-        this.maxPage = Math.ceil(this.productList.length / this.rowsPerPage)
+
+
+        // No results
+        if (this.productList.length <= 0) {
+          this.currentPage = 1;
+          this.maxPage = 1;
+          this.totalRows = 0;
+        } else {
+          this.maxPage = parseInt(response.headers['total-pages']);
+          this.totalRows = parseInt(response.headers["total-rows"])
+        }
+
+        this.buildRows();
+
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -188,7 +194,8 @@ export default {
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
-        this.buildRows()
+        this.$router.push({path: `/businesses/${this.businessId}/products`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
+        this.requestProducts()
       }
     },
 
@@ -199,7 +206,8 @@ export default {
     nextPage() {
       if (this.currentPage < this.maxPage) {
         this.currentPage += 1;
-        this.buildRows()
+        this.$router.push({path: `/businesses/${this.businessId}/products`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
+        this.requestProducts()
       }
     },
 
@@ -207,42 +215,24 @@ export default {
      * Orders the products based on the given booleans for each column, and updates the display
      * @param id Boolean, whether to order by productId
      * @param name Boolean, whether to order by name
-     * @param description Boolean, whether to order by description
      * @param manufacturer Boolean, whether to order by manufacturer
      * @param recommendedRetailPrice Boolean, whether to order by RRP
      * @param created Boolean, whether to order by created date
      */
-    orderProducts(id, name, description, manufacturer, recommendedRetailPrice, created) {
+    orderProducts(id, name, manufacturer, recommendedRetailPrice, created) {
 
       if (id) {
         this.disableIcons()
         if (this.productIdAscending) {
-          this.productList.sort(function (a, b) {
-            if (a.id > b.id) {
-              return -1;
-            }
-            if (a.id < b.id) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "nameASC"
           document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.productList.sort(function (a, b) {
-            if (a.id < b.id) {
-              return -1;
-            }
-            if (a.id > b.id) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "nameDESC"
           document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.productIdAscending = !this.productIdAscending;
         this.nameAscending = false;
-        this.descriptionAscending = false;
         this.manufacturerAscending = false;
         this.recommendedRetailPriceAscending = false;
         this.createdAscending = false;
@@ -251,66 +241,15 @@ export default {
       } else if (name) {
         this.disableIcons()
         if (this.nameAscending) {
-          this.productList.sort(function (a, b) {
-            if (a.name > b.name) {
-              return -1;
-            }
-            if (a.name < b.name) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "nameASC"
           document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.productList.sort(function (a, b) {
-            if (a.name < b.name) {
-              return -1;
-            }
-            if (a.name > b.name) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "nameDESC"
           document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.productIdAscending = false;
         this.nameAscending = !this.nameAscending;
-        this.descriptionAscending = false;
-        this.manufacturerAscending = false;
-        this.recommendedRetailPriceAscending = false;
-        this.createdAscending = false;
-
-        this.buildRows();
-      } else if (description) {
-        this.disableIcons()
-        if (this.descriptionAscending) {
-          this.productList.sort(function (a, b) {
-            if (a.description > b.description) {
-              return -1;
-            }
-            if (a.description < b.description) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('descriptionIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-        } else {
-          this.productList.sort(function (a, b) {
-            if (a.description < b.description) {
-              return -1;
-            }
-            if (a.description > b.description) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('descriptionIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
-
-        this.productIdAscending = false;
-        this.nameAscending = false;
-        this.descriptionAscending = !this.descriptionAscending;
         this.manufacturerAscending = false;
         this.recommendedRetailPriceAscending = false;
         this.createdAscending = false;
@@ -319,32 +258,15 @@ export default {
       } else if (manufacturer) {
         this.disableIcons()
         if (this.manufacturerAscending) {
-          this.productList.sort(function (a, b) {
-            if (a.manufacturer > b.manufacturer) {
-              return -1;
-            }
-            if (a.manufacturer < b.manufacturer) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "manufacturerASC"
           document.getElementById('manufacturerIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.productList.sort(function (a, b) {
-            if (a.manufacturer < b.manufacturer) {
-              return -1;
-            }
-            if (a.manufacturer > b.manufacturer) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "manufacturerDESC"
           document.getElementById('manufacturerIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.productIdAscending = false;
         this.nameAscending = false;
-        this.descriptionAscending = false;
         this.manufacturerAscending = !this.manufacturerAscending;
         this.recommendedRetailPriceAscending = false;
         this.createdAscending = false;
@@ -353,32 +275,15 @@ export default {
       } else if (recommendedRetailPrice) {
         this.disableIcons()
         if (this.recommendedRetailPriceAscending) {
-          this.productList.sort(function (a, b) {
-            if (a.recommendedRetailPrice > b.recommendedRetailPrice) {
-              return -1;
-            }
-            if (a.recommendedRetailPrice < b.recommendedRetailPrice) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "recommendedRetailPriceASC"
           document.getElementById('recommendedRetailPriceIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.productList.sort(function (a, b) {
-            if (a.recommendedRetailPrice < b.recommendedRetailPrice) {
-              return -1;
-            }
-            if (a.recommendedRetailPrice > b.recommendedRetailPrice) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "recommendedRetailPriceDESC"
           document.getElementById('recommendedRetailPriceIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.productIdAscending = false;
         this.nameAscending = false;
-        this.descriptionAscending = false;
         this.manufacturerAscending = false;
         this.recommendedRetailPriceAscending = !this.recommendedRetailPriceAscending;
         this.createdAscending = false;
@@ -386,39 +291,23 @@ export default {
         this.buildRows();
       } else if (created) {
         this.disableIcons()
-        if (this.created) {
-          this.productList.sort(function (a, b) {
-            if (a.created > b.created) {
-              return -1;
-            }
-            if (a.created < b.created) {
-              return 1;
-            }
-            return 0;
-          })
+        if (this.createdAscending) {
+          this.orderBy = "createdASC";
           document.getElementById('createdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.productList.sort(function (a, b) {
-            if (a.created < b.created) {
-              return -1;
-            }
-            if (a.created > b.created) {
-              return 1;
-            }
-            return 0;
-          })
+          this.orderBy = "createdDESC";
           document.getElementById('createdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
-
         this.productIdAscending = false;
         this.nameAscending = false;
-        this.descriptionAscending = false;
         this.manufacturerAscending = false;
         this.recommendedRetailPriceAscending = false;
         this.createdAscending = !this.createdAscending;
-
-        this.buildRows();
       }
+
+
+      this.$router.push({path: `/businesses/${this.businessId}/products`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}});
+      this.requestProducts();
 
     },
 
@@ -428,7 +317,6 @@ export default {
     disableIcons() {
       document.getElementById('productIdIcon').setAttribute('class', '');
       document.getElementById('nameIcon').setAttribute('class', '');
-      document.getElementById('descriptionIcon').setAttribute('class', '');
       document.getElementById('manufacturerIcon').setAttribute('class', '');
       document.getElementById('recommendedRetailPriceIcon').setAttribute('class', '');
       document.getElementById('createdIcon').setAttribute('class', '');
@@ -440,7 +328,6 @@ export default {
     buildRows() {
       this.clearRows();
       let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
-      let startIndex = (this.currentPage - 1) * this.rowsPerPage;
       const outerContainer = document.getElementById('outerContainer');
       const lastChild = outerContainer.lastChild;
 
@@ -451,10 +338,10 @@ export default {
       if (this.productList.length > 0) {
 
         // 6 is the last index of the permanent items
-        let tabIndex = 8;
+        let tabIndex = 7;
 
 
-        for (let i = startIndex; i < limit; i++) {
+        for (let i = 0; i < limit; i++) {
           // Check breakpoint
           // let width = window.innerWidth;
 
@@ -487,11 +374,6 @@ export default {
 
           productRow.appendChild(nameCol);
 
-          const descriptionCol = document.createElement("div");
-          descriptionCol.setAttribute("class", `${classInput}`);
-          descriptionCol.setAttribute("id", `${i}-description`);
-          descriptionCol.innerText = this.productList[i].description;
-          productRow.appendChild(descriptionCol);
 
           const manufacturerCol = document.createElement("div");
           manufacturerCol.setAttribute("class", `${classInput}`);
@@ -518,9 +400,11 @@ export default {
         }
       }
 
-      let showingStart = this.productList.length ? startIndex + 1 : 0;
+      let showingStart = this.productList.length ? (this.currentPage*this.rowsPerPage)-this.rowsPerPage+1 : 0;
 
-      const showingString = `Showing ${showingStart}-${limit} of ${this.productList.length} results`;
+      let lastEntryOfPage = limit+(this.currentPage-1)*this.rowsPerPage;
+
+      const showingString = `Showing ${showingStart}-${lastEntryOfPage} of ${this.totalRows} results`;
       const showingRow = document.createElement('div');
       showingRow.setAttribute("class", "row");
       showingRow.setAttribute("id", `showingRow`);
@@ -555,9 +439,8 @@ export default {
      * If cookies are invalid or not present, redirect to login page.
      */
     const currentID = Cookies.get('userID');
-    const businessID = this.$route.params.id;
     if (currentID) {
-      this.requestProducts(businessID).then(
+      this.requestProducts().then(
           () => this.buildRows()
       ).catch(
           (e) => console.log(e)

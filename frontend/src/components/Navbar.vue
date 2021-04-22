@@ -68,7 +68,7 @@
                         </router-link>
                       </li>
                       <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/" tabindex="-1">
+                        <router-link :class="['nav-link', isActivePath('/businesses/15/products')]" to="/" tabindex="-1">
                           Catalogue
                         </router-link>
                       </li>

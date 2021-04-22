@@ -190,11 +190,11 @@ public class ProductResource {
             case "nameDESC":
                 sortBy = Sort.by(Sort.Order.desc("name").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
-            case "descriptionASC":
-                sortBy = Sort.by(Sort.Order.asc("description").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+            case "recommendedRetailPriceASC":
+                sortBy = Sort.by(Sort.Order.asc("recommendedRetailPrice").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
-            case "descriptionDESC":
-                sortBy = Sort.by(Sort.Order.desc("description").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+            case "recommendedRetailPriceDESC":
+                sortBy = Sort.by(Sort.Order.desc("recommendedRetailPrice").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
             case "manufacturerASC":
                 sortBy = Sort.by(Sort.Order.asc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));

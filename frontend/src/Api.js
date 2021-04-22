@@ -274,8 +274,8 @@ export default {
   // Sends a post request to the backend with a new business object to store
   addNewBusiness: (business) => instance.post('/businesses', {...business.data}, {withCredentials: true}),
 
-  sortProducts: (businessID) => {
-    return instance.get(`/businesses/${businessID}/products?orderBy=productIdASC&page=0`,{
+  sortProducts: (businessID, sortBy, page) => {
+    return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`,{
       withCredentials: true
     })
   },
