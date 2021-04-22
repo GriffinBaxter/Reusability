@@ -4,6 +4,7 @@ import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 import org.seng302.user.User;
 import org.seng302.user.UserPayload;
+import org.seng302.user.UserResource;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,6 +50,8 @@ public class BusinessPayload {
             );
             businessPayloads.add(businessPayload);
         }
+
+
         return businessPayloads;
     }
 
@@ -62,7 +65,8 @@ public class BusinessPayload {
                            LocalDateTime created
                            ) throws Exception {
         this.id = id;
-        this.administrators = UserPayload.toUserPayload(administrators);
+        this.administrators = UserPayload.convertToPayload(administrators);
+        //      TODO This might get changed in the future due to the recursive nature of the API seems wrong.
         if (this.administrators.isEmpty()){
             this.administrators.add(null);
         }
@@ -72,6 +76,7 @@ public class BusinessPayload {
         this.address = address;
         this.businessType = businessType.toString();
         this.created = created.toString();
+
     }
 
     public int getId() {

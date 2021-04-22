@@ -149,6 +149,15 @@ public class Business {
     }
 
     //setter
+
+    /**
+     * set id
+     * @param id id
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     /**
      * set name
      * @param name name

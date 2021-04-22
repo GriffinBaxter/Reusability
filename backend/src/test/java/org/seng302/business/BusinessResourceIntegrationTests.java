@@ -562,7 +562,29 @@ public class BusinessResourceIntegrationTests {
         id = business.getId();
         expectedJson = "{" +
                 "\"id\":" + id + "," +
-                "\"administrators\":" + business.getAdministrators() + "," +
+                "\"administrators\":" + "[{\"id\":1," +
+                    "\"firstName\":\"testfirst\"," +
+                    "\"lastName\":\"testlast\"," +
+                    "\"middleName\":\"testmiddle\"," +
+                    "\"nickname\":\"testnick\"," +
+                    "\"bio\":\"testbiography\"," +
+                    "\"email\":\"testemail@email.com\"," +
+                    "\"dateOfBirth\":\"2007-02-02\"," +
+                    "\"phoneNumber\":\"0271316\"," +
+                    "\"created\":\"2021-02-02T00:00\"," +
+                    "\"role\":\"USER\"," +
+                    "\"businessesAdministered\":[" +
+                    "null" +
+                    "]," +
+                    "\"homeAddress\":{" +
+                        "\"streetNumber\":\"3/24\"," +
+                        "\"streetName\":\"Ilam Road\"," +
+                        "\"city\":\"Christchurch\"," +
+                        "\"region\":\"Canterbury\"," +
+                        "\"country\":\"New Zealand\"," +
+                        "\"postcode\":\"90210\"" +
+                        "}" +
+                "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
                 "\"name\":\"" + business.getName() + "\"," +
                 "\"description\":\"" + business.getDescription() + "\"," +
