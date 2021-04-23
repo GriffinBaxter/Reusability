@@ -4,6 +4,8 @@ import org.seng302.main.Authorization;
 import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
+import org.seng302.user.Role;
+import org.seng302.user.UserIdPayload;
 import org.seng302.validation.BusinessValidation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -166,24 +168,25 @@ public class BusinessResource {
     public BusinessPayload retrieveBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                             @PathVariable String id) throws Exception {
         //access token invalid
-        Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        Optional<Business> business = businessRepository.findBusinessById(Integer.valueOf(id));
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        if (business.isEmpty()){
+        Optional<Business> optionalSelectBusiness = businessRepository.findBusinessById(Integer.valueOf(id));
+        if (optionalSelectBusiness.isEmpty()){
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
+        Business selectBusiness = optionalSelectBusiness.get();
 
-        List<User> administrators = business.get().getAdministrators();
+        List<User> administrators = selectBusiness.getAdministrators();
         for (User administrator : administrators){
             administrator.setBusinessesAdministeredObjects(new ArrayList<>());
         }
 
-        address = business.get().getAddress();
+        address = selectBusiness.getAddress();
         AddressPayload addressPayload = new AddressPayload(
                 address.getStreetNumber(),
                 address.getStreetName(),
@@ -192,15 +195,132 @@ public class BusinessResource {
                 address.getCountry(),
                 address.getPostcode()
         );
+
+        Integer primaryAdministratorId = null;
+        if (selectBusiness.isAnAdministratorOfThisBusiness(currentUser) ||
+                currentUser.getRole() == Role.DEFAULTGLOBALAPPLICATIONADMIN){
+            primaryAdministratorId = selectBusiness.getPrimaryAdministratorId();
+        }
         return new BusinessPayload(
-                business.get().getId(),
+                selectBusiness.getId(),
                 administrators,
-                business.get().getPrimaryAdministratorId(),
-                business.get().getName(),
-                business.get().getDescription(),
+                primaryAdministratorId,
+                selectBusiness.getName(),
+                selectBusiness.getDescription(),
                 addressPayload,
-                business.get().getBusinessType(),
-                business.get().getCreated()
+                selectBusiness.getBusinessType(),
+                selectBusiness.getCreated()
                 );
+    }
+
+    /**
+     * check permission of make/remove business Administrator
+     * @param sessionToken session token
+     * @param optionalBusiness selected business
+     * @param optionalUser selected user
+     * @param isRemove is remove Administrator
+     */
+    private void checkBusinessPermission(String sessionToken,
+                                         Optional<Business> optionalBusiness,
+                                         Optional<User> optionalUser,
+                                         boolean isRemove){
+        //401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        //406
+        if (optionalBusiness.isEmpty()){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Select business not exist"
+            );
+        }
+        Business selectBusiness = optionalBusiness.get();
+
+        //403
+        if (currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN &&
+                !selectBusiness.isAnAdministratorOfThisBusiness(currentUser)){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Current user is not DGAA or an administrator of this business"
+            );
+        }
+
+        //400
+        if (optionalUser.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Select user not exist"
+            );
+        }
+        User selectUser = optionalUser.get();
+        if (isRemove){
+            if (!selectBusiness.isAnAdministratorOfThisBusiness(selectUser)){
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Select user is not an administrator of this business"
+                );
+            }
+            if (currentUser == selectUser){
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Administrator can not remove administrator self"
+                );
+            }
+        } else {
+            if (selectBusiness.isAnAdministratorOfThisBusiness(selectUser)){
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Select user already is an administrator of this business"
+                );
+            }
+        }
+    }
+
+    /**
+     * make a non-administrator user(for selected business) become administrator
+     * @param sessionToken session token
+     * @param userIdPayload selected user id payload
+     * @param id selected business id
+     */
+    @PutMapping("/businesses/{id}/makeAdministrator")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Individual added as an administrator successfully")
+    public void makeAdministrator(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                  @RequestBody UserIdPayload userIdPayload, @PathVariable String id){
+
+        Optional<Business> optionalBusiness = businessRepository.findBusinessById(Integer.valueOf(id));
+        Optional<User> optionalUser = userRepository.findById(userIdPayload.getUserId());
+
+        //Permission check
+        checkBusinessPermission(sessionToken, optionalBusiness, optionalUser, false);
+
+        //200
+        optionalBusiness.get().addAdministrators(optionalUser.get());
+        userRepository.flush();
+        businessRepository.flush();
+    }
+
+    /**
+     * remove a administrator user(for selected business) become non-administrator
+     * @param sessionToken session token
+     * @param userIdPayload selected user id payload
+     * @param id selected business id
+     */
+    @PutMapping("/businesses/{id}/removeAdministrator")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Individual added as an administrator successfully")
+    public void removeAdministrator(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                  @RequestBody UserIdPayload userIdPayload, @PathVariable String id){
+
+        Optional<Business> optionalBusiness = businessRepository.findBusinessById(Integer.valueOf(id));
+        Optional<User> optionalUser = userRepository.findById(userIdPayload.getUserId());
+
+        //Permission check
+        checkBusinessPermission(sessionToken, optionalBusiness, optionalUser, true);
+
+        //200
+        System.out.println(optionalBusiness.get().getAdministrators());
+        System.out.println(optionalUser.get());
+        optionalBusiness.get().removeAdministrators(optionalUser.get());
+        userRepository.flush();
+        businessRepository.flush();
     }
 }

@@ -233,8 +233,21 @@ public class Business {
      * @param user An user who was an administrator for this business.
      */
     public void removeAdministrators(User user) {
-        this.administrators.remove(user);
-        user.getBusinessesAdministeredObjects().remove(this);
+        int id = user.getId();
+        for (int i = 0; i < administrators.size(); i++){
+            if (administrators.get(i).getId() == id){
+                this.administrators.remove(i);
+            }
+        }
+        user.removeABusinessesAdministeredObjects(this);
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setAdministrators(List<User> administrators) {
+        this.administrators = administrators;
     }
 
     /**
@@ -249,13 +262,5 @@ public class Business {
             }
         }
         return false;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setAdministrators(List<User> administrators) {
-        this.administrators = administrators;
     }
 }

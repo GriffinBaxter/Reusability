@@ -13,4 +13,7 @@ public class UserIdPayload {
     public int getUserId() {
         return userId;
     }
+
+    public UserIdPayload() {
+    }
 }
