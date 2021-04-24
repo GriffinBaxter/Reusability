@@ -214,7 +214,7 @@ public class InventoryItemResource {
         for (InventoryItem inventoryItem : inventoryList) {
             InventoryPayload newPayload = new InventoryPayload(
                     inventoryItem.getId(),
-                    inventoryItem.getProduct(),
+                    ProductPayload.convertProductToProductPayload(inventoryItem.getProduct()),
                     inventoryItem.getQuantity(),
                     inventoryItem.getPricePerItem(),
                     inventoryItem.getTotalPrice(),
