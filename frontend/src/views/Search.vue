@@ -24,10 +24,9 @@
       <div class="row mb-3">
 
         <!--order by nickname-->
-        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3"
+        <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3"
              @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
           <b>Nickname</b>
-          <i id="nickname-icon"></i>
         </div>
 
         <!--order by full name-->
@@ -104,6 +103,7 @@
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Navbar from "@/components/Navbar";
+
 export default {
   name: "Search",
   components: {
@@ -117,9 +117,12 @@ export default {
       addressAscending: false,
       rowsPerPage: 5,
       currentPage: 1,
-      maxPage: 2,
+      maxPage: 1,
       userList: [],
-      small: false
+      small: false,
+      totalRows: 0,
+      orderBy: "fullNameASC",
+      lastQuery: "PAGEHASBEENREFRESHED" //To allow for a comparison with the previous query when there is no previous query
     }
   },
 
@@ -146,7 +149,8 @@ export default {
     updatePage(event, newPageNum) {
       event.preventDefault();
       this.currentPage = newPageNum;
-      this.buildRows();
+      history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`)
+      this.requestUsers().then(() => this.buildRows())
     },
 
     /**
@@ -167,28 +171,40 @@ export default {
     async requestUsers() {
 
       const urlParams = new URLSearchParams(window.location.search);
-      const query = urlParams.get('searchQuery');
-      await Api.searchUsers(query).then(response => {
+      const query = urlParams.get('searchQuery').trim();
+
+      const ordering = urlParams.get('orderBy');
+      let pageNum = parseInt(urlParams.get('page'))-1;
+      this.currentPage = pageNum+1;
+
+      if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
+        console.log(this.lastQuery);
+        this.currentPage = 1;
+        pageNum = 0;
+        history.pushState({}, null, `/search?searchQuery=${query}&orderBy=${this.orderBy}&page=1`)
+      }
+      this.lastQuery = query;
+
+      await Api.searchUsers(query, ordering, pageNum).then(response => {
+
         this.userList = [...response.data];
-        // Order by nickname alphabetically by default
-        this.userList.sort(function (a, b) {
-          if (a.nickname < b.nickname) {
-            return -1;
-          }
-          if (a.nickname > b.nickname) {
-            return 1;
-          }
-          return 0;
-        });
-        this.maxPage = Math.ceil(this.userList.length / this.rowsPerPage)
+        if (this.userList.length <= 0) {
+          this.currentPage = 1;
+          this.maxPage = 1;
+          this.totalRows = 0;
+        } else {
+          this.maxPage = parseInt(response.headers['total-pages']);
+          this.totalRows = parseInt(response.headers['total-rows']);
+        }
+
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 401) {
           this.$router.push({path: '/invalidtoken'});
         } else {
+          //TODO Change these to actually handle 400 responses from backend
           this.$router.push({path: '/timeout'});
-          console.log(error.message);
         }
       })
     },
@@ -200,7 +216,7 @@ export default {
     search(event) {
       if (event.keyCode === 13) {
         const inputQuery = this.$refs.searchBar.value;
-        history.pushState({}, null, this.$route.path + `?searchQuery=${inputQuery}`);
+        history.pushState({}, null,  `/search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
         this.requestUsers().then(() => this.buildRows()).catch(
             (e) => console.log(e)
         );
@@ -212,7 +228,7 @@ export default {
      */
     searchClicked() {
       const inputQuery = this.$refs.searchBar.value;
-      history.pushState({}, null, this.$route.path + `?searchQuery=${inputQuery}`);
+      history.pushState({}, null, `/search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
       this.requestUsers().then(() => this.buildRows()).catch(
           (e) => console.log(e)
       );
@@ -224,7 +240,8 @@ export default {
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
-        this.buildRows()
+        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.requestUsers().then(() => this.buildRows())
       }
     },
 
@@ -234,7 +251,8 @@ export default {
     nextPage() {
       if (this.currentPage < this.maxPage) {
         this.currentPage += 1;
-        this.buildRows()
+        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.requestUsers().then(() => this.buildRows())
       }
     },
 
@@ -247,265 +265,88 @@ export default {
      */
     orderUsers(nickname, fullName, email, address) {
 
-      if (nickname) {
-        this.disableIcons()
-        if (this.nickAscending) {
-          this.userList.sort(function (a, b) {
-            if (a.nickname > b.nickname) {
-              return -1;
-            }
-            if (a.nickname < b.nickname) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('nicknameIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-        } else {
-          this.userList.sort(function (a, b) {
-            if (a.nickname < b.nickname) {
-              return -1;
-            }
-            if (a.nickname > b.nickname) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('nicknameIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
 
+      if (nickname) {
+        this.disableIcons();
+        if (this.nickAscending) {
+          this.orderBy = "nicknameASC";
+          const icon = document.createElement('font-awesome-icon');
+          //icon.setAttribute('icon', 'search');
+          icon.setAttribute('class', 'float-end');
+          icon.setAttribute(':icon', '[\'fas\', \'search\']')
+          document.getElementById('order-by-nickname-div').appendChild(icon);
+
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameASC&page=${this.currentPage}`);
+        } else {
+          this.orderBy = "nicknameDESC";
+          const icon = document.createElement('font-awesome-icon');
+          //icon.setAttribute('icon', 'search');
+          icon.setAttribute('class', 'float-end');
+          icon.setAttribute(':icon', '[\'fas\', \'search\']')
+          document.getElementById('order-by-nickname-div').appendChild(icon);
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameDESC&page=${this.currentPage}`);
+
+        }
         this.nickAscending = !this.nickAscending;
         this.nameAscending = false;
         this.emailAscending = false;
         this.addressAscending = false;
-        this.joinedAscending = false;
+        this.requestUsers().then(() => this.buildRows());
 
-        this.buildRows();
       } else if (fullName) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.nameAscending) {
-          this.userList.sort(function (a, b) {
-            if (a.firstName > b.firstName) {
-              return -1;
-            }
-            if (a.firstName < b.firstName) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-        } else {
-          this.userList.sort(function (a, b) {
-            if (a.firstName < b.firstName) {
-              return -1;
-            }
-            if (a.firstName > b.firstName) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
+          this.orderBy = "fullNameASC";
+          document.getElementById('name-icon').setAttribute('class','fas fa-chevron-up float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=fullNameASC&page=${this.currentPage}`);
 
+        } else {
+          this.orderBy = "fullNameDESC";
+          document.getElementById('name-icon').setAttribute('class','fas fa-chevron-down float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=fullNameDESC&page=${this.currentPage}`)
+
+        }
         this.nickAscending = false;
         this.nameAscending = !this.nameAscending;
         this.emailAscending = false;
         this.addressAscending = false;
-        this.joinedAscending = false;
+        this.requestUsers().then(() => this.buildRows());
 
-        this.buildRows();
       } else if (email) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.emailAscending) {
-          this.userList.sort(function (a, b) {
-            if (a.email > b.email) {
-              return -1;
-            }
-            if (a.email < b.email) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('emailIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+          this.orderBy = "emailASC";
+          document.getElementById('email-icon').setAttribute('class','fas fa-chevron-up float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=emailASC&page=${this.currentPage}`);
         } else {
-          this.userList.sort(function (a, b) {
-            if (a.email < b.email) {
-              return -1;
-            }
-            if (a.email > b.email) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('emailIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
+          this.orderBy = "emailDESC";
+          document.getElementById('email-icon').setAttribute('class','fas fa-chevron-down float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=emailDESC&page=${this.currentPage}`)
 
+        }
         this.nickAscending = false;
         this.nameAscending = false;
         this.emailAscending = !this.emailAscending;
         this.addressAscending = false;
-        this.joinedAscending = false;
+        this.requestUsers().then(() => this.buildRows());
 
-        this.buildRows();
       } else if (address) {
-        this.disableIcons()
-
+        this.disableIcons();
         if (this.addressAscending) {
-          this.userList.sort(function (a, b) {
+          this.orderBy = "addressASC";
+          document.getElementById('address-icon').setAttribute('class','fas fa-chevron-up float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressASC&page=${this.currentPage}`);
 
-            let city = "";
-            if (a.homeAddress.city) {
-              city = a.homeAddress.city;
-            }
-            let region = "";
-            if (a.homeAddress.region) {
-              region = a.homeAddress.region;
-            }
-            let country = "";
-            if (a.homeAddress.country) {
-              country = a.homeAddress.country;
-            }
-
-            let address1 = "";
-            if (city !== "") {
-              address1 = address1.concat(city);
-            }
-            if (city !== "" && region !== "") {
-              address1 = address1.concat(", ", region);
-            } else {
-              address1 = address1.concat(region);
-            }
-
-            if (region !== "" && country !== "") {
-              address1 = address1.concat(", ", country);
-            } else if (city !== "" && country !== "") {
-              address1 = address1.concat(", ", country);
-            } else {
-              address1 = address1.concat(country);
-            }
-
-            city = "";
-            if (b.homeAddress.city) {
-              city = b.homeAddress.city;
-            }
-            region = "";
-            if (b.homeAddress.region) {
-              region = b.homeAddress.region;
-            }
-            country = "";
-            if (b.homeAddress.country) {
-              country = b.homeAddress.country;
-            }
-
-            let address2 = "";
-            if (city !== "") {
-              address2 = address2.concat(city);
-            }
-            if (city !== "" && region !== "") {
-              address2 = address2.concat(", ", region);
-            } else {
-              address2 = address2.concat(region);
-            }
-
-            if (region !== "" && country !== "") {
-              address2 = address2.concat(", ", country);
-            } else if (city !== "" && country !== "") {
-              address2 = address2.concat(", ", country);
-            } else {
-              address2 = address2.concat(country);
-            }
-
-            if (address1 > address2) {
-              return -1;
-            }
-            if (address1 < address2) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.userList.sort(function (a, b) {
-
-            let city = "";
-            if (a.homeAddress.city) {
-              city = a.homeAddress.city;
-            }
-            let region = "";
-            if (a.homeAddress.region) {
-              region = a.homeAddress.region;
-            }
-            let country = "";
-            if (a.homeAddress.country) {
-              country = a.homeAddress.country;
-            }
-
-            let address1 = "";
-            if (city !== "") {
-              address1 = address1.concat(city);
-            }
-            if (city !== "" && region !== "") {
-              address1 = address1.concat(", ", region);
-            } else {
-              address1 = address1.concat(region);
-            }
-
-            if (region !== "" && country !== "") {
-              address1 = address1.concat(", ", country);
-            } else if (city !== "" && country !== "") {
-              address1 = address1.concat(", ", country);
-            } else {
-              address1 = address1.concat(country);
-            }
-
-            city = "";
-            if (b.homeAddress.city) {
-              city = b.homeAddress.city;
-            }
-            region = "";
-            if (b.homeAddress.region) {
-              region = b.homeAddress.region;
-            }
-            country = "";
-            if (b.homeAddress.country) {
-              country = b.homeAddress.country;
-            }
-
-            let address2 = "";
-            if (city !== "") {
-              address2 = address2.concat(city);
-            }
-            if (city !== "" && region !== "") {
-              address2 = address2.concat(", ", region);
-            } else {
-              address2 = address2.concat(region);
-            }
-
-            if (region !== "" && country !== "") {
-              address2 = address2.concat(", ", country);
-            } else if (city !== "" && country !== "") {
-              address2 = address2.concat(", ", country);
-            } else {
-              address2 = address2.concat(country);
-            }
-
-            if (address1 < address2) {
-              return -1;
-            }
-            if (address1 > address2) {
-              return 1;
-            }
-            return 0;
-          })
-          document.getElementById('addressIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+          this.orderBy = "addressDESC";
+          document.getElementById('address-icon').setAttribute('class','fas fa-chevron-down float-end');
+          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressDESC&page=${this.currentPage}`);
         }
-
         this.nickAscending = false;
         this.nameAscending = false;
         this.emailAscending = false;
-        this.addressAscending = !this.addressAscending;
-        this.joinedAscending = false;
-
-        this.buildRows();
+        this.addressAscending =  !this.addressAscending;
+        this.requestUsers().then(() => this.buildRows());
       }
 
     },
@@ -514,10 +355,13 @@ export default {
      * Disables all ascending or descending icons in the top column headers.
      */
     disableIcons() {
-      document.getElementById('nicknameIcon').setAttribute('class', '');
-      document.getElementById('nameIcon').setAttribute('class', '');
-      document.getElementById('emailIcon').setAttribute('class', '');
-      document.getElementById('addressIcon').setAttribute('class', '');
+
+      // if (document.getElementById('order-by-nickname-div').childElementCount > 1) {
+      //   document.getElementById('order-by-nickname-div').removeChild(document.getElementById('order-by-nickname-div').lastChild);
+      // }
+      document.getElementById('name-icon').setAttribute('class', '');
+      document.getElementById('email-icon').setAttribute('class', '');
+      document.getElementById('address-icon').setAttribute('class', '');
 
     },
 
@@ -527,9 +371,9 @@ export default {
     buildRows() {
       const self = this;
       this.clearRows();
-      let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
-      let startIndex = (this.currentPage - 1) * this.rowsPerPage;
-      const outerContainer = document.getElementById('outerContainer');
+      let limit = this.rowsPerPage + (this.currentPage-1) * this.rowsPerPage;
+      let startIndex = 0;
+      const outerContainer = document.getElementById('outer-container');
       const lastChild = outerContainer.lastChild;
 
       if (limit > this.userList.length) {
@@ -570,6 +414,8 @@ export default {
           const nameCol = document.createElement("div");
           nameCol.setAttribute("class", `${classInput}`);
           nameCol.setAttribute("id", `${i}-name`);
+
+          //TODO test this as not sure if we want this still -> taken from dev branch
           if (this.userList[i].middleName) {
             nameCol.innerText = this.userList[i].firstName + " " + this.userList[i].middleName + " " + this.userList[i].lastName;
           } else {
@@ -590,9 +436,8 @@ export default {
 
           const address = this.getAddress(this.userList[i]);
 
-          addressCol.innerText = address
+          addressCol.innerText = address;
           userRow.appendChild(addressCol);
-
 
             userRow.addEventListener("click", function(event) {
               let path;
@@ -624,9 +469,11 @@ export default {
           }
       }
 
-      let showingStart = this.userList.length ? startIndex + 1 : 0;
+      let showingStart = this.userList.length ? (this.currentPage*this.rowsPerPage)-this.rowsPerPage+1 : 0;
 
-      const showingString = `Showing ${showingStart}-${limit} of ${this.userList.length} results`;
+      let lastEntryOfPage = limit+(this.currentPage-1)*this.rowsPerPage;
+
+      const showingString = `Showing ${showingStart}-${lastEntryOfPage} of ${this.totalRows} results`;
       const showingRow = document.createElement('div');
       showingRow.setAttribute("class", "row");
       showingRow.setAttribute("id", `showingRow`);
@@ -657,6 +504,7 @@ export default {
      * Creates a string which represents a user's address.
      */
     getAddress(user) {
+
       let city = "";
       if (user.homeAddress.city) {
         city = user.homeAddress.city;
@@ -746,6 +594,15 @@ export default {
  */
 .all-but-footer {
   min-height: calc(100vh - 240px);
+}
+
+.page-link {
+  color: #1EBA8C;
+}
+
+.page-item.active .page-link {
+  background-color: #1EBA8C;
+  border: 1px solid #1EBA8C;
 }
 
 </style>

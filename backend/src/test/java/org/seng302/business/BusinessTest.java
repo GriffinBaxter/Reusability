@@ -14,7 +14,6 @@ import java.time.Month;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
 
 /**
  * BusinessAccount test class
@@ -173,32 +172,33 @@ public class BusinessTest {
 
     /**
      * Test to see when a user is one of administrator, the function return true
-     *
      * @throws Exception business or user creat fail
      */
     @Test
     public void testAnUserIsAdministrator() throws Exception {
-        User user = new User("testfirst",
-                "testlast",
-                "testmiddle",
-                "testnick",
-                "testbiography",
-                "testemail@email.com",
-                LocalDate.of(2020, 2, 2).minusYears(13),
-                "0271316",
-                address,
-                "Testpassword123!",
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)),
-                Role.USER);
-        Business business = new Business(user.getId(),
+        Business business = new Business(
+                user.getId(),
                 "name",
                 "description",
                 address,
                 BusinessType.RETAIL_TRADE,
-                LocalDateTime.of(LocalDate.of(2000, 2, 2),
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user);
+                user
+        );
+        User user = new User("first",
+                "last",
+                "middle",
+                "nick",
+                "biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
 
         business.addAdministrators(user);
         assertTrue(business.isAnAdministratorOfThisBusiness(user));
@@ -206,46 +206,34 @@ public class BusinessTest {
 
     /**
      * Test to see when a user is not one of administrator, the function return false
-     *
      * @throws Exception business or user creat fail
      */
     @Test
     public void testAnUserIsNotAdministrator() throws Exception {
-        User user = new User("testfirst",
-                "testlast",
-                "testmiddle",
-                "testnick",
-                "testbiography",
-                "testemail@email.com",
-                LocalDate.of(2020, 2, 2).minusYears(13),
-                "0271316",
-                address,
-                "Testpassword123!",
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)),
-                Role.USER);
-        User anotherUser = new User("first",
-                "last",
-                "middle",
-                "nick",
-                "bio",
-                "example@example.com",
-                LocalDate.of(2021, 1, 1).minusYears(13),
-                "123456789",
-                address,
-                "Password123!",
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0)),
-                Role.USER);
-        Business business = new Business(user.getId(),
+        Business business = new Business(
+                user.getId(),
                 "name",
                 "description",
                 address,
                 BusinessType.RETAIL_TRADE,
-                LocalDateTime.of(LocalDate.of(2000, 2, 2),
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user);
+                user
+        );
+        User user = new User("first",
+                "last",
+                "middle",
+                "nick",
+                "biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
 
-        assertFalse(business.isAnAdministratorOfThisBusiness(anotherUser));
+        assertFalse(business.isAnAdministratorOfThisBusiness(user));
     }
 }
