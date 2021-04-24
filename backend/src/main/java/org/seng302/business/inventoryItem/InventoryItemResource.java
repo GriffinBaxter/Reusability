@@ -76,10 +76,10 @@ public class InventoryItemResource {
      * @return A list of InventoryPayload objects representing the inventory items belonging to the given business.
      */
     @GetMapping("/businesses/{id}/inventory/")
-    public ResponseEntity<List<InventoryPayload>> retrieveInventoryPage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                                                     @PathVariable Integer id,
-                                                                     @RequestParam(defaultValue = "productIdASC") String orderBy,
-                                                                     @RequestParam(defaultValue = "0") String page
+    public ResponseEntity<List<InventoryItemPayload>> retrieveInventoryPage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                                                            @PathVariable Integer id,
+                                                                            @RequestParam(defaultValue = "productIdASC") String orderBy,
+                                                                            @RequestParam(defaultValue = "0") String page
     ){
 
         logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
@@ -136,7 +136,7 @@ public class InventoryItemResource {
                 sortBy = Sort.by(Sort.Order.asc("quantity").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
                 break;
             case "quantityDESC":
-                sortBy = Sort.by(Sort.Order.desc("recommendedRetailPrice").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("quantity").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
                 break;
             case "pricePerItemASC":
                 sortBy = Sort.by(Sort.Order.asc("pricePerItem").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
@@ -195,7 +195,7 @@ public class InventoryItemResource {
 
         logger.info("Product Inventory Retrieval Success - 200 [OK] - Product inventory retrieved for business with ID {}", id);
 
-        List<InventoryPayload> inventoryItemPayloads = convertToPayload(pagedResult.getContent());
+        List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(pagedResult.getContent());
 
         logger.debug("Products retrieved for business with ID {}: {}", id, inventoryItemPayloads);
 
@@ -209,10 +209,10 @@ public class InventoryItemResource {
      * @param inventoryList The given list of product inventory items
      * @return A list of inventoryPayloads.
      */
-    public List<InventoryPayload> convertToPayload(List<InventoryItem> inventoryList) {
-        List<InventoryPayload> payloads = new ArrayList<>();
+    public List<InventoryItemPayload> convertToPayload(List<InventoryItem> inventoryList) {
+        List<InventoryItemPayload> payloads = new ArrayList<>();
         for (InventoryItem inventoryItem : inventoryList) {
-            InventoryPayload newPayload = new InventoryPayload(
+            InventoryItemPayload newPayload = new InventoryItemPayload(
                     inventoryItem.getId(),
                     ProductPayload.convertProductToProductPayload(inventoryItem.getProduct()),
                     inventoryItem.getQuantity(),

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -28,11 +29,14 @@ import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
@@ -81,6 +85,8 @@ public class InventoryItemResourceIntegrationTests {
     private Business business;
 
     private Product product;
+
+    private InventoryItem inventoryItem;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -146,6 +152,19 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
         );
+
+        inventoryItem = new InventoryItem(
+                product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 1, 1),
+                LocalDate.of(2021, 1, 1),
+                LocalDate.of(2022, 1, 1),
+                LocalDate.of(2022, 1, 1)
+        );
+        inventoryItem.setId(4);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new InventoryItemResource(
                 inventoryItemRepository, productRepository, businessRepository, userRepository))
@@ -718,5 +737,37 @@ public class InventoryItemResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+//---------------------------------- Tests for /businesses/{id}/inventory/ endpoint ------------------------------------
 
+    /**
+     * Tests that an OK status and a list of product payloads is received when the business ID in the
+     * /businesses/{id}/inventory/ API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        business.addAdministrators(user);
+
+        // when
+        List<InventoryItem> list = List.of();
+        Page<InventoryItem> pagedResponse = new PageImpl(list);
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sortBy);
+        when(inventoryItemRepository.findInventoryItemsByBusinessId(3, paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
 }
