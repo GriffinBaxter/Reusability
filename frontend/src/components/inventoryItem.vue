@@ -2,7 +2,7 @@
   <div class="card border-secondary mb-3 px-2 py-2 shadow">
     <div class="row no-gutters">
       <div class="col-md-3">
-        <img class="card-img" src="../../public/apples.jpg">
+        <img class="card-img" :src="require('../../public/apples.jpg')" id="inventory-item-image">
       </div>
       <div class="col-md-9">
         <div class="card-body px-3 py-3">
@@ -44,51 +44,62 @@
 export default {
   name: "InventoryItem",
   props: {
+    image: {
+      type: String,
+      default: "../../public/apples.jpg",
+      required: false
+    },
     productName: {
       type: String,
-      default: "Watties Baked Beans - 420g can",
+      default: "NAME",
       required: true
     },
     productId: {
       type: String,
-      default: "WATT-420-BEANS",
+      default: "ID",
       required: true
     },
     quantity: {
       type: Number,
-      default: null,
+      // eslint-disable-next-line vue/require-valid-default-prop
+      default: "None",
       required: true
     },
     pricePerItem: {
       type: Number,
-      default: null,
+      // eslint-disable-next-line vue/require-valid-default-prop
+      default: "None",
       required: false
     },
     totalPrice: {
       type: Number,
-      default: null,
+      // eslint-disable-next-line vue/require-valid-default-prop
+      default: "None",
       required: false
     },
     manufactured: {
-      type: Date,
-      default: null,
+      type: String,
+      default: "None",
       required: false
     },
     sellBy: {
-      type: Date,
-      default: null,
+      type: String,
+      default: "None",
       required: false
     },
     bestBefore: {
-      type: Date,
-      default: null,
+      type: String,
+      default: "None",
       required: false
     },
     expires: {
-      type: Date,
-      default: null,
+      type: String,
+      default: "None",
       required: true
     }
+  },
+  mounted() {
+    document.getElementById("inventory-item-image").src = this.image;
   }
 }
 </script>

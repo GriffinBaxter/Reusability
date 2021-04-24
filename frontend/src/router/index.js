@@ -134,6 +134,14 @@ const routes = [
         component: () => import('../views/Products')
     },
     {
+        path: '/businesses/:id?/inventory',
+        name: 'Inventory',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/Inventory')
+    },
+    {
         path: '*',
         name: 'catchAll',
         component: () => import('../views/Login')
