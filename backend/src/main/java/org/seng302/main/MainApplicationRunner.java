@@ -259,7 +259,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                 "T",
                 "Fran",
                 "Biography",
-                "francisca.benitez@example.com",
+                "francisca.beni@example.com",
                 LocalDate.of(2006, 2, 2),
                 "0271316",
                 address1,
@@ -286,5 +286,86 @@ public class MainApplicationRunner implements ApplicationRunner {
                 Role.USER);
         newUser7 = userRepository.save(newUser7);
         logger.info("Added seventh test user: {}", newUser7);
+
+
+        Business business = new Business(
+                newUser7.getId(),
+                "example name",
+                "some text",
+                newUser7.getHomeAddress(),
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                newUser7
+        );
+        businessRepository.save(business);
+
+        Product product1 = new Product(
+                "APPLE",
+                business,
+                "Apple",
+                "A Description",
+                "Manufacturer",
+                21.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        productRepository.save(product1);
+
+
+        Product product2 = new Product(
+                "APP-LE",
+                business,
+                "Beans",
+                "Description",
+                "A Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2020, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        productRepository.save(product2);
+        Product product3 = new Product(
+                "APP-LE3",
+                business,
+                "Beans",
+                "Description",
+                "A Manufacturer",
+                11.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        productRepository.save(product3);
+        Product product4 = new Product(
+                "DUCT",
+                business,
+                "Duct-Tape",
+                "Brand new Description",
+                "A New Manufacturer",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 1),
+                        LocalTime.of(0, 0))
+        );
+        productRepository.save(product4);
+        Product product5 = new Product(
+                "PROD",
+                business,
+                "Product",
+                "New Description",
+                "New Manufacturer",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 1),
+                        LocalTime.of(1, 0))
+        );
+        productRepository.save(product5);
+        Product product6 = new Product(
+                "PROD1",
+                business,
+                "Product",
+                "New Description",
+                "New Manufacturer",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 1),
+                        LocalTime.of(1, 0))
+        );
+        productRepository.save(product6);
     }
 }

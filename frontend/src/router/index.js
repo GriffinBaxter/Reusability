@@ -88,6 +88,22 @@ const routes = [
         component: () => import('../views/NoSuchBusiness.vue')
     },
     {
+        path: '/pageDoesNotExist',
+        name: 'NoSuchPage',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/NoSuchPage.vue')
+    },
+    {
+        path: '/forbidden',
+        name: 'Forbidden',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/Forbidden.vue')
+    },
+    {
         path: '/timeout',
         name: 'ServerTimeout',
         meta: {
@@ -126,12 +142,12 @@ const routes = [
         component: () => import('../views/BusinessRegistration.vue')
     },
     {
-        path: '/businesses/:id?/products',
-        name: 'Products',
+        path: '/businessProfile/:id?/productCatalogue',
+        name: 'ProductCatalogue',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import('../views/Products')
+        component: () => import('../views/ProductCatalogue')
     },
     {
         path: '*',

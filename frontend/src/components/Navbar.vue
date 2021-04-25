@@ -69,7 +69,7 @@
                       </li>
                       <li class="nav-item">
                         <!--                        TODO Change this to dynamic ID-->
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/businesses/3/products" tabindex="-1">
+                        <router-link :class="['nav-link', isActivePath('/businesses/15/products')]" to="/" tabindex="-1">
                           Catalogue
                         </router-link>
                       </li>
