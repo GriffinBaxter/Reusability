@@ -317,15 +317,14 @@ export default {
     })
   },
 
-  searchUsers: (query) => {
-    return instance.get(`/users/search?searchQuery=${query}`, {
+  searchUsers: (query, orderBy, page) => {
+    return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}`, {
       withCredentials: true
     })
   },
 
   // Sends a post request to the backend with a new business object to store
   addNewBusiness: (business) => instance.post('/businesses', {...business.data}, {withCredentials: true}),
-
 
   sortProducts: (businessID) => {
     return instance.get(`/businesses/${businessID}/products?orderBy=productIdASC&page=0`,{
@@ -346,9 +345,29 @@ export default {
   // /users/{id}/revokeAdmin for readability purposes.
   revokeAdmin: (userId) => {
     return instance.put(`/users/${userId}/revokeAdmin`, {}, {
-    withCredentials: true
+      withCredentials: true
   })
   },
+
+  getBusiness: (businessID) => {
+    return instance.get(`/businesses/${businessID}`,{
+      withCredentials: true
+    })
+  },
+
+  makeAdministrator: (businessesId, userId) => {
+    return instance.put(`/businesses/${businessesId}/makeAdministrator`, {
+      userId},{
+      withCredentials: true
+    })
+  },
+
+  removeAdministrator: (businessesId, userId) => {
+    return instance.put(`/businesses/${businessesId}/removeAdministrator`, {
+      userId},{
+      withCredentials: true
+    })
+  }
 
   // Sends a post request to the backend with a new product object to store
   addNewProduct: (businessID, product) => instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true}),

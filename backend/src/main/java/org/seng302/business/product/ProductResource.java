@@ -135,8 +135,8 @@ public class ProductResource {
     public ResponseEntity<List<ProductPayload>> retrieveProducts(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer id,
-            @RequestParam String orderBy,
-            @RequestParam String page
+            @RequestParam(defaultValue = "productIdASC") String orderBy,
+            @RequestParam(defaultValue = "0") String page
     ) {
         logger.debug("Product retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 

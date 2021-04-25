@@ -223,10 +223,21 @@ public class Address {
         );
     }
 
+    /**
+     * Convert an Address object into an AddressPayloadSecure i.e. no street number, street name or post code
+     * @return an AddressPayloadSecure object
+     */
+    public AddressPayloadSecure toAddressPayloadSecure() throws Exception {
+        return new AddressPayloadSecure(
+                this.city,
+                this.region,
+                this.country
+        );
+    }
 
     /**
-     * Make an address object to json form.
-     * @return a string contain address info in json form
+     * Make an address object to JSON string form.
+     * @return a string contain address info in JSON form
      */
     @Override
     public String toString() {
@@ -239,4 +250,26 @@ public class Address {
                 "\"postcode\":\""     + postcode     + "\"" +
                 "}";
     }
+
+    /**
+     * Make an address object to secure JSON string form.
+     * @return a string containing only some address info in JSON form (if you are not that user)
+     */
+
+    public String toSecureString() {
+        return "{" +
+                "\"city\":\""        + city         + "\"," +
+                "\"region\":\""       + region       + "\"," +
+                "\"country\":\""      + country      + "\"" +
+                "}";
+    }
+
+    /**
+     * Return the object represented in a single line readable string form
+     * @return a string containing address info in string form
+     */
+    public String toOneLineString() {
+        return streetNumber + ", " + streetName + ", " + city + ", " + region + ", " + country + ", " + postcode;
+    }
+
 }
