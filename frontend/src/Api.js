@@ -370,7 +370,9 @@ export default {
   },
 
   // Sends a post request to the backend with a new product object to store
-  addNewProduct: (businessID, product) => instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true})
+  addNewProduct: (businessID, product) => {
+    return instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true})
+  }
 
   // Usage examples from original file:
   //

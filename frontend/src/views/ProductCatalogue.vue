@@ -1,26 +1,22 @@
 <template>
-  <div id="outerContainer" class="container">
+  <div>
+    <navbar></navbar>
 
-    <navbar/>
+  <div id="outerContainer" class="container">
 
     <div id="body" class="container all-but-footer">
 
       <div class="row mt-3">
         <h2 align="center">Product Catalogue</h2>
+        <h6 align="center">{{ addedMessage }}</h6>
       </div>
 
       <div class="row mb-3">
         <div class="col">
-            <button class="btn btn-outline-primary float-end" tabindex="2" id="createProductButton">Create Product</button>
+          <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end mt-4" tabindex="2"
+                  @click="modal.show()">Create Product</button>
         </div>
       </div>
-    <div class="row mb-3">
-      <div class="col">
-        <!--button to open create product modal-->
-        <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end mt-4" tabindex="2"
-                @click="modal.show()">Create Product</button>
-      </div>
-    </div>
 
       <div id="productTable">
         <div class="row mb-3">
@@ -94,7 +90,6 @@
       </div>
     </div>
 
-    <Footer></Footer>
     <!--create product modal-->
     <div class="modal fade" ref="CreateProductModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -155,10 +150,10 @@
               </div>
               <!--toast error-->
               <div class="form-group">
-              <div id="registration-error" ref="registration-error" v-if="toastErrorMessage" class="alert alert-danger"
-                   role="alert">
-                <label>{{ toastErrorMessage }}</label>
-              </div>
+                <div id="registration-error" ref="registration-error" v-if="toastErrorMessage" class="alert alert-danger"
+                     role="alert">
+                  <label>{{ toastErrorMessage }}</label>
+                </div>
               </div>
             </form>
           </div>
@@ -172,6 +167,8 @@
       </div>
     </div>
 
+    </div>
+    <Footer></Footer>
 
   </div>
 </template>
@@ -238,6 +235,9 @@ export default {
       // Toast related variables
       toastErrorMessage: "",
       cannotProceed: false,
+
+      // Message to display that product has been added to catalogue
+      addedMessage: "",
     }
   },
   methods: {
@@ -347,6 +347,8 @@ export default {
      *
      */
     previousPage() {
+      this.addedMessage = ""; // Clear product added message, so it doesn't stick around.
+
       if (this.currentPage > 1) {
         this.currentPage -= 1;
         this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
@@ -359,6 +361,8 @@ export default {
      *
      */
     nextPage() {
+      this.addedMessage = ""; // Clear product added message, so it doesn't stick around.
+
       if (this.currentPage < this.maxPage) {
         this.currentPage += 1;
         this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
@@ -375,6 +379,8 @@ export default {
      * @param created Boolean, whether to order by created date
      */
     orderProducts(id, name, manufacturer, recommendedRetailPrice, created) {
+
+      this.addedMessage = ""; // Clear product added message, so it doesn't stick around.
 
       if (id) {
         this.disableIcons()
@@ -723,18 +729,49 @@ export default {
         recommendedRetailPrice: this.recommendedRetailPrice,
       }
 
-      const businessID = this.$route.params.id;
       const product = new Product(productData);
 
       /*
        * Add the Product to the database by sending an API request to the backend to store the product's information.
        * Raise any errors and ensure they are displayed on the UI.
        */
-      Api.addNewProduct(businessID, product
+      Api.addNewProduct(this.businessId, product
       ).then((res) => {
             if (res.status === 201) {
-              this.modal.hide()
-              this.$router.push('/businesses/'+businessID+'/products');
+              this.modal.hide();
+
+              // Set message so user knows product has been added.
+              this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
+
+              // Reset product id related variables
+              this.productID = "";
+              this.productIDErrorMsg = "";
+
+              // Reset product name related variables
+              this.productName = "";
+              this.productNameErrorMsg = "";
+
+              // Reset recommended retail price related variables
+              this.recommendedRetailPrice = "";
+              this.recommendedRetailPriceErrorMsg = "";
+
+              // Reset product description related variables
+              this.description = "";
+              this.descriptionErrorMsg = "";
+
+              // Reset product manufacturer related variables
+              this.manufacturer = "";
+              this.manufacturerErrorMsg = "";
+
+              // Reset toast related variables
+              this.toastErrorMessage = "";
+              this.cannotProceed = false;
+
+              this.requestProducts().then(
+                  () => this.buildRows()
+              ).catch(
+                  (e) => console.log(e)
+              )
             }
           }
       ).catch((error) => {
@@ -743,7 +780,7 @@ export default {
           if (error.response.status === 400) {
             this.toastErrorMessage = '400 Bad request; invalid product data';
           } else if (error.response.status === 403) {
-            this.toastErrorMessage = 'User is not an administer of this business.'
+            this.toastErrorMessage = 'User is not an administer of this business.';
           } else {
             this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
           }
@@ -830,6 +867,10 @@ export default {
 
 #create-product-button:focus {
   background-color: transparent;
+  color: #1EBA8C;
+}
+
+h6 {
   color: #1EBA8C;
 }
 
