@@ -196,8 +196,14 @@ export default {
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 400) {
+          this.$router.push({path: '/pageDoesNotExist'});
         } else if (error.response.status === 401) {
           this.$router.push({path: '/invalidtoken'});
+        } else if (error.response.status === 403) {
+          this.$router.push({path: '/forbidden'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noBusiness'});
         } else {
           this.$router.push({path: '/timeout'});
           console.log(error.message);
