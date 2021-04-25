@@ -174,7 +174,7 @@ export default {
       // This is used to ensure that the orderBy object provided has the orderBy and isAscending properties and of the correct type.
       validator: orderByOverride => {
         if (orderByOverride.orderBy && orderByOverride.isAscending) {
-          return typeof orderByOverride.orderBy === 'string' && typeof orderByOverride.isAscending === 'boolean';
+          return typeof orderByOverride.orderBy === 'number' && typeof orderByOverride.isAscending === 'boolean';
         }
         return false;
       },
@@ -217,8 +217,8 @@ export default {
   },
   methods: {
     /**
-     *
-     * @param newPageNumber
+     * Given a new page number. The function will either emit an update current page event. Or update the table to show the new page.
+     * @param newPageNumber The 0 origin page number.
      */
     updateCurrentPage(newPageNumber) {
       // If the current page is controlled through the parent we notify the parent of the update that needs to occur.
