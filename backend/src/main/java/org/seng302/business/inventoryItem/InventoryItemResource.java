@@ -127,52 +127,96 @@ public class InventoryItemResource {
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
             case "productIdASC":
-                sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
                 break;
             case "productIdDESC":
-                sortBy = Sort.by(Sort.Order.desc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("productId").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
                 break;
             case "quantityASC":
-                sortBy = Sort.by(Sort.Order.asc("quantity").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("quantity").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "quantityDESC":
-                sortBy = Sort.by(Sort.Order.desc("quantity").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("quantity").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "pricePerItemASC":
-                sortBy = Sort.by(Sort.Order.asc("pricePerItem").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("pricePerItem").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "pricePerItemDESC":
-                sortBy = Sort.by(Sort.Order.desc("pricePerItem").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("pricePerItem").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "totalPriceASC":
-                sortBy = Sort.by(Sort.Order.asc("totalPrice").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("totalPrice").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "totalPriceDESC":
-                sortBy = Sort.by(Sort.Order.desc("totalPrice").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("totalPrice").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "manufacturedASC":
-                sortBy = Sort.by(Sort.Order.asc("manufactured").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("manufactured").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "manufacturedDESC":
-                sortBy = Sort.by(Sort.Order.desc("manufactured").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("manufactured").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "sellByASC":
-                sortBy = Sort.by(Sort.Order.asc("sellBy").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("sellBy").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "sellByDESC":
-                sortBy = Sort.by(Sort.Order.desc("sellBy").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("sellBy").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "bestBeforeASC":
-                sortBy = Sort.by(Sort.Order.asc("bestBefore").ignoreCase()).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("bestBefore").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "bestBeforeDESC":
-                sortBy = Sort.by(Sort.Order.desc("bestBefore").ignoreCase()).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("bestBefore").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "expiresASC":
-                sortBy = Sort.by(Sort.Order.asc("expires").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("expires").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             case "expiresDESC":
-                sortBy = Sort.by(Sort.Order.desc("expires").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("expires").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("productId")));
                 break;
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
