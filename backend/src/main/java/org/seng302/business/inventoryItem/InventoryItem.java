@@ -2,10 +2,13 @@ package org.seng302.business.inventoryItem;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.business.listing.Listing;
 import org.seng302.business.product.Product;
+import org.seng302.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Class for inventory items
@@ -53,6 +56,10 @@ public class InventoryItem {
 
     @Column(name = "expires", nullable = false)
     private LocalDate expires;
+
+    @OneToMany(mappedBy = "inventoryItem", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<Listing> listings;
 
     /**
      * Constructor for inventory items.

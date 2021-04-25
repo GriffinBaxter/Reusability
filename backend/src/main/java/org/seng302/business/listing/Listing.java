@@ -2,12 +2,11 @@ package org.seng302.business.listing;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.address.Address;
+import org.seng302.business.inventoryItem.InventoryItem;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -24,6 +23,9 @@ public class Listing {
     private int id;
 
     // InventoryItem
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "inventoryItem_id", nullable = false)
+    private InventoryItem inventoryItem;
 
     @Column (name = "quantity", nullable = false)
     private int quantity;
@@ -48,7 +50,8 @@ public class Listing {
      * @param created the date the listing was created.
      * @param closes the date the listing closes, defaults to expiry date.
      */
-    public Listing(int quantity, double price, String moreInfo, LocalDateTime created, LocalDateTime closes) {
+    public Listing(InventoryItem inventoryItem, int quantity, double price, String moreInfo, LocalDateTime created, LocalDateTime closes) {
+        this.inventoryItem = inventoryItem;
         this.quantity = quantity;
         this.price = price;
         this.moreInfo = moreInfo;
@@ -56,50 +59,114 @@ public class Listing {
         this.closes = closes;
     }
 
+    /**
+     * get id
+     * @return id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * set id
+     * @param id id
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * get inventory item
+     * @return inventory item
+     */
+    public InventoryItem getInventoryItem() {
+        return inventoryItem;
+    }
+
+    /**
+     * set inventory item
+     * @param inventoryItem inventory item
+     */
+    public void setInventoryItem(InventoryItem inventoryItem) {
+        this.inventoryItem = inventoryItem;
+    }
+
+    /**
+     * get quantity
+     * @return quantity
+     */
     public int getQuantity() {
         return quantity;
     }
 
+    /**
+     * set quantity
+     * @param quantity quantity
+     */
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
+    /**
+     * get price
+     * @return price
+     */
     public double getPrice() {
         return price;
     }
 
+    /**
+     * set price
+     * @return price
+     */
     public void setPrice(double price) {
         this.price = price;
     }
 
+    /**
+     * get more info
+     * @return more info
+     */
     public String getMoreInfo() {
         return moreInfo;
     }
 
+    /**
+     * set More Info
+     * @param moreInfo more Info
+     */
     public void setMoreInfo(String moreInfo) {
         this.moreInfo = moreInfo;
     }
 
+    /**
+     * get Created
+     * @return Created
+     */
     public LocalDateTime getCreated() {
         return created;
     }
 
+    /**
+     * set Created
+     * @param created created
+     */
     public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
+    /**
+     * get closes
+     * @return closes
+     */
     public LocalDateTime getCloses() {
         return closes;
     }
 
+    /**
+     * set closes
+     * @param closes closes
+     */
     public void setCloses(LocalDateTime closes) {
         this.closes = closes;
     }
