@@ -385,10 +385,10 @@ export default {
       if (id) {
         this.disableIcons()
         if (this.productIdAscending) {
-          this.orderBy = "nameASC"
+          this.orderBy = "productIdASC"
           document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "nameDESC"
+          this.orderBy = "productIdDESC"
           document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
