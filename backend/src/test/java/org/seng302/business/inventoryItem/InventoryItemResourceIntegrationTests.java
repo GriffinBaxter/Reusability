@@ -760,10 +760,10 @@ public class InventoryItemResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 5, sortBy);
         when(inventoryItemRepository.findInventoryItemsByBusinessId(3, paging)).thenReturn(pagedResponse);
 
-        List<>
-        pagedResponse.get().forEach(xx -> {
-            System.out.println(xx);
-        });
+//        List<>
+//        pagedResponse.get().forEach(xx -> {
+//            System.out.println(xx);
+//        });
 
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
