@@ -1,82 +1,93 @@
 <template>
-  <div id="outerContainer" class="container" style="overflow: scroll">
+  <div id="outerContainer" class="container">
 
-    <div class="row mb-3">
-      <div class="col">
-          <button class="btn btn-outline-primary float-end mt-4" tabindex="2" id="createProductButton">Create Product</button>
+    <navbar/>
+
+    <div id="body" class="container all-but-footer">
+
+      <div class="row mt-3">
+        <h2 align="center">Product Catalogue</h2>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col">
+            <button class="btn btn-outline-primary float-end" tabindex="2" id="createProductButton">Create Product</button>
+        </div>
+      </div>
+
+      <div id="productTable">
+        <div class="row mb-3">
+          <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)"
+               @click="orderProducts(true, false , false, false, false)">
+            <b>ProductID</b>
+            <i id="productIdIcon"></i>
+          </div>
+          <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)"
+               @click="orderProducts(false, true , false, false, false)">
+            <b>Name</b>
+            <i id="nameIcon"></i>
+          </div>
+          <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)"
+               @click="orderProducts(false, false , true, false, false)">
+            <b>Manufacturer</b>
+            <i id="manufacturerIcon"></i>
+          </div>
+          <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="6" @keydown="orderEnter($event)"
+               @click="orderProducts(false, false , false, true, false)">
+            <b>Recommended Retail Price</b>
+            <i id="recommendedRetailPriceIcon"></i>
+          </div>
+          <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="7" @keydown="orderEnter($event)"
+               @click="orderProducts(false, false , false, false, true)">
+            <b>Created</b>
+            <i id="createdIcon"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <!-- Avert your eyes for this... -->
+          <nav aria-label="product-table-navigation" id="pagination-nav" class="float-end" v-if="maxPage > 1">
+            <ul class="pagination" id="pagination-ul">
+
+              <li :class="toggleDisableClass('page-item', currentPage-1 <= 0)">
+                <a class="page-link" href="#" @click.prevent="previousPage()">Previous</a>
+              </li>
+
+              <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{ currentPage - 2 }}</a>
+              </li>
+
+              <li class="page-item" v-if="currentPage-1 > 0">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{ currentPage - 1 }}</a>
+              </li>
+
+              <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{ currentPage }}</a>
+              </li>
+
+              <li class="page-item" v-if="currentPage+1 <= maxPage">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{ currentPage + 1 }}</a>
+              </li>
+
+              <li class="page-item" v-if="maxPage > 2 && currentPage <= 1">
+                <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{ currentPage + 2 }}</a>
+              </li>
+
+              <li :class="toggleDisableClass('page-item', currentPage+1 > maxPage)" id="next-button">
+                <a class="page-link" href="#" @click.prevent="nextPage()">Next</a>
+              </li>
+            </ul>
+
+          </nav>
+
+
+        </div>
       </div>
     </div>
 
-    <div class="row mb-3">
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3" @keydown="orderEnter($event)"
-           @click="orderProducts(true, false , false, false, false)">
-        <b>ProductID</b>
-        <i id="productIdIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4" @keydown="orderEnter($event)"
-           @click="orderProducts(false, true , false, false, false)">
-        <b>Name</b>
-        <i id="nameIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)"
-           @click="orderProducts(false, false , true, false, false)">
-        <b>Manufacturer</b>
-        <i id="manufacturerIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="6" @keydown="orderEnter($event)"
-           @click="orderProducts(false, false , false, true, false)">
-        <b>Recommended Retail Price</b>
-        <i id="recommendedRetailPriceIcon"></i>
-      </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="7" @keydown="orderEnter($event)"
-           @click="orderProducts(false, false , false, false, true)">
-        <b>Created</b>
-        <i id="createdIcon"></i>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <!-- Avert your eyes for this... -->
-        <nav aria-label="product-table-navigation" id="pagination-nav" class="float-end" v-if="maxPage > 1">
-          <ul class="pagination" id="pagination-ul">
-
-            <li :class="toggleDisableClass('page-item', currentPage-1 <= 0)">
-              <a class="page-link" href="#" @click.prevent="previousPage()">Previous</a>
-            </li>
-
-            <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{ currentPage - 2 }}</a>
-            </li>
-
-            <li class="page-item" v-if="currentPage-1 > 0">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{ currentPage - 1 }}</a>
-            </li>
-
-            <li class="page-item active" aria-current="page">
-              <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{ currentPage }}</a>
-            </li>
-
-            <li class="page-item" v-if="currentPage+1 <= maxPage">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{ currentPage + 1 }}</a>
-            </li>
-
-            <li class="page-item" v-if="maxPage > 2 && currentPage <= 1">
-              <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{ currentPage + 2 }}</a>
-            </li>
-
-            <li :class="toggleDisableClass('page-item', currentPage+1 > maxPage)" id="next-button">
-              <a class="page-link" href="#" @click.prevent="nextPage()">Next</a>
-            </li>
-          </ul>
-
-        </nav>
-
-
-      </div>
-    </div>
-
-
+    <Footer></Footer>
   </div>
 </template>
 
@@ -84,9 +95,16 @@
 
 import Api from '../Api';
 import Cookies from 'js-cookie';
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default {
-  name: "Products",
+  name: "ProductCatalogue",
+  components: {
+    Navbar,
+    Footer
+  },
+
   data() {
     return {
       productIdAscending: false,
@@ -95,7 +113,7 @@ export default {
       recommendedRetailPriceAscending: false,
       createdAscending: false,
 
-      businessId: 15,
+      businessId: 0,
       orderBy: "",
       rowsPerPage: 5,
       currentPage: 1,
@@ -131,7 +149,7 @@ export default {
     updatePage(event, newPageNum) {
       event.preventDefault();
       this.currentPage = newPageNum;
-      this.$router.push({path: `/businesses/${this.businessId}/products`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
+      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
       this.requestProducts();
     },
 
@@ -153,7 +171,7 @@ export default {
      * @return {Promise}
      */
     async requestProducts() {
-
+      this.businessId = parseInt(this.$route.params.id);
 
       this.orderBy = this.$route.query["orderBy"] ? this.$route.query["orderBy"] : "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) ? parseInt(this.$route.query["page"]) : 1
@@ -194,7 +212,7 @@ export default {
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
-        this.$router.push({path: `/businesses/${this.businessId}/products`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
+        this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
         this.requestProducts()
       }
     },
@@ -206,7 +224,7 @@ export default {
     nextPage() {
       if (this.currentPage < this.maxPage) {
         this.currentPage += 1;
-        this.$router.push({path: `/businesses/${this.businessId}/products`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
+        this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
         this.requestProducts()
       }
     },
@@ -306,7 +324,7 @@ export default {
       }
 
 
-      this.$router.push({path: `/businesses/${this.businessId}/products`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}});
+      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}});
       this.requestProducts();
 
     },
@@ -328,8 +346,8 @@ export default {
     buildRows() {
       this.clearRows();
       let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
-      const outerContainer = document.getElementById('outerContainer');
-      const lastChild = outerContainer.lastChild;
+      const container = document.getElementById('body');
+      const lastChild = container.lastChild;
 
       if (limit > this.productList.length) {
         limit = this.productList.length
@@ -337,7 +355,7 @@ export default {
 
       if (this.productList.length > 0) {
 
-        // 6 is the last index of the permanent items
+        // 7 is the last index of the permanent items
         let tabIndex = 7;
 
 
@@ -393,7 +411,7 @@ export default {
           createdCol.innerText = this.productList[i].created;
           productRow.appendChild(createdCol);
 
-          outerContainer.insertBefore(productRow, lastChild);
+          container.insertBefore(productRow, lastChild);
 
           tabIndex += 1;
 
@@ -413,7 +431,7 @@ export default {
       showingCol.innerText = showingString;
       showingRow.appendChild(showingCol);
 
-      outerContainer.insertBefore(showingRow, lastChild);
+      container.insertBefore(showingRow, lastChild);
 
     },
 
@@ -454,6 +472,8 @@ export default {
 
 <style scoped>
 
-
+.all-but-footer {
+  min-height: calc(100vh - 240px);
+}
 
 </style>

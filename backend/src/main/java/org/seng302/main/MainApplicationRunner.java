@@ -259,7 +259,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                 "T",
                 "Fran",
                 "Biography",
-                "francisca.benitez@example.com",
+                "francisca.beni@example.com",
                 LocalDate.of(2006, 2, 2),
                 "0271316",
                 address1,
