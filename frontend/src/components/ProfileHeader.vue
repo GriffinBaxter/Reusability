@@ -7,12 +7,13 @@
         <div class="col search-bar-positioning">
           <div class="input-group">
             <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
-            <button class="btn green-search-button" @click="searchClicked()"><font-awesome-icon icon="search" /></button>
+            <button class="btn green-search-button" @click="searchClicked()"><font-awesome-icon icon="search" ></font-awesome-icon></button>
           </div>
         </div>
       </div>
     </div>
 </template>
+
 
 <script>
 
@@ -27,7 +28,7 @@ export default {
       if (event.keyCode === 13) {
         // Enter pressed
         const inputQuery = this.$refs.searchInput.value;
-        this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}` }})
+        this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1" }})
       }
     },
 
@@ -36,7 +37,7 @@ export default {
      */
     searchClicked() {
       const inputQuery = this.$refs.searchInput.value;
-      this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}` }})
+      this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}})
     }
   }
 }

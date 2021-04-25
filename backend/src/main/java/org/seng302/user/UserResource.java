@@ -1,11 +1,17 @@
 package org.seng302.user;
 
 import org.seng302.address.Address;
+import org.seng302.main.Authorization;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
 import org.seng302.business.Business;
 import org.seng302.main.MainApplicationRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +22,14 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static org.seng302.main.Authorization.*;
 import static org.seng302.user.Role.*;
 
 /**
@@ -36,6 +45,7 @@ public class UserResource {
     private AddressRepository addressRepository;
 
     private Address address;
+
     private List<Business> businesses;
 
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
@@ -43,37 +53,6 @@ public class UserResource {
     public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
-    }
-
-    /**
-     * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
-     * @param sessionToken Session token
-     * @return User object
-     */
-    public User getUserVerifySession(String sessionToken) {
-        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
-        if (sessionToken == null || user.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Access token is missing or invalid"
-            );
-        } else {
-            return user.get();
-        }
-    }
-
-    /**
-     * Checks if the current user's role matches the role parameter.
-     * This method is useful for user authentication/identification.
-     * @param currentUser current user
-     * @param role Role being matched
-     * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
-     */
-    private boolean verifyRole(User currentUser, Role role) {
-        if (currentUser.getRole().equals(role)) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -207,14 +186,14 @@ public class UserResource {
      * @return User object if it exists
      */
     @GetMapping("/users/{id}")
-    public UserPayload retrieveUser(
+    public UserPayloadParent retrieveUser(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
     ) throws Exception {
-        getUserVerifySession(sessionToken);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> optionalSelectUser = userRepository.findById(id);
 
-        if (user.isEmpty()) {
+        if (optionalSelectUser.isEmpty()) {
             logger.error("Requested route does exist, but some part of the request is not acceptable");
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
@@ -223,102 +202,180 @@ public class UserResource {
             );
         }
 
+        User selectUser = optionalSelectUser.get();
+
+        //base info
         Role role = null;
+        LocalDate dateOfBirth = null;
+        String phoneNumber = null;
 
-        if (verifyRole(sessionToken, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            role = user.get().getRole();
-        }
-
-        List<Business> administrators = user.get().getBusinessesAdministeredObjects();
+        //stop payload loop
+        List<Business> administrators = new ArrayList<>();
+        administrators = selectUser.getBusinessesAdministeredObjects();
         for (Business administrator : administrators) {
             administrator.setAdministrators(new ArrayList<>());
         }
 
-        Address address = user.get().getHomeAddress();
-        AddressPayload addressPayload = new AddressPayload(
-                address.getStreetNumber(),
-                address.getStreetName(),
-                address.getCity(),
-                address.getRegion(),
-                address.getCountry(),
-                address.getPostcode()
-        );
-        logger.info("User Found - {}", user.get().toString());
-        return new UserPayload(
-                user.get().getId(),
-                user.get().getFirstName(),
-                user.get().getLastName(),
-                user.get().getMiddleName(),
-                user.get().getNickname(),
-                user.get().getBio(),
-                user.get().getEmail(),
-                user.get().getDateOfBirth(),
-                user.get().getPhoneNumber(),
-                addressPayload,
-                user.get().getCreated(),
-                role,
-                administrators
-        );
+        logger.info("User Found - {}", selectUser.toString());
+        if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
+
+            // If the current user is a DGAA, show the role of the user
+            if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+                role = selectUser.getRole();
+            }
+            // If the current ID matches the retrieved user's ID or the current user is the DGAA, return a normal UserPayload with everything in it.
+            return new UserPayload(
+                    selectUser.getId(),
+                    selectUser.getFirstName(),
+                    selectUser.getLastName(),
+                    selectUser.getMiddleName(),
+                    selectUser.getNickname(),
+                    selectUser.getBio(),
+                    selectUser.getEmail(),
+                    selectUser.getDateOfBirth(),
+                    selectUser.getPhoneNumber(),
+                    selectUser.getHomeAddress().toAddressPayload(),
+                    selectUser.getCreated(),
+                    role,
+                    administrators
+            );
+        } else {
+            // Otherwise return a UserPayloadSecure without the phone number, date of birth and a secure address with only the city, region, and country.
+            return new UserPayloadSecure(
+                    selectUser.getId(),
+                    selectUser.getFirstName(),
+                    selectUser.getLastName(),
+                    selectUser.getMiddleName(),
+                    selectUser.getNickname(),
+                    selectUser.getBio(),
+                    selectUser.getEmail(),
+                    selectUser.getHomeAddress().toAddressPayloadSecure(),
+                    selectUser.getCreated(),
+                    role,
+                    administrators
+            );
+        }
+
+
     }
 
     /**
-     * Search for users by some criteria, for now using names and nickname.
+     * Search for users by first name, middle name, last name, or nickname.
+     * Returns paginated and ordered results based on input query params.
      * @param sessionToken Session token
      * @param searchQuery Search query
+     * @param orderBy Column to order the results by
+     * @param page Page number to return results from
      * @return A list of UserPayload objects matching the search query
      */
     @GetMapping("/users/search")
-    public List<UserPayload> searchUsers(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @RequestParam String searchQuery
+    public ResponseEntity<List<UserPayloadSecure>> searchUsers(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestParam String searchQuery,
+            @RequestParam String orderBy,
+            @RequestParam String page
     ) throws Exception {
-        User currentUser = getUserVerifySession(sessionToken);
+        // TODO Add logging
 
-        List<User> users;
-
-        String[] searchQuerySplit = searchQuery.split(" ");
-
-        if (searchQuerySplit.length == 3) {  // Query including the first, middle and last names.
-            users = userRepository.findByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(
-                    searchQuerySplit[0], searchQuerySplit[1], searchQuerySplit[2]
+        //TODO check this
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        int pageNo;
+        try {
+            pageNo = Integer.parseInt(page);
+        } catch (final NumberFormatException e) {
+            // Invalid page input
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Page parameter invalid"
             );
-        } else if (searchQuerySplit.length == 2) {  // Query including the first and last names.
-            users = userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase(
-                    searchQuerySplit[0], searchQuerySplit[1]
-            );
-        } else {  // Query including either the nickname, first, middle or last name.
-            users = new ArrayList<>(userRepository.findByNicknameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByFirstNameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByLastNameIgnoreCase(searchQuery));
-            users.addAll(userRepository.findByMiddleNameIgnoreCase(searchQuery));
         }
 
-        List<UserPayload> userPayloads = UserPayload.toUserPayload(users);
-        if (!verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-            for (UserPayload userPayload: userPayloads) {
-                userPayload.setRole(null);
-            }
+        // Front-end displays 5 users per page
+        int pageSize = 5;
+
+        Sort sortBy = null;
+        // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
+        // Normally all upper case letters come before any lower case ones.
+        switch (orderBy) {
+            case "fullNameASC":
+
+                sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+
+                break;
+            case "fullNameDESC":
+
+                sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+
+                break;
+            case "nicknameASC":
+
+                sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+
+                break;
+            case "nicknameDESC":
+
+                sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+
+                break;
+            case "emailASC":
+
+                sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
+
+                break;
+            case "emailDESC":
+
+                sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
+
+                break;
+            case "addressASC":
+
+                sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
+
+                break;
+            case "addressDESC":
+
+                sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
+
+                break;
+            default:
+                // Invalid orderBy input
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "OrderBy Field invalid"
+                );
         }
+
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+
+        Page<User> pagedResult = userRepository.findAllUsersByNames(searchQuery, paging);
+
+        int totalPages = pagedResult.getTotalPages();
+        int totalRows = (int) pagedResult.getTotalElements();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
         logger.info("Users Found");
-        return userPayloads;
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
     }
-    /**
-     * Checks if the current user's role matches the role parameter.
-     * This method is useful for user authentication/identification.
-     * @param sessionToken Session token
-     * @param role Role being matched
-     * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
-     */
-    private boolean verifyRole(String sessionToken, Role role) {
-        Optional<User> userOptional = userRepository.findBySessionUUID(sessionToken);
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (user.getRole().equals(role)) {
-                return true;
+    //TODO write unit tests
+    //TODO write comment
+    public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
+        List<UserPayloadSecure> userPayloadList = new ArrayList<>();
+        userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
+
+        for (UserPayloadSecure userPayloadSecure: userPayloadList) {
+            Role role = null;
+            if (verifyRole(user, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
+                role = userPayloadSecure.getRole();
             }
+            userPayloadSecure.setRole(role);
         }
-        return false;
+        return userPayloadList;
     }
 
     /**
@@ -327,9 +384,8 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/makeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
-    public void setGAA(@PathVariable int id, HttpServletRequest request,
-                       @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
-        User currentUser = getUserVerifySession(sessionToken);
+    public void setGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
@@ -363,9 +419,8 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/revokeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
-    public void revokeGAA(@PathVariable int id, HttpServletRequest request,
-                          @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
-        User currentUser = getUserVerifySession(sessionToken);
+    public void revokeGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
