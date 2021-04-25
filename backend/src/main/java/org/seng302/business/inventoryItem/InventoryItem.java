@@ -8,6 +8,7 @@ import org.seng302.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,7 +60,7 @@ public class InventoryItem {
 
     @OneToMany(mappedBy = "inventoryItem", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    private List<Listing> listings;
+    private List<Listing> listings = new ArrayList<Listing>();;
 
     /**
      * Constructor for inventory items.
