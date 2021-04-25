@@ -76,7 +76,7 @@ public class InventoryItemResource {
      * @return A list of InventoryPayload objects representing the inventory items belonging to the given business.
      */
     @GetMapping("/businesses/{id}/inventory/")
-    public List<InventoryItemPayload> retrieveInventoryPage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+    public ResponseEntity<List<InventoryItemPayload>> retrieveInventoryPage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                                             @PathVariable Integer id,
                                                                             @RequestParam(defaultValue = "productIdASC") String orderBy,
                                                                             @RequestParam(defaultValue = "0") String page
@@ -201,11 +201,9 @@ public class InventoryItemResource {
 
         logger.debug("Products retrieved for business with ID {}: {}", id, inventoryItemPayloads);
 
-        System.out.println(inventoryItemPayloads.get(0).toString());
-        return inventoryItemPayloads;
-//        return ResponseEntity.ok()
-//                .headers(responseHeaders)
-//                .body(inventoryItemPayloads);
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(inventoryItemPayloads);
     }
 
     /**
@@ -213,7 +211,7 @@ public class InventoryItemResource {
      * @param inventoryList The given list of product inventory items
      * @return A list of inventoryPayloads.
      */
-    public List<InventoryItemPayload> convertToPayload(List<InventoryItem> inventoryList) {
+    public List<InventoryItemPayload> convertToPayload(List<InventoryItem> inventoryList) { //TODO: Test this function
         List<InventoryItemPayload> payloads = new ArrayList<>();
         InventoryItemPayload newPayload;
         for (InventoryItem inventoryItem : inventoryList) {
