@@ -72,7 +72,7 @@ export default {
     return {
       // Table variables
       // A list of the table headers
-      tableHeaders: ["ProductID", "name", "Manufacturer", "Recommended Retail Price", "Created"],
+      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price", "Created"],
       // A list of the ordering by headers, which is used with talking to the backend
       tableOrderByHeaders: ["productId", "name", "recommendedRetailPrice", "manufacturer", "created"],
       // A list of all the data points belonging to the table
