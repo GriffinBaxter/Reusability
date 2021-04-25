@@ -13,6 +13,7 @@ import org.seng302.validation.ListingValidation;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * Class for sale listings
@@ -58,7 +59,7 @@ public class Listing {
      */
     public Listing(InventoryItem inventoryItem,
                    int quantity,
-                   double price,
+                   Double price,
                    String moreInfo,
                    LocalDateTime created,
                    LocalDateTime closes
@@ -79,12 +80,16 @@ public class Listing {
             logger.error("Listing Creation Error - Created (Date-Time) is null");
             throw new Exception("Invalid creation date");
         }
+        if (closes != null && closes.isBefore(LocalDateTime.now())) {
+            logger.error("Listing Creation Error - Closes (Date-Time) is Invalid");
+            throw new Exception("Invalid close time");
+        }
         this.inventoryItem = inventoryItem;
         this.quantity = quantity;
-        this.price = price;
+        this.price = (price == null) ? calculatePrice() : price;
         this.moreInfo = moreInfo;
         this.created = created;
-        this.closes = closes;
+        this.closes = (closes == null) ? LocalDateTime.of(inventoryItem.getExpires(), LocalTime.of(0,0)) : closes;
     }
 
     /**
@@ -197,5 +202,18 @@ public class Listing {
      */
     public void setCloses(LocalDateTime closes) {
         this.closes = closes;
+    }
+
+    /**
+     * calculate the price of this Listing.
+     */
+    public double calculatePrice(){
+        double calculatedPrice;
+        if (this.inventoryItem.getQuantity() == this.quantity){
+            calculatedPrice = this.inventoryItem.getTotalPrice();
+        } else {
+            calculatedPrice = this.inventoryItem.getPricePerItem() * this.quantity;
+        }
+        return calculatedPrice;
     }
 }
