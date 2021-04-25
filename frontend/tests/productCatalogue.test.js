@@ -3,7 +3,7 @@
  */
 
 import {test, expect} from "@jest/globals"
-import reg from '../src/views/Products'
+import reg from '../src/views/ProductCatalogue'
 import {Product} from '../src/Api'
 
 // ***************************************** getErrorMessage() Tests ***************************************************

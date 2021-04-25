@@ -177,8 +177,8 @@
 import { Modal } from 'bootstrap'
 import Api, { Product } from '../Api';
 import Cookies from 'js-cookie';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default {
   name: "ProductCatalogue",
