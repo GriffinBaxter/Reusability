@@ -191,16 +191,16 @@ public class ProductResource {
                 sortBy = Sort.by(Sort.Order.desc("name").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
             case "recommendedRetailPriceASC":
-                sortBy = Sort.by(Sort.Order.asc("recommendedRetailPrice").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("recommendedRetailPrice").ignoreCase().nullsLast()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
             case "recommendedRetailPriceDESC":
-                sortBy = Sort.by(Sort.Order.desc("recommendedRetailPrice").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("recommendedRetailPrice").ignoreCase().nullsFirst()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
             case "manufacturerASC":
-                sortBy = Sort.by(Sort.Order.asc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("manufacturer").ignoreCase().nullsLast()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
             case "manufacturerDESC":
-                sortBy = Sort.by(Sort.Order.desc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("manufacturer").ignoreCase().nullsFirst()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
             case "createdASC":
                 sortBy = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));

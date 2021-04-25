@@ -18,17 +18,17 @@
         <b>Name</b>
         <i id="nameIcon"></i>
       </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="6" @keydown="orderEnter($event)"
+      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5" @keydown="orderEnter($event)"
            @click="orderProducts(false, false , true, false, false)">
         <b>Manufacturer</b>
         <i id="manufacturerIcon"></i>
       </div>
-      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="7" @keydown="orderEnter($event)"
+      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="6" @keydown="orderEnter($event)"
            @click="orderProducts(false, false , false, true, false)">
         <b>Recommended Retail Price</b>
         <i id="recommendedRetailPriceIcon"></i>
       </div>
-      <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="8" @keydown="orderEnter($event)"
+      <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="7" @keydown="orderEnter($event)"
            @click="orderProducts(false, false , false, false, true)">
         <b>Created</b>
         <i id="createdIcon"></i>
@@ -445,7 +445,6 @@ export default {
       ).catch(
           (e) => console.log(e)
       )
-      //this.orderProducts();
     } else {
       this.$router.push({name: 'Login'});
     }
