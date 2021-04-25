@@ -76,7 +76,7 @@ public class InventoryItemResource {
      * @return A list of InventoryPayload objects representing the inventory items belonging to the given business.
      */
     @GetMapping("/businesses/{id}/inventory/")
-    public ResponseEntity<List<InventoryItemPayload>> retrieveInventoryPage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+    public List<InventoryItemPayload> retrieveInventoryPage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                                             @PathVariable Integer id,
                                                                             @RequestParam(defaultValue = "productIdASC") String orderBy,
                                                                             @RequestParam(defaultValue = "0") String page
@@ -197,11 +197,15 @@ public class InventoryItemResource {
 
         List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(pagedResult.getContent());
 
+        logger.info("The size of the product inventory payload is {}", inventoryItemPayloads.size());
+
         logger.debug("Products retrieved for business with ID {}: {}", id, inventoryItemPayloads);
 
-        return ResponseEntity.ok()
-                .headers(responseHeaders)
-                .body(inventoryItemPayloads);
+        System.out.println(inventoryItemPayloads.get(0).toString());
+        return inventoryItemPayloads;
+//        return ResponseEntity.ok()
+//                .headers(responseHeaders)
+//                .body(inventoryItemPayloads);
     }
 
     /**
@@ -211,8 +215,9 @@ public class InventoryItemResource {
      */
     public List<InventoryItemPayload> convertToPayload(List<InventoryItem> inventoryList) {
         List<InventoryItemPayload> payloads = new ArrayList<>();
+        InventoryItemPayload newPayload;
         for (InventoryItem inventoryItem : inventoryList) {
-            InventoryItemPayload newPayload = new InventoryItemPayload(
+            newPayload = new InventoryItemPayload(
                     inventoryItem.getId(),
                     ProductPayload.convertProductToProductPayload(inventoryItem.getProduct()),
                     inventoryItem.getQuantity(),

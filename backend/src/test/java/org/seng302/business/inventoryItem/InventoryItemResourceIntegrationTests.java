@@ -740,7 +740,7 @@ public class InventoryItemResourceIntegrationTests {
 //---------------------------------- Tests for /businesses/{id}/inventory/ endpoint ------------------------------------
 
     /**
-     * Tests that an OK status and a list of product payloads is received when the business ID in the
+     * Tests that an OK status and a list of product inventory payloads is received when the business ID in the
      * /businesses/{id}/inventory/ API endpoint exists.
      * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
      *
@@ -748,6 +748,46 @@ public class InventoryItemResourceIntegrationTests {
      */
     @Test
     public void canRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        business.addAdministrators(user);
+
+        // when
+        List<InventoryItem> list = List.of(inventoryItem);
+        Page<InventoryItem> pagedResponse = new PageImpl(list);
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sortBy);
+        when(inventoryItemRepository.findInventoryItemsByBusinessId(3, paging)).thenReturn(pagedResponse);
+
+        List<>
+        pagedResponse.get().forEach(xx -> {
+            System.out.println(xx);
+        });
+
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("");//TODO:
+
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is given when the the business exists and the user is the business
+     * admin BUT they have are not logged in i.e. no is cookie present.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorNoUserCookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
@@ -763,11 +803,11 @@ public class InventoryItemResourceIntegrationTests {
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
-                .param("page", "0")
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .param("page", "0"))
                 .andReturn().getResponse();
 
         // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+
     }
 }
