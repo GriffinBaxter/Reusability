@@ -29,7 +29,7 @@ public class Listing {
 
     // InventoryItem
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "inventoryItem_id", nullable = false)
+    @JoinColumn(name = "inventoryItemId", nullable = false)
     private InventoryItem inventoryItem;
 
     @Column (name = "quantity", nullable = false)
@@ -68,7 +68,7 @@ public class Listing {
             logger.error("Listing Creation Error - Inventory item is null");
             throw new Exception("Invalid inventory item");
         }
-        if (!ListingValidation.isValidQuantity(quantity, inventoryItem.getQuantity())) {
+        if (!ListingValidation.isValidQuantity(quantity, inventoryItem)) {
             logger.error("Listing Creation Error - Quantity {} is not valid", quantity);
             throw new Exception("Invalid quantity");
         }
@@ -82,13 +82,15 @@ public class Listing {
         }
         if (closes != null && closes.isBefore(LocalDateTime.now())) {
             logger.error("Listing Creation Error - Closes (Date-Time) is Invalid");
-            throw new Exception("Invalid close time");
+            throw new Exception("Invalid closing date.");
         }
         this.inventoryItem = inventoryItem;
         this.quantity = quantity;
+        // If price is not defined calculate it using price per item.
         this.price = (price == null) ? calculatePrice() : price;
         this.moreInfo = moreInfo;
         this.created = created;
+        // If closing date is not defined, use expiry date of inventory item.
         this.closes = (closes == null) ? LocalDateTime.of(inventoryItem.getExpires(), LocalTime.of(0,0)) : closes;
     }
 

@@ -1,7 +1,6 @@
 package org.seng302.validation;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import org.seng302.business.inventoryItem.InventoryItem;
 
 /**
  * Class methods to validate listing fields
@@ -29,10 +28,11 @@ public class ListingValidation {
      * Checks to see whether quantity is valid based on its constraints.
      * This method can be updated in the future if there is additional constraints.
      * @param quantity The quantity to be checked.
-     * @param inventoryQuantity The total quantity in inventory.
+     * @param inventoryItem An inventoryItem which is needed to validate the quantity of a listing
      * @return true when quantity is valid
      */
-    public static boolean isValidQuantity(int quantity, int inventoryQuantity) {
-        return (quantity > MIN_QUANTITY) && (quantity <= inventoryQuantity);
+    public static boolean isValidQuantity(int quantity, InventoryItem inventoryItem) {
+        return (quantity > MIN_QUANTITY) &&
+                ((quantity + inventoryItem.getInventoryItemQuantityListed()) <= inventoryItem.getQuantity());
     }
 }
