@@ -51,8 +51,11 @@
     <!-- Table footer -->
     <div :id="`${tableId}-footer-row`" class="row flex-column-reverse flex-lg-row text-center">
       <!-- Showing results out of total results section-->
-      <div class="col-lg px-0">
+      <div class="col-lg px-0" v-if="totalRows > 0">
         Showing {{currentPage*maxRowsPerPage+1}}-{{currentPageRows.length+currentPage*maxRowsPerPage}} of {{totalRows}} results
+      </div>
+      <div v-else>
+        No results found
       </div>
       <!-- Paginiation -->
       <div v-if="totalPages > 0" class="col-lg btn-group px-0">
