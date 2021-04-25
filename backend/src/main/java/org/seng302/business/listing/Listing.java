@@ -2,8 +2,12 @@ package org.seng302.business.listing;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.seng302.address.Address;
 import org.seng302.business.inventoryItem.InventoryItem;
+import org.seng302.business.product.Product;
+import org.seng302.validation.ListingValidation;
 
 
 import javax.persistence.*;
@@ -42,6 +46,8 @@ public class Listing {
     @Column (name = "closes")
     private LocalDateTime closes;
 
+    private static final Logger logger = LogManager.getLogger(Listing.class.getName());
+
     /**
      * Create a new listing.
      * @param quantity the quantity of an item being listed.
@@ -50,7 +56,29 @@ public class Listing {
      * @param created the date the listing was created.
      * @param closes the date the listing closes, defaults to expiry date.
      */
-    public Listing(InventoryItem inventoryItem, int quantity, double price, String moreInfo, LocalDateTime created, LocalDateTime closes) {
+    public Listing(InventoryItem inventoryItem,
+                   int quantity,
+                   double price,
+                   String moreInfo,
+                   LocalDateTime created,
+                   LocalDateTime closes
+    ) throws Exception {
+        if (inventoryItem == null) {
+            logger.error("Listing Creation Error - Inventory item is null");
+            throw new Exception("Invalid inventory item");
+        }
+        if (!ListingValidation.isValidQuantity(quantity, inventoryItem.getQuantity())) {
+            logger.error("Listing Creation Error - Quantity {} is not valid", quantity);
+            throw new Exception("Invalid quantity");
+        }
+        if (!ListingValidation.isValidMoreInfo(moreInfo)) {
+            logger.error("Listing Creation Error - More Info {} is not valid", moreInfo);
+            throw new Exception("Invalid more info");
+        }
+        if (created == null) {
+            logger.error("Listing Creation Error - Created (Date-Time) is null");
+            throw new Exception("Invalid creation date");
+        }
         this.inventoryItem = inventoryItem;
         this.quantity = quantity;
         this.price = price;
