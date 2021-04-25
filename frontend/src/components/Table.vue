@@ -161,6 +161,13 @@ export default {
       default() { return true; }
     },
 
+    // This controls wether or not the data given is considered the page data.
+    tableDataIsPage: {
+      type: Boolean,
+      required: false,
+      default() { return false; }
+    },
+
     // current page override. This is used to force a certain page
     // this is in 0 origin.
     currentPageOverride: {
@@ -173,7 +180,7 @@ export default {
     orderByOverride: {
       // This is used to ensure that the orderBy object provided has the orderBy and isAscending properties and of the correct type.
       validator: orderByOverride => {
-        if (orderByOverride.orderBy !== undefined && orderByOverride.isAscending) {
+        if (orderByOverride.orderBy !== undefined && orderByOverride.isAscending !== undefined && orderByOverride.isAscending !== null) {
           return (typeof orderByOverride.orderBy === 'number' || orderByOverride.orderBy === null )&& typeof orderByOverride.isAscending === 'boolean';
         }
         return false;
@@ -246,17 +253,23 @@ export default {
      */
     updateOrderBy(newHeaderIndex) {
 
-      if (this.orderByOverride !== null) {
-        this.$emit(this.eventTypes.ORDER_BY_HEADER_INDEX, {tableId: this.tableId, orderBy: this.orderBy, isAscending: this.isAscending});
+      // Determine the new direction the table should be going in.
+      let isAscending;
+      if (this.orderBy !== newHeaderIndex) {
+        isAscending = true;
       } else {
-        // If the new index is different then the already used ordering by, then it will update the orderBy and reset to
-        // ascending. Otherwise it will just toggle the direction.
+        isAscending = !this.isAscending;
+      }
+
+      if (this.orderByOverride !== null) {
+        this.$emit(this.eventTypes.ORDER_BY_HEADER_INDEX, {tableId: this.tableId, orderBy: newHeaderIndex, isAscending: isAscending});
+      } else {
+        // If the new index is different then the already used ordering by, then it will update the orderBy.
         if (this.orderBy !== newHeaderIndex) {
           this.orderBy = newHeaderIndex;
-          this.isAscending = true;
-        } else {
-          this.isAscending = !this.isAscending;
         }
+        // Update the direction
+        this.isAscending = isAscending;
 
         this.sortRows();
 
@@ -401,13 +414,25 @@ export default {
      * Loads all the rows that belong within the current page.
      */
     loadCurrentPageRows() {
-      const startIndex = this.currentPage*this.maxRowsPerPage;
-      const endIndex = this.currentPage*this.maxRowsPerPage + this.maxRowsPerPage;
-      this.currentPageRows = this.rows.slice(startIndex, endIndex);
+      if (this.tableDataIsPage) {
+        this.currentPageRows = this.rows.slice(0, this.maxRowsPerPage);
+      } else {
+        const startIndex = this.currentPage * this.maxRowsPerPage;
+        const endIndex = this.currentPage * this.maxRowsPerPage + this.maxRowsPerPage;
+        this.currentPageRows = this.rows.slice(startIndex, endIndex);
+      }
     },
   },
   watch: {
     tableData: function() {
+      this.updateTable(true);
+    },
+    currentPageOverride: function () {
+      this.currentPage = this.currentPageOverride;
+      this.updateTable(true);
+    },
+    orderByOverride: function () {
+      this.orderBy = this.orderByOverride;
       this.updateTable(true);
     }
   },
