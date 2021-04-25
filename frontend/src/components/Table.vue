@@ -173,8 +173,8 @@ export default {
     orderByOverride: {
       // This is used to ensure that the orderBy object provided has the orderBy and isAscending properties and of the correct type.
       validator: orderByOverride => {
-        if (orderByOverride.orderBy && orderByOverride.isAscending) {
-          return typeof orderByOverride.orderBy === 'number' && typeof orderByOverride.isAscending === 'boolean';
+        if (orderByOverride.orderBy !== undefined && orderByOverride.isAscending) {
+          return (typeof orderByOverride.orderBy === 'number' || orderByOverride.orderBy === null )&& typeof orderByOverride.isAscending === 'boolean';
         }
         return false;
       },
@@ -222,7 +222,7 @@ export default {
      */
     updateCurrentPage(newPageNumber) {
       // If the current page is controlled through the parent we notify the parent of the update that needs to occur.
-      if (this.currentPageOverride) {
+      if (this.currentPageOverride !== null) {
         this.$emit(this.eventTypes.UPDATE_CURRENT_PAGE, {tableId: this.tableId, newPageNumber: newPageNumber});
       } else {
         // If the current page is being handled internally then it is simple update
@@ -246,7 +246,7 @@ export default {
      */
     updateOrderBy(newHeaderIndex) {
 
-      if (this.orderByOverride) {
+      if (this.orderByOverride !== null) {
         this.$emit(this.eventTypes.ORDER_BY_HEADER_INDEX, {tableId: this.tableId, orderBy: this.orderBy, isAscending: this.isAscending});
       } else {
         // If the new index is different then the already used ordering by, then it will update the orderBy and reset to
@@ -339,8 +339,9 @@ export default {
      * @param newData A flag used to determine if there is new data
      * @param rebuildRows A flag used to determine if the rows need to be rebuilt.
      */
-    async updateTable(newData = false, rebuildRows = false) {
+    updateTable(newData = false, rebuildRows = false) {
       this.dataIsReady = false;
+
 
       // Updates the totalPages to be able to know how many pages exist
       this.totalPages = Math.ceil(this.totalRows/this.maxRowsPerPage);
@@ -358,9 +359,9 @@ export default {
 
       // Some table updates may not require the rows to be rebuilt!
       if (newData || rebuildRows) {
-        await this.buildRows();
+        this.buildRows();
       }
-      await this.loadCurrentPageRows();
+      this.loadCurrentPageRows();
 
       // This dictates the table is ready to load in new data.
       this.dataIsReady = true;
@@ -405,12 +406,17 @@ export default {
       this.currentPageRows = this.rows.slice(startIndex, endIndex);
     },
   },
+  watch: {
+    tableData: function() {
+      this.updateTable(true);
+    }
+  },
   /**
    * An ASYNC function used to initialize the table.
    */
   mounted() {
     // the catch is only to prevent the console from complaining.
-    this.updateTable(true).catch(() => {});
+    this.updateTable(true);
   }
 }
 
