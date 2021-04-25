@@ -1,7 +1,7 @@
 <template>
   <div id="outerContainer" class="container">
 
-    <navbar/>
+    <Navbar ></Navbar>
 
     <div id="body" class="container all-but-footer">
 
@@ -87,6 +87,31 @@
       </div>
     </div>
 
+    <div v-if="showModal">
+      <transition name="fade">
+        <div class="modal-mask">
+          <div class="modal-wrapper">
+            <div class="modal-dialog modal-">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <product-modal
+                      v-bind:product-id="productId"
+                      v-bind:product-name="productName"
+                      v-bind:description="description"
+                      v-bind:manufacturer="manufacturer"
+                      v-bind:recommended-retail-price="recommendedRetailPrice"
+                      v-bind:created="created" />
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-outline-primary float-end" id="closeModalButton" @click="showModal = false">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
+
     <Footer></Footer>
   </div>
 </template>
@@ -97,16 +122,25 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ProductModal from "@/components/ProductModal";
 
 export default {
   name: "ProductCatalogue",
   components: {
+    ProductModal,
     Navbar,
     Footer
   },
 
   data() {
     return {
+      productId: null,
+      productName: null,
+      description: null,
+      manufacturer: null,
+      recommendedRetailPrice: 0,
+      created: null,
+
       productIdAscending: false,
       nameAscending: false,
       manufacturerAscending: false,
@@ -120,7 +154,8 @@ export default {
       maxPage: 2,
       totalRows: 0,
       productList: [],
-      small: false
+      small: false,
+      showModal: false
     }
   },
   methods: {
@@ -138,6 +173,20 @@ export default {
         classList.push('disabled')
       }
       return classList
+    },
+
+    /**
+     * Shows a popup modal which contains the information about a given product.
+     */
+    showDetails(id) {
+      let product = this.productList[id];
+      this.productId = product.id;
+      this.productName = product.name;
+      this.description = product.description;
+      this.manufacturer = product.manufacturer;
+      this.recommendedRetailPrice = product.recommendedRetailPrice;
+      this.created = product.created;
+      this.showModal = true;
     },
 
     /**
@@ -376,13 +425,9 @@ export default {
           }
 
           const productRow = document.createElement("div");
-          if (i % 2 === 0) {
-            productRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour productRows");
-          } else {
-            productRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour-dark productRows");
-          }
+          productRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour productRows");
           productRow.setAttribute("tabIndex", `${tabIndex}`);
-          productRow.setAttribute("id", `${this.productList[i].id}`);
+          productRow.setAttribute("id", `${i}`);
 
           const productIdCol = document.createElement("div");
           productIdCol.setAttribute("class", `${classInput}`);
@@ -416,6 +461,24 @@ export default {
           createdCol.setAttribute("id", `${i}-created`);
           createdCol.innerText = this.productList[i].created;
           productRow.appendChild(createdCol);
+
+          let self = this;
+
+          productRow.addEventListener("click", function(event) {
+            if (event.target.id.includes('-')) {
+              const row = event.target.parentNode;
+              self.showDetails(row.id);
+            } else {
+              self.showDetails(event.target.id);
+            }
+          });
+
+          productRow.addEventListener('keydown', function (event) {
+            // TODO replace all deprecated keyCode uses
+            if (event.keyCode === 13) {
+              event.target.click();
+            }
+          })
 
           container.insertBefore(productRow, lastChild);
 
@@ -477,6 +540,33 @@ export default {
 </script>
 
 <style scoped>
+
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99;
+
+  width: 100%;
+  max-width: 1000px;
+  background-color: #FFFFFF;
+  border-radius: 10px;
+
+  padding: 10px;
+}
+
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
 
 .all-but-footer {
   min-height: calc(100vh - 240px);
