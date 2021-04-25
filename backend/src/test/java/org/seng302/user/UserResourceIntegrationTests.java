@@ -59,13 +59,13 @@ public class UserResourceIntegrationTests {
                                     "\"nickname\":\"%s\"," +
                                     "\"bio\":\"%s\"," +
                                     "\"email\":\"%s\"," +
-                                    "\"dateOfBirth\":\"%s\"," +
-                                    "\"phoneNumber\":\"%s\"," +
                                     "\"created\":\"%s" + "\"," +
                                     "\"role\":%s," +
                                     "\"businessesAdministered\":%s," +
+                                    "\"dateOfBirth\":\"%s\"," +
+                                    "\"phoneNumber\":\"%s\"," +
                                     "\"homeAddress\":%s"+
-            "}";
+                                "}";
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
@@ -154,7 +154,7 @@ public class UserResourceIntegrationTests {
                                 Role.USER);
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+       // this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
 
         //test users for searching for user by name
 
@@ -522,8 +522,8 @@ public class UserResourceIntegrationTests {
     public void canRetrieveUserWhenUserExistsWithDgaaCookie() throws Exception {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]", user.getHomeAddress());
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]",  user.getDateOfBirth(),
+                user.getPhoneNumber(), user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
@@ -545,8 +545,8 @@ public class UserResourceIntegrationTests {
     public void canRetrieveUserWhenUserExistsWithGaaCookie() throws Exception {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getCreated(), null, "[null]", user.getHomeAddress());
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), null, "[null]", user.getDateOfBirth(),
+                user.getPhoneNumber(),  user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -566,14 +566,28 @@ public class UserResourceIntegrationTests {
      */
     @Test
     public void canRetrieveUserWhenUserExistsWithUserCookie() throws Exception {
+        String expectedUserJson = "{\"id\":%d," +
+                "\"firstName\":\"%s\"," +
+                "\"lastName\":\"%s\"," +
+                "\"middleName\":\"%s\"," +
+                "\"nickname\":\"%s\"," +
+                "\"bio\":\"%s\"," +
+                "\"email\":\"%s\"," +
+                "\"created\":\"%s" + "\"," +
+                "\"role\":%s," +
+                "\"businessesAdministered\":%s," +
+                "\"homeAddress\":%s"+
+                "}";
+
+
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getCreated(), null, "[null]", user.getHomeAddress());
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), null, "[null]", user.getHomeAddress().toSecureString());
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
+
         response = mvc.perform(
                 get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
@@ -663,6 +677,19 @@ public class UserResourceIntegrationTests {
                 "nickname"
         );
 
+        String expectedSearchUserJson = "{\"id\":%d," +
+                "\"firstName\":\"%s\"," +
+                "\"lastName\":\"%s\"," +
+                "\"middleName\":\"%s\"," +
+                "\"nickname\":\"%s\"," +
+                "\"bio\":\"%s\"," +
+                "\"email\":\"%s\"," +
+                "\"created\":\"%s" + "\"," +
+                "\"role\":%s," +
+                "\"businessesAdministered\":%s," +
+                "\"homeAddress\":%s"+
+                "}";
+
         //when
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
         ArrayList<User> nicknamesSortedAsc = new ArrayList<User>();
@@ -683,9 +710,8 @@ public class UserResourceIntegrationTests {
         String expectedJSON = "[";
 
         for (User searchUser: nicknamesSortedAsc) {
-            expectedJSON += String.format(expectedUserJson, searchUser.getId(), searchUser.getFirstName(), searchUser.getLastName(),
-                    searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getDateOfBirth(),
-                    searchUser.getPhoneNumber(), searchUser.getCreated(), "\"" + searchUser.getRole() + "\"", "[null]", searchUser.getHomeAddress().toSecureString()) + ",";
+            expectedJSON += String.format(expectedSearchUserJson, searchUser.getId(), searchUser.getFirstName(), searchUser.getLastName(),
+                    searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getCreated(), "\"" + searchUser.getRole() + "\"", "[null]", searchUser.getHomeAddress().toSecureString()) + ",";
         }
 
         expectedJSON = expectedJSON.substring(0, expectedJSON.length() - 1) + "]";
