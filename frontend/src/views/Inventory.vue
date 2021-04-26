@@ -1,14 +1,18 @@
 <template>
   <div>
-
     <!--nav bar-->
     <navbar/>
+
+    <!--creation popup-->
+    <modal>
+      <inventory-item-creation/>
+    </modal>
 
     <!--inventory container-->
     <div class="container p-5 mt-3" id="profileContainer">
       <div class="row">
-        <div class="col-xl-2 mb-2">
 
+        <div class="col-xl-2 mb-2">
           <div class="card text-center shadow-sm">
             <div class="card-body">
 
@@ -21,6 +25,7 @@
                 <h5>{{ name }}</h5>
                 <div class="text-secondary">{{ description }}</div>
               </div>
+
             </div>
             <!--            <div class="card text-center shadow-sm-3">-->
             <!--              <div class="card-body">-->
@@ -28,7 +33,6 @@
             <!--              </div>-->
             <!--            </div>-->
           </div>
-
         </div>
 
         <div class="col">
@@ -40,12 +44,14 @@
             <!--filter-->
             <div class="row px-2 align-content-center">
               <!--order by product name-->
-              <div id="order-by-product-name" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-product-name" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Product Name</b>
               </div>
 
               <!--order by product id-->
-              <div id="order-by-product-id" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-product-id" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Product Name</b>
               </div>
 
@@ -55,18 +61,21 @@
               </div>
 
               <!--order by price per item-->
-              <div id="order-by-price-per-item" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-price-per-item" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Price Per Item</b>
               </div>
 
               <!--order by total price-->
-              <div id="order-by-total-price" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-total-price" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Total Price</b>
               </div>
             </div>
             <div class="row px-2 py-3">
               <!--order by manufactured-->
-              <div id="order-by-manufactured" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-manufactured" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Manufactured</b>
               </div>
 
@@ -76,7 +85,8 @@
               </div>
 
               <!--order by best before-->
-              <div id="order-by-best-before" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-best-before" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Best Before</b>
               </div>
 
@@ -85,6 +95,11 @@
                 <b>Expires</b>
               </div>
             </div>
+
+            <!--creation button-->
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#creationPopup">
+              Creat New
+            </button>
 
             <!--inventory items-->
             <inventory-item
@@ -102,7 +117,7 @@
                 v-bind:expires="inventory.expires"/>
 
             <!--pagination-->
-            <nav >
+            <nav>
               <ul class="pagination justify-content-center">
                 <li class="page-item">
                   <a class="page-link" href="#" aria-label="Previous">
@@ -123,13 +138,10 @@
           </div>
         </div>
 
-
       </div>
-
-
-      <!--footer-->
-
     </div>
+
+    <!--footer-->
     <Footer></Footer>
   </div>
 </template>
@@ -139,9 +151,11 @@
 import Footer from "@/components/Footer";
 import InventoryItem from "@/components/inventoryItem";
 import Navbar from "@/components/Navbar";
+import InventoryItemCreation from "@/components/CreateNewInventoryItem";
 
 export default {
   components: {
+    InventoryItemCreation,
     Navbar,
     InventoryItem,
     Footer
