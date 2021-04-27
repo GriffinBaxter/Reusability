@@ -241,7 +241,11 @@ export default {
       //basic data unpack
       this.name = data.name;
       this.description = data.description;
-      this.businessType = data.businessType.replaceAll("_", " ");
+      let businessTypeLowerCaseAndSplit = data.businessType.replaceAll("_", " ").toLowerCase().split(" ");
+      for (let i = 0; i < businessTypeLowerCaseAndSplit.length; i++) {
+        businessTypeLowerCaseAndSplit[i] = businessTypeLowerCaseAndSplit[i][0].toUpperCase() + businessTypeLowerCaseAndSplit[i].slice(1);
+      }
+      this.businessType = businessTypeLowerCaseAndSplit.join(" ");
       this.getCreatedDate(data.created);
 
       // address unpack
