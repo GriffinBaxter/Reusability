@@ -23,7 +23,6 @@ import java.util.Optional;
 /**
  * UserRepository test class.
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 public class UserRepositoryIntegrationTests {
