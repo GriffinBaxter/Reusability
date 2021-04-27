@@ -234,9 +234,9 @@
             </div>
           </div>
 
-          <!--logout button-->
-          <div align="right" id="signOutRow" v-if="!otherUser">
-          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
+          <!--register business button-->
+          <div align="right" id="registerBusinessRow" v-if="!otherUser">
+          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="$router.push('/businessRegistration')">Register Business</button>
           </div>
 
         </div>

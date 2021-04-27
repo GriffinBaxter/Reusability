@@ -464,7 +464,7 @@ export default {
       Api.addNewBusiness(business
       ).then( (res) => {
             if (res.status === 201) {
-              this.$router.push('/profile'); //TODO update to BusinessProfile when created
+                this.$router.push('/businessProfile');
             }
           }
       ).catch((error) => {

@@ -130,12 +130,6 @@
             </div>
           </div>
 
-          <!--logout button-->
-          <div align="right" id="signOutRow" v-if="isAdministrator">
-            <button class="btn btn-outline-primary float-end mt-4" id="signOutButton" @click="logout()">Sign Out
-            </button>
-          </div>
-
         </div>
       </div>
     </div>
