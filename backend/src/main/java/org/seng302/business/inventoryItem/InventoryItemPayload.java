@@ -27,7 +27,15 @@ public class InventoryItemPayload {
      * @param bestBefore   Date of best before
      * @param expires      Expiry date
      */
-    public InventoryItemPayload(Integer id, ProductPayload product, Integer quantity, double pricePerItem, double totalPrice, String manufactured, String sellBy, String bestBefore, String expires) {
+    public InventoryItemPayload(Integer id,
+                                ProductPayload product,
+                                Integer quantity,
+                                double pricePerItem,
+                                double totalPrice,
+                                String manufactured,
+                                String sellBy,
+                                String bestBefore,
+                                String expires) {
         this.id = id;
         this.product = product;
         this.quantity = quantity;
@@ -37,5 +45,41 @@ public class InventoryItemPayload {
         this.sellBy = sellBy;
         this.bestBefore = bestBefore;
         this.expires = expires;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public ProductPayload getProduct() {
+        return product;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public double getPricePerItem() {
+        return pricePerItem;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public String getManufactured() {
+        return manufactured;
+    }
+
+    public String getSellBy() {
+        return sellBy;
+    }
+
+    public String getBestBefore() {
+        return bestBefore;
+    }
+
+    public String getExpires() {
+        return expires;
     }
 }
