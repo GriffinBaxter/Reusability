@@ -16,7 +16,7 @@
         <div class="col search-bar-positioning">
           <div class="input-group my-4">
             <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
-            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><font-awesome-icon icon="search" /></button>
+            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
       </div>
@@ -27,6 +27,7 @@
         <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3"
              @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
           <b>Nickname</b>
+          <i id="nickname-icon"></i>
         </div>
 
         <!--order by full name-->
@@ -293,12 +294,7 @@ export default {
         this.disableIcons();
         if (this.nickAscending) {
           this.orderBy = "nicknameASC";
-          const icon = document.createElement('font-awesome-icon');
-          //icon.setAttribute('icon', 'search');
-          icon.setAttribute('class', 'float-end');
-          icon.setAttribute(':icon', '[\'fas\', \'search\']')
-          document.getElementById('order-by-nickname-div').appendChild(icon);
-
+          document.getElementById('nickname-icon').setAttribute('class','fas fa-chevron-up float-end');
           this.$router.push({
             path: "/search",
             query: {
@@ -307,11 +303,7 @@ export default {
           })
         } else {
           this.orderBy = "nicknameDESC";
-          const icon = document.createElement('font-awesome-icon');
-          //icon.setAttribute('icon', 'search');
-          icon.setAttribute('class', 'float-end');
-          icon.setAttribute(':icon', '[\'fas\', \'search\']')
-          document.getElementById('order-by-nickname-div').appendChild(icon);
+          document.getElementById('nickname-icon').setAttribute('class','fas fa-chevron-down float-end');
           this.$router.push({
             path: "/search",
             query: {
