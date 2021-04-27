@@ -243,12 +243,26 @@ export default {
       this.getCreatedDate(data.created);
 
       // address unpack
-      this.streetNumber = data.address.streetNumber;
-      this.streetName = data.address.streetName;
-      this.city = data.address.city;
-      this.region = data.address.region;
-      this.country = data.address.country;
-      this.postcode = data.address.postcode;
+      //address unpack
+      if (data.address.streetNumber) {
+        this.streetNumber = data.address.streetNumber;
+      }
+      if (data.address.streetName) {
+        this.streetName = data.address.streetName;
+      }
+      if (data.address.city) {
+        this.city = data.address.city;
+      }
+      if (data.address.region) {
+        this.region = data.address.region;
+      }
+      if (data.address.country) {
+        this.country = data.address.country;
+      }
+      if (data.address.postcode) {
+        this.postcode = data.address.postcode;
+      }
+
       if (this.streetNumber !== "" && this.streetName !== "") {
         this.address.push({line: this.streetNumber + " " + this.streetName});
       } else {
@@ -268,6 +282,13 @@ export default {
       // administrators unpack
       this.primaryAdministratorId = data.primaryAdministratorId;
       data.administrators.forEach(anUser => {
+
+        // This is in case administrator doesn't have a middle name.
+        let adminMiddleName = "";
+        if (anUser.middleName) {
+          adminMiddleName = anUser.middleName;
+        }
+
         //check permission of current user
         if (anUser.id == Cookies.get('userID')) {
           this.isAdministrator = true;
@@ -275,10 +296,10 @@ export default {
 
         //get name of primary administrator
         if (anUser.id === this.primaryAdministratorId) {
-          this.primaryAdministrator = anUser.firstName + " " + anUser.middleName + " " + anUser.lastName;
+          this.primaryAdministrator = anUser.firstName + " " + adminMiddleName + " " + anUser.lastName;
         }
         this.nameOfAdministrators.push({
-          name: anUser.firstName + " " + anUser.middleName + " " + anUser.lastName,
+          name: anUser.firstName + " " + adminMiddleName + " " + anUser.lastName,
           id: anUser.id
         })
       })
