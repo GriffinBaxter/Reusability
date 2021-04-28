@@ -464,7 +464,11 @@ export default {
       Api.addNewBusiness(business
       ).then( (res) => {
             if (res.status === 201) {
-                this.$router.push('/businessProfile'); //TODO Update.
+              const businessId = res.data.businessId;
+              if (businessId) {
+                Cookies.set('actAs', businessId);
+                this.$router.push('/businessProfile/' + businessId);
+              }
             }
           }
       ).catch((error) => {

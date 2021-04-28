@@ -12,6 +12,7 @@ import org.seng302.user.UserRepository;
 import org.seng302.validation.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -50,9 +51,8 @@ public class BusinessResource {
      * @throws Exception Access token is missing or invalid
      */
     @PostMapping("/businesses")
-    @ResponseStatus(value = HttpStatus.CREATED, reason = "Business account created successfully")
-    public void createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                               @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
+    public ResponseEntity<BusinessIdPayload> createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                                        @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
         //access token invalid
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -67,7 +67,7 @@ public class BusinessResource {
                     "Invalid Primary Administrator Id"
             );        }
 
-        //TODO: 400 not in api spec
+
         if (!BusinessValidation.isValidName(name.trim())){
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -142,7 +142,10 @@ public class BusinessResource {
                         currentUser
                 );
                 business.addAdministrators(currentUser); //add user to administrators list
-                businessRepository.saveAndFlush(business);
+                Business createdBusiness = businessRepository.saveAndFlush(business);
+                System.out.println(createdBusiness);
+                System.out.println(createdBusiness.getId());
+                return ResponseEntity.status(HttpStatus.CREATED).body(new BusinessIdPayload(createdBusiness.getId()));
             } catch (Exception e) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
