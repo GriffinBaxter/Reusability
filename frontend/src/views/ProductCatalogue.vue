@@ -157,7 +157,7 @@ export default {
     return {
       // Table variables
       // A list of the table headers
-      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price (" + this.currencySymbol + " " + this.currencyCode + ")", "Created"],
+      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price", "Created"],
       // A list of the ordering by headers, which is used with talking to the backend
       tableOrderByHeaders: ["productId", "name", "recommendedRetailPrice", "manufacturer", "created"],
       // A list of all the data points belonging to the table
@@ -174,7 +174,7 @@ export default {
       totalRows: 0,
 
 
-      // Product modal varaibles
+      // Product modal variables
       productId: null,
       created: null,
       showModal: false,
@@ -674,10 +674,7 @@ export default {
       })
           .catch((error) => console.log(error))
 
-      console.log(country);
-
       await CurrencyAPI.currencyQuery(country).then((response) => {
-        console.log(response.data);
         this.filterResponse(response.data);
       })
           .catch((error) => console.log(error))
@@ -690,7 +687,7 @@ export default {
 
   },
 
-  mounted() {
+  async mounted() {
 
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
@@ -701,7 +698,11 @@ export default {
      */
     const currentID = Cookies.get('userID');
     if (currentID) {
-      this.currencyRequest();
+      await this.currencyRequest();
+      // if currency code and symbol exist we want to update table header of RRP to show this info
+      if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
+        this.tableHeaders[3] = "Recommended Retail Price (" + this.currencySymbol + " " + this.currencyCode + ")";
+      }
       this.requestProducts().then(
           () => {}
       ).catch(
