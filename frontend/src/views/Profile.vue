@@ -76,15 +76,15 @@
             <div class="card-body">
               <div v-if="!isBusinessAdministrator">
                 <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-outline-primary" v-else @click="activeAsAdministrator()">Active As
-                  Administrator
+                <button type="button" class="btn btn-md btn-outline-primary" v-else @click="activeAsAdministrator()">
+                  Grant Business Administrator Status
                 </button>
               </div>
 
               <div v-else>
                 <div class="spinner-border spinner-border-sm text-warning" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-outline-warning" v-else @click="removeActiveAdministrator()">Remove
-                  Administrator
+                <button type="button" class="btn btn-md btn-outline-warning" v-else @click="removeActiveAdministrator()">
+                  Revoke Business Administrator Status
                 </button>
               </div>
             </div>
@@ -102,15 +102,15 @@
               <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
               <div v-if="isGAA(role)">
                 <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-lg btn-outline-danger" v-else @click="revokeUserGAA">Revoke admin
-                  rights
+                <button type="button" class="btn btn-md btn-outline-danger" v-else @click="revokeUserGAA">
+                  Revoke Global Application Admin
                 </button>
               </div>
 
               <div v-else>
                 <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-lg btn-outline-success" v-else @click="grantUserGAA">Grant admin
-                  rights
+                <button type="button" class="btn btn-md btn-outline-success" v-else @click="grantUserGAA">
+                  Grant Global Application Admin
                 </button>
               </div>
             </div>
