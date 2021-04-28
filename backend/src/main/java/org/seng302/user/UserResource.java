@@ -96,6 +96,11 @@ public class UserResource {
      */
     @PostMapping("/login")
     public UserIdPayload loginUser(@RequestBody UserLoginPayload login, HttpServletResponse response) {
+
+
+        //TODO remove later
+        System.out.println(userRepository.findAll());
+
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
         if (user.isPresent()) {
