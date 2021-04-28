@@ -286,12 +286,10 @@ export default {
      * Updates the display to show the new page when a product clicks to move to a different page.
      *
      * @param event The click event
-     * @param newPageNum The page to move to
      */
-    updatePage(event, newPageNum) {
-      event.preventDefault();
-      this.currentPage = newPageNum;
-      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
+    updatePage(event) {
+      this.currentPage = event.newPageNumber;
+      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}})
       this.requestProducts();
     },
     /**
@@ -399,25 +397,8 @@ export default {
     orderProducts(event) {
       this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
       this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}});
-      if (this.currentPage > 1) {
-        this.currentPage -= 1;
-        this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
-        this.requestProducts();
-      }
-    },
+      this.requestProducts();
 
-    /**
-     * Goes to the next page and updates the rows.
-     *
-     */
-    nextPage() {
-      this.addedMessage = ""; // Clear product added message, so it doesn't stick around.
-
-      if (this.currentPage < this.maxPage) {
-        this.currentPage += 1;
-        this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
-        this.requestProducts();
-      }
     },
 
     /**
@@ -699,7 +680,7 @@ export default {
       await this.currencyRequest();
       // if currency code and symbol exist we want to update table header of RRP to show this info
       if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
-        this.tableHeaders[3] = "Recommended Retail Price (" + this.currencySymbol + " " + this.currencyCode + ")";
+        this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
       }
       this.requestProducts().then(
           () => {}

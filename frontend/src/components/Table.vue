@@ -4,9 +4,10 @@
     <div class="row mb-3">
       <div :class="`col py-3 header-col col-hover rounded-3 text-center ${headerIndex > 0 ? 'ms-2' : ''}`"
            :key="headerIndex" v-for="(header, headerIndex) in tableHeaders"
-           @click="() => handleHeaderClick(headerIndex)" @keydown="event => handleHeaderKeyDown(event, headerIndex)" style="cursor: pointer">
+           @click="() => handleHeaderClick(headerIndex)" @keydown="event => handleHeaderKeyDown(event, headerIndex)" style="cursor: pointer; user-select: none; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none;">
         <!-- Header name -->
-        <b v-if="orderBy === headerIndex">{{header}}
+        <div class="fw-bold" v-if="orderBy === headerIndex">
+          <span v-html="header"></span>
           <!-- Header icon-->
 
           <!-- Seems to be an issue with the icons from Font-Awesome and Boostrap with the shevron so I grabbed the direct SVG definition from Boostrap. -->
@@ -20,8 +21,8 @@
                xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
           </svg>
-        </b>
-        <b v-else>{{header}}</b>
+        </div>
+        <div v-html="header" class="fw-bold" v-else></div>
       </div>
     </div>
 
