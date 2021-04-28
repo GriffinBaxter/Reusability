@@ -750,9 +750,7 @@ export default {
    */
   mounted() {
     const currentID = Cookies.get('userID');
-    if (currentID) {
-      this.$router.push({path: '/businessRegistration'});
-    } else {
+    if (!currentID) {
       this.$router.push({name: 'Login'});
     }
   }

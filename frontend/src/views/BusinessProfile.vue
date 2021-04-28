@@ -329,7 +329,32 @@ export default {
         this.retrieveBusiness(urlID);
       }
     }
-  }
+  },
+  beforeRouteUpdate (to, from, next) {
+    // Reset variables
+    this.name = "";
+    this.description = "";
+    this.businessType = "";
+    this.created = "";
+    this.primaryAdministrator = "";
+    this.primaryAdministratorId = "";
+
+    this.address = [];
+    this.streetNumber = "";
+    this.streetName = "";
+    this.city = "";
+    this.region = "";
+    this.country = "";
+    this.postcode = ""
+
+    this.nameOfAdministrators = [];
+
+    this.isAdministrator = false;
+
+    const id = to.params.id;
+    this.retrieveBusiness(id);
+    next();
+  },
 }
 </script>
 

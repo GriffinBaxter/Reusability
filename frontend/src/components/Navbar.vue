@@ -38,8 +38,13 @@
                 <li class="nav-item">
                   <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="actAsId === null">
                   <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                    Profile
+                  </router-link>
+                </li>
+                <li class="nav-item" v-if=actAsId>
+                  <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]" :to="'/businessProfile/' + actAsId" tabindex="2">
                     Profile
                   </router-link>
                 </li>
@@ -292,6 +297,7 @@ export default {
       // delete this cookie.
       Cookies.remove('JSESSIONID', {path: '/'});
       Cookies.remove('userID');
+      Cookies.remove('actAs');
       await this.$router.push({name: 'Login'});
     },
     /**
