@@ -142,8 +142,7 @@ public class BusinessResource {
                         currentUser
                 );
                 business.addAdministrators(currentUser); //add user to administrators list
-                Business createdBusiness = businessRepository.saveAndFlush(business);
-                System.out.println(createdBusiness);
+                Business createdBusiness = businessRepository.save(business);
                 System.out.println(createdBusiness.getId());
                 return ResponseEntity.status(HttpStatus.CREATED).body(new BusinessIdPayload(createdBusiness.getId()));
             } catch (Exception e) {

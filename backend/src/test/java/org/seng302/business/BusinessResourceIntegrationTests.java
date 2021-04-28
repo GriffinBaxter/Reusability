@@ -248,7 +248,7 @@ public class BusinessResourceIntegrationTests {
                 "\"name\": \"New Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
+                    "\"streetNumber\": \"4/24\"," +
                     "\"streetName\": \"Ilam Road\"," +
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +

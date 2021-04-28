@@ -263,4 +263,17 @@ public class Business {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"primaryAdministratorId\":\"" + primaryAdministratorId + "\"" +
+                ",\"name\":\"" + name + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                ",\"address\":\"" + address + "\"" +
+                ",\"businessType\":\"" + businessType + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                ",\"administrators\":[null]" +
+                "}";
+    }
 }
