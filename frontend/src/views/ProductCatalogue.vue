@@ -14,7 +14,7 @@
       <div class="row mb-3">
         <div class="col">
           <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end mt-4" tabindex="2"
-                  @click="modal.show()">Create Product</button>
+                  @click="showCreateProductModal()">Create Product</button>
         </div>
       </div>
 
@@ -55,7 +55,7 @@
         <div class="modal-content">
           <div class="modal-header text-center">
             <h3 class="modal-title w-100" id="createProductModalLabel">Create Product</h3>
-            <button type="button" class="btn-close" @click="closeCreateProductModal" aria-label="Close"></button>
+            <button type="button" class="btn-close" @click="closeCreateProductModal()" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <!--create product form, needs validation-->
@@ -80,7 +80,7 @@
               </div>
               <!--recommended retail price-->
               <div class="form-group">
-                <label for="product-price">Recommended Retail Price(RRP)</label>
+                <label for="product-price">Recommended Retail Price ({{ currencySymbol }} {{ currencyCode }})</label>
                 <input id="product-price" name="product-price" type="text" v-model="recommendedRetailPrice"
                        :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
                        :maxlength="config.recommendedRetailPrice.maxLength">
@@ -118,7 +118,7 @@
           </div>
           <div class="modal-footer justify-content-between">
             <button id="cancel-button" type="button" class="btn btn-md btn-outline-secondary green-button-transparent mr-auto"
-                    @click="closeCreateProductModal">Cancel</button>
+                    @click="closeCreateProductModal()">Cancel</button>
             <button id="creation-button" type="button" class="btn btn-md btn-outline-primary float-lg-end green-button"
                     @click="addNewProduct($event)">Save</button>
           </div>
@@ -140,6 +140,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProductModal from "@/components/ProductModal";
 import Table from "@/components/Table";
+import CurrencyAPI from "../currencyInstance";
 
 export default {
   name: "ProductCatalogue",
@@ -154,7 +155,7 @@ export default {
     return {
       // Table variables
       // A list of the table headers
-      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price", "Created"],
+      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price (" + this.currencySymbol + " " + this.currencyCode + ")", "Created"],
       // A list of the ordering by headers, which is used with talking to the backend
       tableOrderByHeaders: ["productId", "name", "recommendedRetailPrice", "manufacturer", "created"],
       // A list of all the data points belonging to the table
@@ -173,10 +174,6 @@ export default {
 
       // Product modal varaibles
       productId: null,
-      productName: null,
-      description: null,
-      manufacturer: null,
-      recommendedRetailPrice: 0,
       created: null,
       showModal: false,
       small: false,
@@ -216,15 +213,17 @@ export default {
 
       // Message to display that product has been added to catalogue
       addedMessage: "",
+
+      // Currency related variables
+      currencyCode: "",
+      currencySymbol: "",
     }
   },
   methods: {
     /**
-     * Toggles the disabling of pagination buttons.
+     * Shows a modal containing the details about a product.
      *
-     * @param baseClasses Base classes to add
-     * @param condition Given condition for toggling
-     * @returns {array} A list classes to apply
+     * @param productIndex The table index of the product to show details for.
      */
     showDetails(productIndex) {
       let product = this.productList[productIndex];
@@ -235,6 +234,37 @@ export default {
       this.recommendedRetailPrice = product.recommendedRetailPrice;
       this.created = product.created;
       this.showModal = true;
+    },
+
+    /**
+     * Shows a modal to create a new product.
+     */
+    showCreateProductModal() {
+      // Reset product id related variables
+      this.productID = "";
+      this.productIDErrorMsg = "";
+
+      // Reset product name related variables
+      this.productName = "";
+      this.productNameErrorMsg = "";
+
+      // Reset recommended retail price related variables
+      this.recommendedRetailPrice = "";
+      this.recommendedRetailPriceErrorMsg = "";
+
+      // Reset product description related variables
+      this.description = "";
+      this.descriptionErrorMsg = "";
+
+      // Reset product manufacturer related variables
+      this.manufacturer = "";
+      this.manufacturerErrorMsg = "";
+
+      // Reset toast related variables
+      this.toastErrorMessage = "";
+      this.cannotProceed = false;
+
+      this.modal.show();
     },
 
     /**
@@ -286,7 +316,6 @@ export default {
         orderBy = this.orderByString.slice(0, this.orderByString.length-4)
         isAscending = false;
       }
-    },
 
       // If we found a valid orderBy compare it against he allowed orderBy headers in tableOrderByHeaders
       if (orderBy !== null) {
@@ -373,7 +402,7 @@ export default {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
         this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
-        this.requestProducts()
+        this.requestProducts();
       }
     },
 
@@ -387,110 +416,8 @@ export default {
       if (this.currentPage < this.maxPage) {
         this.currentPage += 1;
         this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
-        this.requestProducts()
+        this.requestProducts();
       }
-    },
-
-    /**
-     * Orders the products based on the given booleans for each column, and updates the display
-     * @param id Boolean, whether to order by productId
-     * @param name Boolean, whether to order by name
-     * @param manufacturer Boolean, whether to order by manufacturer
-     * @param recommendedRetailPrice Boolean, whether to order by RRP
-     * @param created Boolean, whether to order by created date
-     */
-    orderProducts(id, name, manufacturer, recommendedRetailPrice, created) {
-
-      this.addedMessage = ""; // Clear product added message, so it doesn't stick around.
-
-      if (id) {
-        this.disableIcons()
-        if (this.productIdAscending) {
-          this.orderBy = "productIdASC"
-          document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-        } else {
-          this.orderBy = "productIdDESC"
-          document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
-
-        this.productIdAscending = !this.productIdAscending;
-        this.nameAscending = false;
-        this.manufacturerAscending = false;
-        this.recommendedRetailPriceAscending = false;
-        this.createdAscending = false;
-
-        this.buildRows();
-      } else if (name) {
-        this.disableIcons()
-        if (this.nameAscending) {
-          this.orderBy = "nameASC"
-          document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-        } else {
-          this.orderBy = "nameDESC"
-          document.getElementById('nameIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
-
-        this.productIdAscending = false;
-        this.nameAscending = !this.nameAscending;
-        this.manufacturerAscending = false;
-        this.recommendedRetailPriceAscending = false;
-        this.createdAscending = false;
-
-        this.buildRows();
-      } else if (manufacturer) {
-        this.disableIcons()
-        if (this.manufacturerAscending) {
-          this.orderBy = "manufacturerASC"
-          document.getElementById('manufacturerIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-        } else {
-          this.orderBy = "manufacturerDESC"
-          document.getElementById('manufacturerIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
-
-        this.productIdAscending = false;
-        this.nameAscending = false;
-        this.manufacturerAscending = !this.manufacturerAscending;
-        this.recommendedRetailPriceAscending = false;
-        this.createdAscending = false;
-
-        this.buildRows();
-      } else if (recommendedRetailPrice) {
-        this.disableIcons()
-        if (this.recommendedRetailPriceAscending) {
-          this.orderBy = "recommendedRetailPriceASC"
-          document.getElementById('recommendedRetailPriceIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-        } else {
-          this.orderBy = "recommendedRetailPriceDESC"
-          document.getElementById('recommendedRetailPriceIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
-
-        this.productIdAscending = false;
-        this.nameAscending = false;
-        this.manufacturerAscending = false;
-        this.recommendedRetailPriceAscending = !this.recommendedRetailPriceAscending;
-        this.createdAscending = false;
-
-        this.buildRows();
-      } else if (created) {
-        this.disableIcons()
-        if (this.createdAscending) {
-          this.orderBy = "createdASC";
-          document.getElementById('createdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
-        } else {
-          this.orderBy = "createdDESC";
-          document.getElementById('createdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
-        }
-        this.productIdAscending = false;
-        this.nameAscending = false;
-        this.manufacturerAscending = false;
-        this.recommendedRetailPriceAscending = false;
-        this.createdAscending = !this.createdAscending;
-      }
-
-
-      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}});
-      this.requestProducts();
-
     },
 
     /**
@@ -725,7 +652,40 @@ export default {
       this.cannotProceed = false;
 
       this.modal.hide();
-    }
+    },
+
+    /**
+     * Currency API requests.
+     * An asynchronous function that calls the REST Countries API with the given country input.
+     * Upon success, the filterResponse function is called with the response data.
+     */
+    async currencyRequest() {
+      this.businessId = parseInt(this.$route.params.id);
+
+      /*
+        Request business from backend. If received assign the country of the business
+        to a variable.
+        */
+      let country = "";
+      await Api.getBusiness(this.businessId).then((response) => {
+        country = response.data.address.country;
+      })
+          .catch((error) => console.log(error))
+
+      console.log(country);
+
+      await CurrencyAPI.currencyQuery(country).then((response) => {
+        console.log(response.data);
+        this.filterResponse(response.data);
+      })
+          .catch((error) => console.log(error))
+    },
+
+    filterResponse(response) {
+      this.currencyCode = response[0].currencies[0].code;
+      this.currencySymbol = response[0].currencies[0].symbol;
+    },
+
   },
 
   mounted() {
@@ -739,6 +699,7 @@ export default {
      */
     const currentID = Cookies.get('userID');
     if (currentID) {
+      this.currencyRequest();
       this.requestProducts().then(
           () => {}
       ).catch(
