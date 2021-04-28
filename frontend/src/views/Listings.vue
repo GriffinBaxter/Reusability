@@ -45,6 +45,8 @@
 import Navbar from "@/components/Navbar";
 import ListingItem from "@/components/ListingItem";
 import Api from "@/Api";
+import Cookies from "js-cookie";
+
 export default {
 name: "Listings",
   components: {ListingItem, Navbar},
@@ -53,7 +55,7 @@ name: "Listings",
       allListings: [],
       listings: [],
       businessName: "",
-      businessAdmin: true //temp
+      businessAdmin: false
     }
   },
   methods: {
@@ -77,7 +79,7 @@ name: "Listings",
       })
     },
     getBusiness(id) {
-      Api.getBusiness(id).then(response => (this.getBusinessName(response.data))).catch((error) => {
+      Api.getBusiness(id).then(response => (this.getBusinessData(response.data))).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 401) {
@@ -90,8 +92,11 @@ name: "Listings",
         }
       })
     },
-    getBusinessName(data) {
+    getBusinessData(data) {
       this.businessName = data.name;
+      // Checks if user is acting as business
+      const actAs = Cookies.get('actAs');
+      this.businessAdmin = actAs === String(data.id);
     },
     populatePage(data) {
       if (data.length === 0) {
