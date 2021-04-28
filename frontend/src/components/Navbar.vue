@@ -359,6 +359,25 @@ export default {
       this.currentUser = response;
       if (Cookies.get('actAs')) {
         this.actAsId = Cookies.get('actAs');
+        // Checks if user is admin of business at id actAs
+        let check = false;
+        for (let i=0; i < response.businessesAdministered.length; i++) {
+          if (String(response.businessesAdministered[i].id) === this.actAsId) {
+            this.actAs = response.businessesAdministered[i].name;
+            check = true;
+            i = response.businessesAdministered.length; // Ends for loop
+          }
+        }
+        // If user not admin of business removes cookie
+        if (check === false) {
+          Cookies.remove('actAs');
+          this.actAsId = null;
+          if (response.nickname == null) {
+            this.actAs = response.firstName;
+          } else {
+            this.actAs = response.nickname;
+          }
+        }
       } else {
         if (response.nickname == null) {
           this.actAs = response.firstName;
