@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * SearchUserByName test class - specifically for testing the searching user by name feature of the UserRepository class
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")

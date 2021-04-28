@@ -42,6 +42,10 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+
     all {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }

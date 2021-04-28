@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * ProductRepository test class
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 public class ProductRepositoryIntegrationTests {

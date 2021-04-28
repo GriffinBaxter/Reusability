@@ -33,7 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * FindProductsByBusinessId test class - specifically for testing the pagination and ordering of the
  * findProductsByBusinessId method in ProductRepository.
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
