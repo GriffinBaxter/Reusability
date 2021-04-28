@@ -286,10 +286,10 @@ export default {
      * Updates the display to show the new page when a product clicks to move to a different page.
      *
      * @param event The click event
-     * @param newPageNum The page to move to
      */
     updatePage(event) {
-      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderByString, "page": (event.newPageNumber).toString()}});
+      this.currentPage = event.newPageNumber;
+      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}})
       this.requestProducts();
     },
     /**
@@ -679,7 +679,7 @@ export default {
       await this.currencyRequest();
       // if currency code and symbol exist we want to update table header of RRP to show this info
       if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
-        this.tableHeaders[3] = "Recommended Retail Price (" + this.currencySymbol + " " + this.currencyCode + ")";
+        this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
       }
       this.requestProducts().then(
           () => {}
