@@ -315,6 +315,12 @@ export default {
       userId},{
       withCredentials: true
     })
+  },
+
+  getBusinessListings: (businessId) => {
+    return instance.get(`/businesses/${businessId}/listings`, {
+      withCredentials: true,
+    })
   }
   // Usage examples from original file:
   //
