@@ -2,16 +2,25 @@
   <div>
     <Navbar/>
     <div class="container">
-      <h1>Listings</h1>
-      <div class="card">
-        <div class="row">
-          <div class="col-md-9">
-            Orderings..
+      <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
+      <div class="card p-1">
+        <!-- Order Buttons -->
+        <div class="row my-3" align="center">
+          <div class="col-md">
+            <button type="button" class="btn btn-outline-success w-75">New Listings</button>
           </div>
-          <div class="col">
-            <button type="button" class="btn btn-success">Add new</button>
+          <div class="col-md">
+            <button type="button" class="btn btn-outline-success w-75">Closing Soon</button>
+          </div>
+          <div class="col-md">
+            <button type="button" class="btn btn-outline-success w-75">Name</button>
+          </div>
+          <!-- Add new Button -->
+          <div class="col-md" v-if="businessAdmin">
+            <button type="button" class="btn btn-success w-75">Add new</button>
           </div>
         </div>
+        <!-- Listings -->
         <ListingItem
             v-for="item in listings"
             v-bind:key="item.index"
@@ -42,7 +51,9 @@ name: "Listings",
   data() {
     return {
       allListings: [],
-      listings: []
+      listings: [],
+      businessName: "",
+      businessAdmin: true //temp
     }
   },
   methods: {
@@ -65,16 +76,39 @@ name: "Listings",
         }
       })
     },
+    getBusiness(id) {
+      Api.getBusiness(id).then(response => (this.getBusinessName(response.data))).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noBusiness'});
+        } else {
+          this.$router.push({path: '/noBusiness'});
+          console.log(error.message);
+        }
+      })
+    },
+    getBusinessName(data) {
+      this.businessName = data.name;
+    },
     populatePage(data) {
-      for (let i=0; i<data.length; i++) {
+      if (data.length === 0) {
+        console.log('No listings')
+      }
+      for (let i=0; i < data.length; i++) {
         this.listings.push({
           productName: data[i].inventoryItem.product.name,
+          description: data[i].inventoryItem.product.description,
           image: data[i].inventoryItem.product.images.filename,
           productId: data[i].inventoryItem.product.id,
+          quantityPerSale: data[i].inventoryItem.quantity,
           quantity: data[i].quantity,
           price: data[i].price,
           listDate: data[i].created,
-          closeDate: data[i].closes
+          closeDate: data[i].closes,
+          moreInfo: data[i].moreInfo
         })
       }
     },
@@ -106,7 +140,8 @@ name: "Listings",
     }
   },
   mounted() {
-    // const businessId = this.$route.params.id;
+    const businessId = parseInt(this.$route.params.id);
+    this.getBusiness(businessId);
     this.fakeListings();
     // this.getListings(businessId); //NOTE: Currently not working
   }
@@ -114,5 +149,10 @@ name: "Listings",
 </script>
 
 <style scoped>
+
+#pageTitle {
+  padding: 10px;
+  text-align: center;
+}
 
 </style>
