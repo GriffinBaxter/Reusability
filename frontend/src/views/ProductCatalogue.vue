@@ -140,8 +140,8 @@ import Api, { Product } from '../Api';
 import Cookies from 'js-cookie';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import ProductModal from "@/components/ProductModal";
-import Table from "@/components/Table";
+import ProductModal from "../components/ProductModal";
+import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 
 export default {
