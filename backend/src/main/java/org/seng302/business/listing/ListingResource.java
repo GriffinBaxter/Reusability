@@ -98,8 +98,8 @@ public class ListingResource {
             );
         }
         // Checks User is Admin
-        Optional<Business> business = BusinessRepository.findBusinessById(id);
-        if (currentUser.getRole() == Role.USER && !(currentBusiness.get().getAdministrators().contains(currentUser))) {
+        Optional<Business> business = businessRepository.findBusinessById(id);
+        if (currentUser.getRole() == Role.USER && !(business.get().getAdministrators().contains(currentUser))) {
             logger.error("Listing Creation Failure - 403 [NOT AUTHORIZED] - User with ID {} is not admin of business with ID {}", currentUser.getId(), id);
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
@@ -109,13 +109,15 @@ public class ListingResource {
         }
 
         // Checks InventoryItem exists and gets InventoryItem
-        Optional<InventoryItem> inventoryItem = InventoryItemRepository.findInventoryItemById(Integer.parseInt(listingPayload.inventoryItemId));
-        if (!inventoryItem) {
-            logger.error("Listing Creation Failure - 400 [BAD REQUEST] - Inventory Item at ID {} Not Found", listingPayload.inventoryItemId);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Inventory Item Not Found");
-        }
+        //Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemById(Integer.parseInt(listingPayload.getInventoryId()));
+        //if (!inventoryItem.isPresent()) {
+        //    logger.error("Listing Creation Failure - 400 [BAD REQUEST] - Inventory Item at ID {} Not Found", listingPayload.getInventoryId());
+        //    throw new ResponseStatusException(
+        //             HttpStatus.BAD_REQUEST,
+        //            "Inventory Item Not Found");
+        //}
+
+        InventoryItem inventoryItem = new InventoryItem();
         Integer quantity = listingPayload.getQuantity();
         Double price = listingPayload.getPrice();
         String moreInfo = listingPayload.getMoreInfo();
@@ -138,7 +140,7 @@ public class ListingResource {
         } catch (Exception e) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
-                "Bad Request"
+                "Bad Request - Couldn't make listing"
             );
         }
     }
