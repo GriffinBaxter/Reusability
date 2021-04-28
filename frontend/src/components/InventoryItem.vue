@@ -2,7 +2,7 @@
   <div class="card border-secondary mb-3 px-2 py-2 shadow">
     <div class="row no-gutters">
       <div class="col-md-3">
-        <img class="card-img" :src="require('../../public/apples.jpg')" id="inventory-item-image">
+        <img class="card-img" :src="image" id="inventory-item-image">
       </div>
       <div class="col-md-9">
         <div class="card-body px-3 py-3">
@@ -46,7 +46,7 @@ export default {
   props: {
     image: {
       type: String,
-      default: "../../public/apples.jpg",
+      default: require("../../public/apples.jpg"),
       required: false
     },
     productName: {
@@ -99,11 +99,10 @@ export default {
     }
   },
   mounted() {
-    document.getElementById("inventory-item-image").src = this.image;
   }
 }
 </script>
-<style>
+<style scoped>
 img {
   object-fit: cover;
   width: 230px;

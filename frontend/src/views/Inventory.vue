@@ -150,7 +150,7 @@
 
 <script>
 import Footer from "@/components/Footer";
-import InventoryItem from "@/components/inventoryItem";
+import InventoryItem from "@/components/InventoryItem";
 import Navbar from "@/components/Navbar";
 import InventoryItemCreation from "@/components/CreateNewInventoryItem";
 
@@ -167,7 +167,7 @@ export default {
       description: "asdasdas",
 
       inventories: [],
-      image: "../../public/apples.jpg",
+      image: require("../../public/apples.jpg"),
       productName: "Watties Baked Beans - 420g can",
       productId: "WATT-420-BEANS",
       quantity: 4,
@@ -184,7 +184,6 @@ export default {
     //example
     this.inventories.push({
       index: 0,
-      image: this.image,
       productName: this.productName,
       productId: this.productId,
       quantity: this.quantity,
@@ -197,7 +196,6 @@ export default {
     });
     this.inventories.push({
       index: 1,
-      image: this.image,
       productName: this.productName,
       productId: this.productId,
       quantity: this.quantity,
