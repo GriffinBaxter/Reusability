@@ -12,7 +12,7 @@
             <br>
             <b>Manufacturer:</b> {{ manufacturer }}
             <br>
-            <b>RRP:</b> {{ recommendedRetailPrice }}
+            <b>RRP:</b> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
             <br>
             <b>Description:</b>
             <br>
@@ -57,19 +57,29 @@ export default {
     },
     manufacturer: {
       type: String,
-      default: "None",
+      default: "N/A",
       required: false
     },
     recommendedRetailPrice: {
       type: Number,
       // eslint-disable-next-line vue/require-valid-default-prop
-      default: "None",
+      default: "--",
       required: false
     },
     created: {
       type: String,
-      default: "None",
+      default: "N/A",
       required: true
+    },
+    currencyCode: {
+      type: String,
+      default: "",
+      required: false
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: false
     }
   },
 

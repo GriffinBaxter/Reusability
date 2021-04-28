@@ -37,7 +37,9 @@
                       v-bind:description="description"
                       v-bind:manufacturer="manufacturer"
                       v-bind:recommended-retail-price="recommendedRetailPrice"
-                      v-bind:created="created" />
+                      v-bind:created="created"
+                      v-bind:currencyCode="currencyCode"
+                      v-bind:currencySymbol="currencySymbol"/>
                 </div>
                 <div class="modal-footer">
                   <button class="btn btn-outline-primary float-end" id="closeModalButton" @click="showModal = false">Close</button>
