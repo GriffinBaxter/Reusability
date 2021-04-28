@@ -4,7 +4,7 @@
 
   <div id="outerContainer" class="container">
 
-    <div id="body" class="container all-but-footer">
+    <div id="body" class="container all-but-footer mb-3">
 
       <div class="row mt-3">
         <h2 align="center">Product Catalogue</h2>
@@ -13,7 +13,7 @@
 
       <div class="row mb-3">
         <div class="col">
-          <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end mt-4" tabindex="2"
+          <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="2"
                   @click="showCreateProductModal()">Create Product</button>
         </div>
       </div>
@@ -159,7 +159,7 @@ export default {
       // A list of the table headers
       tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price", "Created"],
       // A list of the ordering by headers, which is used with talking to the backend
-      tableOrderByHeaders: ["productId", "name", "recommendedRetailPrice", "manufacturer", "created"],
+      tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created"],
       // A list of all the data points belonging to the table
       tableData: [],
       // Used to tell the table what is the current ordering (for visual purposes).
@@ -178,8 +178,6 @@ export default {
       productId: null,
       created: null,
       showModal: false,
-      small: false,
-
       modal: null,
 
       // Used for having pre-filled input fields
@@ -290,10 +288,8 @@ export default {
      * @param event The click event
      * @param newPageNum The page to move to
      */
-    updatePage(event, newPageNum) {
-      event.preventDefault();
-      this.currentPage = newPageNum;
-      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
+    updatePage(event) {
+      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderByString, "page": (event.newPageNumber).toString()}});
       this.requestProducts();
     },
     /**
@@ -401,25 +397,7 @@ export default {
     orderProducts(event) {
       this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
       this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}});
-      if (this.currentPage > 1) {
-        this.currentPage -= 1;
-        this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
-        this.requestProducts();
-      }
-    },
-
-    /**
-     * Goes to the next page and updates the rows.
-     *
-     */
-    nextPage() {
-      this.addedMessage = ""; // Clear product added message, so it doesn't stick around.
-
-      if (this.currentPage < this.maxPage) {
-        this.currentPage += 1;
-        this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}})
-        this.requestProducts();
-      }
+      this.requestProducts();
     },
 
     /**

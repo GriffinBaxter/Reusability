@@ -27,9 +27,8 @@
 
     <!-- Table data rows -->
     <div v-if="dataIsReady">
-        <!-- The table alternates colours between row-colour and row-colour-dark -->
         <!-- The @click and @keydown are used to trigger events for the parent to be informed that the element row was pressed.-->
-        <div :class="`row mb-3 py-4 shadow-sm productRows ${rowIndex % 2 === 0 ? 'row-colour' : 'row-colour-dark'}`" :tabindex="tableTabIndex+rowIndex" style="cursor: pointer"
+        <div :class="`row mb-3 py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex+rowIndex" style="cursor: pointer"
              @click="() => handleRowClick(rowIndex)" @keydown="(event) => handleRowKeyDown(event, rowIndex)"
              v-for="(row, rowIndex) in currentPageRows" :key="`${tableId}-row-${rowIndex}`">
 
@@ -49,16 +48,16 @@
 
 
     <!-- Table footer -->
-    <div :id="`${tableId}-footer-row`" class="row flex-column-reverse flex-lg-row text-center">
+    <div :id="`${tableId}-footer-row`" class="row flex-column-reverse flex-lg-row">
       <!-- Showing results out of total results section-->
-      <div class="col-lg px-0" v-if="totalRows > 0">
+      <div class="col-lg" v-if="totalRows > 0">
         Showing {{currentPage*maxRowsPerPage+1}}-{{currentPageRows.length+currentPage*maxRowsPerPage}} of {{totalRows}} results
       </div>
       <div v-else>
         No results found
       </div>
       <!-- Paginiation -->
-      <div v-if="totalPages > 0" class="col-lg btn-group px-0">
+      <div v-if="totalPages > 0" class="col-lg btn-group">
 
         <!-- This is only enabled when there is a previous page -->
         <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updateCurrentPage(currentPage-1)">
@@ -449,5 +448,21 @@ export default {
 
 
 <style scoped>
+
+.btn {
+  color: #1EBA8C;
+  background-color: #FFFFFF;
+  border: 1px solid #d4d4d4;
+}
+
+.disabled {
+  color: #404040;
+}
+
+.active {
+  color: #FFFFFF;
+  background-color: #1EBA8C;
+  border: 1px solid #1EBA8C;
+}
 
 </style>
