@@ -4,9 +4,7 @@
     <navbar/>
 
     <!--creation popup-->
-    <modal>
-      <inventory-item-creation/>
-    </modal>
+    <inventory-item-creation/>
 
     <!--inventory container-->
     <div class="container p-5 mt-3" id="profileContainer">

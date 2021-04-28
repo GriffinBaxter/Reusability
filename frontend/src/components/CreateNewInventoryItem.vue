@@ -12,112 +12,97 @@
 
         <!--modal body-->
         <div class="modal-body">
-          <!--product id-->
-          <div class="row py-2" align="left">
-            <div class="col-1"/>
-            <label class="col-4 align-baseline" for="product-id">Product ID: </label>
-            <input class="col-6" id="product-id" name="product-id" tabindex="1" type="text" v-model="productId"
-                   required>
-            <div class="col-1"/>
+          <form class="row" id="inventoryItemCreation" @submit.prevent>
 
-            <div class="invalid-feedback">
+            <!--product id-->
+            <div class="col-7 form-group py-1 px-3">
+              <label for="product-id">Product ID*: </label>
+              <input id="product-id" name="product-id" tabindex="1" type="text" v-model="productId"
+                     :class="toggleInvalidClass(productIdErrorMsg)" :maxlength="config.productId.maxLength" required>
+              <div class="invalid-feedback">
+                {{ productIdErrorMsg }}
+              </div>
             </div>
-          </div>
 
-          <!--quantity-->
-          <div class="row py-2" align="left">
-            <div class="col-1"/>
-            <label class="col-4 align-baseline" for="quantity">Quantity: </label>
-            <input class="col-6" id="quantity" name="quantity" tabindex="2" type="number" v-model="quantity"
-                   required>
-            <div class="col-1"/>
-
-            <div class="invalid-feedback">
-              {{ quantityErrorMsg }}
+            <!--quantity-->
+            <div class="col-5 form-group py-1 px-3">
+              <label for="quantity">Quantity*: </label>
+              <input id="quantity" name="quantity" tabindex="2" type="number" v-model="quantity" min="0"
+                     :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
+              <div class="invalid-feedback">
+                {{ quantityErrorMsg }}
+              </div>
             </div>
-          </div>
 
-          <!--price per item-->
-          <div class="row py-2" align="left">
-            <div class="col-1"/>
-            <label class="col-4 align-baseline" for="price-per-item">Price Per Item: </label>
-            <input class="col-6" id="price-per-item" name="price-per-item" tabindex="3" type="number"
-                   v-model="pricePerItem">
-            <div class="col-1"/>
 
-            <div class="invalid-feedback">
-              {{ pricePerItemErrorMsg }}
+            <!--price per item-->
+            <div class="col-6 form-group py-1 px-3">
+              <label for="price-per-item">Price Per Item: </label>
+              <input id="price-per-item" name="price-per-item" tabindex="3" type="number" v-model="pricePerItem" min="0"
+                     :class="toggleInvalidClass(pricePerItemErrorMsg)" :maxlength="config.pricePerItem.maxLength">
+              <div class="invalid-feedback">
+                {{ pricePerItemErrorMsg }}
+              </div>
             </div>
-          </div>
 
-          <!--total price-->
-          <div class="row py-2" align="left">
-            <div class="col-1"/>
-            <label class="col-4 align-baseline" for="total-price">Total Price: </label>
-            <input class="col-6" id="total-price" name="total-price" tabindex="4" type="number"
-                   v-model="totalPrice">
-            <div class="col-1"/>
-
-            <div class="invalid-feedback">
-              {{ totalPriceErrorMsg }}
+            <!--total price-->
+            <div class="col-6 form-group py-1 px-3">
+              <label for="total-price">Total Price: </label>
+              <input id="total-price" name="total-price" tabindex="4" type="number" v-model="totalPrice" min="0"
+                     :class="toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
+              <div class="invalid-feedback">
+                {{ totalPriceErrorMsg }}
+              </div>
             </div>
-          </div>
 
-          <!--manufactured-->
-          <div class="row py-2" align="left">
-            <div class="col-1"/>
-            <label class="col-4 align-baseline" for="manufactured">Manufactured: </label>
-            <input class="col-6" id="manufactured" name="manufactured" tabindex="5" type="date"
-                   v-model="manufactured">
-            <div class="col-1"/>
-
-            <div class="invalid-feedback">
-              {{ manufacturedErrorMsg }}
+            <!--manufactured-->
+            <div class="col-12 form-group py-1 px-3">
+              <label for="manufactured">Manufactured: </label>
+              <input id="manufactured" name="manufactured" tabindex="5" type="date" v-model="manufactured"
+                     :class="toggleInvalidClass(manufacturedErrorMsg)">
+              <div class="invalid-feedback">
+                {{ manufacturedErrorMsg }}
+              </div>
             </div>
-          </div>
 
-          <!--sell by-->
-          <div class="row py-2" align="left">
-            <div class="col-1"/>
-            <label class="col-4 align-baseline" for="sell-by">Sell By: </label>
-            <input class="col-6" id="sell-by" name="sell-by" tabindex="6" type="date" v-model="sellBy">
-            <div class="col-1"/>
-
-            <div class="invalid-feedback">
-              {{ sellNyErrorMsg }}
+            <!--sell by-->
+            <div class="col-12 form-group py-1 px-3">
+              <label for="sell-by">Sell By: </label>
+              <input id="sell-by" name="sell-by" tabindex="6" type="date" v-model="sellBy"
+                     :class="toggleInvalidClass(sellNyErrorMsg)">
+              <div class="invalid-feedback">
+                {{ sellNyErrorMsg }}
+              </div>
             </div>
-          </div>
 
-          <!--best before-->
-          <div class="row py-2" align="left">
-            <div class="col-1"/>
-            <label class="col-4 align-baseline" for="best-before">Best Before: </label>
-            <input class="col-6" id="best-before" name="best-before" tabindex="7" type="date" v-model="bestBefore">
-            <div class="col-1"/>
-
-            <div class="invalid-feedback">
-              {{ bestBeforeErrorMsg }}
+            <!--best before-->
+            <div class="col-12 form-group py-1 px-3">
+              <label for="best-before">Best Before: </label>
+              <input id="best-before" name="best-before" tabindex="7" type="date" v-model="bestBefore"
+                     :class="toggleInvalidClass(bestBeforeErrorMsg)">
+              <div class="invalid-feedback">
+                {{ bestBeforeErrorMsg }}
+              </div>
             </div>
-          </div>
 
-          <!--expires-->
-          <div class="row py-2" align="left">
-            <div class="col-1"/>
-            <label class="col-4 align-baseline" for="expires">Expires: </label>
-            <input class="col-6" id="expires" name="expires" tabindex="8" type="date" v-model="expires" required>
-            <div class="col-1"/>
-
-            <div class="invalid-feedback">
-              {{ expiresErrorMsg }}
+            <!--expires-->
+            <div class="col-12 form-group py-1 px-3">
+              <label for="expires">Expires*: </label>
+              <input class="col-6" id="expires" name="expires" tabindex="8" type="date" v-model="expires"
+                     :class="toggleInvalidClass(expiresErrorMsg)" required>
+              <div class="invalid-feedback">
+                {{ expiresErrorMsg }}
+              </div>
             </div>
-          </div>
 
+          </form>
         </div>
+
 
         <!--footer-->
         <div class="modal-footer">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-success">Confirm</button>
+          <button type="button" class="btn btn-success" @click="createNewInventoryItem()">Confirm</button>
         </div>
 
       </div>
@@ -126,10 +111,15 @@
 </template>
 
 <script>
+import {InventoryItem} from "@/Api";
+
 export default {
   name: 'InventoryItemCreation',
   data() {
     return {
+      // A copy of the product config file for error checking.
+      config: InventoryItem.config,
+
       // product Id related variables
       productId: "",
       productIdErrorMsg: "",
@@ -164,9 +154,244 @@ export default {
     }
   },
   methods: {
-    close() {
-      this.$emit('close');
+    /**
+     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
+     * if an error message needs to be presented to the user.
+     *
+     * @param errorMessage, string, the error message relating to invalid input of a field.
+     * @returns {[string]}, classList, a list containing the classes for an invalid message.
+     */
+    toggleInvalidClass(errorMessage) {
+      let classList = ['form-control']
+      if (errorMessage) {
+        classList.push('is-invalid')
+      }
+      return classList
     },
+    /**
+     * This method parses the given date of birth input and separates it into a year, month and day, provided it meets
+     * the expected format.
+     *
+     * @param dateString, string, the date to validate and separate.
+     * @returns {{month: number, year: number, day: number}|null}, {year, month, day}, if the date meets the expected
+     * format, else null.
+     *
+     */
+    parseSelectedDate(dateString) {
+      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,2}-[0-9]{1,2}$/
+
+      if (verifyRegex.test(dateString)) {
+        const dateParts = dateString.split("-", 3);
+        return {
+          year: Number(dateParts[0]),
+          month: Number(dateParts[1]),
+          day: Number(dateParts[2])
+        }
+      } else {
+        return null
+      }
+    },
+    /**
+     * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
+     *
+     * @param val, int, the value to be tested for being within the range.
+     * @param min, int, the minimum value in the range.
+     * @param max, int, the maximum value in the range.
+     * @returns Boolean, true if within range, false is not within range.
+     */
+    between(val, min, max) {
+      return min <= val && val <= max;
+    },
+    /**
+     * This method determines the error message to be generated for a given input value based on the field type and
+     * its associated validity (determined by a regex).
+     *
+     * @param name, string, name of the input field.
+     * @param inputVal, string, the value entered in the stated field.
+     * @param minLength, number, the minimum allowed length of the inputVal.
+     * @param maxLength, number, the maximum allowed length of the inputVal.
+     * @param regexMessage, string, the tailored message about the expected syntax for the inputVal if it does not
+     *                              meet the regex given.
+     * @param regex, string, the allowed format for the given input field.
+     * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
+     */
+    getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
+      let errorMessage = ""; //TODO: remove after testing and just have ""
+      if (inputVal === "" && minLength >= 1) {
+        errorMessage = "Please enter input";
+      } else if (!regex.test(inputVal)) {
+        errorMessage = regexMessage;
+      } else if (!this.between(inputVal.length, minLength, maxLength)) {
+        errorMessage = `Input must be between ${minLength} and ${maxLength} characters long.`
+      }
+      return errorMessage;
+    },
+    /**
+     * This method removes white space from the beginning and end of all the input field's input values.
+     */
+    trimTextInputFields() {
+      this.productID = this.productId.trim();
+      this.quantity = this.quantity.trim();
+      this.pricePerItem = this.pricePerItem.trim();
+      this.totalPrice = this.totalPrice.trim();
+      this.manufactured = this.manufactured.trim();
+      this.sellBy = this.sellBy.trim();
+      this.bestBefore = this.bestBefore.trim();
+      this.expires = this.expires.trim();
+    },
+    /**
+     * This function will return true for date before.
+     *
+     * @param date selected date
+     * @returns {boolean} isADayBefore or not
+     */
+    isADayBefore(date) {
+      const selectedDate = this.parseSelectedDate(date);
+      const todayDate = new Date();
+
+      if (selectedDate) {
+        const {year, month, day} = selectedDate;
+        if (year && month && day) {
+          const chosenDate = new Date(year, month, day);
+          if (todayDate - chosenDate < 0) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+    /**
+     * This function will return true for date After.
+     *
+     * @param date selected date
+     * @returns {boolean} isADayAfter or not
+     */
+    isADayAfter(date) {
+      const selectedDate = this.parseSelectedDate(date);
+      const todayDate = new Date();
+
+      if (selectedDate) {
+        const {year, month, day} = selectedDate;
+        if (year && month && day) {
+          const chosenDate = new Date(year, month, day);
+          if (todayDate - chosenDate > 0) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+    createNewInventoryItem() {
+      // Steps required for the function before starting processing.
+      // inventoryItem.preventDefault()  // prevents page from reloading
+      this.trimTextInputFields()
+      let requestIsInvalid = false
+
+      // ===================================== START OF INPUT FIELDS VALIDATION ========================================
+      // Product Id error checking
+      this.productIdErrorMsg = this.getErrorMessage(
+          this.config.productId.name,
+          this.productId,
+          this.config.productId.minLength,
+          this.config.productId.maxLength,
+          this.config.productId.regexMessage,
+          this.config.productId.regex
+      )
+      if (this.productIdErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Quantity error checking
+      this.quantityErrorMsg = this.getErrorMessage(
+          this.config.quantity.name,
+          this.quantity,
+          this.config.quantity.minLength,
+          this.config.quantity.maxLength,
+          this.config.quantity.regexMessage,
+          this.config.quantity.regex
+      )
+      if (this.quantityErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Price per item error checking
+      this.pricePerItemErrorMsg = this.getErrorMessage(
+          this.config.pricePerItem.name,
+          this.pricePerItem,
+          this.config.pricePerItem.minLength,
+          this.config.pricePerItem.maxLength,
+          this.config.pricePerItem.regexMessage,
+          this.config.pricePerItem.regex
+      )
+      if (this.pricePerItemErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Total price error checking
+      this.totalPriceErrorMsg = this.getErrorMessage(
+          this.config.totalPrice.name,
+          this.totalPrice,
+          this.config.totalPrice.minLength,
+          this.config.totalPrice.maxLength,
+          this.config.totalPrice.regexMessage,
+          this.config.totalPrice.regex
+      )
+      if (this.totalPriceErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Manufactured error checking
+      //TODO:check this.manufactured == ""
+      console.log(this.isADayAfter(this.manufactured))
+      if (this.isADayAfter(this.manufactured) === false) {
+        this.manufacturedErrorMsg = "If fill in, must be a date before or today.";
+      }
+      if (this.totalPriceErrorMsg) {
+        requestIsInvalid = true;
+      }
+
+      // Sell by error checking
+      console.log(this.isADayAfter(this.sellBy))
+      if (this.isADayAfter(this.sellBy) === false) {
+        this.sellByErrorMsg = "If fill in, must be a date before or today.";
+      }
+      if (this.sellByErrorMsg) {
+        requestIsInvalid = true;
+      }
+
+      // No checking for best before
+
+      // Expires by error checking
+      if (this.isADayBefore(this.expires) !== true) {
+        this.expiresErrorMsg = "Must be a date after or today.";
+      }
+      if (this.expiresErrorMsg) {
+        requestIsInvalid = true
+      }
+
+
+      // If at any stage an error has been discovered we cancel the procedure
+      if (requestIsInvalid) {
+        return
+      }
+
+      // Wrapping up the product submitted fields into a class object (InventoryItem).
+      const inventoryItemData = {
+        productId: this.productId,
+        quantity: this.quantity,
+        pricePerItem: this.pricePerItem,
+        totalPrice: this.totalPrice,
+        manufactured: this.manufactured,
+        sellBy: this.sellBy,
+        bestBefore: this.bestBefore,
+        expires: this.expires
+      }
+      const newInventoryItem = new InventoryItem(inventoryItemData);
+
+      console.log(newInventoryItem);
+
+    }
+
   },
 };
 </script>
