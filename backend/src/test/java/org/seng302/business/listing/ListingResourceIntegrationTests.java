@@ -256,4 +256,152 @@ public class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    @Test
+    public void canCreateProductWhenBusinessExistsAndDataInvalidWithBusinessAdministratorUserCookie() throws Exception {
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
+        given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(null));
+
+        Listing newListing = new Listing(
+                inventoryItem,
+                10,
+                null,
+                "info",
+                LocalDateTime.now(),
+                null
+        );
+
+        String json = String.format(listingPayload, newListing.getInventoryItem().getId(), newListing.getQuantity(),
+                newListing.getPrice(), newListing.getMoreInfo(), newListing.getCloses());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(listingRepository.save(any(Listing.class))).thenReturn(listing);
+        response = mvc.perform(post(String.format("/businesses/%d/listings", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void canCreateProductWhenBusinessDoesntExistsAndDataValid() throws Exception {
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(null));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
+        given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
+
+        Listing newListing = new Listing(
+                inventoryItem,
+                10,
+                null,
+                "info",
+                LocalDateTime.now(),
+                null
+        );
+
+        String json = String.format(listingPayload, newListing.getInventoryItem().getId(), newListing.getQuantity(),
+                newListing.getPrice(), newListing.getMoreInfo(), newListing.getCloses());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(listingRepository.save(any(Listing.class))).thenReturn(listing);
+        response = mvc.perform(post(String.format("/businesses/%d/listings", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    @Test
+    public void canCreateProductWhenBusinessExistsAndDataValidWithoutUserCookie() throws Exception {
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
+        given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
+
+        Listing newListing = new Listing(
+                inventoryItem,
+                10,
+                null,
+                "info",
+                LocalDateTime.now(),
+                null
+        );
+
+        String json = String.format(listingPayload, newListing.getInventoryItem().getId(), newListing.getQuantity(),
+                newListing.getPrice(), newListing.getMoreInfo(), newListing.getCloses());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(listingRepository.save(any(Listing.class))).thenReturn(listing);
+        response = mvc.perform(post(String.format("/businesses/%d/listings", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(json))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void canCreateProductWhenBusinessExistsAndDataValidWithUserCookieGAA() throws Exception {
+        given(userRepository.findById(2)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
+        given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
+
+        Listing newListing = new Listing(
+                inventoryItem,
+                10,
+                null,
+                "info",
+                LocalDateTime.now(),
+                null
+        );
+
+        String json = String.format(listingPayload, newListing.getInventoryItem().getId(), newListing.getQuantity(),
+                newListing.getPrice(), newListing.getMoreInfo(), newListing.getCloses());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(listingRepository.save(any(Listing.class))).thenReturn(listing);
+        response = mvc.perform(post(String.format("/businesses/%d/listings", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    public void canCreateProductWhenBusinessExistsAndDataValidWithInvalidUserCookie() throws Exception {
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
+        given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
+
+        Listing newListing = new Listing(
+                inventoryItem,
+                10,
+                null,
+                "info",
+                LocalDateTime.now(),
+                null
+        );
+
+        String json = String.format(listingPayload, newListing.getInventoryItem().getId(), newListing.getQuantity(),
+                newListing.getPrice(), newListing.getMoreInfo(), newListing.getCloses());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(null));
+        when(listingRepository.save(any(Listing.class))).thenReturn(listing);
+        response = mvc.perform(post(String.format("/businesses/%d/listings", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
 }
