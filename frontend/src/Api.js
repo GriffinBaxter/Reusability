@@ -37,7 +37,7 @@ const instance = axios.create({
   timeout: 3000
 });
 
-// TODO: Only for registration --- NEEDS ADAPATION FOR FUTURE STORIES
+// TODO: Only for registration --- NEEDS ADAPTION FOR FUTURE STORIES
 export class User{
 
   // This is a config for the user requirement details

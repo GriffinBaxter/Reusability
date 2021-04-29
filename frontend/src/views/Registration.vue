@@ -135,7 +135,7 @@
               <div class="col my-2 my-lg-0">
                 <label for="password">Password*</label>
                 <div class="input-group">
-                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" :maxlength="config.password.maxLength" required>
+                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)">
 
                   <!--toggle password visibility-->
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
