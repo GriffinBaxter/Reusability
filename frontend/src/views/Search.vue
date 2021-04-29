@@ -363,7 +363,7 @@ export default {
     buildRows() {
       const self = this;
       this.clearRows();
-      let limit = this.rowsPerPage + (this.currentPage-1) * this.rowsPerPage;
+      let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
       let startIndex = 0;
       const outerContainer = document.getElementById('outer-container');
       const lastChild = outerContainer.lastChild;
