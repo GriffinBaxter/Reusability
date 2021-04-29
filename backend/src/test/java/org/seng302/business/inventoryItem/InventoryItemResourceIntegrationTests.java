@@ -758,7 +758,7 @@ public class InventoryItemResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-//---------------------------------- Tests for /businesses/{id}/inventory/ endpoint ------------------------------------
+    //---------------------------------- Tests for /businesses/{id}/inventory/ endpoint --------------------------------
 
     /**
      * Tests that an OK status and a list of inventory item payloads is received when the business ID in the
@@ -877,14 +877,119 @@ public class InventoryItemResourceIntegrationTests {
     }
 
     /**
-     * Tests that an UNAUTHORIZED status is given when the the business exists and the user is the business
-     * admin BUT they have are not logged in i.e. no is cookie present.
-     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     * Tests that a NOT_ACCEPTABLE status is received when the business ID in the /businesses/{id}/inventory/
+     * API endpoint does not exist.
      *
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorNoUserCookie() throws Exception {
+    public void cantRetrieveInventoryWhenBusinessDoesntExist() throws Exception {
+        // given
+        user.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(0)).thenReturn(Optional.empty());
+
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+
+    /**
+     * Tests that an UNAUTHORIZED status and is received when the business ID in the
+     * /businesses/{id}/inventory/ API endpoint exists but the cookie contains a non-existing user ID.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantRetrieveInventoryWhenBusinessExistsWithNonExistingIdCookie() throws Exception {
+
+        // given
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", String.valueOf(0))))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+
+    }
+
+    /**
+     * Tests that a FORBIDDEN status and is received when the business ID in the
+     * /businesses/{id}/inventory/ API endpoint exists but the cookie contains a non-admin user ID.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantRetrieveInventoryWhenBusinessExistsWithNonAdminUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status and is received when the business ID in the
+     * /businesses/{id}/inventory/ API endpoint exists but there is no cookie.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantRetrieveInventoryWhenBusinessExistsWithNoCookie() throws Exception {
+        // given
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0"))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+
+        /**
+         * Tests that an UNAUTHORIZED status is given when the the business exists and the user is the business
+         * admin BUT they have are not logged in i.e. no is cookie present.
+         * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+         *
+         * @throws Exception Exception error
+         */
+    @Test
+    public void cantRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorNoUserCookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
