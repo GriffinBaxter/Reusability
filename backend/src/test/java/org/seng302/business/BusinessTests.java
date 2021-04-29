@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 /**
  * BusinessAccount test class
  */
-public class BusinessTest {
+public class BusinessTests {
 
     private static User user;
     private static Address address;
