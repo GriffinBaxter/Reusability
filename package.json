@@ -1,1 +1,5 @@
-{}
+{
+  "dependencies": {
+    "vue-date-fns": "^2.0.1"
+  }
+}

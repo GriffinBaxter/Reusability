@@ -111,7 +111,14 @@
 </template>
 
 <script>
-import {InventoryItem} from "@/Api";
+import {InventoryItem} from "../Api";
+// const compareAsc = require('date-fns/compareAsc')
+// const isThisSecond = require('date-fns/isThisSecond')
+const isBefore = require('date-fns/isBefore')
+const endOfToday = require('date-fns/endOfToday');
+const format = require('date-fns/format');
+
+
 
 export default {
   name: 'InventoryItemCreation',
@@ -240,26 +247,26 @@ export default {
       this.expires = this.expires.trim();
     },
     /**
-     * This function will return true for date before.
+     * This function will return true for if the given date is before the current date.
      *
      * @param date selected date
      * @returns {boolean} isADayBefore or not
      */
-    isADayBefore(date) {
+    isADateBeforeToday(date) {
       const selectedDate = this.parseSelectedDate(date);
-      const todayDate = new Date();
 
-      if (selectedDate) {
-        const {year, month, day} = selectedDate;
-        if (year && month && day) {
-          const chosenDate = new Date(year, month, day);
-          if (todayDate - chosenDate < 0) {
-            return true;
-          }
-        }
-      }
-      return false;
+      const givenDateYear = selectedDate.year
+      const givenDateMonth = selectedDate.month
+      const givenDateDay = selectedDate.day
+
+      const todayDateYear = format(endOfToday(new Date()), 'yyy')
+      const todayDateMonth = format(endOfToday(new Date()), 'MM')
+      const todayDateDay = format(endOfToday(new Date()), 'dd')
+
+      //returns true if first day is before second date, otherwise returns false i.e. "Is the first date before the second one?"
+      return isBefore(new Date(givenDateYear, givenDateMonth, givenDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
     },
+
     /**
      * This function will return true for date After.
      *

@@ -223,7 +223,7 @@ test('parseSelectedDate_GivenValidDateString_ReturnYearMonthAndDay', () => {
  * Test for the date being after the current date.
  * @result
  */
-test('isDayAfterToday_DateIsPriorToday_ReturnTrue', () => {
+test('isADateBeforeToday_DateIsPriorToday_ReturnTrue', () => {
     // const dateToday = new Date(Date.now());
     // const dateTodayYear = dateToday.getFullYear();
     // const dateTodayMonth = dateToday.getMonth();
@@ -234,6 +234,6 @@ test('isDayAfterToday_DateIsPriorToday_ReturnTrue', () => {
     // const pastDateDay = pastDate.getDay();
 
     expect(
-        reg.methods.isDayAfterToday('01-01-2021')).toBe(true);
+        reg.methods.isADateBeforeToday('2000-01-02')).toBe(true);
 
 })
