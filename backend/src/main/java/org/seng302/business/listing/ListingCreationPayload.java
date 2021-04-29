@@ -12,7 +12,7 @@ public class ListingCreationPayload {
     private String moreInfo;
     private LocalDateTime closes;
 
-    public String getInventoryId() {
+    public String getInventoryItemId() {
         return inventoryItemId;
     }
     public Integer getQuantity() {

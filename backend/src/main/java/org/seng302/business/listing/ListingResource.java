@@ -133,15 +133,13 @@ public class ListingResource {
         }
 
         // Checks InventoryItem exists and gets InventoryItem
-        //Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemById(Integer.parseInt(listingPayload.getInventoryId()));
-        //if (!inventoryItem.isPresent()) {
-        //    logger.error("Listing Creation Failure - 400 [BAD REQUEST] - Inventory Item at ID {} Not Found", listingPayload.getInventoryId());
-        //    throw new ResponseStatusException(
-        //             HttpStatus.BAD_REQUEST,
-        //            "Inventory Item Not Found");
-        //}
-
-        InventoryItem inventoryItem = new InventoryItem(); // Temp
+        Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemById(Integer.parseInt(listingPayload.getInventoryItemId()));
+        if (inventoryItem.isEmpty()) {
+            logger.error("Listing Creation Failure - 400 [BAD REQUEST] - Inventory Item at ID {} Not Found", listingPayload.getInventoryItemId());
+            throw new ResponseStatusException(
+                     HttpStatus.BAD_REQUEST,
+                    "Inventory Item Not Found");
+        }
 
         Integer quantity = listingPayload.getQuantity();
         Double price = listingPayload.getPrice();
@@ -152,7 +150,7 @@ public class ListingResource {
         // Creates Listing
         try {
             Listing listing = new Listing(
-                inventoryItem,
+                inventoryItem.get(),
                 quantity,
                 price,
                 moreInfo,
@@ -163,7 +161,7 @@ public class ListingResource {
 
             logger.info("Listing Creation Success - 201 [CREATED] - Listing created for business with ID {}", id);
         } catch (Exception e) {
-            logger.error("Couldnt make listing {}", e.getMessage());
+            logger.error("Couldn't make listing {}", e.getMessage());
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "Bad Request - Couldn't make listing"
