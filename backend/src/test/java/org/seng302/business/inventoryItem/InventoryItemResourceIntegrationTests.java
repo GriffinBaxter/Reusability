@@ -77,6 +77,26 @@ public class InventoryItemResourceIntegrationTests {
 
     private String payloadJson;
 
+    private final String expectedInventoryItemJson = "[" +
+            "{\"id\":%s," +
+            "\"product\":{" +
+            "\"id\":\"%s\"," +
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"manufacturer\":\"%s\"," +
+            "\"recommendedRetailPrice\":%.2f," +
+            "\"created\":\"%s\"}," +
+            "\"quantity\":%d," +
+            "\"pricePerItem\":%.2f," +
+            "\"totalPrice\":%.2f," +
+            "\"manufactured\":\"%s\"," +
+            "\"sellBy\":\"%s\"," +
+            "\"bestBefore\":\"%s\"," +
+            "\"expires\":\"%s\"}" +
+            "]";
+
+    private String expectedJson;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -149,7 +169,7 @@ public class InventoryItemResourceIntegrationTests {
                 "Beans",
                 "Description",
                 "Manufacturer",
-                20.00,
+                20.99,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
         );
@@ -158,7 +178,7 @@ public class InventoryItemResourceIntegrationTests {
                 product,
                 product.getProductId(),
                 4,
-                6.5,
+                6.51,
                 21.99,
                 LocalDate.of(2020, 1, 1),
                 LocalDate.of(2021, 1, 1),
@@ -741,7 +761,7 @@ public class InventoryItemResourceIntegrationTests {
 //---------------------------------- Tests for /businesses/{id}/inventory/ endpoint ------------------------------------
 
     /**
-     * Tests that an OK status and a list of product inventory payloads is received when the business ID in the
+     * Tests that an OK status and a list of inventory item payloads is received when the business ID in the
      * /businesses/{id}/inventory/ API endpoint exists.
      * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
      *
@@ -750,9 +770,13 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
         // given
-        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
         business.addAdministrators(user);
+        expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
@@ -760,8 +784,7 @@ public class InventoryItemResourceIntegrationTests {
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
-        when(inventoryItemRepository.findInventoryItemsByBusinessId(3, paging)).thenReturn(pagedResult);
-
+        when(inventoryItemRepository.findInventoryItemsByBusinessId(business.getId(), paging)).thenReturn(pagedResult);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
@@ -772,7 +795,84 @@ public class InventoryItemResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(response.getContentAsString()).isEqualTo("");//TODO:
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status and a list of inventory item payloads is received when the business ID in the
+     * /businesses/{id}/inventory/ API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a GAA.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveInventoryItemsWhenBusinessExistsWithGAAUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        anotherUser.setRole(Role.GLOBALAPPLICATIONADMIN);
+        expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        List<InventoryItem> list = List.of(inventoryItem);
+        Page<InventoryItem> pagedResult = new PageImpl(list);
+        Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sortBy);
+
+        when(inventoryItemRepository.findInventoryItemsByBusinessId(business.getId(), paging)).thenReturn(pagedResult);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+
+    }
+
+    /**
+     * Tests that an OK status and a list of inventory item payloads is received when the business ID in the
+     * /businesses/{id}/inventory/ API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a DGAA.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveInventoryItemsWhenBusinessExistsWithDGAAUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        anotherUser.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        List<InventoryItem> list = List.of(inventoryItem);
+        Page<InventoryItem> pagedResult = new PageImpl(list);
+        Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sortBy);
+
+        when(inventoryItemRepository.findInventoryItemsByBusinessId(business.getId(), paging)).thenReturn(pagedResult);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
 
     }
 
@@ -789,9 +889,10 @@ public class InventoryItemResourceIntegrationTests {
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
         business.addAdministrators(user);
+        expectedJson = "";
 
         // when
-        List<InventoryItem> list = List.of();
+        List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResponse = new PageImpl(list);
         Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
@@ -806,6 +907,6 @@ public class InventoryItemResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 }

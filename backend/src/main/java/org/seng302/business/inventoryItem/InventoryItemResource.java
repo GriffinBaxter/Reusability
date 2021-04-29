@@ -70,9 +70,9 @@ public class InventoryItemResource {
      * This is a GET call to the given endpoint.
      *
      * @param sessionToken Session token
-     * @param id Business ID
-     * @param orderBy Column to order the results by
-     * @param page Page number to return results from
+     * @param id           Business ID
+     * @param orderBy      Column to order the results by
+     * @param page         Page number to return results from
      * @return A list of InventoryPayload objects representing the inventory items belonging to the given business.
      */
     @GetMapping("/businesses/{id}/inventory/")
@@ -80,7 +80,7 @@ public class InventoryItemResource {
                                                                             @PathVariable Integer id,
                                                                             @RequestParam(defaultValue = "productIdASC") String orderBy,
                                                                             @RequestParam(defaultValue = "0") String page
-    ){
+    ) {
 
         logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
@@ -96,7 +96,6 @@ public class InventoryItemResource {
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
-
         if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(id)) {
             logger.error("Product Inventory Retrieval Failure - 403 [FORBIDDEN] - User with ID {} is not an admin of business with ID {}", currentUser.getId(), id);
             throw new ResponseStatusException(
@@ -104,7 +103,6 @@ public class InventoryItemResource {
                     "The account performing the request is neither an administrator of the business, nor a global application admin."
             );
         }
-
         //200: Inventory retrieved successfully. This could be an empty array.
 
         int pageNo;
@@ -252,6 +250,7 @@ public class InventoryItemResource {
 
     /**
      * Converts a list of product inventory items to a list of inventoryPayloads.
+     *
      * @param inventoryList The given list of product inventory items
      * @return A list of inventoryPayloads.
      */
@@ -287,8 +286,8 @@ public class InventoryItemResource {
     @PostMapping("/businesses/{id}/inventory/")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Inventory item created successfully")
     public void addAnInventoryItem(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                               @RequestBody InventoryRegistrationPayload inventoryRegistrationPayload,
-                               @PathVariable Integer id) {
+                                   @RequestBody InventoryRegistrationPayload inventoryRegistrationPayload,
+                                   @PathVariable Integer id) {
         //401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
