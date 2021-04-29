@@ -9,7 +9,6 @@ import org.seng302.user.UserIdPayload;
 import org.seng302.validation.BusinessValidation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
-import org.seng302.validation.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -143,7 +142,7 @@ public class BusinessResource {
                 );
                 business.addAdministrators(currentUser); //add user to administrators list
                 Business createdBusiness = businessRepository.save(business);
-                System.out.println(createdBusiness.getId());
+                System.out.println(createdBusiness);
                 return ResponseEntity.status(HttpStatus.CREATED).body(new BusinessIdPayload(createdBusiness.getId()));
             } catch (Exception e) {
                 throw new ResponseStatusException(
@@ -319,8 +318,6 @@ public class BusinessResource {
         checkBusinessPermission(sessionToken, optionalBusiness, optionalUser, true);
 
         //200
-        System.out.println(optionalBusiness.get().getAdministrators());
-        System.out.println(optionalUser.get());
         optionalBusiness.get().removeAdministrators(optionalUser.get());
         userRepository.flush();
         businessRepository.flush();
