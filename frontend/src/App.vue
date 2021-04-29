@@ -5,7 +5,7 @@
 <template>
   <div id="app">
     <transition :name="transitionName" mode="out-in">
-      <router-view></router-view>
+      <router-view :key="$route.path"></router-view>
     </transition>
 
   </div>
@@ -36,7 +36,9 @@ const app = {
     '$route'(to) {
       document.title = to.meta.title || "Team 400";
       if (to.name === 'NoUser' || to.name === 'ServerTimeout' || to.name === 'InvalidToken') this.transitionName = "";
-    }
+      const event = new CustomEvent('page-routing', {detail: ""})
+      document.dispatchEvent(event);
+    },
   }
 };
 
