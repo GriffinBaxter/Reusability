@@ -23,7 +23,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
