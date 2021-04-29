@@ -73,6 +73,28 @@ public class ListingResource {
     }
 
     /**
+     * Get method for retrieving listings
+     * @param sessionToken
+     * @param id business ID
+     * @return Listings for business
+     */
+    @GetMapping("/businesses/{id}/listings")
+    public void retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                @PathVariable String id){
+        // Checks user logged in - 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // Checks business at ID exists - 406
+        Business currentBusiness = businessRepository.findBusinessById(Integer.valueOf(id)).get();
+        if (currentBusiness == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Business Does Not Exist"
+            );
+        }
+    }
+
+    /**
      * Create a new Listing belonging to the business with the given business ID.
      *
      * @param sessionToken Session Token
@@ -141,6 +163,7 @@ public class ListingResource {
 
             logger.info("Listing Creation Success - 201 [CREATED] - Listing created for business with ID {}", id);
         } catch (Exception e) {
+            logger.error("Couldnt make listing {}", e.getMessage());
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "Bad Request - Couldn't make listing"
