@@ -1,12 +1,13 @@
 package org.seng302.business.listing;
 
+import org.seng302.business.inventoryItem.InventoryItem;
 import org.seng302.business.inventoryItem.InventoryPayload;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class ListingPayload {
     private Integer id;
-    private InventoryPayload inventoryItem;
+    private InventoryItem inventoryItem;
     private Integer quantity;
     private Double price;
     private String moreInfo;
@@ -32,13 +33,13 @@ public class ListingPayload {
 //    }
 
     public ListingPayload(int id,
-                          InventoryPayload inventoryItem,
+                          InventoryItem inventoryItem,
                           Integer quantity,
                           Double price,
                           String moreInfo,
                           LocalDateTime created,
                           LocalDateTime closes
-                          ) throws Exception {
+                          ) {
     this.id = id;
     this.inventoryItem = inventoryItem;
     this.quantity = quantity;
@@ -52,7 +53,7 @@ public class ListingPayload {
     public int getId() {
         return id;
     }
-    public InventoryPayload getInventoryItem() {
+    public InventoryItem getInventoryItem() {
         return inventoryItem;
     }
     public Integer getQuantity() {

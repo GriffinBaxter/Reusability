@@ -7,6 +7,8 @@ import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.inventoryItem.InventoryItemRepository;
 import org.seng302.business.inventoryItem.InventoryItem;
+import org.seng302.business.product.Product;
+import org.seng302.business.product.ProductPayload;
 import org.seng302.business.product.ProductRepository;
 import org.seng302.business.product.ProductResource;
 
@@ -19,6 +21,12 @@ import org.seng302.user.Role;
 import org.seng302.validation.Validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -76,22 +84,100 @@ public class ListingResource {
      * Get method for retrieving listings
      * @param sessionToken
      * @param id business ID
+     * @param orderBy ordering of results
+     * @param page page number
      * @return Listings for business
      */
     @GetMapping("/businesses/{id}/listings")
     public void retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                @PathVariable String id){
+                                 @PathVariable String id,
+                                 @RequestParam(defaultValue = "productIdASC") String orderBy,
+                                 @RequestParam(defaultValue = "0") String page) {
+
         // Checks user logged in - 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
+        Integer businessId = Integer.valueOf(id);
         // Checks business at ID exists - 406
-        Business currentBusiness = businessRepository.findBusinessById(Integer.valueOf(id)).get();
+        Business currentBusiness = businessRepository.findBusinessById(businessId).get();
         if (currentBusiness == null) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "Business Does Not Exist"
             );
         }
+
+        int pageNo;
+        try {
+            pageNo = Integer.parseInt(page);
+        } catch (final NumberFormatException e) {
+            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Page parameter invalid"
+            );
+        }
+
+        // Front-end displays 10 listings per page
+        int pageSize = 10;
+
+        Sort sortBy = null;
+
+        // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
+        // Normally all upper case letters come before any lower case ones.
+        switch (orderBy) {
+            case "idASC":
+                sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                break;
+            case "idDESC":
+                sortBy = Sort.by(Sort.Order.desc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                break;
+            case "priceASC":
+                sortBy = Sort.by(Sort.Order.asc("price").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "priceDESC":
+                sortBy = Sort.by(Sort.Order.desc("price").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "closesASC":
+                sortBy = Sort.by(Sort.Order.asc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "closesDESC":
+                sortBy = Sort.by(Sort.Order.desc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "createdASC":
+                sortBy = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "createdDESC":
+                sortBy = Sort.by(Sort.Order.desc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            default:
+                logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "OrderBy Field invalid"
+                );
+        }
+
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+
+        Page<Product> pagedResult = listingRepository.findListingsByBusinessId(businessId, paging);
+
+        int totalPages = pagedResult.getTotalPages();
+        int totalRows = (int) pagedResult.getTotalElements();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
+
+        logger.info("Listing Retrieval Success - 200 [OK] -  Listings retrieved for business with ID {}", businessId);
+
+        //List<ListingPayload> listingPayloads = convertToPayload(pagedResult.getContent());
+        //
+        //logger.debug("Products retrieved for business with ID {}: {}", businessId, listingPayloads);
+        //
+        //return ResponseEntity.ok()
+        //        .headers(responseHeaders)
+        //        .body(listingPayloads);
     }
 
     /**
@@ -167,6 +253,29 @@ public class ListingResource {
                 "Bad Request - Couldn't make listing"
             );
         }
+    }
+
+    /**
+     * Converts a list of Listings to a list of ListingPayloads.
+     * @param listingList The given list of listings
+     * @return A list of productPayloads.
+     */
+    public List<ListingPayload> convertToPayload(List<Listing> listingList) {
+        List<ListingPayload> payloads = new ArrayList<>();
+        for (Listing listing : listingList) {
+            ListingPayload newPayload = new ListingPayload(
+                    listing.getId(),
+                    listing.getInventoryItem(),
+                    listing.getQuantity(),
+                    listing.getPrice(),
+                    listing.getMoreInfo(),
+                    listing.getCreated(),
+                    listing.getCloses()
+            );
+            logger.debug("Listing payload created: {}", newPayload);
+            payloads.add(newPayload);
+        }
+        return payloads;
     }
 
 }
