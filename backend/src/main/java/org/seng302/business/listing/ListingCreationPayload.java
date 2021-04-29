@@ -2,6 +2,9 @@ package org.seng302.business.listing;
 
 import java.time.LocalDateTime;
 
+/*
+ * ListingCreationPayload class
+ */
 public class ListingCreationPayload {
     private String inventoryItemId;
     private Integer quantity;

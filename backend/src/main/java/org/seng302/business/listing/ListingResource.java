@@ -77,18 +77,20 @@ public class ListingResource {
      *
      * @param sessionToken Session Token
      * @param id Business ID
+     * @param listingPayload listing creation payload
      */
     @PostMapping("/businesses/{id}/listings")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Listing Created successfully")
     public void createListing(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id,
-            @RequestBody ListingCreationPayload listingPayload) {
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                @PathVariable Integer id,
+                @RequestBody ListingCreationPayload listingPayload) {
         logger.debug("Listing payload received: {}", listingPayload);
 
-        // Checks if User is logged in
+        // Checks if User is logged in 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        // Checks Business Exists
+        // Checks Business Exists 406
         if (!Authorization.verifyBusinessExists(id, businessRepository)) {
             logger.error("Listing Creation Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
             throw new ResponseStatusException(
@@ -97,7 +99,7 @@ public class ListingResource {
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
-        // Checks User is Admin
+        // Checks User is Admin 403
         Optional<Business> business = businessRepository.findBusinessById(id);
         if (currentUser.getRole() == Role.USER && !(business.get().getAdministrators().contains(currentUser))) {
             logger.error("Listing Creation Failure - 403 [NOT AUTHORIZED] - User with ID {} is not admin of business with ID {}", currentUser.getId(), id);
@@ -117,7 +119,8 @@ public class ListingResource {
         //            "Inventory Item Not Found");
         //}
 
-        InventoryItem inventoryItem = new InventoryItem();
+        InventoryItem inventoryItem = new InventoryItem(); // Temp
+
         Integer quantity = listingPayload.getQuantity();
         Double price = listingPayload.getPrice();
         String moreInfo = listingPayload.getMoreInfo();

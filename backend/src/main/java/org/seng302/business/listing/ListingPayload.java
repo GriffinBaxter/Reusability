@@ -1,38 +1,38 @@
 package org.seng302.business.listing;
 
-import org.seng302.business.inventoryItem.InventoryItem;
+import org.seng302.business.inventoryItem.InventoryPayload;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class ListingPayload {
     private Integer id;
-    private InventoryItem inventoryItem;
+    private InventoryPayload inventoryItem;
     private Integer quantity;
     private Double price;
     private String moreInfo;
     private LocalDateTime created;
     private LocalDateTime closes;
 
-    public static List<ListingPayload> toListingPayload (List<Listing> listings) throws Exception {
-        List<ListingPayload> listingPayloads = new ArrayList<>();
-        ListingPayload listingPayload;
-        for (Listing listing: listings) {
-            listingPayload = new ListingPayload(
-                listing.getId(),
-                listing.getInventoryItem(),
-                listing.getQuantity(),
-                listing.getPrice(),
-                listing.getMoreInfo(),
-                listing.getCreated(),
-                listing.getCloses()
-            );
-            listingPayloads.add(listingPayload);
-        }
-        return listingPayloads;
-    }
+//    public static List<ListingPayload> toListingPayload (List<Listing> listings) throws Exception {
+//        List<ListingPayload> listingPayloads = new ArrayList<>();
+//        ListingPayload listingPayload;
+//        for (Listing listing: listings) {
+//            listingPayload = new ListingPayload(
+//                listing.getId(),
+//                listing.getInventoryItem(),
+//                listing.getQuantity(),
+//                listing.getPrice(),
+//                listing.getMoreInfo(),
+//                listing.getCreated(),
+//                listing.getCloses()
+//            );
+//            listingPayloads.add(listingPayload);
+//        }
+//        return listingPayloads;
+//    }
 
     public ListingPayload(int id,
-                          InventoryItem inventoryItem,
+                          InventoryPayload inventoryItem,
                           Integer quantity,
                           Double price,
                           String moreInfo,
@@ -52,7 +52,7 @@ public class ListingPayload {
     public int getId() {
         return id;
     }
-    public InventoryItem getInventoryItem() {
+    public InventoryPayload getInventoryItem() {
         return inventoryItem;
     }
     public Integer getQuantity() {
