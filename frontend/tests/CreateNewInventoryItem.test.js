@@ -203,18 +203,18 @@ const format = require('date-fns/format');
 test('parseSelectedDate_GivenValidDateString_ReturnYearMonthAndDay', () => {
     expect(
         reg.methods.parseSelectedDate('2021-01-01')).toStrictEqual({
-        year: 2021,
-        month: 1,
-        day: 1
+        year: '2021',
+        month: '01',
+        day: '01'
     }
     );
 })
 
 /**
- * This method checks that the given date will be parsed as expect i.e. is in the incorrect format
- * e.g. 20-12-1912 and null will be returned
+ * This method checks that the given date will be parsed as expected i.e. if is in the incorrect format
+ * e.g. 20-12-1912, null will be returned
  */
-test('parseSelectedDate_GivenValidDateString_ReturnYearMonthAndDay', () => {
+test('parseSelectedDate_GivenInvalidDateString_ReturnYearMonthAndDay', () => {
     expect(
         reg.methods.parseSelectedDate('21-01-2001')).toStrictEqual(
             null
@@ -244,7 +244,7 @@ test('isValidManufactureDate_DateIsToday_ReturnTrue', () => {
     const todayDateMonth = format(endOfToday(new Date()), 'MM');
     const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`;
+    const todayDate = `${todayDateYear}-${todayDateMonth}-${todayDateDay}`;
 
     expect(
         reg.methods.isValidManufactureDate(todayDate)).toBe(true);
@@ -296,8 +296,8 @@ test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
 test('isValidSellByDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpiryDate_ReturnTrue', () => {
 
     const selectedManufacturedDate = "2019-21-10";
-    const selectedExpiryDate = "2022-21-10";
-    const testSelectedSellByDate = '2022-11-10';
+    const selectedExpiryDate = "2029-21-10";
+    const testSelectedSellByDate = "2022-11-10";
 
     expect(
         reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);

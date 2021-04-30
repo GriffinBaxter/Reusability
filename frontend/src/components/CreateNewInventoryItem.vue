@@ -236,7 +236,7 @@ export default {
      * This method parses the given date and separates it into a year, day and month, provided it meets
      * the expected format.
      *
-     * Note that the date format is yyyy-dd-MM (e.g. '2029-04-30') to use the compareAsc() in the date validation methods.
+     * Note that the date format is yyyy-MM-dd (e.g. '2029-12-30') to use the compareAsc() in the date validation methods.
      * So, this must be consistent!
      *
      * @param dateString, string, the date to validate and separate.
@@ -251,8 +251,8 @@ export default {
         const dateParts = dateString.split("-", 3);
 
         const year = dateParts[0];
-        let day = dateParts[1];
-        let month = dateParts[2];
+        let month = dateParts[1];
+        let day = dateParts[2];
 
         month = (month.length === 1) ? `0${month}` : month;
         day = (day.length === 1) ? `0${day}` : day;
@@ -285,7 +285,7 @@ export default {
 
       // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
       // second or 0 if dates are equal.
-      const comparisonValue = compareAsc(new Date(givenDateYear, givenDateDay, givenDateMonth), new Date(todayDateYear, todayDateDay, todayDateMonth))
+      const comparisonValue = compareAsc(new Date(givenDateYear, givenDateMonth, givenDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
 
       return ((comparisonValue === -1) || (comparisonValue === 0)) ? true : false;
 
@@ -299,6 +299,63 @@ export default {
      */
     isValidSellByDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
 
+      let isValid = false;
+      const sellByDate = this.parseSelectedDate(selectedSellByDate);
+      const manufacturedDate = this.parseSelectedDate(selectedManufacturedDate);
+      const expiryDate = this.parseSelectedDate(selectedExpiryDate);
+
+      const sellByDateYear = sellByDate.year
+      const sellByDateMonth = sellByDate.month
+      const sellByDateDay = sellByDate.day
+
+      const manufacturedDateYear = manufacturedDate.year
+      const manufacturedDateMonth = manufacturedDate.month
+      const manufacturedDateDay = manufacturedDate.day
+
+      const expiredDateYear = expiryDate.year
+      const expiredDateMonth = expiryDate.month
+      const expiredDateDay = expiryDate.day
+
+      const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+      const todayDateMonth = format(endOfToday(new Date()), 'MM');
+      const todayDateDay = format(endOfToday(new Date()), 'dd');
+
+      console.log(todayDateYear)
+      console.log(todayDateMonth)
+      console.log(todayDateDay)
+
+      console.log(new Date(todayDateYear, todayDateMonth, todayDateDay))
+
+      console.log(new Date('2021', '04', '30'))
+
+
+      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
+      // second or 0 if dates are equal.
+
+      console.log(new Date(sellByDateYear, sellByDateMonth, sellByDateDay))
+      console.log(new Date(todayDateYear, todayDateMonth, todayDateDay))
+
+
+      const comparisonWithTodayValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
+
+      const comparisonWithManufacturedValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
+
+      const comparisonWithExpiryValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(expiredDateYear, expiredDateMonth, expiredDateDay))
+
+      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1) ? true : false;
+      const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1) ? true : false;
+      const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1) ? true : false;
+
+      console.log(comparisonWithTodayValue)
+      console.log(isAfterTodayAndNotToday)
+      console.log(isAfterManufactureDateAndNotManufactureDate)
+      console.log(isBeforeExpiryAndNotExpiryDate)
+
+      if (isAfterTodayAndNotToday && isAfterManufactureDateAndNotManufactureDate && isBeforeExpiryAndNotExpiryDate) {
+        isValid = true;
+      }
+
+      return isValid
 
     },
 
