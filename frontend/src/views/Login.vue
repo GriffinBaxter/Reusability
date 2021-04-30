@@ -77,14 +77,14 @@
       </div>
 
     </div>
-      <FooterSecure class="footer"></FooterSecure>
+    <FooterSecure class="footer"></FooterSecure>
   </div>
 </template>
 
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import FooterSecure from "@/components/FooterSecure";
+import FooterSecure from "../components/FooterSecure";
 
 export default {
   name: "Login",
@@ -153,10 +153,8 @@ export default {
   visibility: hidden;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
+.all-but-footer {
+  padding-bottom: 50px;
 }
 
 input:focus, textarea:focus {

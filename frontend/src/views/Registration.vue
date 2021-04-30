@@ -1206,12 +1206,4 @@ input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus
 
 /*------------------------------------------------------------------------*/
 
-/**
- * TODO remove once footer is sticky
- * Calculates where footer should be.
- */
-.all-but-footer {
-  min-height: calc(100vh - 50px);
-}
-
 </style>
