@@ -256,7 +256,7 @@ export class Listing{
       minLength: 1,
       maxLength: 15,
       regex: /^[0-9]+$/,
-      regexMessage: "Must only contain numbers",
+      regexMessage: "Must select an Inventory Item",
     },
     quantity: {
       name: "Quantity",
@@ -267,13 +267,17 @@ export class Listing{
     },
     price: {
       name: "Price",
-      minLength: 0,
+      minLength: 1,
       maxLength: 16,
       regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
       regexMessage: "Must be a positive double precision floating point number e.g 1.00"
     },
     moreInfo: {
       name: "MoreInfo",
+      minLength: 0,
+      maxLength: 255,
+      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
+      regex: /^[a-zA-Z '-]*$/
     },
     closes: {
       name: "manufactured"
@@ -368,7 +372,9 @@ export default {
     return instance.get(`/businesses/${businessId}/listings`, {
       withCredentials: true,
     })
-  }
+  },
+
+  addBusinessListing: (businessId, listing) => instance.post(`/businesses/${businessId}/listings`, {...listing.data}, {withCredentials: true}),
   // Usage examples from original file:
   //
   // // (C)reate
