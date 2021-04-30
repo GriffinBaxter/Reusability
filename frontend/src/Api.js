@@ -247,6 +247,53 @@ export class Business{
 
 }
 
+export class Listing{
+
+  // This is a config for the Inventory Item requirement details
+  static config = {
+    inventoryId: {
+      name: "Inventory Item ID",
+      minLength: 1,
+      maxLength: 15,
+      regex: /^[0-9]+$/,
+      regexMessage: "Must only contain numbers",
+    },
+    quantity: {
+      name: "Quantity",
+      minLength: 1,
+      maxLength: 3,
+      regex: /^[0-9]+$/,
+      regexMessage: "Must only contain numbers",
+    },
+    price: {
+      name: "Price",
+      minLength: 0,
+      maxLength: 16,
+      regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
+      regexMessage: "Must be a positive double precision floating point number e.g 1.00"
+    },
+    moreInfo: {
+      name: "MoreInfo",
+    },
+    closes: {
+      name: "manufactured"
+    }
+  };
+
+  constructor({inventoryId, quantity, price, moreInfo, closes}) {
+    this.data = {
+      inventoryId,
+      quantity,
+      price,
+      moreInfo,
+      closes
+    }
+
+  }
+
+}
+
+
 export default {
 
   // Sends a post request to the backend with a new user object to store
