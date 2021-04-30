@@ -111,14 +111,11 @@
 </template>
 
 <script>
+
 import {InventoryItem} from "../Api";
-// const compareAsc = require('date-fns/compareAsc')
-// const isThisSecond = require('date-fns/isThisSecond')
-const isBefore = require('date-fns/isBefore')
 const endOfToday = require('date-fns/endOfToday');
 const format = require('date-fns/format');
-
-
+const compareAsc = require('date-fns/compareAsc');
 
 export default {
   name: 'InventoryItemCreation',
@@ -157,7 +154,7 @@ export default {
 
       // expires related variables
       expires: "",
-      expiresErrorMsg: ""
+      expiresErrorMsg: "",
     }
   },
   methods: {
@@ -175,29 +172,7 @@ export default {
       }
       return classList
     },
-    /**
-     * This method parses the given date of birth input and separates it into a year, month and day, provided it meets
-     * the expected format.
-     *
-     * @param dateString, string, the date to validate and separate.
-     * @returns {{month: number, year: number, day: number}|null}, {year, month, day}, if the date meets the expected
-     * format, else null.
-     *
-     */
-    parseSelectedDate(dateString) {
-      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,2}-[0-9]{1,2}$/
 
-      if (verifyRegex.test(dateString)) {
-        const dateParts = dateString.split("-", 3);
-        return {
-          year: Number(dateParts[0]),
-          month: Number(dateParts[1]),
-          day: Number(dateParts[2])
-        }
-      } else {
-        return null
-      }
-    },
     /**
      * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
      *
@@ -209,6 +184,7 @@ export default {
     between(val, min, max) {
       return min <= val && val <= max;
     },
+
     /**
      * This method determines the error message to be generated for a given input value based on the field type and
      * its associated validity (determined by a regex).
@@ -223,7 +199,7 @@ export default {
      * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
      */
     getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = ""; //TODO: remove after testing and just have ""
+      let errorMessage = "";
       if (inputVal === "" && minLength >= 1) {
         errorMessage = "Please enter input";
       } else if (!regex.test(inputVal)) {
@@ -233,6 +209,7 @@ export default {
       }
       return errorMessage;
     },
+
     /**
      * This method removes white space from the beginning and end of all the input field's input values.
      */
@@ -246,48 +223,106 @@ export default {
       this.bestBefore = this.bestBefore.trim();
       this.expires = this.expires.trim();
     },
+
     /**
-     * This function will return true for if the given date is before the current date.
+     * This method parses the given date and separates it into a year, day and month, provided it meets
+     * the expected format.
      *
-     * @param date selected date
-     * @returns {boolean} isADayBefore or not
+     * Note that the date format is yyyy-dd-MM (e.g. '2029-04-30') to use the compareAsc() in the date validation methods.
+     * So, this must be consistent!
+     *
+     * @param dateString, string, the date to validate and separate.
+     * @returns {{year: string, day: string, month: string}|null}, {year, day, month}, if the date meets the expected
+     * format, else null.
      */
-    isADateBeforeToday(date) {
-      const selectedDate = this.parseSelectedDate(date);
+    parseSelectedDate(dateString) {
+
+      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,3}-[0-9]{1,3}$/
+
+      if (verifyRegex.test(dateString)) {
+        const dateParts = dateString.split("-", 3);
+
+        const year = dateParts[0];
+        let day = dateParts[1];
+        let month = dateParts[2];
+
+        month = (month.length === 1) ? `0${month}`: month;
+        day = (day.length === 1) ? `0${day}`: day;
+
+        return {
+          year: year,
+          month: month,
+          day: day,
+        }
+      } else {
+        return null
+      }
+    },
+
+    /**
+     * This function will check the validity of the manufactured date of an inventory item i.e. that the manufactured
+     * date of the inventory item is prior to today's date
+     * @return true if the date is before today's date or today's date, otherwise false.
+     */
+    isValidManufactureDate(selectedManufacturedDate) {
+
+      const selectedDate = this.parseSelectedDate(selectedManufacturedDate);
+
+      console.log(selectedDate)
 
       const givenDateYear = selectedDate.year
       const givenDateMonth = selectedDate.month
       const givenDateDay = selectedDate.day
 
-      const todayDateYear = format(endOfToday(new Date()), 'yyy')
-      const todayDateMonth = format(endOfToday(new Date()), 'MM')
-      const todayDateDay = format(endOfToday(new Date()), 'dd')
+      const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+      const todayDateMonth = format(endOfToday(new Date()), 'MM');
+      const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-      //returns true if first day is before second date, otherwise returns false i.e. "Is the first date before the second one?"
-      return isBefore(new Date(givenDateYear, givenDateMonth, givenDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
+      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
+      // second or 0 if dates are equal.
+      const comparisonValue = compareAsc(new Date(givenDateYear, givenDateDay, givenDateMonth), new Date(todayDateYear, todayDateDay, todayDateMonth))
+
+      return ((comparisonValue === -1) || (comparisonValue === 0)) ? true : false;
+
     },
 
     /**
-     * This function will return true for date After.
+     * This function will check the validity of the sell by date of an inventory item i.e. that the sell by date of the
+     * inventory item is after to today's date but not today's date, and before the expiry date.
      *
-     * @param date selected date
-     * @returns {boolean} isADayAfter or not
+     * @return true if the date meets the above conditions, otherwise false
      */
-    isADayAfter(date) {
-      const selectedDate = this.parseSelectedDate(date);
-      const todayDate = new Date();
+    isValidSellByDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
 
-      if (selectedDate) {
-        const {year, month, day} = selectedDate;
-        if (year && month && day) {
-          const chosenDate = new Date(year, month, day);
-          if (todayDate - chosenDate > 0) {
-            return true;
-          }
-        }
-      }
-      return false;
+
+
     },
+
+    /**
+     * This function will check the validity of the best before date of an inventory item i.e. that the best before date
+     * of the inventory item is after to today's date but not today's date, and before expiry date.
+     *
+     * @return true if the date meets the above conditions, otherwise false
+     */
+    isValidBestBeforeDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
+
+
+    },
+
+    /**
+     * This function will check the validity of the expires date of an inventory item i.e. that the expiry date
+     * of the inventory item is after today's date, after the manufacture date, and after or equal to the best before
+     * date.
+     *
+     * @return true if the date meets the above conditions, otherwise false
+     */
+    isValidExpiryDate(selectedManufacturedDate, selectedBestBeforeDate) {
+
+
+    },
+
+
+
     createNewInventoryItem() {
       // Steps required for the function before starting processing.
       // inventoryItem.preventDefault()  // prevents page from reloading
@@ -295,6 +330,7 @@ export default {
       let requestIsInvalid = false
 
       // ===================================== START OF INPUT FIELDS VALIDATION ========================================
+
       // Product Id error checking
       this.productIdErrorMsg = this.getErrorMessage(
           this.config.productId.name,
