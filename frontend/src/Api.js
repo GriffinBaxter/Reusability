@@ -247,56 +247,57 @@ export class Business{
 
 }
 
-export class Listing{
+export class Product{
 
-  // This is a config for the Inventory Item requirement details
+  // This is a config for the product requirement details
   static config = {
-    inventoryId: {
-      name: "Inventory Item ID",
-      minLength: 1,
+    productID: {
+      name: "Product ID",
+      minLength: 3,
       maxLength: 15,
-      regex: /^[0-9]+$/,
-      regexMessage: "Must select an Inventory Item",
+      regex: /^[A-Z0-9-]+$/,
+      regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
     },
-    quantity: {
-      name: "Quantity",
+    productName: {
+      name: "Product name",
       minLength: 1,
-      maxLength: 3,
-      regex: /^[0-9]+$/,
-      regexMessage: "Must only contain numbers",
+      maxLength: 100,
+      regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
+      regexMessage: "Must only contain alphanumeric characters, numbers, spaces or '#,.&()-"
     },
-    price: {
-      name: "Price",
-      minLength: 1,
+    description: {
+      name: "Description",
+      minLength: 0,
+      maxLength: 600
+    },
+    manufacturer: {
+      name: "manufacturer",
+      minLength: 0,
+      maxLength: 100,
+      regex: /^[a-zA-Z0-9 '#,.&()-]*$/,
+      regexMessage: "Must only contain alphanumeric characters, numbers, spaces or '#,.&()-"
+    },
+    recommendedRetailPrice: {
+      name: "Recommended retail price",
+      minLength: 0,
       maxLength: 16,
       regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
       regexMessage: "Must be a positive double precision floating point number e.g 1.00"
     },
-    moreInfo: {
-      name: "MoreInfo",
-      minLength: 0,
-      maxLength: 255,
-      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-      regex: /^[a-zA-Z '-]*$/
-    },
-    closes: {
-      name: "manufactured"
-    }
   };
 
-  constructor({inventoryId, quantity, price, moreInfo, closes}) {
+  constructor({id, name, description, manufacturer, recommendedRetailPrice}) {
     this.data = {
-      inventoryId,
-      quantity,
-      price,
-      moreInfo,
-      closes
+      id,
+      name,
+      description,
+      manufacturer,
+      recommendedRetailPrice,
     }
 
   }
 
 }
-
 
 export default {
 
@@ -325,8 +326,8 @@ export default {
   // Sends a post request to the backend with a new business object to store
   addNewBusiness: (business) => instance.post('/businesses', {...business.data}, {withCredentials: true}),
 
-  sortProducts: (businessID) => {
-    return instance.get(`/businesses/${businessID}/products?orderBy=productIdASC&page=0`,{
+  sortProducts: (businessID, sortBy, page) => {
+    return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`,{
       withCredentials: true
     })
   },
@@ -368,13 +369,11 @@ export default {
     })
   },
 
-  getBusinessListings: (businessId) => {
-    return instance.get(`/businesses/${businessId}/listings`, {
-      withCredentials: true,
-    })
-  },
+  // Sends a post request to the backend with a new product object to store
+  addNewProduct: (businessID, product) => {
+    return instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true})
+  }
 
-  addBusinessListing: (businessId, listing) => instance.post(`/businesses/${businessId}/listings`, {...listing.data}, {withCredentials: true}),
   // Usage examples from original file:
   //
   // // (C)reate

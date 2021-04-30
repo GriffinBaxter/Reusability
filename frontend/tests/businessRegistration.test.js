@@ -3,7 +3,7 @@ import reg from '../src/views/BusinessRegistration'
 import { Business } from '../src/Api'
 
 /**
- * Jest tests for registration.vue.
+ * Jest tests for businessRegistration.vue.
  */
 
 // ***************************************** getErrorMessage() Tests ***************************************************
@@ -289,7 +289,7 @@ test('Description with any input greater than allowed length', () => {
     ).toBe(expectedMessage);
 })
 
-// ------------------------------------------------ Business Address Tests -------------------------------------------------
+// ------------------------------------------------ Business Address Tests ---------------------------------------------
 
 /**
  * Test for ensuring no error message is raised when no input is entered into the business address field.
@@ -805,7 +805,7 @@ test( 'Testing for the country with symbols', () => {
 // ************************************************ Suburb Tests *******************************************************
 // Waiting for approval from PO
 
-/*/!**
+/*/!*!/!**
  * Testing that an error message is returned when the suburb has a length greater than the maximum length of 255
  * characters.
  *  @result message raised is Input must be between 0 and 255.
@@ -884,15 +884,15 @@ test( 'Testing for the suburb with symbols', () => {
         Business.config.suburb.minLength,
         Business.config.suburb.maxLength
     )).toBe(expectedValue)
-})
+})*/
 
 // *********************************************** Postcode Tests ******************************************************
 
-/!**
+/**
  * Testing that an error message is returned when the postcode has a length greater than the maximum length of 255
  * characters.
  *  @result message raised is Input must be between 0 and 255.
- *!/
+ */
 test( 'Test for the postcode for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
@@ -905,10 +905,10 @@ test( 'Test for the postcode for the max length', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing that an error message is returned when we submit the empty string.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Test for the postcode for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
@@ -921,10 +921,10 @@ test( 'Test for the postcode for empty string', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for valid input of postcode.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for a valid postcode', () => {
     const inputValue = "8014"
     const expectedValue = ""
@@ -937,10 +937,10 @@ test( 'Testing for a valid postcode', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for postcode with numbers.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for postcode with numbers', () => {
     const inputValue = "1111"
     const expectedValue = ""
@@ -953,10 +953,10 @@ test( 'Testing for postcode with numbers', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for postcode with symbols.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for the postcode with symbols', () => {
     const inputValue = "!@#!@ suburb"
     const expectedValue = ""
@@ -967,7 +967,7 @@ test( 'Testing for the postcode with symbols', () => {
         Business.config.postcode.minLength,
         Business.config.postcode.maxLength
     )).toBe(expectedValue)
-})*/
+})
 
 // ************************************************ between() Tests ****************************************************
 /**

@@ -129,16 +129,14 @@
 
             </div>
           </div>
-          <div class="row" id="signOutRow">
-            <div class="col">
-              <button class="btn btn-success mt-4" @click="gotoBusinessPage('Listings')">Listings</button>
-            </div>
-            <!--logout button-->
-            <div class="col" align="right" v-if="isAdministrator">
-              <button class="btn btn-outline-primary float-end mt-4" id="signOutButton" @click="logout()">Sign Out
-              </button>
-            </div>
+
+          <!--logout button-->
+          <div align="right" id="adminButtonRow" v-if="isAdministrator">
+            <button class="btn btn-outline-primary float-end mt-4 mx-2" id="signOutButton" @click="logout()">Sign Out</button>
+            <button class="btn btn-outline-primary float-end mt-4" id="productCatalogueButton"
+                    @click="navigateToProductCatalogue()">Product Catalogue</button>
           </div>
+
         </div>
       </div>
     </div>
@@ -165,7 +163,6 @@ export default {
   },
   data() {
     return {
-      urlId: null,
       name: "",
       description: "",
       businessType: "",
@@ -183,7 +180,7 @@ export default {
 
       nameOfAdministrators: [],
 
-      isAdministrator: false
+      isAdministrator: true
     }
   },
   methods: {
@@ -292,9 +289,12 @@ export default {
     pushToUser(id) {
       this.$router.push({name: 'Profile', params: {id}});
     },
-    gotoBusinessPage(page) {
-      const id = this.urlID
-      this.$router.push({name: page, params: {id}});
+    navigateToProductCatalogue() {
+      /*
+      Navigates to the product catalogue of the business
+       */
+      let id = this.$route.params.id;
+      this.$router.push({name: 'ProductCatalogue', params: {id}});
     },
     logout() {
       /*
@@ -316,7 +316,6 @@ export default {
         this.$router.push({path: '/noBusiness'});
       } else {
         this.retrieveBusiness(urlID);
-        this.urlID = urlID;
       }
     }
   }
