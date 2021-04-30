@@ -18,5 +18,5 @@ public interface ListingRepository extends JpaRepository<Listing, Integer> {
      * @param businessId A business ID.
      * @return A list of products with the given business ID.
      */
-    Page<Product> findListingsByBusinessId(Integer businessId, Pageable paging);
+    Page<Listing> findListingsByBusinessId(Integer businessId, Pageable paging);
 }

@@ -7,7 +7,7 @@ import java.util.*;
 
 public class ListingPayload {
     private Integer id;
-    private InventoryItem inventoryItem;
+    private InventoryPayload inventoryItem;
     private Integer quantity;
     private Double price;
     private String moreInfo;
@@ -33,7 +33,7 @@ public class ListingPayload {
 //    }
 
     public ListingPayload(int id,
-                          InventoryItem inventoryItem,
+                          InventoryPayload inventoryItem,
                           Integer quantity,
                           Double price,
                           String moreInfo,
@@ -53,7 +53,7 @@ public class ListingPayload {
     public int getId() {
         return id;
     }
-    public InventoryItem getInventoryItem() {
+    public InventoryPayload getInventoryItem() {
         return inventoryItem;
     }
     public Integer getQuantity() {

@@ -7,6 +7,7 @@ import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.inventoryItem.InventoryItemRepository;
 import org.seng302.business.inventoryItem.InventoryItem;
+import org.seng302.business.inventoryItem.InventoryItemResource;
 import org.seng302.business.product.Product;
 import org.seng302.business.product.ProductPayload;
 import org.seng302.business.product.ProductRepository;
@@ -89,10 +90,12 @@ public class ListingResource {
      * @return Listings for business
      */
     @GetMapping("/businesses/{id}/listings")
-    public void retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                 @PathVariable String id,
-                                 @RequestParam(defaultValue = "productIdASC") String orderBy,
-                                 @RequestParam(defaultValue = "0") String page) {
+    public ResponseEntity<List<ListingPayload>> retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                                                 @PathVariable String id,
+                                                                 @RequestParam(defaultValue = "productIdASC") String orderBy,
+                                                                 @RequestParam(defaultValue = "0") String page) {
+
+        logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
         // Checks user logged in - 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -107,6 +110,7 @@ public class ListingResource {
             );
         }
 
+        // Checks Page Num valid - 400
         int pageNo;
         try {
             pageNo = Integer.parseInt(page);
@@ -150,7 +154,7 @@ public class ListingResource {
             case "createdDESC":
                 sortBy = Sort.by(Sort.Order.desc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
-            default:
+            default:    // Order By value not valid - 400
                 logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
@@ -160,7 +164,7 @@ public class ListingResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<Product> pagedResult = listingRepository.findListingsByBusinessId(businessId, paging);
+        Page<Listing> pagedResult = listingRepository.findListingsByBusinessId(businessId, paging);
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
@@ -171,13 +175,13 @@ public class ListingResource {
 
         logger.info("Listing Retrieval Success - 200 [OK] -  Listings retrieved for business with ID {}", businessId);
 
-        //List<ListingPayload> listingPayloads = convertToPayload(pagedResult.getContent());
-        //
-        //logger.debug("Products retrieved for business with ID {}: {}", businessId, listingPayloads);
-        //
-        //return ResponseEntity.ok()
-        //        .headers(responseHeaders)
-        //        .body(listingPayloads);
+        List<ListingPayload> listingPayloads = convertToPayload(pagedResult.getContent());
+
+        logger.debug("Products retrieved for business with ID {}: {}", businessId, listingPayloads);
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(listingPayloads);
     }
 
     /**
@@ -265,7 +269,7 @@ public class ListingResource {
         for (Listing listing : listingList) {
             ListingPayload newPayload = new ListingPayload(
                     listing.getId(),
-                    listing.getInventoryItem(),
+                    InventoryItemResource.convertToPayload(listing.getInventoryItem()),
                     listing.getQuantity(),
                     listing.getPrice(),
                     listing.getMoreInfo(),

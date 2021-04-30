@@ -42,4 +42,8 @@ public class InventoryItemResource {
         this.userRepository = userRepository;
     }
 
+    public static InventoryPayload convertToPayload(InventoryItem item){
+        return new InventoryPayload();
+    }
+
 }

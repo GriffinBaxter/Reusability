@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -90,6 +92,40 @@ public class ListingResourceIntegrationTests {
                                                 "\"price\":%f," +
                                                 "\"moreInfo\":\"%s\"," +
                                                 "\"closes\":\"%s\"}";
+
+    private String expectedJSON;
+
+    private final String expectedListingJSON = "[" +
+                                            "{\"id\"%s," +
+                                            "\"inventoryItem\":{" +
+                                                "{\"id\":%s," +
+                                                "\"product\":{" +
+                                                    "\"id\":\"%s\"," +
+                                                    "\"name\":\"%s\"," +
+                                                    "\"description\":\"%s\"," +
+                                                    "\"manufacturer\":\"%s\"," +
+                                                    "\"recommendedRetailPrice\":%.2f," +
+                                                    "\"created\":\"%s\"}," +
+                                                "\"quantity\":%d," +
+                                                "\"pricePerItem\":%.2f," +
+                                                "\"totalPrice\":%.2f," +
+                                                "\"manufactured\":\"%s\"," +
+                                                "\"sellBy\":\"%s\"," +
+                                                "\"bestBefore\":\"%s\"," +
+                                                "\"expires\":\"%s\"}" +
+                                            "\"quantity\":%d," +
+                                            "\"price\":%.2f," +
+                                            "\"moreInfo\":\"%s\"," +
+                                            "\"created\":\"%s\"," +
+                                            "\"closes\":\"%s\"}" +
+                                            "]";
+
+
+    private String inventoryItemId;
+    private Integer quantity;
+    private Double price;
+    private String moreInfo;
+    private LocalDateTime closes;
 
     @BeforeAll
     public void setup() throws Exception {
@@ -403,5 +439,46 @@ public class ListingResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    // GET Tests
+
+    /**
+     * Tests that an OK status and a list of listing payloads are received when the business ID in the
+     * /businesses/{id}/listings API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveListingsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated(), listing.getCloses());
+
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl(list);
+        Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                .param("orderBy", "createdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 }
