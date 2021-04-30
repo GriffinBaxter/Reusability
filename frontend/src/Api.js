@@ -299,6 +299,56 @@ export class Product{
 
 }
 
+export class Listing{
+
+  // This is a config for the Inventory Item requirement details
+  static config = {
+    inventoryId: {
+      name: "Inventory Item ID",
+      minLength: 1,
+      maxLength: 15,
+      regex: /^[0-9]+$/,
+      regexMessage: "Must select an Inventory Item",
+    },
+    quantity: {
+      name: "Quantity",
+      minLength: 1,
+      maxLength: 3,
+      regex: /^[0-9]+$/,
+      regexMessage: "Must only contain numbers",
+    },
+    price: {
+      name: "Price",
+      minLength: 1,
+      maxLength: 16,
+      regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
+      regexMessage: "Must be a positive double precision floating point number e.g 1.00"
+    },
+    moreInfo: {
+      name: "MoreInfo",
+      minLength: 0,
+      maxLength: 255,
+      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
+      regex: /^[a-zA-Z '-]*$/
+    },
+    closes: {
+      name: "manufactured"
+    }
+  };
+
+  constructor({inventoryId, quantity, price, moreInfo, closes}) {
+    this.data = {
+      inventoryId,
+      quantity,
+      price,
+      moreInfo,
+      closes
+    }
+
+  }
+
+}
+
 export default {
 
   // Sends a post request to the backend with a new user object to store
@@ -372,7 +422,15 @@ export default {
   // Sends a post request to the backend with a new product object to store
   addNewProduct: (businessID, product) => {
     return instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true})
-  }
+  },
+
+  getBusinessListings: (businessId) => {
+    return instance.get(`/businesses/${businessId}/listings`, {
+      withCredentials: true,
+    })
+  },
+
+  addBusinessListing: (businessId, listing) => instance.post(`/businesses/${businessId}/listings`, {...listing.data}, {withCredentials: true}),
 
   // Usage examples from original file:
   //
