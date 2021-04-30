@@ -6,6 +6,9 @@ import {test, expect} from "@jest/globals"
 import reg from '../src/components/CreateNewInventoryItem'
 // import {InventoryItem} from '../Api'
 
+const endOfToday = require('date-fns/endOfToday');
+const format = require('date-fns/format');
+
 // ***************************************** getErrorMessage() Tests ***************************************************
 // /**
 //  * Test for ensuring an error message is raised when no input is entered into the product id field.
@@ -218,22 +221,43 @@ test('parseSelectedDate_GivenValidDateString_ReturnYearMonthAndDay', () => {
     );
 })
 
+//------------------------------ date validation tests for isValidManufactureDate --------------------------------------
 
 /**
- * Test for the date being after the current date.
+ * Test for the validation of the manufacture date.
  * @result
  */
-test('isADateBeforeToday_DateIsPriorToday_ReturnTrue', () => {
-    // const dateToday = new Date(Date.now());
-    // const dateTodayYear = dateToday.getFullYear();
-    // const dateTodayMonth = dateToday.getMonth();
-    // const dateTodayDay = dateToday.getDay()
-    // const pastDate = new Date('01-01-2021');
-    // const pastDateYear = pastDate.getFullYear();
-    // const pastDateMonth = pastDate.getMonth();
-    // const pastDateDay = pastDate.getDay();
-
+test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
     expect(
-        reg.methods.isADateBeforeToday('2000-01-02')).toBe(true);
+        reg.methods.isValidManufactureDate('2000-01-02')).toBe(true);
 
 })
+
+/**
+ * Test for the validation of the manufacture date.
+ * @result
+ */
+test('isValidManufactureDate_DateIsToday_ReturnTrue', () => {
+
+    const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+    const todayDateMonth = format(endOfToday(new Date()), 'MM');
+    const todayDateDay = format(endOfToday(new Date()), 'dd');
+
+    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`;
+
+    expect(
+        reg.methods.isValidManufactureDate(todayDate)).toBe(true);
+
+})
+
+/**
+ * Test for the validation of the manufacture date.
+ * @result
+ */
+test('isValidManufactureDate_DateIsAfterToday_ReturnFalse', () => {
+    expect(
+        reg.methods.isValidManufactureDate('2029-04-30')).toBe(false);
+
+})
+
+//TODO write test for two and one digit month and days.
