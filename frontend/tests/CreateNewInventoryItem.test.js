@@ -224,18 +224,19 @@ test('parseSelectedDate_GivenValidDateString_ReturnYearMonthAndDay', () => {
 //------------------------------ date validation tests for isValidManufactureDate --------------------------------------
 
 /**
- * Test for the validation of the manufacture date.
- * @result
+ * Test for the validation of the manufacture date. Specifically, it tests that the date is valid if it is a date
+ * prior to today's date.
+ * @result true is returned
  */
 test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
     expect(
-        reg.methods.isValidManufactureDate('2000-01-02')).toBe(true);
+        reg.methods.isValidManufactureDate('2000-30-10')).toBe(true);
 
 })
 
 /**
- * Test for the validation of the manufacture date.
- * @result
+ * Test for the validation of the manufacture date. Specifically, it tests that the date is valid if it is today's date.
+ * @result true is returned
  */
 test('isValidManufactureDate_DateIsToday_ReturnTrue', () => {
 
@@ -251,8 +252,9 @@ test('isValidManufactureDate_DateIsToday_ReturnTrue', () => {
 })
 
 /**
- * Test for the validation of the manufacture date.
- * @result
+ * Test for the validation of the manufacture date. Specifically, it tests that the date is invalid if it is a date
+ * after today's date.
+ * @result true is returned
  */
 test('isValidManufactureDate_DateIsAfterToday_ReturnFalse', () => {
     expect(
@@ -260,4 +262,112 @@ test('isValidManufactureDate_DateIsAfterToday_ReturnFalse', () => {
 
 })
 
-//TODO write test for two and one digit month and days.
+/**
+ * Test for the validation of the manufacture date. Specifically, it tests that a valid date that contains a single digit day
+ * is valid 9. This checks that it becomes 09.
+ * prior to today's date.
+ * @result true is returned
+ */
+test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
+    expect(
+        reg.methods.isValidManufactureDate('2000-09-02')).toBe(true);
+
+})
+
+/**
+ * Test for the validation of the manufacture date. Specifically, it tests that a valid date that contains a single digit month
+ * is valid i.e. 4 for april. This checks that it becomes 04.
+ * prior to today's date.
+ * @result true is returned
+ */
+test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
+    expect(
+        reg.methods.isValidManufactureDate('2000-01-04')).toBe(true);
+
+})
+
+//------------------------------ date validation tests for isValidSellByDate -------------------------------------------
+
+/**
+ * Test for the validation of the sell by date. Specifically, it tests that the date is valid if it is a date
+ * after today's date, after the manufacture date and before the expiry date.
+ * @result true is returned
+ */
+test('isValidSellByDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpiryDate_ReturnTrue', () => {
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+    const testSelectedSellByDate = '2022-11-10';
+
+    expect(
+        reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
+})
+
+/**
+ * Test for the validation of the sell by date. Specifically, it tests that the date is invalid if it is today's date
+ * (and after the manufacture date and before the expiry date).
+ * @result false is returned
+ */
+test('isValidSellByDate_DateIsTodayAndAfterManufactureDateAndBeforeExpiryDate_ReturnFalse', () => {
+
+    const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+    const todayDateMonth = format(endOfToday(new Date()), 'MM');
+    const todayDateDay = format(endOfToday(new Date()), 'dd');
+
+    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`;
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+
+    expect(
+        reg.methods.isValidSellByDate(todayDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+
+})
+
+/**
+ * Test for the validation of the sell by date. Specifically, it tests that the date is invalid if it is prior to today's date
+ * (and after the manufacture date and before the expiry date).
+ * @result false is returned
+ */
+test('isValidSellByDate_DateIsBeforeTodayAndAfterManufactureDateAndBeforeExpiryDate_ReturnFalse', () => {
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+    const testSelectedSellByDate = '2020-11-10';
+
+    expect(
+        reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+
+})
+
+/**
+ * Test for the validation of the sell by date. Specifically, it tests that the date is invalid if it is after the
+ * manufacture date and after today but is after the expiry date.
+ * @result false is returned
+ */
+test('isValidSellByDate_DateIsAfterTodayAndAfterManufactureDateAndAfterExpiryDate_ReturnFalse', () => {
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+    const testSelectedSellByDate = '2024-11-10';
+
+    expect(
+        reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+
+})
+
+/**
+ * Test for the validation of the sell by date. Specifically, it tests that the date is invalid if it is after the
+ * manufacture date and after today but is the expiry date.
+ * @result false is returned
+ */
+test('isValidSellByDate_DateIsNotTodayAndAfterManufactureDateAndIsExpiryDate_ReturnFalse', () => {
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+    const testSelectedSellByDate = "2022-21-10";
+
+    expect(
+        reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+
+})

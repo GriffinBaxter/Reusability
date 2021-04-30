@@ -267,13 +267,9 @@ export default {
     isValidManufactureDate(selectedManufacturedDate) {
 
       const selectedDate = this.parseSelectedDate(selectedManufacturedDate);
-
-      console.log(selectedDate)
-
       const givenDateYear = selectedDate.year
       const givenDateMonth = selectedDate.month
       const givenDateDay = selectedDate.day
-
       const todayDateYear = format(endOfToday(new Date()), 'yyyy');
       const todayDateMonth = format(endOfToday(new Date()), 'MM');
       const todayDateDay = format(endOfToday(new Date()), 'dd');
@@ -288,12 +284,11 @@ export default {
 
     /**
      * This function will check the validity of the sell by date of an inventory item i.e. that the sell by date of the
-     * inventory item is after to today's date but not today's date, and before the expiry date.
+     * inventory item is after to today's date but not today's date, and after the manufacture date and before the expiry date (not including).
      *
      * @return true if the date meets the above conditions, otherwise false
      */
     isValidSellByDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
-
 
 
     },
