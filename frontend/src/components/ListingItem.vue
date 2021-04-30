@@ -1,17 +1,24 @@
 <template>
   <div class="card border-secondary mb-3 px-2 py-2 shadow">
     <div class="row">
-      <div class="row">
-        <div class="col-md-3">
+      <div class="row" id="mainContent">
+        <div class="col-12 col-sm-3">
           <div class="ratio ratio-4x3">
           <img class="card-img" src="../../public/apples.jpg" id="listing-item-image">
           </div>
         </div>
         <div class="col">
           <div class="card-body px-3" id="cardbody">
+            <div class="row">
+              <div class="col">
+                <h4 class="card-title">{{quantityPerSale}}x {{ productName }}</h4>
+              </div>
+              <div class="col d-flex align-items-end flex-column col-5" v-if="!(moreInfo.length===0)">
+                <p align="right">{{moreInfo}}</p>
+              </div>
+            </div>
             <div class="row py-2" id="mainbody">
               <div class="col-md-3">
-                <h4 class="card-title">{{quantityPerSale}}x {{ productName }}</h4>
                 <p class="card-text">
                   {{ productId }}
                   <br>
@@ -19,7 +26,6 @@
                 </p>
               </div>
               <div class="col d-flex align-items-end flex-column">
-                <p align="right">{{moreInfo}}</p>
                 <p>{{ description }}</p>
                 <p class="card-text mt-auto" id="price">Price: ${{ price }}</p>
               </div>
@@ -132,8 +138,8 @@ img {
   margin-right: 5%;
 }
 
-#mainbody {
-  min-height: 160px;
+#mainContent {
+  margin-left: 1px;
 }
 
 </style>
