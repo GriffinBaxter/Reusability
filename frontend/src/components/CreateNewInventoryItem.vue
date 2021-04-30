@@ -38,8 +38,10 @@
             <!--price per item-->
             <div class="col-6 form-group py-1 px-3">
               <label for="price-per-item">Price Per Item: </label>
-              <input id="price-per-item" name="price-per-item" tabindex="3" type="number" v-model="pricePerItem" min="0"
-                     :class="toggleInvalidClass(pricePerItemErrorMsg)" :maxlength="config.pricePerItem.maxLength">
+              <input id="price-per-item" name="price-per-item" tabindex="3" type="number" step="0.01"
+                     v-model="pricePerItem"
+                     min="0" :class="toggleInvalidClass(pricePerItemErrorMsg)"
+                     :maxlength="config.pricePerItem.maxLength">
               <div class="invalid-feedback">
                 {{ pricePerItemErrorMsg }}
               </div>
@@ -48,8 +50,8 @@
             <!--total price-->
             <div class="col-6 form-group py-1 px-3">
               <label for="total-price">Total Price: </label>
-              <input id="total-price" name="total-price" tabindex="4" type="number" v-model="totalPrice" min="0"
-                     :class="toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
+              <input id="total-price" name="total-price" tabindex="4" type="number" step="0.01" v-model="totalPrice"
+                     min="0" :class="toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
               <div class="invalid-feedback">
                 {{ totalPriceErrorMsg }}
               </div>
@@ -101,7 +103,7 @@
 
         <!--footer-->
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-light" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-success" @click="createNewInventoryItem()">Confirm</button>
         </div>
 
@@ -112,13 +114,19 @@
 
 <script>
 
-import {InventoryItem} from "../Api";
+import Api, {InventoryItem} from "../Api";
 const endOfToday = require('date-fns/endOfToday');
 const format = require('date-fns/format');
 const compareAsc = require('date-fns/compareAsc');
 
 export default {
   name: 'InventoryItemCreation',
+  props: {
+    businessId: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       // A copy of the product config file for error checking.
@@ -154,7 +162,7 @@ export default {
 
       // expires related variables
       expires: "",
-      expiresErrorMsg: "",
+      expiresErrorMsg: ""
     }
   },
   methods: {
@@ -246,8 +254,8 @@ export default {
         let day = dateParts[1];
         let month = dateParts[2];
 
-        month = (month.length === 1) ? `0${month}`: month;
-        day = (day.length === 1) ? `0${day}`: day;
+        month = (month.length === 1) ? `0${month}` : month;
+        day = (day.length === 1) ? `0${day}` : day;
 
         return {
           year: year,
@@ -267,6 +275,7 @@ export default {
     isValidManufactureDate(selectedManufacturedDate) {
 
       const selectedDate = this.parseSelectedDate(selectedManufacturedDate);
+
       const givenDateYear = selectedDate.year
       const givenDateMonth = selectedDate.month
       const givenDateDay = selectedDate.day
@@ -313,11 +322,48 @@ export default {
      */
     isValidExpiryDate(selectedManufacturedDate, selectedBestBeforeDate) {
 
+    },
+    /**
+     * reset all input file
+     */
+    dataReset(){
+      // product Id related variables
+      this.productId = null;
+      this.productIdErrorMsg = null;
 
+      // quantity related variables
+      this.quantity = null;
+      this.quantityErrorMsg = null;
+
+      // price per item related variables
+      this.pricePerItem = null;
+      this.pricePerItemErrorMsg = null;
+
+      // total price related variables
+      this.totalPrice = null;
+      this.totalPriceErrorMsg = null;
+
+      // manufactured related variables
+      this.manufactured = null;
+      this.manufacturedErrorMsg = null;
+
+      // sell by related variables
+      this.sellBy = null;
+      this.sellNyErrorMsg = null;
+
+
+      // best Before Id related variables
+      this.bestBefore = null;
+      this.bestBeforeErrorMsg = null;
+
+      // expires related variables
+      this.expires = null;
+      this.expiresErrorMsg = null;
     },
 
-
-
+    /**
+     *
+     */
     createNewInventoryItem() {
       // Steps required for the function before starting processing.
       // inventoryItem.preventDefault()  // prevents page from reloading
@@ -348,6 +394,9 @@ export default {
           this.config.quantity.regexMessage,
           this.config.quantity.regex
       )
+      if (this.quantity <= 0) {
+        this.quantityErrorMsg = "At less one"
+      }
       if (this.quantityErrorMsg) {
         requestIsInvalid = true
       }
@@ -378,34 +427,34 @@ export default {
         requestIsInvalid = true
       }
 
-      // Manufactured error checking
-      //TODO:check this.manufactured == ""
-      console.log(this.isADayAfter(this.manufactured))
-      if (this.isADayAfter(this.manufactured) === false) {
-        this.manufacturedErrorMsg = "If fill in, must be a date before or today.";
-      }
-      if (this.totalPriceErrorMsg) {
-        requestIsInvalid = true;
-      }
-
-      // Sell by error checking
-      console.log(this.isADayAfter(this.sellBy))
-      if (this.isADayAfter(this.sellBy) === false) {
-        this.sellByErrorMsg = "If fill in, must be a date before or today.";
-      }
-      if (this.sellByErrorMsg) {
-        requestIsInvalid = true;
-      }
-
-      // No checking for best before
-
-      // Expires by error checking
-      if (this.isADayBefore(this.expires) !== true) {
-        this.expiresErrorMsg = "Must be a date after or today.";
-      }
-      if (this.expiresErrorMsg) {
-        requestIsInvalid = true
-      }
+      // // Manufactured error checking
+      // //TODO:check this.manufactured == ""
+      // console.log(this.isADayAfter(this.manufactured))
+      // if (this.isADayAfter(this.manufactured) === false) {
+      //   this.manufacturedErrorMsg = "If fill in, must be a date before or today.";
+      // }
+      // if (this.totalPriceErrorMsg) {
+      //   requestIsInvalid = true;
+      // }
+      //
+      // // Sell by error checking
+      // console.log(this.isADayAfter(this.sellBy))
+      // if (this.isADayAfter(this.sellBy) === false) {
+      //   this.sellByErrorMsg = "If fill in, must be a date before or today.";
+      // }
+      // if (this.sellByErrorMsg) {
+      //   requestIsInvalid = true;
+      // }
+      //
+      // // No checking for best before
+      //
+      // // Expires by error checking
+      // if (this.isADayBefore(this.expires) !== true) {
+      //   this.expiresErrorMsg = "Must be a date after or today.";
+      // }
+      // if (this.expiresErrorMsg) {
+      //   requestIsInvalid = true
+      // }
 
 
       // If at any stage an error has been discovered we cancel the procedure
@@ -426,11 +475,35 @@ export default {
       }
       const newInventoryItem = new InventoryItem(inventoryItemData);
 
-      console.log(newInventoryItem);
-
+      /**
+       * Add the Product to the database by sending an API request to the backend to store the product's information.
+       * Raise any errors and ensure they are displayed on the UI.
+       */
+      Api.addNewInventoryItem(this.businessId, newInventoryItem
+      ).then((response) => {
+            if (response.status === 201) {
+              this.dataReset();
+            }
+          }
+      ).catch((error) => {
+        this.cannotProceed = true;
+        if (error.response) {
+          if (error.response.status === 400) {
+            this.toastErrorMessage = '400 Bad request; invalid product data';
+          } else if (error.response.status === 403) {
+            this.toastErrorMessage = 'User is not an administer of this business.';
+          } else {
+            this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
+          }
+        } else if (error.request) {
+          this.toastErrorMessage = 'Timeout occurred';
+        } else {
+          this.toastErrorMessage = 'Unexpected error occurred!';
+        }
+      })
     }
 
-  },
+  }
 };
 </script>
 
