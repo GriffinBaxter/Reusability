@@ -16,7 +16,7 @@
         <div class="col search-bar-positioning">
           <div class="input-group my-4">
             <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
-            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><font-awesome-icon icon="search" /></button>
+            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
       </div>
@@ -27,6 +27,7 @@
         <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3"
              @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
           <b>Nickname</b>
+          <i id="nickname-icon"></i>
         </div>
 
         <!--order by full name-->
@@ -149,7 +150,10 @@ export default {
     updatePage(event, newPageNum) {
       event.preventDefault();
       this.currentPage = newPageNum;
-      history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`)
+      this.$router.push({
+        path: "/search",
+        query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()}
+      }).catch(()=>{});
       this.requestUsers().then(() => this.buildRows())
     },
 
@@ -171,42 +175,46 @@ export default {
     async requestUsers() {
 
       const urlParams = new URLSearchParams(window.location.search);
-      const query = urlParams.get('searchQuery').trim();
 
-      const ordering = urlParams.get('orderBy');
-      let pageNum = parseInt(urlParams.get('page'))-1;
-      this.currentPage = pageNum+1;
+      if (urlParams.get('searchQuery') !== null) {
+        const query = urlParams.get('searchQuery').trim();
 
-      if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
-        console.log(this.lastQuery);
-        this.currentPage = 1;
-        pageNum = 0;
-        history.pushState({}, null, `/search?searchQuery=${query}&orderBy=${this.orderBy}&page=1`)
-      }
-      this.lastQuery = query;
+        const ordering = urlParams.get('orderBy');
+        let pageNum = parseInt(urlParams.get('page'))-1;
+        this.currentPage = pageNum+1;
 
-      await Api.searchUsers(query, ordering, pageNum).then(response => {
-
-        this.userList = [...response.data];
-        if (this.userList.length <= 0) {
+        if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
           this.currentPage = 1;
-          this.maxPage = 1;
-          this.totalRows = 0;
-        } else {
-          this.maxPage = parseInt(response.headers['total-pages']);
-          this.totalRows = parseInt(response.headers['total-rows']);
+          pageNum = 0;
+          this.$router.push(
+              {path: "/search", query: {"searchQuery": query, "orderBy": this.orderBy, "page": "1"}}
+          ).catch(()=>{});
         }
+        this.lastQuery = query;
 
-      }).catch((error) => {
-        if (error.request && !error.response) {
-          this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 401) {
-          this.$router.push({path: '/invalidtoken'});
-        } else {
-          //TODO Change these to actually handle 400 responses from backend
-          this.$router.push({path: '/timeout'});
-        }
-      })
+        await Api.searchUsers(query, ordering, pageNum).then(response => {
+
+          this.userList = [...response.data];
+          if (this.userList.length <= 0) {
+            this.currentPage = 1;
+            this.maxPage = 1;
+            this.totalRows = 0;
+          } else {
+            this.maxPage = parseInt(response.headers['total-pages']);
+            this.totalRows = parseInt(response.headers['total-rows']);
+          }
+
+        }).catch((error) => {
+          if (error.request && !error.response) {
+            this.$router.push({path: '/timeout'});
+          } else if (error.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
+          } else {
+            //TODO Change these to actually handle 400 responses from backend
+            this.$router.push({path: '/timeout'});
+          }
+        })
+      }
     },
 
     /**
@@ -216,7 +224,10 @@ export default {
     search(event) {
       if (event.keyCode === 13) {
         const inputQuery = this.$refs.searchBar.value;
-        history.pushState({}, null,  `/search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.$router.push({
+          path: "/search",
+          query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": this.currentPage.toString()}
+        }).catch(()=>{});
         this.requestUsers().then(() => this.buildRows()).catch(
             (e) => console.log(e)
         );
@@ -228,7 +239,10 @@ export default {
      */
     searchClicked() {
       const inputQuery = this.$refs.searchBar.value;
-      history.pushState({}, null, `/search?searchQuery=${inputQuery}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+      this.$router.push({
+        path: "/search",
+        query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": this.currentPage.toString()}
+      }).catch(()=>{});
       this.requestUsers().then(() => this.buildRows()).catch(
           (e) => console.log(e)
       );
@@ -240,7 +254,12 @@ export default {
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage -= 1;
-        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.$router.push({
+          path: "/search",
+          query: {
+            "searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()
+          }
+        })
         this.requestUsers().then(() => this.buildRows())
       }
     },
@@ -251,7 +270,12 @@ export default {
     nextPage() {
       if (this.currentPage < this.maxPage) {
         this.currentPage += 1;
-        history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=${this.orderBy}&page=${this.currentPage}`);
+        this.$router.push({
+          path: "/search",
+          query: {
+            "searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()
+          }
+        })
         this.requestUsers().then(() => this.buildRows())
       }
     },
@@ -270,21 +294,22 @@ export default {
         this.disableIcons();
         if (this.nickAscending) {
           this.orderBy = "nicknameASC";
-          const icon = document.createElement('font-awesome-icon');
-          //icon.setAttribute('icon', 'search');
-          icon.setAttribute('class', 'float-end');
-          icon.setAttribute(':icon', '[\'fas\', \'search\']')
-          document.getElementById('order-by-nickname-div').appendChild(icon);
-
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameASC&page=${this.currentPage}`);
+          document.getElementById('nickname-icon').setAttribute('class','fas fa-chevron-up float-end');
+          this.$router.push({
+            path: "/search",
+            query: {
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameASC", "page": this.currentPage.toString()
+            }
+          })
         } else {
           this.orderBy = "nicknameDESC";
-          const icon = document.createElement('font-awesome-icon');
-          //icon.setAttribute('icon', 'search');
-          icon.setAttribute('class', 'float-end');
-          icon.setAttribute(':icon', '[\'fas\', \'search\']')
-          document.getElementById('order-by-nickname-div').appendChild(icon);
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=nicknameDESC&page=${this.currentPage}`);
+          document.getElementById('nickname-icon').setAttribute('class','fas fa-chevron-down float-end');
+          this.$router.push({
+            path: "/search",
+            query: {
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameDESC", "page": this.currentPage.toString()
+            }
+          })
 
         }
         this.nickAscending = !this.nickAscending;
@@ -298,12 +323,22 @@ export default {
         if (this.nameAscending) {
           this.orderBy = "fullNameASC";
           document.getElementById('name-icon').setAttribute('class','fas fa-chevron-up float-end');
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=fullNameASC&page=${this.currentPage}`);
+          this.$router.push({
+            path: "/search",
+            query: {
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "fullNameASC", "page": this.currentPage.toString()
+            }
+          })
 
         } else {
           this.orderBy = "fullNameDESC";
           document.getElementById('name-icon').setAttribute('class','fas fa-chevron-down float-end');
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=fullNameDESC&page=${this.currentPage}`)
+          this.$router.push({
+            path: "/search",
+            query: {
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "fullNameDESC", "page": this.currentPage.toString()
+            }
+          })
 
         }
         this.nickAscending = false;
@@ -317,11 +352,21 @@ export default {
         if (this.emailAscending) {
           this.orderBy = "emailASC";
           document.getElementById('email-icon').setAttribute('class','fas fa-chevron-up float-end');
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=emailASC&page=${this.currentPage}`);
+          this.$router.push({
+            path: "/search",
+            query: {
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "emailASC", "page": this.currentPage.toString()
+            }
+          })
         } else {
           this.orderBy = "emailDESC";
           document.getElementById('email-icon').setAttribute('class','fas fa-chevron-down float-end');
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=emailDESC&page=${this.currentPage}`)
+          this.$router.push({
+            path: "/search",
+            query: {
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "emailDESC", "page": this.currentPage.toString()
+            }
+          })
 
         }
         this.nickAscending = false;
@@ -335,12 +380,22 @@ export default {
         if (this.addressAscending) {
           this.orderBy = "addressASC";
           document.getElementById('address-icon').setAttribute('class','fas fa-chevron-up float-end');
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressASC&page=${this.currentPage}`);
+          this.$router.push({
+            path: "/search",
+            query: {
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "addressASC", "page": this.currentPage.toString()
+            }
+          })
 
         } else {
           this.orderBy = "addressDESC";
           document.getElementById('address-icon').setAttribute('class','fas fa-chevron-down float-end');
-          history.pushState({}, null, `/search?searchQuery=${this.$refs.searchBar.value}&orderBy=addressDESC&page=${this.currentPage}`);
+          this.$router.push({
+            path: "/search",
+            query: {
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "addressDESC", "page": this.currentPage.toString()
+            }
+          })
         }
         this.nickAscending = false;
         this.nameAscending = false;
@@ -371,7 +426,7 @@ export default {
     buildRows() {
       const self = this;
       this.clearRows();
-      let limit = this.rowsPerPage + (this.currentPage-1) * this.rowsPerPage;
+      let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
       let startIndex = 0;
       const outerContainer = document.getElementById('outer-container');
       const lastChild = outerContainer.lastChild;
@@ -539,6 +594,14 @@ export default {
       return address;
     },
 
+    requestUsersListener() {
+      this.requestUsers().then(
+          () => this.buildRows()
+      ).catch(
+          (e) => console.log(e)
+      )
+    }
+
   },
 
   /**
@@ -558,6 +621,8 @@ export default {
       this.$router.push({name: 'Login'});
     }
 
+    document.addEventListener('page-routing', this.requestUsersListener);
+
     //TODO what is the purpose of this? Is it needed still?
 
     // let self = this;
@@ -570,6 +635,9 @@ export default {
     //     }
     //   });
     // })
+  },
+  beforeDestroy() {
+    document.removeEventListener('page-routing', this.requestUsersListener);
   }
 }
 </script>

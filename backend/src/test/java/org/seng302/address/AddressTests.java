@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class AddressTest {
+public class AddressTests {
 
     @Test
     public void testToStringJSON() throws Exception {
