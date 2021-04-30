@@ -1,6 +1,10 @@
 <template>
   <div>
+    <!-- Navbar -->
     <Navbar/>
+    <!-- Listing Creation -->
+    <create-listing v-bind:business-id="businessId"></create-listing>
+    <!-- Listing Container -->
     <div class="container">
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
       <div class="card p-1">
@@ -17,7 +21,7 @@
           </div>
           <!-- Add new Button -->
           <div class="col-md" v-if="businessAdmin">
-            <button type="button" class="btn btn-success w-75 my-1">Add new</button>
+            <button type="button" class="btn btn-success w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
           </div>
         </div>
         <!-- Listings -->
@@ -38,6 +42,8 @@
             v-bind:moreInfo="item.moreInfo"/>
       </div>
     </div>
+    <!-- Footer -->
+    <Footer/>
   </div>
 </template>
 
@@ -46,16 +52,19 @@ import Navbar from "@/components/Navbar";
 import ListingItem from "@/components/ListingItem";
 import Api from "@/Api";
 import Cookies from "js-cookie";
+import CreateListing from "@/components/CreateListing";
+import Footer from "@/components/Footer";
 
 export default {
 name: "Listings",
-  components: {ListingItem, Navbar},
+  components: {Footer, CreateListing, ListingItem, Navbar},
   data() {
     return {
       allListings: [],
       listings: [],
       businessName: "",
-      businessAdmin: false
+      businessAdmin: false,
+      businessId: ""
     }
   },
   methods: {
@@ -145,10 +154,10 @@ name: "Listings",
     }
   },
   mounted() {
-    const businessId = parseInt(this.$route.params.id);
-    this.getBusiness(businessId);
+    this.businessId = parseInt(this.$route.params.id);
+    this.getBusiness(this.businessId);
     this.fakeListings();
-    // this.getListings(businessId); //NOTE: Currently not working
+    // this.getListings(this.businessId); //NOTE: Currently not working
   }
 }
 </script>
