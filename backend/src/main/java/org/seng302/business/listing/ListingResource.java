@@ -164,7 +164,7 @@ public class ListingResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<Listing> pagedResult = listingRepository.findListingsByBusinessId(businessId, paging);
+        Page<Listing> pagedResult = Page.empty(); // listingRepository.findListingsByBusinessId(businessId, paging);
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
@@ -230,6 +230,7 @@ public class ListingResource {
                      HttpStatus.BAD_REQUEST,
                     "Inventory Item Not Found");
         }
+
 
         Integer quantity = listingPayload.getQuantity();
         Double price = listingPayload.getPrice();

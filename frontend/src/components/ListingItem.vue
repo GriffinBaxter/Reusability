@@ -1,39 +1,42 @@
 <template>
   <div class="card border-secondary mb-3 px-2 py-2 shadow">
-    <div class="row no-gutters">
-      <div class="col-md-3">
-        <img class="card-img" src="../../public/apples.jpg" id="listing-item-image">
-      </div>
-      <div class="col">
-        <div class="card-body px-3 py-3" id="cardbody">
-          <div class="row py-2" id="mainbody">
-            <div class="col-md-3">
-              <h4 class="card-title">{{quantityPerSale}}x {{ productName }}</h4>
-              <p class="card-text">
-                {{ productId }}
-                <br>
-                (Quantity: {{ quantity }})
-              </p>
-            </div>
-            <div class="col d-flex align-items-end flex-column">
-              <p align="right">{{moreInfo}}</p>
-              <p>{{ description }}</p>
+    <div class="row">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="ratio ratio-4x3">
+          <img class="card-img" src="../../public/apples.jpg" id="listing-item-image">
+          </div>
+        </div>
+        <div class="col">
+          <div class="card-body px-3" id="cardbody">
+            <div class="row py-2" id="mainbody">
+              <div class="col-md-3">
+                <h4 class="card-title">{{quantityPerSale}}x {{ productName }}</h4>
+                <p class="card-text">
+                  {{ productId }}
+                  <br>
+                  (Quantity: {{ quantity }})
+                </p>
+              </div>
+              <div class="col d-flex align-items-end flex-column">
+                <p align="right">{{moreInfo}}</p>
+                <p>{{ description }}</p>
                 <p class="card-text mt-auto" id="price">Price: ${{ price }}</p>
-
+              </div>
             </div>
           </div>
-          <div class="row">
-            <hr>
-            <div class="col-3">
-              Listing Date: {{ listDate }}
-            </div>
-            <div class="col-3">
-              Closing Date: {{ closeDate }}
-            </div>
-            <div class="col-3">
-              Expires: {{ expires }}
-            </div>
-          </div>
+        </div>
+      </div>
+      <hr class="mt-2 mb-2" id="lineBreak">
+      <div class="row">
+        <div class="col-4 text-center">
+          Listing Date: {{ listDate }}
+        </div>
+        <div class="col-4 text-center">
+          Closing Date: {{ closeDate }}
+        </div>
+        <div class="col-4 text-center">
+          Expires: {{ expires }}
         </div>
       </div>
     </div>
@@ -116,16 +119,17 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 img {
   object-fit: cover;
-  width: 230px;
-  height: 230px;
+  width: 100%;
 }
 
-#cardbody {
-  height: 224px;
+#lineBreak {
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 #mainbody {

@@ -7,17 +7,17 @@
         <!-- Order Buttons -->
         <div class="row my-3" align="center">
           <div class="col-md">
-            <button type="button" class="btn btn-outline-success w-75">New Listings</button>
+            <button type="button" class="btn btn-outline-success w-75 my-1">New Listings</button>
           </div>
           <div class="col-md">
-            <button type="button" class="btn btn-outline-success w-75">Closing Soon</button>
+            <button type="button" class="btn btn-outline-success w-75 my-1">Closing Soon</button>
           </div>
           <div class="col-md">
-            <button type="button" class="btn btn-outline-success w-75">Name</button>
+            <button type="button" class="btn btn-outline-success w-75 my-1">Name</button>
           </div>
           <!-- Add new Button -->
           <div class="col-md" v-if="businessAdmin">
-            <button type="button" class="btn btn-success w-75">Add new</button>
+            <button type="button" class="btn btn-success w-75 my-1">Add new</button>
           </div>
         </div>
         <!-- Listings -->
