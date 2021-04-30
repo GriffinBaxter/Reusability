@@ -64,7 +64,7 @@ name: "Listings",
       listings: [],
       businessName: "",
       businessAdmin: false,
-      businessId: ""
+      businessId: -1
     }
   },
   methods: {

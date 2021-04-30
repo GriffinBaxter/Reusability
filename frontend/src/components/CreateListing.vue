@@ -7,7 +7,7 @@
 
         <!--title-->
         <div class="modal-header">
-          <h2 align="central" id="creationPopupTitle">New Listing Item</h2>
+          <h2 class="text-center">New Listing</h2>
         </div>
 
 
@@ -18,15 +18,16 @@
             <!--Inventory Item Select-->
             <div class="row">
               <div class="col form-group py-1 px-3">
-                <label for="" class="form-control-label">Inventory ID*: </label>
-                <select class="form-control selectpicker" id="selectInventoryItem" placeholder="" data-live-search="true">
-                  <option v-for="item in inventoryItems" v-bind:key="item.id" >{{item.product.id}} x{{item.quantity}}</option>
+                <label for="inventoryId" class="form-control-label">Inventory ID*: </label>
+                <select id="inventoryId" class="form-select mdb-select md-form" searchable="Search here.." tabindex="1" data-live-search="true">
+                  <option value="" disabled selected>Select an Item</option>
+                  <option v-for="item in inventoryItems" v-bind:key="item.id" :value="item.id">{{item.product.id}} x{{item.quantity}} (${{item.totalPrice}})</option>
                 </select>
               </div>
             </div>
             <!--quantity-->
             <div class="row">
-              <div class="col-6 form-group py-1 px-3">
+              <div class="col-sm-6 form-group py-1 px-3">
                 <label for="quantity">Quantity*: </label>
                 <input id="quantity" name="quantity" tabindex="2" type="number" v-model="quantity" min="0"
                        :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
@@ -37,14 +38,19 @@
 
 
               <!--Price-->
-              <div class="col-6 form-group py-1 px-3">
+              <div class="col-sm-6 form-group py-1 px-3">
                 <label for="price">Price: </label>
-                <input id="price" name="price" tabindex="3" type="number" step="0.01"
-                       v-model="price"
-                       min="0" :class="toggleInvalidClass(priceErrorMsg)"
-                       :maxlength="config.price.maxLength">
-                <div class="invalid-feedback">
-                  {{ priceErrorMsg }}
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                  </div>
+                  <input id="price" name="price" tabindex="3" type="number" step="0.01"
+                         v-model="price"
+                         min="0" :class="toggleInvalidClass(priceErrorMsg)"
+                         :maxlength="config.price.maxLength">
+                  <div class="invalid-feedback">
+                    {{ priceErrorMsg }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -103,7 +109,6 @@ export default {
       inventoryItems: [],
 
       // Inventory Id related variables
-      inventoryId: "",
       inventoryIdErrorMsg: "",
       // Quantity related variables
       quantity: "",
@@ -138,7 +143,6 @@ export default {
      * Resets data on the page
      */
     dataReset() {
-      this.inventoryId = null;
       this.inventoryIdErrorMsg = null;
       this.quantity = null;
       this.quantityErrorMsg = null;
@@ -153,18 +157,24 @@ export default {
      * Creates the new Inventory Item
      */
     createNewInventoryItem() { // TODO
-
+      const inventoryId = document.getElementById("inventoryId").value;
+      console.log("Inventory Id:", inventoryId);
+      if (inventoryId.length === 0) {
+        console.log("Inventory Id must be selected")
+      }
     },
     /**
      * Creates test data TEMP
      */
     testData() {
       const product = {id:"WATT-420-BEANS"};
-      const item = {id:1, product:product, quantity:5};
+      const item = {id:1, product:product, quantity:5, totalPrice:5.19};
       this.inventoryItems.push(item);
       const anotherProduct = {id:"FOOT-LETTUCE"};
-      const anotherItem = {id:2, product:anotherProduct, quantity:3};
+      const anotherItem = {id:2, product:anotherProduct, quantity:3, totalPrice:2.59};
       this.inventoryItems.push(anotherItem);
+      this.inventoryItems.push({id:7, product:anotherProduct, quantity:2});
+      this.inventoryItems.push({id:234, product:product, quantity:3})
     }
   },
   mounted() {
