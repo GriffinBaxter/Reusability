@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,13 +77,15 @@ public class InventoryItemResource {
      * @return A list of InventoryPayload objects representing the inventory items belonging to the given business.
      */
     @GetMapping("/businesses/{id}/inventory/")
-    public ResponseEntity<List<InventoryItemPayload>> retrieveInventoryPage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                                                            @PathVariable Integer id,
-                                                                            @RequestParam(defaultValue = "productIdASC") String orderBy,
-                                                                            @RequestParam(defaultValue = "0") String page
+    public ResponseEntity<List<InventoryItemPayload>> retrieveInventoryPage(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "productIdASC") String orderBy,
+            @RequestParam(defaultValue = "0") String page
     ) {
 
-        logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
+        logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}",
+                id, orderBy, page);
 
         //401: Access token is missing or invalid
         // user is retrieved if access token is provided and valid
@@ -97,7 +100,8 @@ public class InventoryItemResource {
             );
         }
         if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(id)) {
-            logger.error("Product Inventory Retrieval Failure - 403 [FORBIDDEN] - User with ID {} is not an admin of business with ID {}", currentUser.getId(), id);
+            logger.error("Product Inventory Retrieval Failure - 403 [FORBIDDEN] - User with ID {} is not an " +
+                    "admin of business with ID {}", currentUser.getId(), id);
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "The account performing the request is neither an administrator of the business, nor a global application admin."
@@ -237,7 +241,9 @@ public class InventoryItemResource {
 
         logger.info("Product Inventory Retrieval Success - 200 [OK] - Product inventory retrieved for business with ID {}", id);
 
+        System.out.println(11);
         List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(pagedResult.getContent());
+        System.out.println(11);
 
         logger.info("The size of the product inventory payload is {}", inventoryItemPayloads.size());
 
@@ -257,17 +263,27 @@ public class InventoryItemResource {
     public List<InventoryItemPayload> convertToPayload(List<InventoryItem> inventoryList) { //TODO: Test this function
         List<InventoryItemPayload> payloads = new ArrayList<>();
         InventoryItemPayload newPayload;
+        String manufactured;
+        String sellBy;
+        String bestBefore;
+        String expires;
+
         for (InventoryItem inventoryItem : inventoryList) {
+            manufactured = (inventoryItem.getManufactured() == null) ? null : inventoryItem.getManufactured().toString();
+            sellBy = (inventoryItem.getSellBy() == null) ? null : inventoryItem.getSellBy().toString();
+            bestBefore = (inventoryItem.getBestBefore() == null) ? null : inventoryItem.getBestBefore().toString();
+            expires = (inventoryItem.getExpires() == null) ? null : inventoryItem.getExpires().toString();
+
             newPayload = new InventoryItemPayload(
                     inventoryItem.getId(),
                     ProductPayload.convertProductToProductPayload(inventoryItem.getProduct()),
                     inventoryItem.getQuantity(),
                     inventoryItem.getPricePerItem(),
                     inventoryItem.getTotalPrice(),
-                    inventoryItem.getManufactured().toString(),
-                    inventoryItem.getSellBy().toString(),
-                    inventoryItem.getBestBefore().toString(),
-                    inventoryItem.getExpires().toString()
+                    manufactured,
+                    sellBy,
+                    bestBefore,
+                    expires
             );
             logger.debug("Product inventory payload created: {}", newPayload);
             payloads.add(newPayload);
@@ -328,6 +344,16 @@ public class InventoryItemResource {
 
         try {
             inventoryItemRepository.save(new InventoryItem(selectProduct,
+                    productId,
+                    inventoryRegistrationPayload.getQuantity(),
+                    inventoryRegistrationPayload.getPricePerItem(),
+                    inventoryRegistrationPayload.getTotalPrice(),
+                    inventoryRegistrationPayload.getManufactured(),
+                    inventoryRegistrationPayload.getSellBy(),
+                    inventoryRegistrationPayload.getBestBefore(),
+                    inventoryRegistrationPayload.getExpires()
+            ));
+            System.out.println(new InventoryItem(selectProduct,
                     productId,
                     inventoryRegistrationPayload.getQuantity(),
                     inventoryRegistrationPayload.getPricePerItem(),

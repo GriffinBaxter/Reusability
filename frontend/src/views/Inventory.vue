@@ -4,7 +4,7 @@
     <navbar/>
 
     <!--creation popup-->
-    <inventory-item-creation/>
+    <inventory-item-creation v-bind:business-id="businessId"/>
 
     <!--inventory container-->
     <div class="container p-5 mt-3" id="profileContainer">
@@ -161,6 +161,8 @@ export default {
   },
   data() {
     return {
+      businessId: "",
+
       name: "scott",
       description: "asdasdas",
 
@@ -179,6 +181,9 @@ export default {
   },
   methods: {},
   mounted() {
+    const url = document.URL;
+    this.businessId = url.toString().split("/")[4]
+
     //example
     this.inventories.push({
       index: 0,

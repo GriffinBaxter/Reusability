@@ -377,7 +377,15 @@ export default {
       userId},{
       withCredentials: true
     })
+  },
+
+  addNewInventoryItem: (id, inventoryItem) => {
+    return instance.post(`/businesses/${id}/inventory/`, {
+      ...inventoryItem.data}, {
+      withCredentials: true
+    })
   }
+
   // Usage examples from original file:
   //
   // // (C)reate

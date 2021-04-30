@@ -7,8 +7,8 @@ public class InventoryItemPayload {
     private Integer id;
     private ProductPayload product;
     private Integer quantity;
-    private double pricePerItem;
-    private double totalPrice;
+    private Double pricePerItem;
+    private Double totalPrice;
     private String manufactured;
     private String sellBy;
     private String bestBefore;
@@ -30,8 +30,8 @@ public class InventoryItemPayload {
     public InventoryItemPayload(Integer id,
                                 ProductPayload product,
                                 Integer quantity,
-                                double pricePerItem,
-                                double totalPrice,
+                                Double pricePerItem,
+                                Double totalPrice,
                                 String manufactured,
                                 String sellBy,
                                 String bestBefore,
@@ -59,11 +59,11 @@ public class InventoryItemPayload {
         return quantity;
     }
 
-    public double getPricePerItem() {
+    public Double getPricePerItem() {
         return pricePerItem;
     }
 
-    public double getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
