@@ -7,7 +7,7 @@
 
         <!--title-->
         <div class="modal-header">
-          <h2 align="central" id="creationPopupTitle">New Inventory Item</h2>
+          <h2 id="creationPopupTitle">New Inventory Item</h2>
         </div>
 
         <!--modal body-->
@@ -114,6 +114,7 @@
 
 <script>
 
+import { Modal } from "bootstrap";
 import Api, {InventoryItem} from "../Api";
 const endOfToday = require('date-fns/endOfToday');
 const format = require('date-fns/format');
@@ -131,6 +132,7 @@ export default {
     return {
       // A copy of the product config file for error checking.
       config: InventoryItem.config,
+      modal: null,
 
       // product Id related variables
       productId: "",
@@ -358,64 +360,64 @@ export default {
       return isValid
 
     },
-
-    /**
-     * This function will check the validity of the best before date of an inventory item i.e. that the best before date
-     * of the inventory item is after to today's date but not today's date, and before expiry date.
-     *
-     * @return true if the date meets the above conditions, otherwise false
-     */
-    isValidBestBeforeDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
-
-
-    },
-
-    /**
-     * This function will check the validity of the expires date of an inventory item i.e. that the expiry date
-     * of the inventory item is after today's date, after the manufacture date, and after or equal to the best before
-     * date.
-     *
-     * @return true if the date meets the above conditions, otherwise false
-     */
-    isValidExpiryDate(selectedManufacturedDate, selectedBestBeforeDate) {
-
-    },
+    //
+    // /**
+    //  * This function will check the validity of the best before date of an inventory item i.e. that the best before date
+    //  * of the inventory item is after to today's date but not today's date, and before expiry date.
+    //  *
+    //  * @return true if the date meets the above conditions, otherwise false
+    //  */
+    // isValidBestBeforeDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
+    //
+    //
+    // },
+    //
+    // /**
+    //  * This function will check the validity of the expires date of an inventory item i.e. that the expiry date
+    //  * of the inventory item is after today's date, after the manufacture date, and after or equal to the best before
+    //  * date.
+    //  *
+    //  * @return true if the date meets the above conditions, otherwise false
+    //  */
+    // isValidExpiryDate(selectedManufacturedDate, selectedBestBeforeDate) {
+    //
+    // },
     /**
      * reset all input file
      */
-    dataReset(){
+    dataReset() {
+      this.modal.hide();
       // product Id related variables
-      this.productId = null;
-      this.productIdErrorMsg = null;
+      this.productId = "";
+      this.productIdErrorMsg = "";
 
       // quantity related variables
-      this.quantity = null;
-      this.quantityErrorMsg = null;
+      this.quantity = "";
+      this.quantityErrorMsg = "";
 
       // price per item related variables
-      this.pricePerItem = null;
-      this.pricePerItemErrorMsg = null;
+      this.pricePerItem = "";
+      this.pricePerItemErrorMsg = "";
 
       // total price related variables
-      this.totalPrice = null;
-      this.totalPriceErrorMsg = null;
+      this.totalPrice = "";
+      this.totalPriceErrorMsg = "";
 
       // manufactured related variables
-      this.manufactured = null;
-      this.manufacturedErrorMsg = null;
+      this.manufactured = "";
+      this.manufacturedErrorMsg = "";
 
       // sell by related variables
-      this.sellBy = null;
-      this.sellNyErrorMsg = null;
-
+      this.sellBy = "";
+      this.sellNyErrorMsg = "";
 
       // best Before Id related variables
-      this.bestBefore = null;
-      this.bestBeforeErrorMsg = null;
+      this.bestBefore = "";
+      this.bestBeforeErrorMsg = "";
 
       // expires related variables
-      this.expires = null;
-      this.expiresErrorMsg = null;
+      this.expires = "";
+      this.expiresErrorMsg = "";
     },
 
     /**
@@ -560,6 +562,9 @@ export default {
       })
     }
 
+  },
+  mounted() {
+    this.modal = new Modal(document.getElementById("creationPopup"));
   }
 };
 </script>
