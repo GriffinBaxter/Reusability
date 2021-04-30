@@ -25,23 +25,23 @@ public class InventoryRegistrationPayload {
     }
 
     public Double getPricePerItem() {
-        return pricePerItem == null ? null : pricePerItem;
+        return pricePerItem;
     }
 
     public Double getTotalPrice() {
-        return totalPrice == null ? null : totalPrice;
+        return totalPrice;
     }
 
     public LocalDate getManufactured() {
-        return manufactured == null ? null : manufactured;
+        return manufactured;
     }
 
     public LocalDate getSellBy() {
-        return sellBy == null ? null : sellBy;
+        return sellBy;
     }
 
     public LocalDate getBestBefore() {
-        return bestBefore == null ? null : bestBefore;
+        return bestBefore;
     }
 
     public LocalDate getExpires() {

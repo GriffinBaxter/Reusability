@@ -40,13 +40,15 @@
             <!--filter-->
             <div class="row px-2 align-content-center">
               <!--order by product name-->
-              <div id="order-by-product-name" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-product-name" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Product Name</b>
               </div>
 
               <!--order by product id-->
-              <div id="order-by-product-id" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
-                <b>Product Name</b>
+              <div id="order-by-product-id" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
+                <b>Product Id</b>
               </div>
 
               <!--order by quantity-->
@@ -55,18 +57,21 @@
               </div>
 
               <!--order by price per item-->
-              <div id="order-by-price-per-item" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-price-per-item" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Price Per Item</b>
               </div>
 
               <!--order by total price-->
-              <div id="order-by-total-price" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-total-price" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Total Price</b>
               </div>
             </div>
             <div class="row px-2 py-3">
               <!--order by manufactured-->
-              <div id="order-by-manufactured" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-manufactured" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Manufactured</b>
               </div>
 
@@ -76,7 +81,8 @@
               </div>
 
               <!--order by best before-->
-              <div id="order-by-best-before" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
+              <div id="order-by-best-before" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
+                   tabindex="3">
                 <b>Best Before</b>
               </div>
 
@@ -102,7 +108,7 @@
                 v-bind:expires="inventory.expires"/>
 
             <!--pagination-->
-            <nav >
+            <nav>
               <ul class="pagination justify-content-center">
                 <li class="page-item">
                   <a class="page-link" href="#" aria-label="Previous">
