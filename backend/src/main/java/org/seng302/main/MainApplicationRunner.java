@@ -63,7 +63,6 @@ public class MainApplicationRunner implements ApplicationRunner {
     /**
      * By overriding the run method, we tell Spring to run this code at startup. See
      * https://dzone.com/articles/spring-boot-applicationrunner-and-commandlinerunne
-     *
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {

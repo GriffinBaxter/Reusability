@@ -365,7 +365,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(null));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.empty());
         when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
@@ -922,7 +922,7 @@ public class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
-                .cookie(new Cookie("JSESSIONID", String.valueOf(0))))
+                .cookie(new Cookie("JSESSIONID", "0")))
                 .andReturn().getResponse();
 
         // then
@@ -981,13 +981,13 @@ public class InventoryItemResourceIntegrationTests {
     }
 
 
-        /**
-         * Tests that an UNAUTHORIZED status is given when the the business exists and the user is the business
-         * admin BUT they have are not logged in i.e. no is cookie present.
-         * This is for testing /businesses/{id}/inventory/ API endpoint exists.
-         *
-         * @throws Exception Exception error
-         */
+    /**
+     * Tests that an UNAUTHORIZED status is given when the the business exists and the user is the business
+     * admin BUT they have are not logged in i.e. no is cookie present.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void cantRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorNoUserCookie() throws Exception {
         // given
