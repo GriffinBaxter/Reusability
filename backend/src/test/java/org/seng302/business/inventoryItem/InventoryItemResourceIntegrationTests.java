@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -47,6 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
+@ActiveProfiles("test")
 public class InventoryItemResourceIntegrationTests {
 
     @Autowired
@@ -493,6 +495,7 @@ public class InventoryItemResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+//----------------------------------------------/businesses/%d/inventory/----------------------------------------------
 
     /**
      * Test that a CREATED(201) status is received when send an InventoryRegistrationPayLoad with no price per item,
