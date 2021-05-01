@@ -74,7 +74,7 @@
                       </li>
                       <li class="nav-item">
                         <!--                        TODO Change this to dynamic ID-->
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/businesses/3/products" tabindex="-1">
+                        <router-link :class="['nav-link', isActivePath('/businesses/15/products')]" to="/" tabindex="-1">
                           Catalogue
                         </router-link>
                       </li>
@@ -293,12 +293,14 @@ export default {
        */
       event.preventDefault();
 
-      // Reason for this not working is because it is HttpOnly, which doesn't allow the browser/ JS to
-      // delete this cookie.
-      Cookies.remove('JSESSIONID', {path: '/'});
       Cookies.remove('userID');
       Cookies.remove('actAs');
       await this.$router.push({name: 'Login'});
+      Cookies.remove('actAs');
+
+      Api.signOut().then(() => {
+        this.$router.push({ name: 'Login' })
+      })
     },
     /**
      * The function when called ensure the user is logged in. Otherwise takes you to the login page.
@@ -365,6 +367,25 @@ export default {
       this.currentUser = response;
       if (Cookies.get('actAs')) {
         this.actAsId = Cookies.get('actAs');
+        // Checks if user is admin of business at id actAs
+        let check = false;
+        for (let i=0; i < response.businessesAdministered.length; i++) {
+          if (String(response.businessesAdministered[i].id) === this.actAsId) {
+            this.actAs = response.businessesAdministered[i].name;
+            check = true;
+            i = response.businessesAdministered.length; // Ends for loop
+          }
+        }
+        // If user not admin of business removes cookie
+        if (check === false) {
+          Cookies.remove('actAs');
+          this.actAsId = null;
+          if (response.nickname == null) {
+            this.actAs = response.firstName;
+          } else {
+            this.actAs = response.nickname;
+          }
+        }
       } else {
         if (response.nickname == null) {
           this.actAs = response.firstName;

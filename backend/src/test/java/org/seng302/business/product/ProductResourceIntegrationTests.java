@@ -19,6 +19,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -44,6 +45,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
+@ActiveProfiles("test")
 public class ProductResourceIntegrationTests {
 
     @Autowired
@@ -548,7 +550,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -584,7 +586,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -620,7 +622,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);

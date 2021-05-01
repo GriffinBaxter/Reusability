@@ -130,6 +130,13 @@
             </div>
           </div>
 
+          <!--logout button-->
+          <div align="right" id="adminButtonRow" v-if="isAdministrator">
+            <button class="btn btn-outline-primary float-end mt-4 mx-2" id="signOutButton" @click="logout()">Sign Out</button>
+            <button class="btn btn-outline-primary float-end mt-4" id="productCatalogueButton"
+                    @click="navigateToProductCatalogue()">Product Catalogue</button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -173,7 +180,7 @@ export default {
 
       nameOfAdministrators: [],
 
-      isAdministrator: false
+      isAdministrator: true
     }
   },
   methods: {
@@ -306,6 +313,13 @@ export default {
     },
     pushToUser(id) {
       this.$router.push({name: 'Profile', params: {id}});
+    },
+    navigateToProductCatalogue() {
+      /*
+      Navigates to the product catalogue of the business
+       */
+      let id = this.$route.params.id;
+      this.$router.push({name: 'ProductCatalogue', params: {id}});
     },
     logout() {
       /*

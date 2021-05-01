@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-3 m-3">
@@ -136,7 +137,8 @@
         </form>
       </div>
     </div>
-    <Footer/>
+  </div>
+    <Footer></Footer>
   </div>
 </template>
 

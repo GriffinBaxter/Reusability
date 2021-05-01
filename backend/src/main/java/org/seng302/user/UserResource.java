@@ -5,6 +5,7 @@ import org.seng302.main.Authorization;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
 import org.seng302.business.Business;
+import org.seng302.main.MainApplicationRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +47,8 @@ public class UserResource {
     private Address address;
 
     private List<Business> businesses;
+
+    private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
 
     public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
@@ -79,9 +84,11 @@ public class UserResource {
                 userRepository.save(user.get());
 
                 Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
+                cookie.setMaxAge(3600); // 1 hour in seconds
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
 
+                logger.info("Successful Login - User Id: {}", user.get().getId());
                 return new UserIdPayload(user.get().getId());
             }
         }
@@ -89,6 +96,22 @@ public class UserResource {
                 HttpStatus.BAD_REQUEST,
                 "Failed login attempt, email or password incorrect"
         );
+    }
+
+    /**
+     * Attempt to authenticate a user account with a username and password.
+     * @param sessionToken Login payload
+     * @param response HTTP Response
+     */
+    @PostMapping("/logout")
+    public void logoutUser(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                           HttpServletResponse response) {
+        if (sessionToken != null) {
+            Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+            cookie.setMaxAge(0); // 0 deletes the cookie
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+        }
     }
 
     /**
@@ -100,6 +123,7 @@ public class UserResource {
             @RequestBody UserRegistrationPayload registration, HttpServletResponse response
     ) {
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
+            logger.error("Registration Failure - Email already in use {}", registration.getEmail());
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Email address already in use"
@@ -161,9 +185,11 @@ public class UserResource {
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
+            logger.info("Successful Registration - User Id {}", createdUser.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
 
         } catch (Exception e) {
+            logger.error("Registration Failure - {}", e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     e.getMessage()
@@ -185,6 +211,7 @@ public class UserResource {
         Optional<User> optionalSelectUser = userRepository.findById(id);
 
         if (optionalSelectUser.isEmpty()) {
+            logger.error("Requested route does exist, but some part of the request is not acceptable");
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -206,6 +233,7 @@ public class UserResource {
             administrator.setAdministrators(new ArrayList<>());
         }
 
+        logger.info("User Found - {}", selectUser.toString());
         if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
 
             // If the current user is a DGAA, show the role of the user
@@ -345,6 +373,7 @@ public class UserResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
+        logger.info("Users Found");
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
@@ -378,6 +407,7 @@ public class UserResource {
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
         if (optionalSelectedUser.isEmpty()) {
+            logger.error("Requested route does exist, but some part of the request is not acceptable");
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -388,7 +418,9 @@ public class UserResource {
             if (selectedUser.getRole() == USER && currentUser.getRole() == DEFAULTGLOBALAPPLICATIONADMIN){
                 selectedUser.setRole(GLOBALAPPLICATIONADMIN);
                 userRepository.saveAndFlush(selectedUser);
+                logger.info("User with Id: {} is now GAA.", selectedUser.getId());
             } else {
+                logger.error("User does not have permission to perform action.");
                 throw new ResponseStatusException(
                         HttpStatus.FORBIDDEN,
                         "The user does not have permission to perform the requested action"
@@ -410,6 +442,7 @@ public class UserResource {
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
         if (optionalSelectedUser.isEmpty()){
+            logger.error("Requested route does exist, but some part of the request is not acceptable");
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -420,7 +453,9 @@ public class UserResource {
             if (selectedUser.getRole() == GLOBALAPPLICATIONADMIN && currentUser.getRole() == DEFAULTGLOBALAPPLICATIONADMIN) {
                 selectedUser.setRole(USER);
                 userRepository.saveAndFlush(selectedUser);
+                logger.info("User with Id: {} is now USER.", selectedUser.getId());
             } else {
+                logger.error("User does not have permission to perform action.");
                 throw new ResponseStatusException(
                         HttpStatus.FORBIDDEN,
                         "The user does not have permission to perform the requested action"

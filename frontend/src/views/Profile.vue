@@ -631,9 +631,10 @@ export default {
      */
     logout() {
       Cookies.remove('userID');
-      Cookies.remove('JSESSIONID');
       Cookies.remove('actAs');
-      this.$router.push({name: 'Login'});
+      Api.signOut().then(() => {
+        this.$router.push({ name: 'Login' })
+      })
     },
 
     /**
