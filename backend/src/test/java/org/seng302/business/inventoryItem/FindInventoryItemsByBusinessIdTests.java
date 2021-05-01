@@ -1,6 +1,5 @@
 package org.seng302.business.inventoryItem;
 
-import io.cucumber.java.sl.In;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -449,6 +448,46 @@ import static org.assertj.core.api.Assertions.assertThat;
             }
         }
 
+        /**
+         * Tests that the findInventoryItemsByBusinessId functionality will order inventory Items(price per item of one
+         * inventory item is null) by price per item in descending order i.e. in most expensive to least expensive order
+         * (null will be last) and a secondary sort of best before date from earliest to more recent, and a tertiary
+         * sort of expiry date from earliest to more recent.
+         */
+        @Test
+        public void FindInventoryItemsByBusinessIdTests_WithPricePerItemOfOneInventoryItemIsNull() {
+            // given
+            int pageNo = 0;
+            int pageSize = 5;
+            inventoryItem4.setPricePerItem(null);
+            Sort sortBy = Sort.by(Sort.Order.desc("pricePerItem").ignoreCase())
+                    .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("productId")));
+            Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+            ArrayList<Double> orderedPricePerItem = new ArrayList<>();
+            orderedPricePerItem.add(17.44);
+            orderedPricePerItem.add(6.5);
+            orderedPricePerItem.add(6.5);
+            orderedPricePerItem.add(4.99);
+            orderedPricePerItem.add(null);
+            ArrayList<String> orderedProductIds = new ArrayList<>();
+            orderedProductIds.add("APP-LE");
+            orderedProductIds.add("APPLE");
+            orderedProductIds.add("PROD");
+            orderedProductIds.add("APP-LE3");
+            orderedProductIds.add("DUCT");
+
+            // when
+            Page<InventoryItem> inventoryPage = inventoryItemRepository.findInventoryItemsByBusinessId(businessId, pageable);
+
+            // then
+            for (int i = 0; i < inventoryPage.getContent().size(); i++) {
+                assertThat(inventoryPage.getContent().get(i).getPricePerItem()).isEqualTo(orderedPricePerItem.get(i));
+                assertThat(inventoryPage.getContent().get(i).getProduct().getProductId()).isEqualTo(orderedProductIds.get(i));
+            }
+        }
+
         // ------------------------------------ order by total price tests ---------------------------------------------
 
         /**
@@ -527,6 +566,46 @@ import static org.assertj.core.api.Assertions.assertThat;
             }
         }
 
+        /**
+         * Tests that the findInventoryItemsByBusinessId functionality will order inventory Items(total price of one
+         * inventory item is null) by total price in descending order i.e. in most expensive to least expensive order
+         * (null will be last) and a secondary sort of best before date from earliest to more recent, and a tertiary
+         * sort of expiry date from earliest to more recent.
+         */
+        @Test
+        public void FindInventoryItemsByBusinessIdTests_WithTotalPriceOfOneInventoryItemIsNull() {
+            // given
+            int pageNo = 0;
+            int pageSize = 5;
+            inventoryItem2.setTotalPrice(null);
+            Sort sortBy = Sort.by(Sort.Order.desc("totalPrice").ignoreCase())
+                    .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("productId")));
+            Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+            ArrayList<Double> orderedTotalPrices = new ArrayList<>();
+            orderedTotalPrices.add(32.23);
+            orderedTotalPrices.add(29.99);
+            orderedTotalPrices.add(21.99);
+            orderedTotalPrices.add(21.99);
+            orderedTotalPrices.add(null);
+            ArrayList<String> orderedProductIds = new ArrayList<>();
+            orderedProductIds.add("APP-LE3");
+            orderedProductIds.add("DUCT");
+            orderedProductIds.add("APPLE");
+            orderedProductIds.add("PROD");
+            orderedProductIds.add("APP-LE");
+
+            // when
+            Page<InventoryItem> inventoryPage = inventoryItemRepository.findInventoryItemsByBusinessId(businessId, pageable);
+
+            // then
+            for (int i = 0; i < inventoryPage.getContent().size(); i++) {
+                assertThat(inventoryPage.getContent().get(i).getTotalPrice()).isEqualTo(orderedTotalPrices.get(i));
+                assertThat(inventoryPage.getContent().get(i).getProduct().getProductId()).isEqualTo(orderedProductIds.get(i));
+            }
+        }
+
         // ------------------------------------ order by manufactured date tests ---------------------------------------
 
         /**
@@ -594,6 +673,46 @@ import static org.assertj.core.api.Assertions.assertThat;
             orderedProductIds.add("APP-LE3");
             orderedProductIds.add("PROD");
             orderedProductIds.add("APPLE");
+
+            // when
+            Page<InventoryItem> inventoryPage = inventoryItemRepository.findInventoryItemsByBusinessId(businessId, pageable);
+
+            // then
+            for (int i = 0; i < inventoryPage.getContent().size(); i++) {
+                assertThat(inventoryPage.getContent().get(i).getManufactured()).isEqualTo(orderedManufacturedDates.get(i));
+                assertThat(inventoryPage.getContent().get(i).getProduct().getProductId()).isEqualTo(orderedProductIds.get(i));
+            }
+        }
+
+        /**
+         * Tests that the findInventoryItemsByBusinessId functionality will order inventory Items(manufactured date of
+         * one inventory item is null) by the manufactured date in descending order i.e. in most recent to least recent
+         * order (null will be last) and a secondary sort of best before date from earliest to more recent, and a
+         * tertiary sort of expiry date from earliest to more recent.
+         */
+        @Test
+        public void FindInventoryItemsByBusinessIdTests_WithManufacturedOfOneInventoryItemIsNull() {
+            // given
+            int pageNo = 0;
+            int pageSize = 5;
+            inventoryItem3.setManufactured(null);
+            Sort sortBy = Sort.by(Sort.Order.desc("manufactured").ignoreCase())
+                    .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("productId")));
+            Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+            ArrayList<LocalDate> orderedManufacturedDates = new ArrayList<>();
+            orderedManufacturedDates.add(LocalDate.of(2021, 04, 25));
+            orderedManufacturedDates.add(LocalDate.of(2021, 04, 25));
+            orderedManufacturedDates.add(LocalDate.of(2020, 05, 25));
+            orderedManufacturedDates.add(LocalDate.of(2020, 04, 25));
+            orderedManufacturedDates.add(null);
+            ArrayList<String> orderedProductIds = new ArrayList<>();
+            orderedProductIds.add("APP-LE");
+            orderedProductIds.add("DUCT");
+            orderedProductIds.add("PROD");
+            orderedProductIds.add("APPLE");
+            orderedProductIds.add("APP-LE3");
 
             // when
             Page<InventoryItem> inventoryPage = inventoryItemRepository.findInventoryItemsByBusinessId(businessId, pageable);
@@ -684,6 +803,47 @@ import static org.assertj.core.api.Assertions.assertThat;
             }
         }
 
+        /**
+         * Tests that the findInventoryItemsByBusinessId functionality will order inventory Items(sell by date of one
+         * inventory item is null) by the sell by date in descending order i.e. in most recent to least recent order
+         * (null will be last) and a secondary sort of best before date from earliest to more recent, and a
+         * tertiary sort of expiry date from earliest to more recent.
+         */
+        @Test
+        public void FindInventoryItemsByBusinessIdTests_WithSellByOfOneInventoryItemIsNull() {
+            // given
+            int pageNo = 0;
+            int pageSize = 5;
+            inventoryItem2.setSellBy(null);
+            Sort sortBy = Sort.by(Sort.Order.desc("sellBy").ignoreCase())
+                    .and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("productId")));
+            Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+            ArrayList<LocalDate> orderedSellByDates = new ArrayList<>();
+            orderedSellByDates.add(LocalDate.of(2023, 04, 25));
+            orderedSellByDates.add(LocalDate.of(2023, 04, 25));
+            orderedSellByDates.add(LocalDate.of(2022, 04, 25));
+            orderedSellByDates.add(LocalDate.of(2021, 04, 25));
+            orderedSellByDates.add(null);
+            ArrayList<String> orderedProductIds = new ArrayList<>();
+            orderedProductIds.add("DUCT");
+            orderedProductIds.add("APP-LE3");
+            orderedProductIds.add("PROD");
+            orderedProductIds.add("APPLE");
+            orderedProductIds.add("APP-LE");
+
+            // when
+            Page<InventoryItem> inventoryPage = inventoryItemRepository.findInventoryItemsByBusinessId(businessId, pageable);
+
+
+            // then
+            for (int i = 0; i < inventoryPage.getContent().size(); i++) {
+                assertThat(inventoryPage.getContent().get(i).getSellBy()).isEqualTo(orderedSellByDates.get(i));
+                assertThat(inventoryPage.getContent().get(i).getProduct().getProductId()).isEqualTo(orderedProductIds.get(i));
+            }
+        }
+
         // ------------------------------------ order by best before date tests ----------------------------------------
 
         /**
@@ -749,6 +909,44 @@ import static org.assertj.core.api.Assertions.assertThat;
             orderedProductIds.add("APP-LE3");
             orderedProductIds.add("APP-LE");
             orderedProductIds.add("APPLE");
+
+            // when
+            Page<InventoryItem> inventoryPage = inventoryItemRepository.findInventoryItemsByBusinessId(businessId, pageable);
+
+            // then
+            for (int i = 0; i < inventoryPage.getContent().size(); i++) {
+                assertThat(inventoryPage.getContent().get(i).getBestBefore()).isEqualTo(orderedBestBeforeDates.get(i));
+                assertThat(inventoryPage.getContent().get(i).getProduct().getProductId()).isEqualTo(orderedProductIds.get(i));
+            }
+        }
+
+        /**
+         * Tests that the findInventoryItemsByBusinessId functionality will order inventory Items(best before date of
+         * one inventory item is null) by the best before date in descending order i.e. most recent to least recent
+         * order (null will be last) and a secondary sort of expiry date from earliest to more recent.
+         */
+        @Test
+        public void FindInventoryItemsByBusinessIdTests_WithBestBeforeOfOneInventoryItemIsNull() {
+            // given
+            int pageNo = 0;
+            int pageSize = 5;
+            inventoryItem3.setBestBefore(null);
+            Sort sortBy = Sort.by(Sort.Order.desc("bestBefore").ignoreCase())
+                    .and(Sort.by(Sort.Order.asc("expires").ignoreCase()))
+                    .and(Sort.by(Sort.Order.asc("productId")));
+            Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+            ArrayList<LocalDate> orderedBestBeforeDates = new ArrayList<>();
+            orderedBestBeforeDates.add(LocalDate.of(2023, 04, 25));
+            orderedBestBeforeDates.add(LocalDate.of(2023, 04, 25));
+            orderedBestBeforeDates.add(LocalDate.of(2022, 04, 25));
+            orderedBestBeforeDates.add(LocalDate.of(2021, 04, 25));
+            orderedBestBeforeDates.add(null);
+            ArrayList<String> orderedProductIds = new ArrayList<>();
+            orderedProductIds.add("DUCT");
+            orderedProductIds.add("PROD");
+            orderedProductIds.add("APP-LE");
+            orderedProductIds.add("APPLE");
+            orderedProductIds.add("APP-LE3");
 
             // when
             Page<InventoryItem> inventoryPage = inventoryItemRepository.findInventoryItemsByBusinessId(businessId, pageable);
@@ -837,7 +1035,6 @@ import static org.assertj.core.api.Assertions.assertThat;
                 assertThat(inventoryPage.getContent().get(i).getProduct().getProductId()).isEqualTo(orderedProductIds.get(i));
             }
         }
-
 
         // ----------------------------------------- pagination tests --------------------------------------------------
 
@@ -963,6 +1160,4 @@ import static org.assertj.core.api.Assertions.assertThat;
             assertThat(inventoryPage.getContent().get(0).getProductId()).isEqualTo("APP-LE3");
             assertThat(inventoryPage.getContent().get(1).getProductId()).isEqualTo("DUCT");
         }
-
-
 }
