@@ -150,7 +150,7 @@ const routes = [
         component: () => import('../views/ProductCatalogue')
     },
     {
-        path: '/businesses/:id?/inventory',
+        path: '/businessProfile/:id?/inventory',
         name: 'Inventory',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route

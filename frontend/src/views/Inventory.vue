@@ -109,20 +109,41 @@
 
             <!--pagination-->
             <nav>
-              <ul class="pagination justify-content-center">
-                <li class="page-item">
-                  <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
+              <ul v-if="totalPages > 0" class="pagination justify-content-center">
+                <!-- This is only enabled when there is a previous page -->
+                <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
+                  Previous
+                </button>
+
+                <!-- This is shown when there are more then 2 pages and you are at page 1-->
+                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
+                  {{currentPage-1}}
+                </button>
+
+                <!-- Only shows when we are past at least the first page -->
+                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
+                  {{currentPage}}
+                </button>
+
+                <!-- This converts the current page into 1 origin.-->
+                <button type="button" class="btn btn-outline-primary active">
+                  {{currentPage+1}}
+                </button>
+
+                <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
+                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
+                  {{currentPage+2}}
+                </button>
+
+                <!-- This is shown when there are more then 2 pages and you are at page 1-->
+                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
+                  {{currentPage+3}}
+                </button>
+
+                <!-- The next button only enabled if there is another page.-->
+                <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
+                  Next
+                </button>
               </ul>
             </nav>
 
@@ -167,6 +188,7 @@ export default {
       // These variables are used to control and update the table.
       rowsPerPage: 5,
       currentPage: 0,
+      totalPages: 0,
       totalRows: 0,
 
 
@@ -189,6 +211,28 @@ export default {
     }
   },
   methods: {
+
+    /**
+     * Updates the display to show the new page when a user clicks to move to a different page.
+     *
+     * @param event The click event
+     * @param newPageNumber The new page number
+     */
+    updatePage(event, newPageNumber) {
+      this.currentPage = newPageNumber;
+      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}})
+      this.retrieveInventoryItems();
+    },
+
+    /**
+     * Given a page number check that the page is within the acceptable range.
+     * NOTE this is a 0 origin.
+     * @param pageNumber The page number to be checked.
+     */
+    isValidPageNumber(pageNumber) {
+      return 0 <= pageNumber && pageNumber < this.totalPages;
+    },
+
     retrieveBusinessInfo() {
       Api.getBusiness(this.businessId).then(response => {
         this.businessName = response.data.name;
@@ -265,20 +309,21 @@ export default {
 
         this.InventoryItemList = [...response.data];
 
-        let newTableData = [];
-
         // No results
         if (this.InventoryItemList.length <= 0) {
-          this.currentPage = 1;
-          this.maxPage = 1;
+          this.currentPage = 0;
+          this.maxPage = 0;
           this.totalRows = 0;
+          this.totalPages = 0;
           // Generate the tableData to be placed in the table & get the total number of rows.
         } else {
           this.totalRows = parseInt(response.headers["total-rows"]);
+          this.totalPages = parseInt(response.headers["total-pages"]);
 
-          for (let i = 0; i < this.InventoryItemList.length; i++) {
+          this.inventories = [];
 
-            newTableData.push({
+          for (let i = 0; i < this.rowsPerPage; i++) {
+            this.inventories.push({
               index: i,
               productName: this.InventoryItemList[i].product.name,
               productId: this.InventoryItemList[i].product.id,
@@ -291,7 +336,6 @@ export default {
               expires: this.InventoryItemList[i].expires
             })
           }
-          this.inventories = newTableData;
         }
 
       }).catch((error) => {
