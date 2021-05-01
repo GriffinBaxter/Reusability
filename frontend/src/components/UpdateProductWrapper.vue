@@ -101,7 +101,7 @@
 <script>
 import { Modal } from 'bootstrap'
 import Product from "../configs/Product"
-import Api from "@/Api";
+import Api from "../Api";
 
 
 export default {
@@ -164,7 +164,7 @@ export default {
      */
     toggleInvalidClass(errorMessage) {
       let classList = ['form-control']
-      if (errorMessage) {
+      if (errorMessage !== "") {
         classList.push('is-invalid')
       }
       return classList

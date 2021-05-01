@@ -1,4 +1,8 @@
 /**
+ * @jest-environment jsdom
+ */
+
+/**
  * Jest tests for UpdateProductWrapper.vue.
  */
 
@@ -888,3 +892,134 @@ test('RRP contains invalid symbols.', () => {
         )
     ).toBe(expectedMessage);
 })
+
+
+// ************************************************ between() Tests ****************************************************
+
+/**
+ * Test for checking the functionality of between() when value 1 < value 2 < value 3.
+ * @result true.
+ */
+test('Test if value 1 < value 2 < 3 gives true', () => {
+    const testVal = 2;
+    const testMin = 1;
+    const testMax = 3;
+    const expectedMessage = true;
+
+    expect(component.methods.between(testVal, testMin, testMax)
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for checking the functionality of between() when value 1 > value 2 > value 3.
+ * @result false.
+ */
+test('Test if value 1 > value 2 > 3 gives false', () => {
+    const testVal = 8;
+    const testMin = 7;
+    const testMax = 6;
+    const expectedMessage = false;
+
+    expect(component.methods.between(testVal, testMin, testMax)
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for checking the functionality of between() when value 1 = value 2 = value 3.
+ * @result true.
+ */
+test('Test if value 1 = value 2 = value 3 gives true', () => {
+    const testVal = 11;
+    const testMin = 11;
+    const testMax = 11;
+    const expectedMessage = true;
+
+    expect(component.methods.between(testVal, testMin, testMax)
+    ).toBe(expectedMessage);
+
+})
+
+/**
+ * Test for checking the functionality of between() when value 1 > value 2 = value 3.
+ * @result true.
+ */
+test('Test if value 1 > value 2 = value 3 gives false', () => {
+    const testVal = 8;
+    const testMin = 11;
+    const testMax = 20;
+    const expectedMessage = false;
+
+    expect(component.methods.between(testVal, testMin, testMax)
+    ).toBe(expectedMessage);
+})
+
+
+/** toggleInvalidClass(errorMessage) tests **/
+
+
+/**
+ * Test given a random string of characters then the is-invalid class is returned in the class list.
+ * @result A list (class list) containing the class 'is-invalid'.
+ */
+
+test('Test if given a random string toggle Invalid class returns the invalid class', () => {
+    const errorMessage = "asdsadaiDAISDASIDA";
+    const expectedClassList = ['form-control', 'is-invalid'];
+
+    expect(component.methods.toggleInvalidClass(errorMessage)).toStrictEqual(expectedClassList)
+
+})
+
+/**
+ * Test given a random number then the is-invalid class is returned in the class list.
+ * @result A list (class list) containing the class 'is-invalid'.
+ */
+
+test('Test if given a random number toggle Invalid class returns the invalid class', () => {
+    const errorMessage = 555311454;
+    const expectedClassList = ['form-control', 'is-invalid'];
+
+    expect(component.methods.toggleInvalidClass(errorMessage)).toStrictEqual(expectedClassList)
+
+})
+
+/**
+ * Test given a empty string of characters then the is-invalid class is not returned in the class list.
+ * @result A list (class list) not containing the class 'is-invalid'.
+ */
+
+test('Test if given a empty string toggle Invalid class returns the invalid class', () => {
+    const errorMessage = "";
+    const expectedClassList = ['form-control'];
+    expect(component.methods.toggleInvalidClass(errorMessage)).toStrictEqual(expectedClassList)
+
+})
+
+/**
+ * Test given a zero then the is-invalid class is returned in the class list.
+ * @result A list (class list) containing the class 'is-invalid'.
+ */
+
+test('Test if given a zero toggle Invalid class returns the invalid class', () => {
+    const errorMessage = 0;
+    const expectedClassList = ['form-control', 'is-invalid'];
+
+    expect(component.methods.toggleInvalidClass(errorMessage)).toStrictEqual(expectedClassList)
+
+})
+
+/**
+ * Test given a false boolean then the is-invalid class is returned in the class list.
+ * @result A list (class list) containing the class 'is-invalid'.
+ */
+
+test('Test if given a false boolean toggle Invalid class returns the invalid class', () => {
+    const errorMessage = false;
+    const expectedClassList = ['form-control', 'is-invalid'];
+
+    expect(component.methods.toggleInvalidClass(errorMessage)).toStrictEqual(expectedClassList)
+
+})
+
+
+
