@@ -61,32 +61,53 @@
                 </button>
 
                 <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                  <!--order by product name-->
-                  <button type="button" class="btn btn-outline-primary col-12">Product Name</button>
-
                   <!--order by product id-->
-                  <button type="button" class="btn btn-outline-primary col-12">Product ID</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(true, false, false, false, false, false, false, false)">
+                    Product ID
+                    <i id="productIdIcon"></i>
+                  </button>
 
                   <!--order by quantity-->
-                  <button type="button" class="btn btn-outline-primary col-12">Quantity</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, true, false, false, false, false, false, false)">
+                    Quantity
+                    <i id="quantityIcon"></i>
+                  </button>
 
                   <!--order by price per item-->
-                  <button type="button" class="btn btn-outline-primary col-12">Price Per Item</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, true, false, false, false, false, false)">
+                    Price Per Item
+                    <i id="pricePerItemIcon"></i>
+                  </button>
 
                   <!--order by total price-->
-                  <button type="button" class="btn btn-outline-primary col-12">Total Price</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, true, false, false, false, false)">
+                    Total Price
+                    <i id="totalPriceIcon"></i>
+                  </button>
 
                   <!--order by manufactured-->
-                  <button type="button" class="btn btn-outline-primary col-12">Manufactured</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, true, false, false, false)">
+                    Manufactured
+                    <i id="manufacturedIcon"></i>
+                  </button>
 
                   <!--order by sell by-->
-                  <button type="button" class="btn btn-outline-primary col-12">Sell By</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, true, false, false)">
+                    Sell By
+                    <i id="sellByIcon"></i>
+                  </button>
 
                   <!--order by best before-->
-                  <button type="button" class="btn btn-outline-primary col-12">Best Before</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, false, true, false)">
+                    Best Before
+                    <i id="bestBeforeIcon"></i>
+                  </button>
 
                   <!--order by expires-->
-                  <button type="button" class="btn btn-outline-primary col-12">Expires</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, false, false, true)">
+                    Expires
+                    <i id="expiresIcon"></i>
+                  </button>
                 </ul>
               </div>
 
@@ -286,6 +307,189 @@ export default {
 
       return {orderBy, isAscending};
     },
+
+    /**
+     * Orders the inventory based on the given booleans for each column, and updates the display
+     * @param id Boolean, whether to order by productId
+     * @param quantity Boolean, whether to order by quantity
+     * @param pricePerItem Boolean, whether to order by price per item
+     * @param totalPrice Boolean, whether to order by total price
+     * @param manufactured Boolean, whether to order by manufacture date
+     * @param sellBy Boolean, whether to order by sell by date
+     * @param bestBefore Boolean, whether to order by best before date
+     * @param expires Boolean, whether to order by expiration date
+     */
+    orderInventory(id, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires) {
+
+      if (id) {
+        this.disableIcons()
+        if (this.productIdAscending) {
+          this.orderBy = "productIdASC"
+          document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "productIdDESC"
+          document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.productIdAscending = !this.productIdAscending;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.recommendedRetailPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (quantity) {
+        this.disableIcons()
+        if (this.quantityAscending) {
+          this.orderBy = "quantityASC"
+          document.getElementById('quantityIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "quantityDESC"
+          document.getElementById('quantityIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.productIdAscending = false;
+        this.quantityAscending = !this.quantityAscending;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (pricePerItem) {
+        this.disableIcons()
+        if (this.pricePerItemAscending) {
+          this.orderBy = "pricePerItemASC"
+          document.getElementById('pricePerItemIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "pricePerItemDESC"
+          document.getElementById('pricePerItemIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = !this.pricePerItemAscending;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (totalPrice) {
+        this.disableIcons()
+        if (this.totalPriceAscending) {
+          this.orderBy = "totalPriceASC"
+          document.getElementById('totalPriceIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "totalPriceDESC"
+          document.getElementById('totalPriceIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = !this.totalPriceAscending;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (manufactured) {
+        this.disableIcons()
+        if (this.manufacturedAscending) {
+          this.orderBy = "manufacturedASC";
+          document.getElementById('manufacturedIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "manufacturedDESC";
+          document.getElementById('manufacturedIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = !this.manufacturedAscending;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (sellBy) {
+        this.disableIcons()
+        if (this.sellByAscending) {
+          this.orderBy = "sellByASC";
+          document.getElementById('sellByIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "sellByDESC";
+          document.getElementById('sellByIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = !this.sellByAscending;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (bestBefore) {
+        this.disableIcons()
+        if (this.bestBeforeAscending) {
+          this.orderBy = "bestBeforeASC";
+          document.getElementById('bestBeforeIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "bestBeforeDESC";
+          document.getElementById('bestBeforeIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = !this.bestBeforeAscending;
+        this.expiresAscending = false;
+
+      } else if (expires) {
+        this.disableIcons()
+        if (this.expiresAscending) {
+          this.orderBy = "expiresASC";
+          document.getElementById('expiresIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "expiresDESC";
+          document.getElementById('expiresIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = !this.expiresAscending;
+
+      }
+
+
+      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}});
+      this.retrieveInventoryItems();
+    },
+
+    /**
+     * Disables all ascending or descending icons in the top column headers.
+     */
+    disableIcons() {
+      document.getElementById('productIdIcon').setAttribute('class', '');
+      document.getElementById('quantityIcon').setAttribute('class', '');
+      document.getElementById('pricePerItemIcon').setAttribute('class', '');
+      document.getElementById('totalPriceIcon').setAttribute('class', '');
+      document.getElementById('manufacturedIcon').setAttribute('class', '');
+      document.getElementById('sellByIcon').setAttribute('class', '');
+      document.getElementById('bestBeforeIcon').setAttribute('class', '');
+      document.getElementById('expiresIcon').setAttribute('class', '');
+    },
+
     /**
      * Requests a list of inventory item matching the given business ID from the back-end.
      * If successful it updates the Table to contain the new data points.
