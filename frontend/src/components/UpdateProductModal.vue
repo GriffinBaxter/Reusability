@@ -1,8 +1,7 @@
 <template>
-  <div v-if="isModalShowing">
 
     <!-- Modal -->
-    <div class="modal fade" ref="updateProductModel" tabindex="-1" aria-labelledby="updateProductModel" aria-hidden="true">
+    <div class="modal fade" ref="_updateProductModel" tabindex="-1" aria-labelledby="updateProductModel" aria-hidden="true" id="update-product-modal">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -27,7 +26,7 @@
               <div class="row my-lg-2">
                 <div class="col-12 my-2 my-lg-0">
                   <label :for="'product-id-'+value.data.id">ID</label>
-                  <input :id="'product-id-'+value.data.id" name="product-id" tabindex="1" type="text" v-model="newProduct.data.id"
+                  <input :id="'product-id-'+value.data.id" name="product-id" type="text" v-model="newProduct.data.id"
                          :class="toggleInvalidClass(errorsMessages.id)" :maxlength="config.productID.maxLength">
                   <div class="invalid-feedback">
                     {{errorsMessages.id}}
@@ -39,7 +38,7 @@
               <div class="row my-lg-2">
                 <div class="col-12 my-2 my-lg-0">
                   <label :for="'product-name-'+value.data.id">Name*</label>
-                  <input :id="'product-name-'+value.data.id" name="product-name" tabindex="2" type="text" v-model="newProduct.data.name"
+                  <input :id="'product-name-'+value.data.id" name="product-name" type="text" v-model="newProduct.data.name"
                          :class="toggleInvalidClass(errorsMessages.name)" :maxlength="config.productName.maxLength">
                   <div class="invalid-feedback">
                     {{errorsMessages.name}}
@@ -51,7 +50,7 @@
               <div class="row my-lg-2">
                 <div class="col-12 my-2 my-lg-0">
                   <label :for="'product-manufacturer-'+value.data.id">Manufacturer</label>
-                  <input :id="'product-manufacturer-'+value.data.id" name="product-manufacturer" tabindex="3" type="text" v-model="newProduct.data.manufacturer"
+                  <input :id="'product-manufacturer-'+value.data.id" name="product-manufacturer" type="text" v-model="newProduct.data.manufacturer"
                          :class="toggleInvalidClass(errorsMessages.manufacturer)" :maxlength="config.manufacturer.maxLength">
                   <div class="invalid-feedback">
                     {{errorsMessages.manufacturer}}
@@ -63,7 +62,7 @@
               <div class="row my-lg-2">
                 <div class="col-12 my-2 my-lg-0">
                   <label :for="'product-price-'+value.data.id">Recommended Retail Price</label>
-                  <input :id="'product-price-'+value.data.id" name="product-price" tabindex="4" type="number" v-model="newProduct.data.recommendedRetailPrice"
+                  <input :id="'product-price-'+value.data.id" name="product-price" type="number" v-model="newProduct.data.recommendedRetailPrice"
                          :class="toggleInvalidClass(errorsMessages.recommendedRetailPrice)" min="0">
                   <div class="invalid-feedback">
                     {{errorsMessages.recommendedRetailPrice}}
@@ -75,7 +74,7 @@
               <div class="row my-lg-2">
                 <div class="col-12 my-2 my-lg-0">
                   <label :for="'product-description-'+value.data.id">Description</label>
-                  <textarea :id="'product-description-'+value.data.id" name="product-description" tabindex="5" v-model="newProduct.data.description"
+                  <textarea :id="'product-description-'+value.data.id" name="product-description" v-model="newProduct.data.description"
                             :class="toggleInvalidClass(errorsMessages.description)" :maxlength="config.description.maxLength" style="resize: none"/>
                   <div class="invalid-feedback">
                     {{errorsMessages.description}}
@@ -85,14 +84,13 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" @click="event => updateProduct(event)">Save changes</button>
+            <button type="button" class="btn btn-primary order-1 green-button" @click="event => updateProduct(event)">Save changes</button>
+            <button type="button" class="btn btn-outline-primary order-0 green-button-transparent" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
     </div>
 
-  </div>
 </template>
 
 <script>
@@ -102,7 +100,7 @@ import Api from "../Api";
 
 
 export default {
-  name: "UpdateProductWrapper",
+  name: "UpdateProductModal",
   props: {
 
     // Product details -- MUST BE V-MODEL therefore MUST BE NAMED VALUE!
@@ -115,22 +113,7 @@ export default {
     businessId: {
       type: Number,
       required: true
-    },
-
-
-    currencyCode: {
-      type: String,
-      default: "",
-      required: false
-    },
-
-
-    currencySymbol: {
-      type: String,
-      default: "",
-      required: false
     }
-
   },
   data() {
     return {
@@ -139,9 +122,6 @@ export default {
 
       // This defines the error message regarding different responses from the request to Axios
       formErrorModalMessage: "",
-
-      // Keeps track if the modal is showing
-      isModalShowing: false,
 
       // Contains the config for checking the product parameters when updated
       config: Product.config,
@@ -195,7 +175,7 @@ export default {
       event.preventDefault();
 
       // If the modal is already showing prevent the placeholders from being updated.
-      if (!this.$refs.updateProductModel.classList.contains("show")) {
+      if (!this.$refs._updateProductModel.classList.contains("show")) {
         // Update the placeholders
         this.newProduct.data.id = this.value.data.id;
         this.newProduct.data.name = this.value.data.name;
@@ -255,6 +235,7 @@ export default {
     updateProduct(event) {
       // Prevent any default actions
       event.preventDefault();
+      this.inputError = false;
 
       // Process new ID
       this.errorsMessages.id = this.getErrorMessage("Id", this.newProduct.data.id, this.config.productID.minLength,
@@ -334,11 +315,13 @@ export default {
                 if (error.response) {
 
                   // There was something wrong with the user data!
-                  if (error.data.status === 400) {
+                  if (error.response.status === 400) {
+                    // There is no way to tell if this is caused by the product ID already existing or not, which is not very helpful
+                    // when this happens!
                     this.formErrorModalMessage = "Some of the information you have entered is invalid."
 
                     // Invalid token was used
-                  } else if (error.data.status === 403) {
+                  } else if (error.response.status === 403) {
                     this.formErrorModalMessage = "You do not have permission to perform this action!"
                     this.$router.push({path: "/invalidtoken"})
 
@@ -362,7 +345,7 @@ export default {
   },
   mounted() {
     // Create a modal and attach it to the updateProductModel reference.
-    this.modal = new Modal(this.$refs.updateProductModel);
+    this.modal = new Modal(this.$refs._updateProductModel);
   }
 }
 </script>

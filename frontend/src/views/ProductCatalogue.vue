@@ -24,6 +24,8 @@
 
     </div>
 
+    <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct" />
+
     <div v-if="showModal">
       <transition name="fade">
         <div class="modal-mask">
@@ -42,10 +44,11 @@
                       v-bind:currencySymbol="currencySymbol"/>
                 </div>
                 <div class="modal-footer">
-                  <UpdateProductWrapper :business-id="businessId" v-model="currentProduct">
-                    <button class="btn btn-outline-primary float-end">Edit</button>
-                  </UpdateProductWrapper>
-                  <button class="btn btn-outline-primary float-end" id="closeModalButton" @click="showModal = false">Close</button>
+                    <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
+                      this.showModal = false;
+                      this.$refs.updateProductModel.showModel(event);
+                    }">Edit</button>
+                  <button class="btn btn-outline-primary float-end green-button-transparent " id="closeModalButton" @click="showModal = false">Close</button>
                 </div>
               </div>
             </div>
@@ -147,12 +150,12 @@ import Footer from "../components/Footer";
 import ProductModal from "../components/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
-import UpdateProductWrapper from "@/components/UpdateProductWrapper";
+import UpdateProductModal from "@/components/UpdateProductModal";
 
 export default {
   name: "ProductCatalogue",
   components: {
-    UpdateProductWrapper,
+    UpdateProductModal,
     Table,
     ProductModal,
     Navbar,
@@ -193,6 +196,7 @@ export default {
             recommendedRetailPrice: 0
           }
       ),
+      currentProductIndex: null,
       modal: null,
 
       // Used for having pre-filled input fields
@@ -249,6 +253,7 @@ export default {
       this.recommendedRetailPrice = product.data.recommendedRetailPrice;
       this.created = product.data.created;
       this.currentProduct = product;
+      this.currentProductIndex = productIndex;
       this.showModal = true;
     },
 
@@ -707,7 +712,36 @@ export default {
     } else {
       this.$router.push({name: 'Login'});
     }
-  }
+  },
+   watch: {
+    // If the current Product was updated we update the table.
+     currentProduct: function () {
+       /* TODO THIS IS INCREDIBLY UNOPTIMIZED. Must be sorted out in the future.
+          THIS IS CrUDE ENOUGH for now */
+
+       this.productList[this.currentProductIndex] = this.currentProduct;
+       let newtableData = [];
+
+       // No results
+       if (this.productList.length <= 0) {
+         this.currentPage = 1;
+         this.maxPage = 1;
+         this.totalRows = 0;
+         // Generate the tableData to be placed in the table & get the total number of rows.
+       } else {
+         for (let i = 0; i < this.productList.length; i++ ) {
+           newtableData.push(this.productList[i].data.id);
+           newtableData.push(this.productList[i].data.name);
+           newtableData.push(this.productList[i].data.manufacturer);
+           newtableData.push(this.productList[i].data.recommendedRetailPrice);
+           newtableData.push(this.productList[i].data.created);
+         }
+
+         this.tableData = newtableData;
+       }
+
+     }
+   }
 }
 </script>
 
