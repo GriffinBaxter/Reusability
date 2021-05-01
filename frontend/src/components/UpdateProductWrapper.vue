@@ -110,7 +110,7 @@ export default {
     // Product details -- MUST BE V-MODEL therefore MUST BE NAMED VALUE!
     value: {
       type: Product,
-      required: true
+      required: false
     },
 
     // Business id used to not what business to update
@@ -177,6 +177,12 @@ export default {
     showModel(event) {
       // Prevent any default actions
       event.preventDefault();
+
+      // Don't do anything if there is no data to work with!
+      if (this.value === null) {
+        console.log("ERR")
+        return;
+      }
 
       // If the modal is already showing prevent the placeholders from being updated.
       if (!this.$refs.updateProductModel.classList.contains("show")) {

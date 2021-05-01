@@ -42,6 +42,9 @@
                       v-bind:currencySymbol="currencySymbol"/>
                 </div>
                 <div class="modal-footer">
+                  <UpdateProductWrapper :business-id="businessId" v-model="currentProduct">
+                    <button class="btn btn-outline-primary float-end">Edit</button>
+                  </UpdateProductWrapper>
                   <button class="btn btn-outline-primary float-end" id="closeModalButton" @click="showModal = false">Close</button>
                 </div>
               </div>
@@ -144,10 +147,12 @@ import Footer from "../components/Footer";
 import ProductModal from "../components/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
+import UpdateProductWrapper from "@/components/UpdateProductWrapper";
 
 export default {
   name: "ProductCatalogue",
   components: {
+    UpdateProductWrapper,
     Table,
     ProductModal,
     Navbar,
@@ -179,6 +184,15 @@ export default {
       productId: null,
       created: null,
       showModal: false,
+      currentProduct: new Product(
+          {
+            id: 'temp-id',
+            name: 'temp-name',
+            description: 'temp-desc',
+            manufacturer: 'temp-man',
+            recommendedRetailPrice: 0
+          }
+      ),
       modal: null,
 
       // Used for having pre-filled input fields
@@ -234,6 +248,7 @@ export default {
       this.manufacturer = product.manufacturer;
       this.recommendedRetailPrice = product.recommendedRetailPrice;
       this.created = product.created;
+      this.currentProduct = product;
       this.showModal = true;
     },
 
