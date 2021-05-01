@@ -1,4 +1,4 @@
-export default class Product{
+export default class Product {
 
     // This is a config for the product requirement details
     static config = {
@@ -36,7 +36,6 @@ export default class Product{
             regexMessage: "Must be a positive double precision floating point number e.g 1.00"
         },
     };
-
 
     constructor({id, name, description, manufacturer, recommendedRetailPrice}) {
         this.data = {

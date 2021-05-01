@@ -897,7 +897,7 @@ test( 'Test for the postcode for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -913,7 +913,7 @@ test( 'Test for the postcode for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -929,7 +929,7 @@ test( 'Testing for a valid postcode', () => {
     const inputValue = "8014"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -945,7 +945,7 @@ test( 'Testing for postcode with numbers', () => {
     const inputValue = "1111"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -961,7 +961,7 @@ test( 'Testing for the postcode with symbols', () => {
     const inputValue = "!@#!@ suburb"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,

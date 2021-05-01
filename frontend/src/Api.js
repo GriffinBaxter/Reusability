@@ -37,60 +37,6 @@ const instance = axios.create({
   timeout: 3000
 });
 
-// TODO: Only for registration --- NEEDS ADAPATION FOR FUTURE STORIES
-
-
-export class Product{
-
-  // This is a config for the product requirement details
-  static config = {
-    productID: {
-      name: "Product ID",
-      minLength: 3,
-      maxLength: 15,
-      regex: /^[A-Z0-9-]+$/,
-      regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
-    },
-    productName: {
-      name: "Product name",
-      minLength: 1,
-      maxLength: 100,
-      regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
-      regexMessage: "Must only contain alphanumeric characters, numbers, spaces or '#,.&()-"
-    },
-    description: {
-      name: "Description",
-      minLength: 0,
-      maxLength: 600
-    },
-    manufacturer: {
-      name: "manufacturer",
-      minLength: 0,
-      maxLength: 100,
-      regex: /^[a-zA-Z0-9 '#,.&()-]*$/,
-      regexMessage: "Must only contain alphanumeric characters, numbers, spaces or '#,.&()-"
-    },
-    recommendedRetailPrice: {
-      name: "Recommended retail price",
-      minLength: 0,
-      maxLength: 16,
-      regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
-      regexMessage: "Must be a positive double precision floating point number e.g 1.00"
-    },
-  };
-
-  constructor({id, name, description, manufacturer, recommendedRetailPrice}) {
-    this.data = {
-      id,
-      name,
-      description,
-      manufacturer,
-      recommendedRetailPrice,
-    }
-
-  }
-
-}
 
 export default {
 
@@ -165,8 +111,6 @@ export default {
   // Sends a post request to the backend with a new product object to store
   addNewProduct: (businessID, product) => {
     return instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true})
-    withCredentials: true
-  })
   },
   // Sends a PUT request to modify a product from some given business ID
   modifyProduct: (productId, businessId, newProduct) => {

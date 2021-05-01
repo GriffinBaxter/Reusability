@@ -136,7 +136,8 @@
 
 <script>
 import { Modal } from 'bootstrap'
-import Api, { Product } from '../Api';
+import Api from '../Api';
+import Product from "../configs/Product";
 import Cookies from 'js-cookie';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
