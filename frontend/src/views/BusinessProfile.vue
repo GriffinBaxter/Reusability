@@ -132,7 +132,6 @@
 
           <!--logout button-->
           <div align="right" id="adminButtonRow" v-if="isAdministrator">
-            <button class="btn btn-outline-primary float-end mt-4 mx-2" id="signOutButton" @click="logout()">Sign Out</button>
             <button class="btn btn-outline-primary float-end mt-4" id="productCatalogueButton"
                     @click="navigateToProductCatalogue()">Product Catalogue</button>
           </div>

@@ -295,8 +295,6 @@ export default {
 
       Cookies.remove('userID');
       Cookies.remove('actAs');
-      await this.$router.push({name: 'Login'});
-      Cookies.remove('actAs');
 
       Api.signOut().then(() => {
         this.$router.push({ name: 'Login' })
