@@ -783,7 +783,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
-        Page<InventoryItem> pagedResult = new PageImpl(list);
+        Page<InventoryItem> pagedResult = new PageImpl<InventoryItem>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
@@ -821,7 +821,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
-        Page<InventoryItem> pagedResult = new PageImpl(list);
+        Page<InventoryItem> pagedResult = new PageImpl<InventoryItem>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
@@ -860,7 +860,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
-        Page<InventoryItem> pagedResult = new PageImpl(list);
+        Page<InventoryItem> pagedResult = new PageImpl<InventoryItem>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
@@ -1001,7 +1001,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
-        Page<InventoryItem> pagedResponse = new PageImpl(list);
+        Page<InventoryItem> pagedResponse = new PageImpl<InventoryItem>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
