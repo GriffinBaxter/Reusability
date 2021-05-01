@@ -3,15 +3,20 @@ package org.seng302.main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.address.Address;
-import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
+import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.BusinessType;
+import org.seng302.business.product.Product;
+import org.seng302.business.product.ProductRepository;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,7 +24,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 
 /**
  * This spring component runs at application startup to do some initialisation
@@ -33,6 +37,15 @@ public class MainApplicationRunner implements ApplicationRunner {
     private UserRepository userRepository;
     private BusinessRepository businessRepository;
     private AddressRepository addressRepository;
+    private ProductRepository productRepository;
+
+    @Value("${dgaa.email}")
+    private String dgaaEmail;
+    @Value("${dgaa.password}")
+    private String dgaaPassword;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
@@ -40,10 +53,11 @@ public class MainApplicationRunner implements ApplicationRunner {
      * classes (i.e. dependency injection)
      */
     @Autowired
-    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository) {
+    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository, ProductRepository productRepository) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
         this.addressRepository = addressRepository;
+        this.productRepository = productRepository;
     }
 
     /**
@@ -53,13 +67,17 @@ public class MainApplicationRunner implements ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        logger.info("Startup application with {}", args);
-
-        userRepository.findAll().forEach(logger::info);
-        businessRepository.findAll().forEach(logger::info);
-        addressRepository.findAll().forEach(logger::info);
-
-        addTestUsers();
+        if (isPresent(dgaaEmail) && isPresent(dgaaPassword)) {
+            logger.info("Startup application with {}", args);
+            userRepository.findAll().forEach(logger::info);
+            businessRepository.findAll().forEach(logger::info);
+            addressRepository.findAll().forEach(logger::info);
+            addTestUsers();
+        } else {
+            logger.fatal("Environment variables for DGAA email and/or password are not defined.");
+            logger.info("-- shutting down application --");
+            context.close();
+        }
     }
 
 
@@ -91,20 +109,23 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "S",
                     "Johnny",
                     "Biography",
-                    "email@email.com",
+                    dgaaEmail,
                     LocalDate.of(2000, 2, 2),
                     "0271316",
                     address,
-                    "Password123!",
+                    dgaaPassword,
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
                     Role.DEFAULTGLOBALAPPLICATIONADMIN);
-            System.out.println(dGAA);
             dGAA = userRepository.save(dGAA);
             logger.error("DGAA does not exist. New DGAA created {}", dGAA);
         } else {
             logger.info("DGGA exists.");
         }
+    }
+
+    public boolean isPresent(String dgaaData) {
+        return (dgaaData != null) && !(dgaaData.isEmpty());
     }
 
     public void addTestUsers() throws Exception {
@@ -254,7 +275,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                 "T",
                 "Fran",
                 "Biography",
-                "francisca.benitez@example.com",
+                "francisca.beni@example.com",
                 LocalDate.of(2006, 2, 2),
                 "0271316",
                 address1,
@@ -281,5 +302,86 @@ public class MainApplicationRunner implements ApplicationRunner {
                 Role.USER);
         newUser7 = userRepository.save(newUser7);
         logger.info("Added seventh test user: {}", newUser7);
+
+
+        Business business = new Business(
+                newUser7.getId(),
+                "example name",
+                "some text",
+                newUser7.getHomeAddress(),
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                newUser7
+        );
+        businessRepository.save(business);
+
+        Product product1 = new Product(
+                "APPLE",
+                business,
+                "Apple",
+                "A Description",
+                "Manufacturer",
+                21.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        productRepository.save(product1);
+
+
+        Product product2 = new Product(
+                "APP-LE",
+                business,
+                "Beans",
+                "Description",
+                "A Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2020, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        productRepository.save(product2);
+        Product product3 = new Product(
+                "APP-LE3",
+                business,
+                "Beans",
+                "Description",
+                "A Manufacturer",
+                11.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        productRepository.save(product3);
+        Product product4 = new Product(
+                "DUCT",
+                business,
+                "Duct-Tape",
+                "Brand new Description",
+                "A New Manufacturer",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 1),
+                        LocalTime.of(0, 0))
+        );
+        productRepository.save(product4);
+        Product product5 = new Product(
+                "PROD",
+                business,
+                "Product",
+                "New Description",
+                "New Manufacturer",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 1),
+                        LocalTime.of(1, 0))
+        );
+        productRepository.save(product5);
+        Product product6 = new Product(
+                "PROD1",
+                business,
+                "Product",
+                "New Description",
+                "New Manufacturer",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 1),
+                        LocalTime.of(1, 0))
+        );
+        productRepository.save(product6);
     }
 }

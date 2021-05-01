@@ -1,4 +1,4 @@
-@import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
+@import url('https://use.fontawesome.com/releases/v5.15.3/css/all.css');
 @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans&family=Oswald:wght@500&family=Roboto&family=Rochester&display=swap');
 /*
  * Created on Wed Feb 10 2021
@@ -176,6 +176,15 @@ body {
   border: 1px solid #1EBABC;
 }
 
+/****************************************
+              Search Bar
+ ****************************************/
+
+#profile-header-div {
+  margin-left: 15%;
+  margin-right: 15%;
+}
+
 /*****************************************************************
                   Autocomplete Dropdown Styling
 
@@ -214,8 +223,8 @@ body {
   color: #ffffff;
 }
 
-.text-font, p, h{
+/*****************************************************************/
+
+.text-font, p, h, label, textarea, select, button {
   font-family: 'Roboto', sans-serif;
 }
-
-/*****************************************************************/
