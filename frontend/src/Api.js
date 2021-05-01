@@ -309,6 +309,11 @@ export default {
     withCredentials: true
   }),
 
+  // Sends a post request to the backend to logout the user
+  signOut: () => instance.post('/logout', {}, {
+    withCredentials: true
+  }),
+
   // Sends a get request to the backend asking for a the given user's details
   getUser: (userID) => {
     // Now sends cookies for backend to check

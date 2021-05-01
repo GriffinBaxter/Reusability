@@ -313,6 +313,7 @@ public class UserResourceIntegrationTests {
         // then
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, user.getId()));
         assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
+        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(3600);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -357,6 +358,40 @@ public class UserResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
         assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that an OK status is received when making a POST to the /logout API endpoint
+     * with an existing JSESSIONID cookie
+     */
+    @Test
+    public void canLogoutWhenCookieExists() throws Exception {
+        // when
+        response = mvc.perform(post("/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
+        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(0);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an OK status is received when making a POST to the /logout API endpoint
+     * with no existing JSESSIONID cookie
+     */
+    @Test
+    public void canLogoutWhenCookieDoesNotExist() throws Exception {
+        // when
+        response = mvc.perform(post("/logout")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
