@@ -245,7 +245,7 @@ export default {
      * @param productIndex The table index of the product to show details for.
      */
     showRowModal(productIndex) {
-      let product = this.productList[productIndex];
+      let product = this.productList[productIndex % this.rowsPerPage];
       this.productId = product.data.id;
       this.productName = product.data.name;
       this.description = product.data.description;
@@ -716,30 +716,7 @@ export default {
    watch: {
     // If the current Product was updated we update the table.
      currentProduct: function () {
-       /* TODO THIS IS INCREDIBLY UNOPTIMIZED. Must be sorted out in the future.
-          THIS IS CrUDE ENOUGH for now */
-
-       this.productList[this.currentProductIndex] = this.currentProduct;
-       let newtableData = [];
-
-       // No results
-       if (this.productList.length <= 0) {
-         this.currentPage = 1;
-         this.maxPage = 1;
-         this.totalRows = 0;
-         // Generate the tableData to be placed in the table & get the total number of rows.
-       } else {
-         for (let i = 0; i < this.productList.length; i++ ) {
-           newtableData.push(this.productList[i].data.id);
-           newtableData.push(this.productList[i].data.name);
-           newtableData.push(this.productList[i].data.manufacturer);
-           newtableData.push(this.productList[i].data.recommendedRetailPrice);
-           newtableData.push(this.productList[i].data.created);
-         }
-
-         this.tableData = newtableData;
-       }
-
+       this.requestProducts()
      }
    }
 }
