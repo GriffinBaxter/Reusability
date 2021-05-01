@@ -42,24 +42,7 @@
                 </div>
               </div>
 
-<!--              &lt;!&ndash;password input field&ndash;&gt;-->
-<!--              <div class="row">-->
-<!--                <div class="row mb-1">-->
-<!--                  <label for="password-input" class="form-label">Password</label>-->
-<!--                  <input :type="togglePasswordInputType(showPassword)" class="form-control" id="password-input" ref="pInput" tabindex="2">-->
-<!--                  &lt;!&ndash;toggle password visibility&ndash;&gt;-->
-<!--                  <div id = "login-toggle-password" class="input-group-text green-search-button" @click="showPassword = !showPassword"-->
-<!--                        @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"-->
-<!--                        tabindex="3">-->
-<!--                    <i v-if="!showPassword" class="fas fa-eye"></i>-->
-<!--                    <i v-else class="fas fa-eye-slash"></i>-->
-<!--                    </div>-->
-
-<!--                </div>-->
-<!--              </div>-->
-
               <div class="row my-lg-2">
-
                 <!--password input field-->
                 <div class="col my-2 my-lg-0">
                   <label for="password-input" class="form-label">Password</label>
