@@ -361,6 +361,40 @@ public class UserResourceIntegrationTests {
     }
 
     /**
+     * Tests that an OK status is received when making a POST to the /logout API endpoint
+     * with an existing JSESSIONID cookie
+     */
+    @Test
+    public void canLogoutWhenCookieExists() throws Exception {
+        // when
+        response = mvc.perform(post("/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
+        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(0);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an OK status is received when making a POST to the /logout API endpoint
+     * with no existing JSESSIONID cookie
+     */
+    @Test
+    public void canLogoutWhenCookieDoesNotExist() throws Exception {
+        // when
+        response = mvc.perform(post("/logout")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
      * Tests that a CREATED status is received when sending a registration payload to the /users API endpoint
      * that contains an email that doesn't belong to an existing user and contains valid data
      */
