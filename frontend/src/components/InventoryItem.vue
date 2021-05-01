@@ -1,39 +1,55 @@
 <template>
   <div class="card border-secondary mb-3 px-2 py-2 shadow">
     <div class="row no-gutters">
+
+      <!--image-->
       <div class="col-md-3">
         <img class="card-img" :src="image" id="inventory-item-image">
       </div>
+
       <div class="col-md-9">
         <div class="card-body px-3 py-3">
-          <h4 class="card-title">{{ productName }}</h4>
-          <p class="card-text">
+
+          <!--Product info-->
+          <h3 class="card-title">{{ productName }}</h3>
+          <h6 class="card-text">
             {{ productId }}
-            <br>
+          </h6>
+          <h6 class="card-text">
             (Quantity: {{ quantity }})
-          </p>
-          <p class="card-text" align="right">
+          </h6>
+
+          <!--price-->
+          <h6 class="card-text" align="right" v-if="pricePerItem != null">
             Price Per Item: {{ pricePerItem }}
-            <br>
+          </h6>
+          <h6 class="card-text" align="right" v-else><br></h6>
+
+          <h6 class="card-text" align="right" v-if="totalPrice != null">
             Total Price: {{ totalPrice }}
-          </p>
+          </h6>
+          <h6 class="card-text" align="right" v-else><br></h6>
+
+          <!--date-->
           <hr>
           <div class="row">
-            <div class="col-3">
+            <div class="col" v-if="manufactured != null">
               Manufactured: {{ manufactured }}
             </div>
-            <div class="col-3">
+            <div class="col" v-if="sellBy != null">
               Sell By: {{ sellBy }}
             </div>
-            <div class="col-3">
+            <div class="col" v-if="bestBefore != null">
               Best Before: {{ bestBefore }}
             </div>
-            <div class="col-3">
+            <div class="col" v-if="expires != null">
               Expires: {{ expires }}
             </div>
           </div>
+
         </div>
       </div>
+
     </div>
   </div>
 
