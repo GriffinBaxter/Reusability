@@ -42,21 +42,42 @@
                 </div>
               </div>
 
-              <!--password input field-->
-              <div class="row">
-                <div class="row mb-1">
-                  <label for="password-input" class="form-label">Password</label>
-                  <input :type="togglePasswordInputType(showPassword)" class="form-control" id="password-input" ref="pInput" tabindex="2">
-                  <!--toggle password visibility-->
-                  <div id = "login-toggle-password" class="input-group-text green-search-button" @click="showPassword = !showPassword"
-                        @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
-                        tabindex="3">
-                    <i v-if="!showPassword" class="fas fa-eye"></i>
-                    <i v-else class="fas fa-eye-slash"></i>
-                    </div>
+<!--              &lt;!&ndash;password input field&ndash;&gt;-->
+<!--              <div class="row">-->
+<!--                <div class="row mb-1">-->
+<!--                  <label for="password-input" class="form-label">Password</label>-->
+<!--                  <input :type="togglePasswordInputType(showPassword)" class="form-control" id="password-input" ref="pInput" tabindex="2">-->
+<!--                  &lt;!&ndash;toggle password visibility&ndash;&gt;-->
+<!--                  <div id = "login-toggle-password" class="input-group-text green-search-button" @click="showPassword = !showPassword"-->
+<!--                        @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"-->
+<!--                        tabindex="3">-->
+<!--                    <i v-if="!showPassword" class="fas fa-eye"></i>-->
+<!--                    <i v-else class="fas fa-eye-slash"></i>-->
+<!--                    </div>-->
 
+<!--                </div>-->
+<!--              </div>-->
+
+              <div class="row my-lg-2">
+
+                <!--password input field-->
+                <div class="col my-2 my-lg-0">
+                  <label for="password-input" class="form-label">Password</label>
+                  <div class="input-group">
+                    <input class="form-control" name="password" :type="togglePasswordInputType(showPassword)" tabindex="2" id="password-input" ref="pInput">
+
+                    <!--toggle password visibility-->
+                    <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
+                          @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
+                          tabindex="3">
+                      <i v-if="!showPassword" class="fas fa-eye"></i>
+                      <i v-else class="fas fa-eye-slash"></i>
+                      </span>
+
+                  </div>
                 </div>
-              </div>
+
+            </div>
 
               <!--error message location-->
               <div class="row">
@@ -194,11 +215,11 @@ input:focus, textarea:focus {
   border: 1px solid #1EBABC;
 }
 
-#password-input {
-  max-width: 360px;
-}
+/*#password-input {*/
+/*  max-width: 360px;*/
+/*}*/
 
-#login-toggle-password {
-  max-width: 40px;
-}
+/*#login-toggle-password {*/
+/*  max-width: 40px;*/
+/*}*/
 </style>
