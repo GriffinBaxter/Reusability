@@ -69,7 +69,7 @@
                       </li>
                       <li class="nav-item">
                         <!--                        TODO Change this to dynamic ID-->
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/businesses/3/products" tabindex="-1">
+                        <router-link :class="['nav-link', isActivePath('/businesses/15/products')]" to="/" tabindex="-1">
                           Catalogue
                         </router-link>
                       </li>
@@ -288,11 +288,12 @@ export default {
        */
       event.preventDefault();
 
-      // Reason for this not working is because it is HttpOnly, which doesn't allow the browser/ JS to
-      // delete this cookie.
-      Cookies.remove('JSESSIONID', {path: '/'});
       Cookies.remove('userID');
-      await this.$router.push({name: 'Login'});
+      Cookies.remove('actAs');
+
+      Api.signOut().then(() => {
+        this.$router.push({ name: 'Login' })
+      })
     },
     /**
      * The function when called ensure the user is logged in. Otherwise takes you to the login page.

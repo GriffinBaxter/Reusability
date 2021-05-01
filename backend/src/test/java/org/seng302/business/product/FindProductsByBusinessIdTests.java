@@ -130,7 +130,7 @@ public class FindProductsByBusinessIdTests {
                 "Beans",
                 "Description",
                 "A Manufacturer",
-                11.00,
+                null,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
         );
@@ -149,7 +149,7 @@ public class FindProductsByBusinessIdTests {
                 business,
                 "Product",
                 "New Description",
-                "New Manufacturer",
+                "",
                 10.00,
                 LocalDateTime.of(LocalDate.of(2021, 2, 1),
                         LocalTime.of(1, 0))
@@ -364,17 +364,17 @@ public class FindProductsByBusinessIdTests {
         Sort sortBy = Sort.by(Sort.Order.asc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedManufacturers = new ArrayList<>();
+        orderedManufacturers.add(null);
         orderedManufacturers.add("A Manufacturer");
         orderedManufacturers.add("A Manufacturer");
         orderedManufacturers.add("A New Manufacturer");
         orderedManufacturers.add("Manufacturer");
-        orderedManufacturers.add("New Manufacturer");
         ArrayList<String> orderedProductIds = new ArrayList<>();
+        orderedProductIds.add("PROD");
         orderedProductIds.add("APP-LE");
         orderedProductIds.add("APP-LE3");
         orderedProductIds.add("DUCT");
         orderedProductIds.add("APPLE");
-        orderedProductIds.add("PROD");
 
         // when
         Page<Product> productPage = productRepository.findProductsByBusinessId(businessId, pageable);
@@ -398,17 +398,17 @@ public class FindProductsByBusinessIdTests {
         Sort sortBy = Sort.by(Sort.Order.desc("manufacturer").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedManufacturers = new ArrayList<>();
-        orderedManufacturers.add("New Manufacturer");
         orderedManufacturers.add("Manufacturer");
         orderedManufacturers.add("A New Manufacturer");
         orderedManufacturers.add("A Manufacturer");
         orderedManufacturers.add("A Manufacturer");
+        orderedManufacturers.add(null);
         ArrayList<String> orderedProductIds = new ArrayList<>();
-        orderedProductIds.add("PROD");
         orderedProductIds.add("APPLE");
         orderedProductIds.add("DUCT");
         orderedProductIds.add("APP-LE");
         orderedProductIds.add("APP-LE3");
+        orderedProductIds.add("PROD");
 
         // when
         Page<Product> productPage = productRepository.findProductsByBusinessId(businessId, pageable);
@@ -432,15 +432,15 @@ public class FindProductsByBusinessIdTests {
         Sort sortBy = Sort.by(Sort.Order.asc("recommendedRetailPrice").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<Double> orderedRecommendedRetailPrices = new ArrayList<>();
+        orderedRecommendedRetailPrices.add(null);
         orderedRecommendedRetailPrices.add(10.00);
         orderedRecommendedRetailPrices.add(10.00);
-        orderedRecommendedRetailPrices.add(11.00);
         orderedRecommendedRetailPrices.add(20.00);
         orderedRecommendedRetailPrices.add(21.00);
         ArrayList<String> orderedProductIds = new ArrayList<>();
+        orderedProductIds.add("APP-LE3");
         orderedProductIds.add("DUCT");
         orderedProductIds.add("PROD");
-        orderedProductIds.add("APP-LE3");
         orderedProductIds.add("APP-LE");
         orderedProductIds.add("APPLE");
 
@@ -468,15 +468,15 @@ public class FindProductsByBusinessIdTests {
         ArrayList<Double> orderedRecommendedRetailPrices = new ArrayList<>();
         orderedRecommendedRetailPrices.add(21.00);
         orderedRecommendedRetailPrices.add(20.00);
-        orderedRecommendedRetailPrices.add(11.00);
         orderedRecommendedRetailPrices.add(10.00);
         orderedRecommendedRetailPrices.add(10.00);
+        orderedRecommendedRetailPrices.add(null);
         ArrayList<String> orderedProductIds = new ArrayList<>();
         orderedProductIds.add("APPLE");
         orderedProductIds.add("APP-LE");
-        orderedProductIds.add("APP-LE3");
         orderedProductIds.add("DUCT");
         orderedProductIds.add("PROD");
+        orderedProductIds.add("APP-LE3");
 
         // when
         Page<Product> productPage = productRepository.findProductsByBusinessId(businessId, pageable);

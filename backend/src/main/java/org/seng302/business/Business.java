@@ -18,7 +18,7 @@ import java.util.List;
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class Business {
     @Id // this field (attribute) is the table primary key
-    @GeneratedValue//(strategy = GenerationType.IDENTITY) // autoincrement the ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // autoincrement the ID
     @Column(name = "id", nullable = false)
     private int id;
 
