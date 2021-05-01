@@ -313,6 +313,7 @@ public class UserResourceIntegrationTests {
         // then
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, user.getId()));
         assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
+        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(3600);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 

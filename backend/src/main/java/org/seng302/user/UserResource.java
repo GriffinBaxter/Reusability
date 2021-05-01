@@ -84,6 +84,8 @@ public class UserResource {
                 userRepository.save(user.get());
 
                 Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
+                cookie.setMaxAge(3600); // 1 hour in seconds
+                // A zero value causes the cookie to be deleted.
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
 
