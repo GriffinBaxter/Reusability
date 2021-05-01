@@ -1,7 +1,10 @@
 package org.seng302.main;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.BusinessResource;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -15,14 +18,20 @@ import java.util.Optional;
  */
 public class Authorization {
 
+    private static final Logger logger = LogManager.getLogger(Authorization.class.getName());
+
     /**
      * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
      * @param sessionToken Session token
      * @return User object
      */
     public static User getUserVerifySession(String sessionToken, UserRepository userRepository) {
-        Optional<User> user = userRepository.findBySessionUUID(sessionToken);
-        if (sessionToken == null || user.isEmpty()) {
+        Optional<User> user = Optional.empty();
+        if (sessionToken != null) {
+            user = userRepository.findBySessionUUID(sessionToken);
+        }
+        if (user.isEmpty()) {
+            logger.error("Invalid Session Token - {} - UNAUTHORIZED", sessionToken);
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Access token is missing or invalid"

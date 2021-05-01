@@ -550,7 +550,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -586,7 +586,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -622,7 +622,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
