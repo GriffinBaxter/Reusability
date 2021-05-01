@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -47,6 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
+@ActiveProfiles("test")
 public class InventoryItemResourceIntegrationTests {
 
     @Autowired
@@ -365,7 +367,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(null));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.empty());
         when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
@@ -493,6 +495,7 @@ public class InventoryItemResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+//----------------------------------------------/businesses/%d/inventory/----------------------------------------------
 
     /**
      * Test that a CREATED(201) status is received when send an InventoryRegistrationPayLoad with no price per item,
@@ -922,7 +925,7 @@ public class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
-                .cookie(new Cookie("JSESSIONID", String.valueOf(0))))
+                .cookie(new Cookie("JSESSIONID", "0")))
                 .andReturn().getResponse();
 
         // then
@@ -981,13 +984,13 @@ public class InventoryItemResourceIntegrationTests {
     }
 
 
-        /**
-         * Tests that an UNAUTHORIZED status is given when the the business exists and the user is the business
-         * admin BUT they have are not logged in i.e. no is cookie present.
-         * This is for testing /businesses/{id}/inventory/ API endpoint exists.
-         *
-         * @throws Exception Exception error
-         */
+    /**
+     * Tests that an UNAUTHORIZED status is given when the the business exists and the user is the business
+     * admin BUT they have are not logged in i.e. no is cookie present.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
     @Test
     public void cantRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorNoUserCookie() throws Exception {
         // given

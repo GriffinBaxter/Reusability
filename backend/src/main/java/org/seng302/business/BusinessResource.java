@@ -4,16 +4,19 @@ import org.seng302.main.Authorization;
 import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 import org.seng302.address.AddressRepository;
+import org.seng302.main.MainApplicationRunner;
 import org.seng302.user.Role;
 import org.seng302.user.UserIdPayload;
 import org.seng302.validation.BusinessValidation;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
-import org.seng302.validation.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +37,8 @@ public class BusinessResource {
 
     private Address address;
     private List<Business> businesses;
+
+    private static final Logger logger = LogManager.getLogger(BusinessResource.class.getName());
 
     public BusinessResource(
             BusinessRepository businessRepository, UserRepository userRepository, AddressRepository addressRepository
@@ -62,6 +67,7 @@ public class BusinessResource {
 
         //403
         if (currentUser.getId() != businessRegistrationPayload.getPrimaryAdministratorId()){
+            logger.error("User with Id: {} is not primary administrator.", currentUser.getId());
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Invalid Primary Administrator Id"
@@ -69,6 +75,7 @@ public class BusinessResource {
 
         //TODO: 400 not in api spec
         if (!BusinessValidation.isValidName(name.trim())){
+            logger.error("Invalid Business Name - {}", name.trim());
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Invalid business name"
@@ -76,6 +83,7 @@ public class BusinessResource {
         }
 
         if (!BusinessValidation.isValidDescription(description)){
+            logger.error("Invalid Description - {}", description);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Invalid description"
@@ -83,6 +91,7 @@ public class BusinessResource {
         }
 
         if (businessType == null){
+            logger.error("Invalid Business Type (is null)");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Invalid business type"
@@ -122,6 +131,7 @@ public class BusinessResource {
                 // No businesses will exist at new address.
                 businesses = new ArrayList<>();
             } catch (Exception e) {
+                logger.error("Invalid Business Address");
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Invalid business address"
@@ -143,7 +153,9 @@ public class BusinessResource {
                 );
                 business.addAdministrators(currentUser); //add user to administrators list
                 businessRepository.saveAndFlush(business);
+                logger.info("Successful Business Registration - {}", business.toString());
             } catch (Exception e) {
+                logger.error("Business Registration Failure - {}", e.getMessage());
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Invalid business"
@@ -151,6 +163,7 @@ public class BusinessResource {
             }
 
         } else { //TODO: 409 not in api spec
+            logger.error("Name: {} and Address: {} already in use", name, address.toString());
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Name and Address already in use"
@@ -173,6 +186,7 @@ public class BusinessResource {
 
         Optional<Business> optionalSelectBusiness = businessRepository.findBusinessById(Integer.valueOf(id));
         if (optionalSelectBusiness.isEmpty()){
+            logger.error("The requested route does exist, but some part of the request is not acceptable");
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -201,6 +215,7 @@ public class BusinessResource {
                 currentUser.getRole() == Role.DEFAULTGLOBALAPPLICATIONADMIN){
             primaryAdministratorId = selectBusiness.getPrimaryAdministratorId();
         }
+        logger.info("Business Found - {}", selectBusiness.toString());
         return new BusinessPayload(
                 selectBusiness.getId(),
                 administrators,

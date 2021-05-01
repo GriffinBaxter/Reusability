@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <!-- see https://logging.apache.org/log4j/2.x/manual/appenders.html -->
+    <Appenders>
+        <!-- the following defines a log file where application log will be output, it "rolls over" multiple files -->
+        <RollingFile name="errorlog" fileName="logs/error.log" filePattern="logs/other-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1950KB" />
+            </Policies>
+            <DefaultRolloverStrategy max="1"/>
+        </RollingFile>
+
+        <RollingFile name="eventlog" fileName="logs/event.log" filePattern="logs/app-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n"/>
+            <Filters>
+                <!-- Deny warn, error and fatal messages -->
+                <ThresholdFilter level="warn"  onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="fatal" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <!-- Accept info, so only info messages are outputted to file. -->
+                <ThresholdFilter level="info"  onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1950KB" />
+            </Policies>
+            <DefaultRolloverStrategy max="1"/>
+        </RollingFile>
+
+        <RollingFile name="allother" fileName="logs/other.log" filePattern="logs/app-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1950KB" />
+            </Policies>
+            <DefaultRolloverStrategy max="1"/>
+        </RollingFile>
+
+        <!-- the following defines a logger that will output to stdout -->
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout disableAnsi="false" pattern="%d{HH:mm:ss.SSS} [%t] %highlight{%-5level}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue} %logger - %msg%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.seng302">
+            <AppenderRef ref="eventlog" level="INFO"/>
+            <AppenderRef ref="errorlog" level="ERROR"/>
+            <AppenderRef ref="stdout" level="ALL"/>
+        </Logger>
+
+        <Root level="all" additivity="false">
+            <AppenderRef ref="allother"/>
+        </Root>
+
+    </Loggers>
+</Configuration>

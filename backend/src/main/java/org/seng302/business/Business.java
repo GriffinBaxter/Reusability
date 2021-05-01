@@ -18,7 +18,7 @@ import java.util.List;
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class Business {
     @Id // this field (attribute) is the table primary key
-    @GeneratedValue//(strategy = GenerationType.IDENTITY) // autoincrement the ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // autoincrement the ID
     @Column(name = "id", nullable = false)
     private int id;
 
@@ -242,10 +242,18 @@ public class Business {
         user.removeABusinessesAdministeredObjects(this);
     }
 
+    /**
+     * Set the id of business.
+     * @param id the id to be set.
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * Set the administrators of  business.
+     * @param administrators - A list of users who are the administrators of business.
+     */
     public void setAdministrators(List<User> administrators) {
         this.administrators = administrators;
     }
@@ -262,5 +270,23 @@ public class Business {
             }
         }
         return false;
+    }
+
+    /**
+     * Override the string method for this business. This method is useful for printing the details
+     * of a business for debugging purposes.
+     * @return String which represents the business.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"administrators\":[null]" +
+                ",\"primaryAdministratorId\":\"" + primaryAdministratorId + "\"" +
+                ",\"name\":\"" + name + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                ",\"address\":\"" + address + "\"" +
+                ",\"businessType\":\"" + businessType + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                "}";
     }
 }

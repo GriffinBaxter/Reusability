@@ -2,10 +2,14 @@ package org.seng302.business.inventoryItem;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.business.listing.Listing;
 import org.seng302.business.product.Product;
+import org.seng302.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for inventory items
@@ -16,7 +20,7 @@ import java.time.LocalDate;
 public class InventoryItem {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private int id;
 
@@ -53,6 +57,10 @@ public class InventoryItem {
 
     @Column(name = "expires", nullable = false)
     private LocalDate expires;
+
+    @OneToMany(mappedBy = "inventoryItem", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<Listing> listings = new ArrayList<Listing>();;
 
     /**
      * Constructor for inventory items.
@@ -201,6 +209,43 @@ public class InventoryItem {
 
     public void setExpires(LocalDate expires) {
         this.expires = expires;
+    }
+
+    /**
+     * Adds a new listing for this inventory item.
+     * This function will need to be called in the endpoint when creating a listing.
+     * @param listing A listing which contains this inventory item.
+     */
+    public void addListing(Listing listing) {
+        this.listings.add(listing);
+    }
+
+    /**
+     * Removes a listing from the list of listings for this inventory item.
+     * Also removes this inventory item for the corresponding listing.
+     * @param listing A listing which is to be removed.
+     */
+    public void removeListing(Listing listing) {
+        int id = listing.getId();
+        for (int i = 0; i < listings.size(); i++){
+            if (listings.get(i).getId() == id){
+                this.listings.remove(i);
+            }
+        }
+        listing.setInventoryItem(null);
+    }
+
+    /**
+     * Loops through the current listings for this inventory item and calculates the total currently listed.
+     * This quantity is needed to validate whether a listing should be created based on its quantity.
+     * @return totalListed the total quantity of this inventory item listed for sale.
+     */
+    public int getInventoryItemQuantityListed(){
+        int totalListed = 0;
+        for (Listing listing: listings) {
+            totalListed += listing.getQuantity();
+        }
+        return totalListed;
     }
 
 }
