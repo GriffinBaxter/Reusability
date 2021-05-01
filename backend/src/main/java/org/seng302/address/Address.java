@@ -19,7 +19,7 @@ import java.util.List;
 public class Address {
 
     @Id // this field (attribute) is the table primary key
-    @GeneratedValue // autoincrement the ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // autoincrement the ID
     @Column(name = "id", nullable = false)
     private int id;
 
