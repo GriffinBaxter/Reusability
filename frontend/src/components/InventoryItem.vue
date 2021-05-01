@@ -13,9 +13,9 @@
             (Quantity: {{ quantity }})
           </p>
           <p class="card-text" align="right">
-            Price Per Item: {{ pricePerItem }}
+            Price Per Item: {{ currency }} {{ pricePerItem }}
             <br>
-            Total Price: {{ totalPrice }}
+            Total Price: {{ currency }} {{ totalPrice }}
           </p>
           <hr>
           <div class="row">
@@ -96,6 +96,11 @@ export default {
       type: String,
       default: "None",
       required: true
+    },
+    currency: {
+      type: String,
+      default: "",
+      required: false
     }
   },
   mounted() {

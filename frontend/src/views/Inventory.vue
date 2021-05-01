@@ -112,7 +112,9 @@
                 v-bind:manufactured="inventory.manufactured"
                 v-bind:sell-by="inventory.sellBy"
                 v-bind:best-before="inventory.bestBefore"
-                v-bind:expires="inventory.expires"/>
+                v-bind:expires="inventory.expires"
+                v-bind:currency="currency"
+            />
 
             <!--pagination-->
             <nav>
@@ -180,9 +182,19 @@ export default {
     }
   },
   methods: {},
-  mounted() {
+  async mounted() {
     const url = document.URL;
     this.businessId = url.toString().split("/")[4]
+
+    const country = "New Zealand" // TODO: update to set to country from business creator's account
+    const restCountriesResponse = await fetch('https://restcountries.eu/rest/v2/name/' + country);
+
+    if (restCountriesResponse.status === 200) {
+      const restCountriesJson = await restCountriesResponse.json();
+      this.currency = restCountriesJson[0].currencies[0].code + restCountriesJson[0].currencies[0].symbol;
+    } else {
+      this.currency = "";
+    }
 
     //example
     this.inventories.push({
