@@ -316,23 +316,28 @@ export default {
         .catch(
           error => {
             if (error.response) {
-              // TODO Error codes handling
+
+              // There was something wrong with the user data!
               if (error.data.status === 400) {
                 this.formErrorModalMessage = "Some of the information you have entered is invalid."
+
+              // Invalid token was used
               } else if (error.data.status === 403) {
                 this.formErrorModalMessage = "You do not have permission to perform this action!"
-                this.modal.hide();
                 this.$router.push({path: "/invalidtoken"})
+
+              // We got an error code back but unsure of its meaning
               } else {
                 this.formErrorModalMessage = "Sorry, something went wrong..."
               }
+
+
             } else if (error.request) {
-              // TODO Timeout
+              // Timeout occured
               this.formErrorModalMessage = "Server timeout"
-              // this.modal.hide();
-              // this.$router.push({path: "/timeout"})
+              this.$router.push({path: "/timeout"})
             } else {
-              // TODO Something went wrong and it ain't good :(
+              // Something went wrong but with send the request itself.
               this.formErrorModalMessage = "Sorry, something went wrong..."
             }
           }

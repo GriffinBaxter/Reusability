@@ -1,6 +1,6 @@
 import {test, expect} from "@jest/globals";
 import profile from '../src/views/Profile'
-import {UserRole} from "@/configs/User";
+import {UserRole} from "../src/configs/User";
 
 
 /**
