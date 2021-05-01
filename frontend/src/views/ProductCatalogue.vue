@@ -150,7 +150,7 @@ import Footer from "../components/Footer";
 import ProductModal from "../components/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
-import UpdateProductModal from "@/components/UpdateProductModal";
+import UpdateProductModal from "../components/UpdateProductModal";
 
 export default {
   name: "ProductCatalogue",
