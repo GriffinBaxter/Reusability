@@ -316,6 +316,15 @@ public class User {
         return businessesAdministeredObjects;
     }
 
+    public void removeABusinessesAdministeredObjects(Business business){
+        int id = business.getId();
+        for (int i = 0; i < businessesAdministeredObjects.size(); i++){
+            if (businessesAdministeredObjects.get(i).getId() == id){
+                this.businessesAdministeredObjects.remove(i);
+            }
+        }
+    }
+
     /**
      * Loops through a list of businesses administered by the user and
      * gets the businesses ids' and adds them to a list of integers.
@@ -351,6 +360,7 @@ public class User {
                 ",\"homeAddress\":" + homeAddress +
                 ",\"created\":\"" + created + "\"" +
                 ",\"role\":\"" + role + "\"" +
+//      TODO This might get changed in the future due to the recursive nature of the API seems wrong.
                 ",\"businessesAdministered\":[null]" +
                 "}";
     }

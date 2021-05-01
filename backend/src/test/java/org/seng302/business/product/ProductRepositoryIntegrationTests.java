@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -27,9 +28,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * ProductRepository test class
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
+@ActiveProfiles("test")
 public class ProductRepositoryIntegrationTests {
 
     @Autowired
@@ -95,7 +96,7 @@ public class ProductRepositoryIntegrationTests {
                 "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                                LocalTime.of(0, 0))
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -111,8 +112,8 @@ public class ProductRepositoryIntegrationTests {
         assertThat(foundProductList.get().findFirst().get().getManufacturer()).isEqualTo("Manufacturer");
         assertThat(foundProductList.get().findFirst().get().getRecommendedRetailPrice()).isEqualTo(20.00);
         assertThat(foundProductList.get().findFirst().get().getCreated()).isEqualTo(LocalDateTime.of(
-                LocalDate.of(2021, 1, 1),
-                LocalTime.of(0, 0)).toString());
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(0, 0)).toString());
     }
 
     /**
@@ -253,8 +254,8 @@ public class ProductRepositoryIntegrationTests {
         assertThat(foundProduct.get().getManufacturer()).isEqualTo("Manufacturer");
         assertThat(foundProduct.get().getRecommendedRetailPrice()).isEqualTo(20.00);
         assertThat(foundProduct.get().getCreated()).isEqualTo(LocalDateTime.of(
-                LocalDate.of(2021, 1, 1),
-                LocalTime.of(0, 0)).toString());
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(0, 0)).toString());
     }
 
     /**

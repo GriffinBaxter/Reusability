@@ -21,6 +21,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.event.annotation.PrepareTestInstance;
 import org.springframework.test.web.servlet.MockMvc;
@@ -47,6 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
+@ActiveProfiles("test")
 public class ProductResourceIntegrationTests {
 
     @Autowired
@@ -575,10 +577,10 @@ public class ProductResourceIntegrationTests {
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .param("orderBy", "productIdASC")
-                .param("page", "0")
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn().getResponse();
+                                .param("orderBy", "productIdASC")
+                                .param("page", "0")
+                                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                                .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -747,9 +749,9 @@ public class ProductResourceIntegrationTests {
 
         // when
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .param("orderBy", "productIdASC")
-                .param("page", "0"))
-                .andReturn().getResponse();
+                    .param("orderBy", "productIdASC")
+                    .param("page", "0"))
+                    .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());

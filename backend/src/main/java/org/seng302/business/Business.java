@@ -220,7 +220,7 @@ public class Business {
     /**
      * Adds a new user as an administrator for this business.
      * Also adds this business to the list of businesses administered by the user.
-     * @param user A user which is an administrator for this business.
+     * @param user An user which is an administrator for this business.
      */
     public void addAdministrators(User user) {
         this.administrators.add(user);
@@ -230,18 +230,63 @@ public class Business {
     /**
      * Removes a user from the list of administrators for this business.
      * Also removes this business from the list of businesses administered by the user.
-     * @param user A user who was an administrator for this business.
+     * @param user An user who was an administrator for this business.
      */
     public void removeAdministrators(User user) {
-        this.administrators.remove(user.getId());
-        user.getBusinessesAdministeredObjects().remove(this);
+        int id = user.getId();
+        for (int i = 0; i < administrators.size(); i++){
+            if (administrators.get(i).getId() == id){
+                this.administrators.remove(i);
+            }
+        }
+        user.removeABusinessesAdministeredObjects(this);
     }
 
+    /**
+     * Set the id of business.
+     * @param id the id to be set.
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * Set the administrators of  business.
+     * @param administrators - A list of users who are the administrators of business.
+     */
     public void setAdministrators(List<User> administrators) {
         this.administrators = administrators;
+    }
+
+    /**
+     * check if a user is an administrator of this business
+     * @param user an user
+     * @return return true when user is a administrator of this business
+     */
+    public boolean isAnAdministratorOfThisBusiness(User user) {
+        for (User administrator : administrators){
+            if (administrator.equals(user)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Override the string method for this business. This method is useful for printing the details
+     * of a business for debugging purposes.
+     * @return String which represents the business.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"administrators\":[null]" +
+                ",\"primaryAdministratorId\":\"" + primaryAdministratorId + "\"" +
+                ",\"name\":\"" + name + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                ",\"address\":\"" + address + "\"" +
+                ",\"businessType\":\"" + businessType + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                "}";
     }
 }

@@ -31,7 +31,6 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import '@fortawesome/fontawesome-free'
 import 'bootstrap'
 
 Vue.config.productionTip = false

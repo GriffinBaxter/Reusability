@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.Ordered;
@@ -27,7 +28,7 @@ public class Main {
 
     public static void main(String[] args) {
         logger.info("-- booting up application --");
-        SpringApplication.run(Main.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
     }
 
     /**
@@ -45,7 +46,7 @@ public class Main {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**").allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                        .allowedOrigins("http://localhost:9500", "https://csse-s302g4.canterbury.ac.nz"); // Intresting fact. We can remove the allowed origins line and the requests
+                        .allowedOrigins("http://localhost:9500", "https://csse-s302g4.canterbury.ac.nz"); // Interesting fact. We can remove the allowed origins line and the requests
                                                                                                            // still work fine lol.
             }
         };

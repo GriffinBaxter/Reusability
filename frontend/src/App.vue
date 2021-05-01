@@ -1,7 +1,11 @@
+<!--This file creates the Vue app instance-->
+<!--The page transition is also created here.-->
+<!--The app instance watches for error routes and routes to the error page one occurs.-->
+
 <template>
   <div id="app">
     <transition :name="transitionName" mode="out-in">
-      <router-view></router-view>
+      <router-view :key="$route.path"></router-view>
     </transition>
 
   </div>
@@ -30,14 +34,19 @@ const app = {
   },
   watch: {
     '$route'(to) {
+      document.title = to.meta.title || "Team 400";
       if (to.name === 'NoUser' || to.name === 'ServerTimeout' || to.name === 'InvalidToken') this.transitionName = "";
-    }
+      const event = new CustomEvent('page-routing', {detail: ""})
+      document.dispatchEvent(event);
+    },
   }
 };
 
 // make the 'app' available
 export default app;
 </script>
+
+<!---------------------------------------------------- App Styling ---------------------------------------------------->
 
 <style>
 [v-cloak] {
