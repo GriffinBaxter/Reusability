@@ -114,25 +114,21 @@
 
 <script>
 
-import { Modal } from "bootstrap";
+import {Modal} from "bootstrap";
 import Api, {InventoryItem} from "../Api";
+
 const endOfToday = require('date-fns/endOfToday');
 const format = require('date-fns/format');
 const compareAsc = require('date-fns/compareAsc');
 
 export default {
   name: 'InventoryItemCreation',
-  props: {
-    businessId: {
-      type: String,
-      required: true
-    }
-  },
   data() {
     return {
       // A copy of the product config file for error checking.
       config: InventoryItem.config,
       modal: null,
+      businessId: this.$route.params.id,
 
       // product Id related variables
       productId: "",
@@ -360,7 +356,7 @@ export default {
       return isValid
 
     },
-    //
+
     // /**
     //  * This function will check the validity of the best before date of an inventory item i.e. that the best before date
     //  * of the inventory item is after to today's date but not today's date, and before expiry date.

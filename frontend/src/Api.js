@@ -405,6 +405,11 @@ export default {
         })
     },
 
+    sortInventoryItems: (id, sortBy, page) => {
+        return instance.get(`/businesses/${id}/inventory/?orderBy=${sortBy}&page=${page}`, {
+            withCredentials: true
+        })
+    },
 
     // The API spec states this should be /users/{id}/makeadmin. But we decided to implement it as
     // /users/{id}/makeAdmin for readability purposes.

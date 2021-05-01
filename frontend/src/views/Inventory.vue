@@ -4,7 +4,7 @@
     <navbar/>
 
     <!--creation popup-->
-    <inventory-item-creation v-bind:business-id="businessId"/>
+    <inventory-item-creation/>
 
     <!--inventory container-->
     <div class="container p-5 mt-3" id="profileContainer">
@@ -20,8 +20,8 @@
 
               <!--business's name-->
               <div class="mt-3">
-                <h5>{{ name }}</h5>
-                <div class="text-secondary">{{ description }}</div>
+                <h5>{{ businessName }}</h5>
+                <div class="text-secondary">{{ businessDescription }}</div>
               </div>
 
             </div>
@@ -35,69 +35,62 @@
 
         <div class="col">
           <div class="card card-body">
-            <h2 align="center">Inventory</h2>
+            <h1 align="center">Inventory</h1>
 
             <hr/>
 
-            <!--filter-->
-            <div class="row px-2 align-content-center">
-              <!--order by product name-->
-              <div id="order-by-product-name" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
-                   tabindex="3">
-                <b>Product Name</b>
+            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+              <div class="btn-group col-2 py-1">
+                <!--creation button-->
+                <button type="button" class="btn btn-success col-2 py-1" data-bs-toggle="modal"
+                        data-bs-target="#creationPopup">
+                  Creat New
+                </button>
+              </div>
+              <!--search bar-->
+              <div class="input-group py-1 px-1">
+                <input type="text" class="form-control" placeholder="This is for later use."
+                       aria-label="Input group example" aria-describedby="btnGroupAddon">
+                <button type="button" class="btn btn-outline-primary">Search</button>
               </div>
 
-              <!--order by product id-->
-              <div id="order-by-product-id" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
-                   tabindex="3">
-                <b>Product Name</b>
+              <!--filter-->
+              <div class="btn-group col-3 py-1" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle col-4"
+                        data-bs-toggle="dropdown" aria-expanded="false">Filter
+                </button>
+
+                <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                  <!--order by product name-->
+                  <button type="button" class="btn btn-outline-primary col-12">Product Name</button>
+
+                  <!--order by product id-->
+                  <button type="button" class="btn btn-outline-primary col-12">Product ID</button>
+
+                  <!--order by quantity-->
+                  <button type="button" class="btn btn-outline-primary col-12">Quantity</button>
+
+                  <!--order by price per item-->
+                  <button type="button" class="btn btn-outline-primary col-12">Price Per Item</button>
+
+                  <!--order by total price-->
+                  <button type="button" class="btn btn-outline-primary col-12">Total Price</button>
+
+                  <!--order by manufactured-->
+                  <button type="button" class="btn btn-outline-primary col-12">Manufactured</button>
+
+                  <!--order by sell by-->
+                  <button type="button" class="btn btn-outline-primary col-12">Sell By</button>
+
+                  <!--order by best before-->
+                  <button type="button" class="btn btn-outline-primary col-12">Best Before</button>
+
+                  <!--order by expires-->
+                  <button type="button" class="btn btn-outline-primary col-12">Expires</button>
+                </ul>
               </div>
 
-              <!--order by quantity-->
-              <div id="order-by-quantity" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
-                <b>Quantity</b>
-              </div>
-
-              <!--order by price per item-->
-              <div id="order-by-price-per-item" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
-                   tabindex="3">
-                <b>Price Per Item</b>
-              </div>
-
-              <!--order by total price-->
-              <div id="order-by-total-price" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
-                   tabindex="3">
-                <b>Total Price</b>
-              </div>
             </div>
-            <div class="row px-2 py-3">
-              <!--order by manufactured-->
-              <div id="order-by-manufactured" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
-                   tabindex="3">
-                <b>Manufactured</b>
-              </div>
-
-              <!--order by sell by-->
-              <div id="order-by-sell-by" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
-                <b>Sell By</b>
-              </div>
-
-              <!--order by best before-->
-              <div id="order-by-best-before" class="col py-2 header-col col-hover rounded-3 me-2 text-center"
-                   tabindex="3">
-                <b>Best Before</b>
-              </div>
-
-              <!--order by expires-->
-              <div id="order-by-expires" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3">
-                <b>Expires</b>
-              </div>
-            </div>
-
-            <!--creation button-->
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#creationPopup">
-              Creat New
-            </button>
 
             <!--inventory items-->
             <inventory-item
@@ -151,6 +144,7 @@ import Footer from "@/components/Footer";
 import InventoryItem from "@/components/InventoryItem";
 import Navbar from "@/components/Navbar";
 import InventoryItemCreation from "@/components/CreateNewInventoryItem";
+import Api from "@/Api";
 
 export default {
   components: {
@@ -161,10 +155,25 @@ export default {
   },
   data() {
     return {
-      businessId: "",
+      // Table variables
+      // A list of the ordering by headers, which is used with talking to the backend
+      tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created"],
+      // Used to tell the table what is the current ordering (for visual purposes).
+      tableOrderBy: {orderBy: null, isAscending: true},
+      // Stores the URL string that is used by the requestProducts() to order the products
+      orderByString: "",
+      // A list of Product object that store the products
+      InventoryItemList: [],
+      // These variables are used to control and update the table.
+      rowsPerPage: 5,
+      currentPage: 0,
+      totalRows: 0,
 
-      name: "scott",
-      description: "asdasdas",
+
+      businessId: null,
+
+      businessName: null,
+      businessDescription: null,
 
       inventories: [],
       image: require("../../public/apples.jpg"),
@@ -179,75 +188,137 @@ export default {
       expires: "2021-04-23"
     }
   },
-  methods: {},
+  methods: {
+    retrieveBusinessInfo() {
+      Api.getBusiness(this.businessId).then(response => {
+        this.businessName = response.data.name;
+        this.businessDescription = response.data.description;
+      }).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noBusiness'});
+        } else {
+          this.$router.push({path: '/noBusiness'});
+          console.log(error.message);
+        }
+      })
+    },
+    /**
+     * Parses the orderByString and returns the resulted Objects.
+     * @return {{orderBy: null | String, isAscending: boolean}} This contains the {orderBy, isAscending} properties of the this.orderByString .
+     * Emulates a click when the product presses enter on a column header.
+     *
+     * @param event The keydown event
+     */
+    parseOrderBy() {
+      let orderBy = null;
+      let isAscending = true;
+
+      // If the last 3 letters are ASC then we can assume the orderBy is the other component of that orderByString.
+      // This also means isAscending is true.
+      if (this.orderByString.slice(this.orderByString.length - 3) === 'ASC') {
+        orderBy = this.orderByString.slice(0, this.orderByString.length - 3);
+
+        // If the last 4 letters are DESC then we can assume the orderBy is the other component of the orderByString
+        // This also means that isAscending is false.
+      } else if (this.orderByString.slice(this.orderByString.length - 4) === 'DESC') {
+        orderBy = this.orderByString.slice(0, this.orderByString.length - 4)
+        isAscending = false;
+      }
+
+      // If we found a valid orderBy compare it against he allowed orderBy headers in tableOrderByHeaders
+      if (orderBy !== null) {
+        orderBy = this.tableOrderByHeaders.indexOf(orderBy);
+
+        // If the orderBy is returned as -1. This means that no header was found!
+        // So we say it is unordered.
+        if (orderBy === -1) {
+          orderBy = null;
+        }
+      }
+
+      return {orderBy, isAscending};
+    },
+    /**
+     * Requests a list of inventory item matching the given business ID from the back-end.
+     * If successful it updates the Table to contain the new data points.
+     * If successful it sets the productList variable to the response data.
+     *
+     * @return {Promise}
+     */
+    async retrieveInventoryItems() {
+
+      // Getting query params from the route update.
+      this.orderByString = this.$route.query["orderBy"] || "productIdASC";
+      this.currentPage = parseInt(this.$route.query["page"]) || 0;
+
+      // Perform the call to sort the products and get them back.
+      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage).then(response => {
+
+
+        // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
+        const {orderBy, isAscending} = this.parseOrderBy();
+        this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
+
+        this.InventoryItemList = [...response.data];
+
+        let newTableData = [];
+
+        // No results
+        if (this.InventoryItemList.length <= 0) {
+          this.currentPage = 1;
+          this.maxPage = 1;
+          this.totalRows = 0;
+          // Generate the tableData to be placed in the table & get the total number of rows.
+        } else {
+          this.totalRows = parseInt(response.headers["total-rows"]);
+
+          for (let i = 0; i < this.InventoryItemList.length; i++) {
+
+            newTableData.push({
+              index: i,
+              productName: this.InventoryItemList[i].product.name,
+              productId: this.InventoryItemList[i].product.id,
+              quantity: this.InventoryItemList[i].quantity,
+              pricePerItem: this.InventoryItemList[i].pricePerItem,
+              totalPrice: this.InventoryItemList[i].totalPrice,
+              manufactured: this.InventoryItemList[i].manufactured,
+              sellBy: this.InventoryItemList[i].sellBy,
+              bestBefore: this.InventoryItemList[i].bestBefore,
+              expires: this.InventoryItemList[i].expires
+            })
+          }
+          this.inventories = newTableData;
+        }
+
+      }).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 400) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else if (error.response.status === 403) {
+          this.$router.push({path: '/forbidden'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noBusiness'});
+        } else {
+          this.$router.push({path: '/timeout'});
+          console.log(error.message);
+        }
+      })
+    },
+  },
   mounted() {
-    const url = document.URL;
-    this.businessId = url.toString().split("/")[4]
+    this.businessId = this.$route.params.id;
+    this.retrieveBusinessInfo()
+    this.retrieveInventoryItems()
 
     //example
-    this.inventories.push({
-      index: 0,
-      productName: this.productName,
-      productId: this.productId,
-      quantity: this.quantity,
-      pricePerItem: this.pricePerItem,
-      totalPrice: this.totalPrice,
-      manufactured: this.manufactured,
-      sellBy: this.sellBy,
-      bestBefore: this.bestBefore,
-      expires: this.expires
-    });
-    this.inventories.push({
-      index: 1,
-      productName: this.productName,
-      productId: this.productId,
-      quantity: this.quantity,
-      pricePerItem: this.pricePerItem,
-      totalPrice: this.totalPrice,
-      manufactured: this.manufactured,
-      sellBy: this.sellBy,
-      bestBefore: this.bestBefore,
-      expires: this.expires
-    });
-    this.inventories.push({
-      index: 2,
-      image: this.image,
-      productName: this.productName,
-      productId: this.productId,
-      quantity: this.quantity,
-      pricePerItem: this.pricePerItem,
-      totalPrice: this.totalPrice,
-      manufactured: this.manufactured,
-      sellBy: this.sellBy,
-      bestBefore: this.bestBefore,
-      expires: this.expires
-    });
-    this.inventories.push({
-      index: 3,
-      image: this.image,
-      productName: this.productName,
-      productId: this.productId,
-      quantity: this.quantity,
-      pricePerItem: this.pricePerItem,
-      totalPrice: this.totalPrice,
-      manufactured: this.manufactured,
-      sellBy: this.sellBy,
-      bestBefore: this.bestBefore,
-      expires: this.expires
-    });
-    this.inventories.push({
-      index: 4,
-      image: this.image,
-      productName: this.productName,
-      productId: this.productId,
-      quantity: this.quantity,
-      pricePerItem: this.pricePerItem,
-      totalPrice: this.totalPrice,
-      manufactured: this.manufactured,
-      sellBy: this.sellBy,
-      bestBefore: this.bestBefore,
-      expires: this.expires
-    });
+
   }
 }
 </script>
