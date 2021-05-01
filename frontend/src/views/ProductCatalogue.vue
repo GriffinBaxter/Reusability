@@ -20,7 +20,7 @@
 
       <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0" :table-headers="tableHeaders" :table-data="tableData"
              :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage" :order-by-override="tableOrderBy" :table-data-is-page="true"
-             @update-current-page="event => updatePage(event)" @order-by-header-index="event => orderProducts(event)" @row-selected="event => showDetails(event.index)"></Table>
+             @update-current-page="event => updatePage(event)" @order-by-header-index="event => orderProducts(event)" @row-selected="event => showRowModal(event.index)"></Table>
 
     </div>
 
@@ -240,14 +240,14 @@ export default {
      *
      * @param productIndex The table index of the product to show details for.
      */
-    showDetails(productIndex) {
+    showRowModal(productIndex) {
       let product = this.productList[productIndex];
-      this.productId = product.id;
-      this.productName = product.name;
-      this.description = product.description;
-      this.manufacturer = product.manufacturer;
-      this.recommendedRetailPrice = product.recommendedRetailPrice;
-      this.created = product.created;
+      this.productId = product.data.id;
+      this.productName = product.data.name;
+      this.description = product.data.description;
+      this.manufacturer = product.data.manufacturer;
+      this.recommendedRetailPrice = product.data.recommendedRetailPrice;
+      this.created = product.data.created;
       this.currentProduct = product;
       this.showModal = true;
     },
@@ -365,7 +365,9 @@ export default {
         const {orderBy, isAscending} = this.parseOrderBy();
         this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
 
-        this.productList = [...response.data];
+        this.productList = response.data.map( (product) => {
+          return new Product(product);
+        });
         let newtableData = [];
 
         // No results
@@ -378,11 +380,11 @@ export default {
           this.totalRows = parseInt(response.headers["total-rows"]);
 
           for (let i = 0; i < this.productList.length; i++ ) {
-            newtableData.push(this.productList[i].id);
-            newtableData.push(this.productList[i].name);
-            newtableData.push(this.productList[i].manufacturer);
-            newtableData.push(this.productList[i].recommendedRetailPrice);
-            newtableData.push(this.productList[i].created);
+            newtableData.push(this.productList[i].data.id);
+            newtableData.push(this.productList[i].data.name);
+            newtableData.push(this.productList[i].data.manufacturer);
+            newtableData.push(this.productList[i].data.recommendedRetailPrice);
+            newtableData.push(this.productList[i].data.created);
           }
 
           this.tableData = newtableData;

@@ -37,13 +37,14 @@ export default class Product {
         },
     };
 
-    constructor({id, name, description, manufacturer, recommendedRetailPrice}) {
+    constructor({id, name, description, manufacturer, recommendedRetailPrice, created}) {
         this.data = {
             id,
             name,
             description,
             manufacturer,
             recommendedRetailPrice,
+            created
         }
 
     }
