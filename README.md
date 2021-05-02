@@ -18,6 +18,7 @@ A backend sub-project (business logic and persistence server):
 ## How to run
 
 The following is assuming you already cloned the repository.
+
 ### Frontend / GUI
 
     $ cd frontend
@@ -26,12 +27,13 @@ The following is assuming you already cloned the repository.
 
 Running on: http://localhost:9500/ by default
 
-Note that due to CORS policy and sameSite cookie policy, you will need to disable some security measures.
-For example this can be achieved by doing the following for Chrome: 
-- Create a shortcut to Chrome 
-- In the properties add '--disable-web-security --user-data-dir="C:/ChromeDevSession"' after everything in the target property field.
-
 ### Backend / server
+
+For running locally using the in-memory H2 database, the following environment variables should be set with the given
+corresponding values:
+* DB_DRIVER=org.h2.Driver
+* DB_PLATFORM=org.hibernate.dialect.H2Dialect
+
 
     cd backend
     ./gradlew bootRun
