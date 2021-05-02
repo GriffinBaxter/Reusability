@@ -1,16 +1,16 @@
-package gradle.cucumber;
+package org.seng302.steps;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-public class RegisterUserFeature extends SpringIntegrationTest {
+public class RegistrationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
     UserRepository userRepository;

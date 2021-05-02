@@ -1,11 +1,12 @@
-package gradle.cucumber;
+package org.seng302.steps;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.BeforeAll;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
 import org.seng302.user.Role;
@@ -13,6 +14,8 @@ import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.seng302.user.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-public class LogInSteps extends SpringIntegrationTest {
+public class LoginStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
     private MockMvc mvc;
@@ -48,39 +51,12 @@ public class LogInSteps extends SpringIntegrationTest {
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
     @Before
-    public void setup() throws Exception {
-//
-//        address = new Address(
-//                "3/24",
-//                "Ilam Road",
-//                "Christchurch",
-//                "Canterbury",
-//                "New Zealand",
-//                "90210"
-//        );
-//        user = new User("Bob",
-//                "Smith",
-//                "Ben",
-//                "Bobby",
-//                "cool person",
-//                "email@email.com",
-//                LocalDate.of(2020, 2, 2).minusYears(13),
-//                "0271316",
-//                address,
-//                "Password123!",
-//                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-//                        LocalTime.of(0, 0)),
-//                Role.GLOBALAPPLICATIONADMIN);
-//        user.setId(1);
-
-        // initializes the MockMVC object and tells it to use the userRepository
+    public void createMockMvc() {
 //        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
-
     }
 
     @Given("The user's details exist in the database, with email of {string} and password of {string}")
     public void theUserSDetailsExistInTheDatabaseWithEmailOfAndPasswordOf(String email, String password) throws Exception {
-
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -94,11 +70,11 @@ public class LogInSteps extends SpringIntegrationTest {
                 "Ben",
                 "Bobby",
                 "cool person",
-                "email@email.com",
+                email,
                 LocalDate.of(2020, 2, 2).minusYears(13),
                 "0271316",
                 address,
-                "Password123!",
+                password,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
@@ -106,11 +82,7 @@ public class LogInSteps extends SpringIntegrationTest {
 
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
 
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.ofNullable(user));
-
-        assertThat(user.getEmail()).isEqualTo(email);
-        assertThat(true).isEqualTo(user.verifyPassword(password));
-
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
     }
 
     @When("The user supplies an email {string} and password {string} which matches the details in the database")
