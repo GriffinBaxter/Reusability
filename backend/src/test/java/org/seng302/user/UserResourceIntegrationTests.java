@@ -951,9 +951,8 @@ public class UserResourceIntegrationTests {
     }
 
     /**
-     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
-     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
-     * names: first, last, middle, first middle last, first last.
+     * Tests that a BAD_REQUEST status is received when searching for a user using the /users/search API endpoint
+     * when the order by param is invalid.
      * Test specifically for when the order by param provided is invalid.
      */
     @Test
@@ -989,9 +988,8 @@ public class UserResourceIntegrationTests {
     }
 
     /**
-     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
-     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
-     * names: first, last, middle, first middle last, first last.
+     * Tests that a BAD_REQUEST status is received when searching for a user using the /users/search API endpoint
+     * when the page param is invalid.
      * Test specifically for when the page param provided is invalid.
      */
     @Test
