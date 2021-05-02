@@ -3,6 +3,7 @@ package org.seng302.user;
 import org.junit.jupiter.api.*;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
+import org.seng302.business.product.Product;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -66,6 +67,19 @@ public class UserResourceIntegrationTests {
                                     "\"phoneNumber\":\"%s\"," +
                                     "\"homeAddress\":%s"+
                                 "}";
+
+    private final String expectedSecureUserJson = "{\"id\":%d," +
+            "\"firstName\":\"%s\"," +
+            "\"lastName\":\"%s\"," +
+            "\"middleName\":\"%s\"," +
+            "\"nickname\":\"%s\"," +
+            "\"bio\":\"%s\"," +
+            "\"email\":\"%s\"," +
+            "\"created\":\"%s" + "\"," +
+            "\"role\":%s," +
+            "\"businessesAdministered\":%s," +
+            "\"homeAddress\":%s"+
+            "}";
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
@@ -699,81 +713,384 @@ public class UserResourceIntegrationTests {
     // The sorting done in this is entirely unneeded, this has been moved to SearchUserByNameTests.
     // TODO Test bad URL params
     /**
-     * Tests that the search functionality will order users by a given attribute in e.g. ascending order i.e. in alphabetical order.
-     * A valid outcome will met the criteria of giving a 200 status code and returns a JSON list of Users.
-     * For this example, it sorts by nickname, in ascending order but the outcome would be similar for another type of
-     * sort query.
-     * The query itself is tested in UserRepositoryIntegrationTests.
+     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
+     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
+     * names: first, last, middle, first middle last, first last.
+     * Test specifically for when the user searching for a user is a DGAA.
      */
     @Test
-    public void canOrderSearchResults() throws Exception {
-        //given
+    public void canSearchUsersWhenUserExistsWithDgaaCookie() throws Exception {
+        // given
         List<String> searchQueryList = List.of(
-                "nickname"
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
         );
-
-        String expectedSearchUserJson = "{\"id\":%d," +
-                "\"firstName\":\"%s\"," +
-                "\"lastName\":\"%s\"," +
-                "\"middleName\":\"%s\"," +
-                "\"nickname\":\"%s\"," +
-                "\"bio\":\"%s\"," +
-                "\"email\":\"%s\"," +
-                "\"created\":\"%s" + "\"," +
-                "\"role\":%s," +
-                "\"businessesAdministered\":%s," +
-                "\"homeAddress\":%s"+
-                "}";
-
-        //when
+        expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" +
+                user.getRole() + "\"", "[null]",  user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
-        ArrayList<User> nicknamesSortedAsc = new ArrayList<User>();
 
-        for (User searchUser: searchUsers) {
-            nicknamesSortedAsc.add(new User(searchUser.getFirstName(), searchUser.getLastName(),
-                    searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getDateOfBirth(),
-                    searchUser.getPhoneNumber(), searchUser.getHomeAddress(), "Password123!",searchUser.getCreated(), searchUser.getRole()));
-        }
+        // when
+        List<User> list = List.of(user);
+        Page<User> pagedResponse = new PageImpl<User>(list);
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
 
-        Collections.sort(nicknamesSortedAsc, new Comparator<User>() {
-            @Override
-            public int compare(User user, User t1) {
-                return user.getNickname().toUpperCase().compareTo(t1.getNickname().toUpperCase());
-            }
-        });
-
-        String expectedJSON = "[";
-
-        for (User searchUser: nicknamesSortedAsc) {
-            expectedJSON += String.format(expectedSearchUserJson, searchUser.getId(), searchUser.getFirstName(), searchUser.getLastName(),
-                    searchUser.getMiddleName(), searchUser.getNickname(), searchUser.getBio(), searchUser.getEmail(), searchUser.getCreated(), "\"" + searchUser.getRole() + "\"", "[null]", searchUser.getHomeAddress().toSecureString()) + ",";
-        }
-
-        expectedJSON = expectedJSON.substring(0, expectedJSON.length() - 1) + "]";
-
-        int pageNo = 0;
-        int pageSize = 5;
-        Sort sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
-
-        Page<User> nicknamePage = new PageImpl<User>(nicknamesSortedAsc, paging, nicknamesSortedAsc.size());
-
-
-        when(userRepository.findById(dGAA.getId())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        when(userRepository.findAllUsersByNames("", paging)).thenReturn(nicknamePage);
 
-        responseList.add(mvc.perform(
-                get("/users/search").param("searchQuery", "").param("orderBy", "nicknameASC" ).param("page", "0").cookie(
-                        new Cookie("JSESSIONID", String.valueOf(dGAA.getSessionUUID())))).andReturn().getResponse());
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
+        }
 
         // then
         for (MockHttpServletResponse response: responseList) {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.getContentAsString().replace("city\":null", "city\":\"null\"").replace("region\":null", "region\":\"null\"")).isEqualTo(expectedJSON);
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
+     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
+     * names: first, last, middle, first middle last, first last.
+     * Test specifically for when the order by and page params provided are valid.
+     */
+    @Test
+    public void canSearchUsersWhenUserExistsWithValidOrderByAndPageParams() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" +
+                        user.getRole() + "\"", "[null]",  user.getHomeAddress().toSecureString()) + "]";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        List<User> list = List.of(user);
+        Page<User> pagedResponse = new PageImpl<User>(list);
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "fullNameASC")
+                            .param("page", "0")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
         }
 
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
     }
+
+    /**
+     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
+     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
+     * names: first, last, middle, first middle last, first last.
+     * Test specifically for when the user searching for a user is a GAA.
+     */
+    @Test
+    public void canSearchUsersWhenUserExistsWithGaaCookie() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
+                null, "[null]",  user.getHomeAddress().toSecureString()) + "]";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        List<User> list = List.of(user);
+        Page<User> pagedResponse = new PageImpl<User>(list);
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
+     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
+     * names: first, last, middle, first middle last, first last.
+     * Test specifically for when the user searching for a user is a USER.
+     */
+    @Test
+    public void canSearchUsersWhenUserExistsWithUserCookie() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
+                null, "[null]",  user.getHomeAddress().toSecureString()) + "]";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        List<User> list = List.of(user);
+        Page<User> pagedResponse = new PageImpl<User>(list);
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that an OK status but an empty response is received when searching for a user that does not exist using
+     * the /users/search API endpoint. The user (that does not exist by the names searched for) is searched for using
+     * the following orders of the names: first, last, middle, first middle last, first last.
+     */
+    @Test
+    public void emptySearchUsersWhenUserDoesntExist() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "notFirst",
+                "notLast",
+                "notMiddle",
+                "notNick",
+                "notFirst notMiddle notLast",
+                "notFirst notLast"
+        );
+        expectedJson = "[]";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        List<User> list = List.of();
+        Page<User> pagedResponse = new PageImpl<User>(list);
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                    .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
+     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
+     * names: first, last, middle, first middle last, first last.
+     * Test specifically for when the order by param provided is invalid.
+     */
+    @Test
+    public void cantSearchUsersWithInvalidOrderByParam() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "a")
+                            .param("page", "0")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
+     * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
+     * names: first, last, middle, first middle last, first last.
+     * Test specifically for when the page param provided is invalid.
+     */
+    @Test
+    public void cantSearchUsersWithInvalidPageParam() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "fullNameASC")
+                            .param("page", "a")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when searching for a user using the /users/search API endpoint
+     * when the cookie contains a non-existing ID
+     */
+    @Test
+    public void cantSearchUsersWithNonExistingIdCookie() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        when(userRepository.findBySessionUUID("0")).thenReturn(Optional.empty());
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery).cookie(
+                            new Cookie("JSESSIONID", "0"))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when searching for a user using the /users/search API endpoint
+     * when there is no cookie
+     */
+    @Test
+    public void cantSearchUsersWithNoCookie() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
 
     /**
      * Test that an OK(200) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
