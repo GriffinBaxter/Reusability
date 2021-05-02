@@ -44,7 +44,7 @@
                 <!--creation button-->
                 <button type="button" class="btn btn-success col-2 py-1" data-bs-toggle="modal"
                         data-bs-target="#creationPopup">
-                  Creat New
+                  Create New
                 </button>
               </div>
               <!--search bar-->
@@ -62,49 +62,57 @@
 
                 <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                   <!--order by product id-->
-                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(true, false, false, false, false, false, false, false)">
+                  <button type="button" class="btn btn-outline-primary col-12"
+                          @click="orderInventory(true, false, false, false, false, false, false, false)">
                     Product ID
                     <i id="productIdIcon"></i>
                   </button>
 
                   <!--order by quantity-->
-                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, true, false, false, false, false, false, false)">
+                  <button type="button" class="btn btn-outline-primary col-12"
+                          @click="orderInventory(false, true, false, false, false, false, false, false)">
                     Quantity
                     <i id="quantityIcon"></i>
                   </button>
 
                   <!--order by price per item-->
-                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, true, false, false, false, false, false)">
+                  <button type="button" class="btn btn-outline-primary col-12"
+                          @click="orderInventory(false, false, true, false, false, false, false, false)">
                     Price Per Item
                     <i id="pricePerItemIcon"></i>
                   </button>
 
                   <!--order by total price-->
-                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, true, false, false, false, false)">
+                  <button type="button" class="btn btn-outline-primary col-12"
+                          @click="orderInventory(false, false, false, true, false, false, false, false)">
                     Total Price
                     <i id="totalPriceIcon"></i>
                   </button>
 
                   <!--order by manufactured-->
-                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, true, false, false, false)">
+                  <button type="button" class="btn btn-outline-primary col-12"
+                          @click="orderInventory(false, false, false, false, true, false, false, false)">
                     Manufactured
                     <i id="manufacturedIcon"></i>
                   </button>
 
                   <!--order by sell by-->
-                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, true, false, false)">
+                  <button type="button" class="btn btn-outline-primary col-12"
+                          @click="orderInventory(false, false, false, false, false, true, false, false)">
                     Sell By
                     <i id="sellByIcon"></i>
                   </button>
 
                   <!--order by best before-->
-                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, false, true, false)">
+                  <button type="button" class="btn btn-outline-primary col-12"
+                          @click="orderInventory(false, false, false, false, false, false, true, false)">
                     Best Before
                     <i id="bestBeforeIcon"></i>
                   </button>
 
                   <!--order by expires-->
-                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, false, false, true)">
+                  <button type="button" class="btn btn-outline-primary col-12"
+                          @click="orderInventory(false, false, false, false, false, false, false, true)">
                     Expires
                     <i id="expiresIcon"></i>
                   </button>
@@ -200,8 +208,7 @@ export default {
       // Table variables
       // A list of the ordering by headers, which is used with talking to the backend
       tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created"],
-      // Used to tell the table what is the current ordering (for visual purposes).
-      tableOrderBy: {orderBy: null, isAscending: true},
+
       // Stores the URL string that is used by the requestProducts() to order the products
       orderByString: "",
       // A list of Product object that store the products
@@ -212,6 +219,14 @@ export default {
       totalPages: 0,
       totalRows: 0,
 
+      productIdAscending: false,
+      quantityAscending: false,
+      pricePerItemAscending: false,
+      totalPriceAscending: false,
+      manufacturedAscending: false,
+      sellByAscending: false,
+      bestBeforeAscending: false,
+      expiresAscending: false,
 
       businessId: null,
 
@@ -241,7 +256,7 @@ export default {
      */
     updatePage(event, newPageNumber) {
       this.currentPage = newPageNumber;
-      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}})
+      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}})
       this.retrieveInventoryItems();
     },
 
@@ -271,42 +286,6 @@ export default {
         }
       })
     },
-    /**
-     * Parses the orderByString and returns the resulted Objects.
-     * @return {{orderBy: null | String, isAscending: boolean}} This contains the {orderBy, isAscending} properties of the this.orderByString .
-     * Emulates a click when the product presses enter on a column header.
-     *
-     * @param event The keydown event
-     */
-    parseOrderBy() {
-      let orderBy = null;
-      let isAscending = true;
-
-      // If the last 3 letters are ASC then we can assume the orderBy is the other component of that orderByString.
-      // This also means isAscending is true.
-      if (this.orderByString.slice(this.orderByString.length - 3) === 'ASC') {
-        orderBy = this.orderByString.slice(0, this.orderByString.length - 3);
-
-        // If the last 4 letters are DESC then we can assume the orderBy is the other component of the orderByString
-        // This also means that isAscending is false.
-      } else if (this.orderByString.slice(this.orderByString.length - 4) === 'DESC') {
-        orderBy = this.orderByString.slice(0, this.orderByString.length - 4)
-        isAscending = false;
-      }
-
-      // If we found a valid orderBy compare it against he allowed orderBy headers in tableOrderByHeaders
-      if (orderBy !== null) {
-        orderBy = this.tableOrderByHeaders.indexOf(orderBy);
-
-        // If the orderBy is returned as -1. This means that no header was found!
-        // So we say it is unordered.
-        if (orderBy === -1) {
-          orderBy = null;
-        }
-      }
-
-      return {orderBy, isAscending};
-    },
 
     /**
      * Orders the inventory based on the given booleans for each column, and updates the display
@@ -322,31 +301,31 @@ export default {
     orderInventory(id, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires) {
 
       if (id) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.productIdAscending) {
-          this.orderBy = "productIdASC"
+          this.orderByString = "productIdASC"
           document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "productIdDESC"
+          this.orderByString = "productIdDESC"
           document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
         this.productIdAscending = !this.productIdAscending;
         this.quantityAscending = false;
         this.pricePerItemAscending = false;
-        this.recommendedRetailPriceAscending = false;
+        this.totalPriceAscending = false;
         this.manufacturedAscending = false;
         this.sellByAscending = false;
         this.bestBeforeAscending = false;
         this.expiresAscending = false;
 
       } else if (quantity) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.quantityAscending) {
-          this.orderBy = "quantityASC"
+          this.orderByString = "quantityASC"
           document.getElementById('quantityIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "quantityDESC"
+          this.orderByString = "quantityDESC"
           document.getElementById('quantityIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
@@ -360,12 +339,12 @@ export default {
         this.expiresAscending = false;
 
       } else if (pricePerItem) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.pricePerItemAscending) {
-          this.orderBy = "pricePerItemASC"
+          this.orderByString = "pricePerItemASC"
           document.getElementById('pricePerItemIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "pricePerItemDESC"
+          this.orderByString = "pricePerItemDESC"
           document.getElementById('pricePerItemIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
@@ -379,12 +358,12 @@ export default {
         this.expiresAscending = false;
 
       } else if (totalPrice) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.totalPriceAscending) {
-          this.orderBy = "totalPriceASC"
+          this.orderByString = "totalPriceASC"
           document.getElementById('totalPriceIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "totalPriceDESC"
+          this.orderByString = "totalPriceDESC"
           document.getElementById('totalPriceIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
 
@@ -398,12 +377,12 @@ export default {
         this.expiresAscending = false;
 
       } else if (manufactured) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.manufacturedAscending) {
-          this.orderBy = "manufacturedASC";
+          this.orderByString = "manufacturedASC";
           document.getElementById('manufacturedIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "manufacturedDESC";
+          this.orderByString = "manufacturedDESC";
           document.getElementById('manufacturedIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
         this.productIdAscending = false;
@@ -416,12 +395,12 @@ export default {
         this.expiresAscending = false;
 
       } else if (sellBy) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.sellByAscending) {
-          this.orderBy = "sellByASC";
+          this.orderByString = "sellByASC";
           document.getElementById('sellByIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "sellByDESC";
+          this.orderByString = "sellByDESC";
           document.getElementById('sellByIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
         this.productIdAscending = false;
@@ -434,12 +413,12 @@ export default {
         this.expiresAscending = false;
 
       } else if (bestBefore) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.bestBeforeAscending) {
-          this.orderBy = "bestBeforeASC";
+          this.orderByString = "bestBeforeASC";
           document.getElementById('bestBeforeIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "bestBeforeDESC";
+          this.orderByString = "bestBeforeDESC";
           document.getElementById('bestBeforeIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
         this.productIdAscending = false;
@@ -452,12 +431,12 @@ export default {
         this.expiresAscending = false;
 
       } else if (expires) {
-        this.disableIcons()
+        this.disableIcons();
         if (this.expiresAscending) {
-          this.orderBy = "expiresASC";
+          this.orderByString = "expiresASC";
           document.getElementById('expiresIcon').setAttribute('class', 'fas fa-chevron-up float-end');
         } else {
-          this.orderBy = "expiresDESC";
+          this.orderByString = "expiresDESC";
           document.getElementById('expiresIcon').setAttribute('class', 'fas fa-chevron-down float-end');
         }
         this.productIdAscending = false;
@@ -471,8 +450,7 @@ export default {
 
       }
 
-
-      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}});
+      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}});
       this.retrieveInventoryItems();
     },
 
@@ -501,15 +479,10 @@ export default {
 
       // Getting query params from the route update.
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
-      this.currentPage = parseInt(this.$route.query["page"]) || 0;
+      this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
 
       // Perform the call to sort the products and get them back.
       await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage).then(response => {
-
-
-        // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
-        const {orderBy, isAscending} = this.parseOrderBy();
-        this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
 
         this.InventoryItemList = [...response.data];
 
