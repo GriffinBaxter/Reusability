@@ -61,36 +61,53 @@
                 </button>
 
                 <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                  <!--order by product name-->
-                  <button type="button" class="btn btn-outline-primary col-12">Product Name</button>
-
                   <!--order by product id-->
-                  <button type="button" class="btn btn-outline-primary col-12">Product ID</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(true, false, false, false, false, false, false, false)">
+                    Product ID
+                    <i id="productIdIcon"></i>
+                  </button>
 
                   <!--order by quantity-->
-                  <button type="button" class="btn btn-outline-primary col-12">Quantity</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, true, false, false, false, false, false, false)">
+                    Quantity
+                    <i id="quantityIcon"></i>
+                  </button>
 
                   <!--order by price per item-->
-                  <button type="button" class="btn btn-outline-primary col-12">
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, true, false, false, false, false, false)">
                     Price Per Item ({{ currencySymbol }} {{ currencyCode }})
+                    <i id="pricePerItemIcon"></i>
                   </button>
 
                   <!--order by total price-->
-                  <button type="button" class="btn btn-outline-primary col-12">
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, true, false, false, false, false)">
                     Total Price ({{ currencySymbol }} {{ currencyCode }})
+                    <i id="totalPriceIcon"></i>
                   </button>
 
                   <!--order by manufactured-->
-                  <button type="button" class="btn btn-outline-primary col-12">Manufactured</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, true, false, false, false)">
+                    Manufactured
+                    <i id="manufacturedIcon"></i>
+                  </button>
 
                   <!--order by sell by-->
-                  <button type="button" class="btn btn-outline-primary col-12">Sell By</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, true, false, false)">
+                    Sell By
+                    <i id="sellByIcon"></i>
+                  </button>
 
                   <!--order by best before-->
-                  <button type="button" class="btn btn-outline-primary col-12">Best Before</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, false, true, false)">
+                    Best Before
+                    <i id="bestBeforeIcon"></i>
+                  </button>
 
                   <!--order by expires-->
-                  <button type="button" class="btn btn-outline-primary col-12">Expires</button>
+                  <button type="button" class="btn btn-outline-primary col-12" @click="orderInventory(false, false, false, false, false, false, false, true)">
+                    Expires
+                    <i id="expiresIcon"></i>
+                  </button>
                 </ul>
               </div>
 
@@ -116,20 +133,41 @@
 
             <!--pagination-->
             <nav>
-              <ul class="pagination justify-content-center">
-                <li class="page-item">
-                  <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
+              <ul v-if="totalPages > 0" class="pagination justify-content-center">
+                <!-- This is only enabled when there is a previous page -->
+                <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
+                  Previous
+                </button>
+
+                <!-- This is shown when there are more then 2 pages and you are at page 1-->
+                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
+                  {{currentPage-1}}
+                </button>
+
+                <!-- Only shows when we are past at least the first page -->
+                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
+                  {{currentPage}}
+                </button>
+
+                <!-- This converts the current page into 1 origin.-->
+                <button type="button" class="btn btn-outline-primary active">
+                  {{currentPage+1}}
+                </button>
+
+                <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
+                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
+                  {{currentPage+2}}
+                </button>
+
+                <!-- This is shown when there are more then 2 pages and you are at page 1-->
+                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
+                  {{currentPage+3}}
+                </button>
+
+                <!-- The next button only enabled if there is another page.-->
+                <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
+                  Next
+                </button>
               </ul>
             </nav>
 
@@ -176,6 +214,7 @@ export default {
       // These variables are used to control and update the table.
       rowsPerPage: 5,
       currentPage: 0,
+      totalPages: 0,
       totalRows: 0,
 
 
@@ -202,6 +241,28 @@ export default {
     }
   },
   methods: {
+
+    /**
+     * Updates the display to show the new page when a user clicks to move to a different page.
+     *
+     * @param event The click event
+     * @param newPageNumber The new page number
+     */
+    updatePage(event, newPageNumber) {
+      this.currentPage = newPageNumber;
+      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}})
+      this.retrieveInventoryItems();
+    },
+
+    /**
+     * Given a page number check that the page is within the acceptable range.
+     * NOTE this is a 0 origin.
+     * @param pageNumber The page number to be checked.
+     */
+    isValidPageNumber(pageNumber) {
+      return 0 <= pageNumber && pageNumber < this.totalPages;
+    },
+
     retrieveBusinessInfo() {
       Api.getBusiness(this.businessId).then(response => {
         this.businessName = response.data.name;
@@ -255,6 +316,189 @@ export default {
 
       return {orderBy, isAscending};
     },
+
+    /**
+     * Orders the inventory based on the given booleans for each column, and updates the display
+     * @param id Boolean, whether to order by productId
+     * @param quantity Boolean, whether to order by quantity
+     * @param pricePerItem Boolean, whether to order by price per item
+     * @param totalPrice Boolean, whether to order by total price
+     * @param manufactured Boolean, whether to order by manufacture date
+     * @param sellBy Boolean, whether to order by sell by date
+     * @param bestBefore Boolean, whether to order by best before date
+     * @param expires Boolean, whether to order by expiration date
+     */
+    orderInventory(id, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires) {
+
+      if (id) {
+        this.disableIcons()
+        if (this.productIdAscending) {
+          this.orderBy = "productIdASC"
+          document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "productIdDESC"
+          document.getElementById('productIdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.productIdAscending = !this.productIdAscending;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.recommendedRetailPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (quantity) {
+        this.disableIcons()
+        if (this.quantityAscending) {
+          this.orderBy = "quantityASC"
+          document.getElementById('quantityIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "quantityDESC"
+          document.getElementById('quantityIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.productIdAscending = false;
+        this.quantityAscending = !this.quantityAscending;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (pricePerItem) {
+        this.disableIcons()
+        if (this.pricePerItemAscending) {
+          this.orderBy = "pricePerItemASC"
+          document.getElementById('pricePerItemIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "pricePerItemDESC"
+          document.getElementById('pricePerItemIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = !this.pricePerItemAscending;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (totalPrice) {
+        this.disableIcons()
+        if (this.totalPriceAscending) {
+          this.orderBy = "totalPriceASC"
+          document.getElementById('totalPriceIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "totalPriceDESC"
+          document.getElementById('totalPriceIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = !this.totalPriceAscending;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (manufactured) {
+        this.disableIcons()
+        if (this.manufacturedAscending) {
+          this.orderBy = "manufacturedASC";
+          document.getElementById('manufacturedIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "manufacturedDESC";
+          document.getElementById('manufacturedIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = !this.manufacturedAscending;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (sellBy) {
+        this.disableIcons()
+        if (this.sellByAscending) {
+          this.orderBy = "sellByASC";
+          document.getElementById('sellByIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "sellByDESC";
+          document.getElementById('sellByIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = !this.sellByAscending;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = false;
+
+      } else if (bestBefore) {
+        this.disableIcons()
+        if (this.bestBeforeAscending) {
+          this.orderBy = "bestBeforeASC";
+          document.getElementById('bestBeforeIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "bestBeforeDESC";
+          document.getElementById('bestBeforeIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = !this.bestBeforeAscending;
+        this.expiresAscending = false;
+
+      } else if (expires) {
+        this.disableIcons()
+        if (this.expiresAscending) {
+          this.orderBy = "expiresASC";
+          document.getElementById('expiresIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "expiresDESC";
+          document.getElementById('expiresIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+        this.productIdAscending = false;
+        this.quantityAscending = false;
+        this.pricePerItemAscending = false;
+        this.totalPriceAscending = false;
+        this.manufacturedAscending = false;
+        this.sellByAscending = false;
+        this.bestBeforeAscending = false;
+        this.expiresAscending = !this.expiresAscending;
+
+      }
+
+
+      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderBy, "page": (this.currentPage).toString()}});
+      this.retrieveInventoryItems();
+    },
+
+    /**
+     * Disables all ascending or descending icons in the top column headers.
+     */
+    disableIcons() {
+      document.getElementById('productIdIcon').setAttribute('class', '');
+      document.getElementById('quantityIcon').setAttribute('class', '');
+      document.getElementById('pricePerItemIcon').setAttribute('class', '');
+      document.getElementById('totalPriceIcon').setAttribute('class', '');
+      document.getElementById('manufacturedIcon').setAttribute('class', '');
+      document.getElementById('sellByIcon').setAttribute('class', '');
+      document.getElementById('bestBeforeIcon').setAttribute('class', '');
+      document.getElementById('expiresIcon').setAttribute('class', '');
+    },
+
     /**
      * Requests a list of inventory item matching the given business ID from the back-end.
      * If successful it updates the Table to contain the new data points.
@@ -278,20 +522,21 @@ export default {
 
         this.InventoryItemList = [...response.data];
 
-        let newTableData = [];
-
         // No results
         if (this.InventoryItemList.length <= 0) {
-          this.currentPage = 1;
-          this.maxPage = 1;
+          this.currentPage = 0;
+          this.maxPage = 0;
           this.totalRows = 0;
+          this.totalPages = 0;
           // Generate the tableData to be placed in the table & get the total number of rows.
         } else {
           this.totalRows = parseInt(response.headers["total-rows"]);
+          this.totalPages = parseInt(response.headers["total-pages"]);
 
-          for (let i = 0; i < this.InventoryItemList.length; i++) {
+          this.inventories = [];
 
-            newTableData.push({
+          for (let i = 0; i < this.rowsPerPage; i++) {
+            this.inventories.push({
               index: i,
               productName: this.InventoryItemList[i].product.name,
               productId: this.InventoryItemList[i].product.id,
@@ -304,7 +549,6 @@ export default {
               expires: this.InventoryItemList[i].expires
             })
           }
-          this.inventories = newTableData;
         }
 
       }).catch((error) => {

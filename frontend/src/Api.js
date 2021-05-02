@@ -411,7 +411,7 @@ export default {
     },
 
     sortInventoryItems: (id, sortBy, page) => {
-        return instance.get(`/businesses/${id}/inventory/?orderBy=${sortBy}&page=${page}`, {
+        return instance.get(`/businesses/${id}/inventory?orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },

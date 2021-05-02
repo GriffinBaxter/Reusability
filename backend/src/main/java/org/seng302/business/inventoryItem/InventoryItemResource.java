@@ -76,7 +76,7 @@ public class InventoryItemResource {
      * @param page         Page number to return results from
      * @return A list of InventoryPayload objects representing the inventory items belonging to the given business.
      */
-    @GetMapping("/businesses/{id}/inventory/")
+    @GetMapping("/businesses/{id}/inventory")
     public ResponseEntity<List<InventoryItemPayload>> retrieveInventoryPage(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer id,
@@ -299,7 +299,7 @@ public class InventoryItemResource {
      * @param inventoryRegistrationPayload inventory registration payload
      * @param id                           business id
      */
-    @PostMapping("/businesses/{id}/inventory/")
+    @PostMapping("/businesses/{id}/inventory")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Inventory item created successfully")
     public void addAnInventoryItem(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                    @RequestBody InventoryRegistrationPayload inventoryRegistrationPayload,
