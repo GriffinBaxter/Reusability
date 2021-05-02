@@ -937,6 +937,11 @@ public class UserResourceIntegrationTests {
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery)
