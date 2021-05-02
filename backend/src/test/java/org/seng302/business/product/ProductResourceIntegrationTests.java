@@ -557,8 +557,6 @@ public class ProductResourceIntegrationTests {
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                                .param("orderBy", "productIdASC")
-                                .param("page", "0")
                                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                                 .andReturn().getResponse();
 
@@ -593,8 +591,6 @@ public class ProductResourceIntegrationTests {
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .param("orderBy", "productIdASC")
-                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -629,13 +625,103 @@ public class ProductResourceIntegrationTests {
 
         when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .param("orderBy", "productIdASC")
-                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", gAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status and a list of product payloads is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists.
+     * Test specifically for when the order by and page params provided are valid.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveProductsWhenBusinessExistsWithValidOrderByAndPageParams() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated()) + "]";
+
+        // when
+        List<Product> list = List.of(product);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
+        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status and no product payloads are received when the business ID in the
+     * /businesses/{id}/products API endpoint exists but the order by param is invalid.
+     * Test specifically for when the order by param provided is invalid.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantRetrieveProductsWhenBusinessExistsWithInvalidOrderByParam() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("orderBy", "a")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status and no product payloads are received when the business ID in the
+     * /businesses/{id}/products API endpoint exists but the page param is invalid.
+     * Test specifically for when the page param provided is invalid.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantRetrieveProductsWhenBusinessExistsWithInvalidPageParam() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "a")
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
@@ -655,8 +741,6 @@ public class ProductResourceIntegrationTests {
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(businessRepository.findBusinessById(0)).thenReturn(Optional.empty());
         response = mvc.perform(get(String.format("/businesses/%d/products", 0))
-                .param("orderBy", "productIdASC")
-                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -679,8 +763,6 @@ public class ProductResourceIntegrationTests {
 
         // when
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .param("orderBy", "productIdASC")
-                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", String.valueOf(0))))
                 .andReturn().getResponse();
 
@@ -705,8 +787,6 @@ public class ProductResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                .param("orderBy", "productIdASC")
-                .param("page", "0")
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -728,9 +808,7 @@ public class ProductResourceIntegrationTests {
         expectedJson = "";
 
         // when
-        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                    .param("orderBy", "productIdASC")
-                    .param("page", "0"))
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId())))
                     .andReturn().getResponse();
 
         // then
