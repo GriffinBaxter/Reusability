@@ -152,10 +152,8 @@ public class BusinessResource {
                         currentUser
                 );
                 business.addAdministrators(currentUser); //add user to administrators list
-                businessRepository.saveAndFlush(business);
-                logger.info("Successful Business Registration - {}", business.toString());
                 Business createdBusiness = businessRepository.save(business);
-                System.out.println(createdBusiness);
+                logger.info("Successful Business Registration - {}", createdBusiness.toString());
                 return ResponseEntity.status(HttpStatus.CREATED).body(new BusinessIdPayload(createdBusiness.getId()));
             } catch (Exception e) {
                 logger.error("Business Registration Failure - {}", e.getMessage());
