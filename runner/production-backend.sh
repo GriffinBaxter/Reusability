@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 
+# retrieve environment variables
+source env_variables.txt
+
 # Run the production backend server
 
 fuser -k 8999/tcp || true
