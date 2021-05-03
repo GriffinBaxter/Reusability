@@ -38,7 +38,10 @@
             v-bind:close-date="item.closeDate"
             v-bind:best-before="item.bestBefore"
             v-bind:expires="item.expires"
-            v-bind:moreInfo="item.moreInfo"/>
+            v-bind:moreInfo="item.moreInfo"
+            v-bind:currency-code="this.currencyCode"
+            v-bind:currency-symbol="this.currencySymbol"
+        />
       </div>
     </div>
     <div class="card p-1" v-if="!isListings">
@@ -56,6 +59,7 @@ import Api from "@/Api";
 import Cookies from "js-cookie";
 import CreateListing from "@/components/CreateListing";
 import Footer from "@/components/Footer";
+import CurrencyAPI from "@/currencyInstance";
 
 export default {
 name: "Listings",
@@ -67,7 +71,10 @@ name: "Listings",
       businessName: "",
       businessAdmin: false,
       businessId: -1,
-      isListings: true
+      isListings: true,
+
+      currencyCode: "",
+      currencySymbol: ""
     }
   },
   methods: {
@@ -131,6 +138,38 @@ name: "Listings",
         })
       }
     },
+
+    /**
+     * Currency API requests.
+     * An asynchronous function that calls the REST Countries API with the given country input.
+     * Upon success, the filterResponse function is called with the response data.
+     */
+    async currencyRequest() {
+      /*
+        Request business from backend. If received assign the country of the business
+        to a variable.
+        */
+      let country = "";
+      await Api.getBusiness(this.businessId).then((response) => {
+        country = response.data.address.country;
+      })
+          .catch((error) => console.log(error))
+
+      await CurrencyAPI.currencyQuery(country).then((response) => {
+        this.filterResponse(response.data);
+      })
+          .catch((error) => console.log(error))
+    },
+
+    /**
+     * Retrieves the currency code and symbol that we want from the API response.
+     * @param response The response from the REST countries API
+     */
+    filterResponse(response) {
+      this.currencyCode = response[0].currencies[0].code;
+      this.currencySymbol = response[0].currencies[0].symbol;
+    },
+
     fakeListings() {
       this.listings.push({
         productName: 'Beans',
@@ -179,12 +218,33 @@ name: "Listings",
         moreInfo: 'Seller may be willing to consider near offers'
       })
     }
+
   },
-  mounted() {
-    this.businessId = parseInt(this.$route.params.id);
-    this.getBusiness(this.businessId);
-    //this.fakeListings();
-    // this.getListings(this.businessId); //NOTE: Currently not working
+  async mounted() {
+    /**
+     * When mounted, initiate population of page.
+     * If cookies are invalid or not present, redirect to login page.
+     */
+    const currentID = Cookies.get('userID');
+    if (currentID) {
+      this.businessId = await parseInt(this.$route.params.id);
+      await this.getBusiness(this.businessId);
+
+      await this.currencyRequest();
+      // // if currency code and symbol exist we want to update table header of RRP to show this info
+      // if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
+      //   this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
+      // }
+      // this.getListings(this.businessId).then(
+      //     () => {}
+      // ).catch(
+      //     (e) => console.log(e)
+      // )
+      // this.fakeListings();
+      // this.populatePage(this.listings);
+    } else {
+      this.$router.push({name: 'Login'});
+    }
   }
 }
 </script>

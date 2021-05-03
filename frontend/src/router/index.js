@@ -142,7 +142,7 @@ const routes = [
         component: () => import('../views/BusinessRegistration.vue')
     },
     {
-        path: '/businessProfile/:id?/productCatalogue',
+        path: '/businessProfile/:id/productCatalogue',
         name: 'ProductCatalogue',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
@@ -150,7 +150,7 @@ const routes = [
         component: () => import('../views/ProductCatalogue')
     },
     {
-        path: '/businessProfile/:id?/inventory',
+        path: '/businessProfile/:id/inventory',
         name: 'Inventory',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
@@ -158,7 +158,7 @@ const routes = [
         component: () => import('../views/Inventory')
     },
     {
-        path: '/businesses/:id/listings',
+        path: '/businessProfile/:id/listings',
         name: 'Listings',
         props: true,
         // route level code-splitting

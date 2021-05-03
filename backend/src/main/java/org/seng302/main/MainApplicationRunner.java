@@ -7,6 +7,10 @@ import org.seng302.address.AddressRepository;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.BusinessType;
+import org.seng302.business.inventoryItem.InventoryItem;
+import org.seng302.business.inventoryItem.InventoryItemRepository;
+import org.seng302.business.listing.Listing;
+import org.seng302.business.listing.ListingRepository;
 import org.seng302.business.product.Product;
 import org.seng302.business.product.ProductRepository;
 import org.seng302.user.Role;
@@ -38,6 +42,8 @@ public class MainApplicationRunner implements ApplicationRunner {
     private BusinessRepository businessRepository;
     private AddressRepository addressRepository;
     private ProductRepository productRepository;
+    private InventoryItemRepository inventoryItemRepository;
+    private ListingRepository listingRepository;
 
     @Value("${dgaa.email}")
     private String dgaaEmail;
@@ -53,11 +59,13 @@ public class MainApplicationRunner implements ApplicationRunner {
      * classes (i.e. dependency injection)
      */
     @Autowired
-    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository, ProductRepository productRepository) {
+    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository, ProductRepository productRepository, InventoryItemRepository inventoryItemRepository, ListingRepository listingRepository) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
         this.addressRepository = addressRepository;
         this.productRepository = productRepository;
+        this.inventoryItemRepository = inventoryItemRepository;
+        this.listingRepository = listingRepository;
     }
 
     /**
@@ -382,6 +390,38 @@ public class MainApplicationRunner implements ApplicationRunner {
                 LocalDateTime.of(LocalDate.of(2021, 2, 1),
                         LocalTime.of(1, 0))
         );
-        productRepository.save(product6);
+        product6 = productRepository.save(product6);
+
+        InventoryItem inventoryItem = new InventoryItem(
+                product6,
+                product6.getProductId(),
+                10,
+                6.51,
+                21.99,
+                LocalDate.of(2020, 1, 1),
+                LocalDate.of(2021, 1, 1),
+                LocalDate.of(2022, 1, 1),
+                LocalDate.of(2022, 1, 1)
+        );
+        inventoryItem = inventoryItemRepository.save(inventoryItem);
+
+        Listing listing = new Listing(
+                inventoryItem,
+                3,
+                20.00,
+                "more info",
+                LocalDateTime.now(),
+                null
+        );
+        listingRepository.save(listing);
+        Listing listing2 = new Listing(
+                inventoryItem,
+                5,
+                null,
+                "more i",
+                LocalDateTime.now(),
+                null
+        );
+        listingRepository.save(listing2);
     }
 }

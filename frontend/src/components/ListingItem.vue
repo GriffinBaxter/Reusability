@@ -27,7 +27,7 @@
               </div>
               <div class="col d-flex align-items-end flex-column">
                 <p>{{ description }}</p>
-                <p class="card-text mt-auto" id="price">Price: ${{ price }}</p>
+                <p class="card-text mt-auto" id="price">Price: {{ currencySymbol }}{{ price }} {{ currencyCode }}</p>
               </div>
             </div>
           </div>
@@ -116,7 +116,18 @@ export default {
       type: String,
       default: "",
       required: false
+    },
+    currencyCode: {
+      type: String,
+      default: "",
+      required: false
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: false
     }
+
   }
 }
 </script>
