@@ -228,7 +228,7 @@ public class ListingResource {
         }
         System.out.println(listingPayload.getInventoryItemId());
         // Checks InventoryItem exists and gets InventoryItem
-        Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemByProductId(listingPayload.getInventoryItemId());
+        Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemById(Integer.parseInt(listingPayload.getInventoryItemId()));
         if (inventoryItem.isEmpty()) {
             logger.error("Listing Creation Failure - 400 [BAD REQUEST] - Inventory Item at ID {} Not Found", listingPayload.getInventoryItemId());
             throw new ResponseStatusException(
