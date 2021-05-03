@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -38,9 +39,11 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
     @Autowired
     private MockMvc mvc;
 
+    @Autowired
     @MockBean
     private UserRepository userRepository;
 
+    @Autowired
     @MockBean
     private AddressRepository addressRepository;
 
@@ -52,12 +55,14 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
 
     @Before
     public void createMockMvc() {
-//        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        userRepository = mock(UserRepository.class);
+        addressRepository = mock(AddressRepository.class);
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
     @Given("The user's details exist in the database, with email of {string} and password of {string}")
     public void theUserSDetailsExistInTheDatabaseWithEmailOfAndPasswordOf(String email, String password) throws Exception {
-        Address address = new Address(
+        address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
@@ -65,7 +70,7 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
                 "New Zealand",
                 "90210"
         );
-        User user = new User("Bob",
+        user = new User("Bob",
                 "Smith",
                 "Ben",
                 "Bobby",
@@ -80,8 +85,6 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
                 Role.GLOBALAPPLICATIONADMIN);
         user.setId(1);
 
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
-
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
     }
 
@@ -90,7 +93,8 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
 
         Optional<User> optionUser = Optional.ofNullable(user);
 
-        when(optionUser.get().verifyPassword("Password123!")).thenReturn(true);
+        // TODO: rework, as "optionUser" cannot be mocked
+        // when(optionUser.get().verifyPassword("Password123!")).thenReturn(true);
 
     }
 

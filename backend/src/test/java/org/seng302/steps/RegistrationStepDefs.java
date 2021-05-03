@@ -1,18 +1,27 @@
 package org.seng302.steps;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 public class RegistrationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
+    @MockBean
     UserRepository userRepository;
+
+    @Before
+    public void createMockMvc() {
+        userRepository = mock(UserRepository.class);
+    }
 
     @Given("My email {string} doesnt exist in the database.")
     public void my_email_doesnt_exist_in_the_database(String email) {
@@ -29,36 +38,30 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
     @Then("The account is created with email {string}.")
     public void the_account_is_created_with_email(String email) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
     }
 
     @Given("The email {string} already exists in the database.")
     public void the_email_already_exists_in_the_database(String string) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
     }
 
     @When("I try to register with existing email {string}.")
     public void i_try_to_register_with_existing_email(String email) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
     }
 
     @Then("I receive a 409 response.")
     public void i_receive_a_409_response() {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
     }
 
     @When("I try to register with invalid data and email {string}.")
     public void i_try_to_register_with_invalid_data_and_email(String email) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
     }
 
     @Then("I receive a 400 response.")
     public void i_receive_a_400_response() {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
     }
 }
