@@ -72,18 +72,31 @@ name: "Listings",
       businessAdmin: false,
       businessId: -1,
 
+      orderBy: "",
+      rowsPerPage: 5,
+      currentPage: 0,
+      totalPages: 0,
+      totalRows: 0,
+
       currencyCode: "",
       currencySymbol: ""
     }
   },
   methods: {
-    getListings(id) {
+    async getListings() {
       /*
       Attempts to get listings from backend
       If successful, sends data to populatePage()
       If not, redirects to appropriate page
       */
-      Api.getBusinessListings(id).then(response => (this.populatePage(response.data))).catch((error) => {
+      this.orderBy = this.$route.query["orderBy"] || "idASC";
+      this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+
+      await Api.sortListings(this.businessId, this.orderBy, this.currentPage).then(response => {
+        console.log(response);
+        this.populatePage(response.data);
+
+      }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 401) {
@@ -225,16 +238,9 @@ name: "Listings",
 
       await this.currencyRequest();
 
-      // // if currency code and symbol exist we want to update table header of RRP to show this info
-      // if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
-      //   this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
-      // }
-      // this.getListings(this.businessId).then(
-      //     () => {}
-      // ).catch(
-      //     (e) => console.log(e)
-      // )
-      this.fakeListings();
+      this.getListings(this.businessId);
+
+      // this.fakeListings();
       // this.populatePage(this.listings);
     } else {
       this.$router.push({name: 'Login'});

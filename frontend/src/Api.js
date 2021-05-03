@@ -509,8 +509,8 @@ export default {
     return instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true})
   },
 
-  getBusinessListings: (businessId) => {
-    return instance.get(`/businesses/${businessId}/listings`, {
+  sortListings: (businessId, sortBy, page) => {
+    return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
       withCredentials: true,
     })
   },

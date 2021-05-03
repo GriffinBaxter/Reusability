@@ -122,7 +122,7 @@ public class ListingResource {
         }
 
         // Front-end displays 10 listings per page
-        int pageSize = 10;
+        int pageSize = 5;
 
         Sort sortBy = null;
 
@@ -182,7 +182,7 @@ public class ListingResource {
 
         List<ListingPayload> listingPayloads = convertToPayload(pagedResult.getContent());
 
-        logger.debug("Listings retrieved for business with ID {}: {}", id, listingPayloads);
+        logger.debug("Listings retrieved for business with ID {}: {}", id, listingPayloads.toString());
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
@@ -279,10 +279,10 @@ public class ListingResource {
                     listing.getQuantity(),
                     listing.getPrice(),
                     listing.getMoreInfo(),
-                    listing.getCreated(),
-                    listing.getCloses()
+                    listing.getCreated().toString(),
+                    listing.getCloses().toString()
             );
-            logger.debug("Listing payload created: {}", newPayload);
+            logger.debug("Listing payload created: {}", newPayload.toString());
             payloads.add(newPayload);
         }
         return payloads;

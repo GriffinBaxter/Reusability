@@ -67,8 +67,10 @@ public class InventoryItemResource {
         this.userRepository = userRepository;
     }
 
-    public static InventoryPayload convertToPayload(InventoryItem item){
-        return new InventoryPayload();
+    public static InventoryItemPayload convertToPayload(InventoryItem item){
+        return new InventoryItemPayload(item.getId(), ProductPayload.convertProductToProductPayload(item.getProduct()),
+                item.getQuantity(), item.getPricePerItem(), item.getTotalPrice(), item.getManufactured().toString(),
+                item.getBestBefore().toString(), item.getSellBy().toString(), item.getExpires().toString());
     }
 
 
