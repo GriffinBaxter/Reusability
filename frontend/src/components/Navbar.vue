@@ -172,7 +172,7 @@ export default {
     getUserData() {
       const currentID = Cookies.get('userID');
       Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
-
+        console.log(error)
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 406) {
@@ -363,6 +363,9 @@ export default {
         // Checks if user is admin of business at id actAs
         let check = false;
         for (let i=0; i < response.businessesAdministered.length; i++) {
+          if (response.businessesAdministered[i] === null){
+            return
+          }
           if (String(response.businessesAdministered[i].id) === this.actAsId) {
             this.actAs = response.businessesAdministered[i].name;
             check = true;

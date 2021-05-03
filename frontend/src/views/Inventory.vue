@@ -4,7 +4,7 @@
     <navbar/>
 
     <!--creation popup-->
-    <inventory-item-creation/>
+    <inventory-item-creation @updateInventoryItem="afterCreation"/>
 
     <!--inventory container-->
     <div class="container p-5 mt-3" id="profileContainer">
@@ -121,9 +121,23 @@
 
             </div>
 
+            <!--space-->
+            <br>
+
+            <!--creation success info-->
+            <div class="alert alert-success" role="alert" v-if="creationSuccess">
+              <div class="row">
+                <div class="col">A simple success alert—check it out!</div>
+                <div class="col" align="right">
+                  <button type="button" class="btn btn-outline-success px-1 py-0" @click="closeMessage">X</button>
+                </div>
+              </div>
+            </div>
+
             <!--inventory items-->
             <inventory-item
                 v-for="inventory in inventories"
+                :id="'InventoryItemCard' + inventory.index"
                 v-bind:key="inventory.index"
                 v-bind:image="inventory.image"
                 v-bind:product-name="inventory.productName"
@@ -135,6 +149,9 @@
                 v-bind:sell-by="inventory.sellBy"
                 v-bind:best-before="inventory.bestBefore"
                 v-bind:expires="inventory.expires"/>
+
+            <!--space-->
+            <br>
 
             <!--pagination-->
             <nav>
@@ -229,6 +246,7 @@ export default {
       expiresAscending: false,
 
       businessId: null,
+      creationSuccess: false,
 
       businessName: null,
       businessDescription: null,
@@ -247,6 +265,12 @@ export default {
     }
   },
   methods: {
+    /**
+     * close creation message
+     */
+    closeMessage() {
+      this.creationSuccess = false;
+    },
 
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
@@ -500,6 +524,9 @@ export default {
           this.inventories = [];
 
           for (let i = 0; i < this.rowsPerPage; i++) {
+            if (i === this.InventoryItemList){
+              return
+            }
             this.inventories.push({
               index: i,
               productName: this.InventoryItemList[i].product.name,
@@ -516,6 +543,7 @@ export default {
         }
 
       }).catch((error) => {
+        console.log(error);
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 400) {
@@ -531,6 +559,13 @@ export default {
           console.log(error.message);
         }
       })
+    },
+    /**
+     * after creation success, show the success info and use endpoint to collect data from backend.
+     */
+    afterCreation() {
+      this.creationSuccess = true;
+      this.retrieveInventoryItems();
     },
   },
   mounted() {

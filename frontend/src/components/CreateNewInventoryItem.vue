@@ -382,6 +382,7 @@ export default {
      * reset all input file
      */
     dataReset() {
+      this.$emit('updateInventoryItem')
       this.modal.hide();
       // product Id related variables
       this.productId = "";
