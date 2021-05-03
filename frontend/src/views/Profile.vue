@@ -812,16 +812,6 @@ export default {
   width: 60%; /* Could be more or less, depending on screen size */
 }
 
-
-/**
- * TODO remove once footer is sticky
- * Calculates where footer should be.
- */
-
-.all-but-footer {
-  min-height: calc(100vh - 738px);
-}
-
 #profile-container {
   margin-bottom: 10%;
 }

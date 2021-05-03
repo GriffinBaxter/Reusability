@@ -4,6 +4,7 @@
 <!--authenticated user would have access to as the is no cookie yet as the user is not logged in.-->
 
 <template>
+
   <!-- Footer -->
   <footer class=" text-center text-white text-font" id="footer">
 
@@ -22,11 +23,16 @@
 
 <style scoped>
 
+/* styling for dark mode */
+  .footer-styling {
+    bottom: 0;
+    width: 100%;
+  }
+
   #footer {
     background-color: #189570;
   }
   #copyright {
-    padding-top: 50px;
     background-color: rgba(0, 0, 0, 0.5);
   }
 
