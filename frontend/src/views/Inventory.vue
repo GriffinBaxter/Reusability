@@ -39,24 +39,24 @@
 
             <hr/>
 
-            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-              <div class="btn-group col-2 py-1">
+            <div class="row" role="group" aria-label="Button group with nested dropdown">
+              <div class="col-md-3 py-1">
                 <!--creation button-->
-                <button type="button" class="btn btn-success col-2 py-1" data-bs-toggle="modal"
+                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
                         data-bs-target="#creationPopup">
                   Create New
                 </button>
               </div>
               <!--search bar-->
-              <div class="input-group py-1 px-1">
+              <div class="input-group col-md py-1">
                 <input type="text" class="form-control" placeholder="This is for later use."
                        aria-label="Input group example" aria-describedby="btnGroupAddon">
                 <button type="button" class="btn btn-outline-primary">Search</button>
               </div>
 
               <!--filter-->
-              <div class="btn-group col-3 py-1" role="group">
-                <button type="button" class="btn btn-primary dropdown-toggle col-4"
+              <div class="btn-group col-md-3 py-1" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle"
                         data-bs-toggle="dropdown" aria-expanded="false">Filter
                 </button>
 
@@ -127,7 +127,7 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col">A simple success alert—check it out!</div>
+                <div class="col">Item successfully created!</div>
                 <div class="col" align="right">
                   <button type="button" class="btn btn-outline-success px-1 py-0" @click="closeMessage">X</button>
                 </div>
