@@ -12,6 +12,17 @@ public class ListingCreationPayload {
     private String moreInfo;
     private LocalDateTime closes;
 
+    public ListingCreationPayload() {
+    }
+
+    public ListingCreationPayload(String inventoryItemId, Integer quantity, Double price, String moreInfo, LocalDateTime closes) {
+        this.inventoryItemId = inventoryItemId;
+        this.quantity = quantity;
+        this.price = price;
+        this.moreInfo = moreInfo;
+        this.closes = closes;
+    }
+
     public String getInventoryItemId() {
         return inventoryItemId;
     }

@@ -14,12 +14,14 @@ import java.util.Optional;
 @RepositoryRestResource
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, String> {
 
-    /**
-     * Search for an InventoryItem by its id
-     * @param id id
-     * @return InventoryItem object if exists
-     */
-    Optional<InventoryItem> findInventoryItemById(Integer id);
+//    /**
+//     * Search for an InventoryItem by its id
+//     * @param id id
+//     * @return InventoryItem object if exists
+//     */
+//    Optional<InventoryItem> findInventoryItemById(Integer id);
+
+    Optional<InventoryItem> findInventoryItemByProductId(String productId);
 
     /**
      * Finds all product inventory items with the given business ID.
@@ -30,5 +32,7 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, St
     Page<InventoryItem> findInventoryItemsByBusinessId(Integer businessId, Pageable paging);
 
     List<InventoryItem> findAllByBusinessId(Integer businessId);
+
+
 
 }
