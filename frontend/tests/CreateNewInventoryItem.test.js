@@ -314,7 +314,7 @@ test('isValidSellByDate_DateIsTodayAndAfterManufactureDateAndBeforeExpiryDate_Re
     const todayDateMonth = format(endOfToday(new Date()), 'MM');
     const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`;
+    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`; // selected sell by date
 
     const selectedManufacturedDate = "2019-21-10";
     const selectedExpiryDate = "2022-21-10";
@@ -369,5 +369,92 @@ test('isValidSellByDate_DateIsNotTodayAndAfterManufactureDateAndIsExpiryDate_Ret
 
     expect(
         reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+
+})
+
+
+//------------------------------ date validation tests for isValidBestBeforeDate -------------------------------------------
+
+/**
+ * Test for the validation of the best before date. Specifically, it tests that the date is valid if it is a date
+ * after today's date, after the manufacture date and before the expiry date.
+ * @result true is returned
+ */
+test('isValidBestBeforeDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpiryDate_ReturnTrue', () => {
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2029-21-10";
+    const testSelectedBestBeforeDate = "2022-11-10";
+
+    expect(
+        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
+})
+
+/**
+ * Test for the validation of the best before date. Specifically, it tests that the date is invalid if it is today's date
+ * (and after the manufacture date and before the expiry date).
+ * @result false is returned
+ */
+test('isValidBestBeforeDate_DateIsTodayAndAfterManufactureDateAndBeforeExpiryDate_ReturnFalse', () => {
+
+    const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+    const todayDateMonth = format(endOfToday(new Date()), 'MM');
+    const todayDateDay = format(endOfToday(new Date()), 'dd');
+
+    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`; // selected best before date
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+
+    expect(
+        reg.methods.isValidBestBeforeDate(todayDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+
+})
+
+/**
+ * Test for the validation of the best before date. Specifically, it tests that the date is invalid if it is prior to today's date
+ * (and after the manufacture date and before the expiry date).
+ * @result false is returned
+ */
+test('isValidBestBeforeDate_DateIsBeforeTodayAndAfterManufactureDateAndBeforeExpiryDate_ReturnFalse', () => {
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+    const testSelectedBestBeforeDate = '2020-11-10';
+
+    expect(
+        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+
+})
+
+/**
+ * Test for the validation of the best before date. Specifically, it tests that the date is invalid if it is after the
+ * manufacture date and after today but is after the expiry date.
+ * @result false is returned
+ */
+test('isValidBestBeforeDate_DateIsAfterTodayAndAfterManufactureDateAndAfterExpiryDate_ReturnFalse', () => {
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+    const testSelectedBestBeforeDate = '2024-11-10';
+
+    expect(
+        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+
+})
+
+/**
+ * Test for the validation of the best before date. Specifically, it tests that the date is invalid if it is after the
+ * manufacture date and after today but is the expiry date.
+ * @result false is returned
+ */
+test('isValidBestBeforeDate_DateIsNotTodayAndAfterManufactureDateAndIsExpiryDate_ReturnFalse', () => {
+
+    const selectedManufacturedDate = "2019-21-10";
+    const selectedExpiryDate = "2022-21-10";
+    const testSelectedBestBeforeDate = "2022-21-10";
+
+    expect(
+        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })

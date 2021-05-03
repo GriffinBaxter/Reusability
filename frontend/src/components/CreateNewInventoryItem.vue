@@ -114,7 +114,7 @@
 
 <script>
 
-import { Modal } from "bootstrap";
+// import { Modal } from "bootstrap";
 import Api, {InventoryItem} from "../Api";
 
 const endOfToday = require('date-fns/endOfToday');
@@ -318,21 +318,8 @@ export default {
       const todayDateMonth = format(endOfToday(new Date()), 'MM');
       const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-      console.log(todayDateYear)
-      console.log(todayDateMonth)
-      console.log(todayDateDay)
-
-      console.log(new Date(todayDateYear, todayDateMonth, todayDateDay))
-
-      console.log(new Date('2021', '04', '30'))
-
-
       // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
       // second or 0 if dates are equal.
-
-      console.log(new Date(sellByDateYear, sellByDateMonth, sellByDateDay))
-      console.log(new Date(todayDateYear, todayDateMonth, todayDateDay))
-
 
       const comparisonWithTodayValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
 
@@ -344,11 +331,6 @@ export default {
       const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1) ? true : false;
       const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1) ? true : false;
 
-      console.log(comparisonWithTodayValue)
-      console.log(isAfterTodayAndNotToday)
-      console.log(isAfterManufactureDateAndNotManufactureDate)
-      console.log(isBeforeExpiryAndNotExpiryDate)
-
       if (isAfterTodayAndNotToday && isAfterManufactureDateAndNotManufactureDate && isBeforeExpiryAndNotExpiryDate) {
         isValid = true;
       }
@@ -356,28 +338,29 @@ export default {
       return isValid
 
     },
-    //
-    // /**
-    //  * This function will check the validity of the best before date of an inventory item i.e. that the best before date
-    //  * of the inventory item is after to today's date but not today's date, and before expiry date.
-    //  *
-    //  * @return true if the date meets the above conditions, otherwise false
-    //  */
-    // isValidBestBeforeDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
-    //
-    //
-    // },
-    //
-    // /**
-    //  * This function will check the validity of the expires date of an inventory item i.e. that the expiry date
-    //  * of the inventory item is after today's date, after the manufacture date, and after or equal to the best before
-    //  * date.
-    //  *
-    //  * @return true if the date meets the above conditions, otherwise false
-    //  */
-    // isValidExpiryDate(selectedManufacturedDate, selectedBestBeforeDate) {
-    //
-    // },
+
+    /**
+     * This function will check the validity of the best before date of an inventory item i.e. that the best before date
+     * of the inventory item is after to today's date but not today's date (and implicitly after the manufacture date)
+     * and before expiry date.
+     *
+     * @return true if the date meets the above conditions, otherwise false
+     */
+    isValidBestBeforeDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
+
+
+    },
+
+    /**
+     * This function will check the validity of the expires date of an inventory item i.e. that the expiry date
+     * of the inventory item is after today's date, after the manufacture date, and after or equal to the best before
+     * date.
+     *
+     * @return true if the date meets the above conditions, otherwise false
+     */
+    isValidExpiryDate(selectedManufacturedDate, selectedBestBeforeDate) {
+
+    },
     /**
      * reset all input file
      */
