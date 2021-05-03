@@ -203,7 +203,7 @@ public class ListingResource {
                 @PathVariable Integer id,
                 @RequestBody ListingCreationPayload listingPayload) {
         logger.debug("Listing payload received: {}", listingPayload);
-
+        System.out.println("TEST");
         // Checks if User is logged in 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -226,16 +226,15 @@ public class ListingResource {
                         " AND the user is not a global application admin"
             );
         }
-
+        System.out.println(listingPayload.getInventoryItemId());
         // Checks InventoryItem exists and gets InventoryItem
-        Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemById(Integer.parseInt(listingPayload.getInventoryItemId()));
+        Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemByProductId(listingPayload.getInventoryItemId());
         if (inventoryItem.isEmpty()) {
             logger.error("Listing Creation Failure - 400 [BAD REQUEST] - Inventory Item at ID {} Not Found", listingPayload.getInventoryItemId());
             throw new ResponseStatusException(
                      HttpStatus.BAD_REQUEST,
                     "Inventory Item Not Found");
         }
-
 
         Integer quantity = listingPayload.getQuantity();
         Double price = listingPayload.getPrice();

@@ -314,7 +314,7 @@ export class Listing{
 
   // This is a config for the Inventory Item requirement details
   static config = {
-    inventoryId: {
+    inventoryItemId: {
       name: "Inventory Item ID",
       minLength: 1,
       maxLength: 15,
@@ -340,16 +340,16 @@ export class Listing{
       minLength: 0,
       maxLength: 255,
       regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-      regex: /^[a-zA-Z '-]*$/
+      regex: /^[a-zA-Z0-9 '-.]*$/
     },
     closes: {
       name: "manufactured"
     }
   };
 
-  constructor({inventoryId, quantity, price, moreInfo, closes}) {
+  constructor({inventoryItemId, quantity, price, moreInfo, closes}) {
     this.data = {
-      inventoryId,
+      inventoryItemId,
       quantity,
       price,
       moreInfo,
@@ -523,13 +523,21 @@ export default {
     })
   },
 
-    addBusinessListing: (businessId, listing) => instance.post(`/businesses/${businessId}/listings`, {...listing.data}, {withCredentials: true}),
+  addNewBusinessListing: (businessId, listing) => {
+    console.log(listing.data);
+    console.log(businessId);
+    return instance.post(`/businesses/${businessId}/listings`, {
+        ...listing.data
+    }, {
+        withCredentials: true
+    })
+  },
 
-    getEveryInventoryItem: (businessID) => {
-        return instance.get(`/businesses/${businessID}/inventoryAll`, {
-            withCredentials: true
-        })
-    }
+  getEveryInventoryItem: (businessID) => {
+     return instance.get(`/businesses/${businessID}/inventoryAll`, {
+        withCredentials: true
+     })
+  }
 
     // Usage examples from original file:
     //

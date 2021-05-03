@@ -19,9 +19,9 @@
             <div class="row">
               <div class="col form-group py-1 px-3">
                 <label for="productDataList" class="form-control-label">Inventory ID*: </label>
-                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" :maxlength="config.inventoryId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" required/>
+                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" :maxlength="config.inventoryItemId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" required/>
                 <datalist id="productDataList" style="overflow-y: auto!important">
-                  <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id">Quantity: {{item.quantity}} Price: (${{item.totalPrice}})</option>
+                  <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id + ' ' + item.expires">Quantity: {{item.quantity}} Price: (${{item.totalPrice}}) Expiration Date: {{item.expires}}</option>
                 </datalist>
 <!--                <select id="inventoryId" class="form-select mdb-select md-form" searchable="Search here.." tabindex="1" data-live-search="true" :class="toggleInvalidClass(inventoryIdErrorMsg)">-->
 <!--                  <option value="" disabled selected>Select an Item</option>-->
@@ -293,13 +293,17 @@ export default {
       })
     },
 
+    autofillDetails(event) {
+      console.log(event);
+    },
+
     /**
      * Creates the new Inventory Item
      */
-    createNewInventoryItem() { // TODO
+    async createNewInventoryItem() { // TODO
       let requestIsInvalid = false;
 
-      //this.inventoryId = document.getElementById("inventoryId").value;
+      this.inventoryId = document.getElementById("productInput").value;
       this.trimTextInputFields();
 
       // Inventory Item Error Checking
@@ -361,19 +365,21 @@ export default {
       }
 
       const listingItemData = {
-        inventoryItemId: this.inventoryId.toString(),
-        quantity: this.quantity,
-        price: this.price,
+        inventoryItemId: this.inventoryId,
+        quantity: parseInt(this.quantity),
+        price: parseFloat(this.price),
         moreInfo: this.moreInfo,
         closes: this.closes
       };
+      //console.log(listingItemData);
       const newListingItem = new Listing(listingItemData);
 
-      Api.addBusinessListing(this.businessId, newListingItem).then((response) => {
+      await Api.addNewBusinessListing(this.businessId, newListingItem).then((response) => {
         if (response.status === 201) {
           this.dataReset();
         }
       }).catch((error) => {
+
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
