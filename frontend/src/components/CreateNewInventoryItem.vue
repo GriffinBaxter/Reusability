@@ -641,7 +641,7 @@ export default {
 
   },
   mounted() {
-    this.modal = new Modal(document.getElementById("creationPopup"));
+    // this.modal = new Modal(document.getElementById("creationPopup"));
   }
 };
 </script>

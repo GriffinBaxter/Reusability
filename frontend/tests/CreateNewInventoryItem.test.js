@@ -4,194 +4,194 @@
 
 import {test, expect} from "@jest/globals"
 import reg from '../src/components/CreateNewInventoryItem'
-// import {InventoryItem} from '../Api'
+import {InventoryItem} from '../src/Api'
 
 const endOfToday = require('date-fns/endOfToday');
 const format = require('date-fns/format');
 
 // ***************************************** getErrorMessage() Tests ***************************************************
-// /**
-//  * Test for ensuring an error message is raised when no input is entered into the product id field.
-//  * Also a test for min length.
-//  * @result message raised is "Please enter input".
-//  */
-// test('Product id with no input', () => {
-//     const testInputVal = "";
-//     const expectedMessage = "Please enter input";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
-//
-// /**
-//  * Test for ensuring an error message is raised when input greater then the max length
-//  * is entered into the product id field.
-//  * @result message raised is "Input must be between 3 and 15 characters long.".
-//  */
-// test('Product id with length greater than max length', () => {
-//     const testInputVal = "1".repeat(20);
-//     const expectedMessage = "Input must be between 3 and 15 characters long.";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
-//
-// /**
-//  * Test for ensuring no error message is raised when input length is equal to min length of product id.
-//  * @result no error message is raised.
-//  */
-// test('Product id with length equal to min length', () => {
-//     const testInputVal = "123" ; //minLength = 3
-//     const expectedMessage = "";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
-//
-// /**
-//  * Test for ensuring no error message is raised when input length is equal to max length of product id.
-//  * @result no error message is raised.
-//  */
-// test('Product id with length equal to max length', () => {
-//     const testInputVal = "1".repeat(15); //maxLength = 15
-//     const expectedMessage = "";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
-//
-// /**
-//  * Test for ensuring an error message is raised when length of product id is within range but contains lowercase
-//  * characters.
-//  * @result error message is raised "Must only contain uppercase alphanumeric characters, numbers, or -"
-//  */
-// test('Product id with valid length but contains lowercase letters', () => {
-//     const testInputVal = "aBCa";
-//     const expectedMessage = "Must only contain uppercase alphanumeric characters, numbers, or -";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
-//
-// /**
-//  * Test for ensuring no error message is raised when length of product id is within range and contains a hyphen.
-//  * @result no error message is raised.
-//  */
-// test('Product id with valid length and contains hyphen', () => {
-//     const testInputVal = "A-B-C";
-//     const expectedMessage = "";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
-//
-// /**
-//  * Test for ensuring no error message is raised when length of product id is within range and contains numbers.
-//  * @result no error message is raised.
-//  */
-// test('Product id with valid length and contains numbers', () => {
-//     const testInputVal = "12445";
-//     const expectedMessage = "";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
-//
-// /**
-//  * Test for ensuring no error message is raised when sample data (WATT-420-BEANS) is entered into product id field.
-//  * @result no error message is raised.
-//  */
-// test('Product id is sample data.', () => {
-//     const testInputVal = "WATT-420-BEANS";
-//     const expectedMessage = "";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
-//
-// /**
-//  * Test for ensuring an error message is raised when product id field contains invalid symbols.
-//  * @result error message is raised "Must only contain uppercase alphanumeric characters, numbers, or -"
-//  */
-// test('Product id contains invalid symbols', () => {
-//     const testInputVal = "WATT !#%*";
-//     const expectedMessage = "Must only contain uppercase alphanumeric characters, numbers, or -";
-//
-//     expect(
-//         reg.methods.getErrorMessage(
-//             InventoryItem.config.productID.name,
-//             testInputVal,
-//             InventoryItem.config.productID.minLength,
-//             InventoryItem.config.productID.maxLength,
-//             InventoryItem.config.productID.regexMessage,
-//             InventoryItem.config.productID.regex,
-//         )
-//     ).toBe(expectedMessage);
-// })
+/**
+ * Test for ensuring an error message is raised when no input is entered into the product id field.
+ * Also a test for min length.
+ * @result message raised is "Please enter input".
+ */
+test('Product id with no input', () => {
+    const testInputVal = "";
+    const expectedMessage = "Please enter input";
+
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring an error message is raised when input greater then the max length
+ * is entered into the product id field.
+ * @result message raised is "Input must be between 3 and 15 characters long.".
+ */
+test('Product id with length greater than max length', () => {
+    const testInputVal = "1".repeat(20);
+    const expectedMessage = "Input must be between 3 and 15 characters long.";
+
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring no error message is raised when input length is equal to min length of product id.
+ * @result no error message is raised.
+ */
+test('Product id with length equal to min length', () => {
+    const testInputVal = "123" ; //minLength = 3
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring no error message is raised when input length is equal to max length of product id.
+ * @result no error message is raised.
+ */
+test('Product id with length equal to max length', () => {
+    const testInputVal = "1".repeat(15); //maxLength = 15
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring an error message is raised when length of product id is within range but contains lowercase
+ * characters.
+ * @result error message is raised "Must only contain uppercase alphanumeric characters, numbers, or -"
+ */
+test('Product id with valid length but contains lowercase letters', () => {
+    const testInputVal = "aBCa";
+    const expectedMessage = "Must only contain uppercase alphanumeric characters, numbers, or -";
+
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring no error message is raised when length of product id is within range and contains a hyphen.
+ * @result no error message is raised.
+ */
+test('Product id with valid length and contains hyphen', () => {
+    const testInputVal = "A-B-C";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring no error message is raised when length of product id is within range and contains numbers.
+ * @result no error message is raised.
+ */
+test('Product id with valid length and contains numbers', () => {
+    const testInputVal = "12445";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring no error message is raised when sample data (WATT-420-BEANS) is entered into product id field.
+ * @result no error message is raised.
+ */
+test('Product id is sample data.', () => {
+    const testInputVal = "WATT-420-BEANS";
+    const expectedMessage = "";
+    
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring an error message is raised when product id field contains invalid symbols.
+ * @result error message is raised "Must only contain uppercase alphanumeric characters, numbers, or -"
+ */
+test('Product id contains invalid symbols', () => {
+    const testInputVal = "WATT !#%*";
+    const expectedMessage = "Must only contain uppercase alphanumeric characters, numbers, or -";
+
+    expect(
+        reg.methods.getErrorMessage(
+            InventoryItem.config.productId.name,
+            testInputVal,
+            InventoryItem.config.productId.minLength,
+            InventoryItem.config.productId.maxLength,
+            InventoryItem.config.productId.regexMessage,
+            InventoryItem.config.productId.regex,
+        )
+    ).toBe(expectedMessage);
+})
 
 //------------------------------------------------------------------------------------------------------'
 
