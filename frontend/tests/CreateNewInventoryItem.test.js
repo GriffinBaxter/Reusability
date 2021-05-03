@@ -517,7 +517,7 @@ test('isValidExpiryDate_DateIsAfterTodayAndAfterManufactureDateAndEqualToBestBef
     const testSelectedExpiryDate = "2029-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedManufacturedDate, selectedBestBeforeDate)).toBe(true);
+        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(true);
 })
 
 /**
@@ -533,7 +533,7 @@ test('isValidExpiryDate_DateIsAfterTodayAndAfterManufactureDateAndAfterBestBefor
     const testSelectedExpiryDate = "2030-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedManufacturedDate, selectedBestBeforeDate)).toBe(true);
+        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(true);
 })
 
 
@@ -554,7 +554,7 @@ test('isValidExpiryDate_DateIsTodayAndAfterManufactureDateAndAfterBestBeforeDate
     const selectedBestBeforeDate = "2020-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(todayDate, selectedManufacturedDate, selectedBestBeforeDate)).toBe(false);
+        reg.methods.isValidExpiryDate(todayDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 
 })
 
@@ -570,7 +570,7 @@ test('isValidExpiryDate_DateIsBeforeTodayAndAfterManufactureDateAndAfterBestBefo
     const testSelectedExpiryDate = "2021-02-02";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedManufacturedDate, selectedBestBeforeDate)).toBe(true);
+        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 })
 
 
@@ -585,7 +585,7 @@ test('isValidExpiryDate_DateIsAfterTodayAndBeforeManufactureDateAndAfterBestBefo
     const testSelectedExpiryDate = "2018-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedManufacturedDate, selectedBestBeforeDate)).toBe(true);
+        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 })
 
 /**
@@ -596,10 +596,10 @@ test('isValidExpiryDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeBestBefo
 
     const selectedManufacturedDate = "2019-21-10";
     const selectedBestBeforeDate = "2021-21-10";
-    const testSelectedExpiryDate = "2021-21-10";
+    const testSelectedExpiryDate = "2020-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedManufacturedDate, selectedBestBeforeDate)).toBe(true);
+        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 })
 
 
@@ -614,5 +614,5 @@ test('isValidExpiryDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpiryDa
     const testSelectedExpiryDate = "10-21-2029";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedManufacturedDate, selectedBestBeforeDate)).toBe(false);
+        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 })

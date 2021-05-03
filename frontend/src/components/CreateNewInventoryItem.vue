@@ -116,11 +116,6 @@
 
 // import { Modal } from "bootstrap"; //uncommenting means the test do not run
 import Api, {InventoryItem} from "../Api";
-
-// const endOfToday = require('date-fns/endOfToday');
-// const format = require('date-fns/format');
-// const compareAsc = require('date-fns/compareAsc');
-
 import {endOfToday, format, compareAsc} from 'date-fns'
 
 export default {
@@ -291,7 +286,7 @@ export default {
         // second or 0 if dates are equal.
         const comparisonValue = compareAsc(new Date(givenDateYear, givenDateMonth, givenDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
 
-        return ((comparisonValue === -1) || (comparisonValue === 0)) ? true : false;
+        return ((comparisonValue === -1) || (comparisonValue === 0));
 
       }
 
@@ -339,9 +334,9 @@ export default {
 
         const comparisonWithExpiryValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(expiredDateYear, expiredDateMonth, expiredDateDay))
 
-        const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1) ? true : false;
-        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1) ? true : false;
-        const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1) ? true : false;
+        const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
+        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
+        const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1);
 
         if (isAfterTodayAndNotToday && isAfterManufactureDateAndNotManufactureDate && isBeforeExpiryAndNotExpiryDate) {
           isValid = true;
@@ -394,9 +389,9 @@ export default {
 
         const comparisonWithExpiryValue = compareAsc(new Date(bestBeforeDateYear, bestBeforeDateMonth, bestBeforeDateDay), new Date(expiredDateYear, expiredDateMonth, expiredDateDay))
 
-        const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1) ? true : false;
-        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1) ? true : false;
-        const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1) ? true : false;
+        const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
+        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
+        const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1);
 
         if (isAfterTodayAndNotToday && isAfterManufactureDateAndNotManufactureDate && isBeforeExpiryAndNotExpiryDate) {
           isValid = true;
@@ -415,6 +410,52 @@ export default {
      * @return true if the date meets the above conditions, otherwise false
      */
     isValidExpiryDate(selectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate) {
+
+      let isValid = false;
+      const bestBeforeDate = this.parseSelectedDate(selectedBestBeforeDate);
+      const manufacturedDate = this.parseSelectedDate(selectedManufacturedDate);
+      const expiryDate = this.parseSelectedDate(selectedExpiryDate);
+
+      if (bestBeforeDate === null || manufacturedDate === null || expiryDate === null) {
+        return isValid
+      } else {
+
+        const bestBeforeDateYear = bestBeforeDate.year
+        const bestBeforeDateMonth = bestBeforeDate.month
+        const bestBeforeDateDay = bestBeforeDate.day
+
+        const manufacturedDateYear = manufacturedDate.year
+        const manufacturedDateMonth = manufacturedDate.month
+        const manufacturedDateDay = manufacturedDate.day
+
+        const expiredDateYear = expiryDate.year
+        const expiredDateMonth = expiryDate.month
+        const expiredDateDay = expiryDate.day
+
+        const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+        const todayDateMonth = format(endOfToday(new Date()), 'MM');
+        const todayDateDay = format(endOfToday(new Date()), 'dd');
+
+        // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
+        // second or 0 if dates are equal.
+
+        const comparisonWithTodayValue = compareAsc(new Date(expiredDateYear, expiredDateMonth, expiredDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
+
+        const comparisonWithManufacturedValue = compareAsc(new Date(expiredDateYear, expiredDateMonth, expiredDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
+
+        const comparisonWithBestBeforeValue = compareAsc(new Date(expiredDateYear, expiredDateMonth, expiredDateDay), new Date(bestBeforeDateYear, bestBeforeDateMonth, bestBeforeDateDay))
+
+        const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
+        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
+
+        const isEqualOrAfterBestBeforeDate = (comparisonWithBestBeforeValue !== -1);
+
+        if (isAfterTodayAndNotToday && isAfterManufactureDateAndNotManufactureDate && isEqualOrAfterBestBeforeDate) {
+          isValid = true;
+        }
+
+        return isValid
+      }
 
     },
     /**
