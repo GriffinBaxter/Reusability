@@ -71,9 +71,9 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="sell-by">Sell By: </label>
               <input id="sell-by" name="sell-by" tabindex="6" type="date" v-model="sellBy"
-                     :class="toggleInvalidClass(sellNyErrorMsg)">
+                     :class="toggleInvalidClass(sellByErrorMsg)">
               <div class="invalid-feedback">
-                {{ sellNyErrorMsg }}
+                {{ sellByErrorMsg }}
               </div>
             </div>
 
@@ -149,7 +149,7 @@ export default {
 
       // sell by related variables
       sellBy: "",
-      sellNyErrorMsg: "",
+      sellByErrorMsg: "",
 
       // best Before Id related variables
       bestBefore: "",
@@ -486,7 +486,7 @@ export default {
 
       // sell by related variables
       this.sellBy = "";
-      this.sellNyErrorMsg = "";
+      this.sellByErrorMsg = "";
 
       // best Before Id related variables
       this.bestBefore = "";
@@ -563,35 +563,29 @@ export default {
         requestIsInvalid = true
       }
 
-      // // Manufactured error checking
-      // //TODO:check this.manufactured == ""
-      // console.log(this.isADayAfter(this.manufactured))
-      // if (this.isADayAfter(this.manufactured) === false) {
-      //   this.manufacturedErrorMsg = "If fill in, must be a date before or today.";
-      // }
-      // if (this.totalPriceErrorMsg) {
-      //   requestIsInvalid = true;
-      // }
-      //
-      // // Sell by error checking
-      // console.log(this.isADayAfter(this.sellBy))
-      // if (this.isADayAfter(this.sellBy) === false) {
-      //   this.sellByErrorMsg = "If fill in, must be a date before or today.";
-      // }
-      // if (this.sellByErrorMsg) {
-      //   requestIsInvalid = true;
-      // }
-      //
-      // // No checking for best before
-      //
-      // // Expires by error checking
-      // if (this.isADayBefore(this.expires) !== true) {
-      //   this.expiresErrorMsg = "Must be a date after or today.";
-      // }
-      // if (this.expiresErrorMsg) {
-      //   requestIsInvalid = true
-      // }
+      // Manufacture date error checking
+      if (!this.isValidManufactureDate(this.manufactured)) {
+          this.manufacturedErrorMsg = "Manufactured date must be prior to today's date";
+          requestIsInvalid = true;
+      }
 
+      // Sell by date error checking
+      if (!this.isValidSellByDate(this.sellBy)) {
+        this.sellByErrorMsg = "Sell by date must be after today's date but not today's date, and after the manufacture date and before the expiry date (not including)";
+        requestIsInvalid = true;
+      }
+
+      // Best best date before error checking
+      if (!this.isValidBestBeforeDate(this.bestBefore)) {
+        this.bestBeforeErrorMsg = "Best before date must be after today's date but not today's date, after the manufacture date and before expiry date";
+        requestIsInvalid = true;
+      }
+
+      // Expiry date error checking
+      if (!this.isValidBestBeforeDate(this.bestBefore)) {
+        this.expiresErrorMsg = "Expiry date of the inventory item is after today's date, after the manufacture date, and after or equal to the best before date";
+        requestIsInvalid = true;
+      }
 
       // If at any stage an error has been discovered we cancel the procedure
       if (requestIsInvalid) {
