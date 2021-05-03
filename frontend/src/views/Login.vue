@@ -72,24 +72,26 @@
 
             </form>
 
+
           </div>
+          <p class="text-secondary mt-3 text-center">© SENG302 Team 400 2021</p>
         </div>
       </div>
 
     </div>
-    <FooterSecure class="footer"></FooterSecure>
+
   </div>
 </template>
 
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import FooterSecure from "../components/FooterSecure";
+
 
 export default {
   name: "Login",
   components: {
-    FooterSecure,
+
   },
   methods: {
 
@@ -153,12 +155,6 @@ export default {
   visibility: hidden;
 }
 
-.footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
 .all-but-footer {
   padding-bottom: 50px;
 }
@@ -167,5 +163,11 @@ input:focus, textarea:focus {
   outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 </style>
