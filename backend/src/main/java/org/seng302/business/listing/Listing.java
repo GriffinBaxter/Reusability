@@ -23,7 +23,7 @@ import java.time.LocalTime;
 @Entity
 public class Listing {
     @Id // this field (attribute) is the table primary key
-    @GeneratedValue//(strategy = GenerationType.IDENTITY) // autoincrement the ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // autoincrement the ID
     @Column(name = "id", nullable = false)
     private int id;
 

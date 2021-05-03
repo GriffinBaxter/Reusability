@@ -63,7 +63,6 @@ public class MainApplicationRunner implements ApplicationRunner {
     /**
      * By overriding the run method, we tell Spring to run this code at startup. See
      * https://dzone.com/articles/spring-boot-applicationrunner-and-commandlinerunne
-     *
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -89,6 +88,7 @@ public class MainApplicationRunner implements ApplicationRunner {
      * period between checks can be altered by changing the
      * fixed-delay.in.milliseconds section in the application.properties file.
      * The system logs are updated when checked.
+     *
      * @throws Exception An exception
      */
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")

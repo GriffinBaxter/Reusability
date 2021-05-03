@@ -63,19 +63,19 @@ public class ProductResourceIntegrationTests {
     private MockHttpServletResponse response;
 
     private final String productPayloadJson = "{\"id\":\"%s\"," +
-                                        "\"name\":\"%s\"," +
-                                        "\"description\":\"%s\"," +
-                                        "\"manufacturer\":\"%s\"," +
-                                        "\"recommendedRetailPrice\":%.1f}";
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"manufacturer\":\"%s\"," +
+            "\"recommendedRetailPrice\":%.1f}";
 
     private String payloadJson;
 
     private final String expectedProductJson = "{\"id\":\"%s\"," +
-                                        "\"name\":\"%s\"," +
-                                        "\"description\":\"%s\"," +
-                                        "\"manufacturer\":\"%s\"," +
-                                        "\"recommendedRetailPrice\":%.1f," +
-                                        "\"created\":\"%s\"}";
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"manufacturer\":\"%s\"," +
+            "\"recommendedRetailPrice\":%.1f," +
+            "\"created\":\"%s\"}";
 
     private String expectedJson;
 
@@ -135,7 +135,7 @@ public class ProductResourceIntegrationTests {
                 Role.GLOBALAPPLICATIONADMIN);
         gAA.setId(2);
         gAA.setSessionUUID(User.generateSessionUUID());
-        user = new User ("first",
+        user = new User("first",
                 "last",
                 "middle",
                 "nick",
@@ -150,7 +150,7 @@ public class ProductResourceIntegrationTests {
                 Role.USER);
         user.setId(3);
         user.setSessionUUID(User.generateSessionUUID());
-        anotherUser = new User ("first",
+        anotherUser = new User("first",
                 "last",
                 "middle",
                 "nick",
@@ -220,18 +220,18 @@ public class ProductResourceIntegrationTests {
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
         Product newProduct = new Product(
-                        "NEW",
-                        business,
-                        "NewProd",
-                        "NewDesc",
-                        "Manufacturer",
-                        10.00,
-                        LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                "NEW",
+                business,
+                "NewProd",
+                "NewDesc",
+                "Manufacturer",
+                10.00,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getManufacturer(),
-                                    newProduct.getRecommendedRetailPrice());
+                newProduct.getDescription(), newProduct.getManufacturer(),
+                newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -272,8 +272,8 @@ public class ProductResourceIntegrationTests {
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getManufacturer(),
-                                    newProduct.getRecommendedRetailPrice());
+                newProduct.getDescription(), newProduct.getManufacturer(),
+                newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -314,8 +314,8 @@ public class ProductResourceIntegrationTests {
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getManufacturer(),
-                                    newProduct.getRecommendedRetailPrice());
+                newProduct.getDescription(), newProduct.getManufacturer(),
+                newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -359,8 +359,8 @@ public class ProductResourceIntegrationTests {
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getManufacturer(),
-                                    newProduct.getRecommendedRetailPrice());
+                newProduct.getDescription(), newProduct.getManufacturer(),
+                newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), anotherBusiness.getId()))
                 .willReturn(Optional.empty());
 
@@ -391,8 +391,8 @@ public class ProductResourceIntegrationTests {
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
                 .willReturn(Optional.ofNullable(product));
         payloadJson = String.format(productPayloadJson, product.getProductId(), product.getName(),
-                                    product.getDescription(), product.getManufacturer(),
-                                    product.getRecommendedRetailPrice());
+                product.getDescription(), product.getManufacturer(),
+                product.getRecommendedRetailPrice());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -419,8 +419,8 @@ public class ProductResourceIntegrationTests {
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
         payloadJson = String.format(productPayloadJson, "P", product.getName(),
-                                    product.getDescription(), product.getManufacturer(),
-                                    product.getRecommendedRetailPrice());
+                product.getDescription(), product.getManufacturer(),
+                product.getRecommendedRetailPrice());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -456,8 +456,8 @@ public class ProductResourceIntegrationTests {
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getManufacturer(),
-                                    newProduct.getRecommendedRetailPrice());
+                newProduct.getDescription(), newProduct.getManufacturer(),
+                newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -494,8 +494,8 @@ public class ProductResourceIntegrationTests {
                         LocalTime.of(0, 0))
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
-                                    newProduct.getDescription(), newProduct.getManufacturer(),
-                                    newProduct.getRecommendedRetailPrice());
+                newProduct.getDescription(), newProduct.getManufacturer(),
+                newProduct.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
                 .willReturn(Optional.empty());
 
@@ -531,6 +531,8 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
+    //---------------------------------- Tests for /businesses/{id}/products endpoint ----------------------------------
+
     /**
      * Tests that an OK status and a list of product payloads is received when the business ID in the
      * /businesses/{id}/products API endpoint exists.
@@ -545,22 +547,22 @@ public class ProductResourceIntegrationTests {
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
-                        product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                        product.getCreated()) + "]";
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated()) + "]";
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                                .param("orderBy", "productIdASC")
-                                .param("page", "0")
-                                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                                .andReturn().getResponse();
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -575,7 +577,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveProductsWhenBusinessExistsWithDgaaCookie() throws Exception {
+    public void canRetrieveProductsWhenBusinessExistsWithDGAACookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -586,7 +588,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -611,7 +613,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveProductsWhenBusinessExistsWithGaaCookie() throws Exception {
+    public void canRetrieveProductsWhenBusinessExistsWithGAACookie() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(gAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -622,7 +624,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl(list);
+        Page<Product> pagedResponse = new PageImpl<Product>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -690,7 +692,7 @@ public class ProductResourceIntegrationTests {
     }
 
     /**
-     * Tests that an UNAUTHORIZED status and is received when the business ID in the
+     * Tests that a FORBIDDEN status and is received when the business ID in the
      * /businesses/{id}/products API endpoint exists but the cookie contains a non-admin user ID.
      *
      * @throws Exception Exception error
@@ -729,9 +731,9 @@ public class ProductResourceIntegrationTests {
 
         // when
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
-                    .param("orderBy", "productIdASC")
-                    .param("page", "0"))
-                    .andReturn().getResponse();
+                .param("orderBy", "productIdASC")
+                .param("page", "0"))
+                .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());

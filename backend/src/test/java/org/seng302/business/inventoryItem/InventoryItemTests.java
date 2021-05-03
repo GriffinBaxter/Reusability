@@ -147,16 +147,16 @@ public class InventoryItemTests {
                 product,
                 "PROD",
                 2,
-                0.00,
-                0.00,
+                null,
+                null,
                 null,
                 null,
                 null,
                 LocalDate.now().plusDays(1)
         );
 
-        assertEquals(0, inventoryItem.getPricePerItem());
-        assertEquals(0, inventoryItem.getTotalPrice());
+        assertNull(inventoryItem.getPricePerItem());
+        assertNull(inventoryItem.getTotalPrice());
         assertNull(inventoryItem.getManufactured());
         assertNull(inventoryItem.getSellBy());
         assertNull(inventoryItem.getBestBefore());

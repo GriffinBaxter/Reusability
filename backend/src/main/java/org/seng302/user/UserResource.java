@@ -84,6 +84,7 @@ public class UserResource {
                 userRepository.save(user.get());
 
                 Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
+                cookie.setMaxAge(3600); // 1 hour in seconds
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
 
@@ -95,6 +96,22 @@ public class UserResource {
                 HttpStatus.BAD_REQUEST,
                 "Failed login attempt, email or password incorrect"
         );
+    }
+
+    /**
+     * Attempt to authenticate a user account with a username and password.
+     * @param sessionToken Login payload
+     * @param response HTTP Response
+     */
+    @PostMapping("/logout")
+    public void logoutUser(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                           HttpServletResponse response) {
+        if (sessionToken != null) {
+            Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+            cookie.setMaxAge(0); // 0 deletes the cookie
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+        }
     }
 
     /**

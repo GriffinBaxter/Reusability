@@ -172,7 +172,7 @@ export default {
     getUserData() {
       const currentID = Cookies.get('userID');
       Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
-
+        console.log(error)
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 406) {
@@ -288,11 +288,12 @@ export default {
        */
       event.preventDefault();
 
-      // Reason for this not working is because it is HttpOnly, which doesn't allow the browser/ JS to
-      // delete this cookie.
-      Cookies.remove('JSESSIONID', {path: '/'});
       Cookies.remove('userID');
-      await this.$router.push({name: 'Login'});
+      Cookies.remove('actAs');
+
+      Api.signOut().then(() => {
+        this.$router.push({ name: 'Login' })
+      })
     },
     /**
      * The function when called ensure the user is logged in. Otherwise takes you to the login page.
@@ -362,6 +363,9 @@ export default {
         // Checks if user is admin of business at id actAs
         let check = false;
         for (let i=0; i < response.businessesAdministered.length; i++) {
+          if (response.businessesAdministered[i] === null){
+            return
+          }
           if (String(response.businessesAdministered[i].id) === this.actAsId) {
             this.actAs = response.businessesAdministered[i].name;
             check = true;
