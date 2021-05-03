@@ -71,7 +71,7 @@ name: "Listings",
       businessName: "",
       businessAdmin: false,
       businessId: -1,
-
+      role: "",
       currencyCode: "",
       currencySymbol: ""
     }
@@ -115,6 +115,12 @@ name: "Listings",
       // Checks if user is acting as business
       const actAs = Cookies.get('actAs');
       this.businessAdmin = actAs === String(data.id);
+      // Checks if user is a global admin
+      if (this.businessAdmin === false) {
+        if (this.role === "DEFAULTGLOBALAPPLICATIONADMIN" || this.role === "GLOBALAPPLICATIONADMIN") {
+          this.businessAdmin = true;
+        }
+      }
     },
     populatePage(data) {
       for (let i=0; i < data.length; i++) {
@@ -210,8 +216,12 @@ name: "Listings",
         expires: '2/5/2021',
         moreInfo: 'Seller may be willing to consider near offers'
       })
+    },
+    async getUserRole(id) {
+      await Api.getUser(id).then(response => {
+        this.role = response.data.role;
+      })
     }
-
   },
   async mounted() {
     /**
@@ -220,6 +230,7 @@ name: "Listings",
      */
     const currentID = Cookies.get('userID');
     if (currentID) {
+      await this.getUserRole(currentID);
       this.businessId = await parseInt(this.$route.params.id);
       await this.getBusiness(this.businessId);
 
