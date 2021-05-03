@@ -153,6 +153,12 @@ export default {
   visibility: hidden;
 }
 
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
 .all-but-footer {
   padding-bottom: 50px;
 }
