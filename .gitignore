@@ -7,7 +7,7 @@ build/
 dist/
 node_modules/
 /frontend/coverage/
-/backend/logs/
+logs/
 
 ### STS ###
 .apt_generated

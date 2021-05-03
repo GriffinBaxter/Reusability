@@ -247,15 +247,15 @@ public class BusinessResourceIntegrationTests {
         // given
         payloadJson = "{" +
                 "\"primaryAdministratorId\": " + user.getId() + "," +
-                "\"name\": \"New Lumbridge General Store\"," +
+                "\"name\": \"Lumbridge General Stores\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                "\"streetNumber\": \"16/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90211\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -263,6 +263,7 @@ public class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // when
+        when(businessRepository.save(any(Business.class))).thenReturn(business);
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/businesses").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)).andReturn().getResponse();

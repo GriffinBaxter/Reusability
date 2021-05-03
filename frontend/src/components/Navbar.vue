@@ -38,8 +38,13 @@
                 <li class="nav-item">
                   <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="actAsId === null">
                   <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                    Profile
+                  </router-link>
+                </li>
+                <li class="nav-item" v-if=actAsId>
+                  <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]" :to="'/businessProfile/' + actAsId" tabindex="2">
                     Profile
                   </router-link>
                 </li>
@@ -288,11 +293,12 @@ export default {
        */
       event.preventDefault();
 
-      // Reason for this not working is because it is HttpOnly, which doesn't allow the browser/ JS to
-      // delete this cookie.
-      Cookies.remove('JSESSIONID', {path: '/'});
       Cookies.remove('userID');
-      await this.$router.push({name: 'Login'});
+      Cookies.remove('actAs');
+
+      Api.signOut().then(() => {
+        this.$router.push({ name: 'Login' })
+      })
     },
     /**
      * The function when called ensure the user is logged in. Otherwise takes you to the login page.
