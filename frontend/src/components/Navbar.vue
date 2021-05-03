@@ -59,21 +59,23 @@
               <div id="business-dropdown-links-wrapper">
                 <ul class="dropdown-menu show" id="business-dropdown-links">
                   <li class="nav-item">
-                    <router-link :class="['nav-link ', isActivePath('/')]" to="/" tabindex="3">
+                    <router-link
+                        :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="5">
                       Business Listings
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="4">
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="6">
                       Inventory
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="5">
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="7">
                       Catalogue
                     </router-link>
                   </li>
@@ -326,7 +328,6 @@ export default {
         this.interactAs = [{id: this.currentUser.id, name: this.currentUser.nickname}];
       }
 
-
       for (let i = 0; i < this.businesses.length; i++) {
         this.interactAs.push(this.businesses[i]);
       }
@@ -352,6 +353,7 @@ export default {
       } else {
         this.thumbnail = null;
         Cookies.set('actAs', this.interactAs[index].id);
+        this.businessAccountId = this.interactAs[index].id;
         this.isActAsBusiness = true;
         this.actAsId = this.interactAs[index].id;
         this.actAs = this.interactAs[index].name;
