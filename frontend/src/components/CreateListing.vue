@@ -21,11 +21,7 @@
                 <label for="productDataList" class="form-control-label">Inventory ID*: </label>
                 <input :class="toggleInvalidClass(inventoryIdErrorMsg)" :maxlength="config.inventoryId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" required/>
                 <datalist id="productDataList" style="overflow-y: auto!important">
-                      <option value="Chocolate">asd</option>
-                      <option value="Coconut">asd</option>
-                      <option value="Mint">ads</option>
-                      <option value="Strawberry">asd</option>
-                      <option value="Vanilla">ads</option>
+                  <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id">Quantity: {{item.quantity}} Price: (${{item.totalPrice}})</option>
                 </datalist>
 <!--                <select id="inventoryId" class="form-select mdb-select md-form" searchable="Search here.." tabindex="1" data-live-search="true" :class="toggleInvalidClass(inventoryIdErrorMsg)">-->
 <!--                  <option value="" disabled selected>Select an Item</option>-->
@@ -119,6 +115,7 @@ export default {
     return {
       config: Listing.config,
       inventoryItems: [],
+      allInventoryItems: [], // Stores all inventory items (for new listing dropdown)
 
       // Inventory Id related variables
       inventoryId: "",
@@ -276,6 +273,26 @@ export default {
       return isValid
     },
 
+    async getAllInventoryItems() {
+      await Api.getEveryInventoryItem(2).then((response) => {
+        this.allInventoryItems = [...response.data];
+      }).catch((error) => {
+        if (error.response) {
+          if (error.response.status === 400) {
+            this.toastErrorMessage = '400 Bad request; invalid listing data';
+          } else if (error.response.status === 403) {
+            this.toastErrorMessage = 'User is not an administer of this business.';
+          } else {
+            this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
+          }
+        } else if (error.request) {
+          this.toastErrorMessage = 'Timeout occurred';
+        } else {
+          this.toastErrorMessage = 'Unexpected error occurred!';
+        }
+      })
+    },
+
     /**
      * Creates the new Inventory Item
      */
@@ -390,7 +407,8 @@ export default {
   },
   mounted() {
     // Adds test data
-    this.testData();
+    this.getAllInventoryItems().then(() => console.log(this.allInventoryItems));
+    //this.testData();
   }
 }
 </script>

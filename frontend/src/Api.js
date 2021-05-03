@@ -523,7 +523,13 @@ export default {
     })
   },
 
-  addBusinessListing: (businessId, listing) => instance.post(`/businesses/${businessId}/listings`, {...listing.data}, {withCredentials: true}),
+    addBusinessListing: (businessId, listing) => instance.post(`/businesses/${businessId}/listings`, {...listing.data}, {withCredentials: true}),
+
+    getEveryInventoryItem: (businessID) => {
+        return instance.get(`/businesses/${businessID}/inventoryAll`, {
+            withCredentials: true
+        })
+    }
 
     // Usage examples from original file:
     //

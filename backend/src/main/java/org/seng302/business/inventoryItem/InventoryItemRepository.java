@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,5 +28,7 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, St
      * @return A list of product inventory items with the given business ID.
      */
     Page<InventoryItem> findInventoryItemsByBusinessId(Integer businessId, Pageable paging);
+
+    List<InventoryItem> findAllByBusinessId(Integer businessId);
 
 }
