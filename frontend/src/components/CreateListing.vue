@@ -105,6 +105,7 @@
 
 <script>
 import Api, {Listing} from "@/Api";
+const datefns = require('date-fns');
 
 export default {
   name: "CreateListing",
@@ -210,6 +211,70 @@ export default {
       }
       return errorMessage;
     },
+    /**
+     * This method parses the given date and separates it into a year, day and month, provided it meets
+     * the expected format.
+     *
+     * Note that the date format is yyyy-MM-dd (e.g. '2029-12-30') to use the compareAsc() in the date validation methods.
+     * So, this must be consistent!
+     *
+     * @param dateString, string, the date to validate and separate.
+     * @returns {{year: string, day: string, month: string}|null}, {year, day, month}, if the date meets the expected
+     * format, else null.
+     */
+    parseSelectedDate(dateString) {
+
+      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,3}-[0-9]{1,3}$/
+
+      if (verifyRegex.test(dateString)) {
+        const dateParts = dateString.split("-", 3);
+
+        const year = dateParts[0];
+        let month = dateParts[1];
+        let day = dateParts[2];
+
+        month = (month.length === 1) ? `0${month}` : month;
+        day = (day.length === 1) ? `0${day}` : day;
+
+        return {
+          year: year,
+          month: month,
+          day: day,
+        }
+      } else {
+        return null
+      }
+    },
+    /**
+     * This function will check the validity of the sell by date of an inventory item i.e. that the sell by date of the
+     * inventory item is after to today's date but not today's date, and after the manufacture date and before the expiry date (not including).
+     *
+     * @return true if the date meets the above conditions, otherwise false
+     */
+    isValidCloseDate(selectedCloseDate) {
+      let isValid = false;
+      const closeDate = this.parseSelectedDate(selectedCloseDate);
+      if (closeDate === null) {
+        return isValid;
+      }
+      const closeDateYear = closeDate.year
+      const closeDateMonth = closeDate.month-1; // 1 month must be taken off
+      const closeDateDay = closeDate.day
+
+      const todayDate = datefns.endOfToday();
+
+      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
+      // second or 0 if dates are equal.
+
+      const comparisonWithTodayValue = datefns.compareAsc(new Date(closeDateYear, closeDateMonth, closeDateDay), todayDate)
+      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
+
+      if (isAfterTodayAndNotToday) {
+        isValid = true;
+      }
+
+      return isValid
+    },
 
     /**
      * Creates the new Inventory Item
@@ -217,16 +282,16 @@ export default {
     createNewInventoryItem() { // TODO
       let requestIsInvalid = false;
 
-      this.inventoryId = document.getElementById("inventoryId").value;
+      //this.inventoryId = document.getElementById("inventoryId").value;
       this.trimTextInputFields();
 
       // Inventory Item Error Checking
-      if (this.inventoryId.length === 0) {
-        requestIsInvalid = true;
-        this.inventoryIdErrorMsg = "Must select an item from the inventory"
-      } else {
-        this.inventoryIdErrorMsg = "";
-      }
+      //if (this.inventoryId.length === 0) {
+      //  requestIsInvalid = true;
+      //  this.inventoryIdErrorMsg = "Must select an item from the inventory"
+      //} else {
+      //  this.inventoryIdErrorMsg = "";
+      //}
 
       // Quantity error checking
       this.quantityErrorMsg = this.getErrorMessage(
@@ -266,7 +331,12 @@ export default {
           this.config.moreInfo.regex
       )
 
-      // TODO Error Message Date
+      if (!this.isValidCloseDate(this.closes)) {
+        requestIsInvalid = true;
+        this.closesErrorMsg = "Date must be valid and in the future";
+      } else {
+        this.closesErrorMsg = "";
+      }
 
       // If at any stage there is an issue with the request cancel the request
       if (requestIsInvalid) {
