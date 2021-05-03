@@ -39,8 +39,8 @@
             v-bind:best-before="item.bestBefore"
             v-bind:expires="item.expires"
             v-bind:moreInfo="item.moreInfo"
-            v-bind:currency-code="this.currencyCode"
-            v-bind:currency-symbol="this.currencySymbol"
+            v-bind:currency-code="currencyCode"
+            v-bind:currency-symbol="currencySymbol"
         />
       </div>
     </div>
@@ -224,6 +224,7 @@ name: "Listings",
       await this.getBusiness(this.businessId);
 
       await this.currencyRequest();
+
       // // if currency code and symbol exist we want to update table header of RRP to show this info
       // if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
       //   this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
@@ -233,7 +234,7 @@ name: "Listings",
       // ).catch(
       //     (e) => console.log(e)
       // )
-      // this.fakeListings();
+      this.fakeListings();
       // this.populatePage(this.listings);
     } else {
       this.$router.push({name: 'Login'});
