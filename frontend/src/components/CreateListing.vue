@@ -19,7 +19,7 @@
             <div class="row">
               <div class="col form-group py-1 px-3">
                 <label for="productDataList" class="form-control-label">Inventory ID*: </label>
-                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" :maxlength="config.inventoryItemId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" required/>
+                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" :maxlength="config.inventoryItemId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" required/>
                 <datalist id="productDataList" style="overflow-y: auto!important">
                   <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id + ' ' + item.expires">Quantity: {{item.quantity}} Price: (${{item.totalPrice}}) Expiration Date: {{item.expires}}</option>
                 </datalist>
@@ -36,7 +36,7 @@
             <div class="row">
               <div class="col-sm-6 form-group py-1 px-3">
                 <label for="quantity">Quantity*: </label>
-                <input id="quantity" name="quantity" tabindex="2" type="number" v-model="quantity" min="0"
+                <input id="quantity" name="quantity" tabindex="2" type="number" ref="quantity" v-model="quantity" min="0"
                        :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
                 <div class="invalid-feedback">
                   {{ quantityErrorMsg }}
@@ -51,7 +51,7 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text">$</span>
                   </div>
-                  <input id="price" name="price" tabindex="3" type="number" step="0.01"
+                  <input id="price" name="price" tabindex="3" type="number" ref="price" step="0.01"
                          v-model="price"
                          min="0" :class="toggleInvalidClass(priceErrorMsg)"
                          :maxlength="config.price.maxLength">
@@ -75,7 +75,7 @@
             <!--Close Date-->
             <div class="row form-group py-1 px-3">
               <label for="closes">Close Date: </label>
-              <input id="closes" name="closes" tabindex="5" type="date" v-model="closes"
+              <input id="closes" name="closes" tabindex="5" type="datetime-local" v-model="closes"
                      :class="toggleInvalidClass(closesErrorMsg)">
               <div class="invalid-feedback">
                 {{ closesErrorMsg }}
@@ -116,6 +116,7 @@ export default {
       config: Listing.config,
       inventoryItems: [],
       allInventoryItems: [], // Stores all inventory items (for new listing dropdown)
+      currentInventoryItem: null,
 
       // Inventory Id related variables
       inventoryId: "",
@@ -168,8 +169,8 @@ export default {
      * This method removes white space from the beginning and end of all the input field's input values.
      */
     trimTextInputFields() {
-      this.quantity = this.quantity.trim();
-      this.price = this.price.trim();
+      this.$refs.quantity.value = this.$refs.quantity.value.trim();
+      this.$refs.price.value = this.$refs.price.value.trim();
       this.moreInfo = this.moreInfo.trim();
       this.closes = this.closes.trim();
     },
@@ -208,6 +209,33 @@ export default {
       }
       return errorMessage;
     },
+
+    /**
+     *
+     * */
+    autofillData() {
+      const value = document.querySelector('#productInput').value;
+      if (!value) return;
+
+      let result = null;
+
+      let i = 0;
+      let itemNotFound = true;
+      while (i < this.allInventoryItems.length && itemNotFound) {
+        if (this.allInventoryItems[i].product.id === value.split(' ')[0]) {
+          result = this.allInventoryItems[i];
+          itemNotFound = false;
+        }
+        i += 1;
+      }
+
+      if (result !== null) {
+        this.currentInventoryItem = result;
+        document.getElementById('quantity').value = result.quantity;
+        document.getElementById('price').value = result.totalPrice;
+      }
+    },
+
     /**
      * This method parses the given date and separates it into a year, day and month, provided it meets
      * the expected format.
@@ -216,31 +244,45 @@ export default {
      * So, this must be consistent!
      *
      * @param dateString, string, the date to validate and separate.
-     * @returns {{year: string, day: string, month: string}|null}, {year, day, month}, if the date meets the expected
+     * @returns {{year: string, day: string, month: string, hour: string, minute: string, seconds: string}|null}, {year, day, month}, if the date meets the expected
      * format, else null.
      */
     parseSelectedDate(dateString) {
+      const newDate = datefns.parseISO(dateString);
 
-      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,3}-[0-9]{1,3}$/
-
-      if (verifyRegex.test(dateString)) {
-        const dateParts = dateString.split("-", 3);
-
-        const year = dateParts[0];
-        let month = dateParts[1];
-        let day = dateParts[2];
-
-        month = (month.length === 1) ? `0${month}` : month;
-        day = (day.length === 1) ? `0${day}` : day;
-
+      if (datefns.isValid(newDate)) {
         return {
-          year: year,
-          month: month,
-          day: day,
+          year: datefns.getYear(newDate),
+          month: datefns.getMonth(newDate),
+          day: datefns.getDate(newDate),
+          hour: datefns.getHours(newDate),
+          minute: datefns.getMinutes(newDate),
+          seconds: datefns.getSeconds(newDate)
         }
       } else {
-        return null
+        return null;
       }
+
+      // const verifyRegex = /^[0-9]{1,5}-[0-9]{1,3}-[0-9]{1,3}$/
+      //
+      // if (verifyRegex.test(dateString)) {
+      //   const dateParts = dateString.split("-", 3);
+      //
+      //   const year = dateParts[0];
+      //   let month = dateParts[1];
+      //   let day = dateParts[2];
+      //
+      //   month = (month.length === 1) ? `0${month}` : month;
+      //   day = (day.length === 1) ? `0${day}` : day;
+      //
+      //   return {
+      //     year: year,
+      //     month: month,
+      //     day: day,
+      //   }
+      // } else {
+      //   return null
+      // }
     },
     /**
      * This function will check the validity of the sell by date of an inventory item i.e. that the sell by date of the
@@ -251,11 +293,12 @@ export default {
     isValidCloseDate(selectedCloseDate) {
       let isValid = false;
       const closeDate = this.parseSelectedDate(selectedCloseDate);
+      console.log(closeDate);
       if (closeDate === null) {
         return isValid;
       }
       const closeDateYear = closeDate.year
-      const closeDateMonth = closeDate.month-1; // 1 month must be taken off
+      const closeDateMonth = closeDate.month;
       const closeDateDay = closeDate.day
 
       const todayDate = datefns.endOfToday();
@@ -303,7 +346,8 @@ export default {
     async createNewInventoryItem() { // TODO
       let requestIsInvalid = false;
 
-      this.inventoryId = document.getElementById("productInput").value;
+      // this.inventoryId = document.getElementById("productInput").value;
+      this.inventoryId = this.currentInventoryItem.id;
       this.trimTextInputFields();
 
       // Inventory Item Error Checking
@@ -317,13 +361,13 @@ export default {
       // Quantity error checking
       this.quantityErrorMsg = this.getErrorMessage(
           this.config.quantity.name,
-          this.quantity,
+          this.$refs.quantity.value,
           this.config.quantity.minLength,
           this.config.quantity.maxLength,
           this.config.quantity.regexMessage,
           this.config.quantity.regex
       )
-      if (this.quantity <= 0) {
+      if (this.$refs.quantity <= 0) {
         this.quantityErrorMsg = "At least one"
       }
       if (this.quantityErrorMsg) {
@@ -333,7 +377,7 @@ export default {
       // Price per item error checking
       this.priceErrorMsg = this.getErrorMessage(
           this.config.price.name,
-          this.price,
+          this.$refs.price.value,
           this.config.price.minLength,
           this.config.price.maxLength,
           this.config.price.regexMessage,
@@ -366,10 +410,10 @@ export default {
 
       const listingItemData = {
         inventoryItemId: this.inventoryId,
-        quantity: parseInt(this.quantity),
-        price: parseFloat(this.price),
+        quantity: parseInt(this.$refs.quantity.value),
+        price: parseFloat(this.$refs.price.value),
         moreInfo: this.moreInfo,
-        closes: this.closes
+        closes: '2021-07-21T23:59:00Z'
       };
       //console.log(listingItemData);
       const newListingItem = new Listing(listingItemData);

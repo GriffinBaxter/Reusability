@@ -250,9 +250,7 @@ public class InventoryItemResource {
 
         logger.info("Product Inventory Retrieval Success - 200 [OK] - Product inventory retrieved for business with ID {}", id);
 
-        System.out.println(11);
         List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(pagedResult.getContent());
-        System.out.println(11);
 
         logger.info("The size of the product inventory payload is {}", inventoryItemPayloads.size());
 
@@ -389,16 +387,6 @@ public class InventoryItemResource {
 
         try {
             inventoryItemRepository.save(new InventoryItem(selectProduct,
-                    productId,
-                    inventoryRegistrationPayload.getQuantity(),
-                    inventoryRegistrationPayload.getPricePerItem(),
-                    inventoryRegistrationPayload.getTotalPrice(),
-                    inventoryRegistrationPayload.getManufactured(),
-                    inventoryRegistrationPayload.getSellBy(),
-                    inventoryRegistrationPayload.getBestBefore(),
-                    inventoryRegistrationPayload.getExpires()
-            ));
-            System.out.println(new InventoryItem(selectProduct,
                     productId,
                     inventoryRegistrationPayload.getQuantity(),
                     inventoryRegistrationPayload.getPricePerItem(),
