@@ -91,8 +91,8 @@ public class ListingResource {
      */
     @GetMapping("/businesses/{id}/listings")
     public ResponseEntity<List<ListingPayload>> retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                                                 @PathVariable String id,
-                                                                 @RequestParam(defaultValue = "productIdASC") String orderBy,
+                                                                 @PathVariable Integer id,
+                                                                 @RequestParam(defaultValue = "idASC") String orderBy,
                                                                  @RequestParam(defaultValue = "0") String page) {
 
         logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
@@ -100,13 +100,12 @@ public class ListingResource {
         // Checks user logged in - 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        Integer businessId = Integer.valueOf(id);
-        // Checks business at ID exists - 406
-        Business currentBusiness = businessRepository.findBusinessById(businessId).get();
-        if (currentBusiness == null) {
+        if (!Authorization.verifyBusinessExists(id, businessRepository)) {
+            logger.error("Product Catalogue Retrieval Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "Business Does Not Exist"
+                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                            "for example trying to access a resource by an ID that does not exist."
             );
         }
 
@@ -131,10 +130,16 @@ public class ListingResource {
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
             case "idASC":
-                sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
                 break;
             case "idDESC":
-                sortBy = Sort.by(Sort.Order.desc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                sortBy = Sort.by(Sort.Order.desc("id").ignoreCase());
+                break;
+            case "quantityASC":
+                sortBy = Sort.by(Sort.Order.asc("quantity").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "quantityDESC":
+                sortBy = Sort.by(Sort.Order.desc("quantity").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
             case "priceASC":
                 sortBy = Sort.by(Sort.Order.asc("price").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
@@ -164,7 +169,7 @@ public class ListingResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<Listing> pagedResult = Page.empty(); // listingRepository.findListingsByBusinessId(businessId, paging);
+        Page<Listing> pagedResult = listingRepository.findListingsByBusinessId(id, paging);
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
@@ -173,11 +178,11 @@ public class ListingResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Listing Retrieval Success - 200 [OK] -  Listings retrieved for business with ID {}", businessId);
+        logger.info("Listing Retrieval Success - 200 [OK] -  Listings retrieved for business with ID {}", id);
 
         List<ListingPayload> listingPayloads = convertToPayload(pagedResult.getContent());
 
-        logger.debug("Products retrieved for business with ID {}: {}", businessId, listingPayloads);
+        logger.debug("Listings retrieved for business with ID {}: {}", id, listingPayloads);
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)

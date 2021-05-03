@@ -32,6 +32,9 @@ public class Listing {
     @JoinColumn(name = "inventoryItemId", nullable = false)
     private InventoryItem inventoryItem;
 
+    @Column(name = "businessId", nullable = false)
+    private Integer businessId;
+
     @Column (name = "quantity", nullable = false)
     private int quantity;
 
@@ -85,6 +88,7 @@ public class Listing {
             throw new Exception("Invalid closing date.");
         }
         this.inventoryItem = inventoryItem;
+        this.businessId = inventoryItem.getProduct().getBusinessId();
         this.quantity = quantity;
         // If price is not defined calculate it using price per item.
         this.price = (price == null) ? calculatePrice() : price;
