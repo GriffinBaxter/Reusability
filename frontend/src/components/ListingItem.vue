@@ -117,11 +117,7 @@ export default {
       default: "",
       required: false
     }
-  },
-  mounted() {
-    document.getElementById("listing-item-image").src = this.image;
   }
-
 }
 </script>
 

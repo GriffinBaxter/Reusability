@@ -28,7 +28,6 @@
         <ListingItem
             v-for="item in listings"
             v-bind:key="item.index"
-            v-bind:image="item.image"
             v-bind:product-name="item.productName"
             v-bind:description="item.description"
             v-bind:product-id="item.productId"
@@ -115,7 +114,6 @@ name: "Listings",
         this.listings.push({
           productName: data[i].inventoryItem.product.name,
           description: data[i].inventoryItem.product.description,
-          image: data[i].inventoryItem.product.images.filename,
           productId: data[i].inventoryItem.product.id,
           quantityPerSale: data[i].inventoryItem.quantity,
           quantity: data[i].quantity,
@@ -129,7 +127,6 @@ name: "Listings",
     fakeListings() {
       this.listings.push({
         productName: 'Beans',
-        image: '../../public/cans.jpg',
         productId: 'WATT-420-BEANS',
         description: 'Watties baked beanz is natures super food. 99% fat free, high in protein, source of iron and a great source of dietary fibre. Watties baked beans are low gi, giving you long-lasting energy to keep you going for longer. Proudly made in nz.',
         quantityPerSale: 4,
@@ -142,7 +139,6 @@ name: "Listings",
       })
       this.listings.push({
         productName: 'Apples',
-        image: '../../public/apples.jpg',
         productId: 'APPLES',
         quantityPerSale: 2,
         quantity: 5,
@@ -150,6 +146,30 @@ name: "Listings",
         listDate: '28/4/2021',
         closeDate: '1/5/2021',
         expires: '2/5/2021'
+      })
+      this.listings.push({
+        productName: 'XXX',
+        productId: 'XXX',
+        description: 'Watties baked beanz is natures super food. 99% fat free, high in protein, source of iron and a great source of dietary fibre. Watties baked beans are low gi, giving you long-lasting energy to keep you going for longer. Proudly made in nz.',
+        quantityPerSale: 4,
+        quantity: 3,
+        price: 17.99,
+        listDate: '28/4/2021',
+        closeDate: '10/5/2021',
+        expires: '24/5/2021',
+        moreInfo: ''
+      })
+      this.listings.push({
+        productName: 'YYY',
+        productId: 'UHHHH',
+        description: "",
+        quantityPerSale: 4,
+        quantity: 3,
+        price: 17.99,
+        listDate: '28/4/2021',
+        closeDate: '1/5/2021',
+        expires: '2/5/2021',
+        moreInfo: 'Seller may be willing to consider near offers'
       })
     }
   },
