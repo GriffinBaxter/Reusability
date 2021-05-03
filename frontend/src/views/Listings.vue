@@ -70,7 +70,7 @@ name: "Listings",
       listings: [],
       businessName: "",
       businessAdmin: false,
-      businessId: -1
+      businessId: -1,
 
       currencyCode: "",
       currencySymbol: ""
