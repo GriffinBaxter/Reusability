@@ -54,11 +54,6 @@
 export default {
   name: "ListingItem",
   props: {
-    image: {
-      type: String,
-      default: "../../public/apples.jpg",
-      required: true
-    },
     productName: {
       type: String,
       default: "NAME",

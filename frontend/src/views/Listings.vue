@@ -7,16 +7,16 @@
     <!-- Listing Container -->
     <div class="container">
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
-      <div class="card p-1" v-if="isListings">
+      <div class="card p-1">
         <!-- Order Buttons -->
         <div class="row my-3" align="center">
-          <div class="col-md">
+          <div class="col-md" v-if="listings.length > 0">
             <button type="button" class="btn btn-outline-success w-75 my-1">New Listings</button>
           </div>
-          <div class="col-md">
+          <div class="col-md" v-if="listings.length > 0">
             <button type="button" class="btn btn-outline-success w-75 my-1">Closing Soon</button>
           </div>
-          <div class="col-md">
+          <div class="col-md" v-if="listings.length > 0">
             <button type="button" class="btn btn-outline-success w-75 my-1">Name</button>
           </div>
           <!-- Add new Button -->
@@ -41,7 +41,7 @@
             v-bind:moreInfo="item.moreInfo"/>
       </div>
     </div>
-    <div class="card p-1" v-if="!isListings">
+    <div class="card p-1" v-if="listings.length < 1">
       <p class="h2 py-5" align="center">No Listings Found</p>
     </div>
     <!-- Footer -->
@@ -66,8 +66,7 @@ name: "Listings",
       listings: [],
       businessName: "",
       businessAdmin: false,
-      businessId: -1,
-      isListings: true
+      businessId: -1
     }
   },
   methods: {
@@ -111,12 +110,6 @@ name: "Listings",
       this.businessAdmin = actAs === String(data.id);
     },
     populatePage(data) {
-      if (data.length === 0) {
-        console.log('No listings')
-        this.isListings = false;
-      } else {
-        this.isListings = true;
-      }
       for (let i=0; i < data.length; i++) {
         this.listings.push({
           productName: data[i].inventoryItem.product.name,
@@ -183,7 +176,7 @@ name: "Listings",
   mounted() {
     this.businessId = parseInt(this.$route.params.id);
     this.getBusiness(this.businessId);
-    //this.fakeListings();
+    this.fakeListings();
     // this.getListings(this.businessId); //NOTE: Currently not working
   }
 }
