@@ -25,6 +25,8 @@ public class AddressPayload {
         this.postcode = postcode;
     }
 
+    public AddressPayload() {
+    }
 
     public String getStreetNumber() {
         return streetNumber;

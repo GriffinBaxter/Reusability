@@ -42,13 +42,25 @@
                 </div>
               </div>
 
-              <!--password input field-->
-              <div class="row">
-                <div class="col mb-1">
+              <div class="row my-lg-2">
+                <!--password input field-->
+                <div class="col my-2 my-lg-0">
                   <label for="password-input" class="form-label">Password</label>
-                  <input type="password" class="form-control" id="password-input" ref="pInput" tabindex="2">
+                  <div class="input-group">
+                    <input class="form-control" name="password" :type="togglePasswordInputType(showPassword)" tabindex="2" id="password-input" ref="pInput">
+
+                    <!--toggle password visibility-->
+                    <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
+                          @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
+                          tabindex="3">
+                      <i v-if="!showPassword" class="fas fa-eye"></i>
+                      <i v-else class="fas fa-eye-slash"></i>
+                      </span>
+
+                  </div>
                 </div>
-              </div>
+
+            </div>
 
               <!--error message location-->
               <div class="row">
@@ -61,12 +73,12 @@
 
                 <!--register button-->
                 <div class="col-5">
-                  <router-link class="btn btn-lg m-sm-4 mb-4 green-button-transparent" to="/registration" tag="button" type="button" tabindex="4" >Register</router-link>
+                  <router-link class="btn btn-lg m-sm-4 mb-4 green-button-transparent" to="/registration" tag="button" type="button" tabindex="5" >Register</router-link>
                 </div>
 
                 <!--login button-->
                 <div class="col">
-                  <button class="btn btn-lg float-end m-sm-4 mb-4 green-button" @click="login()" type="submit" id="loginButton" tabindex="3">Sign In</button>
+                  <button class="btn btn-lg float-end m-sm-4 mb-4 green-button" @click="login()" type="submit" id="loginButton" tabindex="4">Sign In</button>
                 </div>
               </div>
 
@@ -92,6 +104,13 @@ export default {
   components: {
 
   },
+
+  data() {
+    return {
+      showPassword: false, // Used for toggling the password visibility
+    }
+  },
+
   methods: {
 
     /**
@@ -122,7 +141,21 @@ export default {
           this.$refs.errorLbl.style.visibility = "visible";
         }
       })
-    }
+    },
+
+    /**
+     * This method toggles the appearance of the password field, where the password will be shown if showPassword is
+     * true, else it is hidden.
+     * @param showPassword, whether the password should be displayed.
+     * @returns {string}, String, the visibility of the password.
+     */
+    togglePasswordInputType(showPassword) {
+      if (showPassword) {
+        return 'text'
+      } else {
+        return 'password'
+      }
+    },
   }
 }
 
@@ -164,9 +197,11 @@ input:focus, textarea:focus {
   border: 1px solid #1EBABC;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-}
+/*#password-input {*/
+/*  max-width: 360px;*/
+/*}*/
+
+/*#login-toggle-password {*/
+/*  max-width: 40px;*/
+/*}*/
 </style>

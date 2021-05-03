@@ -173,7 +173,7 @@ export default {
         { bType: 'ACCOMMODATION AND FOOD SERVICES', value: 'Accommodation and Food Services' },
         { bType: 'RETAIL TRADE', value: 'Retail Trade' },
         { bType: 'CHARITABLE ORGANISATION', value: 'Charitable Organisation' },
-        { bType: 'NON-PROFIT ORGANISATION', value: 'Non-Profit Organisation' }
+        { bType: 'NON PROFIT ORGANISATION', value: 'Non Profit Organisation' }
       ],
       businessTypeErrorMsg: "",
 
@@ -315,7 +315,7 @@ export default {
         'ACCOMMODATION AND FOOD SERVICES',
         'RETAIL TRADE',
         'CHARITABLE ORGANISATION',
-        'NON-PROFIT ORGANISATION']
+        'NON PROFIT ORGANISATION']
       if (businessTypes.includes(this.businessType.toUpperCase())) {
         this.businessTypeErrorMsg = "";
         requestIsInvalid = false
@@ -466,7 +466,11 @@ export default {
       Api.addNewBusiness(business
       ).then( (res) => {
             if (res.status === 201) {
-              this.$router.push('/profile'); //TODO update to BusinessProfile when created
+              const businessId = res.data.businessId;
+              if (businessId) {
+                Cookies.set('actAs', businessId);
+                this.$router.push('/businessProfile/' + businessId);
+              }
             }
           }
       ).catch((error) => {
@@ -748,9 +752,7 @@ export default {
    */
   mounted() {
     const currentID = Cookies.get('userID');
-    if (currentID) {
-      this.$router.push({path: '/businessRegistration'});
-    } else {
+    if (!currentID) {
       this.$router.push({name: 'Login'});
     }
   }

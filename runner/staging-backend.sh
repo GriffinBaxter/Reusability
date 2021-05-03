@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 
+# retrieve environment variables
+source env_variables.txt
+
 # Run the staging backend server
 
 fuser -k 9499/tcp || true
