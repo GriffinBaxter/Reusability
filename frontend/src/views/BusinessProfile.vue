@@ -131,7 +131,7 @@
           </div>
           <div class="row" id="signOutRow">
             <div class="col">
-              <button class="btn btn-success mt-4" @click="gotoBusinessPage('Listings')">Listings</button>
+              <button class="btn btn-outline-primary mt-4" @click="gotoBusinessPage('Listings')">Listings</button>
             </div>
             <!--logout button-->
             <div class="col" align="right" id="adminButtonRow" v-if="isAdministrator">

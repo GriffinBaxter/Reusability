@@ -60,7 +60,6 @@
             v-bind:description="item.description"
             v-bind:product-id="item.productId"
             v-bind:quantity="item.quantity"
-            v-bind:quantityPerSale="item.quantityPerSale"
             v-bind:price="item.price"
             v-bind:listDate="item.listDate"
             v-bind:close-date="item.closeDate"
@@ -341,7 +340,6 @@ name: "Listings",
             productName: response.data[i].inventoryItem.product.name,
             description: response.data[i].inventoryItem.product.description,
             productId: response.data[i].inventoryItem.product.id,
-            quantityPerSale: response.data[i].inventoryItem.quantity,
             quantity: response.data[i].quantity,
             price: response.data[i].price,
             listDate: response.data[i].created,

@@ -11,7 +11,7 @@
           <div class="card-body px-3" id="cardbody">
             <div class="row">
               <div class="col">
-                <h4 class="card-title">{{quantityPerSale}}x {{ productName }}</h4>
+                <h4 class="card-title">{{quantity}}x {{ productName }}</h4>
               </div>
               <div class="col d-flex align-items-end flex-column col-5" v-if="!(moreInfo.length===0)">
                 <p align="right">{{moreInfo}}</p>
@@ -21,8 +21,6 @@
               <div class="col-md-3">
                 <p class="card-text">
                   {{ productId }}
-                  <br>
-                  (Quantity: {{ quantity }})
                 </p>
               </div>
               <div class="col d-flex align-items-end flex-column">
@@ -70,12 +68,6 @@ export default {
       required: false
     },
     quantity: {
-      type: Number,
-      // eslint-disable-next-line vue/require-valid-default-prop
-      default: "None",
-      required: true
-    },
-    quantityPerSale: {
       type: Number,
       // eslint-disable-next-line vue/require-valid-default-prop
       default: "None",
