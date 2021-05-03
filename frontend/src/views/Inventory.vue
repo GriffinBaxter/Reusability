@@ -222,10 +222,6 @@ export default {
   },
   data() {
     return {
-      // Table variables
-      // A list of the ordering by headers, which is used with talking to the backend
-      tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created"],
-
       // Stores the URL string that is used by the requestProducts() to order the products
       orderByString: "",
       // A list of Product object that store the products
@@ -479,7 +475,7 @@ export default {
     },
 
     /**
-     * Disables all ascending or descending icons in the top column headers.
+     * Disables all ascending or descending icons in the filter buttons.
      */
     disableIcons() {
       document.getElementById('productIdIcon').setAttribute('class', '');

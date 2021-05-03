@@ -92,7 +92,7 @@ public class ListingResource {
     @GetMapping("/businesses/{id}/listings")
     public ResponseEntity<List<ListingPayload>> retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                                  @PathVariable Integer id,
-                                                                 @RequestParam(defaultValue = "idASC") String orderBy,
+                                                                 @RequestParam(defaultValue = "closesASC") String orderBy,
                                                                  @RequestParam(defaultValue = "0") String page) {
 
         logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
@@ -129,12 +129,6 @@ public class ListingResource {
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
-            case "idASC":
-                sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
-                break;
-            case "idDESC":
-                sortBy = Sort.by(Sort.Order.desc("id").ignoreCase());
-                break;
             case "quantityASC":
                 sortBy = Sort.by(Sort.Order.asc("quantity").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
