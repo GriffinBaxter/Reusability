@@ -524,7 +524,7 @@ export default {
           this.inventories = [];
 
           for (let i = 0; i < this.rowsPerPage; i++) {
-            if (i === this.InventoryItemList){
+            if (i === this.InventoryItemList.length){
               return
             }
             this.inventories.push({
