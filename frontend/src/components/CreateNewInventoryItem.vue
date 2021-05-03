@@ -117,9 +117,11 @@
 // import { Modal } from "bootstrap"; //uncommenting means the test do not run
 import Api, {InventoryItem} from "../Api";
 
-const endOfToday = require('date-fns/endOfToday');
-const format = require('date-fns/format');
-const compareAsc = require('date-fns/compareAsc');
+// const endOfToday = require('date-fns/endOfToday');
+// const format = require('date-fns/format');
+// const compareAsc = require('date-fns/compareAsc');
+
+import {endOfToday, format, compareAsc} from 'date-fns'
 
 export default {
   name: 'InventoryItemCreation',
