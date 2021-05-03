@@ -87,7 +87,6 @@
 import Api from '../Api';
 import Cookies from 'js-cookie';
 
-
 export default {
   name: "Login",
   components: {
