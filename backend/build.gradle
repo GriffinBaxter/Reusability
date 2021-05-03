@@ -127,3 +127,7 @@ sonarqube {
         property "sonar.login", "dfbb0075dfd103401c06e7306086ae841c151b63"
     }
 }
+
+bootRun {
+    systemProperties = System.properties
+}

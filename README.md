@@ -29,11 +29,23 @@ Running on: http://localhost:9500/ by default
 
 ### Backend / server
 
-For running locally using the in-memory H2 database, the following environment variables should be set with the given
-corresponding values:
-* DB_DRIVER=org.h2.Driver
-* DB_PLATFORM=org.hibernate.dialect.H2Dialect
+#### Using a MariaDB database
 
+For running using a MariaDB database, the following environment variables need to be set:
+* DB_URL
+* DB_USERNAME
+* DB_PASSWORD
+* DGAA_EMAIL
+* DGAA_PASSWORD
+
+Also, the following commands should be run:
+
+    cd backend
+    ./gradlew bootRun -Dspring.profiles.active=mariadb
+
+#### Using an in-memory H2 database
+
+For running locally using an in-memory H2 database, the following commands should be run:
 
     cd backend
     ./gradlew bootRun
