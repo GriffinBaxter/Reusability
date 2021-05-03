@@ -423,5 +423,41 @@ public class MainApplicationRunner implements ApplicationRunner {
                 null
         );
         listingRepository.save(listing2);
+        Listing listing3 = new Listing(
+                inventoryItem,
+                3,
+                20.00,
+                "more info",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+        listingRepository.save(listing3);
+        Listing listing4 = new Listing(
+                inventoryItem,
+                7,
+                null,
+                "mo i",
+                LocalDateTime.now().minusHours(1),
+                null
+        );
+        listingRepository.save(listing4);
+        Listing listing5 = new Listing(
+                inventoryItem,
+                1,
+                21.00,
+                "more info",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusHours(4)
+        );
+        listingRepository.save(listing5);
+        Listing listing6 = new Listing(
+                inventoryItem,
+                1,
+                5.00,
+                "moe i",
+                LocalDateTime.now().minusHours(2),
+                LocalDateTime.now().plusHours(2)
+        );
+        listingRepository.save(listing6);
     }
 }

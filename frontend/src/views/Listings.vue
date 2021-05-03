@@ -10,15 +10,43 @@
       <div class="card p-1">
         <!-- Order Buttons -->
         <div class="row my-3" align="center">
-          <div class="col-md" v-if="listings.length > 0">
-            <button type="button" class="btn btn-outline-success w-75 my-1">New Listings</button>
+          <!--filter-->
+          <div class="btn-group col-3 py-1" role="group">
+            <button type="button" class="btn btn-primary dropdown-toggle col-4"
+                    data-bs-toggle="dropdown" aria-expanded="false">Filter
+            </button>
+
+            <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+              <!--order by quantity-->
+              <button type="button" class="btn btn-outline-primary col-12"
+                      @click="orderListings(true, false, false, false)">
+                Quantity
+                <i id="quantityIcon"></i>
+              </button>
+
+              <!--order by price-->
+              <button type="button" class="btn btn-outline-primary col-12"
+                      @click="orderListings(false, true, false, false)">
+                Price
+                <i id="priceIcon"></i>
+              </button>
+
+              <!--order by closing date-->
+              <button type="button" class="btn btn-outline-primary col-12"
+                      @click="orderListings(false, false, true, false)">
+                Closing Date
+                <i id="closesIcon"></i>
+              </button>
+
+              <!--order by listing date-->
+              <button type="button" class="btn btn-outline-primary col-12"
+                      @click="orderListings(false, false, false, true)">
+                Listing Date
+                <i id="createdIcon"></i>
+              </button>
+            </ul>
           </div>
-          <div class="col-md" v-if="listings.length > 0">
-            <button type="button" class="btn btn-outline-success w-75 my-1">Closing Soon</button>
-          </div>
-          <div class="col-md" v-if="listings.length > 0">
-            <button type="button" class="btn btn-outline-success w-75 my-1">Name</button>
-          </div>
+
           <!-- Add new Button -->
           <div class="col-md" v-if="businessAdmin">
             <button type="button" class="btn btn-success w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
@@ -42,6 +70,50 @@
             v-bind:currency-code="currencyCode"
             v-bind:currency-symbol="currencySymbol"
         />
+
+        <!--space-->
+        <br>
+
+        <!--pagination-->
+        <nav>
+          <ul v-if="totalPages > 0" class="pagination justify-content-center">
+            <!-- This is only enabled when there is a previous page -->
+            <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
+              Previous
+            </button>
+
+            <!-- This is shown when there are more then 2 pages and you are at page 1-->
+            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
+              {{currentPage-1}}
+            </button>
+
+            <!-- Only shows when we are past at least the first page -->
+            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
+              {{currentPage}}
+            </button>
+
+            <!-- This converts the current page into 1 origin.-->
+            <button type="button" class="btn btn-outline-primary active">
+              {{currentPage+1}}
+            </button>
+
+            <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
+            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
+              {{currentPage+2}}
+            </button>
+
+            <!-- This is shown when there are more then 2 pages and you are at page 1-->
+            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
+              {{currentPage+3}}
+            </button>
+
+            <!-- The next button only enabled if there is another page.-->
+            <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
+              Next
+            </button>
+          </ul>
+        </nav>
+
       </div>
     </div>
     <div class="card p-1" v-if="listings.length < 1">
@@ -72,26 +144,152 @@ name: "Listings",
       businessAdmin: false,
       businessId: -1,
       role: "",
+
+      orderBy: "",
+      rowsPerPage: 5,
+      currentPage: 0,
+      totalPages: 0,
+      totalRows: 0,
+
+      quantityAscending: false,
+      priceAscending: false,
+      closesAscending: false,
+      createdAscending: false,
+
       currencyCode: "",
       currencySymbol: ""
     }
   },
   methods: {
-    getListings(id) {
+    /**
+     * Updates the display to show the new page when a user clicks to move to a different page.
+     *
+     * @param event The click event
+     * @param newPageNumber The new page number
+     */
+    updatePage(event, newPageNumber) {
+      this.currentPage = newPageNumber;
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+      this.getListings();
+    },
+
+    /**
+     * Given a page number check that the page is within the acceptable range.
+     * NOTE this is a 0 origin.
+     * @param pageNumber The page number to be checked.
+     */
+    isValidPageNumber(pageNumber) {
+      return 0 <= pageNumber && pageNumber < this.totalPages;
+    },
+
+    /**
+     * Orders the listings based on the given booleans for each column, and updates the display
+     * @param quantity Boolean, whether to order by quantity
+     * @param price Boolean, whether to order by price
+     * @param closes Boolean, whether to order by closing date
+     * @param created Boolean, whether to order by listing date
+     */
+    orderListings(quantity, price, closes, created) {
+
+      if (quantity) {
+        this.disableIcons();
+        if (this.quantityAscending) {
+          this.orderBy = "quantityASC"
+          document.getElementById('quantityIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "quantityDESC"
+          document.getElementById('quantityIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.quantityAscending = !this.quantityAscending;
+        this.priceAscending = false;
+        this.closesAscending = false;
+        this.createdAscending = false;
+
+      } else if (price) {
+        this.disableIcons();
+        if (this.priceAscending) {
+          this.orderBy = "priceASC"
+          document.getElementById('priceIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "priceDESC"
+          document.getElementById('priceIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.quantityAscending = false;
+        this.priceAscending = !this.priceAscending;
+        this.closesAscending = false;
+        this.createdAscending = false;
+
+      } else if (closes) {
+        this.disableIcons();
+        if (this.closesAscending) {
+          this.orderBy = "closesASC"
+          document.getElementById('closesIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "closesDESC"
+          document.getElementById('closesIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.quantityAscending = false;
+        this.priceAscending = false;
+        this.closesAscending = !this.closesAscending;
+        this.createdAscending = false;
+
+      } else if (created) {
+        this.disableIcons();
+        if (this.createdAscending) {
+          this.orderBy = "createdASC"
+          document.getElementById('createdIcon').setAttribute('class', 'fas fa-chevron-up float-end');
+        } else {
+          this.orderBy = "createdDESC"
+          document.getElementById('createdIcon').setAttribute('class', 'fas fa-chevron-down float-end');
+        }
+
+        this.quantityAscending = false;
+        this.priceAscending = false;
+        this.closesAscending = false;
+        this.createdAscending = !this.createdAscending;
+
+      }
+
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}});
+      this.getListings();
+    },
+
+    /**
+     * Disables all ascending or descending icons in the filter buttons.
+     */
+    disableIcons() {
+      document.getElementById('quantityIcon').setAttribute('class', '');
+      document.getElementById('priceIcon').setAttribute('class', '');
+      document.getElementById('closesIcon').setAttribute('class', '');
+      document.getElementById('createdIcon').setAttribute('class', '');
+    },
+
+    async getListings() {
       /*
       Attempts to get listings from backend
       If successful, sends data to populatePage()
       If not, redirects to appropriate page
       */
-      Api.getBusinessListings(id).then(response => (this.populatePage(response.data))).catch((error) => {
+      this.orderBy = this.$route.query["orderBy"] || "closesASC";
+      this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+
+      await Api.sortListings(this.businessId, this.orderBy, this.currentPage).then(response => {
+        this.populatePage(response);
+
+      }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 400) {
+          this.$router.push({path: '/pageDoesNotExist'});
         } else if (error.response.status === 401) {
           this.$router.push({path: '/invalidtoken'});
         } else if (error.response.status === 406) {
           this.$router.push({path: '/noBusiness'});
         } else {
-          this.$router.push({path: '/noBusiness'});
+          this.$router.push({path: '/timeout'});
           console.log(error.message);
         }
       })
@@ -122,19 +320,35 @@ name: "Listings",
         }
       }
     },
-    populatePage(data) {
-      for (let i=0; i < data.length; i++) {
-        this.listings.push({
-          productName: data[i].inventoryItem.product.name,
-          description: data[i].inventoryItem.product.description,
-          productId: data[i].inventoryItem.product.id,
-          quantityPerSale: data[i].inventoryItem.quantity,
-          quantity: data[i].quantity,
-          price: data[i].price,
-          listDate: data[i].created,
-          closeDate: data[i].closes,
-          moreInfo: data[i].moreInfo
-        })
+    populatePage(response) {
+      if (response.data.length <= 0) {
+        this.currentPage = 0;
+        this.maxPage = 0;
+        this.totalRows = 0;
+        this.totalPages = 0;
+        // Generate the tableData to be placed in the table & get the total number of rows.
+      } else {
+        this.totalRows = parseInt(response.headers["total-rows"]);
+        this.totalPages = parseInt(response.headers["total-pages"]);
+
+        this.listings = [];
+
+        for (let i = 0; i < this.rowsPerPage; i++) {
+          if (i === response.data.length) {
+            return
+          }
+          this.listings.push({
+            productName: response.data[i].inventoryItem.product.name,
+            description: response.data[i].inventoryItem.product.description,
+            productId: response.data[i].inventoryItem.product.id,
+            quantityPerSale: response.data[i].inventoryItem.quantity,
+            quantity: response.data[i].quantity,
+            price: response.data[i].price,
+            listDate: response.data[i].created,
+            closeDate: response.data[i].closes,
+            moreInfo: response.data[i].moreInfo
+          })
+        }
       }
     },
 
@@ -169,54 +383,6 @@ name: "Listings",
       this.currencySymbol = response[0].currencies[0].symbol;
     },
 
-    fakeListings() {
-      this.listings.push({
-        productName: 'Beans',
-        productId: 'WATT-420-BEANS',
-        description: 'Watties baked beanz is natures super food. 99% fat free, high in protein, source of iron and a great source of dietary fibre. Watties baked beans are low gi, giving you long-lasting energy to keep you going for longer. Proudly made in nz.',
-        quantityPerSale: 4,
-        quantity: 3,
-        price: 17.99,
-        listDate: '28/4/2021',
-        closeDate: '1/5/2021',
-        expires: '2/5/2021',
-        moreInfo: 'Seller may be willing to consider near offers'
-      })
-      this.listings.push({
-        productName: 'Apples',
-        productId: 'APPLES',
-        quantityPerSale: 2,
-        quantity: 5,
-        price: 5,
-        listDate: '28/4/2021',
-        closeDate: '1/5/2021',
-        expires: '2/5/2021'
-      })
-      this.listings.push({
-        productName: 'XXX',
-        productId: 'XXX',
-        description: 'Watties baked beanz is natures super food. 99% fat free, high in protein, source of iron and a great source of dietary fibre. Watties baked beans are low gi, giving you long-lasting energy to keep you going for longer. Proudly made in nz.',
-        quantityPerSale: 4,
-        quantity: 3,
-        price: 17.99,
-        listDate: '28/4/2021',
-        closeDate: '10/5/2021',
-        expires: '24/5/2021',
-        moreInfo: ''
-      })
-      this.listings.push({
-        productName: 'YYY',
-        productId: 'UHHHH',
-        description: "",
-        quantityPerSale: 4,
-        quantity: 3,
-        price: 17.99,
-        listDate: '28/4/2021',
-        closeDate: '1/5/2021',
-        expires: '2/5/2021',
-        moreInfo: 'Seller may be willing to consider near offers'
-      })
-    },
     async getUserRole(id) {
       await Api.getUser(id).then(response => {
         this.role = response.data.role;
@@ -236,17 +402,11 @@ name: "Listings",
 
       await this.currencyRequest();
 
-      // // if currency code and symbol exist we want to update table header of RRP to show this info
-      // if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
-      //   this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
-      // }
-      // this.getListings(this.businessId).then(
-      //     () => {}
-      // ).catch(
-      //     (e) => console.log(e)
-      // )
-      this.fakeListings();
-      // this.populatePage(this.listings);
+      this.getListings().then(
+          () => {}
+      ).catch(
+          (e) => console.log(e)
+      )
     } else {
       this.$router.push({name: 'Login'});
     }

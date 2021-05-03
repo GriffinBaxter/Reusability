@@ -1,44 +1,26 @@
 package org.seng302.business.listing;
 
 import org.seng302.business.inventoryItem.InventoryItem;
-import org.seng302.business.inventoryItem.InventoryPayload;
+import org.seng302.business.inventoryItem.InventoryItemPayload;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class ListingPayload {
     private Integer id;
-    private InventoryPayload inventoryItem;
+    private InventoryItemPayload inventoryItem;
     private Integer quantity;
     private Double price;
     private String moreInfo;
-    private LocalDateTime created;
-    private LocalDateTime closes;
-
-//    public static List<ListingPayload> toListingPayload (List<Listing> listings) throws Exception {
-//        List<ListingPayload> listingPayloads = new ArrayList<>();
-//        ListingPayload listingPayload;
-//        for (Listing listing: listings) {
-//            listingPayload = new ListingPayload(
-//                listing.getId(),
-//                listing.getInventoryItem(),
-//                listing.getQuantity(),
-//                listing.getPrice(),
-//                listing.getMoreInfo(),
-//                listing.getCreated(),
-//                listing.getCloses()
-//            );
-//            listingPayloads.add(listingPayload);
-//        }
-//        return listingPayloads;
-//    }
+    private String created;
+    private String closes;
 
     public ListingPayload(int id,
-                          InventoryPayload inventoryItem,
+                          InventoryItemPayload inventoryItem,
                           Integer quantity,
                           Double price,
                           String moreInfo,
-                          LocalDateTime created,
-                          LocalDateTime closes
+                          String created,
+                          String closes
                           ) {
     this.id = id;
     this.inventoryItem = inventoryItem;
@@ -53,7 +35,7 @@ public class ListingPayload {
     public int getId() {
         return id;
     }
-    public InventoryPayload getInventoryItem() {
+    public InventoryItemPayload getInventoryItem() {
         return inventoryItem;
     }
     public Integer getQuantity() {
@@ -65,10 +47,36 @@ public class ListingPayload {
     public String getMoreInfo() {
         return moreInfo;
     }
-    public LocalDateTime getCreated() {
+    public String getCreated() {
         return created;
     }
-    public LocalDateTime getCloses() {
+    public String getCloses() {
         return closes;
+    }
+
+    @Override
+    public String toString() {
+        return "{\"id\":" + id + "," +
+                "\"inventoryItem\":" +
+                "{\"id\":" + inventoryItem.getId() + "," +
+                "\"product\":{" +
+                "\"id\":\"" + inventoryItem.getProduct().getId() + "\"," +
+                "\"name\":\"" + inventoryItem.getProduct().getName() + "\"," +
+                "\"description\":\"" + inventoryItem.getProduct().getDescription() + "\"," +
+                "\"manufacturer\":\"" + inventoryItem.getProduct().getManufacturer() + "\"," +
+                "\"recommendedRetailPrice\":" + inventoryItem.getProduct().getRecommendedRetailPrice() + "," +
+                "\"created\":\"" + inventoryItem.getProduct().getCreated() + "\"}," +
+                "\"quantity\":" + inventoryItem.getQuantity() + "," +
+                "\"pricePerItem\":" + inventoryItem.getPricePerItem() + "," +
+                "\"totalPrice\":" + inventoryItem.getTotalPrice() + "," +
+                "\"manufactured\":\"" + inventoryItem.getManufactured() + "\"," +
+                "\"sellBy\":\"" + inventoryItem.getSellBy() + "\"," +
+                "\"bestBefore\":\"" + inventoryItem.getBestBefore() + "\"," +
+                "\"expires\":\"" + inventoryItem.getExpires() + "\"}," +
+                "\"quantity\":" + quantity + "," +
+                "\"price\":" + price + "," +
+                "\"moreInfo\":\"" + moreInfo + "\"," +
+                "\"created\":\"" + created + "\"," +
+                "\"closes\":\"" + closes + "\"}";
     }
 }

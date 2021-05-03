@@ -98,25 +98,25 @@ public class ListingResourceIntegrationTests {
     private String expectedJSON;
 
     private final String expectedListingJSON = "[" +
-                                            "{\"id\"%s," +
-                                            "\"inventoryItem\":{" +
+                                            "{\"id\":%s," +
+                                            "\"inventoryItem\":" +
                                                 "{\"id\":%s," +
                                                 "\"product\":{" +
                                                     "\"id\":\"%s\"," +
                                                     "\"name\":\"%s\"," +
                                                     "\"description\":\"%s\"," +
                                                     "\"manufacturer\":\"%s\"," +
-                                                    "\"recommendedRetailPrice\":%.2f," +
+                                                    "\"recommendedRetailPrice\":%.1f," +
                                                     "\"created\":\"%s\"}," +
                                                 "\"quantity\":%d," +
-                                                "\"pricePerItem\":%.2f," +
-                                                "\"totalPrice\":%.2f," +
+                                                "\"pricePerItem\":%.1f," +
+                                                "\"totalPrice\":%.1f," +
                                                 "\"manufactured\":\"%s\"," +
                                                 "\"sellBy\":\"%s\"," +
                                                 "\"bestBefore\":\"%s\"," +
-                                                "\"expires\":\"%s\"}" +
+                                                "\"expires\":\"%s\"}," +
                                             "\"quantity\":%d," +
-                                            "\"price\":%.2f," +
+                                            "\"price\":%.1f," +
                                             "\"moreInfo\":\"%s\"," +
                                             "\"created\":\"%s\"," +
                                             "\"closes\":\"%s\"}" +
@@ -462,12 +462,12 @@ public class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
-                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated(), listing.getCloses());
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
 
 
         // when
         List<Listing> list = List.of(listing);
-        Page<Listing> pagedResponse = new PageImpl(list);
+        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
         Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
