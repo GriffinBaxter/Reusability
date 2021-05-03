@@ -42,6 +42,50 @@
             v-bind:currency-code="currencyCode"
             v-bind:currency-symbol="currencySymbol"
         />
+
+        <!--space-->
+        <br>
+
+        <!--pagination-->
+        <nav>
+          <ul v-if="totalPages > 0" class="pagination justify-content-center">
+            <!-- This is only enabled when there is a previous page -->
+            <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
+              Previous
+            </button>
+
+            <!-- This is shown when there are more then 2 pages and you are at page 1-->
+            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
+              {{currentPage-1}}
+            </button>
+
+            <!-- Only shows when we are past at least the first page -->
+            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
+              {{currentPage}}
+            </button>
+
+            <!-- This converts the current page into 1 origin.-->
+            <button type="button" class="btn btn-outline-primary active">
+              {{currentPage+1}}
+            </button>
+
+            <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
+            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
+              {{currentPage+2}}
+            </button>
+
+            <!-- This is shown when there are more then 2 pages and you are at page 1-->
+            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
+              {{currentPage+3}}
+            </button>
+
+            <!-- The next button only enabled if there is another page.-->
+            <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
+              Next
+            </button>
+          </ul>
+        </nav>
+
       </div>
     </div>
     <div class="card p-1" v-if="listings.length < 1">
@@ -83,6 +127,27 @@ name: "Listings",
     }
   },
   methods: {
+    /**
+     * Updates the display to show the new page when a user clicks to move to a different page.
+     *
+     * @param event The click event
+     * @param newPageNumber The new page number
+     */
+    updatePage(event, newPageNumber) {
+      this.currentPage = newPageNumber;
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+      this.getListings();
+    },
+
+    /**
+     * Given a page number check that the page is within the acceptable range.
+     * NOTE this is a 0 origin.
+     * @param pageNumber The page number to be checked.
+     */
+    isValidPageNumber(pageNumber) {
+      return 0 <= pageNumber && pageNumber < this.totalPages;
+    },
+
     async getListings() {
       /*
       Attempts to get listings from backend
@@ -93,8 +158,7 @@ name: "Listings",
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
 
       await Api.sortListings(this.businessId, this.orderBy, this.currentPage).then(response => {
-        console.log(response);
-        this.populatePage(response.data);
+        this.populatePage(response);
 
       }).catch((error) => {
         if (error.request && !error.response) {
@@ -135,19 +199,35 @@ name: "Listings",
         }
       }
     },
-    populatePage(data) {
-      for (let i=0; i < data.length; i++) {
-        this.listings.push({
-          productName: data[i].inventoryItem.product.name,
-          description: data[i].inventoryItem.product.description,
-          productId: data[i].inventoryItem.product.id,
-          quantityPerSale: data[i].inventoryItem.quantity,
-          quantity: data[i].quantity,
-          price: data[i].price,
-          listDate: data[i].created,
-          closeDate: data[i].closes,
-          moreInfo: data[i].moreInfo
-        })
+    populatePage(response) {
+      if (response.data.length <= 0) {
+        this.currentPage = 0;
+        this.maxPage = 0;
+        this.totalRows = 0;
+        this.totalPages = 0;
+        // Generate the tableData to be placed in the table & get the total number of rows.
+      } else {
+        this.totalRows = parseInt(response.headers["total-rows"]);
+        this.totalPages = parseInt(response.headers["total-pages"]);
+
+        this.listings = [];
+
+        for (let i = 0; i < this.rowsPerPage; i++) {
+          if (i === response.data.length) {
+            return
+          }
+          this.listings.push({
+            productName: response.data[i].inventoryItem.product.name,
+            description: response.data[i].inventoryItem.product.description,
+            productId: response.data[i].inventoryItem.product.id,
+            quantityPerSale: response.data[i].inventoryItem.quantity,
+            quantity: response.data[i].quantity,
+            price: response.data[i].price,
+            listDate: response.data[i].created,
+            closeDate: response.data[i].closes,
+            moreInfo: response.data[i].moreInfo
+          })
+        }
       }
     },
 
