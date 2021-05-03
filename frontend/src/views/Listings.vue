@@ -7,7 +7,7 @@
     <!-- Listing Container -->
     <div class="container">
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
-      <div class="card p-1">
+      <div class="card p-1" v-if="isListings">
         <!-- Order Buttons -->
         <div class="row my-3" align="center">
           <div class="col-md">
@@ -41,6 +41,9 @@
             v-bind:moreInfo="item.moreInfo"/>
       </div>
     </div>
+    <div class="card p-1" v-if="!isListings">
+      <p class="h2 py-5" align="center">No Listings Found</p>
+    </div>
     <!-- Footer -->
     <Footer/>
   </div>
@@ -63,7 +66,8 @@ name: "Listings",
       listings: [],
       businessName: "",
       businessAdmin: false,
-      businessId: -1
+      businessId: -1,
+      isListings: false
     }
   },
   methods: {
@@ -109,6 +113,9 @@ name: "Listings",
     populatePage(data) {
       if (data.length === 0) {
         console.log('No listings')
+        this.isListings = false;
+      } else {
+        this.isListings = true;
       }
       for (let i=0; i < data.length; i++) {
         this.listings.push({
@@ -176,7 +183,7 @@ name: "Listings",
   mounted() {
     this.businessId = parseInt(this.$route.params.id);
     this.getBusiness(this.businessId);
-    this.fakeListings();
+    //this.fakeListings();
     // this.getListings(this.businessId); //NOTE: Currently not working
   }
 }
