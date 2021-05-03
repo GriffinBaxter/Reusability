@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # retrieve environment variables
-source env_variables.txt
+source "production-backend/env_variables.txt"
 
 # Run the production backend server
 

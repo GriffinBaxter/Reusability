@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # retrieve environment variables
-source env_variables.txt
+source "staging-backend/env_variables.txt"
 
 # Run the staging backend server
 
