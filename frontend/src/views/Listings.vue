@@ -67,7 +67,7 @@ name: "Listings",
       businessName: "",
       businessAdmin: false,
       businessId: -1,
-      isListings: false
+      isListings: true
     }
   },
   methods: {

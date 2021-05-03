@@ -69,7 +69,7 @@ public class InventoryItemResource {
         return new InventoryPayload();
     }
 
-}
+
     /**
      * Retrieve a business's product inventory with the given business ID, 5 pages a time.
      * The page is ordered based on orderBy and the specified page given by page is returned.

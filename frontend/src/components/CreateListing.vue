@@ -18,11 +18,19 @@
             <!--Inventory Item Select-->
             <div class="row">
               <div class="col form-group py-1 px-3">
-                <label for="inventoryId" class="form-control-label">Inventory ID*: </label>
-                <select id="inventoryId" class="form-select mdb-select md-form" searchable="Search here.." tabindex="1" data-live-search="true" :class="toggleInvalidClass(inventoryIdErrorMsg)">
-                  <option value="" disabled selected>Select an Item</option>
-                  <option v-for="item in inventoryItems" v-bind:key="item.id" :value="item.id">{{item.product.id}} x{{item.quantity}} (${{item.totalPrice}})</option>
-                </select>
+                <label for="productDataList" class="form-control-label">Inventory ID*: </label>
+                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" :maxlength="config.inventoryId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" required/>
+                <datalist id="productDataList" style="overflow-y: auto!important">
+                      <option value="Chocolate">asd</option>
+                      <option value="Coconut">asd</option>
+                      <option value="Mint">ads</option>
+                      <option value="Strawberry">asd</option>
+                      <option value="Vanilla">ads</option>
+                </datalist>
+<!--                <select id="inventoryId" class="form-select mdb-select md-form" searchable="Search here.." tabindex="1" data-live-search="true" :class="toggleInvalidClass(inventoryIdErrorMsg)">-->
+<!--                  <option value="" disabled selected>Select an Item</option>-->
+<!--                  <option v-for="item in inventoryItems" v-bind:key="item.id" :value="item.id">{{item.product.id}} x{{item.quantity}} (${{item.totalPrice}})</option>-->
+<!--                </select>-->
                 <div class="invalid-feedback">
                   {{ inventoryIdErrorMsg }}
                 </div>
