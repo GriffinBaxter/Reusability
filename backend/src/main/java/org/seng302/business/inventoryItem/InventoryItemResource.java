@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.listing.Listing;
+import org.seng302.business.listing.ListingPayload;
 import org.seng302.business.product.Product;
 import org.seng302.business.product.ProductPayload;
 import org.seng302.business.product.ProductRepository;
@@ -64,6 +66,13 @@ public class InventoryItemResource {
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
     }
+
+    public static InventoryItemPayload convertToPayload(InventoryItem item){
+        return new InventoryItemPayload(item.getId(), ProductPayload.convertProductToProductPayload(item.getProduct()),
+                item.getQuantity(), item.getPricePerItem(), item.getTotalPrice(), item.getManufactured().toString(),
+                item.getBestBefore().toString(), item.getSellBy().toString(), item.getExpires().toString());
+    }
+
 
     /**
      * Retrieve a business's product inventory with the given business ID, 5 pages a time.
@@ -241,9 +250,7 @@ public class InventoryItemResource {
 
         logger.info("Product Inventory Retrieval Success - 200 [OK] - Product inventory retrieved for business with ID {}", id);
 
-        System.out.println(11);
         List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(pagedResult.getContent());
-        System.out.println(11);
 
         logger.info("The size of the product inventory payload is {}", inventoryItemPayloads.size());
 
@@ -251,6 +258,44 @@ public class InventoryItemResource {
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
+                .body(inventoryItemPayloads);
+    }
+
+    /**
+     * Get method for retrieving all inventory items at once (not pagination). To be used with CreateListing modal.
+     * @param sessionToken The current user's session token
+     * @param id The current business ID (from the URL path)
+     * @return A list of all inventory items for the given business
+     */
+    @GetMapping("/businesses/{id}/inventoryAll")
+    public ResponseEntity<List<InventoryItemPayload>> retrieveAllInventoryItems(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                                                    @PathVariable Integer id) {
+        logger.debug("Product inventory retrieval request (all items) received with business ID {}", id);
+
+        // Checks user logged in - 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        Integer businessId = Integer.valueOf(id);
+        // Checks business at ID exists - 406
+
+        Optional<Business> currentBusiness = businessRepository.findBusinessById(businessId);
+
+        if (currentBusiness.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Business Does Not Exist"
+            );
+        }
+
+        List<InventoryItem> inventoryItems = inventoryItemRepository.findAllByBusinessId(businessId);
+
+        logger.info("Inventory Retrieval Success - 200 [OK] -  All inventory items retrieved for business with ID {}", businessId);
+
+        List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(inventoryItems);
+
+        logger.debug("All inventory items retrieved for business with ID {}: {}", businessId, inventoryItemPayloads);
+
+        return ResponseEntity.ok()
                 .body(inventoryItemPayloads);
     }
 

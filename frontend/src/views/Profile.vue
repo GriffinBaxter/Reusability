@@ -813,7 +813,7 @@ export default {
 }
 
 #profile-container {
-  margin-bottom: 10%;
+  margin-bottom: 5%;
 }
 
 #imageDiv {

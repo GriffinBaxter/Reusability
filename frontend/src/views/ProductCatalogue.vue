@@ -599,7 +599,9 @@ export default {
               this.cannotProceed = false;
 
               this.requestProducts().then(
-                  () => this.buildRows()
+                  () => {
+
+                  }
               ).catch(
                   (e) => console.log(e)
               )
