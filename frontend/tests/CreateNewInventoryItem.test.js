@@ -1,5 +1,6 @@
 /**
  * Jest tests for CreateNewInventoryItem.vue.
+ * @jest-environment jsdom
  */
 
 import {test, expect} from "@jest/globals"
@@ -160,7 +161,7 @@ test('Product id with valid length and contains numbers', () => {
 test('Product id is sample data.', () => {
     const testInputVal = "WATT-420-BEANS";
     const expectedMessage = "";
-    
+
     expect(
         reg.methods.getErrorMessage(
             InventoryItem.config.productId.name,

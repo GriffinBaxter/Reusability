@@ -114,7 +114,7 @@
 
 <script>
 
-// import { Modal } from "bootstrap"; //uncommenting means the test do not run
+import { Modal } from "bootstrap"; //uncommenting means the test do not run
 import Api, {InventoryItem} from "../Api";
 import {endOfToday, format, compareAsc} from 'date-fns'
 
@@ -643,7 +643,7 @@ export default {
 
   },
   mounted() {
-    // this.modal = new Modal(document.getElementById("creationPopup"));
+    this.modal = new Modal(document.getElementById("creationPopup"));
   }
 };
 </script>
