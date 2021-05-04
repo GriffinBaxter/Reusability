@@ -16,7 +16,7 @@
 
         <!-- Logo image -->
         <div class="logo-container text-center">
-          <router-link class="navbar-brand " to="/home">
+          <router-link class="navbar-brand " to="/home" tabindex="-1">
             <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
           </router-link>
           <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
@@ -36,17 +36,24 @@
 
                 <!-- default page links -->
                 <li class="nav-item">
-                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home">Home</router-link>
+                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
                 </li>
-                <li class="nav-item">
-                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile">Profile</router-link>
+                <li class="nav-item" v-if="actAsId === null">
+                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                    Profile
+                  </router-link>
+                </li>
+                <li class="nav-item" v-if=actAsId>
+                  <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]" :to="'/businessProfile/' + actAsId" tabindex="2">
+                    Profile
+                  </router-link>
                 </li>
 
                 <!--- Business specific account links -->
                 <li class="nav-item dropdown" v-if="isBusinessAccount">
 
                 <!-- Navbar toggle drop down -->
-                <a class="nav-link dropdown-toggle" role="button" @click="() => {
+                <a class="nav-link dropdown-toggle" role="button" tabindex="3" @click="() => {
                   this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown)
                 }">
                   Business Pages
@@ -56,13 +63,20 @@
                 <div id="business-dropdown-links-wrapper">
                  <ul class="dropdown-menu show" id="business-dropdown-links">
                       <li class="nav-item">
-                        <router-link :class="['nav-link ', isActivePath('/')]" to="/">Business Listings</router-link>
+                        <router-link :class="['nav-link ', isActivePath('/')]" to="/" tabindex="-1">
+                          Business Listings
+                        </router-link>
                       </li>
                       <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Inventory</router-link>
+                        <router-link :class="['nav-link', isActivePath('/')]" to="/" tabindex="-1">
+                          Inventory
+                        </router-link>
                       </li>
                       <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/">Catalogue</router-link>
+                        <!--                        TODO Change this to dynamic ID-->
+                        <router-link :class="['nav-link', isActivePath('/businesses/15/products')]" to="/" tabindex="-1">
+                          Catalogue
+                        </router-link>
                       </li>
                  </ul>
                 </div>
@@ -71,7 +85,7 @@
 
                 <!-- Log out link-->
                 <li class="nav-item">
-                  <a class="nav-link" style="cursor: pointer" @click="e =>logout(e)">Log out</a>
+                  <a class="nav-link" style="cursor: pointer" tabindex="4" @click="e =>logout(e)">Log out</a>
                 </li>
 
               </ul>
@@ -279,11 +293,12 @@ export default {
        */
       event.preventDefault();
 
-      // Reason for this not working is because it is HttpOnly, which doesn't allow the browser/ JS to
-      // delete this cookie.
-      Cookies.remove('JSESSIONID', {path: '/'});
       Cookies.remove('userID');
-      await this.$router.push({name: 'Login'});
+      Cookies.remove('actAs');
+
+      Api.signOut().then(() => {
+        this.$router.push({ name: 'Login' })
+      })
     },
     /**
      * The function when called ensure the user is logged in. Otherwise takes you to the login page.
@@ -350,6 +365,25 @@ export default {
       this.currentUser = response;
       if (Cookies.get('actAs')) {
         this.actAsId = Cookies.get('actAs');
+        // Checks if user is admin of business at id actAs
+        let check = false;
+        for (let i=0; i < response.businessesAdministered.length; i++) {
+          if (String(response.businessesAdministered[i].id) === this.actAsId) {
+            this.actAs = response.businessesAdministered[i].name;
+            check = true;
+            i = response.businessesAdministered.length; // Ends for loop
+          }
+        }
+        // If user not admin of business removes cookie
+        if (check === false) {
+          Cookies.remove('actAs');
+          this.actAsId = null;
+          if (response.nickname == null) {
+            this.actAs = response.firstName;
+          } else {
+            this.actAs = response.nickname;
+          }
+        }
       } else {
         if (response.nickname == null) {
           this.actAs = response.firstName;
@@ -455,6 +489,10 @@ export default {
     max-width: 200px;
   }
 
+.navbar-brand {
+  outline: none;
+}
+
 .company-name-main-position-nav {
 
   /* centre text */
@@ -482,8 +520,9 @@ export default {
   width: auto;
 }
 
-.nav-link:hover {
+.nav-link:hover, .nav-link:focus {
   background: #ef5e33;
+  outline: none;
 }
 
 .navbar-toggler {
@@ -516,6 +555,41 @@ export default {
   padding: 0 5rem;
   /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
+
+.company-name-main-font {
+  font-family: 'Merriweather Sans', sans-serif;
+
+  /* centre text with navbar toggle */
+  margin: 0;
+  position: absolute;
+  top: 35px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+@media (min-width: 250px) {
+  .company-name-main-font {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 350px) {
+  .company-name-main-font {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 400px) {
+  .company-name-main-font {
+    font-size: 22px;
+  }
+}
+
+@media (min-width: 450px) {
+  .company-name-main-font {
+    font-size: 28px;
+  }
+}
 /*-------------------------------------------- Large break point styling ------------------------------------------*/
 
 /* Styling for smaller screen sizes ends */
@@ -532,7 +606,6 @@ export default {
   }
 
   .company-name-main-font {
-    font-family: 'Merriweather Sans', sans-serif;
     font-size: 32px;
 
     /* centre text */
@@ -541,11 +614,6 @@ export default {
     top: 50%;
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
-
-    /* align to bottom of logo */
-    /*vertical-align: bottom;*/
-    /*line-height: 90%;*/
-
   }
 
   #navbar-id {
@@ -606,7 +674,6 @@ export default {
   }
 
   .company-name-main-font {
-    font-family: 'Merriweather Sans', sans-serif;
     font-size: 50px;
 
     /* centre text */
@@ -615,10 +682,6 @@ export default {
     top: 50%;
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
-
-    /* align to bottom of logo */
-    /*vertical-align: bottom;*/
-    /*line-height: 90%;*/
   }
 }
 

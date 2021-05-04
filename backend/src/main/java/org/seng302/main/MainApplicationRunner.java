@@ -4,13 +4,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
+import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.BusinessType;
+import org.seng302.business.product.Product;
+import org.seng302.business.product.ProductRepository;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -31,6 +37,15 @@ public class MainApplicationRunner implements ApplicationRunner {
     private UserRepository userRepository;
     private BusinessRepository businessRepository;
     private AddressRepository addressRepository;
+    private ProductRepository productRepository;
+
+    @Value("${dgaa.email}")
+    private String dgaaEmail;
+    @Value("${dgaa.password}")
+    private String dgaaPassword;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
@@ -38,10 +53,11 @@ public class MainApplicationRunner implements ApplicationRunner {
      * classes (i.e. dependency injection)
      */
     @Autowired
-    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository) {
+    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository, ProductRepository productRepository) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
         this.addressRepository = addressRepository;
+        this.productRepository = productRepository;
     }
 
     /**
@@ -51,12 +67,17 @@ public class MainApplicationRunner implements ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        logger.info("Startup application with {}", args);
+        if (isPresent(dgaaEmail) && isPresent(dgaaPassword)) {
+            logger.info("Startup application with {}", args);
+            userRepository.findAll().forEach(logger::info);
+            businessRepository.findAll().forEach(logger::info);
+            addressRepository.findAll().forEach(logger::info);
 
-        userRepository.findAll().forEach(logger::info);
-        businessRepository.findAll().forEach(logger::info);
-        addressRepository.findAll().forEach(logger::info);
-
+        } else {
+            logger.fatal("Environment variables for DGAA email and/or password are not defined.");
+            logger.info("-- shutting down application --");
+            context.close();
+        }
     }
 
     /**
@@ -87,20 +108,24 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "S",
                     "Johnny",
                     "Biography",
-                    "email@email.com",
+                    dgaaEmail,
                     LocalDate.of(2000, 2, 2),
                     "0271316",
                     address,
-                    "Password123!",
+                    dgaaPassword,
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
                     Role.DEFAULTGLOBALAPPLICATIONADMIN);
-            System.out.println(dGAA);
             dGAA = userRepository.save(dGAA);
             logger.error("DGAA does not exist. New DGAA created {}", dGAA);
         } else {
             logger.info("DGGA exists.");
         }
+    }
+
+
+    public boolean isPresent(String dgaaData) {
+        return (dgaaData != null) && !(dgaaData.isEmpty());
     }
 
 }

@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-3 m-3">
@@ -129,14 +130,15 @@
           </div>
 
           <div class="d-grid gap-2 d-lg-block">
-            <button class="btn btn-lg btn-outline-primary" type="button" tabindex="12" @click="$router.push('/profile')">Back to Account</button>
+            <button class="btn btn-lg btn-outline-primary" type="button" tabindex="12" @click="$router.push('/profile')">Back to Profile</button>
             <button id="register-button" tabindex="11" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewBusiness($event)">Register</button>
           </div>
 
         </form>
       </div>
     </div>
-    <Footer/>
+  </div>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -171,7 +173,7 @@ export default {
         { bType: 'ACCOMMODATION AND FOOD SERVICES', value: 'Accommodation and Food Services' },
         { bType: 'RETAIL TRADE', value: 'Retail Trade' },
         { bType: 'CHARITABLE ORGANISATION', value: 'Charitable Organisation' },
-        { bType: 'NON-PROFIT ORGANISATION', value: 'Non-Profit Organisation' }
+        { bType: 'NON PROFIT ORGANISATION', value: 'Non Profit Organisation' }
       ],
       businessTypeErrorMsg: "",
 
@@ -313,7 +315,7 @@ export default {
         'ACCOMMODATION AND FOOD SERVICES',
         'RETAIL TRADE',
         'CHARITABLE ORGANISATION',
-        'NON-PROFIT ORGANISATION']
+        'NON PROFIT ORGANISATION']
       if (businessTypes.includes(this.businessType.toUpperCase())) {
         this.businessTypeErrorMsg = "";
         requestIsInvalid = false
@@ -464,7 +466,11 @@ export default {
       Api.addNewBusiness(business
       ).then( (res) => {
             if (res.status === 201) {
-              this.$router.push('/profile'); //TODO update to BusinessProfile when created
+              const businessId = res.data.businessId;
+              if (businessId) {
+                Cookies.set('actAs', businessId);
+                this.$router.push('/businessProfile/' + businessId);
+              }
             }
           }
       ).catch((error) => {
@@ -737,6 +743,17 @@ export default {
       for (let i = 0; i < elementList.length; i++) {
         elementList[i].classList.remove("autocomplete-active");
       }
+    }
+  },
+
+  /**
+   * When mounted, initiate population of page.
+   * If cookies are invalid or not present, redirect to login page.
+   */
+  mounted() {
+    const currentID = Cookies.get('userID');
+    if (!currentID) {
+      this.$router.push({name: 'Login'});
     }
   }
 }

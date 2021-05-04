@@ -30,11 +30,11 @@ junit:
 
 # Run acceptance (cucumber) tests
 # Uncomment after ATDD workshop (at the latest)
-# cucumber:
-#   stage: test
-#   script:
-#     - cd backend
-#     - ./gradlew cucumber
+cucumber:
+  stage: test
+  script:
+    - cd backend
+    - ./gradlew cucumber
 
 # Run Jest (Javascript) tests
 # Uncomment after Jest workshop (at the latest)
@@ -50,21 +50,21 @@ jest:
     - npm run test
 
 # Export sonarqube (static code analysis) reports
-# Uncomment after ATDD workshop (at the latest)
-# dev-sonarqube:
-#   stage: sonarqube
-#   cache:
-#     key: node-modules
-#     paths:
-#       - frontend/node_modules
-#     policy: pull
-#   script:
-#     - cd frontend
-#     - npm run sonarqube
-#     - cd ../backend
-#     - ./gradlew sonarqube
-#   only:
-#     - dev
+dev-sonarqube:
+  stage: sonarqube
+  cache:
+    key: node-modules
+    paths:
+      - frontend/node_modules
+    policy: pull
+  script:
+    - cd frontend
+    - npm run test
+    - npm run sonarqube
+    - cd ../backend
+    - ./gradlew sonarqube
+  only:
+    - dev
 
 # builds all branches, except dev and master
 branch-build:
@@ -97,6 +97,11 @@ deploy-staging-backend:
     - mkdir /home/gitlab-runner/staging-backend/
     - cp -r ./build/libs /home/gitlab-runner/staging-backend
     - cp ../runner/staging-backend.sh /home/gitlab-runner/staging-backend.sh
+    - echo "export DB_URL=${DB_URL}" > /home/gitlab-runner/staging-backend/env_variables.txt
+    - echo "export DB_USERNAME=${DB_USERNAME}" >> /home/gitlab-runner/staging-backend/env_variables.txt
+    - echo "export DB_PASSWORD=${DB_PASSWORD}" >> /home/gitlab-runner/staging-backend/env_variables.txt
+    - echo "export DGAA_EMAIL=${DGAA_EMAIL}" >> /home/gitlab-runner/staging-backend/env_variables.txt
+    - echo "export DGAA_PASSWORD=${DGAA_PASSWORD}" >> /home/gitlab-runner/staging-backend/env_variables.txt
     - chmod u+x /home/gitlab-runner/staging-backend.sh
     - sudo systemctl restart seng302-staging-backend
   artifacts:
@@ -136,6 +141,11 @@ deploy-production-backend:
     - mkdir /home/gitlab-runner/production-backend/
     - cp -r ./build/libs /home/gitlab-runner/production-backend
     - cp ../runner/production-backend.sh /home/gitlab-runner/production-backend.sh
+    - echo "export DB_URL=${DB_URL}" > /home/gitlab-runner/production-backend/env_variables.txt
+    - echo "export DB_USERNAME=${DB_USERNAME}" >> /home/gitlab-runner/production-backend/env_variables.txt
+    - echo "export DB_PASSWORD=${DB_PASSWORD}" >> /home/gitlab-runner/production-backend/env_variables.txt
+    - echo "export DGAA_EMAIL=${DGAA_EMAIL}" >> /home/gitlab-runner/production-backend/env_variables.txt
+    - echo "export DGAA_PASSWORD=${DGAA_PASSWORD}" >> /home/gitlab-runner/production-backend/env_variables.txt
     - chmod u+x /home/gitlab-runner/production-backend.sh
     - sudo systemctl restart seng302-production-backend
   artifacts:
