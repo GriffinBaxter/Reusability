@@ -130,15 +130,25 @@
             </div>
           </div>
 
-          <!--logout button-->
-          <div align="right" id="adminButtonRow" v-if="isAdministrator">
-            <button class="btn btn-outline-primary float-end mt-4 mx-2" id="productCatalogueButton"
-                    @click="navigateTo('ProductCatalogue')">Product Catalogue
-            </button>
-            <button class="btn btn-outline-primary float-end mt-4 mx-2" id="InventoryButton"
-                    @click="navigateTo('Inventory')">Inventory
-            </button>
+          <div class="row">
+            <div class="col">
+              <button class="btn btn-outline-primary mt-4" @click="navigateTo('Listings')">Listings</button>
+            </div>
+            <div class="col">
+              <!--logout button-->
+              <div align="right" id="adminButtonRow" v-if="isAdministrator">
+                <button class="btn btn-outline-primary float-end mt-4 mx-2" id="productCatalogueButton"
+                        @click="navigateTo('ProductCatalogue')">Product Catalogue
+                </button>
+                <button class="btn btn-outline-primary float-end mt-4 mx-2" id="InventoryButton"
+                        @click="navigateTo('Inventory')">Inventory
+                </button>
+              </div>
+            </div>
           </div>
+
+
+
 
         </div>
       </div>

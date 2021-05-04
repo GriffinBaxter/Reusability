@@ -10,8 +10,6 @@
           <h2 class="text-center">New Listing</h2>
         </div>
 
-
-
         <!--modal body-->
         <div class="modal-body">
           <form id="ListingCreation" @submit.prevent>
@@ -102,12 +100,6 @@ const datefns = require('date-fns');
 
 export default {
   name: "CreateListing",
-  props: {
-    businessId: {
-      type: Number,
-      required: true
-    }
-  },
   data() {
     return {
       config: Listing.config,
@@ -132,6 +124,7 @@ export default {
       // Closes related variables
       closes: "",
       closesErrorMsg: "",
+      businessId: this.$route.params.id
     }
   },
   methods: {
@@ -274,26 +267,6 @@ export default {
         return null;
       }
 
-      // const verifyRegex = /^[0-9]{1,5}-[0-9]{1,3}-[0-9]{1,3}$/
-      //
-      // if (verifyRegex.test(dateString)) {
-      //   const dateParts = dateString.split("-", 3);
-      //
-      //   const year = dateParts[0];
-      //   let month = dateParts[1];
-      //   let day = dateParts[2];
-      //
-      //   month = (month.length === 1) ? `0${month}` : month;
-      //   day = (day.length === 1) ? `0${day}` : day;
-      //
-      //   return {
-      //     year: year,
-      //     month: month,
-      //     day: day,
-      //   }
-      // } else {
-      //   return null
-      // }
     },
     /**
      * This function will check the validity of the sell by date of an inventory item i.e. that the sell by date of the
@@ -327,7 +300,7 @@ export default {
     },
 
     async getAllInventoryItems() {
-      await Api.getEveryInventoryItem(2).then((response) => {
+      await Api.getEveryInventoryItem(this.businessId).then((response) => {
         this.allInventoryItems = [...response.data];
       }).catch((error) => {
         if (error.response) {
@@ -352,17 +325,8 @@ export default {
     async createNewInventoryItem() { // TODO
       let requestIsInvalid = false;
 
-      // this.inventoryId = document.getElementById("productInput").value;
       this.inventoryId = this.currentInventoryItem.id;
       this.trimTextInputFields();
-
-      // Inventory Item Error Checking
-      //if (this.inventoryId.length === 0) {
-      //  requestIsInvalid = true;
-      //  this.inventoryIdErrorMsg = "Must select an item from the inventory"
-      //} else {
-      //  this.inventoryIdErrorMsg = "";
-      //}
 
       // Quantity error checking
       this.quantityErrorMsg = this.getErrorMessage(
@@ -464,10 +428,8 @@ export default {
     }
   },
   mounted() {
-    // Adds test data
     this.getAllInventoryItems().then(() => {});
     this.modal = new Modal(document.getElementById("listingCreationPopup"));
-    //this.testData();
   }
 }
 </script>

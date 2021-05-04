@@ -269,7 +269,7 @@ public class InventoryItemResource {
      */
     @GetMapping("/businesses/{id}/inventoryAll")
     public ResponseEntity<List<InventoryItemPayload>> retrieveAllInventoryItems(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                                                    @PathVariable String id) {
+                                                                    @PathVariable Integer id) {
         logger.debug("Product inventory retrieval request (all items) received with business ID {}", id);
 
         // Checks user logged in - 401
@@ -277,8 +277,13 @@ public class InventoryItemResource {
 
         Integer businessId = Integer.valueOf(id);
         // Checks business at ID exists - 406
-        Business currentBusiness = businessRepository.findBusinessById(businessId).get();
-        if (currentBusiness == null) {
+
+        System.out.println("ID: " + businessId);
+
+        Optional<Business> currentBusiness = businessRepository.findBusinessById(businessId);
+        System.out.println(currentBusiness);
+//        Business currentBusiness = businessRepository.findBusinessById(businessId).get();
+        if (currentBusiness.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "Business Does Not Exist"
