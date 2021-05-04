@@ -94,7 +94,9 @@
 </template>
 
 <script>
-import Api, {Listing} from "@/Api";
+import Api from "@/Api";
+import Listing from "@/configs/Listings";
+
 import {Modal} from "bootstrap";
 const datefns = require('date-fns');
 

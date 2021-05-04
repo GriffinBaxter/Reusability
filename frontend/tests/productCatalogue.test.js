@@ -4,7 +4,8 @@
 
 import {test, expect} from "@jest/globals"
 import reg from '../src/views/ProductCatalogue'
-import {Product} from '../src/Api'
+// noinspection DuplicatedCode
+import Product from '../src/configs/Product'
 
 // ***************************************** getErrorMessage() Tests ***************************************************
 

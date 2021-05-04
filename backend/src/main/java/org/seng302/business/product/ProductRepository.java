@@ -31,4 +31,11 @@ public interface ProductRepository extends JpaRepository<Product, String> {
      */
     Optional<Product> findProductByIdAndBusinessId(String id, Integer businessId);
 
+    /**
+     * Deletes any products with a matching product ID and a business ID.
+     * @param id The ID of the product
+     * @param businessId The ID of the business
+     */
+    void deleteByIdAndBusinessId(String id, Integer businessId);
+
 }
