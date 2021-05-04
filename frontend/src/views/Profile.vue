@@ -76,15 +76,15 @@
             <div class="card-body">
               <div v-if="!isBusinessAdministrator">
                 <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-outline-primary" v-else @click="activeAsAdministrator()">Active As
-                  Administrator
+                <button type="button" class="btn btn-md btn-outline-primary" v-else @click="activeAsAdministrator()">
+                  Grant Business Administrator Status
                 </button>
               </div>
 
               <div v-else>
                 <div class="spinner-border spinner-border-sm text-warning" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-outline-warning" v-else @click="removeActiveAdministrator()">Remove
-                  Administrator
+                <button type="button" class="btn btn-md btn-outline-warning" v-else @click="removeActiveAdministrator()">
+                  Revoke Business Administrator Status
                 </button>
               </div>
             </div>
@@ -102,15 +102,15 @@
               <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
               <div v-if="isGAA(role)">
                 <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-lg btn-outline-danger" v-else @click="revokeUserGAA">Revoke admin
-                  rights
+                <button type="button" class="btn btn-md btn-outline-danger" v-else @click="revokeUserGAA">
+                  Revoke Global Application Admin
                 </button>
               </div>
 
               <div v-else>
                 <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-lg btn-outline-success" v-else @click="grantUserGAA">Grant admin
-                  rights
+                <button type="button" class="btn btn-md btn-outline-success" v-else @click="grantUserGAA">
+                  Grant Global Application Admin
                 </button>
               </div>
             </div>
@@ -214,14 +214,14 @@
               </div>
               <hr v-if="businessesAdministeredExist()">
               <div class="container" v-if="businessesAdministeredExist()">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between businesses-administered">
                   <div class="col-md-3">
                     <h6>Businesses Administered:</h6>
                   </div>
                   <div class="col">
                     <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
                     <div v-else>
-                      <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
+                      <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
                            align="right" @click="pushToBusiness(business.id)">
                         {{ business.name }}
                       </div>
@@ -234,9 +234,9 @@
             </div>
           </div>
 
-          <!--logout button-->
-          <div align="right" id="signOutRow" v-if="!otherUser">
-          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="logout()">Sign Out</button>
+          <!--register business button-->
+          <div align="right" id="registerBusinessRow" v-if="!otherUser">
+          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="$router.push('/businessRegistration')">Register Business</button>
           </div>
 
         </div>
@@ -812,16 +812,6 @@ export default {
   width: 60%; /* Could be more or less, depending on screen size */
 }
 
-
-/**
- * TODO remove once footer is sticky
- * Calculates where footer should be.
- */
-
-.all-but-footer {
-  min-height: calc(100vh - 738px);
-}
-
 #profile-container {
   margin-bottom: 10%;
 }
@@ -829,6 +819,11 @@ export default {
 #imageDiv {
   width:100%;
   padding: 2px;
+}
+
+.businesses-administered:hover {
+  color: #1EBA8C !important;
+  cursor: pointer;
 }
 
 </style>
