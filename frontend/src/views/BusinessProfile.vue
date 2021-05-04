@@ -137,10 +137,9 @@
             </div>
             <div class="col" align="right" id="adminButtonRow" v-if="isAdministrator">
               <button class="btn btn-outline-primary float-end mt-4" id="productCatalogueButton"
-                      @click="navigateToProductCatalogue()">Product Catalogue</button>
+                      @click="gotoBusinessPage('ProductCatalogue')">Product Catalogue</button>
             </div>
           </div>
-
 
         </div>
       </div>
