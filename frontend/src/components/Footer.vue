@@ -120,103 +120,104 @@
 <template>
   <!-- Footer -->
   <footer class=" text-center text-white text-font" id="footer">
-    <!-- Grid container -->
-    <div class="container p-4">
+    <!-- Footer links to be uncommented and updated when we have sufficient links in our application. -->
+<!--    &lt;!&ndash; Grid container &ndash;&gt;-->
+<!--    <div class="container p-4">-->
 
-      <!-- Section: Links -->
-      <section class="">
-        <!--Grid row-->
-        <div class="row">
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="text-uppercase">Links</h5>
+<!--      &lt;!&ndash; Section: Links &ndash;&gt;-->
+<!--      <section class="">-->
+<!--        &lt;!&ndash;Grid row&ndash;&gt;-->
+<!--        <div class="row">-->
+<!--          &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">-->
+<!--            <h5 class="text-uppercase">Links</h5>-->
 
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a href="#!" class="text-white">Link 1</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 2</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 3</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 4</a>
-              </li>
-            </ul>
-          </div>
-          <!--Grid column-->
+<!--            <ul class="list-unstyled mb-0">-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 1</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 2</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 3</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 4</a>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--          &lt;!&ndash;Grid column&ndash;&gt;-->
 
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="text-uppercase">Links</h5>
+<!--          &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">-->
+<!--            <h5 class="text-uppercase">Links</h5>-->
 
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a href="#!" class="text-white">Link 1</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 2</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 3</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 4</a>
-              </li>
-            </ul>
-          </div>
-          <!--Grid column-->
+<!--            <ul class="list-unstyled mb-0">-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 1</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 2</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 3</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 4</a>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--          &lt;!&ndash;Grid column&ndash;&gt;-->
 
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="text-uppercase">Links</h5>
+<!--          &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">-->
+<!--            <h5 class="text-uppercase">Links</h5>-->
 
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a href="#!" class="text-white">Link 1</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 2</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 3</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 4</a>
-              </li>
-            </ul>
-          </div>
-          <!--Grid column-->
+<!--            <ul class="list-unstyled mb-0">-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 1</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 2</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 3</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 4</a>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--          &lt;!&ndash;Grid column&ndash;&gt;-->
 
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="text-uppercase">Links</h5>
+<!--          &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">-->
+<!--            <h5 class="text-uppercase">Links</h5>-->
 
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a href="#!" class="text-white">Link 1</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 2</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 3</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 4</a>
-              </li>
-            </ul>
-          </div>
-          <!--Grid column-->
-        </div>
-        <!--Grid row-->
-      </section>
-      <!-- Section: Links -->
+<!--            <ul class="list-unstyled mb-0">-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 1</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 2</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 3</a>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a href="#!" class="text-white">Link 4</a>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--          &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--        </div>-->
+<!--        &lt;!&ndash;Grid row&ndash;&gt;-->
+<!--      </section>-->
+<!--      &lt;!&ndash; Section: Links &ndash;&gt;-->
 
-    </div>
-    <!-- Grid container -->
+<!--    </div>-->
+<!--    &lt;!&ndash; Grid container &ndash;&gt;-->
 
     <!-- Copyright -->
     <div class="text-center p-2" id="copyright">

@@ -34,15 +34,20 @@
         <div id="navbar-inner-id" class="navbar-nav mb-2 mb-xl-0   py-3   mx-auto me-xl-0 ms-xl-auto">
           <ul class="navbar-nav flex-column flex-xl-row">
 
-            <!-- default page links -->
-            <li class="nav-item">
-              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-                Profile
-              </router-link>
-            </li>
+                <!-- default page links -->
+                <li class="nav-item">
+                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
+                </li>
+                <li class="nav-item" v-if="actAsId === null">
+                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                    Profile
+                  </router-link>
+                </li>
+                <li class="nav-item" v-if=actAsId>
+                  <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]" :to="'/businessProfile/' + actAsId" tabindex="2">
+                    Profile
+                  </router-link>
+                </li>
 
             <!--- Business specific account links -->
             <li class="nav-item dropdown" v-if="isActAsBusiness">
