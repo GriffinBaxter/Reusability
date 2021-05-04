@@ -119,7 +119,7 @@
       <p class="h2 py-5" align="center">No Listings Found</p>
     </div>
     <!-- Footer -->
-    <Footer/>
+    <Footer class="footer"/>
   </div>
 </template>
 
@@ -420,6 +420,10 @@ name: "Listings",
 </script>
 
 <style scoped>
+
+.footer {
+  margin-top: 20%;
+}
 
 #pageTitle {
   padding: 10px;

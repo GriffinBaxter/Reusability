@@ -382,6 +382,10 @@ export default {
   cursor: pointer;
 }
 
+#profileContainer {
+  margin-bottom: 5%;
+}
+
 
 
 </style>
