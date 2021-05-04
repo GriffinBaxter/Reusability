@@ -37,7 +37,7 @@ const instance = axios.create({
     timeout: 3000
 });
 
-// TODO: Only for registration --- NEEDS ADAPATION FOR FUTURE STORIES
+// TODO: Only for registration --- NEEDS ADAPTION FOR FUTURE STORIES
 export class User {
 
     // This is a config for the user requirement details
@@ -324,7 +324,7 @@ export class InventoryItem {
         quantity: {
             name: "Quantity",
             minLength: 1,
-            maxLength: 2,
+            maxLength: 12,
             regex: /^[0-9]+$/,
             regexMessage: "Must only contain numbers",
         },

@@ -239,6 +239,8 @@ public class UserResource {
             // If the current user is a DGAA, show the role of the user
             if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
                 role = selectUser.getRole();
+            } else if (currentUser.getId() == id){
+                role = currentUser.getRole();
             }
             // If the current ID matches the retrieved user's ID or the current user is the DGAA, return a normal UserPayload with everything in it.
             return new UserPayload(
