@@ -322,7 +322,7 @@ export default {
     /**
      * Creates the new Inventory Item
      */
-    async createNewInventoryItem() { // TODO
+    async createNewInventoryItem() {
       let requestIsInvalid = false;
 
       this.inventoryId = this.currentInventoryItem.id;
