@@ -19,7 +19,7 @@
             <div class="row">
               <div class="col form-group py-1 px-3">
                 <label for="productDataList" class="form-control-label">Inventory ID*: </label>
-                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" :maxlength="config.inventoryItemId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" required/>
+                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" :maxlength="config.inventoryItemId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" ref="productInput" required/>
                 <datalist id="productDataList" style="overflow-y: auto!important">
                   <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id + ' ' + item.expires">Quantity: {{item.quantity}} Price: (${{item.totalPrice}}) Expiration Date: {{item.expires}}</option>
                 </datalist>
@@ -214,7 +214,8 @@ export default {
      *
      * */
     autofillData() {
-      const value = document.querySelector('#productInput').value;
+
+      const value = this.$refs.productInput.value;
       if (!value) return;
 
       let result = null;
@@ -231,8 +232,8 @@ export default {
 
       if (result !== null) {
         this.currentInventoryItem = result;
-        document.getElementById('quantity').value = result.quantity;
-        document.getElementById('price').value = result.totalPrice;
+        this.quantity = result.quantity;
+        this.price = result.totalPrice;
       }
     },
 
@@ -413,7 +414,7 @@ export default {
         quantity: parseInt(this.$refs.quantity.value),
         price: parseFloat(this.$refs.price.value),
         moreInfo: this.moreInfo,
-        closes: '2021-07-21T23:59:00Z'
+        closes: this.closes
       };
       //console.log(listingItemData);
       const newListingItem = new Listing(listingItemData);
@@ -421,6 +422,7 @@ export default {
       await Api.addNewBusinessListing(this.businessId, newListingItem).then((response) => {
         if (response.status === 201) {
           this.dataReset();
+          this.modal.hide();
         }
       }).catch((error) => {
 
