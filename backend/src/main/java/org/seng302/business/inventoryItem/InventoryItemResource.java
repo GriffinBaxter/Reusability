@@ -278,11 +278,8 @@ public class InventoryItemResource {
         Integer businessId = Integer.valueOf(id);
         // Checks business at ID exists - 406
 
-        System.out.println("ID: " + businessId);
-
         Optional<Business> currentBusiness = businessRepository.findBusinessById(businessId);
-        System.out.println(currentBusiness);
-//        Business currentBusiness = businessRepository.findBusinessById(businessId).get();
+
         if (currentBusiness.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
