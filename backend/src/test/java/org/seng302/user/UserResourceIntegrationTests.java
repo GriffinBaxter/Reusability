@@ -580,8 +580,8 @@ public class UserResourceIntegrationTests {
     public void canRetrieveUserWhenUserExistsWithGaaCookie() throws Exception {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), null, "[null]", user.getDateOfBirth(),
-                user.getPhoneNumber(),  user.getHomeAddress());
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
+                ("\"" + user.getRole() + "\""), "[null]", user.getDateOfBirth(), user.getPhoneNumber(),  user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));

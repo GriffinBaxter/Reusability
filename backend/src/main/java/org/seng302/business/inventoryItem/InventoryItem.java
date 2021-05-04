@@ -65,40 +65,40 @@ public class InventoryItem {
     /**
      * Constructor for inventory items.
      *
-     * @param product The product that the inventory item is an instance of.
-     * @param productId The product ID of the product.
-     * @param quantity The number of items.
+     * @param product      The product that the inventory item is an instance of.
+     * @param productId    The product ID of the product.
+     * @param quantity     The number of items.
      * @param pricePerItem The price for each item.
-     * @param totalPrice The total price of all the items together.
+     * @param totalPrice   The total price of all the items together.
      * @param manufactured The date this batch was manufactured on.
-     * @param sellBy The sell by date of this batch.
-     * @param bestBefore The best before date of this batch.
-     * @param expires The expiration date of this batch.
+     * @param sellBy       The sell by date of this batch.
+     * @param bestBefore   The best before date of this batch.
+     * @param expires      The expiration date of this batch.
      */
     public InventoryItem(
-        Product product,
-        String productId,
-        Integer quantity,
-        Double pricePerItem,
-        Double totalPrice,
-        LocalDate manufactured,
-        LocalDate sellBy,
-        LocalDate bestBefore,
-        LocalDate expires
+            Product product,
+            String productId,
+            Integer quantity,
+            Double pricePerItem,
+            Double totalPrice,
+            LocalDate manufactured,
+            LocalDate sellBy,
+            LocalDate bestBefore,
+            LocalDate expires
     ) throws Exception {
         if (product == null) {
             throw new Exception("Invalid product");
         }
-        if (!productId.equals(product.getProductId())) {
+        if (productId == null || !productId.equals(product.getProductId())) {
             throw new Exception("Invalid product or product ID");
         }
-        if (quantity <= 0) {
+        if (quantity == null || quantity <= 0) {
             throw new Exception("Invalid quantity, must have at least one item");
         }
-        if (pricePerItem < 0) {
+        if (pricePerItem != null && pricePerItem < 0) {
             throw new Exception("Invalid price per item, must not be negative");
         }
-        if (totalPrice < 0) {
+        if (totalPrice != null && totalPrice < 0) {
             throw new Exception("Invalid total price, must not be negative");
         }
         if (manufactured != null && manufactured.isAfter(LocalDate.now())) {

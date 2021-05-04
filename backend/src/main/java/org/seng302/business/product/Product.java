@@ -5,10 +5,12 @@ import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.business.Business;
+import org.seng302.image.Image;
 import org.seng302.validation.ProductValidation;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Class for products

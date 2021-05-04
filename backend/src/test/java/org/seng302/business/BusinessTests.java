@@ -50,8 +50,8 @@ public class BusinessTests {
     }
 
     @Test
-    public void TestInvalidName(){
-        try{
+    public void TestInvalidName() {
+        try {
             Business businessAccount = new Business(
                     user.getId(),
                     "",
@@ -61,14 +61,14 @@ public class BusinessTests {
                     LocalDateTime.now(),
                     user
             );
-        }catch (Exception e){
+        } catch (Exception e) {
             assertEquals("Invalid business name.", e.getMessage());
         }
     }
 
     @Test
-    public void TestInvalidAddress(){
-        try{
+    public void TestInvalidAddress() {
+        try {
             Business businessAccount = new Business(
                     user.getId(),
                     "name",
@@ -78,7 +78,7 @@ public class BusinessTests {
                     LocalDateTime.now(),
                     user
             );
-        }catch (Exception e){
+        } catch (Exception e) {
             assertEquals("Invalid address", e.getMessage());
         }
     }
@@ -100,6 +100,7 @@ public class BusinessTests {
     /**
      * Test to see whether the list of administrators for a business are updated as well as the list of businesses
      * administered by a user are updated when a user becomes a new administrator for that business.
+     *
      * @throws Exception
      */
     @Test
@@ -134,20 +135,11 @@ public class BusinessTests {
     /**
      * Test to see whether the list of administrators for a business are updated as well as the list of businesses
      * administered by a user are updated when a user is removed as an administrator for that business.
+     *
      * @throws Exception
      */
     @Test
     public void testRemoveAdministrators() throws Exception {
-        Business business = new Business(
-                user.getId(),
-                "name",
-                "description",
-                address,
-                BusinessType.RETAIL_TRADE,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)),
-                user
-        );
         User user = new User("first",
                 "last",
                 "middle",
@@ -161,6 +153,16 @@ public class BusinessTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "description",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                user
+        );
 
         business.removeAdministrators(user);
 
