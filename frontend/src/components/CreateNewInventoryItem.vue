@@ -71,9 +71,9 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="sell-by">Sell By: </label>
               <input id="sell-by" name="sell-by" tabindex="6" type="date" v-model="sellBy"
-                     :class="toggleInvalidClass(sellNyErrorMsg)">
+                     :class="toggleInvalidClass(sellByErrorMsg)">
               <div class="invalid-feedback">
-                {{ sellNyErrorMsg }}
+                {{ sellByErrorMsg }}
               </div>
             </div>
 
@@ -96,6 +96,9 @@
                 {{ expiresErrorMsg }}
               </div>
             </div>
+            <div class="text-center text-danger">
+              {{toastErrorMessage}}
+            </div>
 
           </form>
         </div>
@@ -114,12 +117,9 @@
 
 <script>
 
-import { Modal } from "bootstrap";
+import { Modal } from "bootstrap"; //uncommenting means the test do not run
 import Api, {InventoryItem} from "../Api";
-
-const endOfToday = require('date-fns/endOfToday');
-const format = require('date-fns/format');
-const compareAsc = require('date-fns/compareAsc');
+import {endOfToday, format, compareAsc} from 'date-fns'
 
 export default {
   name: 'InventoryItemCreation',
@@ -152,7 +152,7 @@ export default {
 
       // sell by related variables
       sellBy: "",
-      sellNyErrorMsg: "",
+      sellByErrorMsg: "",
 
       // best Before Id related variables
       bestBefore: "",
@@ -160,7 +160,9 @@ export default {
 
       // expires related variables
       expires: "",
-      expiresErrorMsg: ""
+      expiresErrorMsg: "",
+
+      toastErrorMessage: ""
     }
   },
   methods: {
@@ -274,18 +276,24 @@ export default {
 
       const selectedDate = this.parseSelectedDate(selectedManufacturedDate);
 
-      const givenDateYear = selectedDate.year
-      const givenDateMonth = selectedDate.month
-      const givenDateDay = selectedDate.day
-      const todayDateYear = format(endOfToday(new Date()), 'yyyy');
-      const todayDateMonth = format(endOfToday(new Date()), 'MM');
-      const todayDateDay = format(endOfToday(new Date()), 'dd');
+      if (selectedDate === null) {
+        return true
+      } else {
 
-      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
-      // second or 0 if dates are equal.
-      const comparisonValue = compareAsc(new Date(givenDateYear, givenDateMonth, givenDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
+        const givenDateYear = selectedDate.year
+        const givenDateMonth = selectedDate.month
+        const givenDateDay = selectedDate.day
+        const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+        const todayDateMonth = format(endOfToday(new Date()), 'MM');
+        const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-      return ((comparisonValue === -1) || (comparisonValue === 0)) ? true : false;
+        // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
+        // second or 0 if dates are equal.
+        const comparisonValue = compareAsc(new Date(givenDateYear, givenDateMonth, givenDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
+
+        return ((comparisonValue === -1) || (comparisonValue === 0));
+
+      }
 
     },
 
@@ -302,82 +310,173 @@ export default {
       const manufacturedDate = this.parseSelectedDate(selectedManufacturedDate);
       const expiryDate = this.parseSelectedDate(selectedExpiryDate);
 
+      if (sellByDate === null) {
+        return true;
+      }
       const sellByDateYear = sellByDate.year
       const sellByDateMonth = sellByDate.month
       const sellByDateDay = sellByDate.day
 
-      const manufacturedDateYear = manufacturedDate.year
-      const manufacturedDateMonth = manufacturedDate.month
-      const manufacturedDateDay = manufacturedDate.day
+      if (manufacturedDate !== null) {
+        const manufacturedDateYear = manufacturedDate.year
+        const manufacturedDateMonth = manufacturedDate.month
+        const manufacturedDateDay = manufacturedDate.day
 
-      const expiredDateYear = expiryDate.year
-      const expiredDateMonth = expiryDate.month
-      const expiredDateDay = expiryDate.day
+        const comparisonWithManufacturedValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
+        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
+
+        if (!isAfterManufactureDateAndNotManufactureDate) {
+          return isValid;
+        }
+      }
+      if (expiryDate !== null) {
+        const expiredDateYear = expiryDate.year
+        const expiredDateMonth = expiryDate.month
+        const expiredDateDay = expiryDate.day
+
+        const comparisonWithExpiryValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(expiredDateYear, expiredDateMonth, expiredDateDay))
+        const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1);
+
+        if (!isBeforeExpiryAndNotExpiryDate) {
+          return isValid;
+        }
+      }
 
       const todayDateYear = format(endOfToday(new Date()), 'yyyy');
       const todayDateMonth = format(endOfToday(new Date()), 'MM');
       const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-      console.log(todayDateYear)
-      console.log(todayDateMonth)
-      console.log(todayDateDay)
-
-      console.log(new Date(todayDateYear, todayDateMonth, todayDateDay))
-
-      console.log(new Date('2021', '04', '30'))
-
-
       // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
       // second or 0 if dates are equal.
 
-      console.log(new Date(sellByDateYear, sellByDateMonth, sellByDateDay))
-      console.log(new Date(todayDateYear, todayDateMonth, todayDateDay))
-
-
       const comparisonWithTodayValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
+      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
 
-      const comparisonWithManufacturedValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
-
-      const comparisonWithExpiryValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(expiredDateYear, expiredDateMonth, expiredDateDay))
-
-      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1) ? true : false;
-      const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1) ? true : false;
-      const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1) ? true : false;
-
-      console.log(comparisonWithTodayValue)
-      console.log(isAfterTodayAndNotToday)
-      console.log(isAfterManufactureDateAndNotManufactureDate)
-      console.log(isBeforeExpiryAndNotExpiryDate)
-
-      if (isAfterTodayAndNotToday && isAfterManufactureDateAndNotManufactureDate && isBeforeExpiryAndNotExpiryDate) {
+      if (isAfterTodayAndNotToday) {
         isValid = true;
       }
 
       return isValid
 
     },
-    //
-    // /**
-    //  * This function will check the validity of the best before date of an inventory item i.e. that the best before date
-    //  * of the inventory item is after to today's date but not today's date, and before expiry date.
-    //  *
-    //  * @return true if the date meets the above conditions, otherwise false
-    //  */
-    // isValidBestBeforeDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
-    //
-    //
-    // },
-    //
-    // /**
-    //  * This function will check the validity of the expires date of an inventory item i.e. that the expiry date
-    //  * of the inventory item is after today's date, after the manufacture date, and after or equal to the best before
-    //  * date.
-    //  *
-    //  * @return true if the date meets the above conditions, otherwise false
-    //  */
-    // isValidExpiryDate(selectedManufacturedDate, selectedBestBeforeDate) {
-    //
-    // },
+
+    /**
+     * This function will check the validity of the best before date of an inventory item i.e. that the best before date
+     * of the inventory item is after today's date but not today's date (and implicitly after the manufacture date)
+     * and before expiry date.
+     *
+     * @return true if the date meets the above conditions, otherwise false
+     */
+    isValidBestBeforeDate(selectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate) {
+
+      let isValid = false;
+      const bestBeforeDate = this.parseSelectedDate(selectedBestBeforeDate);
+      const manufacturedDate = this.parseSelectedDate(selectedManufacturedDate);
+      const expiryDate = this.parseSelectedDate(selectedExpiryDate);
+
+      if (bestBeforeDate === null) {
+        return true
+      }
+
+      const bestBeforeDateYear = bestBeforeDate.year
+      const bestBeforeDateMonth = bestBeforeDate.month
+      const bestBeforeDateDay = bestBeforeDate.day
+
+      if (manufacturedDate !== null) {
+        const manufacturedDateYear = manufacturedDate.year
+        const manufacturedDateMonth = manufacturedDate.month
+        const manufacturedDateDay = manufacturedDate.day
+
+        const comparisonWithManufacturedValue = compareAsc(new Date(bestBeforeDateYear, bestBeforeDateMonth, bestBeforeDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
+        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
+
+        if (!isAfterManufactureDateAndNotManufactureDate) {
+          return isValid;
+        }
+      }
+      if (expiryDate !== null) {
+        const expiredDateYear = expiryDate.year
+        const expiredDateMonth = expiryDate.month
+        const expiredDateDay = expiryDate.day
+
+        const comparisonWithExpiryValue = compareAsc(new Date(bestBeforeDateYear, bestBeforeDateMonth, bestBeforeDateDay), new Date(expiredDateYear, expiredDateMonth, expiredDateDay))
+        const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1);
+
+        if (!isBeforeExpiryAndNotExpiryDate) {
+          return isValid;
+        }
+      }
+
+      const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+      const todayDateMonth = format(endOfToday(new Date()), 'MM');
+      const todayDateDay = format(endOfToday(new Date()), 'dd');
+
+      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
+      // second or 0 if dates are equal.
+
+      const comparisonWithTodayValue = compareAsc(new Date(bestBeforeDateYear, bestBeforeDateMonth, bestBeforeDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
+      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
+
+      if (isAfterTodayAndNotToday) {
+        isValid = true;
+      }
+
+      return isValid
+
+    },
+
+    /**
+     * This function will check the validity of the expires date of an inventory item i.e. that the expiry date
+     * of the inventory item is after today's date, after the manufacture date, and after or equal to the best before
+     * date.
+     *
+     * @return true if the date meets the above conditions, otherwise false
+     */
+    isValidExpiryDate(selectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate) {
+
+      let isValid = false;
+      const manufacturedDate = this.parseSelectedDate(selectedManufacturedDate);
+      const expiryDate = this.parseSelectedDate(selectedExpiryDate);
+
+      if (expiryDate === null) {
+        return isValid
+      }
+
+      const expiredDateYear = expiryDate.year
+      const expiredDateMonth = expiryDate.month
+      const expiredDateDay = expiryDate.day
+
+      if (manufacturedDate !== null) {
+        const manufacturedDateYear = manufacturedDate.year
+        const manufacturedDateMonth = manufacturedDate.month
+        const manufacturedDateDay = manufacturedDate.day
+
+        const comparisonWithManufacturedValue = compareAsc(new Date(expiredDateYear, expiredDateMonth, expiredDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
+        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
+
+        if (!isAfterManufactureDateAndNotManufactureDate) {
+          return isValid;
+        }
+      }
+
+
+      const todayDateYear = format(endOfToday(new Date()), 'yyyy');
+      const todayDateMonth = format(endOfToday(new Date()), 'MM');
+      const todayDateDay = format(endOfToday(new Date()), 'dd');
+
+      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
+      // second or 0 if dates are equal.
+
+      const comparisonWithTodayValue = compareAsc(new Date(expiredDateYear, expiredDateMonth, expiredDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
+      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
+
+      if (isAfterTodayAndNotToday) {
+        isValid = true;
+      }
+
+      return isValid
+
+    },
     /**
      * reset all input file
      */
@@ -406,7 +505,7 @@ export default {
 
       // sell by related variables
       this.sellBy = "";
-      this.sellNyErrorMsg = "";
+      this.sellByErrorMsg = "";
 
       // best Before Id related variables
       this.bestBefore = "";
@@ -482,36 +581,37 @@ export default {
       if (this.totalPriceErrorMsg) {
         requestIsInvalid = true
       }
+      // Manufacture date error checking
+      if (!this.isValidManufactureDate(this.manufactured)) {
+          this.manufacturedErrorMsg = "Manufactured date must be prior to today's date";
+          requestIsInvalid = true;
+      } else {
+        this.manufacturedErrorMsg = '';
+      }
 
-      // // Manufactured error checking
-      // //TODO:check this.manufactured == ""
-      // console.log(this.isADayAfter(this.manufactured))
-      // if (this.isADayAfter(this.manufactured) === false) {
-      //   this.manufacturedErrorMsg = "If fill in, must be a date before or today.";
-      // }
-      // if (this.totalPriceErrorMsg) {
-      //   requestIsInvalid = true;
-      // }
-      //
-      // // Sell by error checking
-      // console.log(this.isADayAfter(this.sellBy))
-      // if (this.isADayAfter(this.sellBy) === false) {
-      //   this.sellByErrorMsg = "If fill in, must be a date before or today.";
-      // }
-      // if (this.sellByErrorMsg) {
-      //   requestIsInvalid = true;
-      // }
-      //
-      // // No checking for best before
-      //
-      // // Expires by error checking
-      // if (this.isADayBefore(this.expires) !== true) {
-      //   this.expiresErrorMsg = "Must be a date after or today.";
-      // }
-      // if (this.expiresErrorMsg) {
-      //   requestIsInvalid = true
-      // }
+      // Sell by date error checking
+      if (!this.isValidSellByDate(this.sellBy, this.manufactured, this.expires)) {
+        this.sellByErrorMsg = "Sell by date must be after today's date but not today's date, and after the manufacture date and before the expiry date (not including)";
+        requestIsInvalid = true;
+      } else {
+        this.sellByErrorMsg = '';
+      }
 
+      // Best best date before error checking
+      if (!this.isValidBestBeforeDate(this.bestBefore, this.manufactured, this.expires)) {
+        this.bestBeforeErrorMsg = "Best before date must be after today's date but not today's date, after the manufacture date and before expiry date";
+        requestIsInvalid = true;
+      } else {
+        this.bestBeforeErrorMsg = '';
+      }
+
+      // Expiry date error checking
+      if (!this.isValidExpiryDate(this.expires, this.bestBefore, this.manufactured)) {
+        this.expiresErrorMsg = "Expiry date of the inventory item is after today's date, after the manufacture date, and after or equal to the best before date";
+        requestIsInvalid = true;
+      } else {
+        this.expiresErrorMsg = '';
+      }
 
       // If at any stage an error has been discovered we cancel the procedure
       if (requestIsInvalid) {
@@ -539,13 +639,14 @@ export default {
       ).then((response) => {
             if (response.status === 201) {
               this.dataReset();
+              this.toastErrorMessage = "";
             }
           }
       ).catch((error) => {
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
-            this.toastErrorMessage = '400 Bad request; invalid product data';
+            this.toastErrorMessage = 'Invalid Product Data. Please check the product ID';
           } else if (error.response.status === 403) {
             this.toastErrorMessage = 'User is not an administer of this business.';
           } else {

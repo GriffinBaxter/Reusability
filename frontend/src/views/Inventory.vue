@@ -78,14 +78,14 @@
                   <!--order by price per item-->
                   <button type="button" class="btn btn-outline-primary col-12"
                           @click="orderInventory(false, false, true, false, false, false, false, false)">
-                    Price Per Item
+                    Price Per Item ({{ currencySymbol }} {{ currencyCode }})
                     <i id="pricePerItemIcon"></i>
                   </button>
 
                   <!--order by total price-->
                   <button type="button" class="btn btn-outline-primary col-12"
                           @click="orderInventory(false, false, false, true, false, false, false, false)">
-                    Total Price
+                    Total Price ({{ currencySymbol }} {{ currencyCode }})
                     <i id="totalPriceIcon"></i>
                   </button>
 
@@ -127,7 +127,7 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col">Item successfully created!</div>
+                <div class="col">New Inventory Item Create successfully!</div>
                 <div class="col" align="right">
                   <button type="button" class="btn btn-outline-success px-1 py-0" @click="closeMessage">X</button>
                 </div>
@@ -148,7 +148,10 @@
                 v-bind:manufactured="inventory.manufactured"
                 v-bind:sell-by="inventory.sellBy"
                 v-bind:best-before="inventory.bestBefore"
-                v-bind:expires="inventory.expires"/>
+                v-bind:expires="inventory.expires"
+                v-bind:currency-code="currencyCode"
+                v-bind:currency-symbol="currencySymbol"
+            />
 
             <!--space-->
             <br>
@@ -212,6 +215,8 @@ import InventoryItem from "@/components/InventoryItem";
 import Navbar from "@/components/Navbar";
 import InventoryItemCreation from "@/components/CreateNewInventoryItem";
 import Api from "@/Api";
+import Cookies from "js-cookie";
+import CurrencyAPI from "@/currencyInstance";
 
 export default {
   components: {
@@ -222,6 +227,10 @@ export default {
   },
   data() {
     return {
+      // Table variables
+      // A list of the ordering by headers, which is used with talking to the backend
+      tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created"],
+
       // Stores the URL string that is used by the requestProducts() to order the products
       orderByString: "",
       // A list of Product object that store the products
@@ -257,7 +266,11 @@ export default {
       manufactured: "2021-04-23",
       sellBy: "2021-04-23",
       bestBefore: "2021-04-23",
-      expires: "2021-04-23"
+      expires: "2021-04-23",
+
+      // Currency related variables
+      currencyCode: "",
+      currencySymbol: "",
     }
   },
   methods: {
@@ -563,13 +576,56 @@ export default {
       this.creationSuccess = true;
       this.retrieveInventoryItems();
     },
-  },
-  mounted() {
-    this.businessId = this.$route.params.id;
-    this.retrieveBusinessInfo()
-    this.retrieveInventoryItems()
+    /**
+     * Currency API requests.
+     * An asynchronous function that calls the REST Countries API with the given country input.
+     * Upon success, the filterResponse function is called with the response data.
+     */
+    async currencyRequest() {
+      this.businessId = parseInt(this.$route.params.id);
 
-    //example
+      /*
+        Request business from backend. If received assign the country of the business
+        to a variable.
+        */
+      let country = "";
+      await Api.getBusiness(this.businessId).then((response) => {
+        country = response.data.address.country;
+      })
+          .catch((error) => console.log(error))
+
+      await CurrencyAPI.currencyQuery(country).then((response) => {
+        this.filterResponse(response.data);
+      })
+          .catch((error) => console.log(error))
+    },
+    filterResponse(response) {
+      this.currencyCode = response[0].currencies[0].code;
+      this.currencySymbol = response[0].currencies[0].symbol;
+    },
+  },
+
+  async mounted() {
+
+    /**
+     * When mounted, initiate population of page.
+     * If cookies are invalid or not present, redirect to login page.
+     */
+    const currentID = Cookies.get('userID');
+    if (currentID) {
+      this.businessId = this.$route.params.id;
+
+      await this.currencyRequest();
+
+      this.retrieveBusinessInfo();
+      this.retrieveInventoryItems().then(
+          () => {}
+      ).catch(
+          (e) => console.log(e)
+      );
+    } else {
+      this.$router.push({name: 'Login'});
+    }
 
   }
 }

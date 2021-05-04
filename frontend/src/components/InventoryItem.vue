@@ -23,12 +23,12 @@
 
           <!--price-->
           <h6 class="card-text" align="right" v-if="pricePerItem != null">
-            Price Per Item: {{ pricePerItem }}
+            Price Per Item: {{ currencySymbol }}{{ pricePerItem }} {{ currencyCode }}
           </h6>
           <h6 class="card-text" align="right" v-else><br></h6>
 
           <h6 class="card-text" align="right" v-if="totalPrice != null">
-            Total Price: {{ totalPrice }}
+            Total Price: {{ currencySymbol }}{{ totalPrice }} {{ currencyCode }}
           </h6>
           <h6 class="card-text" align="right" v-else><br></h6>
 
@@ -115,6 +115,16 @@ export default {
       type: String,
       default: "None",
       required: true
+    },
+    currencyCode: {
+      type: String,
+      default: "",
+      required: false
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: false
     }
   },
   mounted() {
