@@ -212,7 +212,11 @@ export default {
         return "Please enter input";
       } else if (!regex.test(inputVal)) {
         return regexMessage;
-      } else if (!this.between(inputVal.length, minLength, maxLength)) {
+      } else if (inputVal !== null) {
+        if (!this.between(inputVal.length, minLength, maxLength)) {
+          return `Input must be between ${minLength} and ${maxLength} characters long.`
+        }
+      } else if (minLength >= 1) {
         return `Input must be between ${minLength} and ${maxLength} characters long.`
       }
       return "";
