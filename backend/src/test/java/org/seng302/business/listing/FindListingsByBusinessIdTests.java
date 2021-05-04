@@ -241,7 +241,6 @@ public class FindListingsByBusinessIdTests {
                 LocalDateTime.now().minusDays(2),
                 LocalDateTime.now().plusDays(54));
         listing1.setId(1);
-        System.out.println(listing1);
 
         listing2 = new Listing(inventoryItem2,
                 4,
@@ -291,7 +290,6 @@ public class FindListingsByBusinessIdTests {
     @Test
     public void whenFindListingByBusinessIdTests_thenReturnQuantityOrderedListingsAscending() {
         // given
-        System.out.println();
 
         int pageNo = 0;
         int pageSize = 5;
@@ -313,10 +311,9 @@ public class FindListingsByBusinessIdTests {
 
         // when
         Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
-        System.out.println("check");
+
         // then
         for (int i = 0; i < listingsPage.getContent().size(); i++) {
-            System.out.println(listingsPage.getContent().get(i).getInventoryItem());
             assertThat(listingsPage.getContent().get(i).getQuantity()).isEqualTo(orderedQuantities.get(i));
             assertThat(listingsPage.getContent().get(i).getId()).isEqualTo(orderedInventoryIds.get(i));
         }
