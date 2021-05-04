@@ -1,6 +1,6 @@
 import {test, expect} from "@jest/globals"
-import reg from '../src/views/BusinessRegistration'
-import { Business } from '../src/Api'
+import businessRegistration from '../src/views/BusinessRegistration'
+import Business from '../src/configs/Business'
 
 /**
  * Jest tests for businessRegistration.vue.
@@ -19,7 +19,7 @@ test('Business name with no input', () => {
     const expectedMessage = "Please enter input";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -40,7 +40,7 @@ test('Business name with more than max length', () => {
     const expectedMessage = `Input must be between 1 and 100 characters long.`;
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -61,7 +61,7 @@ test('Business name with correct name, syntax and leading spaces', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -82,7 +82,7 @@ test('Business name with correct name syntax and trailing spaces', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -103,7 +103,7 @@ test('Business name with correct name syntax, including hyphen', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -124,7 +124,7 @@ test('Business name with correct name syntax, including space', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -145,7 +145,7 @@ test('Business name with correct name syntax with numbers', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -166,7 +166,7 @@ test('Business name with correct name syntax with supported symbols', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -187,7 +187,7 @@ test('Business name with incorrect name syntax with symbols not supported', () =
     const expectedMessage = "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -208,7 +208,7 @@ test('Business name with correct name syntax with apostrophes', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessName.name,
             testInputVal,
             Business.config.businessName.minLength,
@@ -230,7 +230,7 @@ test('Description with no input', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.description.name,
             testInputVal,
             Business.config.description.minLength,
@@ -253,7 +253,7 @@ test('Description with any input within length', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.description.name,
             testInputVal,
             Business.config.description.minLength,
@@ -280,7 +280,7 @@ test('Description with any input greater than allowed length', () => {
     const expectedMessage = `Input must be between 0 and 600 characters long.`;
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.description.name,
             testInputVal,
             Business.config.description.minLength,
@@ -300,7 +300,7 @@ test('Business address with no input', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessAddress.name,
             testInputVal,
             Business.config.businessAddress.minLength,
@@ -323,7 +323,7 @@ test('Business address with input that is too long', () => {
     const expectedMessage = `Input must be between 0 and 255 characters long.`;
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessAddress.name,
             testInputVal,
             Business.config.businessAddress.minLength,
@@ -342,7 +342,7 @@ test('Business address with input that contains allowed symbols', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessAddress.name,
             testInputVal,
             Business.config.businessAddress.minLength,
@@ -361,7 +361,7 @@ test('Business address with input that contains invalid symbols', () => {
     const expectedMessage = "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessAddress.name,
             testInputVal,
             Business.config.businessAddress.minLength,
@@ -382,7 +382,7 @@ test('Business address with input that contains the sample data\'s business addr
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        businessRegistration.methods.getErrorMessage(
             Business.config.businessAddress.name,
             testInputVal,
             Business.config.businessAddress.minLength,
@@ -404,7 +404,7 @@ test( 'Test for the street number for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.streetNumber.name,
         inputValue,
         Business.config.streetNumber.minLength,
@@ -420,7 +420,7 @@ test( 'Test for the street number for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.streetNumber.name,
         inputValue,
         Business.config.streetNumber.minLength,
@@ -436,7 +436,7 @@ test( 'Testing for a valid street number', () => {
     const inputValue = "10"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.streetNumber.name,
         inputValue,
         Business.config.streetNumber.minLength,
@@ -452,7 +452,7 @@ test( 'Testing for the street number with symbols', () => {
     const inputValue = "2/24"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.streetNumber.name,
         inputValue,
         Business.config.streetNumber.minLength,
@@ -471,7 +471,7 @@ test( 'Test for the street name for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.streetName.name,
         inputValue,
         Business.config.streetName.minLength,
@@ -487,7 +487,7 @@ test( 'Test for the street name for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.streetName.name,
         inputValue,
         Business.config.streetName.minLength,
@@ -503,7 +503,7 @@ test( 'Testing for a valid street name', () => {
     const inputValue = "East Street"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.streetName.name,
         inputValue,
         Business.config.streetName.minLength,
@@ -519,7 +519,7 @@ test( 'Testing for the street name with symbols', () => {
     const inputValue = "#!& Street"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.streetName.name,
         inputValue,
         Business.config.streetName.minLength,
@@ -537,7 +537,7 @@ test( 'Test for the city for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.city.name,
         inputValue,
         Business.config.city.minLength,
@@ -553,7 +553,7 @@ test( 'Test for the city for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.city.name,
         inputValue,
         Business.config.city.minLength,
@@ -569,7 +569,7 @@ test( 'Testing for a valid city', () => {
     const inputValue = "Christchurch"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.city.name,
         inputValue,
         Business.config.city.minLength,
@@ -585,7 +585,7 @@ test( 'Testing for city with numbers', () => {
     const inputValue = "District 12"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.city.name,
         inputValue,
         Business.config.city.minLength,
@@ -601,7 +601,7 @@ test( 'Testing for the city with symbols', () => {
     const inputValue = "!@#!@ city"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.city.name,
         inputValue,
         Business.config.city.minLength,
@@ -619,7 +619,7 @@ test( 'Test for the region for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.region.name,
         inputValue,
         Business.config.region.minLength,
@@ -635,7 +635,7 @@ test( 'Test for the region for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.region.name,
         inputValue,
         Business.config.region.minLength,
@@ -651,7 +651,7 @@ test( 'Testing for a valid region', () => {
     const inputValue = "Central Otago"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.region.name,
         inputValue,
         Business.config.region.minLength,
@@ -667,7 +667,7 @@ test( 'Testing for region with numbers', () => {
     const inputValue = "Region 12"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.region.name,
         inputValue,
         Business.config.region.minLength,
@@ -683,7 +683,7 @@ test( 'Testing for the region with symbols', () => {
     const inputValue = "!@#!@ region"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.region.name,
         inputValue,
         Business.config.region.minLength,
@@ -701,7 +701,7 @@ test( 'Test for the country for the max length', () => {
     const inputValue = "Abc"*255
     const expectedValue = `Input must be between 1 and 255 characters long.`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
@@ -720,7 +720,7 @@ test( 'Test for the country for the minimum length and empty string', () => {
     const inputValue = ""
     const expectedValue = `Please enter input`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
@@ -738,7 +738,7 @@ test( 'Testing for a valid country', () => {
     const inputValue = "Belgium"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
@@ -756,7 +756,7 @@ test( 'Testing for country with numbers', () => {
     const inputValue = "Country 13"
     const expectedValue = "Must be alphanumeric (spaces, -, ' optional)"
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
@@ -774,7 +774,7 @@ test( 'Testing for the country with symbols', () => {
     const inputValue = "!@#!@ country"
     const expectedValue = "Must be alphanumeric (spaces, -, ' optional)"
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
@@ -792,7 +792,7 @@ test( 'Testing for the country with symbols', () => {
     const inputValue = "'- country"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.country.name,
         inputValue,
         Business.config.country.minLength,
@@ -897,7 +897,7 @@ test( 'Test for the postcode for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -913,7 +913,7 @@ test( 'Test for the postcode for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -929,7 +929,7 @@ test( 'Testing for a valid postcode', () => {
     const inputValue = "8014"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -945,7 +945,7 @@ test( 'Testing for postcode with numbers', () => {
     const inputValue = "1111"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -961,7 +961,7 @@ test( 'Testing for the postcode with symbols', () => {
     const inputValue = "!@#!@ suburb"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.postcode.name,
         inputValue,
         Business.config.postcode.minLength,
@@ -980,7 +980,7 @@ test('Test if value 1 < value 2 < 3 gives true', () => {
     const testMax = 3;
     const expectedMessage = true;
 
-    expect(reg.methods.between(testVal, testMin, testMax)
+    expect(businessRegistration.methods.between(testVal, testMin, testMax)
     ).toBe(expectedMessage);
 })
 
@@ -994,7 +994,7 @@ test('Test if value 1 > value 2 > 3 gives false', () => {
     const testMax = 6;
     const expectedMessage = false;
 
-    expect(reg.methods.between(testVal, testMin, testMax)
+    expect(businessRegistration.methods.between(testVal, testMin, testMax)
     ).toBe(expectedMessage);
 })
 
@@ -1008,7 +1008,7 @@ test('Test if value 1 = value 2 = value 3 gives true', () => {
     const testMax = 11;
     const expectedMessage = true;
 
-    expect(reg.methods.between(testVal, testMin, testMax)
+    expect(businessRegistration.methods.between(testVal, testMin, testMax)
     ).toBe(expectedMessage);
 
 })
@@ -1023,6 +1023,6 @@ test('Test if value 1 > value 2 = value 3 gives false', () => {
     const testMax = 20;
     const expectedMessage = false;
 
-    expect(reg.methods.between(testVal, testMin, testMax)
+    expect(businessRegistration.methods.between(testVal, testMin, testMax)
     ).toBe(expectedMessage);
 })

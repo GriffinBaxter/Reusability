@@ -18,6 +18,9 @@ public class ProductValidation {
     private static final Integer MANUFACTURER_MIN_LENGTH = 0;
     private static final Integer MANUFACTURER_MAX_LENGTH = 100;
 
+    private static final Double RECOMMENDED_RETAIL_PRICE_MINIMUM = 0.0;
+    private static final Double RECOMMENDED_RETAIL_PRICE_MAXIMUM = Double.POSITIVE_INFINITY;
+
     /**
      * Checks to see whether a product ID is valid based on its constraints.
      * This method can be updated in the future if there is additional constraints.
@@ -62,5 +65,15 @@ public class ProductValidation {
         return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
                 (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
                 (manufacturer.matches("^[a-zA-Z0-9 '#,.&()-]*$"));
+    }
+
+    /**
+     * Checks to see whether a recommendedRetailPrice is valid based on its constratins.
+     * This method can be updated in the future if there is additional constraints.
+     * @param recommendedRetailPrice Recommended retail price to be checked.
+     * @return true when the recommendedRetailPrice is valid. Otherwise false.
+     */
+    public static boolean isValidRecommendeRetailPrice(Double recommendedRetailPrice) {
+        return RECOMMENDED_RETAIL_PRICE_MINIMUM <= recommendedRetailPrice && recommendedRetailPrice <= RECOMMENDED_RETAIL_PRICE_MAXIMUM;
     }
 }
