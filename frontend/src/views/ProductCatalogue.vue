@@ -20,9 +20,11 @@
 
       <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0" :table-headers="tableHeaders" :table-data="tableData"
              :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage" :order-by-override="tableOrderBy" :table-data-is-page="true"
-             @update-current-page="event => updatePage(event)" @order-by-header-index="event => orderProducts(event)" @row-selected="event => showDetails(event.index)"></Table>
+             @update-current-page="event => updatePage(event)" @order-by-header-index="event => orderProducts(event)" @row-selected="event => showRowModal(event.index)"></Table>
 
     </div>
+
+    <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct" />
 
     <div v-if="showModal">
       <transition name="fade">
@@ -42,7 +44,11 @@
                       v-bind:currencySymbol="currencySymbol"/>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn btn-outline-primary float-end" id="closeModalButton" @click="showModal = false">Close</button>
+                    <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
+                      this.showModal = false;
+                      this.$refs.updateProductModel.showModel(event);
+                    }">Edit</button>
+                  <button class="btn btn-outline-primary float-end green-button-transparent " id="closeModalButton" @click="showModal = false">Close</button>
                 </div>
               </div>
             </div>
@@ -136,17 +142,20 @@
 
 <script>
 import { Modal } from 'bootstrap'
-import Api, { Product } from '../Api';
+import Api from '../Api';
+import Product from "../configs/Product";
 import Cookies from 'js-cookie';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProductModal from "../components/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
+import UpdateProductModal from "../components/UpdateProductModal";
 
 export default {
   name: "ProductCatalogue",
   components: {
+    UpdateProductModal,
     Table,
     ProductModal,
     Navbar,
@@ -178,6 +187,16 @@ export default {
       productId: null,
       created: null,
       showModal: false,
+      currentProduct: new Product(
+          {
+            id: 'temp-id',
+            name: 'temp-name',
+            description: 'temp-desc',
+            manufacturer: 'temp-man',
+            recommendedRetailPrice: 0
+          }
+      ),
+      currentProductIndex: null,
       modal: null,
 
       // Used for having pre-filled input fields
@@ -225,14 +244,16 @@ export default {
      *
      * @param productIndex The table index of the product to show details for.
      */
-    showDetails(productIndex) {
-      let product = this.productList[productIndex];
-      this.productId = product.id;
-      this.productName = product.name;
-      this.description = product.description;
-      this.manufacturer = product.manufacturer;
-      this.recommendedRetailPrice = product.recommendedRetailPrice;
-      this.created = product.created;
+    showRowModal(productIndex) {
+      let product = this.productList[productIndex % this.rowsPerPage];
+      this.productId = product.data.id;
+      this.productName = product.data.name;
+      this.description = product.data.description;
+      this.manufacturer = product.data.manufacturer;
+      this.recommendedRetailPrice = product.data.recommendedRetailPrice;
+      this.created = product.data.created;
+      this.currentProduct = product;
+      this.currentProductIndex = productIndex;
       this.showModal = true;
     },
 
@@ -349,7 +370,9 @@ export default {
         const {orderBy, isAscending} = this.parseOrderBy();
         this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
 
-        this.productList = [...response.data];
+        this.productList = response.data.map( (product) => {
+          return new Product(product);
+        });
         let newtableData = [];
 
         // No results
@@ -362,11 +385,11 @@ export default {
           this.totalRows = parseInt(response.headers["total-rows"]);
 
           for (let i = 0; i < this.productList.length; i++ ) {
-            newtableData.push(this.productList[i].id);
-            newtableData.push(this.productList[i].name);
-            newtableData.push(this.productList[i].manufacturer);
-            newtableData.push(this.productList[i].recommendedRetailPrice);
-            newtableData.push(this.productList[i].created);
+            newtableData.push(this.productList[i].data.id);
+            newtableData.push(this.productList[i].data.name);
+            newtableData.push(this.productList[i].data.manufacturer);
+            newtableData.push(this.productList[i].data.recommendedRetailPrice);
+            newtableData.push(this.productList[i].data.created);
           }
 
           this.tableData = newtableData;
@@ -691,7 +714,13 @@ export default {
     } else {
       this.$router.push({name: 'Login'});
     }
-  }
+  },
+   watch: {
+    // If the current Product was updated we update the table.
+     currentProduct: function () {
+       this.requestProducts()
+     }
+   }
 }
 </script>
 
