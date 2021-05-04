@@ -118,7 +118,8 @@
 <script>
 
 import { Modal } from "bootstrap"; //uncommenting means the test do not run
-import Api, {InventoryItem} from "../Api";
+import Api from "../Api";
+import InventoryItem from "../configs/InventoryItem";
 import {endOfToday, format, compareAsc} from 'date-fns'
 
 export default {

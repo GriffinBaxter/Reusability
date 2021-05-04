@@ -156,7 +156,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
-import {UserRole} from "@/components/User";
+import {UserRole} from "@/configs/User";
 
 export default {
   name: "BusinessProfile",
