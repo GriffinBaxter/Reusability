@@ -22,6 +22,7 @@
     "popper": "^1.0.1",
     "serve": "^11.3.2",
     "vue": "^2.6.12",
+    "vue-date-fns": "^2.0.1",
     "vue-dropdowns": "^1.1.2",
     "vue-router": "^3.5.1",
     "vuejs-logger": "^1.5.5"

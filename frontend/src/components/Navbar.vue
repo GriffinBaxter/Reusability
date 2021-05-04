@@ -12,27 +12,27 @@
 
 <template>
   <nav class="navbar sticky-top navbar-expand-xl shadow-sm text-font" style="background-color: white">
-      <div class="container mt-2 my-xl-3 mx-auto">
+    <div class="container mt-2 my-xl-3 mx-auto">
 
-        <!-- Logo image -->
-        <div class="logo-container text-center">
-          <router-link class="navbar-brand " to="/home" tabindex="-1">
-            <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
-          </router-link>
-          <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
+      <!-- Logo image -->
+      <div class="logo-container text-center">
+        <router-link class="navbar-brand " to="/home" tabindex="-1">
+          <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
+        </router-link>
+        <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
 
-        </div>
+      </div>
 
-        <!-- Hamburger icon -->
-        <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+      <!-- Hamburger icon -->
+      <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <!-- Navbar links -->
-        <div class="navbar-collapse" id="navbar-id">
-          <!-- navbar inner is required for the animation -->
-          <div id="navbar-inner-id" class="navbar-nav mb-2 mb-xl-0   py-3   mx-auto me-xl-0 ms-xl-auto">
-            <ul class="navbar-nav flex-column flex-xl-row">
+      <!-- Navbar links -->
+      <div class="navbar-collapse" id="navbar-id">
+        <!-- navbar inner is required for the animation -->
+        <div id="navbar-inner-id" class="navbar-nav mb-2 mb-xl-0   py-3   mx-auto me-xl-0 ms-xl-auto">
+          <ul class="navbar-nav flex-column flex-xl-row">
 
                 <!-- default page links -->
                 <li class="nav-item">
@@ -49,74 +49,81 @@
                   </router-link>
                 </li>
 
-                <!--- Business specific account links -->
-                <li class="nav-item dropdown" v-if="isBusinessAccount">
+            <!--- Business specific account links -->
+            <li class="nav-item dropdown" v-if="isActAsBusiness">
 
-                <!-- Navbar toggle drop down -->
-                <a class="nav-link dropdown-toggle" role="button" tabindex="3" @click="() => {
-                  this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown)
+              <!-- Navbar toggle drop down -->
+              <a class="nav-link dropdown-toggle" role="button" tabindex="3" @click="() => {
+                  this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links',
+                  'business-dropdown-links-wrapper', this.showBusinessDropdown)
                 }">
-                  Business Pages
-                </a>
+                Business Pages
+              </a>
 
-                <!-- Dropdown links-->
-                <div id="business-dropdown-links-wrapper">
-                 <ul class="dropdown-menu show" id="business-dropdown-links">
-                      <li class="nav-item">
-                        <router-link :class="['nav-link ', isActivePath('/')]" to="/" tabindex="-1">
-                          Business Listings
-                        </router-link>
-                      </li>
-                      <li class="nav-item">
-                        <router-link :class="['nav-link', isActivePath('/')]" to="/" tabindex="-1">
-                          Inventory
-                        </router-link>
-                      </li>
-                      <li class="nav-item">
-                        <!--                        TODO Change this to dynamic ID-->
-                        <router-link :class="['nav-link', isActivePath('/businesses/15/products')]" to="/" tabindex="-1">
-                          Catalogue
-                        </router-link>
-                      </li>
-                 </ul>
-                </div>
+              <!-- Dropdown links-->
+              <div id="business-dropdown-links-wrapper">
+                <ul class="dropdown-menu show" id="business-dropdown-links">
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="5">
+                      Business Listings
+                    </router-link>
+                  </li>
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="6">
+                      Inventory
+                    </router-link>
+                  </li>
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="7">
+                      Catalogue
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
 
-                </li>
+            </li>
 
-                <!-- Log out link-->
-                <li class="nav-item">
-                  <a class="nav-link" style="cursor: pointer" tabindex="4" @click="e =>logout(e)">Log out</a>
-                </li>
+            <!-- Log out link-->
+            <li class="nav-item">
+              <a class="nav-link" style="cursor: pointer" tabindex="4" @click="e =>logout(e)">Log out</a>
+            </li>
 
-              </ul>
+          </ul>
 
-              <ul class="navbar-nav flex-column flex-xl-row">
-                <!-- Interact As -->
-                <li id="interactDrop">
-                  <a role="button" @click="() => {
-                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper', this.showInteractMenu)
+          <ul class="navbar-nav flex-column flex-xl-row">
+            <!-- Interact As -->
+            <li id="interactDrop">
+              <a role="button" @click="() => {
+                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
+                    'interact-dropdown-links-wrapper', this.showInteractMenu)
                     }">
 
-                    <img src="../../public/profile_icon_default.png" width="27px" class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{actAs}}
-                  </a>
+                <img src="../../public/profile_icon_default.png" width="27px"
+                     class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{ actAs }}
+              </a>
 
-                  <div id="interact-dropdown-links-wrapper">
-                    <ul class="dropdown-menu show" id="interact-dropdown-links" >
-                      <li class="nav-item" v-for="(act, index) in interactAs" :key = "index" @click="itemClicked(index)" >
-                        <a class="nav-link">{{act.name}}</a>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
-              </ul>
+              <div id="interact-dropdown-links-wrapper">
+                <ul class="dropdown-menu show" id="interact-dropdown-links">
+                  <li class="nav-item" v-for="(act, index) in interactAs" :key="index" @click="itemClicked(index)">
+                    <a class="nav-link">{{ act.name }}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
 
 
-
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
 
-    </nav>
+  </nav>
 </template>
 
 <script>
@@ -126,14 +133,6 @@ import Api from "../Api"
 export default {
   name: "Navbar",
   props: {
-
-    // Defines if to show or hide the business account specific links
-    isBusinessAccount: {
-      type: Boolean,
-      default: false,
-      required: false
-    },
-
     // Dictates the transition animation time
     msTransitionDelay: {
       type: Number,
@@ -164,9 +163,11 @@ export default {
       // navbar required variables
       showNavbar: false,
       navbarMaxHeight: null,                                     // max height of the navbar pixels
-      navbarMinHeight: 0   ,                                     // min height of the navbar pixels
-      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`
+      navbarMinHeight: 0,                                     // min height of the navbar pixels
+      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`,
       // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
+      isActAsBusiness: false,
+      businessAccountId: null
     }
   },
 
@@ -177,7 +178,7 @@ export default {
     getUserData() {
       const currentID = Cookies.get('userID');
       Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
-
+        console.log(error)
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 406) {
@@ -216,10 +217,10 @@ export default {
      *
      * @return - Returns the new value for the toggle variable so it can be updated (cannot update directly as far as I know).
      */
-    toggleDropdownAnimated(dropdownId, dropdownWrapperId, toggleVariable,  preventToggle = false, minHeight = 0) {
+    toggleDropdownAnimated(dropdownId, dropdownWrapperId, toggleVariable, preventToggle = false, minHeight = 0) {
       // To save accessing time
-      let dropdownElement =  document.getElementById(dropdownId);
-      let wrapperElement =  document.getElementById(dropdownWrapperId);
+      let dropdownElement = document.getElementById(dropdownId);
+      let wrapperElement = document.getElementById(dropdownWrapperId);
 
       // Only toggle it if you can find it!
       if (dropdownElement && wrapperElement) {
@@ -271,13 +272,14 @@ export default {
         if (this.showNavbar) targetHeight = this.navbarMaxHeight
 
         // Assign the target height to the navbar
-        document.getElementById("navbar-id").setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
+        document.getElementById("navbar-id")
+            .setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
       }
     },
     /**
      * Determines if the current route path matches the path given.
      * @param path - the path you want to test against the route path.
-     * @return Returns "active" class keywrod if the paths match. Otherwise "" for an empty class.
+     * @return Returns "active" class keyword if the paths match. Otherwise "" for an empty class.
      */
     isActivePath(path) {
       return this.$route.path === path ? "active" : ""
@@ -297,7 +299,7 @@ export default {
       Cookies.remove('actAs');
 
       Api.signOut().then(() => {
-        this.$router.push({ name: 'Login' })
+        this.$router.push({name: 'Login'})
       })
     },
     /**
@@ -325,15 +327,13 @@ export default {
      * Refreshes dropdown list for interact as
      */
     refreshDropdown() {
-      if (this.currentUser.nickname == null)
-      {
-        this.interactAs = [ {id:this.currentUser.id, name:this.currentUser.firstName} ];
+      if (this.currentUser.nickname == null) {
+        this.interactAs = [{id: this.currentUser.id, name: this.currentUser.firstName}];
       } else {
-        this.interactAs = [ {id:this.currentUser.id, name:this.currentUser.nickname} ];
+        this.interactAs = [{id: this.currentUser.id, name: this.currentUser.nickname}];
       }
 
-
-      for (let i=0; i<this.businesses.length; i++) {
+      for (let i = 0; i < this.businesses.length; i++) {
         this.interactAs.push(this.businesses[i]);
       }
     },
@@ -342,11 +342,12 @@ export default {
      * @param index of dropdown clicked
      */
     itemClicked(index) {
-      this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper', this.showInteractMenu)
-      if (index === 0)
-      {
+      this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links',
+          'interact-dropdown-links-wrapper', this.showInteractMenu)
+      if (index === 0) {
         // Delete Cookie
         Cookies.remove('actAs');
+        this.isActAsBusiness = false;
         //
         this.actAsId = null;
         if (this.currentUser.nickname) {
@@ -357,6 +358,8 @@ export default {
       } else {
         this.thumbnail = null;
         Cookies.set('actAs', this.interactAs[index].id);
+        this.businessAccountId = this.interactAs[index].id;
+        this.isActAsBusiness = true;
         this.actAsId = this.interactAs[index].id;
         this.actAs = this.interactAs[index].name;
       }
@@ -367,7 +370,10 @@ export default {
         this.actAsId = Cookies.get('actAs');
         // Checks if user is admin of business at id actAs
         let check = false;
-        for (let i=0; i < response.businessesAdministered.length; i++) {
+        for (let i = 0; i < response.businessesAdministered.length; i++) {
+          if (response.businessesAdministered[i] === null) {
+            return
+          }
           if (String(response.businessesAdministered[i].id) === this.actAsId) {
             this.actAs = response.businessesAdministered[i].name;
             check = true;
@@ -408,6 +414,8 @@ export default {
     if (this.loginRequired) {
       this.ensureLoggedIn();
     }
+    this.businessAccountId = Cookies.get("actAs");
+    this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
   },
   mounted() {
     this.getUserData();
@@ -421,8 +429,10 @@ export default {
     }
 
     // Set the initial height for the navbar and the dropdown
-    this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper', this.showBusinessDropdown, true);
-    this.toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper', this.showInteractMenu, true);
+    this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper',
+        this.showBusinessDropdown, true);
+    this.toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper',
+        this.showInteractMenu, true);
     this.toggleNavbar(true)
 
     // Adding an event listener for resizing
@@ -440,54 +450,54 @@ export default {
 
 /* Styling for smaller screen sizes begins */
 
-  .logo-container {
-    position: center;
-  }
+.logo-container {
+  position: center;
+}
 
-  #logo-image-nav {
-    max-width: 90px;
-    margin-left: 28px;
-    margin-right: 10px;
-    width: 100%;
-  }
+#logo-image-nav {
+  max-width: 90px;
+  margin-left: 28px;
+  margin-right: 10px;
+  width: 100%;
+}
 
-  #interact-dropdown-links-wrapper {
-    margin-top: 6px; /* height between profile image and drop down buttons*/
-    width: unset;
-  }
+#interact-dropdown-links-wrapper {
+  margin-top: 6px; /* height between profile image and drop down buttons*/
+  width: unset;
+}
 
-  #interactDrop {
-    display: flex;
-    flex-flow: column wrap;
-    align-items: center;
-    max-width: 100%;
-    height: auto;
-    margin-left: 0px;
-    padding-left: 0px;
-  }
+#interactDrop {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  max-width: 100%;
+  height: auto;
+  margin-left: 0px;
+  padding-left: 0px;
+}
 
-  #interactDrop a {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 40px;
-  }
+#interactDrop a {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 40px;
+}
 
-  .act-as-image {
-    height: 55px;
-    width: auto;
-    border: 1px lightgrey solid;
-    margin-right: 15px;
-  }
+.act-as-image {
+  height: 55px;
+  width: auto;
+  border: 1px lightgrey solid;
+  margin-right: 15px;
+}
 
-  #actAsImg {
-    float: none;
-  }
+#actAsImg {
+  float: none;
+}
 
-  #logoImage {
-    max-width: 200px;
-  }
+#logoImage {
+  max-width: 200px;
+}
 
 .navbar-brand {
   outline: none;
@@ -590,6 +600,7 @@ export default {
     font-size: 28px;
   }
 }
+
 /*-------------------------------------------- Large break point styling ------------------------------------------*/
 
 /* Styling for smaller screen sizes ends */
@@ -662,9 +673,9 @@ export default {
 
 }
 
-/*-------------------------------------------- Extra Large break point styling -------------------------------------------*/
+/*------------------------------------------ Extra Large break point styling -----------------------------------------*/
 
-@media(min-width: 1400px) {
+@media (min-width: 1400px) {
 
   #logo-image-nav {
     max-width: 140px;

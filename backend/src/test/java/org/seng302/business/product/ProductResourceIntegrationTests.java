@@ -135,7 +135,7 @@ public class ProductResourceIntegrationTests {
                 Role.GLOBALAPPLICATIONADMIN);
         gAA.setId(2);
         gAA.setSessionUUID(User.generateSessionUUID());
-        user = new User ("first",
+        user = new User("first",
                 "last",
                 "middle",
                 "nick",
@@ -150,7 +150,7 @@ public class ProductResourceIntegrationTests {
                 Role.USER);
         user.setId(3);
         user.setSessionUUID(User.generateSessionUUID());
-        anotherUser = new User ("first",
+        anotherUser = new User("first",
                 "last",
                 "middle",
                 "nick",
@@ -531,6 +531,8 @@ public class ProductResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
+    //---------------------------------- Tests for /businesses/{id}/products endpoint ----------------------------------
+
     /**
      * Tests that an OK status and a list of product payloads is received when the business ID in the
      * /businesses/{id}/products API endpoint exists.
@@ -573,7 +575,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveProductsWhenBusinessExistsWithDgaaCookie() throws Exception {
+    public void canRetrieveProductsWhenBusinessExistsWithDGAACookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -607,7 +609,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveProductsWhenBusinessExistsWithGaaCookie() throws Exception {
+    public void canRetrieveProductsWhenBusinessExistsWithGAACookie() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(gAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -772,7 +774,7 @@ public class ProductResourceIntegrationTests {
     }
 
     /**
-     * Tests that an UNAUTHORIZED status and is received when the business ID in the
+     * Tests that a FORBIDDEN status and is received when the business ID in the
      * /businesses/{id}/products API endpoint exists but the cookie contains a non-admin user ID.
      *
      * @throws Exception Exception error
