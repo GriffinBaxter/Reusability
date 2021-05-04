@@ -13,8 +13,7 @@ Feature: U1 - Log in
 
   Scenario: Incorrect password entered
     Given The user's details exist in the database, with email of "email@email.com" and password of "Password123!"
-    When The user enters a registered email, "email@email.com"
-    And An incorrect password is supplied, "password"
+    When The user enters a registered email, "email@email.com" and an incorrect password is supplied, "password"
     Then An error message stating the email or password is incorrect is displayed
 
   Scenario: No email entered

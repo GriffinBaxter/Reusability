@@ -167,37 +167,56 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @And("An error message stating the email or password is incorrect is displayed")
-    public void anErrorMessageStatingTheEmailOrPasswordIsIncorrectIsDisplayed() {
+    @Then("An error message stating the email or password is incorrect is displayed")
+    public void anErrorMessageStatingTheEmailOrPasswordIsIncorrectIsDisplayed() throws Exception {
+
+        MockHttpServletResponse response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, currentEmail, currentPassword)))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 
-    @When("The user enters a registered email, {string}")
-    public void theUserEntersARegisteredEmail(String email) {
-
-    }
-
-    @And("An incorrect password is supplied, {string}")
-    public void anIncorrectPasswordIsSupplied(String password) {
-
-    }
 
     @Given("No email is entered in the login page")
     public void noEmailIsEnteredInTheLoginPage() {
+
+        currentEmail = "";
 
     }
 
     @When("The user attempts to login with no email and the password {string}")
     public void theUserAttemptsToLoginWithNoEmailAndThePassword(String password) {
 
+        currentPassword = password;
+
     }
 
     @Given("No password is entered in the login page and a registered email of {string} is provided")
     public void noPasswordIsEnteredInTheLoginPageAndARegisteredEmailOfIsProvided(String email) {
 
+        currentEmail = email;
+
     }
 
     @When("The user attempts to login, and a registered email of {string} is provided")
     public void theUserAttemptsToLoginAndARegisteredEmailOfIsProvided(String email) {
+
+        currentEmail = email;
+
     }
+
+    @When("The user enters a registered email, {string} and an incorrect password is supplied, {string}")
+    public void theUserEntersARegisteredEmailAndAnIncorrectPasswordIsSupplied(String email, String password) {
+
+        currentEmail = email;
+        currentPassword = password;
+
+        Optional<User> findUser = userRepository.findByEmail(currentEmail);
+        assertThat(findUser.get().getPassword()).isNotEqualTo(currentPassword);
+
+    }
+
 }
