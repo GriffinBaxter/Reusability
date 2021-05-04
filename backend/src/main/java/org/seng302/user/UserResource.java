@@ -74,6 +74,7 @@ public class UserResource {
      */
     @PostMapping("/login")
     public UserIdPayload loginUser(@RequestBody UserLoginPayload login, HttpServletResponse response) {
+
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
         if (user.isPresent()) {
