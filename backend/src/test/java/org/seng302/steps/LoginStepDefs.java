@@ -13,6 +13,7 @@ import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.seng302.user.UserResource;
+import org.seng302.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +24,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -52,6 +54,9 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
             "\"password\": \"%s\"}";
     private final String expectedUserIdJson = "{\"userId\":%s}";
+
+    private String currentEmail;
+    private String currentPassword;
 
     @Before
     public void createMockMvc() {
@@ -89,24 +94,15 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
     }
 
     @When("The user supplies an email {string} and password {string} which matches the details in the database")
-    public void theUserSuppliesAnEmailAndPasswordWhichMatchesTheDetailsInTheDatabase(String email, String password) {
+    public void theUserSuppliesAnEmailAndPasswordWhichMatchesTheDetailsInTheDatabase(String email, String password) throws UnsupportedEncodingException {
+        User findUser = userRepository.findByEmail(email).get();
 
-        Optional<User> optionUser = Optional.ofNullable(user);
-
-        // TODO: rework, as "optionUser" cannot be mocked
-        // when(optionUser.get().verifyPassword("Password123!")).thenReturn(true);
-
-    }
-
-
-    @And("attempts to log in")
-    public void attemptsToLogIn() {
-
+        assertThat(findUser.getEmail()).isEqualTo(email);
+        assertThat(findUser.getPassword()).isEqualTo(user.encode(password));
     }
 
     @Then("They should be logged in")
     public void theyShouldBeLoggedIn() throws Exception {
-
         MockHttpServletResponse response = mvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.format(loginPayloadJson, user.getEmail(), "Password123!")))
@@ -116,27 +112,59 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
         assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
         assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(3600);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-
     }
 
     @Given("The user is not existing in the database, i.e.  the email of {string} does not exist")
-    public void theUserIsNotExistingInTheDatabaseIETheEmailOfDoesNotExist(String email) {
+    public void theUserIsNotExistingInTheDatabaseIETheEmailOfDoesNotExist(String email) throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210"
+        );
+        user = new User("Bob",
+                "Smith",
+                "Ben",
+                "Bobby",
+                "cool person",
+                "invalid@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "invalidPassword1!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.GLOBALAPPLICATIONADMIN);
+        user.setId(1);
 
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
     }
 
     @When("The user enters an email of {string} that is not registered")
     public void theUserEntersAnEmailOfThatIsNotRegistered(String email) {
+        currentEmail = email;
 
+        Optional<User> findUser = userRepository.findByEmail(currentEmail);
+
+        assertThat(findUser.isEmpty()).isTrue();
     }
 
     @And("the password {string} is supplied")
     public void thePasswordIsSupplied(String password) {
-
+        currentPassword = password;
+        assertThat(UserValidation.isValidPassword(currentPassword)).isTrue();
     }
 
-    @Then("They should not be logged in")
-    public void theyShouldNotBeLoggedIn() {
+    @Then("They should not be logged in and an error message stating the email or password is incorrect is displayed")
+    public void theyShouldNotBeLoggedInAndAnErrorMessageStatingTheEmailOrPasswordIsIncorrectIsDisplayed() throws Exception {
+        MockHttpServletResponse response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, currentEmail, currentPassword)))
+                .andReturn().getResponse();
 
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @And("An error message stating the email or password is incorrect is displayed")
