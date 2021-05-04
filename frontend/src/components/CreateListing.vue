@@ -23,10 +23,6 @@
                 <datalist id="productDataList" style="overflow-y: auto!important">
                   <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id + ' (Expires: ' + item.expires + ')' + ' ID: ' + item.id">Quantity: {{item.quantity}} Price: (${{item.totalPrice}})</option>
                 </datalist>
-<!--                <select id="inventoryId" class="form-select mdb-select md-form" searchable="Search here.." tabindex="1" data-live-search="true" :class="toggleInvalidClass(inventoryIdErrorMsg)">-->
-<!--                  <option value="" disabled selected>Select an Item</option>-->
-<!--                  <option v-for="item in inventoryItems" v-bind:key="item.id" :value="item.id">{{item.product.id}} x{{item.quantity}} (${{item.totalPrice}})</option>-->
-<!--                </select>-->
                 <div class="invalid-feedback">
                   {{ inventoryIdErrorMsg }}
                 </div>
@@ -245,6 +241,9 @@ export default {
         this.currentInventoryItem = result;
         this.quantity = result.quantity;
         this.price = result.totalPrice;
+
+        const newDateTime = new Date(result.expires);
+        this.closes = datefns.format(new Date(newDateTime.getFullYear(), newDateTime.getMonth(), newDateTime.getDate()), "yyyy-MM-dd'T'HH:mm:ss.SSS");
       }
     },
 
