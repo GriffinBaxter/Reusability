@@ -233,46 +233,40 @@ public class FindListingsByBusinessIdTests {
         }
 
         entityManager.flush();
-
         listing1 = new Listing(inventoryItem1,
                 5,
                 12.0,
                 "",
-                LocalDateTime.now().minusDays(2),
-                LocalDateTime.now().plusDays(54));
-        listing1.setId(1);
+                LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
 
         listing2 = new Listing(inventoryItem2,
                 4,
                 1.2,
                 "",
-                LocalDateTime.now().minusDays(5),
-                LocalDateTime.now().plusDays(1));
-        listing2.setId(2);
+                LocalDateTime.of(LocalDate.of(2020, 10, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2022, 4, 1), LocalTime.of(0,0,0)));
 
         listing3 = new Listing(inventoryItem3,
                 3,
                 1.50,
                 "",
-                LocalDateTime.now().minusDays(1),
-                LocalDateTime.now().plusDays(23));
-        listing3.setId(3);
+                LocalDateTime.of(LocalDate.of(2021, 3, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2022, 3, 1), LocalTime.of(0,0,0)));
 
         listing4 = new Listing(inventoryItem4,
                 2,
                 11.20,
                 "",
-                LocalDateTime.now().minusDays(3),
-                LocalDateTime.now().plusDays(41));
-        listing4.setId(4);
+                LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2021, 12, 1), LocalTime.of(0,0,0)));
 
         listing5 = new Listing(inventoryItem5,
                 1,
                 15.20,
                 "",
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(12));
-        listing5.setId(5);
+                LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
 
         listings = List.of(listing1, listing2, listing3, listing4, listing5);
         for (Listing listing : listings) {
@@ -302,12 +296,12 @@ public class FindListingsByBusinessIdTests {
         orderedQuantities.add(3);
         orderedQuantities.add(4);
         orderedQuantities.add(5);
-        ArrayList<Integer> orderedInventoryIds = new ArrayList<>();
-        orderedInventoryIds.add(5);
-        orderedInventoryIds.add(4);
-        orderedInventoryIds.add(3);
-        orderedInventoryIds.add(2);
-        orderedInventoryIds.add(1);
+        ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("PROD");
+        orderedProdIds.add("DUCT");
+        orderedProdIds.add("APP-LE3");
+        orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
 
         // when
         Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
@@ -315,10 +309,262 @@ public class FindListingsByBusinessIdTests {
         // then
         for (int i = 0; i < listingsPage.getContent().size(); i++) {
             assertThat(listingsPage.getContent().get(i).getQuantity()).isEqualTo(orderedQuantities.get(i));
-            assertThat(listingsPage.getContent().get(i).getId()).isEqualTo(orderedInventoryIds.get(i));
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
         }
     }
 
+    /**
+     * Tests that the findListingByBusinessId functionality will order products by quantity
+     * in descending order i.e. from largest to lowest
+     */
+    @Test
+    public void whenFindListingByBusinessIdTests_thenReturnQuantityOrderedListingsDescending() {
+        // given
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.desc("quantity").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("id")));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<Integer> orderedQuantities = new ArrayList<>();
+        orderedQuantities.add(5);
+        orderedQuantities.add(4);
+        orderedQuantities.add(3);
+        orderedQuantities.add(2);
+        orderedQuantities.add(1);
+        ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("APPLE");
+        orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APP-LE3");
+        orderedProdIds.add("DUCT");
+        orderedProdIds.add("PROD");
+
+        // when
+        Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        for (int i = 0; i < listingsPage.getContent().size(); i++) {
+            assertThat(listingsPage.getContent().get(i).getQuantity()).isEqualTo(orderedQuantities.get(i));
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findListingByBusinessId functionality will order products by price
+     * in descending order i.e. from lowest to largest
+     */
+    @Test
+    public void whenFindListingByBusinessIdTests_thenReturnPriceOrderedListingsAscending() {
+        // given
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.asc("price").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("id")));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<Double> orderedPrices = new ArrayList<>();
+        orderedPrices.add(1.2);
+        orderedPrices.add(1.5);
+        orderedPrices.add(11.2);
+        orderedPrices.add(12.0);
+        orderedPrices.add(15.2);
+        ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APP-LE3");
+        orderedProdIds.add("DUCT");
+        orderedProdIds.add("APPLE");
+        orderedProdIds.add("PROD");
+
+        // when
+        Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        for (int i = 0; i < listingsPage.getContent().size(); i++) {
+            assertThat(listingsPage.getContent().get(i).getPrice()).isEqualTo(orderedPrices.get(i));
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findListingByBusinessId functionality will order products by price
+     * in descending order i.e. from largest to lowest
+     */
+    @Test
+    public void whenFindListingByBusinessIdTests_thenReturnPriceOrderedListingsDescending() {
+        // given
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.desc("price").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("id")));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<Double> orderedPrices = new ArrayList<>();
+        orderedPrices.add(15.2);
+        orderedPrices.add(12.0);
+        orderedPrices.add(11.2);
+        orderedPrices.add(1.5);
+        orderedPrices.add(1.2);
+        ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
+        orderedProdIds.add("DUCT");
+        orderedProdIds.add("APP-LE3");
+        orderedProdIds.add("APP-LE");
+
+        // when
+        Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        for (int i = 0; i < listingsPage.getContent().size(); i++) {
+            assertThat(listingsPage.getContent().get(i).getPrice()).isEqualTo(orderedPrices.get(i));
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findListingByBusinessId functionality will order products by created
+     * in Ascending order i.e. from oldest to newest
+     */
+    @Test
+    public void whenFindListingByBusinessIdTests_thenReturnCreatedOrderedListingsAscending() {
+        // given
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.asc("created").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("id")));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<LocalDateTime> orderedPrices = new ArrayList<>();
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 3, 1), LocalTime.of(0,0,0)));
+        ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
+        orderedProdIds.add("APP-LE");
+        orderedProdIds.add("DUCT");
+        orderedProdIds.add("APP-LE3");
+
+
+        // when
+        Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        for (int i = 0; i < listingsPage.getContent().size(); i++) {
+            assertThat(listingsPage.getContent().get(i).getCreated()).isEqualTo(orderedPrices.get(i));
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findListingByBusinessId functionality will order products by created
+     * in descending order i.e. from newest to oldest
+     */
+    @Test
+    public void whenFindListingByBusinessIdTests_thenReturnCreatedOrderedListingsDescending() {
+        // given
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.desc("created").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("id")));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<LocalDateTime> orderedPrices = new ArrayList<>();
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 3, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)));
+        ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("APP-LE3");
+        orderedProdIds.add("DUCT");
+        orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
+        orderedProdIds.add("PROD");
+
+        // when
+        Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        for (int i = 0; i < listingsPage.getContent().size(); i++) {
+            assertThat(listingsPage.getContent().get(i).getCreated()).isEqualTo(orderedPrices.get(i));
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findListingByBusinessId functionality will order products by closes
+     * in ascending order i.e. from newest to oldest
+     */
+    @Test
+    public void whenFindListingByBusinessIdTests_thenReturnClosesOrderedListingsAscending() {
+        // given
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.asc("closes").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("id")));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<LocalDateTime> orderedPrices = new ArrayList<>();
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 12, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 3, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 4, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
+        ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("DUCT");
+        orderedProdIds.add("APP-LE3");
+        orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
+        orderedProdIds.add("PROD");
+
+        // when
+        Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        for (int i = 0; i < listingsPage.getContent().size(); i++) {
+            assertThat(listingsPage.getContent().get(i).getCloses()).isEqualTo(orderedPrices.get(i));
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findListingByBusinessId functionality will order products by closes
+     * in descending order i.e. from newest to oldest
+     */
+    @Test
+    public void whenFindListingByBusinessIdTests_thenReturnClosesOrderedListingsDescending() {
+        // given
+
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.desc("closes").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("id")));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<LocalDateTime> orderedPrices = new ArrayList<>();
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 4, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 3, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 12, 1), LocalTime.of(0,0,0)));
+        ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
+        orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APP-LE3");
+        orderedProdIds.add("DUCT");
+
+        // when
+        Page<Listing> listingsPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        for (int i = 0; i < listingsPage.getContent().size(); i++) {
+            assertThat(listingsPage.getContent().get(i).getCloses()).isEqualTo(orderedPrices.get(i));
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
+        }
+    }
 }
 
 
