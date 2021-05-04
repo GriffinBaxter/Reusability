@@ -127,7 +127,7 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col">A simple success alert—check it out!</div>
+                <div class="col">New Inventory Item Create successfully!</div>
                 <div class="col" align="right">
                   <button type="button" class="btn btn-outline-success px-1 py-0" @click="closeMessage">X</button>
                 </div>
