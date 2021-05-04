@@ -310,6 +310,56 @@ export class Product {
 
 }
 
+export class Listing{
+
+  // This is a config for the Inventory Item requirement details
+  static config = {
+    inventoryItemId: {
+      name: "Inventory Item ID",
+      minLength: 1,
+      maxLength: 15,
+      regex: /^[0-9]+$/,
+      regexMessage: "Must select an Inventory Item",
+    },
+    quantity: {
+      name: "Quantity",
+      minLength: 1,
+      maxLength: 3,
+      regex: /^[0-9]+$/,
+      regexMessage: "Must only contain numbers",
+    },
+    price: {
+      name: "Price",
+      minLength: 1,
+      maxLength: 16,
+      regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
+      regexMessage: "Must be a positive double precision floating point number e.g 1.00"
+    },
+    moreInfo: {
+      name: "MoreInfo",
+      minLength: 0,
+      maxLength: 255,
+      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
+      regex: /^[a-zA-Z0-9 '-.]*$/
+    },
+    closes: {
+      name: "manufactured"
+    }
+  };
+
+  constructor({inventoryItemId, quantity, price, moreInfo, closes}) {
+    this.data = {
+      inventoryItemId,
+      quantity,
+      price,
+      moreInfo,
+      closes
+    }
+
+  }
+
+}
+
 export class InventoryItem {
 
     // This is a config for the Inventory Item requirement details
@@ -356,19 +406,19 @@ export class InventoryItem {
         },
     };
 
-    constructor({productId, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires}) {
-        this.data = {
-            productId,
-            quantity,
-            pricePerItem,
-            totalPrice,
-            manufactured,
-            sellBy,
-            bestBefore,
-            expires
-        }
-
+  constructor({productId, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires}) {
+    this.data = {
+      productId,
+      quantity,
+      pricePerItem,
+      totalPrice,
+      manufactured,
+      sellBy,
+      bestBefore,
+      expires
     }
+
+  }
 
 }
 
@@ -454,17 +504,37 @@ export default {
         })
     },
 
-    // Sends a post request to the backend with a new product object to store
-    addNewProduct: (businessID, product) => {
-        return instance.post('/businesses/' + businessID + '/products', {...product.data}, {withCredentials: true})
-    },
+  // Sends a post request to the backend with a new product object to store
+  addNewProduct: (businessID, product) => {
+    return instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true})
+  },
 
-    addNewInventoryItem: (id, inventoryItem) => {
-        return instance.post(`/businesses/${id}/inventory/`, {
-            ...inventoryItem.data
-        }, {
-            withCredentials: true
-        })
-    }
+  sortListings: (businessId, sortBy, page) => {
+    return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
+      withCredentials: true,
+    })
+  },
+
+  addNewInventoryItem: (id, inventoryItem) => {
+    return instance.post(`/businesses/${id}/inventory/`, {
+      ...inventoryItem.data
+    }, {
+      withCredentials: true
+    })
+  },
+
+  addNewBusinessListing: (businessId, listing) => {
+    return instance.post(`/businesses/${businessId}/listings`, {
+        ...listing.data
+    }, {
+        withCredentials: true
+    })
+  },
+
+  getEveryInventoryItem: (businessID) => {
+     return instance.get(`/businesses/${businessID}/inventoryAll`, {
+        withCredentials: true
+     })
+  }
 
 }

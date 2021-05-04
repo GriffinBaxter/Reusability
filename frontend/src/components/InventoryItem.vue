@@ -4,7 +4,9 @@
 
       <!--image-->
       <div class="col-md-3">
-        <img class="card-img" :src="image" id="inventory-item-image">
+        <div class="ratio ratio-1x1">
+          <img class="card-img" :src="image" id="inventory-item-image">
+        </div>
       </div>
 
       <div class="col-md-9">
@@ -30,26 +32,27 @@
           </h6>
           <h6 class="card-text" align="right" v-else><br></h6>
 
-          <!--date-->
-          <hr>
-          <div class="row">
-            <div class="col" v-if="manufactured != null">
-              Manufactured: {{ manufactured }}
-            </div>
-            <div class="col" v-if="sellBy != null">
-              Sell By: {{ sellBy }}
-            </div>
-            <div class="col" v-if="bestBefore != null">
-              Best Before: {{ bestBefore }}
-            </div>
-            <div class="col" v-if="expires != null">
-              Expires: {{ expires }}
-            </div>
-          </div>
-
         </div>
       </div>
 
+    </div>
+    <div>
+      <!--date-->
+      <hr id="lineBreak">
+      <div class="row">
+        <div class="col-md text-center" v-if="manufactured != null">
+          Manufactured: {{ manufactured }}
+        </div>
+        <div class="col-md text-center" v-if="sellBy != null">
+          Sell By: {{ sellBy }}
+        </div>
+        <div class="col-md text-center" v-if="bestBefore != null">
+          Best Before: {{ bestBefore }}
+        </div>
+        <div class="col-md text-center" v-if="expires != null">
+          Expires: {{ expires }}
+        </div>
+      </div>
     </div>
   </div>
 
@@ -131,8 +134,17 @@ export default {
 <style scoped>
 img {
   object-fit: cover;
-  width: 230px;
-  height: 230px;
+  width: 100%;
+}
+
+#lineBreak {
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+h6 {
+  margin: 0;
 }
 
 </style>
