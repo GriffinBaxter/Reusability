@@ -25,7 +25,7 @@
               <!-- Product ID -->
               <div class="row my-lg-2">
                 <div class="col-12 my-2 my-lg-0">
-                  <label :for="'product-id-'+value.data.id">ID</label>
+                  <label :for="'product-id-'+value.data.id">ID*</label>
                   <input :id="'product-id-'+value.data.id" name="product-id" type="text" v-model="newProduct.data.id"
                          :class="toggleInvalidClass(errorsMessages.id)" :maxlength="config.productID.maxLength">
                   <div class="invalid-feedback">
