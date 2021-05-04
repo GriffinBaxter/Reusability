@@ -344,7 +344,8 @@ name: "Listings",
             price: response.data[i].price,
             listDate: response.data[i].created,
             closeDate: response.data[i].closes,
-            moreInfo: response.data[i].moreInfo
+            moreInfo: response.data[i].moreInfo,
+            expires: response.data[i].inventoryItem.expires
           })
         }
       }
