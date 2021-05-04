@@ -123,6 +123,7 @@ public class UserResource {
     public ResponseEntity<UserIdPayload> registerUser(
             @RequestBody UserRegistrationPayload registration, HttpServletResponse response
     ) {
+        System.out.println(userRepository.findByEmail(registration.getEmail()));
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
             logger.error("Registration Failure - Email already in use {}", registration.getEmail());
             throw new ResponseStatusException(
