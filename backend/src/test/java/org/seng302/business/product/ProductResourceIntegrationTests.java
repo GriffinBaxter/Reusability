@@ -783,35 +783,6 @@ public class ProductResourceIntegrationTests {
 
 
     /**
-     * Tests that a BAD_REQUEST status is returned when attempting to modify a product with invalid business id (path variable).
-     *
-     * @throws Exception Exception error
-     */
-    @Test
-    public void cannotModifyAProductWithInvalidBusinessId() throws Exception {
-        // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
-        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
-        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
-        expectedJson = "";
-        payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
-
-        // when
-        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        when(businessRepository.findBusinessById(255)).thenReturn(Optional.empty());
-        response = mvc.perform(put(String.format("/businesses/%d/products/%s", 255, product.getProductId()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))
-                ).andReturn().getResponse();
-
-        System.out.println(response.getStatus());
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-
-    /**
      * Tests that a BAD_REQUEST status is returned when attempting to modify a product with invalid product id (path variable).
      *
      * @throws Exception Exception error
@@ -963,10 +934,7 @@ public class ProductResourceIntegrationTests {
         ).andReturn().getResponse();
 
         // then
-        Optional<Product> updatedProduct = productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(updatedProduct.isPresent()).isTrue();
-        assertThat(updatedProduct.get()).isEqualTo(product);
     }
 
 
@@ -993,10 +961,7 @@ public class ProductResourceIntegrationTests {
         ).andReturn().getResponse();
 
         // then
-        Optional<Product> updatedProduct = productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(updatedProduct.isPresent()).isTrue();
-        assertThat(updatedProduct.get()).isEqualTo(product);
     }
 
 
@@ -1022,10 +987,7 @@ public class ProductResourceIntegrationTests {
         ).andReturn().getResponse();
 
         // then
-        Optional<Product> updatedProduct = productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(updatedProduct.isPresent()).isTrue();
-        assertThat(updatedProduct.get()).isEqualTo(product);
     }
 
 
