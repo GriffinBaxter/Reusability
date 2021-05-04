@@ -2,8 +2,8 @@
 <!--It contains the search bar for searching for users by first name.-->
 
 <template>
-    <div class="pt-3 text-font" id=" search-bar-container">
-      <div class="row text-center">
+    <div class="pt-3 text-font container-fluid" id="search-bar-container">
+      <div class="row">
         <div class="col search-bar-positioning">
           <div class="input-group">
             <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
@@ -56,6 +56,10 @@ export default {
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
+}
+
+#search-bar-container {
+ max-width: 1200px;
 }
 
 </style>
