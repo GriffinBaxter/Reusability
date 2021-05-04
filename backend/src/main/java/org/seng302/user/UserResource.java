@@ -292,10 +292,10 @@ public class UserResource {
     public ResponseEntity<List<UserPayloadSecure>> searchUsers(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestParam String searchQuery,
-            @RequestParam String orderBy,
-            @RequestParam String page
+            @RequestParam(defaultValue = "fullNameASC") String orderBy,
+            @RequestParam(defaultValue = "0") String page
     ) throws Exception {
-        // TODO Add logging
+        logger.debug("User search request received with search query {}, order by {}, page {}", searchQuery, orderBy, page);
 
         //TODO check this
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -303,7 +303,7 @@ public class UserResource {
         try {
             pageNo = Integer.parseInt(page);
         } catch (final NumberFormatException e) {
-            // Invalid page input
+            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Page parameter invalid"
@@ -358,7 +358,7 @@ public class UserResource {
 
                 break;
             default:
-                // Invalid orderBy input
+                logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "OrderBy Field invalid"
@@ -376,7 +376,9 @@ public class UserResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Users Found - Search");
+        logger.info("Search Success - 200 [OK] -  Users retrieved for search query {}, order by {}, page {}", searchQuery, orderBy, pageNo);
+
+        logger.debug("Users Found: {}", pagedResult.toList().toString());
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
@@ -387,7 +389,6 @@ public class UserResource {
     public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
         List<UserPayloadSecure> userPayloadList = new ArrayList<>();
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
-
 
         for (UserPayloadSecure userPayloadSecure: userPayloadList) {
             Role role = null;

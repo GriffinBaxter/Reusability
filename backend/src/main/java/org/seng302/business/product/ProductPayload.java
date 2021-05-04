@@ -79,4 +79,15 @@ public class ProductPayload {
         return created;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":\"" + id + "\"," +
+                "\"name\":\"" + name + "\"," +
+                "\"description\":\"" + description + "\"," +
+                "\"manufacturer\":\"" + manufacturer + "\"," +
+                "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
+                "\"created\":\"" + created + "\"}";
+    }
+
 }
