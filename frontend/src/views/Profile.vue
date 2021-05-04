@@ -214,14 +214,14 @@
               </div>
               <hr v-if="businessesAdministeredExist()">
               <div class="container" v-if="businessesAdministeredExist()">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between businesses-administered">
                   <div class="col-md-3">
                     <h6>Businesses Administered:</h6>
                   </div>
                   <div class="col">
                     <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
                     <div v-else>
-                      <div class="text-secondary" v-for="business in businessesAdministered" :key="business.name"
+                      <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
                            align="right" @click="pushToBusiness(business.id)">
                         {{ business.name }}
                       </div>
@@ -819,6 +819,11 @@ export default {
 #imageDiv {
   width:100%;
   padding: 2px;
+}
+
+.businesses-administered:hover {
+  color: #1EBA8C !important;
+  cursor: pointer;
 }
 
 </style>
