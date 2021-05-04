@@ -65,7 +65,7 @@ public class BusinessPayload {
                            LocalDateTime created
                            ) throws Exception {
         this.id = id;
-        this.administrators = UserPayload.convertToPayload(administrators);
+        this.administrators = UserPayload.convertToPayloadWithoutBusiness(administrators);
         //      TODO This might get changed in the future due to the recursive nature of the API seems wrong.
         if (this.administrators.isEmpty()){
             this.administrators.add(null);

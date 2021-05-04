@@ -98,12 +98,12 @@
               <!--business's primary administrator-->
               <hr v-if="isAdministrator">
               <div class="container" v-if="isAdministrator">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between primary-administrator">
                   <div class="col-4 -align-left">
                     <h6>Primary Administrator:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" align="right" @click="pushToUser(primaryAdministratorId)">
+                    <div class="text-secondary primary-administrator" align="right" @click="pushToUser(primaryAdministratorId)">
                       {{ primaryAdministrator }}
                     </div>
                   </div>
@@ -113,12 +113,12 @@
               <!--business's administrators-->
               <hr>
               <div class="container">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between other-administrators">
                   <div class="col-4 -align-left">
                     <h6>Administrators:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" v-for="nameOfAdministrator in nameOfAdministrators"
+                    <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
                          :key="nameOfAdministrator.name"
                          align="right" @click="pushToUser(nameOfAdministrator.id)">
                       {{ nameOfAdministrator.name }}
@@ -387,5 +387,12 @@ export default {
 </script>
 
 <style scoped>
+
+.primary-administrator:hover, .other-administrators:hover {
+  color: #1EBA8C !important;
+  cursor: pointer;
+}
+
+
 
 </style>

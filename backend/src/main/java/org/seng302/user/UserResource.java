@@ -375,7 +375,7 @@ public class UserResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Users Found");
+        logger.info("Users Found - Search");
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
@@ -387,6 +387,7 @@ public class UserResource {
         List<UserPayloadSecure> userPayloadList = new ArrayList<>();
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
 
+
         for (UserPayloadSecure userPayloadSecure: userPayloadList) {
             Role role = null;
             if (verifyRole(user, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
@@ -394,6 +395,7 @@ public class UserResource {
             }
             userPayloadSecure.setRole(role);
         }
+
         return userPayloadList;
     }
 
