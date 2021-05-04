@@ -197,7 +197,6 @@ public class ListingResource {
                 @PathVariable Integer id,
                 @RequestBody ListingCreationPayload listingPayload) {
         logger.debug("Listing payload received: {}", listingPayload);
-        System.out.println("TEST");
         // Checks if User is logged in 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -220,7 +219,6 @@ public class ListingResource {
                         " AND the user is not a global application admin"
             );
         }
-        System.out.println(listingPayload.getInventoryItemId());
         // Checks InventoryItem exists and gets InventoryItem
         Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemById(Integer.parseInt(listingPayload.getInventoryItemId()));
         if (inventoryItem.isEmpty()) {

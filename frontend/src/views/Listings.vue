@@ -3,7 +3,7 @@
     <!-- Navbar -->
     <Navbar/>
     <!-- Listing Creation -->
-    <create-listing v-bind:business-id="businessId"></create-listing>
+    <create-listing @updateListings="afterCreation" v-bind:business-id="businessId"></create-listing>
     <!-- Listing Container -->
     <div class="container">
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
@@ -386,7 +386,13 @@ name: "Listings",
       await Api.getUser(id).then(response => {
         this.role = response.data.role;
       })
-    }
+    },
+    /**
+     * After creation success use endpoint to collect data from backend and display it.
+     */
+    afterCreation() {
+      this.getListings();
+    },
   },
   async mounted() {
     /**

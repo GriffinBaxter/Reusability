@@ -101,6 +101,7 @@
 
 <script>
 import Api, {Listing} from "@/Api";
+import {Modal} from "bootstrap";
 const datefns = require('date-fns');
 
 export default {
@@ -118,6 +119,7 @@ export default {
       allInventoryItems: [], // Stores all inventory items (for new listing dropdown)
       currentInventoryItem: null,
       inventoryItemIds: [], // Stores all inventory item
+      modal: null,
 
       // Inventory Id related variables
       inventoryId: "",
@@ -165,6 +167,9 @@ export default {
       this.moreInfoErrorMsg = "";
       this.closes = "";
       this.closesErrorMsg = "";
+    },
+    closeModal() {
+      this.modal.hide();
     },
     /**
      * This method removes white space from the beginning and end of all the input field's input values.
@@ -300,7 +305,6 @@ export default {
     isValidCloseDate(selectedCloseDate) {
       let isValid = false;
       const closeDate = this.parseSelectedDate(selectedCloseDate);
-      console.log(closeDate);
       if (closeDate === null) {
         return isValid;
       }
@@ -341,10 +345,6 @@ export default {
           this.toastErrorMessage = 'Unexpected error occurred!';
         }
       })
-    },
-
-    autofillDetails(event) {
-      console.log(event);
     },
 
     /**
@@ -422,13 +422,14 @@ export default {
         moreInfo: this.moreInfo,
         closes: this.closes
       };
-      //console.log(listingItemData);
+
       const newListingItem = new Listing(listingItemData);
 
       await Api.addNewBusinessListing(this.businessId, newListingItem).then((response) => {
         if (response.status === 201) {
           this.dataReset();
-          this.modal.hide();
+          this.$emit('updateListings');
+          this.closeModal();
         }
       }).catch((error) => {
 
@@ -465,7 +466,8 @@ export default {
   },
   mounted() {
     // Adds test data
-    this.getAllInventoryItems().then(() => console.log(this.allInventoryItems));
+    this.getAllInventoryItems().then(() => {});
+    this.modal = new Modal(document.getElementById("listingCreationPopup"));
     //this.testData();
   }
 }
