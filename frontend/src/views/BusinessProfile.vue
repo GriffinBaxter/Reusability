@@ -18,7 +18,7 @@
             <div class="card-body">
 
               <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_profile_image.jpg')"
+              <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
                    alt="Profile Image"/>
 
               <!--business's name-->
@@ -98,12 +98,12 @@
               <!--business's primary administrator-->
               <hr v-if="isAdministrator">
               <div class="container" v-if="isAdministrator">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between primary-administrator">
                   <div class="col-4 -align-left">
                     <h6>Primary Administrator:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" align="right" @click="pushToUser(primaryAdministratorId)">
+                    <div class="text-secondary primary-administrator" align="right" @click="pushToUser(primaryAdministratorId)">
                       {{ primaryAdministrator }}
                     </div>
                   </div>
@@ -113,12 +113,12 @@
               <!--business's administrators-->
               <hr>
               <div class="container">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between other-administrators">
                   <div class="col-4 -align-left">
                     <h6>Administrators:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" v-for="nameOfAdministrator in nameOfAdministrators"
+                    <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
                          :key="nameOfAdministrator.name"
                          align="right" @click="pushToUser(nameOfAdministrator.id)">
                       {{ nameOfAdministrator.name }}
@@ -132,8 +132,12 @@
 
           <!--logout button-->
           <div align="right" id="adminButtonRow" v-if="isAdministrator">
-            <button class="btn btn-outline-primary float-end mt-4" id="productCatalogueButton"
-                    @click="navigateToProductCatalogue()">Product Catalogue</button>
+            <button class="btn btn-outline-primary float-end mt-4 mx-2" id="productCatalogueButton"
+                    @click="navigateTo('ProductCatalogue')">Product Catalogue
+            </button>
+            <button class="btn btn-outline-primary float-end mt-4 mx-2" id="InventoryButton"
+                    @click="navigateTo('Inventory')">Inventory
+            </button>
           </div>
 
         </div>
@@ -152,6 +156,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
+import {UserRole} from "@/components/User";
 
 export default {
   name: "BusinessProfile",
@@ -179,7 +184,7 @@ export default {
 
       nameOfAdministrators: [],
 
-      isAdministrator: true
+      isAdministrator: false
     }
   },
   methods: {
@@ -313,26 +318,36 @@ export default {
     pushToUser(id) {
       this.$router.push({name: 'Profile', params: {id}});
     },
-    navigateToProductCatalogue() {
+    navigateTo(name) {
       /*
       Navigates to the product catalogue of the business
        */
       let id = this.$route.params.id;
-      this.$router.push({name: 'ProductCatalogue', params: {id}});
+      this.$router.push({name: name, params: {id}});
     },
-    logout() {
-      /*
-      Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
-       */
-      Cookies.remove('userID');
-      Cookies.remove('JSESSIONID');
-      Cookies.remove('actAs');
-      this.$router.push({name: 'Login'});
-    }
+    checkIsAdmin(currentID) {
+      Api.getUser(currentID).then(response => {
+        this.isAdministrator = this.isAdministrator ? true :
+            (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
+            || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);
+      }).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noUser'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else {
+          this.$router.push({path: '/noUser'});
+          console.log(error.message);
+        }
+      })
+    },
   },
   mounted() {
     const currentID = Cookies.get('userID');
     if (currentID) {
+      this.checkIsAdmin(currentID);
       const url = document.URL;
       const urlID = url.substring(url.lastIndexOf('/') + 1);
 
@@ -372,5 +387,12 @@ export default {
 </script>
 
 <style scoped>
+
+.primary-administrator:hover, .other-administrators:hover {
+  color: #1EBA8C !important;
+  cursor: pointer;
+}
+
+
 
 </style>

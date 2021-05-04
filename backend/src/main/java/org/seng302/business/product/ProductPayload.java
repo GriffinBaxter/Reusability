@@ -40,6 +40,21 @@ public class ProductPayload {
         this.created = created.toString();
     }
 
+    /**
+     * Converts a Product to a ProductPayload
+     * @param product The product that will be converted
+     * @return ProductPayload of the product
+     */
+    public static ProductPayload convertProductToProductPayload(Product product) {
+
+        return new ProductPayload(product.getProductId(),
+                                    product.getName(),
+                                    product.getDescription(),
+                                    product.getManufacturer(),
+                                    product.getRecommendedRetailPrice(),
+                                    product.getCreated());
+    }
+
     public String getId() {
         return id;
     }
@@ -62,6 +77,17 @@ public class ProductPayload {
 
     public String getCreated() {
         return created;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":\"" + id + "\"," +
+                "\"name\":\"" + name + "\"," +
+                "\"description\":\"" + description + "\"," +
+                "\"manufacturer\":\"" + manufacturer + "\"," +
+                "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
+                "\"created\":\"" + created + "\"}";
     }
 
 }
