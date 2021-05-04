@@ -353,16 +353,6 @@ public class InventoryItemResource {
                     inventoryRegistrationPayload.getBestBefore(),
                     inventoryRegistrationPayload.getExpires()
             ));
-            System.out.println(new InventoryItem(selectProduct,
-                    productId,
-                    inventoryRegistrationPayload.getQuantity(),
-                    inventoryRegistrationPayload.getPricePerItem(),
-                    inventoryRegistrationPayload.getTotalPrice(),
-                    inventoryRegistrationPayload.getManufactured(),
-                    inventoryRegistrationPayload.getSellBy(),
-                    inventoryRegistrationPayload.getBestBefore(),
-                    inventoryRegistrationPayload.getExpires()
-            ));
         } catch (Exception e) {
             logger.error("Inventory Item Creation Failure - {}", e.getMessage());
             throw new ResponseStatusException(
@@ -373,4 +363,3 @@ public class InventoryItemResource {
     }
 
 }
-
