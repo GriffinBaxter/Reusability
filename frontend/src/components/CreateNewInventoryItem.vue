@@ -96,6 +96,9 @@
                 {{ expiresErrorMsg }}
               </div>
             </div>
+            <div class="text-center text-danger">
+              {{toastErrorMessage}}
+            </div>
 
           </form>
         </div>
@@ -157,7 +160,9 @@ export default {
 
       // expires related variables
       expires: "",
-      expiresErrorMsg: ""
+      expiresErrorMsg: "",
+
+      toastErrorMessage: ""
     }
   },
   methods: {
@@ -634,13 +639,14 @@ export default {
       ).then((response) => {
             if (response.status === 201) {
               this.dataReset();
+              this.toastErrorMessage = "";
             }
           }
       ).catch((error) => {
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
-            this.toastErrorMessage = '400 Bad request; invalid product data';
+            this.toastErrorMessage = 'Invalid Product Data. Please check the product ID';
           } else if (error.response.status === 403) {
             this.toastErrorMessage = 'User is not an administer of this business.';
           } else {
