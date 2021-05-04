@@ -36,6 +36,10 @@ body {
   background: #fafbfc;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .green-button {
   background-color: #1EBA8C;
   border-color: #1EBA8C;
