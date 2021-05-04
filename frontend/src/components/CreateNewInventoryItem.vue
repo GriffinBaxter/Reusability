@@ -306,7 +306,8 @@ export default {
       const expiryDate = this.parseSelectedDate(selectedExpiryDate);
 
       if (sellByDate === null || manufacturedDate === null || expiryDate === null) {
-        return isValid
+
+        return isValid;
       } else {
 
         const sellByDateYear = sellByDate.year
@@ -562,29 +563,36 @@ export default {
       if (this.totalPriceErrorMsg) {
         requestIsInvalid = true
       }
-
       // Manufacture date error checking
       if (!this.isValidManufactureDate(this.manufactured)) {
           this.manufacturedErrorMsg = "Manufactured date must be prior to today's date";
           requestIsInvalid = true;
+      } else {
+        this.manufacturedErrorMsg = '';
       }
 
       // Sell by date error checking
-      if (!this.isValidSellByDate(this.sellBy)) {
+      if (!this.isValidSellByDate(this.sellBy, this.manufactured, this.expires)) {
         this.sellByErrorMsg = "Sell by date must be after today's date but not today's date, and after the manufacture date and before the expiry date (not including)";
         requestIsInvalid = true;
+      } else {
+        this.sellByErrorMsg = '';
       }
 
       // Best best date before error checking
-      if (!this.isValidBestBeforeDate(this.bestBefore)) {
+      if (!this.isValidBestBeforeDate(this.bestBefore, this.manufactured, this.expires)) {
         this.bestBeforeErrorMsg = "Best before date must be after today's date but not today's date, after the manufacture date and before expiry date";
         requestIsInvalid = true;
+      } else {
+        this.bestBeforeErrorMsg = '';
       }
 
       // Expiry date error checking
-      if (!this.isValidBestBeforeDate(this.bestBefore)) {
+      if (!this.isValidExpiryDate(this.expires, this.bestBefore, this.manufactured)) {
         this.expiresErrorMsg = "Expiry date of the inventory item is after today's date, after the manufacture date, and after or equal to the best before date";
         requestIsInvalid = true;
+      } else {
+        this.expiresErrorMsg = '';
       }
 
       // If at any stage an error has been discovered we cancel the procedure
