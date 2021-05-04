@@ -233,8 +233,8 @@ export default {
       return min <= val && val <= max;
     },
     /**
-     *
-     * @param event
+     * Given an update event we perform a validation and perform the call to the API to modify the product.
+     * @param event An update button event.
      */
     updateProduct(event) {
       // Prevent any default actions
