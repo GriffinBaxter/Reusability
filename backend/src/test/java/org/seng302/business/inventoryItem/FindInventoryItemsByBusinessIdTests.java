@@ -34,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * FindInventoryItemsByBusinessId test class - specifically for testing the pagination and ordering of the
  * findInventoryItemsByBusinessId method in InventoryItemsRepository.
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
