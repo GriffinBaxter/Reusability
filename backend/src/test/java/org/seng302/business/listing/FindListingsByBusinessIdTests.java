@@ -51,6 +51,8 @@ public class FindListingsByBusinessIdTests {
 
     private Business business;
     private Integer businessId;
+    private Business anotherBusiness;
+    private Integer anotherBusinessId;
 
     private Product product1;
     private Product product2;
@@ -119,6 +121,19 @@ public class FindListingsByBusinessIdTests {
         businessId = business.getId();
         entityManager.flush();
 
+        anotherBusiness = new Business(
+                user.getId(),
+                "example name 2",
+                "some text 2",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        anotherBusiness = entityManager.persist(anotherBusiness);
+        anotherBusinessId = anotherBusiness.getId();
+        entityManager.flush();
+
         product1 = new Product(
                 "APPLE",
                 business,
@@ -181,9 +196,9 @@ public class FindListingsByBusinessIdTests {
                 45,
                 6.5,
                 21.99,
-                LocalDate.of(2020, 04, 25),
-                LocalDate.of(2021, 04, 25),
-                LocalDate.of(2021, 04, 25),
+                LocalDate.of(2020, 4, 25),
+                LocalDate.of(2021, 4, 25),
+                LocalDate.of(2021, 4, 25),
                 LocalDate.of(2021, 12, 25));
 
         inventoryItem2 = new InventoryItem(product2,
@@ -191,9 +206,9 @@ public class FindListingsByBusinessIdTests {
                 6,
                 17.44,
                 27.00,
-                LocalDate.of(2021, 04, 25),
-                LocalDate.of(2022, 04, 25),
-                LocalDate.of(2022, 04, 25),
+                LocalDate.of(2021, 4, 25),
+                LocalDate.of(2022, 4, 25),
+                LocalDate.of(2022, 4, 25),
                 LocalDate.of(2022, 12, 25));
 
         inventoryItem3 = new InventoryItem(product3,
@@ -201,9 +216,9 @@ public class FindListingsByBusinessIdTests {
                 40,
                 4.99,
                 32.23,
-                LocalDate.of(2021, 04, 25),
-                LocalDate.of(2023, 04, 25),
-                LocalDate.of(2023, 04, 25),
+                LocalDate.of(2021, 4, 25),
+                LocalDate.of(2023, 4, 25),
+                LocalDate.of(2023, 4, 25),
                 LocalDate.of(2024, 12, 25));
 
         inventoryItem4 = new InventoryItem(product4,
@@ -211,9 +226,9 @@ public class FindListingsByBusinessIdTests {
                 13,
                 6.5,
                 29.99,
-                LocalDate.of(2021, 04, 25),
-                LocalDate.of(2023, 04, 25),
-                LocalDate.of(2023, 04, 25),
+                LocalDate.of(2021, 4, 25),
+                LocalDate.of(2023, 4, 25),
+                LocalDate.of(2023, 4, 25),
                 LocalDate.of(2023, 12, 25));
 
         inventoryItem5 = new InventoryItem(product5,
@@ -221,9 +236,9 @@ public class FindListingsByBusinessIdTests {
                 40,
                 6.5,
                 21.99,
-                LocalDate.of(2020, 05, 25),
-                LocalDate.of(2022, 04, 25),
-                LocalDate.of(2023, 04, 25),
+                LocalDate.of(2020, 5, 25),
+                LocalDate.of(2022, 4, 25),
+                LocalDate.of(2023, 4, 25),
                 LocalDate.of(2023, 12, 25));
 
         inventoryItems = List.of(inventoryItem1, inventoryItem2, inventoryItem3, inventoryItem4, inventoryItem5);
@@ -277,7 +292,7 @@ public class FindListingsByBusinessIdTests {
     // -------------------------------------- order by quantity tests ----------------------------------------------
 
     /**
-     * Tests that the findListingByBusinessId functionality will order products by quantity
+     * Tests that the findListingByBusinessId functionality will order listings by quantity
      * in ascending order i.e. from lowest to largest
      */
     @Test
@@ -313,7 +328,7 @@ public class FindListingsByBusinessIdTests {
     }
 
     /**
-     * Tests that the findListingByBusinessId functionality will order products by quantity
+     * Tests that the findListingByBusinessId functionality will order listings by quantity
      * in descending order i.e. from largest to lowest
      */
     @Test
@@ -349,7 +364,7 @@ public class FindListingsByBusinessIdTests {
     }
 
     /**
-     * Tests that the findListingByBusinessId functionality will order products by price
+     * Tests that the findListingByBusinessId functionality will order listings by price
      * in descending order i.e. from lowest to largest
      */
     @Test
@@ -385,7 +400,7 @@ public class FindListingsByBusinessIdTests {
     }
 
     /**
-     * Tests that the findListingByBusinessId functionality will order products by price
+     * Tests that the findListingByBusinessId functionality will order listings by price
      * in descending order i.e. from largest to lowest
      */
     @Test
@@ -421,7 +436,7 @@ public class FindListingsByBusinessIdTests {
     }
 
     /**
-     * Tests that the findListingByBusinessId functionality will order products by created
+     * Tests that the findListingByBusinessId functionality will order listings by created
      * in Ascending order i.e. from oldest to newest
      */
     @Test
@@ -458,7 +473,7 @@ public class FindListingsByBusinessIdTests {
     }
 
     /**
-     * Tests that the findListingByBusinessId functionality will order products by created
+     * Tests that the findListingByBusinessId functionality will order listings by created
      * in descending order i.e. from newest to oldest
      */
     @Test
@@ -494,7 +509,7 @@ public class FindListingsByBusinessIdTests {
     }
 
     /**
-     * Tests that the findListingByBusinessId functionality will order products by closes
+     * Tests that the findListingByBusinessId functionality will order listings by closes
      * in ascending order i.e. from newest to oldest
      */
     @Test
@@ -530,7 +545,7 @@ public class FindListingsByBusinessIdTests {
     }
 
     /**
-     * Tests that the findListingByBusinessId functionality will order products by closes
+     * Tests that the findListingByBusinessId functionality will order listings by closes
      * in descending order i.e. from newest to oldest
      */
     @Test
@@ -564,6 +579,120 @@ public class FindListingsByBusinessIdTests {
             assertThat(listingsPage.getContent().get(i).getInventoryItem().getProductId()).isEqualTo(orderedProdIds.get(i));
         }
     }
+
+    // ---------------------------------------- PAGINATION TESTS ----------------------------------------
+
+    /**
+     * Tests that the findListingsByBusinessId functionality will return paginated results correctly
+     * when the page is not full with listings.
+     */
+    @Test
+    public void whenFindAllListingsByBusinessId_thenReturnPageHalfFull() {
+        // given
+        int pageNo = 0;
+        // Page size 20 means page will be half full with the default 13 users inserted
+        int pageSize = 10;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        assertThat(listingPage.getTotalElements()).isEqualTo(5);
+        for (int i = 0; i < listings.size(); i++) {
+            assertThat(listingPage.getContent().get(i)).isEqualTo(listings.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findListingsByBusinessId functionality will return an empty page when given a
+     * business ID that does not match anything in the database.
+     */
+    @Test
+    public void whenFindAllListingsByBusinessId_thenReturnEmptyPage() {
+        // given
+        int pageNo = 0;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findListingsByBusinessId(anotherBusinessId, pageable);
+
+        // then
+        assertThat(listingPage.getTotalElements()).isEqualTo(0);
+        assertThat(listingPage.getTotalPages()).isEqualTo(0);
+    }
+
+    /**
+     * Tests that the findListingsByBusinessId functionality will return pages other
+     * than the first one with correct listings.
+     */
+    @Test
+    public void whenFindAllListingsByBusinessId_thenReturnPagesFromTwoOnward() {
+        // given
+        int pageSize = 1;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+
+        // when
+        Page<Listing> listingPage2 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(1, pageSize, sortBy));
+        Page<Listing> listingPage3 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(2, pageSize, sortBy));
+        Page<Listing> listingPage4 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(3, pageSize, sortBy));
+        Page<Listing> listingPage5 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(4, pageSize, sortBy));
+
+        // then
+        assertThat(listingPage2.getTotalPages()).isEqualTo(5);
+        assertThat(listingPage2.getContent().get(0)).isEqualTo(listings.get(1));
+        assertThat(listingPage3.getContent().get(0)).isEqualTo(listings.get(2));
+        assertThat(listingPage4.getContent().get(0)).isEqualTo(listings.get(3));
+        assertThat(listingPage5.getContent().get(0)).isEqualTo(listings.get(4));
+    }
+
+    /**
+     * Tests that the findListingsByBusinessId functionality will return the page correctly when the
+     * page is full.
+     */
+    @Test
+    public void whenFindAllListingsByBusinessId_thenReturnFullPage() {
+        // given
+        int pageNo = 0;
+        int pageSize = 4;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        assertThat(listingPage.getTotalPages()).isEqualTo(2);
+        assertThat(listingPage.getSize()).isEqualTo(4);
+        for (int i = 0; i < listingPage.getSize(); i++) {
+            assertThat(listingPage.getContent().get(i)).isEqualTo(listings.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findListingsByBusinessId functionality ordering works across pages,
+     * not just within a single page.
+     * i.e. That data is ordered 'globally' from all results in the database,
+     * not just the few values that are returned are correctly ordered.
+     */
+    @Test
+    public void whenFindAllListingsByBusinessId_thenReturnGloballyOrderedListings() {
+        // given
+        int pageNo = 1;
+        int pageSize = 2;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findListingsByBusinessId(businessId, pageable);
+
+        // then
+        assertThat(listingPage.getTotalPages()).isEqualTo(3);
+        assertThat(listingPage.getSize()).isEqualTo(2);
+        assertThat(listingPage.getContent().get(0).getInventoryItem().getProductId()).isEqualTo("APP-LE3");
+        assertThat(listingPage.getContent().get(1).getInventoryItem().getProductId()).isEqualTo("DUCT");
+    }
+
 }
 
 
