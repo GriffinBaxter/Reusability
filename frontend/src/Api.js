@@ -524,8 +524,6 @@ export default {
   },
 
   addNewBusinessListing: (businessId, listing) => {
-    console.log(listing.data);
-    console.log(businessId);
     return instance.post(`/businesses/${businessId}/listings`, {
         ...listing.data
     }, {
