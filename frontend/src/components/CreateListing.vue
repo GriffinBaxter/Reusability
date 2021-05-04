@@ -19,9 +19,9 @@
             <div class="row">
               <div class="col form-group py-1 px-3">
                 <label for="productDataList" class="form-control-label">Inventory ID*: </label>
-                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" :maxlength="config.inventoryItemId.maxLength" tabindex="1" list="productDataList" id="productInput" name="productDataList" ref="productInput" required/>
+                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" tabindex="1" list="productDataList" id="productInput" name="productDataList" ref="productInput" required/>
                 <datalist id="productDataList" style="overflow-y: auto!important">
-                  <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id + ' ' + item.expires">Quantity: {{item.quantity}} Price: (${{item.totalPrice}}) Expiration Date: {{item.expires}}</option>
+                  <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id + ' (Expires: ' + item.expires + ')' + ' ID: ' + item.id">Quantity: {{item.quantity}} Price: (${{item.totalPrice}})</option>
                 </datalist>
 <!--                <select id="inventoryId" class="form-select mdb-select md-form" searchable="Search here.." tabindex="1" data-live-search="true" :class="toggleInvalidClass(inventoryIdErrorMsg)">-->
 <!--                  <option value="" disabled selected>Select an Item</option>-->
@@ -117,6 +117,7 @@ export default {
       inventoryItems: [],
       allInventoryItems: [], // Stores all inventory items (for new listing dropdown)
       currentInventoryItem: null,
+      inventoryItemIds: [], // Stores all inventory item
 
       // Inventory Id related variables
       inventoryId: "",
@@ -211,10 +212,12 @@ export default {
     },
 
     /**
-     *
+     *  Checks the ID of the current input value, then finds the inventory item with that ID (in allInventoryItems) to autofill
+     *  that item's quantity and price in the quantity and price input fields.
      * */
     autofillData() {
-
+      // Datalists are not flexible enough to allow nice event handlers and formatting so
+      // changing this to a custom dropdown would be ideal for future sprints.
       const value = this.$refs.productInput.value;
       if (!value) return;
 
@@ -223,7 +226,10 @@ export default {
       let i = 0;
       let itemNotFound = true;
       while (i < this.allInventoryItems.length && itemNotFound) {
-        if (this.allInventoryItems[i].product.id === value.split(' ')[0]) {
+        let itemID = this.allInventoryItems[i].id;
+        // This split depends on the formatting in the :value for the <option> inside the productDataList.
+        let inputID = parseInt(value.split(' ')[4]);
+        if (itemID === inputID) {
           result = this.allInventoryItems[i];
           itemNotFound = false;
         }
@@ -411,8 +417,8 @@ export default {
 
       const listingItemData = {
         inventoryItemId: this.inventoryId,
-        quantity: parseInt(this.$refs.quantity.value),
-        price: parseFloat(this.$refs.price.value),
+        quantity: parseInt(this.quantity),
+        price: parseFloat(this.price),
         moreInfo: this.moreInfo,
         closes: this.closes
       };
