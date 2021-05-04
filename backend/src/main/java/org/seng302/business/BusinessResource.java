@@ -12,6 +12,7 @@ import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
@@ -55,9 +56,8 @@ public class BusinessResource {
      * @throws Exception Access token is missing or invalid
      */
     @PostMapping("/businesses")
-    @ResponseStatus(value = HttpStatus.CREATED, reason = "Business account created successfully")
-    public void createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                               @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
+    public ResponseEntity<BusinessIdPayload> createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                                        @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
         //access token invalid
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -73,7 +73,7 @@ public class BusinessResource {
                     "Invalid Primary Administrator Id"
             );        }
 
-        //TODO: 400 not in api spec
+
         if (!BusinessValidation.isValidName(name.trim())){
             logger.error("Invalid Business Name - {}", name.trim());
             throw new ResponseStatusException(
@@ -152,8 +152,9 @@ public class BusinessResource {
                         currentUser
                 );
                 business.addAdministrators(currentUser); //add user to administrators list
-                businessRepository.saveAndFlush(business);
-                logger.info("Successful Business Registration - {}", business.toString());
+                Business createdBusiness = businessRepository.save(business);
+                logger.info("Successful Business Registration - {}", createdBusiness.toString());
+                return ResponseEntity.status(HttpStatus.CREATED).body(new BusinessIdPayload(createdBusiness.getId()));
             } catch (Exception e) {
                 logger.error("Business Registration Failure - {}", e.getMessage());
                 throw new ResponseStatusException(
@@ -332,8 +333,6 @@ public class BusinessResource {
         checkBusinessPermission(sessionToken, optionalBusiness, optionalUser, true);
 
         //200
-        System.out.println(optionalBusiness.get().getAdministrators());
-        System.out.println(optionalUser.get());
         optionalBusiness.get().removeAdministrators(optionalUser.get());
         userRepository.flush();
         businessRepository.flush();

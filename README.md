@@ -18,6 +18,7 @@ A backend sub-project (business logic and persistence server):
 ## How to run
 
 The following is assuming you already cloned the repository.
+
 ### Frontend / GUI
 
     $ cd frontend
@@ -26,12 +27,25 @@ The following is assuming you already cloned the repository.
 
 Running on: http://localhost:9500/ by default
 
-Note that due to CORS policy and sameSite cookie policy, you will need to disable some security measures.
-For example this can be achieved by doing the following for Chrome: 
-- Create a shortcut to Chrome 
-- In the properties add '--disable-web-security --user-data-dir="C:/ChromeDevSession"' after everything in the target property field.
-
 ### Backend / server
+
+#### Using a MariaDB database
+
+For running using a MariaDB database, the following environment variables need to be set:
+* DB_URL
+* DB_USERNAME
+* DB_PASSWORD
+* DGAA_EMAIL
+* DGAA_PASSWORD
+
+Also, the following commands should be run:
+
+    cd backend
+    ./gradlew bootRun -Dspring.profiles.active=mariadb
+
+#### Using an in-memory H2 database
+
+For running locally using an in-memory H2 database, the following commands should be run:
 
     cd backend
     ./gradlew bootRun

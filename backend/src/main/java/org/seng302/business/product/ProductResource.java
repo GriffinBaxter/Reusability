@@ -227,11 +227,11 @@ public class ProductResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Product Retrieval Success - 200 [OK] -  Products retrieved for business with ID {}", id);
+        logger.info("Product Retrieval Success - 200 [OK] -  Products retrieved for business with ID {}, order by {}, page {}", id, orderBy, pageNo);
 
         List<ProductPayload> productPayloads = convertToPayload(pagedResult.getContent());
 
-        logger.debug("Products retrieved for business with ID {}: {}", id, productPayloads);
+        logger.debug("Products retrieved for business with ID {}: {}", id, productPayloads.toString());
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
@@ -254,7 +254,7 @@ public class ProductResource {
                     product.getRecommendedRetailPrice(),
                     product.getCreated()
             );
-            logger.debug("Product payload created: {}", newPayload);
+            logger.debug("Product payload created: {}", newPayload.toString());
             payloads.add(newPayload);
         }
         return payloads;

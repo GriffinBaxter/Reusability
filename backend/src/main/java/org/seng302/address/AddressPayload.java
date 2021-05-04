@@ -1,5 +1,8 @@
 package org.seng302.address;
 
+/**
+ * AddressPayload class
+ */
 public class AddressPayload {
     private String streetNumber;
     private String streetName;
@@ -25,6 +28,8 @@ public class AddressPayload {
         this.postcode = postcode;
     }
 
+    public AddressPayload() {
+    }
 
     public String getStreetNumber() {
         return streetNumber;

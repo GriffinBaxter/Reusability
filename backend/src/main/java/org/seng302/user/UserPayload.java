@@ -6,6 +6,7 @@ import org.seng302.business.Business;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -69,6 +70,34 @@ public class UserPayload extends UserPayloadParent {
                     user.getCreated(),
                     user.getRole(),
                     user.getBusinessesAdministeredObjects());
+
+            payLoads.add(newPayload);
+        }
+        return payLoads;
+    }
+
+    /**
+     * Converts a list of users to a list of userPayloads with empty businesses (to stop infinite recursion)
+     * @param userList The given list of users
+     * @return A list of userPayloads.
+     */
+    public static List<UserPayload> convertToPayloadWithoutBusiness(List<User> userList) throws Exception {
+        List<UserPayload> payLoads = new ArrayList<>();
+        for (User user : userList) {
+
+            UserPayload newPayload = new UserPayload(user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getMiddleName(),
+                    user.getNickname(),
+                    user.getBio(),
+                    user.getEmail(),
+                    user.getDateOfBirth(),
+                    user.getPhoneNumber(),
+                    user.getHomeAddress().toAddressPayload(),
+                    user.getCreated(),
+                    user.getRole(),
+                    Collections.emptyList());
 
             payLoads.add(newPayload);
         }

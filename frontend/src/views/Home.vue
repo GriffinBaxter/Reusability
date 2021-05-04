@@ -7,7 +7,7 @@
   <div>
 
     <!--Nav bar; displays either business account or individual account nav bar-->
-    <Navbar :is-business-account="true"></Navbar>
+    <Navbar></Navbar>
 
     <div id="home" class="container all-but-footer">
 

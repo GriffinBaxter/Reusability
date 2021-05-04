@@ -18,7 +18,7 @@
             <div class="card-body">
 
               <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_profile_image.jpg')"
+              <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
                    alt="Profile Image"/>
 
               <!--business's name-->
@@ -98,12 +98,12 @@
               <!--business's primary administrator-->
               <hr v-if="isAdministrator">
               <div class="container" v-if="isAdministrator">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between primary-administrator">
                   <div class="col-4 -align-left">
                     <h6>Primary Administrator:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" align="right" @click="pushToUser(primaryAdministratorId)">
+                    <div class="text-secondary primary-administrator" align="right" @click="pushToUser(primaryAdministratorId)">
                       {{ primaryAdministrator }}
                     </div>
                   </div>
@@ -113,12 +113,12 @@
               <!--business's administrators-->
               <hr>
               <div class="container">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between other-administrators">
                   <div class="col-4 -align-left">
                     <h6>Administrators:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" v-for="nameOfAdministrator in nameOfAdministrators"
+                    <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
                          :key="nameOfAdministrator.name"
                          align="right" @click="pushToUser(nameOfAdministrator.id)">
                       {{ nameOfAdministrator.name }}
@@ -130,12 +130,25 @@
             </div>
           </div>
 
-          <!--logout button-->
-          <div align="right" id="adminButtonRow" v-if="isAdministrator">
-            <button class="btn btn-outline-primary float-end mt-4 mx-2" id="signOutButton" @click="logout()">Sign Out</button>
-            <button class="btn btn-outline-primary float-end mt-4" id="productCatalogueButton"
-                    @click="navigateToProductCatalogue()">Product Catalogue</button>
+          <div class="row">
+            <div class="col">
+              <button class="btn btn-outline-primary mt-4" @click="navigateTo('Listings')">Listings</button>
+            </div>
+            <div class="col">
+              <!--logout button-->
+              <div align="right" id="adminButtonRow" v-if="isAdministrator">
+                <button class="btn btn-outline-primary float-end mt-4 mx-2" id="productCatalogueButton"
+                        @click="navigateTo('ProductCatalogue')">Product Catalogue
+                </button>
+                <button class="btn btn-outline-primary float-end mt-4 mx-2" id="InventoryButton"
+                        @click="navigateTo('Inventory')">Inventory
+                </button>
+              </div>
+            </div>
           </div>
+
+
+
 
         </div>
       </div>
@@ -153,6 +166,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
+import {UserRole} from "@/components/User";
 
 export default {
   name: "BusinessProfile",
@@ -163,6 +177,7 @@ export default {
   },
   data() {
     return {
+      urlId: null,
       name: "",
       description: "",
       businessType: "",
@@ -180,7 +195,7 @@ export default {
 
       nameOfAdministrators: [],
 
-      isAdministrator: true
+      isAdministrator: false
     }
   },
   methods: {
@@ -242,16 +257,34 @@ export default {
       //basic data unpack
       this.name = data.name;
       this.description = data.description;
-      this.businessType = data.businessType.replaceAll("_", " ");
+      let businessTypeLowerCaseAndSplit = data.businessType.replaceAll("_", " ").toLowerCase().split(" ");
+      for (let i = 0; i < businessTypeLowerCaseAndSplit.length; i++) {
+        businessTypeLowerCaseAndSplit[i] = businessTypeLowerCaseAndSplit[i][0].toUpperCase() + businessTypeLowerCaseAndSplit[i].slice(1);
+      }
+      this.businessType = businessTypeLowerCaseAndSplit.join(" ");
       this.getCreatedDate(data.created);
 
       // address unpack
-      this.streetNumber = data.address.streetNumber;
-      this.streetName = data.address.streetName;
-      this.city = data.address.city;
-      this.region = data.address.region;
-      this.country = data.address.country;
-      this.postcode = data.address.postcode;
+      //address unpack
+      if (data.address.streetNumber) {
+        this.streetNumber = data.address.streetNumber;
+      }
+      if (data.address.streetName) {
+        this.streetName = data.address.streetName;
+      }
+      if (data.address.city) {
+        this.city = data.address.city;
+      }
+      if (data.address.region) {
+        this.region = data.address.region;
+      }
+      if (data.address.country) {
+        this.country = data.address.country;
+      }
+      if (data.address.postcode) {
+        this.postcode = data.address.postcode;
+      }
+
       if (this.streetNumber !== "" && this.streetName !== "") {
         this.address.push({line: this.streetNumber + " " + this.streetName});
       } else {
@@ -271,6 +304,13 @@ export default {
       // administrators unpack
       this.primaryAdministratorId = data.primaryAdministratorId;
       data.administrators.forEach(anUser => {
+
+        // This is in case administrator doesn't have a middle name.
+        let adminMiddleName = "";
+        if (anUser.middleName) {
+          adminMiddleName = anUser.middleName;
+        }
+
         //check permission of current user
         if (anUser.id == Cookies.get('userID')) {
           this.isAdministrator = true;
@@ -278,10 +318,10 @@ export default {
 
         //get name of primary administrator
         if (anUser.id === this.primaryAdministratorId) {
-          this.primaryAdministrator = anUser.firstName + " " + anUser.middleName + " " + anUser.lastName;
+          this.primaryAdministrator = anUser.firstName + " " + adminMiddleName + " " + anUser.lastName;
         }
         this.nameOfAdministrators.push({
-          name: anUser.firstName + " " + anUser.middleName + " " + anUser.lastName,
+          name: anUser.firstName + " " + adminMiddleName + " " + anUser.lastName,
           id: anUser.id
         })
       })
@@ -289,26 +329,36 @@ export default {
     pushToUser(id) {
       this.$router.push({name: 'Profile', params: {id}});
     },
-    navigateToProductCatalogue() {
+    navigateTo(name) {
       /*
       Navigates to the product catalogue of the business
        */
       let id = this.$route.params.id;
-      this.$router.push({name: 'ProductCatalogue', params: {id}});
+      this.$router.push({name: name, params: {id}});
     },
-    logout() {
-      /*
-      Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
-       */
-      Cookies.remove('userID');
-      Cookies.remove('JSESSIONID');
-      Cookies.remove('actAs');
-      this.$router.push({name: 'Login'});
-    }
+    checkIsAdmin(currentID) {
+      Api.getUser(currentID).then(response => {
+        this.isAdministrator = this.isAdministrator ? true :
+            (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
+            || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);
+      }).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noUser'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else {
+          this.$router.push({path: '/noUser'});
+          console.log(error.message);
+        }
+      })
+    },
   },
   mounted() {
     const currentID = Cookies.get('userID');
     if (currentID) {
+      this.checkIsAdmin(currentID);
       const url = document.URL;
       const urlID = url.substring(url.lastIndexOf('/') + 1);
 
@@ -316,12 +366,49 @@ export default {
         this.$router.push({path: '/noBusiness'});
       } else {
         this.retrieveBusiness(urlID);
+        this.urlID = urlID;
       }
     }
-  }
+  },
+  beforeRouteUpdate (to, from, next) {
+    // Reset variables
+    this.name = "";
+    this.description = "";
+    this.businessType = "";
+    this.created = "";
+    this.primaryAdministrator = "";
+    this.primaryAdministratorId = "";
+
+    this.address = [];
+    this.streetNumber = "";
+    this.streetName = "";
+    this.city = "";
+    this.region = "";
+    this.country = "";
+    this.postcode = ""
+
+    this.nameOfAdministrators = [];
+
+    this.isAdministrator = false;
+
+    const id = to.params.id;
+    this.retrieveBusiness(id);
+    next();
+  },
 }
 </script>
 
 <style scoped>
+
+.primary-administrator:hover, .other-administrators:hover {
+  color: #1EBA8C !important;
+  cursor: pointer;
+}
+
+#profileContainer {
+  margin-bottom: 5%;
+}
+
+
 
 </style>

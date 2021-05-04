@@ -135,7 +135,7 @@
               <div class="col my-2 my-lg-0">
                 <label for="password">Password*</label>
                 <div class="input-group">
-                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" :maxlength="config.password.maxLength" required>
+                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)">
 
                   <!--toggle password visibility-->
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
@@ -927,8 +927,8 @@ export default {
       let index = 0;
       let numInList = 0;
       let fLength = features.length;
-      // Display the first 5 options returned
-      let maxL = 5;
+      // Display the first 8 options returned
+      let maxL = 8;
       // Clear the list after each request (before filtering)
       this.addressResultProperties = [];
 
@@ -1205,13 +1205,5 @@ input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus
 }
 
 /*------------------------------------------------------------------------*/
-
-/**
- * TODO remove once footer is sticky
- * Calculates where footer should be.
- */
-.all-but-footer {
-  min-height: calc(100vh - 50px);
-}
 
 </style>
