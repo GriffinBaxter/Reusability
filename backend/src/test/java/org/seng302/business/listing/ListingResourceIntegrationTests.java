@@ -4,6 +4,7 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mockito;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
@@ -91,7 +92,7 @@ public class ListingResourceIntegrationTests {
 
     private final String listingPayload = "{\"inventoryItemId\":\"%s\"," +
                                                 "\"quantity\":%d," +
-                                                "\"price\":%f," +
+                                                "\"price\":%.1f," +
                                                 "\"moreInfo\":\"%s\"," +
                                                 "\"closes\":\"%s\"}";
 
@@ -249,13 +250,15 @@ public class ListingResourceIntegrationTests {
         );
         inventoryItem.setId(1);
 
+        LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
+
         listing = new Listing(
                 inventoryItem,
                 3,
-                null,
+                10.5,
                 "more info",
-                LocalDateTime.now(),
-                null
+                LocalDateTime.now().minusDays(10),
+                dateTime
         );
         listing.setId(1);
 
@@ -264,8 +267,13 @@ public class ListingResourceIntegrationTests {
                 .build();
     }
 
+    /**
+     * Tests that a Created status is return if the user is a business administrator for endpoint
+     * /businesses/{id}/listings
+     * @throws Exception
+     */
     @Test
-    public void canCreateProductWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
+    public void canCreateLisitngWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -294,8 +302,13 @@ public class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    /**
+     * Tests that a Bad Request status is returned if the create business data in the payload is invalid at endpoint
+     * /businesses/{id}/listings
+     * @throws Exception
+     */
     @Test
-    public void canCreateProductWhenBusinessExistsAndDataInvalidWithBusinessAdministratorUserCookie() throws Exception {
+    public void canCreateListingWhenBusinessExistsAndDataInvalidWithBusinessAdministratorUserCookie() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -324,8 +337,13 @@ public class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Tests that a Not Acceptable status is returned if the business doesn't exist at ID in the
+     * /businesses/{id}/listings endpoint.
+     * @throws Exception
+     */
     @Test
-    public void canCreateProductWhenBusinessDoesntExistsAndDataValid() throws Exception {
+    public void canCreateLisitingWhenBusinessDoesntExistsAndDataValid() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(null));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -354,8 +372,13 @@ public class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
+    /**
+     * Tests that an Unauthorized status is returned if the user doesn't have a JSESSIONID at endpoint
+     * /businesses/{id}/listings
+     * @throws Exception
+     */
     @Test
-    public void canCreateProductWhenBusinessExistsAndDataValidWithoutUserCookie() throws Exception {
+    public void canCreateListingWhenBusinessExistsAndDataValidWithoutUserCookie() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -383,11 +406,15 @@ public class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    /**
+     * Tests that a created status is returned if the user is a GAA but not a business administrator for endpoint
+     * /businesses/{id}/listings
+     * @throws Exception
+     */
     @Test
-    public void canCreateProductWhenBusinessExistsAndDataValidWithUserCookieGAA() throws Exception {
-        given(userRepository.findById(2)).willReturn(Optional.ofNullable(user));
+    public void canCreateListingWhenBusinessExistsAndDataValidWithUserCookieGAA() throws Exception {
+        given(userRepository.findById(2)).willReturn(Optional.ofNullable(gAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
-        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
         given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
 
         Listing newListing = new Listing(
@@ -402,19 +429,58 @@ public class ListingResourceIntegrationTests {
         String json = String.format(listingPayload, newListing.getInventoryItem().getId(), newListing.getQuantity(),
                 newListing.getPrice(), newListing.getMoreInfo(), newListing.getCloses());
 
-        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         when(listingRepository.save(any(Listing.class))).thenReturn(listing);
         response = mvc.perform(post(String.format("/businesses/%d/listings", business.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(json)
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .cookie(new Cookie("JSESSIONID", gAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    /**
+     * Tests that a created status is returned if the user is a DGAA but not a business administrator for endpoint
+     * /businesses/{id}/listings
+     * @throws Exception
+     */
     @Test
-    public void canCreateProductWhenBusinessExistsAndDataValidWithInvalidUserCookie() throws Exception {
+    public void canCreateListingWhenBusinessExistsAndDataValidWithUserCookieGDAA() throws Exception {
+        given(userRepository.findById(2)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
+
+        Listing newListing = new Listing(
+                inventoryItem,
+                10,
+                null,
+                "info",
+                LocalDateTime.now(),
+                null
+        );
+
+        String json = String.format(listingPayload, newListing.getInventoryItem().getId(), newListing.getQuantity(),
+                newListing.getPrice(), newListing.getMoreInfo(), newListing.getCloses());
+
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(listingRepository.save(any(Listing.class))).thenReturn(listing);
+        response = mvc.perform(post(String.format("/businesses/%d/listings", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Tests that an Unauthorized status is returned if the JSESSIONID is invalid at
+     * /businesses/{id}/listings Api endpoint
+     * @throws Exception
+     */
+    @Test
+    public void canCreateListingWhenBusinessExistsAndDataValidWithInvalidUserCookie() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -441,6 +507,41 @@ public class ListingResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an Forbidden status is returned if the user is not an admin of business at
+     * /businesses/{id}/listings Api endpoint
+     * @throws Exception
+     */
+    @Test
+    public void canCreateListingWhenBusinessExistsAndDataValidWithValidUserCookie() throws Exception {
+        given(userRepository.findById(4)).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+        given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
+
+        Listing newListing = new Listing(
+                inventoryItem,
+                10,
+                null,
+                "info",
+                LocalDateTime.now(),
+                null
+        );
+
+        String json = String.format(listingPayload, newListing.getInventoryItem().getId(), newListing.getQuantity(),
+                newListing.getPrice(), newListing.getMoreInfo(), newListing.getCloses());
+
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(listingRepository.save(any(Listing.class))).thenReturn(listing);
+
+        response = mvc.perform(post(String.format("/businesses/%d/listings", business.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     // GET Tests
@@ -483,4 +584,144 @@ public class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
+
+    /**
+     * Tests that an OK status and a list of listing payloads are received when the business ID in the
+     * /businesses/{id}/listings API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is not an administrator
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveListingsWhenBusinessExistsWithUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(4)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
+        Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                .param("orderBy", "createdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received if the business at ID in
+     * /businesses/{id}/listings endpoint does not exist
+     * @throws Exception
+     */
+    @Test
+    public void canRetrieveListingsWhenBusinessDoesntExistsWithUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(null));
+
+        expectedJSON = "";
+
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
+        Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                .param("orderBy", "createdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status and no payloads are received when there is no JSESSIONID for
+     * /businesses/{id}/listings API endpoint
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveListingsWhenBusinessExistsWithoutUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(4)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+
+        expectedJSON = "";
+
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
+        Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                .param("orderBy", "createdASC")
+                .param("page", "0"))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status and no payloads are received when there is an invalid JSESSIONID for
+     * /businesses/{id}/listings API endpoint.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveListingsWhenBusinessExistsWithInvalidUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(4)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+
+        expectedJSON = "";
+
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
+        Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(null));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                .param("orderBy", "createdASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
 }

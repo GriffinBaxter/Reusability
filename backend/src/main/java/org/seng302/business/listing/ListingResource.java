@@ -212,7 +212,7 @@ public class ListingResource {
         }
         // Checks User is Admin 403
         Optional<Business> business = businessRepository.findBusinessById(id);
-        if (currentUser.getRole() == Role.USER && !(business.get().getAdministrators().contains(currentUser))) {
+        if ((currentUser.getRole() == Role.USER) && !(business.get().isAnAdministratorOfThisBusiness(currentUser))) {
             logger.error("Listing Creation Failure - 403 [NOT AUTHORIZED] - User with ID {} is not admin of business with ID {}", currentUser.getId(), id);
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
