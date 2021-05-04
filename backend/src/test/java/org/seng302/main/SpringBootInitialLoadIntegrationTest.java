@@ -11,10 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
-@Sql({"/data.sql"})
+@Sql({"/data-h2.sql"})
 public class SpringBootInitialLoadIntegrationTest {
 
     @Autowired
@@ -22,6 +21,6 @@ public class SpringBootInitialLoadIntegrationTest {
 
     @Test
     public void testLoadUserData() {
-        assertEquals(2, userRepository.findAll().size());
+        assertEquals(9, userRepository.findAll().size());
     }
 }
