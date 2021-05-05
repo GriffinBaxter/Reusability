@@ -27,6 +27,8 @@
                 <div class="text-secondary">{{ description }}</div>
               </div>
             </div>
+
+            <!--       for later use     -->
             <!--            <div class="card text-center shadow-sm-3">-->
             <!--              <div class="card-body">-->
             <!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
@@ -132,17 +134,19 @@
 
           <div class="row">
             <div class="col">
-              <button class="btn btn-outline-primary mt-4" @click="navigateTo('Listings')">Listings</button>
+              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="11">Listings</button>
             </div>
             <div class="col">
               <!--logout button-->
               <div align="right" id="adminButtonRow" v-if="isAdministrator">
-                <button class="btn btn-outline-primary float-end mt-4 mx-2" id="productCatalogueButton"
-                        @click="navigateTo('ProductCatalogue')">Product Catalogue
+                <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
+                        @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue
+
                 </button>
-                <button class="btn btn-outline-primary float-end mt-4 mx-2" id="InventoryButton"
-                        @click="navigateTo('Inventory')">Inventory
+                <button class="btn green-button float-end mt-4 mx-2" id="InventoryButton"
+                        @click="navigateTo('Inventory')" tabindex="12">Inventory
                 </button>
+
               </div>
             </div>
           </div>
