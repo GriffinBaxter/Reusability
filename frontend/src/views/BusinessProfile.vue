@@ -100,7 +100,7 @@
               <!--business's primary administrator-->
               <hr v-if="isAdministrator">
               <div class="container" v-if="isAdministrator">
-                <div class="row justify-content-between primary-administrator">
+                <div class="row justify-content-between">
                   <div class="col-4 -align-left">
                     <h6>Primary Administrator:</h6>
                   </div>
@@ -115,7 +115,7 @@
               <!--business's administrators-->
               <hr>
               <div class="container">
-                <div class="row justify-content-between other-administrators">
+                <div class="row justify-content-between">
                   <div class="col-4 -align-left">
                     <h6>Administrators:</h6>
                   </div>
