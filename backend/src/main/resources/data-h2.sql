@@ -22,9 +22,9 @@ INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, da
 INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Frank', 'Smith', 'J', 'Frankie', 'Biography', 'frank.j.smith@email.com', DATE'2000-05-14', '0271316', 1, 'UGFzc3dvcmQxMjMh', DATE'2019-05-14', 'USER');
 
 /* Businesses */
-INSERT INTO `business` (primaryAdministratorId, name, description, address_id, businessType, created) VALUES (1, 'Brink Food', 'Description', 9, 'RETAIL_TRADE', DATE'2021-02-12');
-INSERT INTO `business` (primaryAdministratorId, name, description, address_id, businessType, created) VALUES (2, 'Sunburst Waste', 'Description', 10, 'CHARITABLE_ORGANISATION', DATE'2021-05-14');
-INSERT INTO `business` (primaryAdministratorId, name, description, address_id, businessType, created) VALUES (3, 'Fringe Wasteless', 'Description', 11, 'RETAIL_TRADE', DATE'2021-05-01');
+INSERT INTO `business` (primary_administrator_id, name, description, address_id, business_type, created) VALUES (1, 'Brink Food', 'Description', 9, 'RETAIL_TRADE', DATE'2021-02-12');
+INSERT INTO `business` (primary_administrator_id, name, description, address_id, business_type, created) VALUES (2, 'Sunburst Waste', 'Description', 10, 'CHARITABLE_ORGANISATION', DATE'2021-05-14');
+INSERT INTO `business` (primary_administrator_id, name, description, address_id, business_type, created) VALUES (3, 'Fringe Wasteless', 'Description', 11, 'RETAIL_TRADE', DATE'2021-05-01');
 
 /* Link Users to Businesses */
 INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (1, 1);
