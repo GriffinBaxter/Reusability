@@ -407,6 +407,7 @@ export default {
           this.dataReset();
           this.$emit('updateListings');
           this.closeModal();
+          this.currentInventoryItem = null;
         }
       }).catch((error) => {
 
