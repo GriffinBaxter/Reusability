@@ -57,7 +57,7 @@
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">
                 <button type="button" class="btn btn-primary dropdown-toggle"
-                        data-bs-toggle="dropdown" aria-expanded="false">Filter
+                        data-bs-toggle="dropdown" aria-expanded="false">Filter Option
                 </button>
 
                 <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
@@ -118,7 +118,7 @@
                   </button>
                 </ul>
               </div>
-
+              <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
             </div>
 
             <!--space-->
@@ -256,17 +256,7 @@ export default {
       businessName: null,
       businessDescription: null,
 
-      inventories: [],
-      image: require("../../public/apples.jpg"),
-      productName: "Watties Baked Beans - 420g can",
-      productId: "WATT-420-BEANS",
-      quantity: 4,
-      pricePerItem: 6.5,
-      totalPrice: 21.99,
-      manufactured: "2021-04-23",
-      sellBy: "2021-04-23",
-      bestBefore: "2021-04-23",
-      expires: "2021-04-23",
+      inventories: null,
 
       // Currency related variables
       currencyCode: "",
@@ -274,6 +264,29 @@ export default {
     }
   },
   methods: {
+    /**
+     * convert orderByString to more readable for user
+     */
+    convertToString() {
+      switch (this.orderByString) {
+        case 'productIdASC': return "Product ID Ascending";
+        case 'productIdDESC': return "Product ID Descending";
+        case 'quantityASC': return "Quantity Ascending";
+        case 'quantityDESC': return "Quantity Descending";
+        case 'pricePerItemASC': return "Price Per Item Ascending";
+        case 'pricePerItemDESC': return "Price Per Item Descending";
+        case 'totalPriceASC': return "Total Price Ascending";
+        case 'totalPriceDESC': return "Total Price Descending";
+        case 'manufacturedASC': return "Manufactured Ascending";
+        case 'manufacturedDESC': return "Manufactured Descending";
+        case 'sellByASC': return "Sell By Ascending";
+        case 'sellByDESC': return "Sell By Descending";
+        case 'bestBeforeASC': return "Best Before Ascending";
+        case 'bestBeforeDESC': return "Best Before Descending";
+        case 'expiresASC': return "Expires Ascending";
+        case 'expiresDESC': return "Expires Descending";
+      }
+    },
     /**
      * close creation message
      */
