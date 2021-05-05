@@ -1,5 +1,18 @@
+/**
+ * Summary. The file contains the definition of the AddressPayloadSecure class.
+ *
+ * Description. The file contains the definition of AddressPayloadSecure, which
+ *
+ * @link   URL
+ * @file   This files defines the MyClass class.
+ * @author AuthorName.
+ * @since  x.x.x
+ */
 package org.seng302.address;
 
+/**
+ * AddressPayloadSecure class
+ */
 public class AddressPayloadSecure {
     private String city;
     private String region;
