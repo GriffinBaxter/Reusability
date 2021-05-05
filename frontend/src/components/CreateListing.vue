@@ -78,13 +78,16 @@
 
 
           </form>
+          <div class="text-center text-danger">
+            {{creationErrorMessage}}
+          </div>
         </div>
 
 
         <!--footer-->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-success" @click="createNewInventoryItem()">Confirm</button>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn green-button-transparent" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn green-button" @click="createNewInventoryItem()">Confirm</button>
         </div>
 
       </div>
@@ -126,7 +129,8 @@ export default {
       // Closes related variables
       closes: "",
       closesErrorMsg: "",
-      businessId: this.$route.params.id
+      businessId: this.$route.params.id,
+      creationErrorMessage: ""
     }
   },
   methods: {
@@ -307,7 +311,7 @@ export default {
       }).catch((error) => {
         if (error.response) {
           if (error.response.status === 400) {
-            this.toastErrorMessage = '400 Bad request; invalid listing data';
+            this.toastErrorMessage = 'Invalid listing data';
           } else if (error.response.status === 403) {
             this.toastErrorMessage = 'User is not an administer of this business.';
           } else {
@@ -327,7 +331,14 @@ export default {
     async createNewInventoryItem() {
       let requestIsInvalid = false;
 
-      this.inventoryId = this.currentInventoryItem.id;
+      if (this.currentInventoryItem === null) {
+        this.inventoryIdErrorMsg = "Please enter an ID";
+        requestIsInvalid = true;
+      } else {
+        this.inventoryId = this.currentInventoryItem.id;
+        this.inventoryIdErrorMsg = "";
+      }
+
       this.trimTextInputFields();
 
       // Quantity error checking
@@ -392,25 +403,27 @@ export default {
 
       await Api.addNewBusinessListing(this.businessId, newListingItem).then((response) => {
         if (response.status === 201) {
+          this.creationErrorMessage = "";
           this.dataReset();
           this.$emit('updateListings');
           this.closeModal();
+          this.currentInventoryItem = null;
         }
       }).catch((error) => {
 
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
-            this.toastErrorMessage = '400 Bad request; invalid listing data';
+            this.creationErrorMessage = 'There are not enough inventory items. Please check the quantity.';
           } else if (error.response.status === 403) {
-            this.toastErrorMessage = 'User is not an administer of this business.';
+            this.creationErrorMessage = 'User is not an administer of this business.';
           } else {
-            this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
+            this.creationErrorMessage = `${error.response.status} Unexpected error occurred!`;
           }
         } else if (error.request) {
-          this.toastErrorMessage = 'Timeout occurred';
+          this.creationErrorMessage = 'Timeout occurred';
         } else {
-          this.toastErrorMessage = 'Unexpected error occurred!';
+          this.creationErrorMessage = 'Unexpected error occurred!';
         }
 
       })

@@ -197,11 +197,4 @@ input:focus, textarea:focus {
   border: 1px solid #1EBABC;
 }
 
-/*#password-input {*/
-/*  max-width: 360px;*/
-/*}*/
-
-/*#login-toggle-password {*/
-/*  max-width: 40px;*/
-/*}*/
 </style>

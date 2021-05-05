@@ -12,34 +12,34 @@
         <div class="row my-3" align="center">
           <!--filter-->
           <div class="btn-group col-3 py-1" role="group">
-            <button type="button" class="btn btn-primary dropdown-toggle col-4"
-                    data-bs-toggle="dropdown" aria-expanded="false">Filter
+            <button type="button" class="btn green-button dropdown-toggle col-4"
+                    data-bs-toggle="dropdown" aria-expanded="false">Filter Option
             </button>
 
             <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
               <!--order by quantity-->
-              <button type="button" class="btn btn-outline-primary col-12"
+              <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(true, false, false, false)">
                 Quantity
                 <i id="quantityIcon"></i>
               </button>
 
               <!--order by price-->
-              <button type="button" class="btn btn-outline-primary col-12"
+              <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, true, false, false)">
                 Price
                 <i id="priceIcon"></i>
               </button>
 
               <!--order by closing date-->
-              <button type="button" class="btn btn-outline-primary col-12"
+              <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, true, false)">
                 Closing Date
                 <i id="closesIcon"></i>
               </button>
 
               <!--order by listing date-->
-              <button type="button" class="btn btn-outline-primary col-12"
+              <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, false, true)">
                 Listing Date
                 <i id="createdIcon"></i>
@@ -48,8 +48,8 @@
           </div>
 
           <!-- Add new Button -->
-          <div class="col-3" v-if="businessAdmin">
-            <button type="button" class="btn btn-success w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
+          <div class="col-md" v-if="businessAdmin">
+            <button type="button" class="btn green-button w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
           </div>
 
           <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
@@ -81,37 +81,37 @@
         <nav>
           <ul v-if="totalPages > 0" class="pagination justify-content-center">
             <!-- This is only enabled when there is a previous page -->
-            <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
+            <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
               Previous
             </button>
 
             <!-- This is shown when there are more then 2 pages and you are at page 1-->
-            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
+            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
               {{currentPage-1}}
             </button>
 
             <!-- Only shows when we are past at least the first page -->
-            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
+            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
               {{currentPage}}
             </button>
 
             <!-- This converts the current page into 1 origin.-->
-            <button type="button" class="btn btn-outline-primary active">
+            <button type="button" class="btn green-button-transparent active">
               {{currentPage+1}}
             </button>
 
             <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
-            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
+            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
               {{currentPage+2}}
             </button>
 
             <!-- This is shown when there are more then 2 pages and you are at page 1-->
-            <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
+            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
               {{currentPage+3}}
             </button>
 
             <!-- The next button only enabled if there is another page.-->
-            <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
+            <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
               Next
             </button>
           </ul>

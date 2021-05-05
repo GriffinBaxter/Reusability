@@ -80,7 +80,7 @@
 
           <div class="col-lg-6 my-2 my-lg-0">
             <label for="postcode">Postcode</label>
-            <input :class="toggleInvalidClass(businessPostcodeErrorMsg)" tabindex="9" id="postcode" name="postcode"
+            <input :class="toggleInvalidClass(businessPostcodeErrorMsg)" tabindex="7" id="postcode" name="postcode"
                    ref="postcode" autocomplete="off">
             <div class="invalid-feedback">
               {{businessPostcodeErrorMsg}}
@@ -91,7 +91,7 @@
         <div class="row my-lg-2">
             <div class="col-lg-6 my-2 my-lg-0">
               <label for="region">State/Region</label>
-              <input :class="toggleInvalidClass(businessRegionErrorMsg)" tabindex="7" name="region" id="region" ref="region"
+              <input :class="toggleInvalidClass(businessRegionErrorMsg)" tabindex="8" name="region" id="region" ref="region"
                      autocomplete="off">
               <div class="invalid-feedback">
                 {{businessRegionErrorMsg}}
@@ -100,7 +100,7 @@
 
           <div class="col-lg-6 my-2 my-lg-0">
             <label for="country">Country*</label>
-            <input :class="toggleInvalidClass(businessCountryErrorMsg)" tabindex="8" id="country" name="country"
+            <input :class="toggleInvalidClass(businessCountryErrorMsg)" tabindex="9" id="country" name="country"
                    ref="country" autocomplete="off" required>
             <div class="invalid-feedback">
               {{businessCountryErrorMsg}}
@@ -130,7 +130,7 @@
           </div>
 
           <div class="d-grid gap-2 d-lg-block">
-            <button class="btn btn-lg btn-outline-primary" type="button" tabindex="12" @click="$router.push('/profile')">Back to Profile</button>
+            <button class="btn btn-lg green-button-transparent" type="button" tabindex="12" @click="$router.push('/profile')">Back to Profile</button>
             <button id="register-button" tabindex="11" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewBusiness($event)">Register</button>
           </div>
 
