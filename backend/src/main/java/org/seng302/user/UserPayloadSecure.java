@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserPayloadSecure.
+ *
+ * Description. This file contains the defintion for the UserPayloadSecure.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/UserPayloadSecure
+ * @file   This file contains the definition for UserPayloadSecure.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import org.seng302.address.AddressPayloadSecure;

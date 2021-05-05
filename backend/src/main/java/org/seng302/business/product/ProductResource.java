@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ProductResource.
+ *
+ * Description. This file contains the defintion for the ProductResource.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/product/ProductResource
+ * @file   This file contains the definition for ProductResource.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.product;
 
 import org.apache.logging.log4j.LogManager;

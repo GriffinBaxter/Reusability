@@ -1,12 +1,13 @@
 /**
  * Summary. The file contains the definition of the AddressPayloadSecure class.
  *
- * Description. The file contains the definition of AddressPayloadSecure, which
+ * Description. The file contains the definition of AddressPayloadSecure, which is used
+ * to only return parts of the address.
  *
- * @link   URL
- * @file   This files defines the MyClass class.
- * @author AuthorName.
- * @since  x.x.x
+ * @link   team-400/src/main/java/org/seng302/address/AddressPayloadSecure
+ * @file   This file contains the definition for the AddressPayloadSecure class.
+ * @author team-400
+ * @since  5.5.2021
  */
 package org.seng302.address;
 

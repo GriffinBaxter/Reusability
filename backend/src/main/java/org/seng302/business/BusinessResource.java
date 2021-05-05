@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the BusinessResource.
+ *
+ * Description. This file contains the defintion for the BusinessResource.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/BusinessResource
+ * @file   This file contains the definition for BusinessResource.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business;
 
 import org.seng302.main.Authorization;

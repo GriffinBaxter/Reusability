@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the BusinessPayload.
+ *
+ * Description. This file contains the defintion for the BusinessPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/BusinessPayload
+ * @file   This file contains the definition for BusinessPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business;
 
 import org.seng302.address.Address;

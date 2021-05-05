@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the Business.
+ *
+ * Description. This file contains the defintion for the Business.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/Business
+ * @file   This file contains the definition for Business.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business;
 
 import javax.persistence.*;

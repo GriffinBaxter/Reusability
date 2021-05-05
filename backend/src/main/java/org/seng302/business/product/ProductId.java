@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ProductId.
+ *
+ * Description. This file contains the defintion for the ProductId.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/product/ProductId
+ * @file   This file contains the definition for ProductId.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.product;
 
 import java.io.Serializable;
