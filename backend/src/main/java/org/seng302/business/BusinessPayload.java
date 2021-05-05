@@ -19,7 +19,16 @@ import org.seng302.user.UserResource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Business Payload
+ *
+ * Business payload to send to the API.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/BusinessPayload.java
+ * @file   BusinessPayload.java.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 public class BusinessPayload {
     private Integer id;
     private List<UserPayload> administrators;
