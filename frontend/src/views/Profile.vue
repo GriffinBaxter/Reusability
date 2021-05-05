@@ -41,14 +41,16 @@
           <div class="card text-center shadow-sm">
             <div class="card-body">
 
-              <!--user's profile image--> <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
+              <!--user's profile image-->
               <div id="imageDiv">
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
               </div>
+
+              <!--      Note that this is commented out as the image storage story has not been implemented        -->
               <!-- Button trigger modal -->
-              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">
-                Upload Image
-              </button>
+<!--              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">-->
+<!--                Upload Image-->
+<!--              </button>-->
 
               <!--user's nickname and bio-->
               <div class="mt-3">
