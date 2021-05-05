@@ -215,7 +215,7 @@
               </div>
               <hr v-if="businessesAdministeredExist()">
               <div class="container" v-if="businessesAdministeredExist()">
-                <div class="row justify-content-between businesses-administered">
+                <div class="row justify-content-between">
                   <div class="col-md-3">
                     <h6>Businesses Administered:</h6>
                   </div>
