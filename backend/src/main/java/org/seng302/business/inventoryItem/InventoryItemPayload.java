@@ -1,3 +1,13 @@
+/**
+ * Summary. Contains the definition for InventoryItemPayload.
+ *
+ * Description. The InventoryItemPayload is used for the the InvetoryResource request.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/InventoryItemPayload
+ * @file   This file contains the definition for InventoryItemPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.inventoryItem;
 
 import org.seng302.business.product.ProductPayload;

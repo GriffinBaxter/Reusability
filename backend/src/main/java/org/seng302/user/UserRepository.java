@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserRepository.
+ *
+ * Description. This file contains the defintion for the UserRepository.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/UserRepository
+ * @file   This file contains the definition for UserRepository.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import org.springframework.data.domain.Page;

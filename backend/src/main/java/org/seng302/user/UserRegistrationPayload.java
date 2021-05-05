@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserRegistrationPayload.
+ *
+ * Description. This file contains the defintion for the UserRegistrationPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/UserRegistrationPayload
+ * @file   This file contains the definition for UserRegistrationPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import org.seng302.address.AddressPayload;
