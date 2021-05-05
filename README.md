@@ -1,4 +1,4 @@
-# SENG 302 Team 400 Project
+# SENG 302 Team 400 Project - Reusability: Share & Save
 
 Project uses `gradle`, `npm`, `Spring Boot`, `Vue.js` and `Gitlab CI`.
 
@@ -27,23 +27,7 @@ The following is assuming you already cloned the repository.
 
 Running on: http://localhost:9500/ by default
 
-### Backend / server
-
-#### Using a MariaDB database
-
-For running using a MariaDB database, the following environment variables need to be set:
-* DB_URL
-* DB_USERNAME
-* DB_PASSWORD
-* DGAA_EMAIL
-* DGAA_PASSWORD
-
-Also, the following commands should be run:
-
-    cd backend
-    ./gradlew bootRun -Dspring.profiles.active=mariadb
-
-#### Using an in-memory H2 database
+### Backend / server (using an in-memory H2 database)
 
 For running locally using an in-memory H2 database, the following commands should be run:
 
@@ -52,15 +36,30 @@ For running locally using an in-memory H2 database, the following commands shoul
 
 Running on: http://localhost:9499/ by default
 
+### Backend / server (using a MariaDB database)
+
+For running using a MariaDB database, the following environment variables are **required** to be set:
+* DB_URL
+* DB_USERNAME
+* DB_PASSWORD
+* DGAA_EMAIL
+* DGAA_PASSWORD
+
+To run it on port 9499, the following commands should be run:
+
+    cd backend
+    ./gradlew bootRun -Dspring.profiles.active=mariadb
+
+Running on: http://localhost:9499/ by default
+
+To run it on port 8999 (as it is in production), the following commands should be run:
+
+    cd backend
+    ./gradlew bootRun -Dspring.profiles.active=production
+
+Running on: http://localhost:8999/ by default
+
 The backend can be tested by using the examples from the [API specification](https://eng-git.canterbury.ac.nz/seng302-2021/seng302-api-spec-2021) in the [Swagger Editor](https://editor.swagger.io/).
-
-## Todo (S2)
-
-- Update team name into `build.gradle` and `package.json`
-- Update this README title
-- Update this README contributors
-- Set up Gitlab CI server (refer to the student guide on learn)
-- Decide on a LICENSE
 
 ## Contributors
 
