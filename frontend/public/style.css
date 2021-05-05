@@ -53,7 +53,7 @@ html {
 }
 
 .green-button:focus {
-  outline: none;     /* oranges! yey */
+  outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
@@ -70,7 +70,7 @@ html {
 }
 
 .green-search-button:focus {
-  outline: none;     /* oranges! yey */
+  outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }

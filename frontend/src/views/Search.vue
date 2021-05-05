@@ -61,7 +61,7 @@
             <ul class="pagination" id="pagination-ul">
 
               <li :class="toggleDisableClass('page-item', currentPage-1 <= 0)">
-                <a class="page-link" href="#" @click.prevent="previousPage()">Previous</a>
+                <a class="page-link " href="#" @click.prevent="previousPage()">Previous</a>
               </li>
 
               <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
@@ -647,7 +647,7 @@ export default {
 <style scoped>
 
 #searchBar:focus {
-  outline: none;     /* oranges! yey */
+  outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
@@ -671,6 +671,12 @@ export default {
 .page-item.active .page-link {
   background-color: #1EBA8C;
   border: 1px solid #1EBA8C;
+}
+
+.page-link:focus {
+  outline: none;
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
 }
 
 </style>
