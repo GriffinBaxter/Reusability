@@ -48,9 +48,12 @@
           </div>
 
           <!-- Add new Button -->
-          <div class="col-md" v-if="businessAdmin">
+          <div class="col-3" v-if="businessAdmin">
             <button type="button" class="btn btn-success w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
           </div>
+
+          <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+
         </div>
 
         <!-- Listings -->
@@ -161,6 +164,21 @@ name: "Listings",
     }
   },
   methods: {
+    /**
+     * convert orderByString to more readable for user
+     */
+    convertToString() {
+      switch (this.orderBy) {
+        case 'quantityASC': return "Quantity Ascending";
+        case 'quantityDESC': return "Quantity Descending";
+        case 'priceASC': return "Price Ascending";
+        case 'priceDESC': return "Price Descending";
+        case 'closesASC': return "Closes Ascending";
+        case 'closesDESC': return "Closes Descending";
+        case 'createdASC': return "Created Ascending";
+        case 'createdDESC': return "Created Descending";
+      }
+    },
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
      *
