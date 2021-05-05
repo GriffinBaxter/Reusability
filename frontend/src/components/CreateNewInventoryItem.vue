@@ -105,9 +105,9 @@
 
 
         <!--footer-->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-success" @click="createNewInventoryItem()">Confirm</button>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn green-button-transparent" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn green-button " @click="createNewInventoryItem()">Confirm</button>
         </div>
 
       </div>
