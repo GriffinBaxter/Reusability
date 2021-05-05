@@ -52,6 +52,7 @@
             <button type="button" class="btn btn-success w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
           </div>
         </div>
+
         <!-- Listings -->
         <ListingItem
             v-for="item in listings"

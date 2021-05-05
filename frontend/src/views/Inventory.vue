@@ -48,11 +48,11 @@
                 </button>
               </div>
               <!--search bar-->
-              <div class="input-group col-md py-1">
-                <input type="text" class="form-control" placeholder="This is for later use."
-                       aria-label="Input group example" aria-describedby="btnGroupAddon">
-                <button type="button" class="btn btn-outline-primary">Search</button>
-              </div>
+<!--              <div class="input-group col-md py-1">-->
+<!--                <input type="text" class="form-control" placeholder="This is for later use."-->
+<!--                       aria-label="Input group example" aria-describedby="btnGroupAddon">-->
+<!--                <button type="button" class="btn btn-outline-primary">Search</button>-->
+<!--              </div>-->
 
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">

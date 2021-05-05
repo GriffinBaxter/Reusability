@@ -106,7 +106,7 @@
 
         <!--footer-->
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-light" @click="dataReset(false)" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-success" @click="createNewInventoryItem()">Confirm</button>
         </div>
 
@@ -481,8 +481,11 @@ export default {
     /**
      * reset all input file
      */
-    dataReset() {
-      this.$emit('updateInventoryItem')
+    dataReset(createSuccess) {
+      if (createSuccess) {
+        this.$emit('updateInventoryItem')
+      }
+
       this.modal.hide();
       // product Id related variables
       this.productId = "";
@@ -639,7 +642,7 @@ export default {
       Api.addNewInventoryItem(this.businessId, newInventoryItem
       ).then((response) => {
             if (response.status === 201) {
-              this.dataReset();
+              this.dataReset(true);
               this.toastErrorMessage = "";
             }
           }
