@@ -41,14 +41,16 @@
           <div class="card text-center shadow-sm">
             <div class="card-body">
 
-              <!--user's profile image--> <!--TODO consider removing this div...is it supposed to have the end tag after the image?-->
+              <!--user's profile image-->
               <div id="imageDiv">
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
               </div>
+
+              <!--      Note that this is commented out as the image storage story has not been implemented        -->
               <!-- Button trigger modal -->
-              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">
-                Upload Image
-              </button>
+<!--              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">-->
+<!--                Upload Image-->
+<!--              </button>-->
 
               <!--user's nickname and bio-->
               <div class="mt-3">
@@ -168,7 +170,6 @@
 
               <!--user's phone number-->
               <hr v-if="!otherUser || isDGAA(loginRole)">
-              <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="container" v-if="!otherUser || isDGAA(loginRole)">
 
                 <div class="row justify-content-between">
@@ -184,7 +185,7 @@
               </div>
 
               <!--user's home address-->
-              <hr><!--TODO not sure if this should be called phoneHR as address section-->
+              <hr>
               <div class="container">
                 <div class="row justify-content-between">
                   <div class="col-md-3">
@@ -214,7 +215,7 @@
               </div>
               <hr v-if="businessesAdministeredExist()">
               <div class="container" v-if="businessesAdministeredExist()">
-                <div class="row justify-content-between businesses-administered">
+                <div class="row justify-content-between">
                   <div class="col-md-3">
                     <h6>Businesses Administered:</h6>
                   </div>
@@ -236,7 +237,7 @@
 
           <!--register business button-->
           <div align="right" id="registerBusinessRow" v-if="!otherUser">
-          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="$router.push('/businessRegistration')">Register Business</button>
+          <button class="btn btn-outline-primary float-end mt-4 green-button" @click="$router.push('/businessRegistration')">Register Business</button>
           </div>
 
         </div>
