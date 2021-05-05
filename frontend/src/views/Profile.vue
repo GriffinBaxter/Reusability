@@ -170,7 +170,6 @@
 
               <!--user's phone number-->
               <hr v-if="!otherUser || isDGAA(loginRole)">
-              <!--TODO not sure if this should be called phoneHR as address section-->
               <div class="container" v-if="!otherUser || isDGAA(loginRole)">
 
                 <div class="row justify-content-between">
@@ -186,7 +185,7 @@
               </div>
 
               <!--user's home address-->
-              <hr><!--TODO not sure if this should be called phoneHR as address section-->
+              <hr>
               <div class="container">
                 <div class="row justify-content-between">
                   <div class="col-md-3">
@@ -238,7 +237,7 @@
 
           <!--register business button-->
           <div align="right" id="registerBusinessRow" v-if="!otherUser">
-          <button class="btn btn-outline-primary float-end mt-4 green-button-transparent" @click="$router.push('/businessRegistration')">Register Business</button>
+          <button class="btn btn-outline-primary float-end mt-4 green-button" @click="$router.push('/businessRegistration')">Register Business</button>
           </div>
 
         </div>
