@@ -68,9 +68,31 @@ public class InventoryItemResource {
     }
 
     public static InventoryItemPayload convertToPayload(InventoryItem item){
+
+        String manufactured;
+        if (item.getManufactured() == null) {
+            manufactured = "";
+        } else {
+            manufactured = item.getManufactured().toString();
+        }
+
+        String bestBefore;
+        if (item.getBestBefore() == null) {
+            bestBefore = "";
+        } else {
+            bestBefore = item.getBestBefore().toString();
+        }
+
+        String sellBy;
+        if (item.getSellBy() == null) {
+            sellBy = "";
+        } else {
+            sellBy = item.getSellBy().toString();
+        }
+
         return new InventoryItemPayload(item.getId(), ProductPayload.convertProductToProductPayload(item.getProduct()),
-                item.getQuantity(), item.getPricePerItem(), item.getTotalPrice(), item.getManufactured().toString(),
-                item.getBestBefore().toString(), item.getSellBy().toString(), item.getExpires().toString());
+                item.getQuantity(), item.getPricePerItem(), item.getTotalPrice(), manufactured,
+                bestBefore, sellBy, item.getExpires().toString());
     }
 
 
