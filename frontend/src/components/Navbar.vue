@@ -363,6 +363,7 @@ export default {
         this.actAsId = this.interactAs[index].id;
         this.actAs = this.interactAs[index].name;
       }
+      this.$router.go();
     },
     setCurUser(response) {
       this.currentUser = response;

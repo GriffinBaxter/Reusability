@@ -695,24 +695,28 @@ export default {
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
 
-    /**
-     * When mounted, initiate population of page.
-     * If cookies are invalid or not present, redirect to login page.
-     */
-    const currentID = Cookies.get('userID');
-    if (currentID) {
-      await this.currencyRequest();
-      // if currency code and symbol exist we want to update table header of RRP to show this info
-      if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
-        this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
-      }
-      this.requestProducts().then(
-          () => {}
-      ).catch(
-          (e) => console.log(e)
-      )
+    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+      this.$router.push({path: '/forbidden'});
     } else {
-      this.$router.push({name: 'Login'});
+      /**
+       * When mounted, initiate population of page.
+       * If cookies are invalid or not present, redirect to login page.
+       */
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        await this.currencyRequest();
+        // if currency code and symbol exist we want to update table header of RRP to show this info
+        if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
+          this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
+        }
+        this.requestProducts().then(
+            () => {}
+        ).catch(
+            (e) => console.log(e)
+        )
+      } else {
+        this.$router.push({name: 'Login'});
+      }
     }
   },
    watch: {
