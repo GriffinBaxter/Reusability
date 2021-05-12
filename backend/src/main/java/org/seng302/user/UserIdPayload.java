@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserIdPayload.
+ *
+ * Description. This file contains the defintion for the UserIdPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/UserIdPayload
+ * @file   This file contains the definition for UserIdPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 /**

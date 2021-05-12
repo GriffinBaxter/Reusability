@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the InventoryItemRegistrationPayload.
+ *
+ * Description. This file contains the defintion for the InventoryItemRegistrationPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/inventoryItem/InventoryItemRegistrationPayload
+ * @file   This file contains the definition for InventoryItemRegistrationPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.inventoryItem;
 
 import org.seng302.business.product.ProductPayload;

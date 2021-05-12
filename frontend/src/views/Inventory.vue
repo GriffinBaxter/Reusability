@@ -42,7 +42,7 @@
             <div class="row" role="group" aria-label="Button group with nested dropdown">
               <div class="col-md-3 py-1">
                 <!--creation button-->
-                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
+                <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
                         data-bs-target="#creationPopup">
                   Create New
                 </button>
@@ -51,67 +51,67 @@
               <div class="input-group col-md py-1">
                 <input type="text" class="form-control" placeholder="This is for later use."
                        aria-label="Input group example" aria-describedby="btnGroupAddon">
-                <button type="button" class="btn btn-outline-primary">Search</button>
+                <button type="button" class="btn green-button-transparent">Search</button>
               </div>
 
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">
-                <button type="button" class="btn btn-primary dropdown-toggle"
-                        data-bs-toggle="dropdown" aria-expanded="false">Filter
+                <button type="button" class="btn green-button dropdown-toggle"
+                        data-bs-toggle="dropdown" aria-expanded="false">Filter Option
                 </button>
 
                 <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                   <!--order by product id-->
-                  <button type="button" class="btn btn-outline-primary col-12"
+                  <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(true, false, false, false, false, false, false, false)">
                     Product ID
                     <i id="productIdIcon"></i>
                   </button>
 
                   <!--order by quantity-->
-                  <button type="button" class="btn btn-outline-primary col-12"
+                  <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, true, false, false, false, false, false, false)">
                     Quantity
                     <i id="quantityIcon"></i>
                   </button>
 
                   <!--order by price per item-->
-                  <button type="button" class="btn btn-outline-primary col-12"
+                  <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, true, false, false, false, false, false)">
                     Price Per Item ({{ currencySymbol }} {{ currencyCode }})
                     <i id="pricePerItemIcon"></i>
                   </button>
 
                   <!--order by total price-->
-                  <button type="button" class="btn btn-outline-primary col-12"
+                  <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, true, false, false, false, false)">
                     Total Price ({{ currencySymbol }} {{ currencyCode }})
                     <i id="totalPriceIcon"></i>
                   </button>
 
                   <!--order by manufactured-->
-                  <button type="button" class="btn btn-outline-primary col-12"
+                  <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, false, true, false, false, false)">
                     Manufactured
                     <i id="manufacturedIcon"></i>
                   </button>
 
                   <!--order by sell by-->
-                  <button type="button" class="btn btn-outline-primary col-12"
+                  <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, false, false, true, false, false)">
                     Sell By
                     <i id="sellByIcon"></i>
                   </button>
 
                   <!--order by best before-->
-                  <button type="button" class="btn btn-outline-primary col-12"
+                  <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, false, false, false, true, false)">
                     Best Before
                     <i id="bestBeforeIcon"></i>
                   </button>
 
                   <!--order by expires-->
-                  <button type="button" class="btn btn-outline-primary col-12"
+                  <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, false, false, false, false, true)">
                     Expires
                     <i id="expiresIcon"></i>
@@ -129,7 +129,7 @@
               <div class="row">
                 <div class="col">New Inventory Item Create successfully!</div>
                 <div class="col" align="right">
-                  <button type="button" class="btn btn-outline-success px-1 py-0" @click="closeMessage">X</button>
+                  <button type="button" class="btn green-button px-1 py-0" @click="closeMessage">X</button>
                 </div>
               </div>
             </div>
@@ -160,37 +160,37 @@
             <nav>
               <ul v-if="totalPages > 0" class="pagination justify-content-center">
                 <!-- This is only enabled when there is a previous page -->
-                <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
+                <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
                   Previous
                 </button>
 
                 <!-- This is shown when there are more then 2 pages and you are at page 1-->
-                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
+                <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
                   {{currentPage-1}}
                 </button>
 
                 <!-- Only shows when we are past at least the first page -->
-                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
+                <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
                   {{currentPage}}
                 </button>
 
                 <!-- This converts the current page into 1 origin.-->
-                <button type="button" class="btn btn-outline-primary active">
+                <button type="button" class="btn green-button-transparent active">
                   {{currentPage+1}}
                 </button>
 
                 <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
-                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
+                <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
                   {{currentPage+2}}
                 </button>
 
                 <!-- This is shown when there are more then 2 pages and you are at page 1-->
-                <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
+                <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
                   {{currentPage+3}}
                 </button>
 
                 <!-- The next button only enabled if there is another page.-->
-                <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
+                <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
                   Next
                 </button>
               </ul>

@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the BusinessPayload.
+ *
+ * Description. This file contains the defintion for the BusinessPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/BusinessPayload
+ * @file   This file contains the definition for BusinessPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business;
 
 import org.seng302.address.Address;
@@ -9,7 +19,16 @@ import org.seng302.user.UserResource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Business Payload
+ *
+ * Business payload to send to the API.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/BusinessPayload.java
+ * @file   BusinessPayload.java.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 public class BusinessPayload {
     private Integer id;
     private List<UserPayload> administrators;

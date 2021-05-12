@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ProductValidation.
+ *
+ * Description. This file contains the defintion for the ProductValidation.
+ *
+ * @link   team-400/src/main/java/org/seng302/validation/ProductValidation
+ * @file   This file contains the definition for ProductValidation.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.validation;
 
 /**

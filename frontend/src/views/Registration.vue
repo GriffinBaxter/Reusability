@@ -698,14 +698,14 @@ export default {
       }
 
       // Date of birth error checking
-      requestIsInvalid = true
       if (!this.dateOfBirth) {
         this.dateOfBirthErrorMsg = "This field is required!"
+        requestIsInvalid = true
       } else if (!this.isValidDateOfBirth(this.dateOfBirth)) {
         this.dateOfBirthErrorMsg = "Must be over 13, and not from the future."
+        requestIsInvalid = true
       } else {
         this.dateOfBirthErrorMsg = "";
-        requestIsInvalid = false
       }
 
       // Password error checking

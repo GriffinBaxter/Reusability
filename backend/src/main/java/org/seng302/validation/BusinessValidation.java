@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the BusinessValidation.
+ *
+ * Description. This file contains the defintion for the BusinessValidation.
+ *
+ * @link   team-400/src/main/java/org/seng302/validation/BusinessValidation
+ * @file   This file contains the definition for AddressValidation.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.validation;
 
 import org.seng302.business.Business;

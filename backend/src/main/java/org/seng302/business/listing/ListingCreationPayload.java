@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ListingCreationPayload.
+ *
+ * Description. This file contains the defintion for the ListingCreationPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/listing/ListingCreationPayload
+ * @file   This file contains the definition for ListingCreationPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.listing;
 
 import java.time.LocalDateTime;

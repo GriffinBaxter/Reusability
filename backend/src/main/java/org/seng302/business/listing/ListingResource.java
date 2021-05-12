@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ListingResource.
+ *
+ * Description. This file contains the defintion for the ListingResource.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/listing/ListingResource
+ * @file   This file contains the definition for ListingResource.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.listing;
 
 import org.apache.logging.log4j.LogManager;
