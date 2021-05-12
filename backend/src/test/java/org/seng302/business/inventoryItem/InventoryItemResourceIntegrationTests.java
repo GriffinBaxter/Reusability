@@ -38,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * ProductResource test class
@@ -193,6 +192,8 @@ public class InventoryItemResourceIntegrationTests {
                 inventoryItemRepository, productRepository, businessRepository, userRepository))
                 .build();
     }
+
+//------------------------------- Tests for post /businesses/{id}/inventory/ endpoint ----------------------------------
 
     /**
      * Test that a CREATED(201) status is received when send correct InventoryRegistrationPayLoad, the business has been given
@@ -495,7 +496,7 @@ public class InventoryItemResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-//----------------------------------------------/businesses/%d/inventory/----------------------------------------------
+//--------------------------------- Test for get /businesses/%d/inventory/ endpoint ------------------------------------
 
     /**
      * Test that a CREATED(201) status is received when send an InventoryRegistrationPayLoad with no price per item,
@@ -761,7 +762,7 @@ public class InventoryItemResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    //---------------------------------- Tests for /businesses/{id}/inventory/ endpoint --------------------------------
+//------------------------------------ Tests for /businesses/{id}/inventory/ endpoint ----------------------------------
 
     /**
      * Tests that an OK status and a list of inventory item payloads is received when the business ID in the
@@ -1017,4 +1018,410 @@ public class InventoryItemResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
+
+//--------------------------- Tests for /businesses/{id}/inventory/{inventoryItemId} endpoint --------------------------
+
+    /**
+     * Test that a OK(200) status is received when send correct InventoryRegistrationPayLoad, the business has been given
+     * is exist, cookie contain a administrator of this business and the product given is exist in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canUpdateAnInventoryItemWithAdministrator() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that a OK(200) status is received when send correct InventoryRegistrationPayLoad, the business has been given
+     * is exist, cookie contain a GAA and the product given is exist in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canUpdateAnInventoryItemWithGAA() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        anotherUser.setRole(Role.GLOBALAPPLICATIONADMIN);
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that a OK(200) status is received when send correct InventoryRegistrationPayLoad, the business has been given
+     * is exist, cookie contain a DGAA and the product given is exist in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canUpdateAnInventoryItemWithDGAA() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        anotherUser.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that a UNAUTHORIZED(401) status is received when send correct InventoryRegistrationPayLoad, the business has been given
+     * is exist, cookie not exist and the product given is exist in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canNotUpdateAnInventoryItemWhenCookieNotExist() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Test that a NOT_ACCEPTABLE(406) status is received when send correct InventoryRegistrationPayLoad, the business
+     * has been given is not exist.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canNotUpdateAnInventoryItemWithBusinessIsNotExist() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.empty());
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Test that a FORBIDDEN(403) status is received when send correct InventoryRegistrationPayLoad, the business has
+     * been given is exist, cookie contain a non-administrator(not GAA or DGAA) of this business and the product given
+     * is exist in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canNotUpdateAnInventoryItemWithNon_Administrator() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that a BAD_REQUEST(400) status is received when send an InventoryRegistrationPayLoad with no Product Id, the
+     * business has been given is exist, cookie contain a administrator of this business and the product given is exist
+     * in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canNotUpdateAnInventoryItemWithNotExistInventoryItemId() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(null));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("selected inventory item does not exist");
+    }
+
+    /**
+     * Test that a BAD_REQUEST(400) status is received when send an InventoryRegistrationPayLoad with no Product Id, the
+     * business has been given is exist, cookie contain a administrator of this business and the product given is exist
+     * in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canNotUpdateAnInventoryItemWithNotExistProductId() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(null));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("selected product does not exist");
+    }
+
+    /**
+     * Test that a BAD_REQUEST(400) status is received when send an InventoryRegistrationPayLoad with no Product Id, the
+     * business has been given is exist, cookie contain a administrator of this business and the product given is exist
+     * in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canNotUpdateAnInventoryItemWithNoProductId() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        inventoryItem.setProductId(null);
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid product ID");
+    }
+
+    /**
+     * Test that a BAD_REQUEST(400) status is received when send an InventoryRegistrationPayLoad with no quantity, the
+     * business has been given is exist, cookie contain a administrator of this business and the product given is exist
+     * in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canNotUpdateAnInventoryItemWithNoQuantity() throws Exception {
+        // given
+        InventoryItem inventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+        inventoryItem.setQuantity(null);
+        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
+                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
+                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item");
+    }
+
+
 }
