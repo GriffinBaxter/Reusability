@@ -484,6 +484,7 @@ public class InventoryItemResource {
             );
         }
 
+
         //400
         Optional<InventoryItem> optionalSelectInventoryItem = inventoryItemRepository
                 .findInventoryItemById(inventoryItemId);
@@ -505,29 +506,20 @@ public class InventoryItemResource {
         LocalDate manufactured = inventoryRegistrationPayload.getManufactured();
         LocalDate expires = inventoryRegistrationPayload.getExpires();
 
-        //400
-        System.out.println(productId == null); //TODO:fix
-        if (productId == null){
-            logger.error("Inventory Item Updating Failure - 400 [BAD REQUEST] - Invalid product ID");
+        Optional<Product> optionalSelectProduct = productRepository.findProductByIdAndBusinessId(productId, businessId);
+        if (optionalSelectProduct.isEmpty()) {
+            logger.error("Inventory Item Creation Failure - 400 [BAD REQUEST] - " +
+                    "Product with ID {} not exist", productId);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Invalid product ID"
             );
         }
-        Optional<Product> optionalSelectProduct = productRepository
-                .findProductByIdAndBusinessId(selectInventoryItem.getProductId(), businessId);
-        if (optionalSelectProduct.isEmpty()) {
-            logger.error("Inventory Item Creation Failure - 400 [BAD REQUEST] - " +
-                    "Product with ID {} not exist", inventoryItemId);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "selected product does not exist"
-            );
-        }
         Product selectProduct = optionalSelectProduct.get();
 
+        System.out.println(expires + "sss");
         if (!productId.equals(selectProduct.getProductId())) {
-            errorMessage = "Invalid product";
+            errorMessage = "Invalid product ID";
         } else if (quantity == null || quantity <= 0) {
             errorMessage = "Invalid quantity, must have at least one item";
         } else if (pricePerItem != null && pricePerItem < 0) {
