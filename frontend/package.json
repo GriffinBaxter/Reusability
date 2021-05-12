@@ -75,14 +75,14 @@
         }
       }
     },
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ],
     "testResultsProcessor": "jest-sonar-reporter",
     "transform": {
-      "^.+\\.vue$": "vue-jest",
-      "^.+\\.js$": "babel-jest"
+      ".*\\.(vue)$": "vue-jest",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
     }
   },
   "jestSonar": {
