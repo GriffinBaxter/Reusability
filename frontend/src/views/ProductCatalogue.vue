@@ -31,7 +31,9 @@
         <div class="modal-mask">
           <div class="modal-wrapper">
             <div class="modal-dialog modal-">
-              <div class="modal-content">
+              <!-- Added an id to modal-content class. This is because the CSS for modal-content was being applied to
+              the create product modal as well. The CSS for this modal-content is now found under #product-modal-->
+              <div class="modal-content" id="product-modal">
                 <div class="modal-body">
                   <product-modal
                       v-bind:product-id="productId"
@@ -730,7 +732,8 @@ export default {
 
 <style scoped>
 
-.modal-content {
+/*CSS for product modal modal-content section*/
+#product-modal {
   position: fixed;
   top: 50%;
   left: 50%;

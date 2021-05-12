@@ -329,7 +329,7 @@ test('isValidSellByDate_DateIsTodayAndAfterManufactureDateAndBeforeExpiryDate_Re
     const todayDateMonth = format(endOfToday(new Date()), 'MM');
     const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`; // selected sell by date
+    const todayDate = `${todayDateYear}-${todayDateMonth}-${todayDateDay}`; // selected sell by date
 
     const selectedManufacturedDate = "2019-21-10";
     const selectedExpiryDate = "2022-21-10";
@@ -430,7 +430,7 @@ test('isValidBestBeforeDate_DateIsTodayAndAfterManufactureDateAndBeforeExpiryDat
     const todayDateMonth = format(endOfToday(new Date()), 'MM');
     const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`; // selected best before date
+    const todayDate = `${todayDateYear}-${todayDateMonth}-${todayDateDay}`; // selected best before date
 
     const selectedManufacturedDate = "2019-21-10";
     const selectedExpiryDate = "2022-21-10";
@@ -549,7 +549,7 @@ test('isValidExpiryDate_DateIsTodayAndAfterManufactureDateAndAfterBestBeforeDate
     const todayDateMonth = format(endOfToday(new Date()), 'MM');
     const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`; // selected expiry date
+    const todayDate = `${todayDateYear}-${todayDateMonth}-${todayDateDay}`; // selected expiry date
 
     const selectedManufacturedDate = "2019-21-10";
     const selectedBestBeforeDate = "2020-21-10";
