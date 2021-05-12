@@ -22,10 +22,10 @@ INSERT INTO `address` (street_number, street_name, city, region, country, postco
 
 /* Users (20) */
 INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Alex', 'Doe', 'Joe', 'Johnny', 'Biography', 'emailUSER@email.com', DATE'2008-02-02', '0271317', 5, 'UGFzc3dvcmQxMjMh', DATE'2021-02-12', 'USER');
-INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Chad', 'Taylor', 'S', 'Chaddy', 'Biography', 'chad.taylor@example.com', DATE'2006-02-01', '0271316678', 3, 'UGFzc3dvcmQxMjMh', DATE'2021-05-14', 'USER');
-INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Naomi', 'Wilson', 'I', 'GM', 'Biography', 'naomi.wilson@example.com', DATE'2007-09-08', '54335522', 4, 'UGFzc3dvcmQxMjMh', DATE'2021-05-01', 'USER');
+INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Chad', 'Taylor', 'S', 'Chaddy', 'Biography', 'chad.taylor@example.com', DATE'2006-02-01', '0271316678', 3, 'UGFzc3dvcmQxMjMh', DATE'2021-03-14', 'USER');
+INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Naomi', 'Wilson', 'I', 'GM', 'Biography', 'naomi.wilson@example.com', DATE'2007-09-08', '54335522', 4, 'UGFzc3dvcmQxMjMh', DATE'2021-03-01', 'USER');
 INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Seth', 'Murphy', 'S', 'Sethy', 'Biography', 'seth.murphy@example.com', DATE'2003-06-19', '027188316', 5, 'UGFzc3dvcmQxMjMh', DATE'2021-03-03', 'USER');
-INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Minttu', 'Wainio', 'Anna', 'Minnie', 'Biography', 'minttu.wainio@example.com', DATE'2004-07-28', '0290316', 6, 'UGFzc3dvcmQxMjMh', DATE'20210-09-05', 'USER');
+INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Minttu', 'Wainio', 'Anna', 'Minnie', 'Biography', 'minttu.wainio@example.com', DATE'2004-07-28', '0290316', 6, 'UGFzc3dvcmQxMjMh', DATE'2021-03-05', 'USER');
 INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Francisca', 'Benitez', 'Tina', 'Fran', 'Biography', 'francisca.benitez@example.com', DATE'2008-09-10', '12334456', 7, 'UGFzc3dvcmQxMjMh', DATE'2021-01-08', 'USER');
 INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Francisca', 'Bznitez', 'Tessa', 'Fran', 'Biography', 'francisca.bznitez@example.com', DATE'2001-07-17', '967352531', 8, 'UGFzc3dvcmQxMjMh', DATE'2021-01-01', 'USER');
 INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Frank', 'Smith', 'J', 'Frankie', 'Biography', 'frank.j.smith@email.com', DATE'2000-05-14', '0271316', 1, 'UGFzc3dvcmQxMjMh', DATE'2019-05-14', 'USER');
@@ -42,12 +42,20 @@ INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, da
 INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Tanner', 'Ilene', 'Levitt', 'Levy', 'Biography', 'tannerlevitt@gmail.com', DATE'1999-12-14', '0271316234', 19, 'UGFzc3dvcmQxMjMh', DATE'2020-01-12', 'USER');
 INSERT INTO `user` (first_name, last_name, middle_name, nickname, bio, email, date_of_birth, phone_number, address_id, password, created, role) VALUES ('Juliana', 'Haden', 'Celeste', 'Jules', 'Biography', 'jules@email.com', DATE'2000-05-19', '0271316534', 20, 'UGFzc3dvcmQxMjMh', DATE'2021-02-03', 'USER');
 
--- /* Businesses */
--- INSERT INTO `business` (primary_administrator_id, name, description, address_id, business_type, created) VALUES (1, 'Brink Food', 'Description', 9, 'RETAIL_TRADE', DATE'2021-02-12');
--- INSERT INTO `business` (primary_administrator_id, name, description, address_id, business_type, created) VALUES (2, 'Sunburst Waste', 'Description', 10, 'CHARITABLE_ORGANISATION', DATE'2021-05-14');
--- INSERT INTO `business` (primary_administrator_id, name, description, address_id, business_type, created) VALUES (3, 'Fringe Wasteless', 'Description', 11, 'RETAIL_TRADE', DATE'2021-05-01');
---
--- /* Link Users to Businesses */
--- INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (1, 1);
--- INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (2, 2);
--- INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (3, 3);
+/* Addresses for Businesses (3) */
+INSERT INTO `address` (street_number, street_name, city, region, country, postcode) VALUES ('86', 'High Street', 'Picton', 'Marlborough', 'New Zealand', '7220');
+INSERT INTO `address` (street_number, street_name, city, region, country, postcode) VALUES ('1849', 'C Street Northwest', 'Washington', 'District of Columbia', 'United States', '20240');
+INSERT INTO `address` (street_number, street_name, city, region, country, postcode) VALUES ('7', 'Wangjing Zhonghuan Nanlu', 'Chaoyang District', 'Beijing', 'China', '100102');
+
+
+/* Businesses (3) */
+INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id) VALUES ('RETAIL_TRADE', DATE'2021-02-12', 'Description', 'Brink Food', 1, 21);
+INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id) VALUES ('CHARITABLE_ORGANISATION', DATE'2021-02-14', 'Description', 'Sunburst Waste', 10, 22);
+INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id) VALUES ('RETAIL_TRADE', DATE'2021-02-01', 'Description', 'Fringe Wasteless', 6, 23);
+
+/* Link Users to Businesses */
+INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (1, 1);
+INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (10, 2);
+INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (11, 2);
+INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (13, 2);
+INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (6, 3);
