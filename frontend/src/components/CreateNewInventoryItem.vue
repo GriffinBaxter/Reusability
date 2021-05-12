@@ -103,7 +103,6 @@
           </form>
         </div>
 
-
         <!--footer-->
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn green-button-transparent" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>

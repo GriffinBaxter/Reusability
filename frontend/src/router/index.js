@@ -167,6 +167,18 @@ const routes = [
         component: () => import('../views/Listings')
     },
     {
+        path: '/marketplace',
+        name: 'Marketplace',
+        meta: {
+            title: 'Marketplace'
+        },
+        props: true,
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/Marketplace')
+    },
+    {
         path: '*',
         name: 'catchAll',
         component: () => import('../views/Login')
@@ -180,3 +192,4 @@ const router = new VueRouter({
 })
 
 export default router
+
