@@ -1,6 +1,11 @@
 import {test, expect} from "@jest/globals"
 import reg from '../src/views/Registration'
 import User from '../src/configs/User'
+import Api from '../src/Api';
+import {shallowMount} from "@vue/test-utils";
+import Registration from "@/views/Registration";
+const registrationTestData = require('registrationTestData.js');
+jest.mock("../src/Api.js");
 
 /**
  * Jest tests for registration.vue.
@@ -2157,3 +2162,24 @@ test('Test if value 1 > value 2 = value 3 gives false', () => {
     expect(reg.methods.between(testVal, testMin, testMax)
     ).toBe(expectedMessage);
 })
+
+// ************************************************ Testing API call ****************************************************
+
+describe('Testing the registration API', async function () {
+
+    let wrapper = shallowMount(Registration.vue);
+    let registerButton = wrapper.find("#register-button");
+
+    test('Test the registration', async () => {
+        await Api.addNewUser(registrationTestData.validRegistrationPayload).mockResolvedValue({
+            status: 201,
+            data: {
+                userId: 1
+            }
+        });
+
+        await registerButton.trigger("click");
+        expect(wrapper.vm.$data.clicked).toBeTruthy();
+    })
+
+});
