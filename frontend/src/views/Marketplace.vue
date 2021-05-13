@@ -66,10 +66,8 @@ export default {
    */
   mounted() {
     const currentID = Cookies.get('userID');
-    //TODO remove
-    console.log(currentID)
     if (!currentID) {
-      this.$router.push({name: 'Login'});
+      // this.$router.push({name: 'Login'});
     }
   },
 }

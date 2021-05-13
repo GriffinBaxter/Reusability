@@ -182,19 +182,23 @@ export default {
      */
     getUserData() {
       const currentID = Cookies.get('userID');
-      Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
-        console.log(error)
-        if (error.request && !error.response) {
-          this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 406) {
-          this.$router.push({path: '/noUser'});
-        } else if (error.response.status === 401) {
-          this.$router.push({path: '/invalidtoken'});
-        } else {
-          this.$router.push({path: '/noUser'});
-          console.log(error.message);
-        }
-      })
+      if(currentID) {
+        Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
+          if (error.request && !error.response) {
+            this.$router.push({path: '/timeout'});
+          } else if (error.response.status === 406) {
+            // this.$router.push({name: 'login'});
+          } else if (error.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
+          } else {
+            this.$router.push({path: '/noUser'});
+            console.log(error.message);
+            console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+          }
+        })
+      } else {
+        // this.$router.push({name: 'Login'})
+      }
     },
     /**
      * Calculates the target maximum height for the navbar once it needs to open.
