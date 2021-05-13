@@ -211,10 +211,10 @@
 
 
 <script>
-import Footer from "@/components/Footer";
-import InventoryItem from "@/components/InventoryItem";
-import Navbar from "@/components/Navbar";
-import InventoryItemCreation from "@/components/CreateInventoryItemModal";
+import Footer from "@/components/main/Footer";
+import InventoryItem from "@/components/inventory/InventoryItem";
+import Navbar from "@/components/main/Navbar";
+import InventoryItemCreation from "@/components/inventory/CreateInventoryItemModal";
 import Api from "@/Api";
 import Cookies from "js-cookie";
 import CurrencyAPI from "@/currencyInstance";

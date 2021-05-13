@@ -130,12 +130,12 @@
 </template>
 
 <script>
-import Navbar from "@/components/Navbar";
-import ListingItem from "@/components/ListingItem";
+import Navbar from "@/components/main/Navbar";
+import ListingItem from "@/components/listing/ListingItem";
 import Api from "@/Api";
 import Cookies from "js-cookie";
-import CreateListing from "@/components/CreateListingModal";
-import Footer from "@/components/Footer";
+import CreateListing from "@/components/listing/CreateListingModal";
+import Footer from "@/components/main/Footer";
 import CurrencyAPI from "@/currencyInstance";
 
 export default {

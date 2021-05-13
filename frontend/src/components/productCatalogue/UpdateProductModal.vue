@@ -95,8 +95,8 @@
 
 <script>
 import { Modal } from 'bootstrap'
-import Product from "../configs/Product"
-import Api from "../Api";
+import Product from "../../configs/Product"
+import Api from "../../Api";
 
 
 export default {

@@ -168,8 +168,8 @@
 
 <script>
 import ProfileHeader from "@/components/ProfileHeader";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+import Footer from "@/components/main/Footer";
+import Navbar from "@/components/main/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
 import {UserRole} from "@/configs/User";

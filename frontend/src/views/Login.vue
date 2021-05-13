@@ -99,7 +99,7 @@
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import Footer from "@/components/Footer";
+import Footer from "@/components/main/Footer";
 
 export default {
   name: "Login",

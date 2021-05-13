@@ -4,7 +4,7 @@
       <div class="row" id="mainContent">
         <div class="col-12 col-sm-3">
           <div class="ratio ratio-4x3">
-          <img class="card-img" src="../../public/apples.jpg" id="listing-item-image">
+          <img class="card-img" src="public/apples.jpg" id="listing-item-image">
           </div>
         </div>
         <div class="col">

@@ -41,11 +41,11 @@
 
 <script>
 
-import Footer from '../components/Footer';
-import Navbar from '../components/Navbar';
-import ForSale from '../components/ForSale';
-import Wanted from '../components/Wanted';
-import Exchange from '../components/Exchange';
+import Footer from '../components/main/Footer';
+import Navbar from '../components/main/Navbar';
+import ForSale from '../components/marketplace/ForSale';
+import Wanted from '../components/marketplace/Wanted';
+import Exchange from '../components/marketplace/Exchange';
 
 export default {
   name: "Marketplace",

@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import ForSaleCard from '../components/ForSaleCard'
+import ForSaleCard from './ForSaleCard'
 
 export default {
   name: "ForSale",

@@ -17,7 +17,7 @@
       <!-- Logo image -->
       <div class="logo-container text-center">
         <router-link class="navbar-brand " to="/home" tabindex="-1">
-          <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
+          <img src="../../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
         </router-link>
         <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
 
@@ -109,7 +109,7 @@
                     'interact-dropdown-links-wrapper', this.showInteractMenu)
                     }">
 
-                <img src="../../public/profile_icon_default.png" width="27px"
+                <img src="../../../public/profile_icon_default.png" width="27px"
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{ actAs }}
               </a>
 
@@ -133,7 +133,7 @@
 
 <script>
 import Cookies from "js-cookie";
-import Api from "../Api"
+import Api from "../../Api"
 
 export default {
   name: "Navbar",
