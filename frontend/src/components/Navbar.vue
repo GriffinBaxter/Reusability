@@ -534,6 +534,7 @@ export default {
 .nav-link:hover, .nav-link:focus {
   background: #ef5e33;
   outline: none;
+  cursor: pointer;
 }
 
 .navbar-toggler {
