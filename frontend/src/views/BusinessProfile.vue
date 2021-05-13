@@ -316,7 +316,7 @@ export default {
         }
 
         //check permission of current user
-        if (anUser.id == Cookies.get('userID')) {
+        if (anUser.id === Cookies.get('userID') || this.$route.params.id === Cookies.get('actAs')) {
           this.isAdministrator = true;
         }
 
@@ -345,6 +345,9 @@ export default {
         this.isAdministrator = this.isAdministrator ? true :
             (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
             || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);
+        if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+          this.isAdministrator = false;
+        }
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});

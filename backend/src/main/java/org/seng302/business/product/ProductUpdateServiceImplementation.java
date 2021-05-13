@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ProductUpdateServiceImplementation.
+ *
+ * Description. This file contains the defintion for the ProductUpdateServiceImplementation.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/product/ProductUpdateServiceImplementation
+ * @file   This file contains the definition for ProductUpdateServiceImplementation.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.product;
 
 import org.apache.logging.log4j.LogManager;

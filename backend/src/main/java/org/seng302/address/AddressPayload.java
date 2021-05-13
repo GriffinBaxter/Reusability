@@ -1,3 +1,14 @@
+/**
+ * Summary. Contains the definition for a general address payload.
+ *
+ * Description. contains the difinition for a general Address payload that
+ * contains all the information associated with an address.
+ *
+ * @link   team-400/backend/src/main/java/org/seng302/address/AddressPayload
+ * @file   Defines the class for the AddressPayload
+ * @author team-400
+ * @since  5.5.2021
+ */
 package org.seng302.address;
 
 /**

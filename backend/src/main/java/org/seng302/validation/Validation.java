@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the Validation.
+ *
+ * Description. This file contains the defintion for the Validation.
+ *
+ * @link   team-400/src/main/java/org/seng302/validation/Validation
+ * @file   This file contains the definition for Validation.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.validation;
 
 public class Validation {

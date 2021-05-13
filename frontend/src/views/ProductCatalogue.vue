@@ -31,7 +31,9 @@
         <div class="modal-mask">
           <div class="modal-wrapper">
             <div class="modal-dialog modal-">
-              <div class="modal-content">
+              <!-- Added an id to modal-content class. This is because the CSS for modal-content was being applied to
+              the create product modal as well. The CSS for this modal-content is now found under #product-modal-->
+              <div class="modal-content" id="product-modal">
                 <div class="modal-body">
                   <product-modal
                       v-bind:product-id="productId"
@@ -71,7 +73,7 @@
               <!--product id-->
               <div class="form-group">
                 <label for="product-id">Product ID*</label>
-                <input id="product-id" name="product-id" type="text" v-model="productID"
+                <input id="product-id" class="input-styling" name="product-id" type="text" v-model="productID"
                        :class="toggleInvalidClass(productIDErrorMsg)" :maxlength="config.productID.maxLength" required>
                 <div class="invalid-feedback">
                   {{productIDErrorMsg}}
@@ -80,7 +82,7 @@
               <!--product name-->
               <div class="form-group">
                 <label for="product-name">Product Name*</label>
-                <input id="product-name" name="product-name" type="text" v-model="productName"
+                <input id="product-name" class="input-styling" name="product-name" type="text" v-model="productName"
                        :class="toggleInvalidClass(productNameErrorMsg)" :maxlength="config.productName.maxLength" required>
                 <div class="invalid-feedback">
                   {{productNameErrorMsg}}
@@ -89,7 +91,7 @@
               <!--recommended retail price-->
               <div class="form-group">
                 <label for="product-price">Recommended Retail Price ({{ currencySymbol }} {{ currencyCode }})</label>
-                <input id="product-price" name="product-price" type="text" v-model="recommendedRetailPrice"
+                <input id="product-price" class="input-styling" name="product-price" type="text" v-model="recommendedRetailPrice"
                        :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
                        :maxlength="config.recommendedRetailPrice.maxLength">
                 <div class="invalid-feedback">
@@ -99,7 +101,7 @@
               <!--manufacturer-->
               <div class="form-group">
                 <label for="manufacturer">Manufacturer</label>
-                <input id="manufacturer" name="manufacturer" type="text" v-model="manufacturer"
+                <input id="manufacturer" class="input-styling" name="manufacturer" type="text" v-model="manufacturer"
                        :class="toggleInvalidClass(manufacturerErrorMsg)" :maxlength="config.manufacturer.maxLength" required>
                 <div class="invalid-feedback">
                   {{manufacturerErrorMsg}}
@@ -108,7 +110,7 @@
               <!--description-->
               <div class="form-group">
                 <label for="description">Description</label>
-                <textarea id="description" name="description" rows="5" cols="70" v-model="description"
+                <textarea id="description" class="input-styling" name="description" rows="5" cols="70" v-model="description"
                           :maxlength="config.description.maxLength" :class="toggleInvalidClass(descriptionErrorMsg)"
                           style="resize: none"/>
                 <div class="invalid-feedback">
@@ -128,7 +130,7 @@
             <button id="cancel-button" type="button" class="btn btn-md btn-outline-secondary green-button-transparent mr-auto"
                     @click="closeCreateProductModal()">Cancel</button>
             <button id="creation-button" type="button" class="btn btn-md btn-outline-primary float-lg-end green-button"
-                    @click="addNewProduct($event)">Save</button>
+                    @click="addNewProduct($event)">Confirm</button>
           </div>
         </div>
       </div>
@@ -695,24 +697,28 @@ export default {
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
 
-    /**
-     * When mounted, initiate population of page.
-     * If cookies are invalid or not present, redirect to login page.
-     */
-    const currentID = Cookies.get('userID');
-    if (currentID) {
-      await this.currencyRequest();
-      // if currency code and symbol exist we want to update table header of RRP to show this info
-      if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
-        this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
-      }
-      this.requestProducts().then(
-          () => {}
-      ).catch(
-          (e) => console.log(e)
-      )
+    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+      this.$router.push({path: '/forbidden'});
     } else {
-      this.$router.push({name: 'Login'});
+      /**
+       * When mounted, initiate population of page.
+       * If cookies are invalid or not present, redirect to login page.
+       */
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        await this.currencyRequest();
+        // if currency code and symbol exist we want to update table header of RRP to show this info
+        if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
+          this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
+        }
+        this.requestProducts().then(
+            () => {}
+        ).catch(
+            (e) => console.log(e)
+        )
+      } else {
+        this.$router.push({name: 'Login'});
+      }
     }
   },
    watch: {
@@ -726,7 +732,8 @@ export default {
 
 <style scoped>
 
-.modal-content {
+/*CSS for product modal modal-content section*/
+#product-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -819,11 +826,13 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+/*------------------------------------------------------------------------*/
+
+/* Styles the input and textarea's borders to be green when they are focused/tabbed to */
 input:focus, textarea:focus, button:focus, #create-product-button:focus{
-  outline: none;     /* oranges! yey */
-  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  outline: none;
+  box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
 }
-/*------------------------------------------------------------------------*/
 
 </style>

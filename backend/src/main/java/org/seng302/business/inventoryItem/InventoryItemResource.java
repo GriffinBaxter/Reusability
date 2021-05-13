@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the InventoryItemResource.
+ *
+ * Description. This file contains the defintion for the InvetoryItemResource.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/inventoryItem/InventoryItemResource
+ * @file   This file contains the definition for InventoryItemResource.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.inventoryItem;
 
 import org.apache.logging.log4j.LogManager;

@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ProductRepository.
+ *
+ * Description. This file contains the defintion for the ProductRepository.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/product/ProductRepository
+ * @file   This file contains the definition for ProductRepository.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.product;
 
 import org.springframework.data.domain.Page;

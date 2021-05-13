@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the User.
+ *
+ * Description. This file contains the defintion for the User.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/User
+ * @file   This file contains the definition for User.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import java.io.UnsupportedEncodingException;
