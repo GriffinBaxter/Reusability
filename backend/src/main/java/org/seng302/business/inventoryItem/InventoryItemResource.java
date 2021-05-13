@@ -461,7 +461,7 @@ public class InventoryItemResource {
      * @param sessionToken The token used to identify the user.
      */
     @PutMapping("/businesses/{businessId}/inventory/{inventoryItemId}")
-    @ResponseStatus(code = HttpStatus.OK, reason = "Product updated successfully")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Inventory item updated successfully")
     public void modifyInventoryItem(
             @RequestBody(required = false) InventoryRegistrationPayload inventoryRegistrationPayload,
             @PathVariable Integer businessId,
@@ -481,6 +481,7 @@ public class InventoryItemResource {
             );
         }
         Business currentBusiness = optionalCurrentBusiness.get();
+        logger.debug("Business {} has been find.", currentBusiness.getName());
 
         //403
         if (currentUser.getRole() == Role.USER &&
@@ -494,7 +495,6 @@ public class InventoryItemResource {
             );
         }
 
-
         //400
         Optional<InventoryItem> optionalSelectInventoryItem = inventoryItemRepository
                 .findInventoryItemById(inventoryItemId);
@@ -507,6 +507,7 @@ public class InventoryItemResource {
             );
         }
         InventoryItem selectInventoryItem = optionalSelectInventoryItem.get();
+        logger.debug("One inventory item has been find.");
 
         String errorMessage = null;
         String productId = inventoryRegistrationPayload.getProductId();
@@ -527,7 +528,6 @@ public class InventoryItemResource {
         }
         Product selectProduct = optionalSelectProduct.get();
 
-        System.out.println(expires + "sss");
         if (!productId.equals(selectProduct.getProductId())) {
             errorMessage = "Invalid product ID";
         } else if (quantity == null || quantity <= 0) {
@@ -552,14 +552,25 @@ public class InventoryItemResource {
         }
 
         selectInventoryItem.setProductId(productId);
+        logger.debug("Inventory item's productId has been change to {}.", productId);
         selectInventoryItem.setProduct(selectProduct);
         selectInventoryItem.setQuantity(quantity);
+        logger.debug("Inventory item's quantity has been change to {}.", quantity);
         selectInventoryItem.setPricePerItem(pricePerItem);
+        logger.debug("Inventory item's pricePerItem has been change to {}.", pricePerItem);
         selectInventoryItem.setTotalPrice(totalPrice);
+        logger.debug("Inventory item's totalPrice has been change to {}.", totalPrice);
         selectInventoryItem.setManufactured(manufactured);
+        logger.debug("Inventory item's manufactured has been change to {}.", manufactured);
         selectInventoryItem.setSellBy(inventoryRegistrationPayload.getSellBy());
+        logger.debug("Inventory item's sellBy has been change to {}.",
+                inventoryRegistrationPayload.getSellBy());
         selectInventoryItem.setBestBefore(inventoryRegistrationPayload.getBestBefore());
+        logger.debug("Inventory item's bestBefore has been change to {}.",
+                inventoryRegistrationPayload.getBestBefore());
         selectInventoryItem.setExpires(expires);
+        logger.debug("Inventory item's expires has been change to {}.", expires);
+
 
         inventoryItemRepository.saveAndFlush(selectInventoryItem);
         logger.info("Inventory Item Updating Success - 200 [OK] - " +
