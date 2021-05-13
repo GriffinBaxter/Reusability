@@ -61,8 +61,6 @@
 
 <script>
 
-import {format} from 'date-fns'
-
 export default {
   name: "InventoryItem",
   props: {
