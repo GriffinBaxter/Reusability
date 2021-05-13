@@ -1,141 +1,164 @@
 <template>
   <div>
     <div id="main">
-    <navbar></navbar>
+      <navbar></navbar>
 
-  <div id="outerContainer" class="container">
+      <div id="outerContainer" class="container">
 
-    <div id="body" class="container all-but-footer mb-3">
+        <div id="body" class="container all-but-footer mb-3">
 
-      <div class="row mt-3">
-        <h2 align="center">Product Catalogue</h2>
-        <h6 align="center">{{ addedMessage }}</h6>
-      </div>
+          <div class="row mt-3">
+            <h2 align="center">Product Catalogue</h2>
+            <h6 align="center">{{ addedMessage }}</h6>
+          </div>
 
-      <div class="row mb-3">
-        <div class="col">
-          <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="2"
-                  @click="showCreateProductModal()">Create Product</button>
+          <div class="row mb-3">
+            <div class="col">
+              <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="2"
+                      @click="showCreateProductModal()">Create Product
+              </button>
+            </div>
+          </div>
+
+          <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0"
+                 :table-headers="tableHeaders" :table-data="tableData"
+                 :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
+                 :order-by-override="tableOrderBy" :table-data-is-page="true"
+                 @update-current-page="event => updatePage(event)"
+                 @order-by-header-index="event => orderProducts(event)"
+                 @row-selected="event => showRowModal(event.index)"></Table>
+
         </div>
-      </div>
 
-      <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0" :table-headers="tableHeaders" :table-data="tableData"
-             :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage" :order-by-override="tableOrderBy" :table-data-is-page="true"
-             @update-current-page="event => updatePage(event)" @order-by-header-index="event => orderProducts(event)" @row-selected="event => showRowModal(event.index)"></Table>
+        <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
 
-    </div>
-
-    <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct" />
-
-    <div v-if="showModal">
-      <transition name="fade">
-        <div class="modal-mask">
-          <div class="modal-wrapper">
-            <div class="modal-dialog modal-">
-              <div class="modal-content">
-                <div class="modal-body">
-                  <product-modal
-                      v-bind:product-id="productId"
-                      v-bind:product-name="productName"
-                      v-bind:description="description"
-                      v-bind:manufacturer="manufacturer"
-                      v-bind:recommended-retail-price="recommendedRetailPrice"
-                      v-bind:created="created"
-                      v-bind:currencyCode="currencyCode"
-                      v-bind:currencySymbol="currencySymbol"/>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
+        <div v-if="showModal">
+          <transition name="fade">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-dialog modal-">
+                  <!-- Added an id to modal-content class. This is because the CSS for modal-content was being applied to
+                  the create product modal as well. The CSS for this modal-content is now found under #product-modal-->
+                  <div class="modal-content" id="product-modal">
+                    <div class="modal-body">
+                      <product-modal
+                          v-bind:product-id="productId"
+                          v-bind:product-name="productName"
+                          v-bind:description="description"
+                          v-bind:manufacturer="manufacturer"
+                          v-bind:recommended-retail-price="recommendedRetailPrice"
+                          v-bind:created="created"
+                          v-bind:currencyCode="currencyCode"
+                          v-bind:currencySymbol="currencySymbol"/>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateProductModel.showModel(event);
-                    }">Edit</button>
-                  <button class="btn btn-outline-primary float-end green-button-transparent " id="closeModalButton" @click="showModal = false">Close</button>
+                    }">Edit
+                      </button>
+                      <button class="btn btn-outline-primary float-end green-button-transparent " id="closeModalButton"
+                              @click="showModal = false">Close
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+
+        <!--create product modal-->
+        <div class="modal fade" ref="CreateProductModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header text-center">
+                <h3 class="modal-title w-100" id="createProductModalLabel">Create Product</h3>
+                <button type="button" class="btn-close" @click="closeCreateProductModal()" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!--create product form, needs validation-->
+                <form id="create" novalidate @submit.prevent>
+                  <!--product id-->
+                  <div class="form-group">
+                    <label for="product-id">Product ID*</label>
+                    <input id="product-id" class="input-styling" name="product-id" type="text" v-model="productID"
+                           :class="toggleInvalidClass(productIDErrorMsg)" :maxlength="config.productID.maxLength"
+                           required>
+                    <div class="invalid-feedback">
+                      {{ productIDErrorMsg }}
+                    </div>
+                  </div>
+                  <!--product name-->
+                  <div class="form-group">
+                    <label for="product-name">Product Name*</label>
+                    <input id="product-name" class="input-styling" name="product-name" type="text" v-model="productName"
+                           :class="toggleInvalidClass(productNameErrorMsg)" :maxlength="config.productName.maxLength"
+                           required>
+                    <div class="invalid-feedback">
+                      {{ productNameErrorMsg }}
+                    </div>
+                  </div>
+                  <!--recommended retail price-->
+                  <div class="form-group">
+                    <label for="product-price">Recommended Retail Price ({{ currencySymbol }} {{
+                        currencyCode
+                      }})</label>
+                    <input id="product-price" class="input-styling" name="product-price" type="text"
+                           v-model="recommendedRetailPrice"
+                           :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
+                           :maxlength="config.recommendedRetailPrice.maxLength">
+                    <div class="invalid-feedback">
+                      {{ recommendedRetailPriceErrorMsg }}
+                    </div>
+                  </div>
+                  <!--manufacturer-->
+                  <div class="form-group">
+                    <label for="manufacturer">Manufacturer</label>
+                    <input id="manufacturer" class="input-styling" name="manufacturer" type="text"
+                           v-model="manufacturer"
+                           :class="toggleInvalidClass(manufacturerErrorMsg)" :maxlength="config.manufacturer.maxLength"
+                           required>
+                    <div class="invalid-feedback">
+                      {{ manufacturerErrorMsg }}
+                    </div>
+                  </div>
+                  <!--description-->
+                  <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" class="input-styling" name="description" rows="5" cols="70"
+                              v-model="description"
+                              :maxlength="config.description.maxLength" :class="toggleInvalidClass(descriptionErrorMsg)"
+                              style="resize: none"/>
+                    <div class="invalid-feedback">
+                      {{ descriptionErrorMsg }}
+                    </div>
+                  </div>
+                  <!--toast error-->
+                  <div class="form-group">
+                    <div id="registration-error" ref="registration-error" v-if="toastErrorMessage"
+                         class="alert alert-danger"
+                         role="alert">
+                      <label>{{ toastErrorMessage }}</label>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer justify-content-between">
+                <button id="cancel-button" type="button"
+                        class="btn btn-md btn-outline-secondary green-button-transparent mr-auto"
+                        @click="closeCreateProductModal()">Cancel
+                </button>
+                <button id="creation-button" type="button"
+                        class="btn btn-md btn-outline-primary float-lg-end green-button"
+                        @click="addNewProduct($event)">Confirm
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </transition>
-    </div>
 
-    <!--create product modal-->
-    <div class="modal fade" ref="CreateProductModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header text-center">
-            <h3 class="modal-title w-100" id="createProductModalLabel">Create Product</h3>
-            <button type="button" class="btn-close" @click="closeCreateProductModal()" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <!--create product form, needs validation-->
-            <form id="create" novalidate @submit.prevent>
-              <!--product id-->
-              <div class="form-group">
-                <label for="product-id">Product ID*</label>
-                <input id="product-id" name="product-id" type="text" v-model="productID"
-                       :class="toggleInvalidClass(productIDErrorMsg)" :maxlength="config.productID.maxLength" required>
-                <div class="invalid-feedback">
-                  {{productIDErrorMsg}}
-                </div>
-              </div>
-              <!--product name-->
-              <div class="form-group">
-                <label for="product-name">Product Name*</label>
-                <input id="product-name" name="product-name" type="text" v-model="productName"
-                       :class="toggleInvalidClass(productNameErrorMsg)" :maxlength="config.productName.maxLength" required>
-                <div class="invalid-feedback">
-                  {{productNameErrorMsg}}
-                </div>
-              </div>
-              <!--recommended retail price-->
-              <div class="form-group">
-                <label for="product-price">Recommended Retail Price ({{ currencySymbol }} {{ currencyCode }})</label>
-                <input id="product-price" name="product-price" type="text" v-model="recommendedRetailPrice"
-                       :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
-                       :maxlength="config.recommendedRetailPrice.maxLength">
-                <div class="invalid-feedback">
-                  {{recommendedRetailPriceErrorMsg}}
-                </div>
-              </div>
-              <!--manufacturer-->
-              <div class="form-group">
-                <label for="manufacturer">Manufacturer</label>
-                <input id="manufacturer" name="manufacturer" type="text" v-model="manufacturer"
-                       :class="toggleInvalidClass(manufacturerErrorMsg)" :maxlength="config.manufacturer.maxLength" required>
-                <div class="invalid-feedback">
-                  {{manufacturerErrorMsg}}
-                </div>
-              </div>
-              <!--description-->
-              <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description" rows="5" cols="70" v-model="description"
-                          :maxlength="config.description.maxLength" :class="toggleInvalidClass(descriptionErrorMsg)"
-                          style="resize: none"/>
-                <div class="invalid-feedback">
-                  {{descriptionErrorMsg}}
-                </div>
-              </div>
-              <!--toast error-->
-              <div class="form-group">
-                <div id="registration-error" ref="registration-error" v-if="toastErrorMessage" class="alert alert-danger"
-                     role="alert">
-                  <label>{{ toastErrorMessage }}</label>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer justify-content-between">
-            <button id="cancel-button" type="button" class="btn btn-md btn-outline-secondary green-button-transparent mr-auto"
-                    @click="closeCreateProductModal()">Cancel</button>
-            <button id="creation-button" type="button" class="btn btn-md btn-outline-primary float-lg-end green-button"
-                    @click="addNewProduct($event)">Save</button>
-          </div>
-        </div>
       </div>
-    </div>
-
-    </div>
     </div>
     <Footer></Footer>
 
@@ -143,7 +166,7 @@
 </template>
 
 <script>
-import { Modal } from 'bootstrap'
+import {Modal} from 'bootstrap'
 import Api from '../Api';
 import Product from "../configs/Product";
 import Cookies from 'js-cookie';
@@ -312,7 +335,10 @@ export default {
      */
     updatePage(event) {
       this.currentPage = event.newPageNumber;
-      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}})
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/productCatalogue`,
+        query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}
+      })
       this.requestProducts();
     },
     /**
@@ -328,13 +354,13 @@ export default {
 
       // If the last 3 letters are ASC then we can assume the orderBy is the other component of that orderByString.
       // This also means isAscending is true.
-      if (this.orderByString.slice(this.orderByString.length-3) === 'ASC') {
-        orderBy = this.orderByString.slice(0, this.orderByString.length-3);
+      if (this.orderByString.slice(this.orderByString.length - 3) === 'ASC') {
+        orderBy = this.orderByString.slice(0, this.orderByString.length - 3);
 
-      // If the last 4 letters are DESC then we can assume the orderBy is the other component of the orderByString
-      // This also means that isAscending is false.
-      } else if (this.orderByString.slice(this.orderByString.length-4) === 'DESC') {
-        orderBy = this.orderByString.slice(0, this.orderByString.length-4)
+        // If the last 4 letters are DESC then we can assume the orderBy is the other component of the orderByString
+        // This also means that isAscending is false.
+      } else if (this.orderByString.slice(this.orderByString.length - 4) === 'DESC') {
+        orderBy = this.orderByString.slice(0, this.orderByString.length - 4)
         isAscending = false;
       }
 
@@ -372,7 +398,7 @@ export default {
         const {orderBy, isAscending} = this.parseOrderBy();
         this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
 
-        this.productList = response.data.map( (product) => {
+        this.productList = response.data.map((product) => {
           return new Product(product);
         });
         let newtableData = [];
@@ -382,11 +408,11 @@ export default {
           this.currentPage = 1;
           this.maxPage = 1;
           this.totalRows = 0;
-        // Generate the tableData to be placed in the table & get the total number of rows.
+          // Generate the tableData to be placed in the table & get the total number of rows.
         } else {
           this.totalRows = parseInt(response.headers["total-rows"]);
 
-          for (let i = 0; i < this.productList.length; i++ ) {
+          for (let i = 0; i < this.productList.length; i++) {
             newtableData.push(this.productList[i].data.id);
             newtableData.push(this.productList[i].data.name);
             newtableData.push(this.productList[i].data.manufacturer);
@@ -421,7 +447,10 @@ export default {
      */
     orderProducts(event) {
       this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
-      this.$router.push({path: `/businessProfile/${this.businessId}/productCatalogue`, query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}});
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/productCatalogue`,
+        query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}
+      });
       this.requestProducts();
     },
 
@@ -620,7 +649,7 @@ export default {
             this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
           }
         } else if (error.request) {
-          this.toastErrorMessage= 'Timeout occurred';
+          this.toastErrorMessage = 'Timeout occurred';
         } else {
           this.toastErrorMessage = 'Unexpected error occurred!';
         }
@@ -633,7 +662,7 @@ export default {
      * If the values are not reset then next time the modal is opened the modal will still display the error messages,
      * and currently stored values for the input fields.
      */
-    closeCreateProductModal(){
+    closeCreateProductModal() {
       // Reset product id related variables
       this.productID = "";
       this.productIDErrorMsg = "";
@@ -697,38 +726,44 @@ export default {
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
 
-    /**
-     * When mounted, initiate population of page.
-     * If cookies are invalid or not present, redirect to login page.
-     */
-    const currentID = Cookies.get('userID');
-    if (currentID) {
-      await this.currencyRequest();
-      // if currency code and symbol exist we want to update table header of RRP to show this info
-      if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
-        this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
-      }
-      this.requestProducts().then(
-          () => {}
-      ).catch(
-          (e) => console.log(e)
-      )
+    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+      this.$router.push({path: '/forbidden'});
     } else {
-      this.$router.push({name: 'Login'});
+      /**
+       * When mounted, initiate population of page.
+       * If cookies are invalid or not present, redirect to login page.
+       */
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        await this.currencyRequest();
+        // if currency code and symbol exist we want to update table header of RRP to show this info
+        if ((this.currencyCode.length > 0) && (this.currencyCode.length > 0)) {
+          this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
+        }
+        this.requestProducts().then(
+            () => {
+            }
+        ).catch(
+            (e) => console.log(e)
+        )
+      } else {
+        this.$router.push({name: 'Login'});
+      }
     }
   },
-   watch: {
+  watch: {
     // If the current Product was updated we update the table.
-     currentProduct: function () {
-       this.requestProducts()
-     }
-   }
+    currentProduct: function () {
+      this.requestProducts()
+    }
+  }
 }
 </script>
 
 <style scoped>
 
-.modal-content {
+/*CSS for product modal modal-content section*/
+#product-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -758,6 +793,7 @@ export default {
 .all-but-footer {
   min-height: calc(100vh - 240px);
 }
+
 #create-product-button {
   background-color: #1EBA8C;
   border-color: #1EBA8C;
@@ -821,10 +857,14 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-input:focus, textarea:focus, button:focus, #create-product-button:focus{
-  outline: none;     /* oranges! yey */
-  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+/*------------------------------------------------------------------------*/
+
+/* Styles the input and textarea's borders to be green when they are focused/tabbed to */
+input:focus, textarea:focus, button:focus, #create-product-button:focus {
+  outline: none;
+  box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
 }
+
 /*------------------------------------------------------------------------*/
 </style>

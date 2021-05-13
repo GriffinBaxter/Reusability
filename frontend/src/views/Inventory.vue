@@ -215,7 +215,7 @@
 import Footer from "@/components/Footer";
 import InventoryItem from "@/components/InventoryItem";
 import Navbar from "@/components/Navbar";
-import InventoryItemCreation from "@/components/CreateNewInventoryItem";
+import InventoryItemCreation from "@/components/CreateInventoryItemModal";
 import Api from "@/Api";
 import Cookies from "js-cookie";
 import CurrencyAPI from "@/currencyInstance";
@@ -608,27 +608,30 @@ export default {
   },
 
   async mounted() {
-
-    /**
-     * When mounted, initiate population of page.
-     * If cookies are invalid or not present, redirect to login page.
-     */
-    const currentID = Cookies.get('userID');
-    if (currentID) {
-      this.businessId = this.$route.params.id;
-
-      await this.currencyRequest();
-
-      this.retrieveBusinessInfo();
-      this.retrieveInventoryItems().then(
-          () => {}
-      ).catch(
-          (e) => console.log(e)
-      );
+    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+      this.$router.push({path: '/forbidden'});
     } else {
-      this.$router.push({name: 'Login'});
-    }
+      /**
+       * When mounted, initiate population of page.
+       * If cookies are invalid or not present, redirect to login page.
+       */
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        this.businessId = this.$route.params.id;
 
+        await this.currencyRequest();
+
+        this.retrieveBusinessInfo();
+        this.retrieveInventoryItems().then(
+            () => {
+            }
+        ).catch(
+            (e) => console.log(e)
+        );
+      } else {
+        this.$router.push({name: 'Login'});
+      }
+    }
   }
 }
 </script>

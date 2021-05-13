@@ -363,6 +363,7 @@ export default {
         this.actAsId = this.interactAs[index].id;
         this.actAs = this.interactAs[index].name;
       }
+      this.$router.go();
     },
     setCurUser(response) {
       this.currentUser = response;
@@ -533,6 +534,7 @@ export default {
 .nav-link:hover, .nav-link:focus {
   background: #ef5e33;
   outline: none;
+  cursor: pointer;
 }
 
 .navbar-toggler {

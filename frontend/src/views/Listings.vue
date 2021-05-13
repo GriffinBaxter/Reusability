@@ -130,7 +130,7 @@ import Navbar from "@/components/Navbar";
 import ListingItem from "@/components/ListingItem";
 import Api from "@/Api";
 import Cookies from "js-cookie";
-import CreateListing from "@/components/CreateListing";
+import CreateListing from "@/components/CreateListingModal";
 import Footer from "@/components/Footer";
 import CurrencyAPI from "@/currencyInstance";
 
