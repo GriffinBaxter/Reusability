@@ -4,7 +4,7 @@
  */
 
 import {test, expect} from "@jest/globals"
-import reg from '@/components/CreateInventoryItemModal'
+import reg from '../src/components/CreateInventoryItemModal'
 import InventoryItem from '../src/configs/InventoryItem'
 
 const endOfToday = require('date-fns/endOfToday');
