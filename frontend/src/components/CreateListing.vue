@@ -17,7 +17,7 @@
             <div class="row">
               <div class="col form-group py-1 px-3">
                 <label for="productDataList" class="form-control-label">Inventory ID*: </label>
-                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" tabindex="1" list="productDataList" id="productInput" name="productDataList" ref="productInput" required/>
+                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" list="productDataList" id="productInput" name="productDataList" ref="productInput" required/>
                 <datalist id="productDataList" style="overflow-y: auto!important">
                   <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id + ' (Expires: ' + item.expires + ')' + ' ID: ' + item.id">Quantity: {{item.quantity}} Price: (${{item.totalPrice}})</option>
                 </datalist>
@@ -30,7 +30,7 @@
             <div class="row">
               <div class="col-sm-6 form-group py-1 px-3">
                 <label for="quantity">Quantity*: </label>
-                <input id="quantity" name="quantity" tabindex="2" type="number" ref="quantity" v-model="quantity" min="0"
+                <input id="quantity" name="quantity" type="number" ref="quantity" v-model="quantity" min="0"
                        :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
                 <div class="invalid-feedback">
                   {{ quantityErrorMsg }}
@@ -45,7 +45,7 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text">$</span>
                   </div>
-                  <input id="price" name="price" tabindex="3" type="number" ref="price" step="0.01"
+                  <input id="price" name="price" type="number" ref="price" step="0.01"
                          v-model="price"
                          min="0" :class="toggleInvalidClass(priceErrorMsg)"
                          :maxlength="config.price.maxLength">
@@ -59,7 +59,7 @@
             <!--More-Info-->
             <div class="row form-group py-1 px-3">
               <label for="more-info">More info: </label>
-              <input id="more-info" name="more-info" tabindex="4" type="text" step="0.01" v-model="moreInfo"
+              <input id="more-info" name="more-info" type="text" step="0.01" v-model="moreInfo"
                      min="0" :class="toggleInvalidClass(moreInfoErrorMsg)" :maxlength="config.moreInfo.maxLength">
               <div class="invalid-feedback">
                 {{ moreInfoErrorMsg }}
@@ -69,7 +69,7 @@
             <!--Close Date-->
             <div class="row form-group py-1 px-3">
               <label for="closes">Close Date: </label>
-              <input id="closes" name="closes" tabindex="5" type="datetime-local" v-model="closes"
+              <input id="closes" name="closes" type="datetime-local" v-model="closes"
                      :class="toggleInvalidClass(closesErrorMsg)">
               <div class="invalid-feedback">
                 {{ closesErrorMsg }}

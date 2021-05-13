@@ -17,7 +17,7 @@
             <!--product id-->
             <div class="col-7 form-group py-1 px-3">
               <label for="product-id">Product ID*: </label>
-              <input id="product-id" name="product-id" tabindex="1" type="text" v-model="productId"
+              <input id="product-id" name="product-id" type="text" v-model="productId"
                      :class="toggleInvalidClass(productIdErrorMsg)" :maxlength="config.productId.maxLength" required>
               <div class="invalid-feedback">
                 {{ productIdErrorMsg }}
@@ -27,7 +27,7 @@
             <!--quantity-->
             <div class="col-5 form-group py-1 px-3">
               <label for="quantity">Quantity*: </label>
-              <input id="quantity" name="quantity" tabindex="2" type="number" v-model="quantity" min="0"
+              <input id="quantity" name="quantity" type="number" v-model="quantity" min="0"
                      :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
               <div class="invalid-feedback">
                 {{ quantityErrorMsg }}
@@ -38,7 +38,7 @@
             <!--price per item-->
             <div class="col-6 form-group py-1 px-3">
               <label for="price-per-item">Price Per Item: </label>
-              <input id="price-per-item" name="price-per-item" tabindex="3" type="number" step="0.01"
+              <input id="price-per-item" name="price-per-item" type="number" step="0.01"
                      v-model="pricePerItem"
                      min="0" :class="toggleInvalidClass(pricePerItemErrorMsg)"
                      :maxlength="config.pricePerItem.maxLength">
@@ -50,7 +50,7 @@
             <!--total price-->
             <div class="col-6 form-group py-1 px-3">
               <label for="total-price">Total Price: </label>
-              <input id="total-price" name="total-price" tabindex="4" type="number" step="0.01" v-model="totalPrice"
+              <input id="total-price" name="total-price" type="number" step="0.01" v-model="totalPrice"
                      min="0" :class="toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
               <div class="invalid-feedback">
                 {{ totalPriceErrorMsg }}
@@ -60,7 +60,7 @@
             <!--manufactured-->
             <div class="col-12 form-group py-1 px-3">
               <label for="manufactured">Manufactured: </label>
-              <input id="manufactured" name="manufactured" tabindex="5" type="date" v-model="manufactured"
+              <input id="manufactured" name="manufactured" type="date" v-model="manufactured"
                      :class="toggleInvalidClass(manufacturedErrorMsg)">
               <div class="invalid-feedback">
                 {{ manufacturedErrorMsg }}
@@ -70,7 +70,7 @@
             <!--sell by-->
             <div class="col-12 form-group py-1 px-3">
               <label for="sell-by">Sell By: </label>
-              <input id="sell-by" name="sell-by" tabindex="6" type="date" v-model="sellBy"
+              <input id="sell-by" name="sell-by" type="date" v-model="sellBy"
                      :class="toggleInvalidClass(sellByErrorMsg)">
               <div class="invalid-feedback">
                 {{ sellByErrorMsg }}
@@ -80,7 +80,7 @@
             <!--best before-->
             <div class="col-12 form-group py-1 px-3">
               <label for="best-before">Best Before: </label>
-              <input id="best-before" name="best-before" tabindex="7" type="date" v-model="bestBefore"
+              <input id="best-before" name="best-before" type="date" v-model="bestBefore"
                      :class="toggleInvalidClass(bestBeforeErrorMsg)">
               <div class="invalid-feedback">
                 {{ bestBeforeErrorMsg }}
@@ -90,7 +90,7 @@
             <!--expires-->
             <div class="col-12 form-group py-1 px-3">
               <label for="expires">Expires*: </label>
-              <input class="col-6" id="expires" name="expires" tabindex="8" type="date" v-model="expires"
+              <input class="col-6" id="expires" name="expires" type="date" v-model="expires"
                      :class="toggleInvalidClass(expiresErrorMsg)" required>
               <div class="invalid-feedback">
                 {{ expiresErrorMsg }}
@@ -107,7 +107,7 @@
         <!--footer-->
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn green-button-transparent" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn green-button " @click="createNewInventoryItem()">Confirm</button>
+          <button type="button" class="btn green-button " @click="createNewInventoryItem()" >Confirm</button>
         </div>
 
       </div>

@@ -130,7 +130,7 @@
             <button id="cancel-button" type="button" class="btn btn-md btn-outline-secondary green-button-transparent mr-auto"
                     @click="closeCreateProductModal()">Cancel</button>
             <button id="creation-button" type="button" class="btn btn-md btn-outline-primary float-lg-end green-button"
-                    @click="addNewProduct($event)">Save</button>
+                    @click="addNewProduct($event)">Confirm</button>
           </div>
         </div>
       </div>
