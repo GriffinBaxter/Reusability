@@ -1,10 +1,10 @@
 /**
- * Jest tests for CreateNewInventoryItem.vue.
+ * Jest tests for CreateInventoryItemModal.vue.
  * @jest-environment jsdom
  */
 
 import {test, expect} from "@jest/globals"
-import reg from '../src/components/CreateNewInventoryItem'
+import reg from '@/components/CreateInventoryItemModal'
 import InventoryItem from '../src/configs/InventoryItem'
 
 const endOfToday = require('date-fns/endOfToday');

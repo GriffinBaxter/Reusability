@@ -824,6 +824,7 @@ input[type=number] {
 
 /*------------------------------------------------------------------------*/
 
+/* Styles the input and textarea's borders to be green when they are focused/tabbed to */
 input:focus, textarea:focus, button:focus, #create-product-button:focus{
   outline: none;
   box-shadow: 0 0 2px 2px #1EBA8C;
