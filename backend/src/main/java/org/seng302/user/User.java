@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
+import org.seng302.marketplace.MarketplaceCard;
 import org.seng302.validation.UserValidation;
 import org.seng302.validation.Validation;
 
@@ -88,6 +89,10 @@ public class User {
 
     @Column(name = "session_uuid")
     private String sessionUUID;
+
+//    @OneToMany(mappedBy = "creatorId", fetch = FetchType.LAZY,
+//            cascade = CascadeType.ALL)
+//    private List<MarketplaceCard> marketplaceCards;
 
 
     /**
