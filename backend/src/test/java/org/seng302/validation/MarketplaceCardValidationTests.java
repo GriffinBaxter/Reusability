@@ -161,7 +161,7 @@ public class MarketplaceCardValidationTests {
     @Test
     public void isValidDescription_GivenDescriptionIsEqualMaxLength_ExpectTrue() {
         String string = "H";
-        String title = string.repeat(700); //maxLength = 700
+        String title = string.repeat(500); //maxLength = 700
         assertEquals(true, MarketplaceCardValidation.isValidDescription(title));
     }
 }

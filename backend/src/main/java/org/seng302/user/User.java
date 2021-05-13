@@ -54,7 +54,7 @@ public class User {
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "bio")
+    @Column(name = "bio", length = 600)
     private String bio;
 
     @Column(name = "email", nullable = false)

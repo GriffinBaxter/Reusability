@@ -7,7 +7,7 @@ public class MarketplaceCardValidation {
     private static final Integer TITLE_MAX_LENGTH = 70;
 
     private static final Integer DESCRIPTION_MIN_LENGTH = 0;
-    private static final Integer DESCRIPTION_MAX_LENGTH = 700;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 500;
 
     /**
      * Checks to see whether title is valid based on its constraints.
