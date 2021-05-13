@@ -311,7 +311,7 @@ export default {
                 if (res.data.status === 200) {
                   this.updateValue(new Product(this.newProduct.data));
                   // Custom event so that ProductCatalogue.vue knows edit was a success and can alert the user.
-                  this.$emit('edits');
+                  this.$root.$emit('edits');
                   this.modal.hide();
                 }
               }

@@ -7,7 +7,7 @@
 
         <div id="body" class="container all-but-footer mb-3">
 
-          <div class="row mt-3" @edits="afterEdit">
+          <div class="row mt-3">
             <h2 align="center">Product Catalogue</h2>
             <!--Creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
@@ -723,6 +723,10 @@ export default {
   },
 
   async mounted() {
+
+    // If the edit is successful the UpdateProductModal component will emit an 'edits' event. This code notices the emit
+    // and will alert the user that the edit was successful by calling the afterEdit function.
+    this.$root.$on('edits', this.afterEdit);
 
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal);
