@@ -270,22 +270,38 @@ export default {
      */
     convertToString() {
       switch (this.orderByString) {
-        case 'productIdASC': return "Product ID Ascending";
-        case 'productIdDESC': return "Product ID Descending";
-        case 'quantityASC': return "Quantity Ascending";
-        case 'quantityDESC': return "Quantity Descending";
-        case 'pricePerItemASC': return "Price Per Item Ascending";
-        case 'pricePerItemDESC': return "Price Per Item Descending";
-        case 'totalPriceASC': return "Total Price Ascending";
-        case 'totalPriceDESC': return "Total Price Descending";
-        case 'manufacturedASC': return "Manufactured Ascending";
-        case 'manufacturedDESC': return "Manufactured Descending";
-        case 'sellByASC': return "Sell By Ascending";
-        case 'sellByDESC': return "Sell By Descending";
-        case 'bestBeforeASC': return "Best Before Ascending";
-        case 'bestBeforeDESC': return "Best Before Descending";
-        case 'expiresASC': return "Expires Ascending";
-        case 'expiresDESC': return "Expires Descending";
+        case 'productIdASC':
+          return "Product ID Ascending";
+        case 'productIdDESC':
+          return "Product ID Descending";
+        case 'quantityASC':
+          return "Quantity Ascending";
+        case 'quantityDESC':
+          return "Quantity Descending";
+        case 'pricePerItemASC':
+          return "Price Per Item Ascending";
+        case 'pricePerItemDESC':
+          return "Price Per Item Descending";
+        case 'totalPriceASC':
+          return "Total Price Ascending";
+        case 'totalPriceDESC':
+          return "Total Price Descending";
+        case 'manufacturedASC':
+          return "Manufactured Ascending";
+        case 'manufacturedDESC':
+          return "Manufactured Descending";
+        case 'sellByASC':
+          return "Sell By Ascending";
+        case 'sellByDESC':
+          return "Sell By Descending";
+        case 'bestBeforeASC':
+          return "Best Before Ascending";
+        case 'bestBeforeDESC':
+          return "Best Before Descending";
+        case 'expiresASC':
+          return "Expires Ascending";
+        case 'expiresDESC':
+          return "Expires Descending";
       }
     },
     /**
@@ -303,7 +319,10 @@ export default {
      */
     updatePage(event, newPageNumber) {
       this.currentPage = newPageNumber;
-      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}})
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+      })
       this.retrieveInventoryItems();
     },
 
@@ -497,7 +516,10 @@ export default {
 
       }
 
-      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}});
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+      });
       this.retrieveInventoryItems();
     },
 
@@ -547,7 +569,7 @@ export default {
           this.inventories = [];
 
           for (let i = 0; i < this.rowsPerPage; i++) {
-            if (i === this.InventoryItemList.length){
+            if (i === this.InventoryItemList.length) {
               return
             }
             this.inventories.push({
@@ -633,12 +655,14 @@ export default {
 
         await this.currencyRequest();
 
-      this.retrieveBusinessInfo();
-      this.retrieveInventoryItems().then(
-          () => {}
-      ).catch(
-          (e) => console.log(e)
-      );
+        this.retrieveBusinessInfo();
+        this.retrieveInventoryItems().then(
+            () => {
+            }
+        ).catch(
+            (e) => console.log(e)
+        );
+      }
     }
   }
 }
