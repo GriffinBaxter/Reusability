@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!--nav bar-->
-    <navbar/>
-
+    <div id="main">
+      <!--nav bar-->
+      <navbar/>
     <!--creation popup-->
     <inventory-item-creation @updateInventoryItem="afterCreation"/>
 
@@ -48,11 +48,11 @@
                 </button>
               </div>
               <!--search bar-->
-              <div class="input-group col-md py-1">
-                <input type="text" class="form-control" placeholder="This is for later use."
-                       aria-label="Input group example" aria-describedby="btnGroupAddon">
-                <button type="button" class="btn green-button-transparent">Search</button>
-              </div>
+<!--              <div class="input-group col-md py-1">-->
+<!--                <input type="text" class="form-control" placeholder="This is for later use."-->
+<!--                       aria-label="Input group example" aria-describedby="btnGroupAddon">-->
+<!--                <button type="button" class="btn btn-outline-primary">Search</button>-->
+<!--              </div>-->
 
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">
@@ -118,7 +118,7 @@
                   </button>
                 </ul>
               </div>
-
+              <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
             </div>
 
             <!--space-->
@@ -202,6 +202,7 @@
       </div>
     </div>
 
+    </div>
     <!--footer-->
     <Footer></Footer>
 
@@ -213,7 +214,7 @@
 import Footer from "@/components/Footer";
 import InventoryItem from "@/components/InventoryItem";
 import Navbar from "@/components/Navbar";
-import InventoryItemCreation from "@/components/CreateNewInventoryItem";
+import InventoryItemCreation from "@/components/CreateInventoryItemModal";
 import Api from "@/Api";
 import Cookies from "js-cookie";
 import CurrencyAPI from "@/currencyInstance";
@@ -256,17 +257,7 @@ export default {
       businessName: null,
       businessDescription: null,
 
-      inventories: [],
-      image: require("../../public/apples.jpg"),
-      productName: "Watties Baked Beans - 420g can",
-      productId: "WATT-420-BEANS",
-      quantity: 4,
-      pricePerItem: 6.5,
-      totalPrice: 21.99,
-      manufactured: "2021-04-23",
-      sellBy: "2021-04-23",
-      bestBefore: "2021-04-23",
-      expires: "2021-04-23",
+      inventories: null,
 
       // Currency related variables
       currencyCode: "",
@@ -274,6 +265,29 @@ export default {
     }
   },
   methods: {
+    /**
+     * convert orderByString to more readable for user
+     */
+    convertToString() {
+      switch (this.orderByString) {
+        case 'productIdASC': return "Product ID Ascending";
+        case 'productIdDESC': return "Product ID Descending";
+        case 'quantityASC': return "Quantity Ascending";
+        case 'quantityDESC': return "Quantity Descending";
+        case 'pricePerItemASC': return "Price Per Item Ascending";
+        case 'pricePerItemDESC': return "Price Per Item Descending";
+        case 'totalPriceASC': return "Total Price Ascending";
+        case 'totalPriceDESC': return "Total Price Descending";
+        case 'manufacturedASC': return "Manufactured Ascending";
+        case 'manufacturedDESC': return "Manufactured Descending";
+        case 'sellByASC': return "Sell By Ascending";
+        case 'sellByDESC': return "Sell By Descending";
+        case 'bestBeforeASC': return "Best Before Ascending";
+        case 'bestBeforeDESC': return "Best Before Descending";
+        case 'expiresASC': return "Expires Ascending";
+        case 'expiresDESC': return "Expires Descending";
+      }
+    },
     /**
      * close creation message
      */
@@ -606,16 +620,18 @@ export default {
   },
 
   async mounted() {
+    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+      this.$router.push({path: '/forbidden'});
+    } else {
+      /**
+       * When mounted, initiate population of page.
+       * If cookies are invalid or not present, redirect to login page.
+       */
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        this.businessId = this.$route.params.id;
 
-    /**
-     * When mounted, initiate population of page.
-     * If cookies are invalid or not present, redirect to login page.
-     */
-    const currentID = Cookies.get('userID');
-    if (currentID) {
-      this.businessId = this.$route.params.id;
-
-      await this.currencyRequest();
+        await this.currencyRequest();
 
       this.retrieveBusinessInfo();
       this.retrieveInventoryItems().then(
@@ -630,5 +646,4 @@ export default {
 
 
 <style scoped>
-
 </style>

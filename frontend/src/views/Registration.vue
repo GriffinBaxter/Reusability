@@ -6,7 +6,7 @@
 
 <template>
   <div>
-
+    <div id="main">
     <!--body excluding footer-->
     <div class="container all-but-footer text-font">
 
@@ -313,6 +313,7 @@
 
     </div>
 
+    </div>
     <!--footer-->
     <FooterSecure></FooterSecure>
 
@@ -871,6 +872,7 @@ export default {
        */
       Api.addNewUser(user
       ).then( (res) => {
+            Cookies.remove('actAs');
             if (res.status === 201) {
               const {userId} = res.data;
               if (userId) {
@@ -1206,5 +1208,4 @@ input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus
 }
 
 /*------------------------------------------------------------------------*/
-
 </style>

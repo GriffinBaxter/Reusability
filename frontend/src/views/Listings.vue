@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div id="main">
     <!-- Navbar -->
     <Navbar/>
     <!-- Listing Creation -->
@@ -51,7 +52,11 @@
           <div class="col-md" v-if="businessAdmin">
             <button type="button" class="btn green-button w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
           </div>
+
+          <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+
         </div>
+
         <!-- Listings -->
         <ListingItem
             v-for="item in listings"
@@ -118,6 +123,7 @@
     <div class="card p-1" v-if="listings.length < 1">
       <p class="h2 py-5" align="center">No Listings Found</p>
     </div>
+    </div>
     <!-- Footer -->
     <Footer class="footer"/>
   </div>
@@ -128,7 +134,7 @@ import Navbar from "@/components/Navbar";
 import ListingItem from "@/components/ListingItem";
 import Api from "@/Api";
 import Cookies from "js-cookie";
-import CreateListing from "@/components/CreateListing";
+import CreateListing from "@/components/CreateListingModal";
 import Footer from "@/components/Footer";
 import CurrencyAPI from "@/currencyInstance";
 
@@ -160,6 +166,21 @@ name: "Listings",
     }
   },
   methods: {
+    /**
+     * convert orderByString to more readable for user
+     */
+    convertToString() {
+      switch (this.orderBy) {
+        case 'quantityASC': return "Quantity Ascending";
+        case 'quantityDESC': return "Quantity Descending";
+        case 'priceASC': return "Price Ascending";
+        case 'priceDESC': return "Price Descending";
+        case 'closesASC': return "Closes Ascending";
+        case 'closesDESC': return "Closes Descending";
+        case 'createdASC': return "Created Ascending";
+        case 'createdDESC': return "Created Descending";
+      }
+    },
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
      *
@@ -418,14 +439,8 @@ name: "Listings",
 </script>
 
 <style scoped>
-
-.footer {
-  margin-top: 20%;
-}
-
 #pageTitle {
   padding: 10px;
   text-align: center;
 }
-
 </style>

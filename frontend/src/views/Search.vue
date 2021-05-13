@@ -4,7 +4,7 @@
 
 <template>
   <div>
-
+    <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -95,8 +95,9 @@
         </div>
       </div>
 
-
     </div>
+    </div>
+    <Footer/>
   </div>
 </template>
 
@@ -104,10 +105,12 @@
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default {
   name: "Search",
   components: {
+    Footer,
     Navbar
   },
   data() {
@@ -675,5 +678,4 @@ export default {
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
-
 </style>
