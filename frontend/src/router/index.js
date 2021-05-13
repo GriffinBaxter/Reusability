@@ -1,5 +1,6 @@
 import VueRouter from 'vue-router'
 import Vue from 'vue'
+import Cookies from "js-cookie";
 
 Vue.use(VueRouter)
 
@@ -190,6 +191,17 @@ const router = new VueRouter({
     base: process.env.VUE_APP_BASE_URL,
     routes
 })
+router.beforeEach((to, from, next) => {
+    if(to.name !== "Login" && to.name !== "Registration") {
+        if (!Cookies.get('userID')) {
+            next({ name: "Login"});
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
+});
 
 export default router
 

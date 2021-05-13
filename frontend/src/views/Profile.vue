@@ -758,6 +758,14 @@ export default {
     },
   },
 
+  beforeCreate() {
+    const currentID = Cookies.get('userID');
+    if (!currentID) {
+      console.log('hhhhhhhhhhhhhhhhhhhhhhh')
+      this.$router.push({ name: 'Login'});
+    }
+  },
+
   /**
    * When mounted, initiate population of page.
    * If cookies are invalid or not present, redirect to login page.

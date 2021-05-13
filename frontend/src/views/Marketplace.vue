@@ -46,7 +46,6 @@ import Navbar from '../components/Navbar';
 import ForSale from '../components/ForSale';
 import Wanted from '../components/Wanted';
 import Exchange from '../components/Exchange';
-import Cookies from "js-cookie";
 
 export default {
   name: "Marketplace",
