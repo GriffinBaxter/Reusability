@@ -7,9 +7,14 @@
 
         <div id="body" class="container all-but-footer mb-3">
 
-          <div class="row mt-3">
+          <div class="row mt-3" @edits="afterEdit">
             <h2 align="center">Product Catalogue</h2>
-            <h6 align="center">{{ addedMessage }}</h6>
+            <!--Creation success info-->
+            <div class="alert alert-success" role="alert" v-if="creationSuccess">
+              <div class="row">
+                <div class="col" align="center">{{ addedMessage }}</div>
+              </div>
+            </div>
           </div>
 
           <div class="row mb-3">
@@ -39,7 +44,7 @@
                 <div class="modal-dialog modal-">
                   <!-- Added an id to modal-content class. This is because the CSS for modal-content was being applied to
                   the create product modal as well. The CSS for this modal-content is now found under #product-modal-->
-                  <div class="modal-content" id="product-modal">
+                  <div class="modal-content" id="product-modal-content">
                     <div class="modal-body">
                       <product-modal
                           v-bind:product-id="productId"
@@ -261,6 +266,9 @@ export default {
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+
+      // If product creation was successful the user will be altered.
+      creationSuccess: false
     }
   },
   methods: {
@@ -601,41 +609,12 @@ export default {
       ).then((res) => {
             if (res.status === 201) {
               this.modal.hide();
-
               // Set message so user knows product has been added.
               this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
 
-              // Reset product id related variables
-              this.productID = "";
-              this.productIDErrorMsg = "";
+              this.closeCreateProductModal();
 
-              // Reset product name related variables
-              this.productName = "";
-              this.productNameErrorMsg = "";
-
-              // Reset recommended retail price related variables
-              this.recommendedRetailPrice = "";
-              this.recommendedRetailPriceErrorMsg = "";
-
-              // Reset product description related variables
-              this.description = "";
-              this.descriptionErrorMsg = "";
-
-              // Reset product manufacturer related variables
-              this.manufacturer = "";
-              this.manufacturerErrorMsg = "";
-
-              // Reset toast related variables
-              this.toastErrorMessage = "";
-              this.cannotProceed = false;
-
-              this.requestProducts().then(
-                  () => {
-
-                  }
-              ).catch(
-                  (e) => console.log(e)
-              )
+              this.afterCreation();
             }
           }
       ).catch((error) => {
@@ -654,6 +633,29 @@ export default {
           this.toastErrorMessage = 'Unexpected error occurred!';
         }
       })
+    },
+
+    /**
+     * After creation success, show the success info.
+     */
+    afterCreation() {
+      this.creationSuccess = true;
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
+    },
+
+    /**
+     * After edit success, show the edit info.
+     */
+    afterEdit() {
+      this.addedMessage = "Product Edited!"
+      this.creationSuccess = true;
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
     },
 
     /**
@@ -724,7 +726,7 @@ export default {
   async mounted() {
 
     // When mounted create instance of modal
-    this.modal = new Modal(this.$refs.CreateProductModal)
+    this.modal = new Modal(this.$refs.CreateProductModal);
 
     if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
       this.$router.push({path: '/forbidden'});
@@ -754,7 +756,7 @@ export default {
   watch: {
     // If the current Product was updated we update the table.
     currentProduct: function () {
-      this.requestProducts()
+      this.requestProducts();
     }
   }
 }
@@ -763,7 +765,7 @@ export default {
 <style scoped>
 
 /*CSS for product modal modal-content section*/
-#product-modal {
+#product-modal-content {
   position: fixed;
   top: 50%;
   left: 50%;

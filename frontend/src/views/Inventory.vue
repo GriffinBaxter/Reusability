@@ -127,10 +127,7 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col">New Inventory Item Create successfully!</div>
-                <div class="col" align="right">
-                  <button type="button" class="btn green-button px-1 py-0" @click="closeMessage">X</button>
-                </div>
+                <div class="col" align="center">New Inventory Item Created!</div>
               </div>
             </div>
 
@@ -610,6 +607,10 @@ export default {
      */
     afterCreation() {
       this.creationSuccess = true;
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
       this.retrieveInventoryItems();
     },
     /**

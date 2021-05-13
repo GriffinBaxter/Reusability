@@ -149,7 +149,7 @@ export default {
      * @param value The new value of the value prop.
      */
     updateValue(value) {
-      this.$emit('input', value)
+      this.$emit('input', value);
     },
     /**
      * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
@@ -310,6 +310,8 @@ export default {
                 // This means that the modification was successfull
                 if (res.data.status === 200) {
                   this.updateValue(new Product(this.newProduct.data));
+                  // Custom event so that ProductCatalogue.vue knows edit was a success and can alert the user.
+                  this.$emit('edits');
                   this.modal.hide();
                 }
               }
