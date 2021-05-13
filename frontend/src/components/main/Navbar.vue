@@ -34,25 +34,25 @@
         <div id="navbar-inner-id" class="navbar-nav mb-2 mb-xl-0   py-3   mx-auto me-xl-0 ms-xl-auto">
           <ul class="navbar-nav flex-column flex-xl-row">
 
-                <!-- default page links -->
-                <li class="nav-item">
-                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
-                </li>
-                <li class="nav-item" v-if="actAsId === null">
-                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-                    Profile
-                  </router-link>
-                </li>
-                <li class="nav-item" v-if=actAsId>
-                  <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]" :to="'/businessProfile/' + actAsId" tabindex="2">
-                    Profile
-                  </router-link>
-                </li>
-                <li class="nav-item">
-                  <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
-                    Marketplace
-                  </router-link>
-                </li>
+            <!-- default page links -->
+            <li class="nav-item">
+              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
+            </li>
+            <li class="nav-item" v-if="actAsId === null">
+              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item" v-if=actAsId>
+              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]" :to="'/businessProfile/' + actAsId" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
+                Marketplace
+              </router-link>
+            </li>
 
             <!--- Business specific account links -->
             <li class="nav-item dropdown" v-if="isActAsBusiness">
@@ -110,18 +110,26 @@
                     }">
 
                 <img src="../../../public/profile_icon_default.png" width="27px"
-                     class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{ actAs }}
+                     class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
               </a>
 
-              <div id="interact-dropdown-links-wrapper">
-                <ul class="dropdown-menu show" id="interact-dropdown-links">
-                  <li class="nav-item" v-for="(act, index) in interactAs" :key="index" @click="itemClicked(index)">
-                    <a class="nav-link">{{ act.name }}</a>
-                  </li>
-                </ul>
-              </div>
             </li>
           </ul>
+          <ul class="no-space">
+            <div class="center">
+              12345678900000
+            </div>
+          </ul>
+          <div id="interact-dropdown-links-wrapper">
+            <ul class="dropdown-menu show" id="interact-dropdown-links">
+
+              <li class="nav-item">
+              </li>
+              <li class="nav-item" v-for="(act, index) in interactAs" :key="index" @click="itemClicked(index)">
+                <a class="nav-link">{{ act.name }}</a>
+              </li>
+            </ul>
+          </div>
 
 
         </div>
@@ -451,7 +459,17 @@ export default {
 
 <!-------------------------------------------- Navigation Bar Styling ------------------------------------------------->
 
-<style scoped>
+<style>
+.no-space {
+  margin: 0px;
+  padding: 0px;
+  height: 30px;
+  weight: 30px;
+}
+.center {
+  padding: 16px 0;
+  text-align: center;
+}
 
 /* Styling for smaller screen sizes begins */
 
