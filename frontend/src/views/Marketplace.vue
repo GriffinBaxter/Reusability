@@ -46,6 +46,7 @@ import Navbar from '../components/Navbar';
 import ForSale from '../components/ForSale';
 import Wanted from '../components/Wanted';
 import Exchange from '../components/Exchange';
+import Cookies from "js-cookie";
 
 export default {
   name: "Marketplace",
@@ -58,7 +59,19 @@ export default {
   },
   methods: {
 
-  }
+  },
+
+  /**
+   * When mounted, if cookie is not present, redirect to login page.
+   */
+  mounted() {
+    const currentID = Cookies.get('userID');
+    //TODO remove
+    console.log(currentID)
+    if (!currentID) {
+      this.$router.push({name: 'Login'});
+    }
+  },
 }
 </script>
 
