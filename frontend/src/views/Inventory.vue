@@ -134,6 +134,8 @@
               </div>
             </div>
 
+            <UpdateInventoryItemModal ref="updateInventoryItemModal" :business-id.sync="businessId" v-model="currentInventoryItem"/>
+
             <!--inventory items-->
             <inventory-item
                 v-for="inventory in inventories"
@@ -151,6 +153,7 @@
                 v-bind:expires="inventory.expires"
                 v-bind:currency-code="currencyCode"
                 v-bind:currency-symbol="currencySymbol"
+                v-on:click="triggerUpdateInventoryItemModal($event, inventory)"
             />
 
             <!--space-->
@@ -218,9 +221,11 @@ import InventoryItemCreation from "@/components/inventory/CreateInventoryItemMod
 import Api from "@/Api";
 import Cookies from "js-cookie";
 import CurrencyAPI from "@/currencyInstance";
+import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
 
 export default {
   components: {
+    UpdateInventoryItemModal,
     InventoryItemCreation,
     Navbar,
     InventoryItem,
@@ -251,13 +256,14 @@ export default {
       bestBeforeAscending: false,
       expiresAscending: false,
 
-      businessId: null,
+      businessId: 0,
       creationSuccess: false,
 
       businessName: null,
       businessDescription: null,
 
       inventories: null,
+      currentInventoryItem: null,
 
       // Currency related variables
       currencyCode: "",
@@ -266,6 +272,15 @@ export default {
   },
   methods: {
     /**
+     * Sets the current inventory item to the one from the card you've clicked on
+     * and triggers the showModal method of UpdateInventoryItemModal.
+     */
+    triggerUpdateInventoryItemModal(event, inventory) {
+      this.currentInventoryItem = inventory;
+      this.$refs.updateInventoryItemModal.showModal(event);
+    },
+
+     /**
      * convert orderByString to more readable for user
      */
     convertToString() {
