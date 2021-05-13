@@ -73,7 +73,7 @@
               <!--product id-->
               <div class="form-group">
                 <label for="product-id">Product ID*</label>
-                <input id="product-id" name="product-id" type="text" v-model="productID"
+                <input id="product-id" class="input-styling" name="product-id" type="text" v-model="productID"
                        :class="toggleInvalidClass(productIDErrorMsg)" :maxlength="config.productID.maxLength" required>
                 <div class="invalid-feedback">
                   {{productIDErrorMsg}}
@@ -82,7 +82,7 @@
               <!--product name-->
               <div class="form-group">
                 <label for="product-name">Product Name*</label>
-                <input id="product-name" name="product-name" type="text" v-model="productName"
+                <input id="product-name" class="input-styling" name="product-name" type="text" v-model="productName"
                        :class="toggleInvalidClass(productNameErrorMsg)" :maxlength="config.productName.maxLength" required>
                 <div class="invalid-feedback">
                   {{productNameErrorMsg}}
@@ -91,7 +91,7 @@
               <!--recommended retail price-->
               <div class="form-group">
                 <label for="product-price">Recommended Retail Price ({{ currencySymbol }} {{ currencyCode }})</label>
-                <input id="product-price" name="product-price" type="text" v-model="recommendedRetailPrice"
+                <input id="product-price" class="input-styling" name="product-price" type="text" v-model="recommendedRetailPrice"
                        :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
                        :maxlength="config.recommendedRetailPrice.maxLength">
                 <div class="invalid-feedback">
@@ -101,7 +101,7 @@
               <!--manufacturer-->
               <div class="form-group">
                 <label for="manufacturer">Manufacturer</label>
-                <input id="manufacturer" name="manufacturer" type="text" v-model="manufacturer"
+                <input id="manufacturer" class="input-styling" name="manufacturer" type="text" v-model="manufacturer"
                        :class="toggleInvalidClass(manufacturerErrorMsg)" :maxlength="config.manufacturer.maxLength" required>
                 <div class="invalid-feedback">
                   {{manufacturerErrorMsg}}
@@ -110,7 +110,7 @@
               <!--description-->
               <div class="form-group">
                 <label for="description">Description</label>
-                <textarea id="description" name="description" rows="5" cols="70" v-model="description"
+                <textarea id="description" class="input-styling" name="description" rows="5" cols="70" v-model="description"
                           :maxlength="config.description.maxLength" :class="toggleInvalidClass(descriptionErrorMsg)"
                           style="resize: none"/>
                 <div class="invalid-feedback">
@@ -822,11 +822,12 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+/*------------------------------------------------------------------------*/
+
 input:focus, textarea:focus, button:focus, #create-product-button:focus{
-  outline: none;     /* oranges! yey */
-  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  outline: none;
+  box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
 }
-/*------------------------------------------------------------------------*/
 
 </style>

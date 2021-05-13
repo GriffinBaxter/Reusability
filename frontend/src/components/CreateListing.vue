@@ -451,4 +451,10 @@ export default {
 
 <style scoped>
 
+input:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 2px 2px #1EBA8C;
+  border: 1px solid #1EBABC;
+}
+
 </style>
