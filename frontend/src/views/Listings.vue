@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div id="main">
     <!-- Navbar -->
     <Navbar/>
     <!-- Listing Creation -->
@@ -121,6 +122,7 @@
     </div>
     <div class="card p-1" v-if="listings.length < 1">
       <p class="h2 py-5" align="center">No Listings Found</p>
+    </div>
     </div>
     <!-- Footer -->
     <Footer class="footer"/>
@@ -439,14 +441,8 @@ name: "Listings",
 </script>
 
 <style scoped>
-
-.footer {
-  margin-top: 20%;
-}
-
 #pageTitle {
   padding: 10px;
   text-align: center;
 }
-
 </style>

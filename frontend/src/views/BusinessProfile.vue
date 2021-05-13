@@ -1,6 +1,7 @@
 <template>
   <div>
 
+    <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -158,6 +159,7 @@
       </div>
     </div>
 
+    </div>
     <!--footer-->
     <Footer/>
 
@@ -415,7 +417,4 @@ export default {
 #profileContainer {
   margin-bottom: 5%;
 }
-
-
-
 </style>

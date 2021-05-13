@@ -6,7 +6,7 @@
 
 <template>
   <div>
-
+    <div id="main">
     <!--body excluding footer-->
     <div class="container all-but-footer text-font">
 
@@ -313,6 +313,7 @@
 
     </div>
 
+    </div>
     <!--footer-->
     <FooterSecure></FooterSecure>
 
@@ -1207,5 +1208,4 @@ input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus
 }
 
 /*------------------------------------------------------------------------*/
-
 </style>

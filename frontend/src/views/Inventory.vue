@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!--nav bar-->
-    <navbar/>
-
+    <div id="main">
+      <!--nav bar-->
+      <navbar/>
     <!--creation popup-->
     <inventory-item-creation @updateInventoryItem="afterCreation"/>
 
@@ -202,6 +202,7 @@
       </div>
     </div>
 
+    </div>
     <!--footer-->
     <Footer></Footer>
 
@@ -649,5 +650,4 @@ export default {
 
 
 <style scoped>
-
 </style>

@@ -8,7 +8,7 @@
 
 <template>
   <div>
-
+    <div id="main">
     <!--login container-->
     <div id="login" class="container text-font all-but-footer">
 
@@ -86,11 +86,12 @@
 
 
           </div>
-          <p class="text-secondary mt-3 text-center">© SENG302 Team 400 2021</p>
         </div>
       </div>
 
     </div>
+    </div>
+    <Footer/>
 
   </div>
 </template>
@@ -98,10 +99,12 @@
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
+import Footer from "@/components/Footer";
 
 export default {
   name: "Login",
   components: {
+    Footer
 
   },
 

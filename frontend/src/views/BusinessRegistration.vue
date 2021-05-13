@@ -1,5 +1,6 @@
 <template>
   <div>
+  <div id="main">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-3 m-3">
@@ -137,6 +138,7 @@
         </form>
       </div>
     </div>
+  </div>
   </div>
     <Footer></Footer>
   </div>
@@ -811,5 +813,4 @@ input:focus, textarea:focus, #register-button:focus{
   border: 1px solid #1EBABC;
 }
 /*------------------------------------------------------------------------*/
-
 </style>

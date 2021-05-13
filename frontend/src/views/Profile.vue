@@ -7,7 +7,7 @@
 
 <template>
   <div>
-
+    <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -258,6 +258,7 @@
           <button type="button" class="btn green-button" @click="showFileUpload(false)">Save changes</button>
         </div>
       </div>
+    </div>
     </div>
     <!--footer-->
     <Footer></Footer>
@@ -826,5 +827,4 @@ export default {
   color: #1EBA8C !important;
   cursor: pointer;
 }
-
 </style>
