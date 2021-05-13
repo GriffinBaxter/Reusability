@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserPayloadParent.
+ *
+ * Description. This file contains the defintion for the UserPayloadParent.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/UserPayloadParent
+ * @file   This file contains the definition for UserPayloadParent.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import org.seng302.business.Business;

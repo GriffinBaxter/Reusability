@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ListingPayload.
+ *
+ * Description. This file contains the defintion for the ListingPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/listing/ListingPayload
+ * @file   This file contains the definition for ListingPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.listing;
 
 import org.seng302.business.inventoryItem.InventoryItem;

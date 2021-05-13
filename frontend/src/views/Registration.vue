@@ -871,6 +871,7 @@ export default {
        */
       Api.addNewUser(user
       ).then( (res) => {
+            Cookies.remove('actAs');
             if (res.status === 201) {
               const {userId} = res.data;
               if (userId) {

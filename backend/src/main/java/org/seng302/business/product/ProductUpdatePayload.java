@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ProductUpdatePayload.
+ *
+ * Description. This file contains the defintion for the ProductUpdatePayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/product/ProductUpdatePayload
+ * @file   This file contains the definition for ProductUpdatePayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.product;
 
 /**

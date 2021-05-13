@@ -1,3 +1,14 @@
+/**
+ * Summary. Contains the definition for the InventoryItem class.
+ *
+ * Description. Contains the definition for the InventoryItem class, which contains
+ * the JPA entity for InventoryItem.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/inventoryItem/InventoryItem
+ * @file   This file contains the InvetoryItem JPA entity definition.
+ * @author team-400
+ * @since  5.5.2021
+ */
 package org.seng302.business.inventoryItem;
 
 import lombok.Data;

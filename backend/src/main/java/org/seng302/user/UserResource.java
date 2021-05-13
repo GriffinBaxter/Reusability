@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserResource.
+ *
+ * Description. This file contains the defintion for the UserResource.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/UserResource
+ * @file   This file contains the definition for UserResource.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import org.seng302.address.Address;

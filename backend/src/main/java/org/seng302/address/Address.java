@@ -1,3 +1,14 @@
+/**
+ * Summary. Contains the class definition for the address JPA entity object.
+ *
+ * Description. Contains the class for the address JPA entity. This is used to perform
+ * actions associated with address information.
+ *
+ * @link   team-400/backend/src/main/java/org/seng302/address/Address
+ * @file   Defines the Address class.
+ * @author Team-400
+ * @since  5.5.2021
+ */
 package org.seng302.address;
 
 import lombok.Data;
