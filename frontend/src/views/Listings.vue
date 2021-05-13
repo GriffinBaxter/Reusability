@@ -422,11 +422,6 @@ name: "Listings",
 </script>
 
 <style scoped>
-
-.footer {
-  margin-top: 20%;
-}
-
 #pageTitle {
   padding: 10px;
   text-align: center;
