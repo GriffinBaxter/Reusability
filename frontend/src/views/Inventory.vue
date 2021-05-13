@@ -3,7 +3,7 @@
     <!--nav bar-->
     <navbar/>
 
-    <main>
+    <div id="main">
     <!--creation popup-->
     <inventory-item-creation @updateInventoryItem="afterCreation"/>
 
@@ -203,7 +203,7 @@
       </div>
     </div>
 
-    </main>
+    </div>
     <!--footer-->
     <Footer></Footer>
 
@@ -635,13 +635,4 @@ export default {
 
 
 <style scoped>
-
-/* Fix Footer */
-main{
-  min-height: calc(100vh - 100px); /* 这个200px是header和footer的高度 */
-}
-
-Footer{
-  height: 100px;
-}
 </style>

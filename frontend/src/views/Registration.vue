@@ -6,7 +6,7 @@
 
 <template>
   <div>
-    <main>
+    <div id="main">
     <!--body excluding footer-->
     <div class="container all-but-footer text-font">
 
@@ -313,7 +313,7 @@
 
     </div>
 
-    </main>
+    </div>
     <!--footer-->
     <FooterSecure></FooterSecure>
 
@@ -1207,13 +1207,4 @@ input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus
 }
 
 /*------------------------------------------------------------------------*/
-
-/* Fix Footer */
-main{
-  min-height: calc(100vh - 100px); /* 这个200px是header和footer的高度 */
-}
-
-Footer{
-  height: 100px;
-}
 </style>

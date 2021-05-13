@@ -4,7 +4,7 @@
 
 <template>
   <div>
-    <main>
+    <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -96,7 +96,7 @@
       </div>
 
     </div>
-    </main>
+    </div>
     <Footer/>
   </div>
 </template>
@@ -680,14 +680,5 @@ export default {
   outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
-}
-
-/* Fix Footer */
-main{
-  min-height: calc(100vh - 100px); /* 100px is the height of Footer */
-}
-
-Footer{
-  height: 100px;
 }
 </style>

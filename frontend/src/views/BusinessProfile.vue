@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <main>
+    <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -159,7 +159,7 @@
       </div>
     </div>
 
-    </main>
+    </div>
     <!--footer-->
     <Footer/>
 
@@ -413,14 +413,5 @@ export default {
 
 #profileContainer {
   margin-bottom: 5%;
-}
-
-/* Fix Footer */
-main{
-  min-height: calc(100vh - 100px); /* 这个200px是header和footer的高度 */
-}
-
-Footer{
-  height: 100px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <main>
+    <div id="main">
     <navbar></navbar>
 
   <div id="outerContainer" class="container">
@@ -136,7 +136,7 @@
     </div>
 
     </div>
-    </main>
+    </div>
     <Footer></Footer>
 
   </div>
@@ -827,13 +827,4 @@ input:focus, textarea:focus, button:focus, #create-product-button:focus{
   border: 1px solid #1EBABC;
 }
 /*------------------------------------------------------------------------*/
-
-/* Fix Footer */
-main{
-  min-height: calc(100vh - 100px); /* 这个200px是header和footer的高度 */
-}
-
-Footer{
-  height: 100px;
-}
 </style>
