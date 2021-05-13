@@ -127,7 +127,7 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col" align="center">New Inventory Item Created!</div>
+                <div class="col" align="center">New Inventory Item Created</div>
               </div>
             </div>
 

@@ -611,10 +611,9 @@ export default {
               this.modal.hide();
               // Set message so user knows product has been added.
               this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
-
               this.closeCreateProductModal();
-
               this.afterCreation();
+              this.requestProducts();
             }
           }
       ).catch((error) => {
@@ -650,7 +649,7 @@ export default {
      * After edit success, show the edit info.
      */
     afterEdit() {
-      this.addedMessage = "Product Edited!"
+      this.addedMessage = "Product Edited"
       this.creationSuccess = true;
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {
