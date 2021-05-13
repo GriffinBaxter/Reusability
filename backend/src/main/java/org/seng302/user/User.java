@@ -326,6 +326,10 @@ public class User {
         return businessesAdministeredObjects;
     }
 
+    /**
+     *
+     * @param business
+     */
     public void removeABusinessesAdministeredObjects(Business business){
         int id = business.getId();
         for (int i = 0; i < businessesAdministeredObjects.size(); i++){
