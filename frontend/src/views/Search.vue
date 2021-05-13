@@ -104,8 +104,8 @@
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/components/main/Navbar";
+import Footer from "@/components/main/Footer";
 
 export default {
   name: "Search",
@@ -619,9 +619,6 @@ export default {
       ).catch(
           (e) => console.log(e)
       )
-      //this.orderUsers();
-    } else {
-      this.$router.push({name: 'Login'});
     }
 
     document.addEventListener('page-routing', this.requestUsersListener);

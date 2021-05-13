@@ -17,7 +17,7 @@
       <!-- Logo image -->
       <div class="logo-container text-center">
         <router-link class="navbar-brand " to="/home" tabindex="-1">
-          <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
+          <img src="../../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
         </router-link>
         <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
 
@@ -48,12 +48,17 @@
                     Profile
                   </router-link>
                 </li>
+                <li class="nav-item">
+                  <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
+                    Marketplace
+                  </router-link>
+                </li>
 
             <!--- Business specific account links -->
             <li class="nav-item dropdown" v-if="isActAsBusiness">
 
               <!-- Navbar toggle drop down -->
-              <a class="nav-link dropdown-toggle" role="button" tabindex="3" @click="() => {
+              <a class="nav-link dropdown-toggle" role="button" tabindex="4" @click="() => {
                   this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links',
                   'business-dropdown-links-wrapper', this.showBusinessDropdown)
                 }">
@@ -66,21 +71,21 @@
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
-                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="5">
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="6">
                       Business Listings
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="6">
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="7">
                       Inventory
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="7">
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="8">
                       Catalogue
                     </router-link>
                   </li>
@@ -91,7 +96,7 @@
 
             <!-- Log out link-->
             <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" tabindex="4" @click="e =>logout(e)">Log out</a>
+              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)">Log out</a>
             </li>
 
           </ul>
@@ -104,7 +109,7 @@
                     'interact-dropdown-links-wrapper', this.showInteractMenu)
                     }">
 
-                <img src="../../public/profile_icon_default.png" width="27px"
+                <img src="../../../public/profile_icon_default.png" width="27px"
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{ actAs }}
               </a>
 
@@ -128,7 +133,7 @@
 
 <script>
 import Cookies from "js-cookie";
-import Api from "../Api"
+import Api from "../../Api"
 
 export default {
   name: "Navbar",
@@ -177,19 +182,18 @@ export default {
      */
     getUserData() {
       const currentID = Cookies.get('userID');
-      Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
-        console.log(error)
-        if (error.request && !error.response) {
-          this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 406) {
-          this.$router.push({path: '/noUser'});
-        } else if (error.response.status === 401) {
-          this.$router.push({path: '/invalidtoken'});
-        } else {
-          this.$router.push({path: '/noUser'});
-          console.log(error.message);
-        }
-      })
+      if(currentID) {
+        Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
+          if (error.request && !error.response) {
+            this.$router.push({path: '/timeout'});
+          } else if (error.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
+          } else {
+            this.$router.push({path: '/noUser'});
+            console.log(error.message);
+          }
+        })
+      }
     },
     /**
      * Calculates the target maximum height for the navbar once it needs to open.
@@ -681,13 +685,13 @@ export default {
 
   #logo-image-nav {
     max-width: 140px;
-    margin-left: 28px;
+    margin-left: -58px;
     margin-right: 10px;
     width: 100%;
   }
 
   .company-name-main-font {
-    font-size: 50px;
+    font-size: 40px;
 
     /* centre text */
     margin: 0;

@@ -324,7 +324,7 @@
 import Api from "../Api";
 import User from "../configs/User"
 import Cookies from 'js-cookie';
-import FooterSecure from "../components/FooterSecure";
+import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
 
 export default {

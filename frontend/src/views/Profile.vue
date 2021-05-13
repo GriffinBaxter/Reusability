@@ -271,8 +271,8 @@
 import ProfileHeader from "../components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
+import Footer from "../components/main/Footer";
+import Navbar from "../components/main/Navbar";
 import {UserRole} from '../configs/User'
 
 export default {
@@ -590,7 +590,7 @@ export default {
       this.actingBusinessId = Cookies.get("actAs");
       data.businessesAdministered.forEach(business => {
         if (business !== null) {
-          if (business.id == this.actingBusinessId) {
+          if (business.id === this.actingBusinessId) {
             this.isBusinessAdministrator = true;
           }
           this.businessesAdministered.push({name: business.name, id: business.id});
@@ -744,7 +744,7 @@ export default {
         Api.getBusiness(this.actingBusinessId).then(response => {
           const newBusinessesAdministered = [];
           this.businessesAdministered.forEach(business => {
-            if (business.id != response.data.id) {
+            if (business.id !== response.data.id) {
               newBusinessesAdministered.push({name: response.data.name, id: response.data.id});
             }
           })
@@ -759,6 +759,14 @@ export default {
     },
   },
 
+  beforeCreate() {
+    const currentID = Cookies.get('userID');
+    if (!currentID) {
+      console.log('hhhhhhhhhhhhhhhhhhhhhhh')
+      this.$router.push({ name: 'Login'});
+    }
+  },
+
   /**
    * When mounted, initiate population of page.
    * If cookies are invalid or not present, redirect to login page.
@@ -766,9 +774,9 @@ export default {
   mounted() {
 
     const currentID = Cookies.get('userID');
-    this.getLoginRole(currentID);
 
     if (currentID) {
+      this.getLoginRole(currentID);
 
       const url = document.URL
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
@@ -781,8 +789,6 @@ export default {
         this.otherUser = true;
       }
 
-    } else {
-      this.$router.push({name: 'Login'});
     }
   }
 }

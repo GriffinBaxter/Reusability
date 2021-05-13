@@ -170,12 +170,12 @@ import {Modal} from 'bootstrap'
 import Api from '../Api';
 import Product from "../configs/Product";
 import Cookies from 'js-cookie';
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import ProductModal from "../components/ProductModal";
+import Navbar from "../components/main/Navbar";
+import Footer from "../components/main/Footer";
+import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
-import UpdateProductModal from "../components/UpdateProductModal";
+import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
 
 export default {
   name: "ProductCatalogue",
