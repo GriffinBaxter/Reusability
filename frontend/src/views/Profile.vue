@@ -589,7 +589,7 @@ export default {
       this.actingBusinessId = Cookies.get("actAs");
       data.businessesAdministered.forEach(business => {
         if (business !== null) {
-          if (business.id == this.actingBusinessId) {
+          if (business.id === this.actingBusinessId) {
             this.isBusinessAdministrator = true;
           }
           this.businessesAdministered.push({name: business.name, id: business.id});
@@ -743,7 +743,7 @@ export default {
         Api.getBusiness(this.actingBusinessId).then(response => {
           const newBusinessesAdministered = [];
           this.businessesAdministered.forEach(business => {
-            if (business.id != response.data.id) {
+            if (business.id !== response.data.id) {
               newBusinessesAdministered.push({name: response.data.name, id: response.data.id});
             }
           })
