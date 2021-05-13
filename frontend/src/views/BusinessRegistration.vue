@@ -1,5 +1,6 @@
 <template>
   <div>
+  <main>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-3 m-3">
@@ -138,6 +139,7 @@
       </div>
     </div>
   </div>
+  </main>
     <Footer></Footer>
   </div>
 </template>
@@ -812,4 +814,12 @@ input:focus, textarea:focus, #register-button:focus{
 }
 /*------------------------------------------------------------------------*/
 
+/* Fix Footer */
+main{
+  min-height: calc(100vh - 100px); /* 这个200px是header和footer的高度 */
+}
+
+Footer{
+  height: 100px;
+}
 </style>

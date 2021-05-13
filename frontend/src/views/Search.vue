@@ -4,7 +4,7 @@
 
 <template>
   <div>
-
+    <main>
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -95,8 +95,9 @@
         </div>
       </div>
 
-
     </div>
+    </main>
+    <Footer/>
   </div>
 </template>
 
@@ -104,10 +105,12 @@
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default {
   name: "Search",
   components: {
+    Footer,
     Navbar
   },
   data() {
@@ -679,4 +682,12 @@ export default {
   border: 1px solid #1EBABC;
 }
 
+/* Fix Footer */
+main{
+  min-height: calc(100vh - 100px); /* 100px is the height of Footer */
+}
+
+Footer{
+  height: 100px;
+}
 </style>

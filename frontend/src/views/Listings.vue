@@ -1,5 +1,6 @@
 <template>
   <div>
+    <main>
     <!-- Navbar -->
     <Navbar/>
     <!-- Listing Creation -->
@@ -118,6 +119,7 @@
     <div class="card p-1" v-if="listings.length < 1">
       <p class="h2 py-5" align="center">No Listings Found</p>
     </div>
+    </main>
     <!-- Footer -->
     <Footer class="footer"/>
   </div>
@@ -430,4 +432,12 @@ name: "Listings",
   text-align: center;
 }
 
+/* Fix Footer */
+main{
+  min-height: calc(100vh - 100px); /* 这个200px是header和footer的高度 */
+}
+
+Footer{
+  height: 100px;
+}
 </style>

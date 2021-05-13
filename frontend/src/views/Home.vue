@@ -6,6 +6,7 @@
 
   <div>
 
+    <main>
     <!--Nav bar; displays either business account or individual account nav bar-->
     <Navbar></Navbar>
 
@@ -83,6 +84,7 @@
       </div>
     </div>
 
+    </main>
     <!--Footer contains links that are the same as those in the nav bar-->
     <Footer></Footer>
 
@@ -245,4 +247,12 @@ div.container{
   }
 }
 
+/* Fix Footer */
+main{
+  min-height: calc(100vh - 100px); /* 这个200px是header和footer的高度 */
+}
+
+Footer{
+  height: 100px;
+}
 </style>

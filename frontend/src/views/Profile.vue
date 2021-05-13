@@ -7,7 +7,7 @@
 
 <template>
   <div>
-
+    <main>
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -259,6 +259,7 @@
         </div>
       </div>
     </div>
+    </main>
     <!--footer-->
     <Footer></Footer>
 
@@ -827,4 +828,12 @@ export default {
   cursor: pointer;
 }
 
+/* Fix Footer */
+main{
+  min-height: calc(100vh - 100px); /* 这个200px是header和footer的高度 */
+}
+
+Footer{
+  height: 100px;
+}
 </style>
