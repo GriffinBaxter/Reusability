@@ -412,8 +412,6 @@ name: "Listings",
       ).catch(
           (e) => console.log(e)
       )
-    } else {
-      this.$router.push({name: 'Login'});
     }
   }
 }

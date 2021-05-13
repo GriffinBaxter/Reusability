@@ -765,9 +765,9 @@ export default {
   mounted() {
 
     const currentID = Cookies.get('userID');
-    this.getLoginRole(currentID);
 
     if (currentID) {
+      this.getLoginRole(currentID);
 
       const url = document.URL
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
@@ -780,8 +780,6 @@ export default {
         this.otherUser = true;
       }
 
-    } else {
-      this.$router.push({name: 'Login'});
     }
   }
 }

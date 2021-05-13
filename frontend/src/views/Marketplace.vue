@@ -65,10 +65,7 @@ export default {
    * When mounted, if cookie is not present, redirect to login page.
    */
   mounted() {
-    const currentID = Cookies.get('userID');
-    if (!currentID) {
-      // this.$router.push({name: 'Login'});
-    }
+
   },
 }
 </script>

@@ -713,8 +713,6 @@ export default {
       ).catch(
           (e) => console.log(e)
       )
-    } else {
-      this.$router.push({name: 'Login'});
     }
   },
    watch: {

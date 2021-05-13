@@ -616,9 +616,6 @@ export default {
       ).catch(
           (e) => console.log(e)
       )
-      //this.orderUsers();
-    } else {
-      this.$router.push({name: 'Login'});
     }
 
     document.addEventListener('page-routing', this.requestUsersListener);
