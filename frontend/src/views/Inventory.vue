@@ -134,7 +134,7 @@
               </div>
             </div>
 
-            <UpdateInventoryItemModal ref="updateInventoryItemModal" :business-id.sync="businessId" v-model="currentInventoryItem"/>
+            <UpdateInventoryItemModal ref="updateInventoryItemModal" :business-id="businessId" v-model="currentInventoryItem"/>
 
             <!--inventory items-->
             <inventory-item
@@ -153,7 +153,7 @@
                 v-bind:expires="inventory.expires"
                 v-bind:currency-code="currencyCode"
                 v-bind:currency-symbol="currencySymbol"
-                v-on:click="triggerUpdateInventoryItemModal($event, inventory)"
+                v-on:click="triggerUpdateInventoryItemModal(inventory)"
             />
 
             <!--space-->
@@ -275,9 +275,10 @@ export default {
      * Sets the current inventory item to the one from the card you've clicked on
      * and triggers the showModal method of UpdateInventoryItemModal.
      */
-    triggerUpdateInventoryItemModal(event, inventory) {
+    triggerUpdateInventoryItemModal(inventory) {
       this.currentInventoryItem = inventory;
-      this.$refs.updateInventoryItemModal.showModal(event);
+      console.log(this.currentInventoryItem);
+      this.$refs.updateInventoryItemModal.showModal();
     },
 
      /**

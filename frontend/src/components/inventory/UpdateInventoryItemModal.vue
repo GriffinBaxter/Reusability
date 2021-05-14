@@ -18,7 +18,7 @@
             <div class="col-7 form-group py-1 px-3">
               <label for="product-id">Product ID*: </label>
               <input id="product-id" name="product-id" tabindex="1" type="text"
-                     :class="toggleInvalidClass(productIdErrorMsg)"
+                     v-model="newInventoryItem.data.productId" :class="toggleInvalidClass(productIdErrorMsg)"
                      :maxlength="config.productId.maxLength" required>
               <div class="invalid-feedback">
                 {{ productIdErrorMsg }}
@@ -29,7 +29,7 @@
             <div class="col-5 form-group py-1 px-3">
               <label for="quantity">Quantity*: </label>
               <input id="quantity" name="quantity" tabindex="2" type="number" min="0"
-                     :class="toggleInvalidClass(quantityErrorMsg)"
+                     v-model="newInventoryItem.data.quantity" :class="toggleInvalidClass(quantityErrorMsg)"
                      :maxlength="config.quantity.maxLength" required>
               <div class="invalid-feedback">
                 {{ quantityErrorMsg }}
@@ -41,7 +41,7 @@
             <div class="col-6 form-group py-1 px-3">
               <label for="price-per-item">Price Per Item: </label>
               <input id="price-per-item" name="price-per-item" tabindex="3" type="number" step="0.01"
-                     :class="toggleInvalidClass(pricePerItemErrorMsg)"
+                     v-model="newInventoryItem.data.pricePerItem" :class="toggleInvalidClass(pricePerItemErrorMsg)"
                      min="0" :maxlength="config.pricePerItem.maxLength">
               <div class="invalid-feedback">
                 {{ pricePerItemErrorMsg }}
@@ -52,7 +52,7 @@
             <div class="col-6 form-group py-1 px-3">
               <label for="total-price">Total Price: </label>
               <input id="total-price" name="total-price" tabindex="4" type="number" step="0.01"
-                     :class="toggleInvalidClass(totalPriceErrorMsg)"
+                     v-model="newInventoryItem.data.totalPrice" :class="toggleInvalidClass(totalPriceErrorMsg)"
                      :maxlength="config.totalPrice.maxLength">
               <div class="invalid-feedback">
                 {{ totalPriceErrorMsg }}
@@ -63,7 +63,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="manufactured">Manufactured: </label>
               <input id="manufactured" name="manufactured" tabindex="5" type="date"
-                     :class="toggleInvalidClass(manufacturedErrorMsg)">
+                     v-model="newInventoryItem.data.manufactured" :class="toggleInvalidClass(manufacturedErrorMsg)">
               <div class="invalid-feedback">
                 {{ manufacturedErrorMsg }}
               </div>
@@ -73,7 +73,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="sell-by">Sell By: </label>
               <input id="sell-by" name="sell-by" tabindex="6" type="date"
-                     :class="toggleInvalidClass(sellByErrorMsg)">
+                     v-model="newInventoryItem.data.sellBy" :class="toggleInvalidClass(sellByErrorMsg)">
               <div class="invalid-feedback">
                 {{ sellByErrorMsg }}
               </div>
@@ -83,7 +83,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="best-before">Best Before: </label>
               <input id="best-before" name="best-before" tabindex="7" type="date"
-                     :class="toggleInvalidClass(bestBeforeErrorMsg)">
+                     v-model="newInventoryItem.data.bestBefore" :class="toggleInvalidClass(bestBeforeErrorMsg)">
               <div class="invalid-feedback">
                 {{ bestBeforeErrorMsg }}
               </div>
@@ -93,7 +93,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="expires">Expires*: </label>
               <input class="col-6" id="expires" name="expires" tabindex="8" type="date"
-                     :class="toggleInvalidClass(expiresErrorMsg)"
+                     v-model="newInventoryItem.data.expires" :class="toggleInvalidClass(expiresErrorMsg)"
                      required>
               <div class="invalid-feedback">
                 {{ expiresErrorMsg }}
@@ -106,7 +106,7 @@
 
         <!--footer-->
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn green-button-transparent" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn green-button-transparent" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn green-button">Save changes</button>
         </div>
 
@@ -141,6 +141,20 @@ export default {
       // The config for checking the inventory item parameters when updated
       config: InventoryItem.config,
 
+      // The new inventory item
+      newInventoryItem: new InventoryItem(
+          {
+            productId: "PROD",
+            quantity: 0,
+            pricePerItem: 0,
+            totalPrice: 0,
+            manufactured: "2021-04-05",
+            sellBy: "2021-05-18",
+            bestBefore: "2021-05-20",
+            expires: "2021-05-22"
+          }
+      ),
+
       // Error messages
       productIdErrorMsg: "",
       quantityErrorMsg: "",
@@ -172,13 +186,35 @@ export default {
     },
 
     /**
-     * Prevents the default call onClick and updates the placeholder values before showing the modal.
+     * Updates the placeholder values before showing the modal.
      *
-     * @param event The event (i.e. click event) that triggered the call.
      */
-    showModal(event) {
-      // Prevent any default actions
-      // event.preventDefault();
+    showModal() {
+      console.log(this.value);
+      console.log(this.businessId);
+
+      // If the modal is already showing prevent the placeholders from being updated.
+      if (!this.$refs._updateInventoryItemModal.classList.contains("show")) {
+        // Update the placeholders
+        this.newInventoryItem.data.productId = "UPDATE";
+        // this.newInventoryItem.data.quantity = this.value.quantity;
+        // this.newInventoryItem.data.pricePerItem = this.value.pricePerItem;
+        // this.newInventoryItem.data.totalPrice = this.value.totalPrice;
+        // this.newInventoryItem.data.manufactured = this.value.manufactured;
+        // this.newInventoryItem.data.sellBy = this.value.sellBy;
+        // this.newInventoryItem.data.bestBefore = this.value.bestBefore;
+        // this.newInventoryItem.data.expires = this.value.expires;
+
+        // Reset all the error messages
+        this.productIdErrorMsg = "";
+        this.quantityErrorMsg = "";
+        this.pricePerItemErrorMsg = "";
+        this.totalPriceErrorMsg = "";
+        this.manufacturedErrorMsg = "";
+        this.sellByErrorMsg = "";
+        this.bestBeforeErrorMsg = "";
+        this.expiresErrorMsg = "";
+      }
 
       // Show the modal
       this.modal.show();
