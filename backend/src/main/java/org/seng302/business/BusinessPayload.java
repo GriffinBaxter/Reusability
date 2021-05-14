@@ -55,7 +55,8 @@ public class BusinessPayload {
                     address.getCity(),
                     address.getRegion(),
                     address.getCountry(),
-                    address.getPostcode()
+                    address.getPostcode(),
+                    address.getSuburb()
             );
             businessPayload = new BusinessPayload(
                     business.getId(),

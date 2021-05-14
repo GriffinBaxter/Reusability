@@ -220,7 +220,8 @@ public class BusinessResource {
                 address.getCity(),
                 address.getRegion(),
                 address.getCountry(),
-                address.getPostcode()
+                address.getPostcode(),
+                address.getSuburb()
         );
 
         Integer primaryAdministratorId = null;

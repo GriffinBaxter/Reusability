@@ -260,7 +260,8 @@ public class Address {
                 this.city,
                 this.region,
                 this.country,
-                this.postcode
+                this.postcode,
+                this.suburb
         );
     }
 
