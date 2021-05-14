@@ -31,7 +31,7 @@
       <!-- Navbar links -->
       <div class="navbar-collapse" id="navbar-id">
         <!-- navbar inner is required for the animation -->
-        <div id="navbar-inner-id" class="navbar-nav mb-2 mb-xl-0   py-3   mx-auto me-xl-0 ms-xl-auto">
+        <div id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
           <ul class="navbar-nav flex-column flex-xl-row">
 
             <!-- default page links -->
@@ -44,7 +44,8 @@
               </router-link>
             </li>
             <li class="nav-item" v-if=actAsId>
-              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]" :to="'/businessProfile/' + actAsId" tabindex="2">
+              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
+                           :to="'/businessProfile/' + actAsId" tabindex="2">
                 Profile
               </router-link>
             </li>
@@ -104,33 +105,34 @@
           <ul class="navbar-nav flex-column flex-xl-row">
             <!-- Interact As -->
             <li id="interactDrop">
-              <a role="button" @click="() => {
+              <a class="" role="button" @click="() => {
                     this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
                     'interact-dropdown-links-wrapper', this.showInteractMenu)
                     }">
-
                 <img src="../../../public/profile_icon_default.png" width="27px"
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
               </a>
-
             </li>
           </ul>
+
           <ul class="no-space">
-            <div class="center">
-              12345678900000
+            <div class="center" role="button" @click="() => {
+                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
+                    'interact-dropdown-links-wrapper', this.showInteractMenu)
+                    }">
+              {{ actAs }}
+            </div>
+            <div id="interact-dropdown-links-wrapper">
+              <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
+
+                <li class="nav-item">
+                </li>
+                <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" @click="itemClicked(index)">
+                  <a class="nav-link">{{ act.name }}</a>
+                </li>
+              </ul>
             </div>
           </ul>
-          <div id="interact-dropdown-links-wrapper">
-            <ul class="dropdown-menu show" id="interact-dropdown-links">
-
-              <li class="nav-item">
-              </li>
-              <li class="nav-item" v-for="(act, index) in interactAs" :key="index" @click="itemClicked(index)">
-                <a class="nav-link">{{ act.name }}</a>
-              </li>
-            </ul>
-          </div>
-
 
         </div>
       </div>
@@ -190,7 +192,7 @@ export default {
      */
     getUserData() {
       const currentID = Cookies.get('userID');
-      if(currentID) {
+      if (currentID) {
         Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
           if (error.request && !error.response) {
             this.$router.push({path: '/timeout'});
@@ -375,6 +377,9 @@ export default {
         this.actAsId = this.interactAs[index].id;
         this.actAs = this.interactAs[index].name;
       }
+      if (this.actAs.length > 10) {
+        this.actAs = this.actAs.slice(0,10) + '...';
+      }
       this.$router.go();
     },
     setCurUser(response) {
@@ -409,6 +414,10 @@ export default {
         } else {
           this.actAs = response.nickname;
         }
+      }
+
+      if (this.actAs.length > 10) {
+        this.actAs = this.actAs.slice(0,10) + '...';
       }
 
       // Filters out the null businesses
@@ -459,16 +468,11 @@ export default {
 
 <!-------------------------------------------- Navigation Bar Styling ------------------------------------------------->
 
-<style>
+<style scoped>
+
 .no-space {
-  margin: 0px;
   padding: 0px;
-  height: 30px;
-  weight: 30px;
-}
-.center {
-  padding: 16px 0;
-  text-align: center;
+  margin: 0px;
 }
 
 /* Styling for smaller screen sizes begins */
@@ -485,7 +489,6 @@ export default {
 }
 
 #interact-dropdown-links-wrapper {
-  margin-top: 6px; /* height between profile image and drop down buttons*/
   width: unset;
 }
 
@@ -511,7 +514,6 @@ export default {
   height: 55px;
   width: auto;
   border: 1px lightgrey solid;
-  margin-right: 15px;
 }
 
 #actAsImg {
@@ -602,24 +604,44 @@ export default {
 }
 
 @media (min-width: 250px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
   .company-name-main-font {
     font-size: 12px;
   }
 }
 
 @media (min-width: 350px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
   .company-name-main-font {
     font-size: 16px;
   }
 }
 
 @media (min-width: 400px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
   .company-name-main-font {
     font-size: 22px;
   }
 }
 
 @media (min-width: 450px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
   .company-name-main-font {
     font-size: 28px;
   }
@@ -632,6 +654,13 @@ export default {
 /* Styling for larger screen sizes begins */
 /*xl Break point*/
 @media (min-width: 1200px) {
+
+  .center {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: 15px;
+    text-align: center;
+  }
 
   #logo-image-nav {
     max-width: 120px;
@@ -678,7 +707,6 @@ export default {
   }
 
   #interact-dropdown-links-wrapper {
-    margin-top: 64px; /* height between profile image and drop down buttons*/
     width: auto;
   }
 
@@ -691,7 +719,7 @@ export default {
 
   #interactDrop a {
     padding: unset;
-    padding: 0.5rem 1rem
+    padding: 0.4rem 0rem
   }
 
 
@@ -700,6 +728,13 @@ export default {
 /*------------------------------------------ Extra Large break point styling -----------------------------------------*/
 
 @media (min-width: 1400px) {
+
+  .center {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: 15px;
+    text-align: center;
+  }
 
   #logo-image-nav {
     max-width: 140px;
