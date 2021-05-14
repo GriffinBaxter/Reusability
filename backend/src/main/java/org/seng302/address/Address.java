@@ -52,6 +52,9 @@ public class Address {
     @Column(name = "postcode")
     private String postcode;
 
+    @Column(name = "suburb")
+    private String suburb;
+
     @OneToMany(mappedBy = "homeAddress", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private List<User> users;
@@ -68,9 +71,16 @@ public class Address {
      * @param region Region (optional)
      * @param country Country (mandatory)
      * @param postcode Postcode (optional)
+     * @param suburb Suburb (optional)
      * @throws Exception Validation exception
      */
-    public Address(String streetNumber, String streetName, String city, String region, String country, String postcode) throws Exception {
+    public Address(String streetNumber,
+                   String streetName,
+                   String city,
+                   String region,
+                   String country,
+                   String postcode,
+                   String suburb) throws Exception {
         if (!AddressValidation.isValidStreetNumber(streetNumber)) {
             throw new Exception("Invalid street number");
         }
@@ -89,6 +99,9 @@ public class Address {
         if (!AddressValidation.isValidPostcode(postcode)) {
             throw new Exception("Invalid postcode");
         }
+        if (!AddressValidation.isValidSuburb(suburb)) {
+            throw new Exception("Invalid suburb");
+        }
 
         this.streetNumber = (streetNumber.equals("")) ? null : streetNumber;
         this.streetName = (streetName.equals("")) ? null : streetName;
@@ -96,6 +109,7 @@ public class Address {
         this.region = (region.equals("")) ? null : region;
         this.country = country;
         this.postcode = (postcode.equals("")) ? null : postcode;
+        this.suburb = (suburb.equals("")) ? null : suburb;
     }
 
     public String getStreetNumber() {
@@ -122,6 +136,12 @@ public class Address {
         return postcode;
     }
 
+    /**
+     * Returns the suburb
+     * @return suburb, the suburb corresponding to this Address.
+     */
+    public String getSuburb() { return suburb; }
+
     public void setStreetNumber(String streetNumber) {
         this.streetNumber = streetNumber;
     }
@@ -144,6 +164,14 @@ public class Address {
 
     public void setPostcode(String postcode) {
         this.postcode = postcode;
+    }
+
+    /**
+     * Sets the suburb of this address to the incoming suburb.
+     * @param suburb incoming suburb.
+     */
+    public void setSuburb (String suburb) {
+        this.suburb = suburb;
     }
 
     public void setUsers(List<User> users) {
@@ -205,6 +233,7 @@ public class Address {
         String region = "";
         String country = "";
         String postcode = "";
+        String suburb = "";
 
         for (int i = 0; i < 6; i++){
             String data = infos[i].split(":")[1];
@@ -214,9 +243,10 @@ public class Address {
             else if (i == 3) region = data;
             else if (i == 4) country = data;
             else if (i == 5) postcode = data;
+            else if (i == 6) suburb = data;
         }
 
-        return new Address(streetNumber, streetName, city, region, country, postcode);
+        return new Address(streetNumber, streetName, city, region, country, postcode, suburb);
     }
 
     /**
@@ -255,10 +285,11 @@ public class Address {
         return "{" +
                 "\"streetNumber\":\"" + streetNumber + "\"," +
                 "\"streetName\":\""   + streetName   + "\"," +
-                "\"city\":\""        + city         + "\"," +
+                "\"city\":\""         + city         + "\"," +
                 "\"region\":\""       + region       + "\"," +
                 "\"country\":\""      + country      + "\"," +
-                "\"postcode\":\""     + postcode     + "\"" +
+                "\"postcode\":\""     + postcode     + "\"," +
+                "\"suburb\":\""       + suburb       + "\""  +
                 "}";
     }
 
@@ -280,7 +311,13 @@ public class Address {
      * @return a string containing address info in string form
      */
     public String toOneLineString() {
-        return streetNumber + ", " + streetName + ", " + city + ", " + region + ", " + country + ", " + postcode;
+        return streetNumber + ", "
+                + streetName + ", "
+                + city + ", "
+                + region + ", "
+                + country + ", "
+                + postcode + ", "
+                + suburb;
     }
 
 }
