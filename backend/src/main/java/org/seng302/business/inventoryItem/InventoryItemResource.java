@@ -528,10 +528,20 @@ public class InventoryItemResource {
         }
         Product selectProduct = optionalSelectProduct.get();
 
+        // Calculates the total quantity of the inventory item being changed from all listings (if any).
+        int totalQuantityFromListings = 0;
+        for (Listing listing: selectInventoryItem.getListings()) {
+            totalQuantityFromListings += listing.getQuantity();
+        }
+        logger.debug("Total quantity from listings: {}.", totalQuantityFromListings);
+
         if (!productId.equals(selectProduct.getProductId())) {
             errorMessage = "Invalid product ID";
-        } else if (quantity == null || quantity <= 0) {
-            errorMessage = "Invalid quantity, must have at least one item";
+        }
+        // The new quantity cannot be lower than the total amount currently in listings for the given inventory item.
+        else if (quantity == null || quantity <= 0 || quantity < totalQuantityFromListings) {
+            errorMessage = "Invalid quantity, must have at least one item " +
+                    "AND must be more than the total quantity in your current listings";
         } else if (pricePerItem != null && pricePerItem < 0) {
             errorMessage = "Invalid price per item, must not be negative";
         } else if (totalPrice != null && totalPrice < 0) {

@@ -7,6 +7,7 @@ import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.BusinessType;
+import org.seng302.business.listing.Listing;
 import org.seng302.business.product.Product;
 import org.seng302.business.product.ProductRepository;
 import org.seng302.main.Main;
@@ -1030,7 +1031,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canUpdateAnInventoryItemWithAdministrator() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1039,9 +1040,9 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1050,7 +1051,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1069,7 +1070,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canUpdateAnInventoryItemWithGAA() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1078,9 +1079,9 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
         anotherUser.setRole(Role.GLOBALAPPLICATIONADMIN);
 
         // when
@@ -1090,7 +1091,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
@@ -1109,7 +1110,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canUpdateAnInventoryItemWithDGAA() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1118,9 +1119,9 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
         anotherUser.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
 
         // when
@@ -1130,7 +1131,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
@@ -1149,7 +1150,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWhenCookieNotExist() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1158,9 +1159,9 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1169,7 +1170,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
@@ -1187,7 +1188,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithBusinessIsNotExist() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1196,9 +1197,9 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1207,7 +1208,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1227,7 +1228,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithNon_Administrator() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1236,9 +1237,9 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
@@ -1247,7 +1248,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
@@ -1267,7 +1268,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithNotExistInventoryItemId() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1276,9 +1277,9 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1287,7 +1288,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(null));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1308,7 +1309,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithNoProductId() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1317,10 +1318,10 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        inventoryItem.setProductId(null);
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        newInventoryItem.setProductId(null);
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1329,7 +1330,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1350,7 +1351,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithNoQuantity() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1359,10 +1360,10 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        inventoryItem.setQuantity(null);
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        newInventoryItem.setQuantity(null);
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1371,7 +1372,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1379,7 +1380,8 @@ public class InventoryItemResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item " +
+                "AND must be more than the total quantity in your current listings");
     }
 
     /**
@@ -1392,7 +1394,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithNegativeQuantity() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1401,10 +1403,10 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        inventoryItem.setQuantity(-10);
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        newInventoryItem.setQuantity(-10);
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1413,7 +1415,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1421,7 +1423,8 @@ public class InventoryItemResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item " +
+                "AND must be more than the total quantity in your current listings");
     }
 
     /**
@@ -1434,7 +1437,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithNegativePricePerItem() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1443,10 +1446,10 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        inventoryItem.setPricePerItem(-5.2);
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        newInventoryItem.setPricePerItem(-5.2);
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1455,7 +1458,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1476,7 +1479,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithNegativeTotalPrice() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1485,10 +1488,10 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        inventoryItem.setTotalPrice(-20.2);
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        newInventoryItem.setTotalPrice(-20.2);
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1497,7 +1500,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1518,7 +1521,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithManufactureDateAfterToday() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1527,10 +1530,10 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        inventoryItem.setManufactured(LocalDate.of(2022, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        newInventoryItem.setManufactured(LocalDate.of(2022, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1539,7 +1542,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1560,7 +1563,7 @@ public class InventoryItemResourceIntegrationTests {
     @Test
     public void canNotUpdateAnInventoryItemWithExpiresDateBeforeToday() throws Exception {
         // given
-        InventoryItem inventoryItem = new InventoryItem(product,
+        InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
                 4,
                 6.5,
@@ -1569,10 +1572,10 @@ public class InventoryItemResourceIntegrationTests {
                 LocalDate.of(2021, 2, 2),
                 LocalDate.of(2022, 2, 2),
                 LocalDate.of(2022, 2, 2));
-        inventoryItem.setExpires(LocalDate.of(2020, 2, 2));
-        payloadJson = String.format(inventoryItemPayloadJson, inventoryItem.getProductId(), inventoryItem.getQuantity(),
-                inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(), inventoryItem.getManufactured(),
-                inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+        newInventoryItem.setExpires(LocalDate.of(2020, 2, 2));
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1581,7 +1584,7 @@ public class InventoryItemResourceIntegrationTests {
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
                 .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(inventoryItem);
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -1590,6 +1593,58 @@ public class InventoryItemResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getErrorMessage()).isEqualTo("Invalid expiration date, must have expiration date and cannot add expired item");
+    }
+
+    /**
+     * Test that a BAD_REQUEST(400) status is received when send an InventoryRegistrationPayLoad with quantity less
+     * than the total listings, the business has been given is exist, cookie contain a administrator of this business
+     * and the product given is exist in this business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canNotUpdateAnInventoryItemWithQuantityLessThanTotalListings() throws Exception {
+        // given
+        InventoryItem newInventoryItem = new InventoryItem(product,
+                product.getProductId(),
+                3,
+                6.5,
+                21.99,
+                LocalDate.of(2020, 2, 2),
+                LocalDate.of(2021, 2, 2),
+                LocalDate.of(2022, 2, 2),
+                LocalDate.of(2022, 2, 2));
+
+        inventoryItem.setListings(List.of(new Listing(
+                inventoryItem,
+                4,
+                null,
+                "info",
+                LocalDateTime.now(),
+                null
+        )));
+
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+                newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
+                newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
+                .thenReturn(Optional.ofNullable(product));
+        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .thenReturn(Optional.ofNullable(inventoryItem));
+        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
+        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item " +
+                "AND must be more than the total quantity in your current listings");
     }
 
 }
