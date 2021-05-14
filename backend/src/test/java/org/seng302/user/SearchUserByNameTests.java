@@ -77,7 +77,7 @@ public class SearchUserByNameTests {
     @BeforeEach
     public void setup() throws Exception {
 
-        addressDGAA = new Address("325", "Citlalli Track", "New Lois", "Heard Island and McDonald Islands", "HM", "Antarctica");
+        addressDGAA = new Address("325", "Citlalli Track", "New Lois", "Heard Island and McDonald Islands", "HM", "Antarctica", "Pingu");
         entityManager.persist(addressDGAA);
         entityManager.flush();
 
@@ -96,7 +96,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
 
-        addressUser = new Address("57", "Sydney Highway", "Shire of Cocos Islands", "West Island", "Cocos (Keeling) Islands", "9732");
+        addressUser = new Address("57", "Sydney Highway", "Shire of Cocos Islands", "West Island", "Cocos (Keeling) Islands", "9732", "Sydney");
         entityManager.persist(addressUser);
         entityManager.flush();
 
@@ -114,7 +114,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
 
-        addressAnotherUser = new Address("47993", "Norwood Garden", "Mambere-Kadei", "Central African Republic", "Africa", "3428");
+        addressAnotherUser = new Address("47993", "Norwood Garden", "Mambere-Kadei", "Central African Republic", "Africa", "3428", "Norwood");
 
         entityManager.persist(addressAnotherUser);
         entityManager.flush();
@@ -133,7 +133,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address1 = new Address("129", "Mastic Trail", "Frank Sound Cayman Islands", "Caribbean", "North America", "3442");
+        address1 = new Address("129", "Mastic Trail", "Frank Sound Cayman Islands", "Caribbean", "North America", "3442", "Pirate Cove");
         entityManager.persist(address1);
         entityManager.flush();
 
@@ -152,7 +152,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address2 = new Address("80416", "Rodney Street", "Jon Loop", "Shaanxi", "China", "2113");
+        address2 = new Address("80416", "Rodney Street", "Jon Loop", "Shaanxi", "China", "2113", "Barryville");
         entityManager.persist(address2);
         entityManager.flush();
 
@@ -171,7 +171,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address3 = new Address("9205", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "1000");
+        address3 = new Address("9205", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "1000", "Buri");
         entityManager.persist(address3);
         entityManager.flush();
 
@@ -190,7 +190,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address4 = new Address("240", "Newson Street", "Bernhard Run", "Southland", "New Zealand", "2839");
+        address4 = new Address("240", "Newson Street", "Bernhard Run", "Southland", "New Zealand", "2839", "Ilam");
         entityManager.persist(address4);
         entityManager.flush();
 
@@ -209,7 +209,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address5 = new Address("186", "Simpsons Road",  "Ashburton", "Canterbury", "New Zealand", "2828");
+        address5 = new Address("186", "Simpsons Road",  "Ashburton", "Canterbury", "New Zealand", "2828", "Ilam");
 
         entityManager.persist(address5);
         entityManager.flush();
@@ -229,7 +229,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address6 = new Address("14798", "Terry Highway", "Queenstown-Lakes", "District", "New Zealand", "2982");
+        address6 = new Address("14798", "Terry Highway", "Queenstown-Lakes", "District", "New Zealand", "2982", "Frankton");
         entityManager.persist(address6);
         entityManager.flush();
 
@@ -248,7 +248,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address7 = new Address("3396", "Bertram Parkway", "Central", "Central Otago", "New Zealand", "1111");
+        address7 = new Address("3396", "Bertram Parkway", "Central", "Central Otago", "New Zealand", "1111", "Wanaka");
 
         entityManager.persist(address7);
         entityManager.flush();

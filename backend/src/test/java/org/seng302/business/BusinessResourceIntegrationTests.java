@@ -79,7 +79,8 @@ public class BusinessResourceIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("testfirst",
                 "testlast",
@@ -144,7 +145,8 @@ public class BusinessResourceIntegrationTests {
                         "Christchurch",
                         "Canterbury",
                         "New Zealand",
-                        "90210"
+                        "90210",
+                        "Ilam"
                 ),
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
@@ -163,7 +165,8 @@ public class BusinessResourceIntegrationTests {
                                 "\"city\": \"Christchurch\"," +
                                 "\"region\": \"Canterbury\"," +
                                 "\"country\": \"New Zealand\"," +
-                                "\"postcode\": \"90210\"" +
+                                "\"postcode\": \"90210\"," +
+                                "\"suburb\": \"Ilam\"" +
                                 "}," +
                         "\"businessType\": \"Accommodation and Food Services\"" +
                         "}";
@@ -198,7 +201,8 @@ public class BusinessResourceIntegrationTests {
                         "Christchurch",
                         "Canterbury",
                         "New Zealand",
-                        "90210"
+                        "90210",
+                        "Ilam"
                 ),
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
@@ -217,7 +221,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90210\"" +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -255,7 +260,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90211\"" +
+                "\"postcode\": \"90211\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -289,7 +295,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -324,6 +331,7 @@ public class BusinessResourceIntegrationTests {
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
                     "\"postcode\": \"90210\"" +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -358,7 +366,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -393,7 +402,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -429,6 +439,7 @@ public class BusinessResourceIntegrationTests {
                     "\"region\": \"" + aString + "\"," +
                     "\"country\": \"" + aString + "\"," +
                     "\"postcode\": \"9\"" +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -462,7 +473,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -496,7 +508,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"example\"" +
                 "}";
@@ -530,7 +543,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -561,7 +575,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90210\"" +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -609,7 +624,8 @@ public class BusinessResourceIntegrationTests {
                         "\"city\":\"Christchurch\"," +
                         "\"region\":\"Canterbury\"," +
                         "\"country\":\"New Zealand\"," +
-                        "\"postcode\":\"90210\"" +
+                        "\"postcode\":\"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                         "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
@@ -669,7 +685,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":null," +
@@ -681,7 +698,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\":\"" + address.getCity() + "\"," +
                 "\"region\":\"" + address.getRegion() + "\"," +
                 "\"country\":\"" + address.getCountry() + "\"," +
-                "\"postcode\":\"" + address.getPostcode() + "\"" +
+                "\"postcode\":\"" + address.getPostcode() + "\"," +
+                "\"suburb\":\"" + address.getSuburb() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
@@ -745,7 +763,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
+                "\"suburb\":\"Ilam\"" +
                 "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
@@ -757,7 +776,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\":\"" + address.getCity() + "\"," +
                 "\"region\":\"" + address.getRegion() + "\"," +
                 "\"country\":\"" + address.getCountry() + "\"," +
-                "\"postcode\":\"" + address.getPostcode() + "\"" +
+                "\"postcode\":\"" + address.getPostcode() + "\"," +
+                "\"suburb\":\"" + address.getSuburb() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";

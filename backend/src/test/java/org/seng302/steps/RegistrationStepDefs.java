@@ -75,7 +75,8 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("Bob",
                 "Smith",
@@ -114,7 +115,8 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90210\"" +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"Testpassword123!\"}";
 
@@ -136,7 +138,8 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("Bob",
                 "Smith",
@@ -168,7 +171,8 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("Bob",
                 "Smith",
@@ -202,7 +206,8 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90210\"" +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"Testpassword123!\"}";
 
@@ -238,7 +243,8 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90210\"" +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"Testpassword123!\"}";
 

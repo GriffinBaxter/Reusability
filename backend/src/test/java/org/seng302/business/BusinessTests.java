@@ -31,7 +31,8 @@ public class BusinessTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User(
                 "first",
