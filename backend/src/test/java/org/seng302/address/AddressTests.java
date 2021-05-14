@@ -14,7 +14,7 @@ public class AddressTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
                 "\"suburb\":\"Ilam\"" +
                 "}";
         Address address = new Address(
@@ -39,7 +39,7 @@ public class AddressTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
                 "\"suburb\":\"Ilam\"" +
                 "}";
         Address address = Address.toAddress(string);
@@ -61,10 +61,11 @@ public class AddressTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
                 "\"suburb\":\"Ilam\"" +
                 "}";
         Address address = Address.toAddress(string);
+
 
         assertEquals("3/24", address.getStreetNumber());
         assertEquals("Ilam Road", address.getStreetName());

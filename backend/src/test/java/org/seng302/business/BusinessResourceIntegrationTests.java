@@ -330,7 +330,7 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
                     "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
@@ -438,7 +438,7 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"" + aString + "\"," +
                     "\"region\": \"" + aString + "\"," +
                     "\"country\": \"" + aString + "\"," +
-                    "\"postcode\": \"9\"" +
+                    "\"postcode\": \"9\"," +
                     "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
@@ -625,7 +625,7 @@ public class BusinessResourceIntegrationTests {
                         "\"region\":\"Canterbury\"," +
                         "\"country\":\"New Zealand\"," +
                         "\"postcode\":\"90210\"," +
-                        "\"suburb\": \"Ilam\"" +
+                        "\"suburb\":\"Ilam\"" +
                         "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
@@ -637,7 +637,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\":\"" + address.getCity() + "\"," +
                     "\"region\":\"" + address.getRegion() + "\"," +
                     "\"country\":\"" + address.getCountry() + "\"," +
-                    "\"postcode\":\"" + address.getPostcode() + "\"" +
+                    "\"postcode\":\"" + address.getPostcode() + "\"," +
+                    "\"suburb\":\"" + address.getSuburb() + "\"" +
                     "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
@@ -686,7 +687,7 @@ public class BusinessResourceIntegrationTests {
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
                 "\"postcode\":\"90210\"," +
-                "\"suburb\": \"Ilam\"" +
+                "\"suburb\":\"Ilam\"" +
                 "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":null," +

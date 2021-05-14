@@ -235,7 +235,7 @@ public class Address {
         String postcode = "";
         String suburb = "";
 
-        for (int i = 0; i < 6; i++){
+        for (int i = 0; i < 7; i++){
             String data = infos[i].split(":")[1];
             if (i == 0) streetNumber = data;
             else if (i == 1) streetName = data;
