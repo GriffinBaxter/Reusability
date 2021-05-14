@@ -54,6 +54,7 @@ public class MarketplaceTests {
     void TestMarketplaceCard_GivenValidData_SuccessfullyCreated() throws Exception {
         MarketplaceCard marketplaceCard = new MarketplaceCard(
                 user.getId(),
+                user,
                 Section.FORSALE,
                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 "Hayley's Birthday",
@@ -69,6 +70,7 @@ public class MarketplaceTests {
         try {
             MarketplaceCard marketplaceCard = new MarketplaceCard(
                     user.getId(),
+                    user,
                     Section.FORSALE,
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                     "a",
@@ -90,6 +92,7 @@ public class MarketplaceTests {
         try {
             MarketplaceCard marketplaceCard = new MarketplaceCard(
                     user.getId(),
+                    user,
                     Section.FORSALE,
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                     "Hayley's Birthday",
@@ -107,6 +110,7 @@ public class MarketplaceTests {
     void TestMarketplaceCard_GivenNoDescription_SuccessfullyCreated() throws Exception {
         MarketplaceCard marketplaceCard = new MarketplaceCard(
                 user.getId(),
+                user,
                 Section.FORSALE,
                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 "Hayley's Birthday",

@@ -90,11 +90,6 @@ public class User {
     @Column(name = "session_uuid")
     private String sessionUUID;
 
-//    @OneToMany(mappedBy = "creatorId", fetch = FetchType.LAZY,
-//            cascade = CascadeType.ALL)
-//    private List<MarketplaceCard> marketplaceCards;
-
-
     /**
      * User account constructor.
      * @param firstName First Name
