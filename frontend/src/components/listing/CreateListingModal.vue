@@ -22,7 +22,7 @@
                 <datalist id="productDataList" style="overflow-y: auto!important">
                   <option v-for="item in allInventoryItems" v-bind:key="item.id"
                           :value="item.product.id + ' (Expires: ' + item.expires + ')' + ' ID: ' + item.id">Quantity:
-                    {{ item.quantity }} Price: (${{ item.totalPrice }})
+                    {{ item.quantity }} Price: ({{currencySymbol}}{{ item.totalPrice }})
                   </option>
                 </datalist>
                 <div class="invalid-feedback">
