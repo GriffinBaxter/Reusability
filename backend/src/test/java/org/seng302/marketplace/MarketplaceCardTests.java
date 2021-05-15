@@ -16,11 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * MarketplaceCard test class.
  */
-public class MarketplaceTests {
+public class MarketplaceCardTests {
 
     private static Address address;
     private static User user;
-    private static MarketplaceCard marketplaceCard;
 
     @BeforeAll
     public static void before() throws Exception {
@@ -60,10 +59,11 @@ public class MarketplaceTests {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
+        assertEquals(marketplaceCard.getCreatorId(), user.getId());
     }
 
     /**
-     * Tests that an invalid title throws an error.
+     * Tests that an invalid title throws an invalid title error.
      */
     @Test
     void TestMarketplaceCard_GivenInvalidTitle_ErrorThrown() {
@@ -83,7 +83,7 @@ public class MarketplaceTests {
     }
 
     /**
-     * Tests that an invalid description throws an error.
+     * Tests that an invalid description throws an invalid description error.
      */
     @Test
     void TestMarketplaceCard_GivenInvalidDescription_ErrorThrown() {
@@ -104,7 +104,7 @@ public class MarketplaceTests {
     }
 
     /**
-     * Tests that the optional field of description are set to null when empty.
+     * Tests that the optional field of description is set to null when empty.
      */
     @Test
     void TestMarketplaceCard_GivenNoDescription_SuccessfullyCreated() throws Exception {

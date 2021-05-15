@@ -44,10 +44,10 @@ public class MarketplaceCard {
 
     // TODO: add keywordIds;
 
-
     /**
      * Marketplace card constructor
      * @param creatorId
+     * @param creator
      * @param section
      * @param created
      * @param title
@@ -69,9 +69,10 @@ public class MarketplaceCard {
             throw new Exception("Invalid description");
         }
 
-        this.creator = creator;
         this.creatorId = creatorId;
+        this.creator = creator;
         this.section = section;
+        this.created = created;
         this.title = title;
         this.description = (description.equals("")) ? null : description;
     }
@@ -150,6 +151,5 @@ public class MarketplaceCard {
 //    public getUserMarketplaceCards(Integer userId) {
 //
 //    }
-
 
 }
