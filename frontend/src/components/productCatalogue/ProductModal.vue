@@ -37,7 +37,7 @@ export default {
   props: {
     image: {
       type: String,
-      default: "../../public/apples.jpg",
+      default: require("../../../public/apples.jpg"),
       required: false
     },
     productName: {

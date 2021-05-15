@@ -8,7 +8,10 @@
 
           <!--section-->
           <div class="modal-header" style="padding: 20px 40px 15px">
-            <h2 id="cardDetailPopUpLabel" style="margin: 0px">{{ section }}</h2>
+            <h2 id="cardDetailPopUpLabel" style="margin: 0px">
+              <!--show link work-->{{ index }}<!--delete after data populate-->
+              {{ section }}
+            </h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
@@ -105,6 +108,14 @@ export default {
       city: "Christchurch",
     }
   },
+  props: {
+    index: {
+      type: Number,
+      default: 0,
+      required: false
+    }
+  },
+  methods: {},
   mounted() {
     this.creator = this.firstName + " " + this.middleName + " " + this.lastName
   }
