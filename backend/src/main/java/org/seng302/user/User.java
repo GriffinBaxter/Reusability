@@ -327,7 +327,7 @@ public class User {
     }
 
     /**
-     *
+     * Removes the given business from the businessesAdministeredObjects
      * @param business
      */
     public void removeABusinessesAdministeredObjects(Business business){
