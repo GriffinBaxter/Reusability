@@ -212,8 +212,9 @@ export default {
     },
     updatePriceFromQuantity() {
       if (!isNaN(this.quantity)) {
-        console.log(this.currentInventoryItem);
-        this.price = this.quantity * this.currentInventoryItem.pricePerItem;
+        if (this.currentInventoryItem.pricePerItem && !isNaN(this.currentInventoryItem.pricePerItem)) {
+          this.price = this.quantity * this.currentInventoryItem.pricePerItem;
+        }
       }
     },
     /**
