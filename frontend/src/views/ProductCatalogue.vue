@@ -364,7 +364,7 @@ export default {
         isAscending = false;
       }
 
-      // If we found a valid orderBy compare it against he allowed orderBy headers in tableOrderByHeaders
+      // If we found a valid orderBy compare it against the allowed orderBy headers in tableOrderByHeaders
       if (orderBy !== null) {
         orderBy = this.tableOrderByHeaders.indexOf(orderBy);
 
