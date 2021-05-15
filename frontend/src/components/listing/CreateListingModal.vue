@@ -210,6 +210,9 @@ export default {
       }
       return errorMessage;
     },
+    /**
+     * Updates the price when the quantity input is modified based on the price per item of the currently selected inventory item.
+     * */
     updatePriceFromQuantity() {
       if (!isNaN(this.quantity)) {
         if (this.currentInventoryItem.pricePerItem && !isNaN(this.currentInventoryItem.pricePerItem)) {
