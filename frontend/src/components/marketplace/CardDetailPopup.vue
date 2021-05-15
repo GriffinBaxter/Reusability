@@ -1,16 +1,14 @@
 <template>
   <div>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      Launch demo modal
-    </button>
-
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="cardDetailPopUp" tabindex="-1" aria-labelledby="cardDetailPopUpLabel"
+         aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
 
+          <!--section-->
           <div class="modal-header" style="padding: 20px 40px 15px">
-            <h2 id="exampleModalLabel" style="margin: 0px">{{ section }}</h2>
+            <h2 id="cardDetailPopUpLabel" style="margin: 0px">{{ section }}</h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
@@ -18,12 +16,12 @@
             <div class="card">
               <div class="card-body">
 
-                <h2 class="card-title" align="center"></h2>
+                <!--title-->
+                <h4 class="card-subtitle mb-2">{{ title }}</h4>
 
-
-                <h4 class="card-subtitle mb-2" >{{ title }}</h4>
-
+                <!--description-->
                 <p class="card-text">
+                  {{ description }}
                   Some quick example text to build on the card title and make up the bulk of the card's
                   content.
                   Some quick example text to build on the card title and make up the bulk of the card's
@@ -54,28 +52,31 @@
                   Some quick example text to build on the card title and make up the bulk of the card's
                   content.
                 </p>
-                <hr>
+
+                <hr style="margin: 16px 0px 12px">
+
+                <!--creator info-->
                 <div class="row">
                   <div class="col">
-                    <p class="text-muted">
+                    <h6 class="text-muted">
                       Created: {{ created }}
-                    </p>
+                    </h6>
                   </div>
                   <div class="col" align="right">
-                    <p class="text-muted">
+                    <h6 class="text-muted">
                       {{ city }}
-                    </p>
+                    </h6>
                   </div>
-
                 </div>
 
-                <hr>
+                <hr style="margin: 5px 0px 10px">
 
                 <!--user's detail-->
                 <div style="vertical-align:middle; font-size:15px;">
                   <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
                   <a style="font-size: 17px"> {{ creator }} </a>
                 </div>
+
               </div>
             </div>
           </div>
