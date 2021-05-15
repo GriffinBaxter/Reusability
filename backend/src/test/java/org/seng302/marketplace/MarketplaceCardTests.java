@@ -1,5 +1,6 @@
 package org.seng302.marketplace;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.seng302.address.Address;
@@ -59,7 +60,16 @@ public class MarketplaceCardTests {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
-        assertEquals(marketplaceCard.getCreatorId(), user.getId());
+        Assertions.assertEquals(marketplaceCard.getCreatorId(), user.getId());
+        Assertions.assertEquals(marketplaceCard.getCreator(), user);
+        Assertions.assertEquals(marketplaceCard.getSection(), Section.FORSALE);
+        Assertions.assertEquals(marketplaceCard.getCreated(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)));
+        Assertions.assertEquals(marketplaceCard.getTitle(), "Hayley's Birthday");
+        Assertions.assertEquals(marketplaceCard.getDescription(), "Come join Hayley and help her celebrate her birthday!");
+
+
+
+
     }
 
     /**
