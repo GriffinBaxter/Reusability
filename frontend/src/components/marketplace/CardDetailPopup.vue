@@ -9,24 +9,20 @@
       <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
 
-          <div class="modal-header">
-            <h2 class="modal-title" id="exampleModalLabel" align="center">{{ section }}</h2>
+          <div class="modal-header" style="padding: 20px 40px 15px">
+            <h2 id="exampleModalLabel" style="margin: 0px">{{ section }}</h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
-          <div class="modal-body" style="padding: 25px 25px">
+          <div class="modal-body" style="padding: 15px 25px 30px">
             <div class="card">
               <div class="card-body">
 
                 <h2 class="card-title" align="center"></h2>
 
-                <!--user's detail-->
-                <div style="vertical-align:middle; font-size:15px;">
-                  <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
-                  <a style="font-size: 17px"> {{ creator }} </a>
-                </div>
-                <hr>
-                <h4 class="card-subtitle mb-2 ">{{ title }}</h4>
+
+                <h4 class="card-subtitle mb-2" >{{ title }}</h4>
+
                 <p class="card-text">
                   Some quick example text to build on the card title and make up the bulk of the card's
                   content.
@@ -73,6 +69,13 @@
 
                 </div>
 
+                <hr>
+
+                <!--user's detail-->
+                <div style="vertical-align:middle; font-size:15px;">
+                  <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
+                  <a style="font-size: 17px"> {{ creator }} </a>
+                </div>
               </div>
             </div>
           </div>
