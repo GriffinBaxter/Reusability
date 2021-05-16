@@ -4,7 +4,9 @@
       <!--nav bar-->
       <navbar/>
     <!--creation popup-->
-    <inventory-item-creation @updateInventoryItem="afterCreation"/>
+    <inventory-item-creation @updateInventoryItem="afterCreation"
+                             v-bind:currency-code="currencyCode"
+                             v-bind:currency-symbol="currencySymbol"/>
 
     <!--inventory container-->
     <div class="container p-5 mt-3" id="profileContainer">
