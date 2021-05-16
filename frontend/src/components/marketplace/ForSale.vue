@@ -12,12 +12,13 @@
         <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"
              style="padding: 12px"
              v-for="card in cards"
-             v-bind:key="card.index"
-             type="button"
-             @click="selectACard(card.index)"
-             data-bs-toggle="modal"
-             data-bs-target="#cardDetailPopUp">
-          <ForSaleCard v-bind:index="card.index"/>
+             v-bind:key="card.index">
+          <div type="button"
+               @click="selectACard(card.index)"
+               data-bs-toggle="modal"
+               data-bs-target="#cardDetailPopUp">
+            <ForSaleCard v-bind:index="card.index"/>
+          </div>
         </div>
       </div>
 

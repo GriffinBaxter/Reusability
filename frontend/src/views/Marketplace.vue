@@ -39,10 +39,10 @@
           <ForSale @openCardDetail="openCardDetail" :sendData="selectedCard"/>
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
-          <Wanted/>
+          <Wanted @openCardDetail="openCardDetail" :sendData="selectedCard"/>
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
-          <Exchange/>
+          <Exchange @openCardDetail="openCardDetail" :sendData="selectedCard"/>
         </div>
       </div>
 
