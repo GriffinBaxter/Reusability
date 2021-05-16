@@ -97,7 +97,7 @@
               </div>
             </div>
             <div class="text-center text-danger">
-              {{toastErrorMessage}}
+              {{ toastErrorMessage }}
             </div>
 
           </form>
@@ -105,7 +105,9 @@
 
         <!--footer-->
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn green-button-transparent" @click="dataReset(false)" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn green-button-transparent" @click="dataReset(false)" data-bs-dismiss="modal">
+            Cancel
+          </button>
           <button type="button" class="btn green-button " @click="createNewInventoryItem()">Confirm</button>
         </div>
 
@@ -116,7 +118,7 @@
 
 <script>
 
-import { Modal } from "bootstrap"; //uncommenting means the test do not run
+import {Modal} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
 import {endOfToday, format, compareAsc} from 'date-fns'
@@ -586,8 +588,8 @@ export default {
       }
       // Manufacture date error checking
       if (!this.isValidManufactureDate(this.manufactured)) {
-          this.manufacturedErrorMsg = "Manufactured date must be prior to today's date";
-          requestIsInvalid = true;
+        this.manufacturedErrorMsg = "Manufactured date must be prior to today's date";
+        requestIsInvalid = true;
       } else {
         this.manufacturedErrorMsg = '';
       }

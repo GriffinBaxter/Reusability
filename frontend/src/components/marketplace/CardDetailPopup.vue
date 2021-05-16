@@ -96,7 +96,6 @@ export default {
   data() {
     return {
       avatar: require("../../../public/sample_profile_image.jpg"),
-      section: "ForSale",
       title: "1982 Lada Samara",
       description: "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.",
       keyword: [],
@@ -112,8 +111,14 @@ export default {
     index: {
       type: Number,
       default: 0,
-      required: false
+      required: true
+    },
+    section: {
+      type: String,
+      default: null,
+      required: true,
     }
+
   },
   methods: {},
   mounted() {

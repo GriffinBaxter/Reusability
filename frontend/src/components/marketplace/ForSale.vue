@@ -7,12 +7,10 @@
       <p class="font-italic text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
         tempor incididunt.</p>
 
-      <!-- card detail popup -->
-      <CardDetail v-bind:index="selectedCard"/>
-
       <div class="row pb-5 mb-4">
         <!-- Card-->
         <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"
+             style="padding: 12px"
              v-for="card in cards"
              v-bind:key="card.index"
              type="button"
@@ -29,25 +27,23 @@
 
 <script>
 import ForSaleCard from './ForSaleCard'
-import CardDetail from "@/components/marketplace/CardDetailPopup";
 
 export default {
   name: "ForSale",
   data() {
     return {
       cards: [],
-      selectedCard: null
+      selectedCard: 0
     }
   },
   components: {
-    CardDetail,
     ForSaleCard,
   },
   methods: {
     selectACard(index) {
-      console.log(index)
-
+      this.$emit('openCardDetail', index);
       this.selectedCard = index
+      console.log(index, this.selectedCard)
     }
   },
   mounted() {
