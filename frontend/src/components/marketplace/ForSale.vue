@@ -43,7 +43,6 @@ export default {
     selectACard(index) {
       this.$emit('openCardDetail', index);
       this.selectedCard = index
-      console.log(index, this.selectedCard)
     }
   },
   mounted() {

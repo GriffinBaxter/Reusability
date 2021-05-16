@@ -2,6 +2,7 @@
 
   <div>
 
+    <div id="main">
     <!--Nav bar; displays either business account or individual account nav bar-->
     <Navbar></Navbar>
 
@@ -46,7 +47,7 @@
       </div>
 
     </div>
-
+    </div>
     <!--Footer contains links that are the same as those in the nav bar-->
     <Footer></Footer>
 
@@ -85,7 +86,6 @@ export default {
     },
     openCardDetail(selectedCard) {
       this.selectedCard = selectedCard
-      console.log(this.selectedCard)
     }
   },
 
