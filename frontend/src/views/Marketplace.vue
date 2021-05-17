@@ -7,6 +7,8 @@
 
     <div id="marketplace-container">
 
+      <OrderingOptionsMenu></OrderingOptionsMenu>
+
       <ul class="nav nav-tabs" id="marketplace-tabs" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="for-sale-tab" data-bs-toggle="tab" data-bs-target="#for-sale" type="button" role="tab" aria-controls="for-sale" aria-selected="true">For Sale</button>
@@ -46,10 +48,12 @@ import Navbar from '../components/main/Navbar';
 import ForSale from '../components/marketplace/ForSale';
 import Wanted from '../components/marketplace/Wanted';
 import Exchange from '../components/marketplace/Exchange';
+import OrderingOptionsMenu from "../components/marketplace/OrderingOptionsMenu";
 
 export default {
   name: "Marketplace",
   components: {
+    OrderingOptionsMenu,
     Footer,
     Navbar,
     ForSale,
