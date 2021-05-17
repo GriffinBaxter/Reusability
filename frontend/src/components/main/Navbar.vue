@@ -72,7 +72,7 @@
                     <router-link
                         :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
                         :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
-                      Business Listings
+                      Listings
                     </router-link>
                   </li>
                   <li class="nav-item">
