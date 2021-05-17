@@ -179,6 +179,7 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
+import {formatDate} from "../dateUtils";
 
 export default {
   name: "ProductCatalogue",
@@ -420,7 +421,7 @@ export default {
             newtableData.push(this.productList[i].data.name);
             newtableData.push(this.productList[i].data.manufacturer);
             newtableData.push(this.productList[i].data.recommendedRetailPrice);
-            newtableData.push(this.productList[i].data.created);
+            newtableData.push(formatDate(this.productList[i].data.created));
           }
 
           this.tableData = newtableData;
