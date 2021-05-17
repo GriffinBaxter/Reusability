@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Embeddable
 @NoArgsConstructor  // generate a no-args constructor needed by JPA (lombok pre-processor)
 @Entity             // declare this class as a JPA entity (that can be mapped to a SQL table)
-@IdClass(MarketplaceCardId.class)
 public class MarketplaceCard {
 
     @Id // this field (attribute) is the table primary key
@@ -26,7 +25,6 @@ public class MarketplaceCard {
     @JoinColumn(name = "creator_id", insertable = false, updatable = false)
     private User creator;
 
-    @Id
     @Column(name = "creator_id")
     private Integer creatorId;
 
@@ -35,6 +33,9 @@ public class MarketplaceCard {
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
+
+    @Column(name = "display_period_end", nullable = false)
+    private LocalDateTime displayPeriodEnd;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -73,6 +74,7 @@ public class MarketplaceCard {
         this.creator = creator;
         this.section = section;
         this.created = created;
+        this.displayPeriodEnd = created.plusWeeks(1);
         this.title = title;
         this.description = (description.equals("")) ? null : description;
     }
@@ -97,6 +99,10 @@ public class MarketplaceCard {
 
     public LocalDateTime getCreated() {
         return created;
+    }
+
+    public LocalDateTime getDisplayPeriodEnd() {
+        return displayPeriodEnd;
     }
 
     public String getTitle() {
@@ -129,6 +135,10 @@ public class MarketplaceCard {
         this.created = created;
     }
 
+    public void setDisplayPeriodEnd(LocalDateTime displayPeriodEnd) {
+        this.displayPeriodEnd = displayPeriodEnd;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -137,19 +147,20 @@ public class MarketplaceCard {
         this.description = description;
     }
 
-//    /**
-//     * Convert a Marketplace object into a MarketplacePayload
-//     * @return a MarketplacePayload object
-//     */
-//    public MarketplaceCardPayload toMarketplaceCardPayload() throws Exception {
-//    };
-//
-//    /**
-//     * Retrieves the cards a user has created.
-//     * @return marketplaceCards a list of MarketplaceCards owned/created by a user
-//     */
-//    public getUserMarketplaceCards(Integer userId) {
-//
-//    }
+    /**
+     * Convert a Marketplace object into a MarketplacePayload
+     * @return a MarketplacePayload object
+     */
+    public MarketplaceCardPayload toMarketplaceCardPayload() throws Exception {
+        return new MarketplaceCardPayload(
+                id,
+                creator.toUserPayloadSecure(),
+                section,
+                created,
+                displayPeriodEnd,
+                title,
+                description
+        );
+    }
 
 }
