@@ -120,7 +120,7 @@
                     this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
                     'interact-dropdown-links-wrapper', this.showInteractMenu)
                     }">
-              {{ actAs }}
+              {{ displayName }}
             </div>
             <div id="interact-dropdown-links-wrapper">
               <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
@@ -165,7 +165,6 @@ export default {
 
   data() {
     return {
-
       // business dropdown variables
       showBusinessDropdown: false,
       // Interact as Menu
@@ -182,7 +181,11 @@ export default {
       STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`,
       // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
       isActAsBusiness: false,
-      businessAccountId: null
+      businessAccountId: null,
+      displayName: null,
+
+      // Watch window width
+      screenWidth: document.body.clientWidth,
     }
   },
 
@@ -377,9 +380,7 @@ export default {
         this.actAsId = this.interactAs[index].id;
         this.actAs = this.interactAs[index].name;
       }
-      if (this.actAs.length > 10) {
-        this.actAs = this.actAs.slice(0,10) + '...';
-      }
+      this.displayName = this.actAs;
       this.$router.go();
     },
     setCurUser(response) {
@@ -415,10 +416,7 @@ export default {
           this.actAs = response.nickname;
         }
       }
-
-      if (this.actAs.length > 10) {
-        this.actAs = this.actAs.slice(0,10) + '...';
-      }
+      this.displayName = this.actAs;
 
       // Filters out the null businesses
       this.businesses = response.businessesAdministered.filter(
@@ -459,9 +457,38 @@ export default {
 
     // Adding an event listener for resizing
     window.addEventListener("resize", this.onResize);
+
+    // Watch window width
+    const that = this
+    window.onresize = () => {
+      return (() => {
+        window.screenWidth = document.body.clientWidth
+        that.screenWidth = window.screenWidth
+      })()
+    }
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.onResize)
+  },
+  watch: {
+    screenWidth(val){
+
+      // use timer to reduce page freezes
+      if(!this.timer){
+        this.screenWidth = val
+        this.timer = true
+        let that = this
+        setTimeout(function(){
+          // change the display name
+          if (that.screenWidth >= 1200 && that.actAs.length > 10) {
+            that.displayName = that.actAs.slice(0,10) + '...';
+          } else {
+            that.displayName = that.actAs;
+          }
+          that.timer = false
+        },400)
+      }
+    }
   }
 }
 </script>
