@@ -3,7 +3,7 @@
     <!-- Table data Headers-->
     <div class="row mb-3">
       <div :class="`col py-3 header-col col-hover rounded-3 text-center ${headerIndex > 0 ? 'ms-2' : ''}`"
-           :key="headerIndex" v-for="(header, headerIndex) in tableHeaders"
+           :key="headerIndex" v-for="(header, headerIndex) in tableHeaders" :tabindex="tableTabIndex"
            @click="() => handleHeaderClick(headerIndex)" @keydown="event => handleHeaderKeyDown(event, headerIndex)" style="cursor: pointer; user-select: none; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none;">
         <!-- Header name -->
         <div class="fw-bold" v-if="orderBy === headerIndex">
@@ -29,7 +29,7 @@
     <!-- Table data rows -->
     <div v-if="dataIsReady">
         <!-- The @click and @keydown are used to trigger events for the parent to be informed that the element row was pressed.-->
-        <div :class="`row mb-3 py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex+rowIndex" style="cursor: pointer"
+        <div :class="`row mb-3 py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex" style="cursor: pointer"
              @click="() => handleRowClick(rowIndex)" @keydown="(event) => handleRowKeyDown(event, rowIndex)"
              v-for="(row, rowIndex) in currentPageRows" :key="`${tableId}-row-${rowIndex}`">
 

@@ -14,7 +14,7 @@
 
           <div class="row mb-3">
             <div class="col">
-              <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="2"
+              <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="0"
                       @click="showCreateProductModal()">Create Product
               </button>
             </div>

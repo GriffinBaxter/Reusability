@@ -61,7 +61,7 @@
               <a class="nav-link dropdown-toggle" role="button" tabindex="4" @click="() => {
                   this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links',
                   'business-dropdown-links-wrapper', this.showBusinessDropdown)
-                }">
+                }" >
                 Business Pages
               </a>
 
@@ -71,21 +71,21 @@
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
-                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="6">
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
                       Business Listings
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="7">
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
                       Inventory
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="8">
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
                       Catalogue
                     </router-link>
                   </li>
