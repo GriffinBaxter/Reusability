@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
+import org.seng302.business.product.Product;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -99,6 +100,15 @@ public class MarketplaceCardResourceIntegrationTests {
         user.setId(1);
         user.setSessionUUID(User.generateSessionUUID());
 
+        card = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                "Hayley's Birthday",
+                "Come join Hayley and help her celebrate her birthday!"
+        );
+
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
                 cardRepository, userRepository, addressRepository))
                 .build();
@@ -113,15 +123,6 @@ public class MarketplaceCardResourceIntegrationTests {
     public void canCreateCardWhenUserExistsAndDataValid() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-
-        card = new MarketplaceCard(
-                user.getId(),
-                user,
-                Section.FORSALE,
-                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
-                "Hayley's Birthday",
-                "Come join Hayley and help her celebrate her birthday!"
-        );
 
         payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription());
         given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
@@ -149,15 +150,6 @@ public class MarketplaceCardResourceIntegrationTests {
     @Test
     public void cantCreateCardWhenCreatorExistsButCardAlreadyExists() throws Exception {
         // given
-        card = new MarketplaceCard(
-                user.getId(),
-                user,
-                Section.FORSALE,
-                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
-                "Hayley's Birthday",
-                "Come join Hayley and help her celebrate her birthday!"
-        );
-
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
@@ -166,7 +158,7 @@ public class MarketplaceCardResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-        response = mvc.perform(post(String.format("/cards"))
+        response = mvc.perform(post("/cards")
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
@@ -174,4 +166,86 @@ public class MarketplaceCardResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when sending a marketplace card creation payload to the
+     * /cards API endpoint that contains invalid data and an existing creator ID.
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    public void cantCreateCardWhenUserExistsButDataIsInvalid() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
+                .willReturn(Optional.ofNullable(card));
+        String title = "Title";
+        title.repeat(20);
+        payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), title, card.getDescription());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when sending a marketplace card creation payload to the
+     * /cards API endpoint that contains valid data and an existing creator ID but with
+     * no cookie.
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    public void cantCreateCardWhenUserExistsAndDataValidWithNoCookie() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+
+        payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription());
+        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
+                .willReturn(Optional.ofNullable(card));
+        // when
+        response = mvc.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when sending a marketplace card creation payload to the
+     * /cards API endpoint that contains valid data and an existing creator ID but with
+     * an invalid UUID.
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    public void cantCreateCardWhenUserExistsAndDataValidWithInvalidUUID() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
+                .willReturn(Optional.ofNullable(card));
+
+        payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription());
+
+        // when
+        // The UUID is invalid because a user can't be found with the supplied UUID
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.empty());
+        response = mvc.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
 }
