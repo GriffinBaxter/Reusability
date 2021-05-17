@@ -35,7 +35,7 @@
               <div class="col-sm-6 form-group py-1 px-3">
                 <label for="quantity">Quantity*: </label>
                 <input id="quantity" name="quantity" type="number" ref="quantity" v-model="quantity" min="0"
-                       :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
+                       :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" @input="updatePriceFromQuantity()" required>
                 <div class="invalid-feedback">
                   {{ quantityErrorMsg }}
                 </div>
@@ -229,7 +229,16 @@ export default {
       }
       return errorMessage;
     },
-
+    /**
+     * Updates the price when the quantity input is modified based on the price per item of the currently selected inventory item.
+     * */
+    updatePriceFromQuantity() {
+      if (!isNaN(this.quantity)) {
+        if (this.currentInventoryItem.pricePerItem && !isNaN(this.currentInventoryItem.pricePerItem)) {
+          this.price = this.quantity * this.currentInventoryItem.pricePerItem;
+        }
+      }
+    },
     /**
      *  Checks the ID of the current input value, then finds the inventory item with that ID (in allInventoryItems) to autofill
      *  that item's quantity and price in the quantity and price input fields.
