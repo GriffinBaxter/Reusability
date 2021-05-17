@@ -1,7 +1,7 @@
 /**
  * Summary. This file contains the definition for the Role.
  *
- * Description. This file contains the defintion for the Role.
+ * Description. This file contains the definition for the Role.
  *
  * @link   team-400/src/main/java/org/seng302/user/Role
  * @file   This file contains the definition for Role.

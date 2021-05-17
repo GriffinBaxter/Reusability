@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
+import org.seng302.marketplace.MarketplaceCard;
 import org.seng302.validation.UserValidation;
 import org.seng302.validation.Validation;
 
@@ -53,7 +54,7 @@ public class User {
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "bio")
+    @Column(name = "bio", length = 600)
     private String bio;
 
     @Column(name = "email", nullable = false)
@@ -88,7 +89,6 @@ public class User {
 
     @Column(name = "session_uuid")
     private String sessionUUID;
-
 
     /**
      * User account constructor.
@@ -326,6 +326,10 @@ public class User {
         return businessesAdministeredObjects;
     }
 
+    /**
+     * Removes the given business from the businessesAdministeredObjects
+     * @param business
+     */
     public void removeABusinessesAdministeredObjects(Business business){
         int id = business.getId();
         for (int i = 0; i < businessesAdministeredObjects.size(); i++){
