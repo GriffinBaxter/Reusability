@@ -72,8 +72,8 @@
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
-                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="6">
-                      Business Listings
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
+                      Listings
                     </router-link>
                   </li>
                   <li class="nav-item">
