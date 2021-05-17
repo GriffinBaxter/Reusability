@@ -120,16 +120,27 @@
                     this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
                     'interact-dropdown-links-wrapper', this.showInteractMenu)
                     }">
-              {{ displayName }}
+              <div v-if="showOmitName">{{ actAsOmit }}</div>
+              <div v-else>{{ actAs }}</div>
             </div>
             <div id="interact-dropdown-links-wrapper">
               <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
 
                 <li class="nav-item">
                 </li>
-                <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" @click="itemClicked(index)">
-                  <a class="nav-link">{{ act.name }}</a>
-                </li>
+                <div v-if="showOmitName">
+                  <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index"
+                      @click="itemClicked(index)">
+                    <a class="nav-link">{{ act.name }}</a>
+                  </li>
+                </div>
+                <div v-else>
+                  <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index"
+                      @click="itemClicked(index)">
+                    <a class="nav-link">{{ act.name }}</a>
+                  </li>
+                </div>
+
               </ul>
             </div>
           </ul>
@@ -182,14 +193,29 @@ export default {
       // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
       isActAsBusiness: false,
       businessAccountId: null,
-      displayName: null,
+
+      // omit part of name
+      showOmitName: null,
+      interactAsOmit: [],
+      actAsOmit: "",
 
       // Watch window width
       screenWidth: document.body.clientWidth,
+      maxNameLength: 30,
+      omitPoint: 10
     }
   },
 
   methods: {
+    /**
+     * omit name which length longer than max.
+     */
+    omitName(name, max) {
+      if (name.length > max) {
+        name = name.slice(0, max) + '...';
+      }
+      return name
+    },
     /**
      * Gets information about the current logged in user
      */
@@ -345,13 +371,38 @@ export default {
      */
     refreshDropdown() {
       if (this.currentUser.nickname == null) {
-        this.interactAs = [{id: this.currentUser.id, name: this.currentUser.firstName}];
+        this.interactAs = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.firstName, this.maxNameLength)
+        }];
+
+        // store a list of name with an max length
+        this.interactAsOmit = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.firstName, this.omitPoint)
+        }];
       } else {
-        this.interactAs = [{id: this.currentUser.id, name: this.currentUser.nickname}];
+        this.interactAs = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.nickname, this.maxNameLength)
+        }];
+
+        // store a list of name with an max length
+        this.interactAsOmit = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.nickname, this.omitPoint)
+        }];
       }
 
       for (let i = 0; i < this.businesses.length; i++) {
-        this.interactAs.push(this.businesses[i]);
+        this.interactAs.push({
+          id: this.businesses[i].id,
+          name: this.omitName(this.businesses[i].name, this.maxNameLength)
+        });
+        this.interactAsOmit.push({
+          id: this.businesses[i].id,
+          name: this.omitName(this.businesses[i].name, this.omitPoint)
+        });
       }
     },
     /**
@@ -380,7 +431,8 @@ export default {
         this.actAsId = this.interactAs[index].id;
         this.actAs = this.interactAs[index].name;
       }
-      this.displayName = this.actAs;
+      this.actAs = this.omitName(this.actAs, this.maxNameLength)
+      this.actAsOmit = this.omitName(this.actAs, this.omitPoint)
       this.$router.go();
     },
     setCurUser(response) {
@@ -416,7 +468,8 @@ export default {
           this.actAs = response.nickname;
         }
       }
-      this.displayName = this.actAs;
+      this.actAs = this.omitName(this.actAs, this.maxNameLength)
+      this.actAsOmit = this.omitName(this.actAs, this.omitPoint);
 
       // Filters out the null businesses
       this.businesses = response.businessesAdministered.filter(
@@ -436,6 +489,7 @@ export default {
     }
     this.businessAccountId = Cookies.get("actAs");
     this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
+    this.showOmitName = (this.screenWidth > 1200);
   },
   mounted() {
     this.getUserData();
@@ -471,22 +525,22 @@ export default {
     window.removeEventListener("resize", this.onResize)
   },
   watch: {
-    screenWidth(val){
+    screenWidth(val) {
 
       // use timer to reduce page freezes
-      if(!this.timer){
+      if (!this.timer) {
         this.screenWidth = val
         this.timer = true
         let that = this
-        setTimeout(function(){
+        setTimeout(function () {
           // change the display name
-          if (that.screenWidth >= 1200 && that.actAs.length > 10) {
-            that.displayName = that.actAs.slice(0,10) + '...';
+          if (that.screenWidth >= 1200) {
+            that.showOmitName = true;
           } else {
-            that.displayName = that.actAs;
+            that.showOmitName = false;
           }
           that.timer = false
-        },400)
+        }, 400)
       }
     }
   }
