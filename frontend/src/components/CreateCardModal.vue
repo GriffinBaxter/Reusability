@@ -29,9 +29,12 @@
 
               <!-- Select a section  -->
               <div class="row my-lg-2">
-                <div class="col-12 my-2 my-lg-0">
-                  <label for="section-selection" class="form-label">What section would you like to post your card?</label>
-                  <select id="section-selection" name="section-selection" :class="`form-select ${isInvalid(formError.sectionSelection)}`" v-model="sectionSelected">
+                <div class="col-md-6 my-2 my-lg-0">
+                  <label for="section-selection" class="form-label">What section would you like to post your card?*</label>
+                </div>
+                <div class="col-md-6 my-2 my-lg-0">
+                  <select id="section-selection" name="section-selection" :class="`form-select ${isInvalid(formError.sectionSelection)}`" v-model="sectionSelected" >
+                    <option value="" disabled selected>Select section</option>
                     <option :value="sections.FOR_SALE">For Sale</option>
                     <option :value="sections.EXCHANGE">Exchange</option>
                     <option :value="sections.WANTED">Wanted</option>
@@ -39,6 +42,34 @@
                   <div class="invalid-feedback" v-if="formError.sectionSelection">
                     {{formError.sectionSelection}}
                   </div>
+              </div>
+              </div>
+
+              <hr>
+
+
+              <!-- Pre filled in information -->
+              <div class="row my-lg-2">
+                <!-- User's full name-->
+                <div class="col-md-12 col-6 d-md-flex flex-md-row">
+                    <label for="user-full-name" class="fw-bold me-md-2">Name:</label>
+                    <p id="user-full-name">{{userFullName}}</p>
+                </div>
+
+                <!-- User's location details -->
+                <div class="col-md-12 col-6 d-md-flex flex-md-row">
+                    <label for="user-location" class="fw-bold me-md-2">Location:</label>
+                    <p id="user-location">{{userLocation}}</p>
+                </div>
+              </div>
+
+              <!-- Card title -->
+              <div class="row my-lg-2">
+                <div class="col-md-2 ">
+                  <label for="card-title" class="fw-bold">Title:</label>
+                </div>
+                <div class="col-md">
+                  <input id="card-title" class="form-control">
                 </div>
               </div>
 
@@ -47,8 +78,8 @@
 
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save Changes</button>
+            <button type="button" class="btn btn-primary order-1">Create</button>
+            <button type="button" class="btn btn-secondary order-0" data-bs-dismiss="modal">Cancel</button>
           </div>
         </div>
       </div>
@@ -76,6 +107,12 @@ export default {
         WANTED: "wanted",
         EXCHANGE: "exchange"
       },
+
+      /** Contains the user's full name to be displayed as a prefilled value*/
+      userFullName: "Your full name",
+      /** Contains the prefilled value of the user's address (only city and suburb)*/
+      userLocation: "Your city, suburb",
+
 
       /** Error messages */
       formError: {
