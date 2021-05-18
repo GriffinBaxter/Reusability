@@ -34,6 +34,11 @@ export default class Business{
             minLength: 0,
             maxLength: 255
         },
+        suburb: {
+            name: "Suburb",
+            minLength: 0,
+            maxLength: 255
+        },
         city: {
             name: "City",
             minLength: 0,
