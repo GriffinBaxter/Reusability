@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,17 +55,17 @@ public class MarketplaceCardResourceIntegrationTests {
     private final String expectedCardJson = "{" +
             "\"id\":%d," +
             "\"creator\":{" +
-                "\"id\":%d," +
-                "\"firstName\":\"%s\"," +
-                "\"lastName\":\"%s\"," +
-                "\"middleName\":\"%s\"," +
-                "\"nickname\":\"%s\"," +
-                "\"bio\":\"%s\"," +
-                "\"email\":\"%s\"," +
-                "\"created\":\"%s\"," +
-                "\"role\":\"%s\"," +
-                "\"businessesAdministered\":[null]," +
-                "\"homeAddress\":%s" +
+            "\"id\":%d," +
+            "\"firstName\":\"%s\"," +
+            "\"lastName\":\"%s\"," +
+            "\"middleName\":\"%s\"," +
+            "\"nickname\":\"%s\"," +
+            "\"bio\":\"%s\"," +
+            "\"email\":\"%s\"," +
+            "\"created\":\"%s\"," +
+            "\"role\":\"%s\"," +
+            "\"businessesAdministered\":[null]," +
+            "\"homeAddress\":%s" +
             "}," +
             "\"section\":\"%s\"," +
             "\"created\":\"%s\"," +
@@ -119,7 +121,7 @@ public class MarketplaceCardResourceIntegrationTests {
         marketplaceCard.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                    marketplaceCardRepository, userRepository)).build();
+                marketplaceCardRepository, userRepository)).build();
     }
 
 
@@ -230,4 +232,150 @@ public class MarketplaceCardResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    // ------------------- GET ALL (by SECTION) -------------------
+
+    /**
+     * Tests that an OK status and marketplace cards are received when the Section is valid.
+     * Test specifically for when the cookie contains a valid UUID.
+     */
+    @Test
+    public void canRetrieveCardsWithValidSectionAndCookie() throws Exception {
+        // given
+        expectedJson = "[" + String.format(expectedCardJson, marketplaceCard.getId(), user.getId(), user.getFirstName(),
+                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard.getSection().toString(),
+                marketplaceCard.getCreated(), marketplaceCard.getDisplayPeriodEnd(), marketplaceCard.getTitle(),
+                marketplaceCard.getDescription()) + "]";
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        Sort sort = Sort.by(Sort.Order.desc("created").ignoreCase());;
+        Pageable page = PageRequest.of(0, 20, sort);
+
+        List<MarketplaceCard> list = List.of(marketplaceCard);
+        Page<MarketplaceCard> pagedResponse = new PageImpl<>(list);
+
+        // when
+        when(marketplaceCardRepository.findAllBySection(Section.FORSALE, page)).thenReturn(pagedResponse);
+        response = mvc.perform(get("/cards").param("section", "FORSALE")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status and marketplace cards are received when the Section is valid.
+     * Test specifically for when the cookie contains a valid UUID and orderBy and page are valid.
+     */
+    @Test
+    public void canRetrieveCardsWithValidSectionAndCookieAndOrderByAndPage() throws Exception {
+        // given
+        expectedJson = "[" + String.format(expectedCardJson, marketplaceCard.getId(), user.getId(), user.getFirstName(),
+                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard.getSection().toString(),
+                marketplaceCard.getCreated(), marketplaceCard.getDisplayPeriodEnd(), marketplaceCard.getTitle(),
+                marketplaceCard.getDescription()) + "]";
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase());;
+        Pageable page = PageRequest.of(0, 20, sort);
+
+        List<MarketplaceCard> list = List.of(marketplaceCard);
+        Page<MarketplaceCard> pagedResponse = new PageImpl<>(list);
+
+        // when
+        when(marketplaceCardRepository.findAllBySection(Section.FORSALE, page)).thenReturn(pagedResponse);
+        response = mvc.perform(get("/cards").param("section", "FORSALE")
+                .param("orderBy", "createdASC").param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that the user cannot retrieve cards with an invalid JSESSIONID
+     */
+    @Test
+    public void cantRetrieveCardsWithInvalidJSESSIONID() throws Exception {
+        // given
+        String fakeSessionID = "xxx";
+        given(userRepository.findBySessionUUID(fakeSessionID)).willReturn(Optional.ofNullable(null));
+
+        // when
+        response = mvc.perform(get("/cards").param("section", "FORSALE")
+                .cookie(new Cookie("JSESSIONID", fakeSessionID))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that the user cannot retrieve cards without a invalid JSESSIONID
+     */
+    @Test
+    public void cantRetrieveCardsWithNoJSESSIONID() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(null)).willReturn(Optional.ofNullable(null));
+
+        // when
+        response = mvc.perform(get("/cards").param("section", "FORSALE")).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that the user cannot retrieve cards with an invalid Page number parameter
+     */
+    @Test
+    public void cantRetrieveCardsWithInvalidPage() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        // when
+        response = mvc.perform(get("/cards").param("section", "FORSALE")
+                .param("orderBy", "createdASC").param("page", "fd")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that the user cannot retrieve cards with an invalid OrderBy parameter
+     */
+    @Test
+    public void cantRetrieveCardsWithInvalidOrderBy() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        // when
+        response = mvc.perform(get("/cards").param("section", "FORSALE")
+                .param("orderBy", "qwerty")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that the user cannot retrieve cards with an invalid Section parameter
+     */
+    @Test
+    public void cantRetrieveCardsWithInvalidSection() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        // when
+        response = mvc.perform(get("/cards").param("section", "SECTION")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

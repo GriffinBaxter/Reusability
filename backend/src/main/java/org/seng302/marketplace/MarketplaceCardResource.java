@@ -58,8 +58,10 @@ public class MarketplaceCardResource {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Checks section is valid
-        Section sectionType = Section.valueOf(section.toUpperCase());
-        if (sectionType == null) {
+        Section sectionType;
+        try {
+            sectionType = Section.valueOf(section.toUpperCase());
+        } catch(Exception e) {
             logger.error("400 [BAD REQUEST] - {} is not a valid section", section);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -80,7 +82,7 @@ public class MarketplaceCardResource {
         }
 
         // Front-end displays 20 cards per page
-        int pageSize = 20;
+        int pageSize = 20; // NOTE if changed must also be changed in MarketplaceCardResourceIntegrationTests
 
         Sort sortBy = null;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
