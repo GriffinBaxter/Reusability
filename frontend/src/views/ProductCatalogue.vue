@@ -101,15 +101,18 @@
                   </div>
                   <!--recommended retail price-->
                   <div class="form-group">
-                    <label for="product-price">Recommended Retail Price ({{ currencySymbol }} {{
-                        currencyCode
-                      }})</label>
-                    <input id="product-price" class="input-styling" name="product-price" type="text"
-                           v-model="recommendedRetailPrice"
-                           :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
-                           :maxlength="config.recommendedRetailPrice.maxLength">
-                    <div class="invalid-feedback">
-                      {{ recommendedRetailPriceErrorMsg }}
+                    <label for="product-price">Recommended Retail Price ({{ currencyCode }})</label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">{{ currencySymbol }}</span>
+                      </div>
+                      <input id="product-price" class="input-styling" name="product-price" type="text"
+                             v-model="recommendedRetailPrice"
+                             :class="toggleInvalidClass(recommendedRetailPriceErrorMsg)"
+                             :maxlength="config.recommendedRetailPrice.maxLength">
+                      <div class="invalid-feedback">
+                        {{ recommendedRetailPriceErrorMsg }}
+                      </div>
                     </div>
                   </div>
                   <!--manufacturer-->
@@ -364,7 +367,7 @@ export default {
         isAscending = false;
       }
 
-      // If we found a valid orderBy compare it against he allowed orderBy headers in tableOrderByHeaders
+      // If we found a valid orderBy compare it against the allowed orderBy headers in tableOrderByHeaders
       if (orderBy !== null) {
         orderBy = this.tableOrderByHeaders.indexOf(orderBy);
 
