@@ -8,7 +8,7 @@
           </div>
         </div>
         <div class="col">
-          <div class="card-body px-3" id="cardbody">
+          <div class="card-body px-3" id="card-body">
             <div class="row">
               <div class="col">
                 <h4 class="card-title">{{quantity}}x {{ productName }}</h4>
@@ -17,7 +17,7 @@
                 <p align="right">{{moreInfo}}</p>
               </div>
             </div>
-            <div class="row py-2" id="mainbody">
+            <div class="row py-2" id="main-body">
               <div class="col-md-3">
                 <p class="card-text">
                   {{ productId }}

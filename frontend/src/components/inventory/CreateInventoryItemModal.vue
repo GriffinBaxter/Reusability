@@ -37,23 +37,33 @@
 
             <!--price per item-->
             <div class="col-6 form-group py-1 px-3">
-              <label for="price-per-item">Price Per Item: </label>
-              <input id="price-per-item" name="price-per-item" type="number" step="0.01"
-                     v-model="pricePerItem"
-                     min="0" :class="toggleInvalidClass(pricePerItemErrorMsg)"
-                     :maxlength="config.pricePerItem.maxLength">
-              <div class="invalid-feedback">
-                {{ pricePerItemErrorMsg }}
+              <label for="price-per-item">Price Per Item ({{ currencyCode }}): </label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">{{ currencySymbol }}</span>
+                </div>
+                <input id="price-per-item" name="price-per-item" type="number" step="0.01"
+                       v-model="pricePerItem"
+                       min="0" :class="toggleInvalidClass(pricePerItemErrorMsg)"
+                       :maxlength="config.pricePerItem.maxLength">
+                <div class="invalid-feedback">
+                  {{ pricePerItemErrorMsg }}
+                </div>
               </div>
             </div>
 
             <!--total price-->
             <div class="col-6 form-group py-1 px-3">
-              <label for="total-price">Total Price: </label>
-              <input id="total-price" name="total-price" type="number" step="0.01" v-model="totalPrice"
-                     min="0" :class="toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
-              <div class="invalid-feedback">
-                {{ totalPriceErrorMsg }}
+              <label for="total-price">Total Price ({{ currencyCode }}): </label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">{{ currencySymbol }}</span>
+                </div>
+                <input id="total-price" name="total-price" type="number" step="0.01" v-model="totalPrice"
+                       min="0" :class="toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
+                <div class="invalid-feedback">
+                  {{ totalPriceErrorMsg }}
+                </div>
               </div>
             </div>
 
@@ -97,7 +107,7 @@
               </div>
             </div>
             <div class="text-center text-danger">
-              {{toastErrorMessage}}
+              {{ toastErrorMessage }}
             </div>
 
           </form>
@@ -105,7 +115,9 @@
 
         <!--footer-->
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn green-button-transparent" @click="dataReset(false)" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn green-button-transparent" @click="dataReset(false)" data-bs-dismiss="modal">
+            Cancel
+          </button>
           <button type="button" class="btn green-button " @click="createNewInventoryItem()">Confirm</button>
         </div>
 
@@ -116,7 +128,7 @@
 
 <script>
 
-import { Modal } from "bootstrap"; //uncommenting means the test do not run
+import {Modal} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
 import {endOfToday, format, compareAsc} from 'date-fns'
@@ -163,6 +175,18 @@ export default {
       expiresErrorMsg: "",
 
       toastErrorMessage: ""
+    }
+  },
+  props: {
+    currencyCode: {
+      type: String,
+      default: "",
+      required: false
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: false
     }
   },
   methods: {
@@ -586,8 +610,8 @@ export default {
       }
       // Manufacture date error checking
       if (!this.isValidManufactureDate(this.manufactured)) {
-          this.manufacturedErrorMsg = "Manufactured date must be prior to today's date";
-          requestIsInvalid = true;
+        this.manufacturedErrorMsg = "Manufactured date must be prior to today's date";
+        requestIsInvalid = true;
       } else {
         this.manufacturedErrorMsg = '';
       }
