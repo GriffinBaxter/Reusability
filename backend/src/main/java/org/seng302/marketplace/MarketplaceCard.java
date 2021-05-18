@@ -1,8 +1,6 @@
 package org.seng302.marketplace;
 
 import lombok.NoArgsConstructor;
-import org.seng302.business.Business;
-import org.seng302.business.product.ProductId;
 import org.seng302.user.User;
 import org.seng302.validation.MarketplaceCardValidation;
 import javax.persistence.*;
@@ -21,8 +19,8 @@ public class MarketplaceCard {
     @Column(name = "id", nullable = false)
     private int id;
 
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false) //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
+    @JoinColumn(name = "creator", nullable = false)
     private User creator;
 
     @Column(name = "creator_id")

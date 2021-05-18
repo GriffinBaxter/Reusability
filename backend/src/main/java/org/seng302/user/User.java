@@ -90,6 +90,10 @@ public class User {
     @Column(name = "session_uuid")
     private String sessionUUID;
 
+    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<MarketplaceCard> cards = new ArrayList<>();
+
     /**
      * User account constructor.
      * @param firstName First Name
@@ -327,6 +331,14 @@ public class User {
     }
 
     /**
+     * Returns a list of MarketplaceCard objects created by the user.
+     * @return cards a list of MarketplaceCard objects.
+     */
+    public List<MarketplaceCard> getCards() {
+        return cards;
+    }
+
+    /**
      * Removes the given business from the businessesAdministeredObjects
      * @param business
      */
@@ -335,6 +347,19 @@ public class User {
         for (int i = 0; i < businessesAdministeredObjects.size(); i++){
             if (businessesAdministeredObjects.get(i).getId() == id){
                 this.businessesAdministeredObjects.remove(i);
+            }
+        }
+    }
+
+    /**
+     * Removes the given card from the list of cards created by the user.
+     * @param card the card to be removed
+     */
+    public void removeACardFromMarketplaceCards(MarketplaceCard card){
+        int id = card.getId();
+        for (int i = 0; i < this.cards.size(); i++){
+            if (this.cards.get(i).getId() == id){
+                this.cards.remove(i);
             }
         }
     }
