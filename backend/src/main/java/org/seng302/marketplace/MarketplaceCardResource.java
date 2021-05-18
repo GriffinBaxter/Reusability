@@ -60,7 +60,7 @@ public class MarketplaceCardResource {
         // Checks section is valid
         Section sectionType = Section.valueOf(section.toUpperCase());
         if (sectionType == null) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid sectopn", section);
+            logger.error("400 [BAD REQUEST] - {} is not a valid section", section);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Invalid Section"
