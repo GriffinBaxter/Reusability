@@ -103,7 +103,7 @@
 
           <ul class="navbar-nav flex-column flex-xl-row">
             <!-- Interact As -->
-            <li id="interactDrop">
+            <li id="interactDrop" tabindex="5">
               <a role="button" @click="() => {
                     this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
                     'interact-dropdown-links-wrapper', this.showInteractMenu)
