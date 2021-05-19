@@ -1,14 +1,11 @@
 package org.seng302.marketplace;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.address.Address;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
-import org.seng302.user.UserPayload;
-import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -23,7 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +47,12 @@ public class MarketplaceCardRepositoryIntegrationTests {
     private MarketplaceCard marketplaceCard2;
     private MarketplaceCard marketplaceCard3;
     private MarketplaceCard marketplaceCard4;
+    private MarketplaceCard marketplaceCard5;
+
+    private int marketplaceCardId;
+    private int marketplaceCardId3;
+    private int marketplaceCardId5;
+
 
     @BeforeEach
     public void before() throws Exception {
@@ -84,6 +87,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
+        marketplaceCardId = marketplaceCard.getId();
         entityManager.persist(marketplaceCard);
         entityManager.flush();
 
@@ -106,6 +110,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 "Your dignity",
                 ""
         );
+        marketplaceCardId3 = marketplaceCard3.getId();
         entityManager.persist(marketplaceCard3);
         entityManager.flush();
 
@@ -118,6 +123,18 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 "Been shot pls help"
         );
         entityManager.persist(marketplaceCard4);
+        entityManager.flush();
+
+        marketplaceCard5 = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 21), LocalTime.of(0, 0)),
+                "WordArt Title's",
+                ""
+        );
+        marketplaceCardId5 = marketplaceCard5.getId();
+        entityManager.persist(marketplaceCard5);
         entityManager.flush();
     }
 
@@ -168,7 +185,6 @@ public class MarketplaceCardRepositoryIntegrationTests {
         foundMarketplaceCards = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable);
 
         // then
-        assertThat(foundMarketplaceCards.getNumberOfElements()).isEqualTo(2);
         for (MarketplaceCard card: foundMarketplaceCards) {
             assertThat(card.getSection()).isEqualTo(Section.FORSALE);
         }
@@ -188,5 +204,138 @@ public class MarketplaceCardRepositoryIntegrationTests {
 
         // then
         assertThat(foundMarketplaceCards.getNumberOfElements()).isEqualTo(0);
+    }
+
+
+    // ------------------------ Get All (Ordering + Pagination) ------------------------
+
+    /**
+     * Tests Ordering by Created Descending for getting all Marketplace Cards by Section (findAllBySection)
+     */
+    @Test
+    public void whenFindAllMarketplaceCardsBySection_thenReturnCreatedOrderedCardsDescending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 3;
+        Sort sortBy = Sort.by(Sort.Order.desc("created").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        ArrayList<String> orderedCardTitles = new ArrayList<>();
+        orderedCardTitles.add("WordArt Title's");
+        orderedCardTitles.add("Your dignity");
+        orderedCardTitles.add("Hayley's Birthday");
+
+        // when
+        Page<MarketplaceCard> cardPage = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable);
+
+        // then
+        for (int i = 0; i < cardPage.getContent().size(); i++) {
+            assertThat(cardPage.getContent().get(i).getTitle()).isEqualTo(orderedCardTitles.get(i));
+        }
+    }
+
+    /**
+     * Tests Ordering by Created Ascending for getting all Marketplace Cards by Section (findAllBySection)
+     */
+    @Test
+    public void whenFindAllMarketplaceCardsBySection_thenReturnCreatedOrderedCardsAscending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 3;
+        Sort sortBy = Sort.by(Sort.Order.asc("created").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        ArrayList<String> orderedCardTitles = new ArrayList<>();
+        orderedCardTitles.add("Hayley's Birthday");
+        orderedCardTitles.add("WordArt Title's");
+        orderedCardTitles.add("Your dignity");
+
+
+        // when
+        Page<MarketplaceCard> cardPage = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable);
+
+        // then
+        for (int i = 0; i < cardPage.getContent().size(); i++) {
+            assertThat(cardPage.getContent().get(i).getTitle()).isEqualTo(orderedCardTitles.get(i));
+        }
+    }
+
+    /**
+     * Tests Ordering by Title Descending for getting all Marketplace Cards by Section (findAllBySection)
+     */
+    @Test
+    public void whenFindAllMarketplaceCardsBySection_thenReturnTitleOrderedCardsDescending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 3;
+        Sort sortBy = Sort.by(Sort.Order.desc("title").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        ArrayList<String> orderedCardTitles = new ArrayList<>();
+        orderedCardTitles.add("Your dignity");
+        orderedCardTitles.add("WordArt Title's");
+        orderedCardTitles.add("Hayley's Birthday");
+
+        // when
+        Page<MarketplaceCard> cardPage = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable);
+
+        // then
+        for (int i = 0; i < cardPage.getContent().size(); i++) {
+            assertThat(cardPage.getContent().get(i).getTitle()).isEqualTo(orderedCardTitles.get(i));
+        }
+    }
+
+    /**
+     * Tests Ordering by Title Ascending for getting all Marketplace Cards by Section (findAllBySection)
+     */
+    @Test
+    public void whenFindAllMarketplaceCardsBySection_thenReturnTitleOrderedCardsAscending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 3;
+        Sort sortBy = Sort.by(Sort.Order.asc("title").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        ArrayList<String> orderedCardTitles = new ArrayList<>();
+        orderedCardTitles.add("Hayley's Birthday");
+        orderedCardTitles.add("WordArt Title's");
+        orderedCardTitles.add("Your dignity");
+
+        // when
+        Page<MarketplaceCard> cardPage = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable);
+
+        // then
+        for (int i = 0; i < cardPage.getContent().size(); i++) {
+            assertThat(cardPage.getContent().get(i).getTitle()).isEqualTo(orderedCardTitles.get(i));
+        }
+    }
+
+    /**
+     * Tests Paging for getting all Marketplace Cards by Section (findAllBySection)
+     */
+    @Test
+    public void whenFindAllMarketplaceCardsBySection_thenReturnPagedCards() throws Exception {
+        // given
+        int pageSize = 1;
+        Sort sortBy = Sort.by(Sort.Order.desc("title").ignoreCase());
+
+        Pageable pageable = PageRequest.of(0, pageSize, sortBy); // Page 1
+        Pageable pageable2 = PageRequest.of(1, pageSize, sortBy); // Page 2
+        Pageable pageable3 = PageRequest.of(2, pageSize, sortBy); // Page 3
+
+        ArrayList<String> orderedCardTitles = new ArrayList<>();
+        orderedCardTitles.add("Your dignity");
+        orderedCardTitles.add("WordArt Title's");
+        orderedCardTitles.add("Hayley's Birthday");
+
+        // when
+        Page<MarketplaceCard> cardPage = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable);
+        Page<MarketplaceCard> cardPage2 = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable2);
+        Page<MarketplaceCard> cardPage3 = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable3);
+
+        // then
+        assertThat(cardPage.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(0));
+        assertThat(cardPage2.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(1));
+        assertThat(cardPage3.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(2));
     }
 }
