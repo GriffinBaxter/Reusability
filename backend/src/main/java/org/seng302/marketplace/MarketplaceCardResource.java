@@ -2,6 +2,7 @@ package org.seng302.marketplace;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
 import org.seng302.main.Authorization;
 import org.seng302.user.User;
@@ -58,43 +59,55 @@ public class MarketplaceCardResource {
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        try {
-            MarketplaceCard card = new MarketplaceCard(
-                    cardPayload.getCreatorId(),
-                    currentUser,
-                    cardPayload.getSection(),
-                    LocalDateTime.now(),
-                    cardPayload.getTitle(),
-                    cardPayload.getDescription()
-            );
+        // Check to see if card already exists.
+        Optional<MarketplaceCard> storedCard = cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                cardPayload.getCreatorId(), cardPayload.getSection(), cardPayload.getTitle(), cardPayload.getDescription());
 
-            List<KeywordPayload> keywords = cardPayload.getKeywords();
-            for (KeywordPayload keyword: keywords) {
-                Optional<Keyword> existingKeyword = keywordRepository.findByName(keyword.getName());
-                if (existingKeyword.isPresent()) { // If keyword exists then update existing keyword.
-                    Keyword existingKeywordPresent = existingKeyword.get();
-                    existingKeywordPresent.addCard(card);
-                    keywordRepository.save(existingKeyword.get());
-                } else { // If no keyword existing create a new one and save.
-                    Keyword newKeyword = new Keyword(
-                            keyword.getName(),
-                            LocalDateTime.now(),
-                            card
-                    );
-                    keywordRepository.save(newKeyword);
+        // If card does not exist create a new one.
+        // This is done to prevent duplicate cards.
+        if (storedCard.isEmpty()) {
+            try {
+                MarketplaceCard card = new MarketplaceCard(
+                        cardPayload.getCreatorId(),
+                        currentUser,
+                        cardPayload.getSection(),
+                        LocalDateTime.now(),
+                        cardPayload.getTitle(),
+                        cardPayload.getDescription()
+                );
+
+                List<String> keywords = cardPayload.getKeywords();
+                for (String keyword: keywords) {
+                    Optional<Keyword> existingKeyword = keywordRepository.findByName(keyword);
+                    if (existingKeyword.isPresent()) { // If keyword exists then update existing keyword.
+                        Keyword existingKeywordPresent = existingKeyword.get();
+                        existingKeywordPresent.addCard(card);
+                        keywordRepository.save(existingKeywordPresent);
+                    } else { // If no keyword existing create a new one and save.
+                        Keyword newKeyword = new Keyword(
+                                keyword,
+                                LocalDateTime.now(),
+                                card
+                        );
+                        keywordRepository.save(newKeyword);
+                    }
                 }
+                MarketplaceCard createdCard = cardRepository.save(card);
+                logger.info("Successful Card Creation - {}", createdCard.toString());
+                return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceCardIdPayload(createdCard.getId()));
+            } catch (Exception e) {
+                logger.error("Card Creation Failure - {}", e.getMessage());
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid card"
+                );
             }
-            MarketplaceCard createdCard = cardRepository.save(card);
-            logger.info("Successful Card Creation - {}", createdCard.toString());
-            return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceCardIdPayload(createdCard.getId()));
-        } catch (Exception e) {
-            logger.error("Card Creation Failure - {}", e.getMessage());
+        } else {
+            logger.error("Card already exists.");
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Invalid card"
+                    HttpStatus.CONFLICT,
+                    "Card already exists."
             );
         }
-
-
     }
 }

@@ -13,7 +13,7 @@ public class MarketplaceCardCreationPayload {
     private String section;
     private String title;
     private String description;
-    private List<KeywordPayload> keywords;
+    private List<String> keywords;
 
     /**
      * Retrieve the id of the user who created the card.
@@ -68,12 +68,26 @@ public class MarketplaceCardCreationPayload {
 
     /**
      * Retrieve the keywords belonging to the card.
-     * @return a list of keywords belonging to card.
+     * @return a list of strings representing keywords belonging to card.
      */
-    public List<KeywordPayload> getKeywords() {
+    public List<String> getKeywords() {
         return keywords;
     }
 
+
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the MarketplaceCardCreationPayload.
+     */
+    @Override
+    public String toString() {
+        return "{\"creatorId\":\"" + creatorId + "\"" +
+                ",\"section\":\"" + section + "\"" +
+                ",\"title\":\"" + title + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                ",\"keywords\":" + keywords  +
+                "}";
+    }
 
 
 

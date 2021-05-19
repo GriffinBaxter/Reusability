@@ -173,6 +173,10 @@ public class MarketplaceCard {
         }
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the marketplace card.
+     */
     @Override
     public String toString() {
         return "{\"id\":" + id +

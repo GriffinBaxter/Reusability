@@ -14,4 +14,13 @@ public class KeywordPayload {
     public String getName() {
         return name;
     }
+
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the KeywordPayload.
+     */
+    @Override
+    public String toString() {
+        return "{\"name\":\"" + name + "\"" + "}";
+    }
 }
