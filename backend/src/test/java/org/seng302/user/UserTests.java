@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -50,8 +51,8 @@ public class UserTests {
     }
 
     /**
-     * initialize
-     * @throws Exception business object create fail
+     * Test that when a new business is created the user is added as an administrator.
+     * @throws Exception thrown when a new business does not contain valid info.
      */
     @Test
     public void testAddAdministrators() throws Exception {
@@ -65,6 +66,9 @@ public class UserTests {
                         LocalTime.of(0, 0)),
                 user
         );
+        ArrayList<User> admins = new ArrayList<>();
+        admins.add(user);
+        assertEquals(admins, business.getAdministrators());
     }
 
     /**

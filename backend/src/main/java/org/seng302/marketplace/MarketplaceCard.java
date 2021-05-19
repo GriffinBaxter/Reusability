@@ -1,10 +1,14 @@
 package org.seng302.marketplace;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.seng302.user.User;
 import org.seng302.validation.MarketplaceCardValidation;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for a marketplace card
@@ -38,7 +42,13 @@ public class MarketplaceCard {
     @Column(name = "description", length = 500)
     private String description;
 
-    // TODO: add keywordIds;
+    @JsonManagedReference
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "card_keywords",
+            joinColumns = { @JoinColumn(name = "card_id") },
+            inverseJoinColumns = { @JoinColumn(name = "keyword_id") })
+    private List<Keyword> keywords = new ArrayList<>();
 
     /**
      * Marketplace card constructor
@@ -131,6 +141,36 @@ public class MarketplaceCard {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Returns a list of keywords that the card contains.
+     * @return keywords a list of keyword entities.
+     */
+    public List<Keyword> getKeywords() {
+        return keywords;
+    }
+
+    /**
+     * Add a keyword to the list of keywords for this card.
+     * Called when a new keyword is created.
+     * @return keyword a keyword that is to be added to this card.
+     */
+    public void addKeyword(Keyword keyword) {
+        keywords.add(keyword);
+    }
+
+    /**
+     * Remove a keyword from the list of keywords for this card.
+     * @return keyword a keyword that is to be removed from this card.
+     */
+    public void removeKeyword(Keyword keyword) {
+        int id = keyword.getId();
+        for (int i = 0; i < keywords.size(); i++){
+            if (keywords.get(i).getId() == id){
+                this.keywords.remove(i);
+            }
+        }
     }
 
 //    /**
