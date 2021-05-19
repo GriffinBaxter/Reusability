@@ -173,6 +173,19 @@ public class MarketplaceCard {
         }
     }
 
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"creatorId\":\"" + creatorId + "\"" +
+                ",\"creator\":\"" + creator + "\"" +
+                ",\"section\":\"" + section + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                ",\"title\":\"" + title + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                //TODO add keyword stuff
+                "}";
+    }
+
 //    /**
 //     * Convert a Marketplace object into a MarketplacePayload
 //     * @return a MarketplacePayload object

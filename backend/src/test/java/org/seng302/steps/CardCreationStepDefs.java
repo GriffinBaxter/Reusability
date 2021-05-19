@@ -5,10 +5,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
-import org.seng302.marketplace.MarketplaceCard;
-import org.seng302.marketplace.MarketplaceCardRepository;
-import org.seng302.marketplace.MarketplaceCardResource;
-import org.seng302.marketplace.Section;
+import org.seng302.marketplace.*;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -52,6 +49,10 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private MarketplaceCardRepository marketplaceCardRepository;
 
+    @Autowired
+    @MockBean
+    private KeywordRepository keywordRepository;
+
     private MockHttpServletResponse response;
     private User user;
     private Address address;
@@ -65,9 +66,10 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
         userRepository = mock(UserRepository.class);
         addressRepository = mock(AddressRepository.class);
         marketplaceCardRepository = mock(MarketplaceCardRepository.class);
+        keywordRepository = mock(KeywordRepository.class);
 
         this.cardMVC = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, addressRepository)).build();
+                marketplaceCardRepository, userRepository, addressRepository, keywordRepository)).build();
         this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 

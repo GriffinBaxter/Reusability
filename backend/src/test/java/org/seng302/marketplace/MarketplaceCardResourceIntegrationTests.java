@@ -56,13 +56,17 @@ public class MarketplaceCardResourceIntegrationTests {
     @MockBean
     private AddressRepository addressRepository;
 
+    @MockBean
+    private KeywordRepository keywordRepository;
+
 
     private MockHttpServletResponse response;
 
     private final String cardPayloadJson = "{\"creatorId\":\"%d\"," +
             "\"section\":\"%s\"," +
             "\"title\":\"%s\"," +
-            "\"description\":\"%s\"}"; // TODO update when we have keywords.
+            "\"description\":\"%s\"}";
+    //TODO add keywords
 
     private String payloadJson;
 
@@ -110,7 +114,7 @@ public class MarketplaceCardResourceIntegrationTests {
         );
 
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                cardRepository, userRepository, addressRepository))
+                cardRepository, userRepository, addressRepository, keywordRepository))
                 .build();
     }
 
