@@ -3,13 +3,15 @@
   <div>
 
     <div id="main">
-    <!--Nav bar; displays either business account or individual account nav bar-->
+    <!------------------------- Nav bar; displays either business account or individual account nav bar --------------->
     <Navbar></Navbar>
 
     <CardDetail v-bind:index="selectedCard"
                 v-bind:section="selectSection"/>
 
     <div id="marketplace-container">
+
+      <!------------------------------------------------ marketplace tabs---------------------------------------------->
 
       <ul class="nav nav-tabs" id="marketplace-tabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -36,13 +38,13 @@
       </ul>
       <div class="tab-content" id="marketplace-tabs-content">
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
-          <ForSale @openCardDetail="openCardDetail" :sendData="selectedCard"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'For Sale'"/>
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
-          <Wanted @openCardDetail="openCardDetail" :sendData="selectedCard"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'Wanted'"/>
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
-          <Exchange @openCardDetail="openCardDetail" :sendData="selectedCard"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'Exchange'"/>
         </div>
       </div>
 
@@ -60,9 +62,7 @@
 import CardDetail from "@/components/marketplace/CardDetailPopup";
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
-import ForSale from '../components/marketplace/ForSale';
-import Wanted from '../components/marketplace/Wanted';
-import Exchange from '../components/marketplace/Exchange';
+import MarketplaceTabSection from "@/components/marketplace/MarketplaceTabSection";
 
 export default {
   name: "Marketplace",
@@ -73,12 +73,10 @@ export default {
     }
   },
   components: {
+    MarketplaceTabSection,
     CardDetail,
     Footer,
     Navbar,
-    ForSale,
-    Wanted,
-    Exchange
   },
   methods: {
     changeSection(newSection) {
@@ -104,15 +102,10 @@ export default {
   margin: 4% 10% 10% 10%;
 }
 
-#for-sale-tab #wanted-tab #exchange-tab {
+#for-sale-tab, #wanted-tab, #exchange-tab {
   font-family: 'Roboto', sans-serif;
 
 }
-
-/*!*TODO: FIX THIS*!*/
-/*#marketplace-tabs.nav.nav-tabs:active {*/
-/*  border-bottom: 8px solid mediumseagreen;*/
-/*}*/
 
 </style>
 
