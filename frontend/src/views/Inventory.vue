@@ -136,7 +136,11 @@
               </div>
             </div>
 
-            <UpdateInventoryItemModal ref="updateInventoryItemModal" :business-id="businessId" v-model="currentInventoryItem"/>
+            <UpdateInventoryItemModal ref="updateInventoryItemModal"
+                                      :business-id="businessId"
+                                      :currency-code="currencyCode"
+                                      :currency-symbol="currencySymbol"
+                                      v-model="currentInventoryItem"/>
 
             <!--inventory items-->
             <inventory-item
@@ -592,6 +596,7 @@ export default {
             }
             this.inventories.push({
               index: i,
+              id: this.InventoryItemList[i].id,
               productName: this.InventoryItemList[i].product.name,
               productId: this.InventoryItemList[i].product.id,
               quantity: this.InventoryItemList[i].quantity,

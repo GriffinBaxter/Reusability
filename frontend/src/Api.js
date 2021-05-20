@@ -221,6 +221,12 @@ export default {
      return instance.get(`/businesses/${businessID}/inventoryAll`, {
         withCredentials: true
      })
+  },
+
+  modifyInventoryItem: (inventoryItemId, businessId, newInventoryItem) => {
+      return instance.put(`/businesses/${businessId}/inventory/${inventoryItemId}`, {...newInventoryItem.data}, {
+          withCredentials: true
+      })
   }
 
 }
