@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -32,7 +33,8 @@ public class UserTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("testfirst",
                 "testlast",
@@ -50,8 +52,8 @@ public class UserTests {
     }
 
     /**
-     * initialize
-     * @throws Exception business object create fail
+     * Tests that an administrator can be added to a business.
+     * @throws Exception Adding of administrator failed
      */
     @Test
     public void testAddAdministrators() throws Exception {
@@ -65,6 +67,21 @@ public class UserTests {
                         LocalTime.of(0, 0)),
                 user
         );
+        User newUser = new User("NEWUSER",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "newUser@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0999999",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        business.addAdministrators(newUser);
+        assertEquals(business.getAdministrators(), List.of(user, newUser));
     }
 
     /**

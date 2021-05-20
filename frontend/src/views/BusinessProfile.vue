@@ -278,6 +278,9 @@ export default {
       if (data.address.streetName) {
         this.streetName = data.address.streetName;
       }
+      if (data.address.suburb) {
+        this.suburb = data.address.suburb;
+      }
       if (data.address.city) {
         this.city = data.address.city;
       }
@@ -295,6 +298,9 @@ export default {
         this.address.push({line: this.streetNumber + " " + this.streetName});
       } else {
         this.address.push({line: this.streetNumber + this.streetName});
+      }
+      if (this.suburb !== "") {
+        this.address.push({line: this.suburb});
       }
       if (this.city !== "" && this.postcode !== "") {
         this.address.push({line: this.city + ", " + this.postcode});

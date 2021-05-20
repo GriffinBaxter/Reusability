@@ -33,13 +33,14 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
      * @param postcode the address postcode.
      * @return address object if exists
      */
-    Optional<Address> findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcode(
+    Optional<Address> findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(
             String streetNumber,
             String streetName,
             String city,
             String region,
             String country,
-            String postcode
+            String postcode,
+            String suburb
     );
 
 

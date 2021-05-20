@@ -15,26 +15,20 @@
 
       <!-- First Row [Wanted Items]-->
       <div class="row pb-5 mb-4">
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-          <!-- Card-->
-          <WantedCard></WantedCard>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-          <!-- Card-->
-          <WantedCard></WantedCard>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-          <!-- Card-->
-          <WantedCard></WantedCard>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-          <!-- Card-->
-          <WantedCard></WantedCard>
+        <!-- Card-->
+        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"
+             style="padding: 12px"
+             v-for="card in cards"
+             v-bind:key="card.index">
+          <div type="button"
+               @click="selectACard(card.index)"
+               data-bs-toggle="modal"
+               data-bs-target="#cardDetailPopUp">
+            <WantedCard v-bind:index="card.index"/>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -46,11 +40,31 @@ import OrderingOptionsMenu from "./OrderingOptionsMenu";
 
 export default {
   name: "Wanted",
+  data() {
+    return {
+      cards: [],
+      selectedCard: 0
+    }
+  },
   components: {
     OrderingOptionsMenu,
     WantedCard,
   },
   methods: {
+    selectACard(index) {
+      this.$emit('openCardDetail', index);
+      this.selectedCard = index
+    }
+  },
+  mounted() {
+    this.cards.push({index: 1})
+    this.cards.push({index: 2})
+    this.cards.push({index: 3})
+    this.cards.push({index: 4})
+    this.cards.push({index: 5})
+    this.cards.push({index: 6})
+    this.cards.push({index: 7})
+    this.cards.push({index: 8})
 
   }
 }

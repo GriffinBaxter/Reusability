@@ -31,28 +31,29 @@
       <!-- Navbar links -->
       <div class="navbar-collapse" id="navbar-id">
         <!-- navbar inner is required for the animation -->
-        <div id="navbar-inner-id" class="navbar-nav mb-2 mb-xl-0   py-3   mx-auto me-xl-0 ms-xl-auto">
+        <div id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
           <ul class="navbar-nav flex-column flex-xl-row">
 
-                <!-- default page links -->
-                <li class="nav-item">
-                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
-                </li>
-                <li class="nav-item" v-if="actAsId === null">
-                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-                    Profile
-                  </router-link>
-                </li>
-                <li class="nav-item" v-if=actAsId>
-                  <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]" :to="'/businessProfile/' + actAsId" tabindex="2">
-                    Profile
-                  </router-link>
-                </li>
-                <li class="nav-item">
-                  <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
-                    Marketplace
-                  </router-link>
-                </li>
+            <!-- default page links -->
+            <li class="nav-item">
+              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
+            </li>
+            <li class="nav-item" v-if="actAsId === null">
+              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item" v-if=actAsId>
+              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
+                           :to="'/businessProfile/' + actAsId" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
+                Marketplace
+              </router-link>
+            </li>
 
             <!--- Business specific account links -->
             <li class="nav-item dropdown" v-if="isActAsBusiness">
@@ -104,25 +105,45 @@
           <ul class="navbar-nav flex-column flex-xl-row">
             <!-- Interact As -->
             <li id="interactDrop">
-              <a role="button" @click="() => {
+              <a class="" role="button" @click="() => {
                     this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
                     'interact-dropdown-links-wrapper', this.showInteractMenu)
                     }">
-
                 <img src="../../../public/profile_icon_default.png" width="27px"
-                     class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{ actAs }}
+                     class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
               </a>
-
-              <div id="interact-dropdown-links-wrapper">
-                <ul class="dropdown-menu show" id="interact-dropdown-links">
-                  <li class="nav-item" v-for="(act, index) in interactAs" :key="index" @click="itemClicked(index)">
-                    <a class="nav-link">{{ act.name }}</a>
-                  </li>
-                </ul>
-              </div>
             </li>
           </ul>
 
+          <ul class="no-space">
+            <div class="center" role="button" @click="() => {
+                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
+                    'interact-dropdown-links-wrapper', this.showInteractMenu)
+                    }">
+              <div v-if="showOmitName">{{ actAsOmit }}</div>
+              <div v-else>{{ actAs }}</div>
+            </div>
+            <div id="interact-dropdown-links-wrapper">
+              <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
+
+                <li class="nav-item">
+                </li>
+                <div v-if="showOmitName">
+                  <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index"
+                      @click="itemClicked(index)">
+                    <a class="nav-link">{{ act.name }}</a>
+                  </li>
+                </div>
+                <div v-else>
+                  <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index"
+                      @click="itemClicked(index)">
+                    <a class="nav-link">{{ act.name }}</a>
+                  </li>
+                </div>
+
+              </ul>
+            </div>
+          </ul>
 
         </div>
       </div>
@@ -155,7 +176,6 @@ export default {
 
   data() {
     return {
-
       // business dropdown variables
       showBusinessDropdown: false,
       // Interact as Menu
@@ -172,17 +192,36 @@ export default {
       STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`,
       // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
       isActAsBusiness: false,
-      businessAccountId: null
+      businessAccountId: null,
+
+      // omit part of name
+      showOmitName: null,
+      interactAsOmit: [],
+      actAsOmit: "",
+
+      // Watch window width
+      screenWidth: document.body.clientWidth,
+      maxNameLength: 30,
+      omitPoint: 10
     }
   },
 
   methods: {
     /**
+     * omit name which length longer than max.
+     */
+    omitName(name, max) {
+      if (name.length > max) {
+        name = name.slice(0, max) + '...';
+      }
+      return name
+    },
+    /**
      * Gets information about the current logged in user
      */
     getUserData() {
       const currentID = Cookies.get('userID');
-      if(currentID) {
+      if (currentID) {
         Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
           if (error.request && !error.response) {
             this.$router.push({path: '/timeout'});
@@ -332,13 +371,38 @@ export default {
      */
     refreshDropdown() {
       if (this.currentUser.nickname == null) {
-        this.interactAs = [{id: this.currentUser.id, name: this.currentUser.firstName}];
+        this.interactAs = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.firstName, this.maxNameLength)
+        }];
+
+        // store a list of name with an max length
+        this.interactAsOmit = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.firstName, this.omitPoint)
+        }];
       } else {
-        this.interactAs = [{id: this.currentUser.id, name: this.currentUser.nickname}];
+        this.interactAs = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.nickname, this.maxNameLength)
+        }];
+
+        // store a list of name with an max length
+        this.interactAsOmit = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.nickname, this.omitPoint)
+        }];
       }
 
       for (let i = 0; i < this.businesses.length; i++) {
-        this.interactAs.push(this.businesses[i]);
+        this.interactAs.push({
+          id: this.businesses[i].id,
+          name: this.omitName(this.businesses[i].name, this.maxNameLength)
+        });
+        this.interactAsOmit.push({
+          id: this.businesses[i].id,
+          name: this.omitName(this.businesses[i].name, this.omitPoint)
+        });
       }
     },
     /**
@@ -367,6 +431,8 @@ export default {
         this.actAsId = this.interactAs[index].id;
         this.actAs = this.interactAs[index].name;
       }
+      this.actAs = this.omitName(this.actAs, this.maxNameLength)
+      this.actAsOmit = this.omitName(this.actAs, this.omitPoint)
       this.$router.go();
     },
     setCurUser(response) {
@@ -402,6 +468,8 @@ export default {
           this.actAs = response.nickname;
         }
       }
+      this.actAs = this.omitName(this.actAs, this.maxNameLength)
+      this.actAsOmit = this.omitName(this.actAs, this.omitPoint);
 
       // Filters out the null businesses
       this.businesses = response.businessesAdministered.filter(
@@ -421,6 +489,7 @@ export default {
     }
     this.businessAccountId = Cookies.get("actAs");
     this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
+    this.showOmitName = (this.screenWidth > 1200);
   },
   mounted() {
     this.getUserData();
@@ -442,9 +511,38 @@ export default {
 
     // Adding an event listener for resizing
     window.addEventListener("resize", this.onResize);
+
+    // Watch window width
+    const that = this
+    window.onresize = () => {
+      return (() => {
+        window.screenWidth = document.body.clientWidth
+        that.screenWidth = window.screenWidth
+      })()
+    }
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.onResize)
+  },
+  watch: {
+    screenWidth(val) {
+
+      // use timer to reduce page freezes
+      if (!this.timer) {
+        this.screenWidth = val
+        this.timer = true
+        let that = this
+        setTimeout(function () {
+          // change the display name
+          if (that.screenWidth >= 1200) {
+            that.showOmitName = true;
+          } else {
+            that.showOmitName = false;
+          }
+          that.timer = false
+        }, 400)
+      }
+    }
   }
 }
 </script>
@@ -452,6 +550,11 @@ export default {
 <!-------------------------------------------- Navigation Bar Styling ------------------------------------------------->
 
 <style scoped>
+
+.no-space {
+  padding: 0px;
+  margin: 0px;
+}
 
 /* Styling for smaller screen sizes begins */
 
@@ -467,7 +570,6 @@ export default {
 }
 
 #interact-dropdown-links-wrapper {
-  margin-top: 6px; /* height between profile image and drop down buttons*/
   width: unset;
 }
 
@@ -493,7 +595,6 @@ export default {
   height: 55px;
   width: auto;
   border: 1px lightgrey solid;
-  margin-right: 15px;
 }
 
 #actAsImg {
@@ -584,24 +685,44 @@ export default {
 }
 
 @media (min-width: 250px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
   .company-name-main-font {
     font-size: 12px;
   }
 }
 
 @media (min-width: 350px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
   .company-name-main-font {
     font-size: 16px;
   }
 }
 
 @media (min-width: 400px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
   .company-name-main-font {
     font-size: 22px;
   }
 }
 
 @media (min-width: 450px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
   .company-name-main-font {
     font-size: 28px;
   }
@@ -614,6 +735,13 @@ export default {
 /* Styling for larger screen sizes begins */
 /*xl Break point*/
 @media (min-width: 1200px) {
+
+  .center {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: 15px;
+    text-align: center;
+  }
 
   #logo-image-nav {
     max-width: 120px;
@@ -660,7 +788,6 @@ export default {
   }
 
   #interact-dropdown-links-wrapper {
-    margin-top: 64px; /* height between profile image and drop down buttons*/
     width: auto;
   }
 
@@ -673,7 +800,7 @@ export default {
 
   #interactDrop a {
     padding: unset;
-    padding: 0.5rem 1rem
+    padding: 0.4rem 0rem
   }
 
 
@@ -682,6 +809,13 @@ export default {
 /*------------------------------------------ Extra Large break point styling -----------------------------------------*/
 
 @media (min-width: 1400px) {
+
+  .center {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: 15px;
+    text-align: center;
+  }
 
   #logo-image-nav {
     max-width: 140px;

@@ -3,7 +3,6 @@ package org.seng302.business.product;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.MockedStatic;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
@@ -12,7 +11,6 @@ import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
-import org.seng302.validation.ProductValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.event.annotation.PrepareTestInstance;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -37,7 +34,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -109,7 +105,8 @@ public class ProductResourceIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
 
         dGAA = new User(
@@ -572,7 +569,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl<Product>(list);
+        Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -606,7 +603,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl<Product>(list);
+        Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -640,7 +637,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl<Product>(list);
+        Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -674,7 +671,7 @@ public class ProductResourceIntegrationTests {
 
         // when
         List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl<Product>(list);
+        Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
@@ -848,7 +845,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void cannotModifyAProductWithoutASessionCookie() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         expectedJson = "";
         payloadJson = String.format(productPayloadJson, "NEW-ID", "New name", "New desc", "New manufacturer", 666.0);
@@ -870,7 +867,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void cannotModifyAProductWithInvalidProductId() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         expectedJson = "";
@@ -897,7 +894,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void canModifyProductAsDGAA() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
         expectedJson = "";
@@ -923,7 +920,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void canModifyProductAsGAA() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(gAA.getId())).willReturn(Optional.of(gAA));
         expectedJson = "";
@@ -949,7 +946,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void canModifyProductAsUserAdmin() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
         expectedJson = "";
@@ -975,7 +972,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void canModifyProductAsUserNonAdmin() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(anotherUser.getId())).willReturn(Optional.of(anotherUser));
         expectedJson = "";
@@ -1001,7 +998,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void canModifyProductWithEmptyPayloadAndNoEffectsOnProduct() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
         expectedJson = "";
@@ -1026,7 +1023,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void cannotModifyAProductIfTheNewIdAlreadyExists() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(productRepository.findProductByIdAndBusinessId(anotherProduct.getProductId(), product.getBusinessId())).willReturn(Optional.of(anotherProduct));
         given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
@@ -1053,7 +1050,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void cannotModifyAProductWithMissingNewName() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
         expectedJson = "";
@@ -1079,7 +1076,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void cannotModifyAProductWithMissingNewId() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
         expectedJson = "";
@@ -1109,7 +1106,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void cannotModifyAProductWithMissingNewDescription() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
         expectedJson = "";
@@ -1139,7 +1136,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void cannotModifyAProductWithMissingNewManufacturer() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
         expectedJson = "";
@@ -1169,7 +1166,7 @@ public class ProductResourceIntegrationTests {
     @Test
     public void cannotModifyAProductWithMissingNewRecommendedRetailPrice() throws Exception {
         // given
-        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(product.getBusiness()));
+        given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
         given(userRepository.findById(dGAA.getId())).willReturn(Optional.of(dGAA));
         expectedJson = "";

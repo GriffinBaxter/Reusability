@@ -33,7 +33,7 @@ public class ProductId implements Serializable {
      */
     public ProductId(String id, Integer businessId) {
         this.id = id;
-        this. businessId = businessId;
+        this.businessId = businessId;
     }
 
 }
