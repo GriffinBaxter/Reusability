@@ -51,7 +51,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -97,7 +98,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -130,7 +132,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -190,7 +193,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -228,6 +232,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
         assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
         assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+        assertThat(userAddress.getSuburb()).isEqualTo(foundAddress.getSuburb());
 
         assertThat(user.getCreated()).isEqualTo(foundUserPayloadList.get(0).getCreated());
     }
@@ -246,7 +251,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -281,7 +287,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -317,6 +324,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
         assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
         assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+        assertThat(userAddress.getSuburb()).isEqualTo(foundAddress.getSuburb());
 
         assertThat(user.getCreated()).isEqualTo(foundUserPayloadList.get(0).getCreated());
     }
@@ -334,7 +342,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -368,7 +377,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -418,6 +428,7 @@ public class UserRepositoryIntegrationTests {
             assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
             assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
             assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+            assertThat(userAddress.getSuburb()).isEqualTo(foundAddress.getSuburb());
 
             assertThat(user.getCreated()).isEqualTo(foundUserPayload.getCreated());
         }
@@ -437,7 +448,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();

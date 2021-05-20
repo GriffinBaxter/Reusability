@@ -278,4 +278,49 @@ public class AddressValidationTests {
         String postcode = "8041";
         assertEquals(true, AddressValidation.isValidPostcode(postcode));
     }
+
+    // ********************************* SUBURB **************************************
+
+    /**
+     * Test to see whether true (i.e valid) is returned when the length of suburb
+     * is equal to the minimum length.
+     */
+    @Test
+    public void isValidSuburbTestLengthEqualMinLength() {
+        String suburb = ""; //minLength = 0
+        assertEquals(true, AddressValidation.isValidSuburb(suburb));
+    }
+
+    /**
+     * Test to see whether false (i.e not valid) is returned when the length of suburb
+     * is greater than the max length.
+     */
+    @Test
+    public void isValidSuburbTestLengthGreaterThanMaxLength() {
+        String string = "A";
+        String suburb = string.repeat(260); //maxLength = 255
+        assertEquals(false, AddressValidation.isValidSuburb(suburb));
+    }
+
+    /**
+     * Test to see whether true (i.e valid) is returned when the length of suburb
+     * is equal to the max length.
+     */
+    @Test
+    public void isValidSuburbTestLengthEqualMaxLength() {
+        String string = "A";
+        String suburb = string.repeat(255); //maxLength = 255
+        assertEquals(true, AddressValidation.isValidSuburb(suburb));
+    }
+
+    /**
+     * Test to see whether true (i.e valid) is returned when the length of suburb
+     * is in range of expected lengths.
+     */
+    @Test
+    public void isValidSuburbTestLengthBetweenLengths() {
+        String suburb = "Ilam";
+        assertEquals(true, AddressValidation.isValidSuburb(suburb));
+    }
+
 }

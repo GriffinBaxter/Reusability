@@ -31,7 +31,8 @@ public class BusinessValidationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         User user = new User (
                 "first",

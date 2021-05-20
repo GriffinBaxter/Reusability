@@ -13,6 +13,13 @@ import java.util.Optional;
 public interface MarketplaceCardRepository extends JpaRepository<MarketplaceCard, Integer> {
 
     /**
+     * Search for a marketplace card by its id.
+     * @param id Integer id
+     * @return A marketplace card matching the id
+     */
+    Optional<MarketplaceCard> findById(Integer id);
+
+    /**
      * Search to see if a card exists.
      * Useful for validation purposes when creating a card.
      * @param creatorId the id of the user who created the card.

@@ -19,7 +19,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
- * ProductResource test class
+ * InventoryItemResource test class
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
@@ -119,7 +118,8 @@ public class InventoryItemResourceIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
 
         user = new User(
@@ -785,7 +785,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
-        Page<InventoryItem> pagedResult = new PageImpl<InventoryItem>(list);
+        Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
@@ -823,7 +823,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
-        Page<InventoryItem> pagedResult = new PageImpl<InventoryItem>(list);
+        Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
@@ -862,7 +862,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
-        Page<InventoryItem> pagedResult = new PageImpl<InventoryItem>(list);
+        Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
@@ -1003,7 +1003,7 @@ public class InventoryItemResourceIntegrationTests {
 
         // when
         List<InventoryItem> list = List.of(inventoryItem);
-        Page<InventoryItem> pagedResponse = new PageImpl<InventoryItem>(list);
+        Page<InventoryItem> pagedResponse = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
 
@@ -1287,7 +1287,7 @@ public class InventoryItemResourceIntegrationTests {
         when(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
                 .thenReturn(Optional.ofNullable(product));
         when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
-                .thenReturn(Optional.ofNullable(null));
+                .thenReturn(Optional.empty());
         when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
