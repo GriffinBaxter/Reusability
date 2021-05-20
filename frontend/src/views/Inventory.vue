@@ -277,9 +277,9 @@ export default {
      * Sets the current inventory item to the one from the card you've clicked on
      * and triggers the showModal method of UpdateInventoryItemModal.
      */
-    triggerUpdateInventoryItemModal(inventory) {
-      this.currentInventoryItem = inventory;
-      console.log(this.currentInventoryItem);
+    async triggerUpdateInventoryItemModal(inventory) {
+      this.currentInventoryItem = await inventory;
+      await this.$forceUpdate();
       this.$refs.updateInventoryItemModal.showModal();
     },
 

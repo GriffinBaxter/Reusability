@@ -196,14 +196,14 @@ export default {
       // If the modal is already showing prevent the placeholders from being updated.
       if (!this.$refs._updateInventoryItemModal.classList.contains("show")) {
         // Update the placeholders
-        this.newInventoryItem.data.productId = "UPDATE";
-        // this.newInventoryItem.data.quantity = this.value.quantity;
-        // this.newInventoryItem.data.pricePerItem = this.value.pricePerItem;
-        // this.newInventoryItem.data.totalPrice = this.value.totalPrice;
-        // this.newInventoryItem.data.manufactured = this.value.manufactured;
-        // this.newInventoryItem.data.sellBy = this.value.sellBy;
-        // this.newInventoryItem.data.bestBefore = this.value.bestBefore;
-        // this.newInventoryItem.data.expires = this.value.expires;
+        this.newInventoryItem.data.productId = this.value.productId;
+        this.newInventoryItem.data.quantity = this.value.quantity;
+        this.newInventoryItem.data.pricePerItem = this.value.pricePerItem;
+        this.newInventoryItem.data.totalPrice = this.value.totalPrice;
+        this.newInventoryItem.data.manufactured = this.value.manufactured;
+        this.newInventoryItem.data.sellBy = this.value.sellBy;
+        this.newInventoryItem.data.bestBefore = this.value.bestBefore;
+        this.newInventoryItem.data.expires = this.value.expires;
 
         // Reset all the error messages
         this.productIdErrorMsg = "";
