@@ -1,6 +1,7 @@
 <template>
   <div>
 
+    <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -158,6 +159,7 @@
       </div>
     </div>
 
+    </div>
     <!--footer-->
     <Footer/>
 
@@ -166,8 +168,8 @@
 
 <script>
 import ProfileHeader from "@/components/ProfileHeader";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+import Footer from "@/components/main/Footer";
+import Navbar from "@/components/main/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
 import {UserRole} from "@/configs/User";
@@ -276,6 +278,9 @@ export default {
       if (data.address.streetName) {
         this.streetName = data.address.streetName;
       }
+      if (data.address.suburb) {
+        this.suburb = data.address.suburb;
+      }
       if (data.address.city) {
         this.city = data.address.city;
       }
@@ -293,6 +298,9 @@ export default {
         this.address.push({line: this.streetNumber + " " + this.streetName});
       } else {
         this.address.push({line: this.streetNumber + this.streetName});
+      }
+      if (this.suburb !== "") {
+        this.address.push({line: this.suburb});
       }
       if (this.city !== "" && this.postcode !== "") {
         this.address.push({line: this.city + ", " + this.postcode});
@@ -316,7 +324,7 @@ export default {
         }
 
         //check permission of current user
-        if (anUser.id == Cookies.get('userID')) {
+        if (anUser.id === Cookies.get('userID') || this.$route.params.id === Cookies.get('actAs')) {
           this.isAdministrator = true;
         }
 
@@ -345,6 +353,9 @@ export default {
         this.isAdministrator = this.isAdministrator ? true :
             (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
             || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);
+        if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+          this.isAdministrator = false;
+        }
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -412,7 +423,4 @@ export default {
 #profileContainer {
   margin-bottom: 5%;
 }
-
-
-
 </style>

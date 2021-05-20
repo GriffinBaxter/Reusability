@@ -17,9 +17,13 @@
             <div class="row">
               <div class="col form-group py-1 px-3">
                 <label for="productDataList" class="form-control-label">Inventory ID*: </label>
-                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" tabindex="1" list="productDataList" id="productInput" name="productDataList" ref="productInput" required/>
+                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" list="productDataList"
+                       id="productInput" name="productDataList" ref="productInput" required/>
                 <datalist id="productDataList" style="overflow-y: auto!important">
-                  <option v-for="item in allInventoryItems" v-bind:key="item.id" :value="item.product.id + ' (Expires: ' + item.expires + ')' + ' ID: ' + item.id">Quantity: {{item.quantity}} Price: (${{item.totalPrice}})</option>
+                  <option v-for="item in allInventoryItems" v-bind:key="item.id"
+                          :value="item.product.id + ' (Expires: ' + item.expires + ')' + ' ID: ' + item.id">Quantity:
+                    {{ item.quantity }} Price: ({{currencySymbol}}{{ item.totalPrice }})
+                  </option>
                 </datalist>
                 <div class="invalid-feedback">
                   {{ inventoryIdErrorMsg }}
@@ -30,8 +34,8 @@
             <div class="row">
               <div class="col-sm-6 form-group py-1 px-3">
                 <label for="quantity">Quantity*: </label>
-                <input id="quantity" name="quantity" tabindex="2" type="number" ref="quantity" v-model="quantity" min="0"
-                       :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
+                <input id="quantity" name="quantity" type="number" ref="quantity" v-model="quantity" min="0"
+                       :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" @input="updatePriceFromQuantity()" required>
                 <div class="invalid-feedback">
                   {{ quantityErrorMsg }}
                 </div>
@@ -40,12 +44,12 @@
 
               <!--Price-->
               <div class="col-sm-6 form-group py-1 px-3">
-                <label for="price">Price*: </label>
+                <label for="price">Price ({{ currencyCode }})*: </label>
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <span class="input-group-text">$</span>
+                    <span class="input-group-text">{{ currencySymbol }}</span>
                   </div>
-                  <input id="price" name="price" tabindex="3" type="number" ref="price" step="0.01"
+                  <input id="price" name="price" type="number" ref="price" step="0.01"
                          v-model="price"
                          min="0" :class="toggleInvalidClass(priceErrorMsg)"
                          :maxlength="config.price.maxLength">
@@ -59,7 +63,7 @@
             <!--More-Info-->
             <div class="row form-group py-1 px-3">
               <label for="more-info">More info: </label>
-              <input id="more-info" name="more-info" tabindex="4" type="text" step="0.01" v-model="moreInfo"
+              <input id="more-info" name="more-info" type="text" step="0.01" v-model="moreInfo"
                      min="0" :class="toggleInvalidClass(moreInfoErrorMsg)" :maxlength="config.moreInfo.maxLength">
               <div class="invalid-feedback">
                 {{ moreInfoErrorMsg }}
@@ -69,7 +73,7 @@
             <!--Close Date-->
             <div class="row form-group py-1 px-3">
               <label for="closes">Close Date: </label>
-              <input id="closes" name="closes" tabindex="5" type="datetime-local" v-model="closes"
+              <input id="closes" name="closes" type="datetime-local" v-model="closes"
                      :class="toggleInvalidClass(closesErrorMsg)">
               <div class="invalid-feedback">
                 {{ closesErrorMsg }}
@@ -79,14 +83,16 @@
 
           </form>
           <div class="text-center text-danger">
-            {{creationErrorMessage}}
+            {{ creationErrorMessage }}
           </div>
         </div>
 
 
         <!--footer-->
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn green-button-transparent" @click="dataReset()" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn green-button-transparent" @click="dataReset()" data-bs-dismiss="modal">
+            Cancel
+          </button>
           <button type="button" class="btn green-button" @click="createNewInventoryItem()">Confirm</button>
         </div>
 
@@ -101,6 +107,7 @@ import Api from "@/Api";
 import Listing from "@/configs/Listings";
 
 import {Modal} from "bootstrap";
+
 const datefns = require('date-fns');
 
 export default {
@@ -131,6 +138,18 @@ export default {
       closesErrorMsg: "",
       businessId: this.$route.params.id,
       creationErrorMessage: ""
+    }
+  },
+  props: {
+    currencyCode: {
+      type: String,
+      default: "",
+      required: false
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: false
     }
   },
   methods: {
@@ -210,7 +229,16 @@ export default {
       }
       return errorMessage;
     },
-
+    /**
+     * Updates the price when the quantity input is modified based on the price per item of the currently selected inventory item.
+     * */
+    updatePriceFromQuantity() {
+      if (!isNaN(this.quantity)) {
+        if (this.currentInventoryItem.pricePerItem && !isNaN(this.currentInventoryItem.pricePerItem)) {
+          this.price = this.quantity * this.currentInventoryItem.pricePerItem;
+        }
+      }
+    },
     /**
      *  Checks the ID of the current input value, then finds the inventory item with that ID (in allInventoryItems) to autofill
      *  that item's quantity and price in the quantity and price input fields.
@@ -432,14 +460,14 @@ export default {
      * Creates test data TEMP
      */
     testData() {
-      const product = {id:"WATT-420-BEANS"};
-      const item = {id:1, product:product, quantity:5, totalPrice:5.19};
+      const product = {id: "WATT-420-BEANS"};
+      const item = {id: 1, product: product, quantity: 5, totalPrice: 5.19};
       this.inventoryItems.push(item);
-      const anotherProduct = {id:"FOOT-LETTUCE"};
-      const anotherItem = {id:2, product:anotherProduct, quantity:3, totalPrice:2.59};
+      const anotherProduct = {id: "FOOT-LETTUCE"};
+      const anotherItem = {id: 2, product: anotherProduct, quantity: 3, totalPrice: 2.59};
       this.inventoryItems.push(anotherItem);
-      this.inventoryItems.push({id:7, product:anotherProduct, quantity:2});
-      this.inventoryItems.push({id:234, product:product, quantity:3})
+      this.inventoryItems.push({id: 7, product: anotherProduct, quantity: 2});
+      this.inventoryItems.push({id: 234, product: product, quantity: 3})
     }
   },
   mounted() {
@@ -450,5 +478,12 @@ export default {
 </script>
 
 <style scoped>
+
+/* Styles the input and textarea's borders to be green when they are focused/tabbed to */
+input:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 2px 2px #1EBA8C;
+  border: 1px solid #1EBABC;
+}
 
 </style>

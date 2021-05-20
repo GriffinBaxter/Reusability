@@ -53,10 +53,10 @@ public class Business {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 600)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
