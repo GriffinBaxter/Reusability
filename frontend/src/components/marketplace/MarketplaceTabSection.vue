@@ -2,6 +2,17 @@
   <div>
     <div class="container py-5">
 
+      <h2 class="font-weight-bold mb-2">For Sale Items</h2>
+      <p class="font-italic text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p>
+
+      <!---------------------------------------------- ordering menu ------------------------------------------------>
+
+      <div id="ordering-options-menu-container">
+        <OrderingOptionsMenu></OrderingOptionsMenu>
+      </div>
+
+      <!------------------------------------------------ cards ------------------------------------------------------>
+
       <!-- First Row [Exchange Items]-->
       <h2 class="font-weight-bold mb-2">{{ section }}</h2>
       <p class="font-italic text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -29,6 +40,7 @@
 
 <script>
 import Card from "@/components/marketplace/Card";
+import OrderingOptionsMenu from "./OrderingOptionsMenu";
 
 export default {
   name: "MarketplaceTabSection",
@@ -46,6 +58,7 @@ export default {
     }
   },
   components: {
+    OrderingOptionsMenu,
     Card,
   },
   methods: {
@@ -68,5 +81,10 @@ export default {
 </script>
 
 <style scoped>
+
+#ordering-options-menu-container {
+  margin-top: 4%;
+  margin-bottom: 4%;
+}
 
 </style>

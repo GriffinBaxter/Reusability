@@ -3,13 +3,15 @@
   <div>
 
     <div id="main">
-    <!--Nav bar; displays either business account or individual account nav bar-->
+    <!------------------------- Nav bar; displays either business account or individual account nav bar --------------->
     <Navbar></Navbar>
 
     <CardDetail v-bind:index="selectedCard"
                 v-bind:section="selectSection"/>
 
     <div id="marketplace-container">
+
+      <!------------------------------------------------ marketplace tabs---------------------------------------------->
 
       <ul class="nav nav-tabs" id="marketplace-tabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -100,15 +102,10 @@ export default {
   margin: 4% 10% 10% 10%;
 }
 
-#for-sale-tab #wanted-tab #exchange-tab {
+#for-sale-tab, #wanted-tab, #exchange-tab {
   font-family: 'Roboto', sans-serif;
 
 }
-
-/*!*TODO: FIX THIS*!*/
-/*#marketplace-tabs.nav.nav-tabs:active {*/
-/*  border-bottom: 8px solid mediumseagreen;*/
-/*}*/
 
 </style>
 
