@@ -76,7 +76,6 @@ public class MarketplaceCardResourceIntegrationTests {
     private MarketplaceCard marketplaceCard;
     private MarketplaceCard anotherMarketplaceCard;
     private User gaa;
-    private MarketplaceCardRepository marketplaceCardRepository;
 
     private final String expectedCardJson = "{" +
             "\"id\":%d," +
@@ -188,7 +187,7 @@ public class MarketplaceCardResourceIntegrationTests {
         anotherMarketplaceCard.setId(2);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, addressRepository, keywordRepository))
+                marketplaceCardRepository, userRepository, keywordRepository))
                 .build();
     }
 
@@ -202,16 +201,16 @@ public class MarketplaceCardResourceIntegrationTests {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
 
-        payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription(),
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), marketplaceCard.getDescription(),
                 "[\"Vege\", \"Green\", \"Fresh\"]");
 
-        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), marketplaceCard.getDescription()))
                 .willReturn(Optional.empty());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-        when(cardRepository.save(any(MarketplaceCard.class))).thenReturn(card);
+        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(marketplaceCard);
         response = mvc.perform(post("/cards")
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -231,10 +230,10 @@ public class MarketplaceCardResourceIntegrationTests {
     public void cantCreateCardWhenCreatorExistsButCardAlreadyExists() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
-                .willReturn(Optional.ofNullable(card));
-        payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription(),
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), marketplaceCard.getDescription()))
+                .willReturn(Optional.ofNullable(marketplaceCard));
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), marketplaceCard.getDescription(),
                 "[\"Vege\", \"Green\", \"Fresh\"]");
 
         // when
@@ -258,13 +257,13 @@ public class MarketplaceCardResourceIntegrationTests {
     public void cantCreateCardWhenUserExistsButDataIsInvalid() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
-                .willReturn(Optional.empty());
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(),
+                marketplaceCard.getDescription())).willReturn(Optional.empty());
         String title = "Title";
         title.repeat(20);
-        payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), title, card.getDescription(),
-                "[\"Vege\", \"Green\", \"Fresh\"]");
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(),
+                title, marketplaceCard.getDescription(), "[\"Vege\", \"Green\", \"Fresh\"]");
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -289,11 +288,11 @@ public class MarketplaceCardResourceIntegrationTests {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
 
-        payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription(),
-                "[\"Vege\", \"Green\", \"Fresh\"]");
-        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
-                .willReturn(Optional.empty());
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(),
+                marketplaceCard.getTitle(), marketplaceCard.getDescription(), "[\"Vege\", \"Green\", \"Fresh\"]");
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(),
+                marketplaceCard.getDescription())).willReturn(Optional.empty());
         // when
         response = mvc.perform(post("/cards")
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
@@ -313,12 +312,12 @@ public class MarketplaceCardResourceIntegrationTests {
     public void cantCreateCardWhenUserExistsAndDataValidWithInvalidUUID() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription()))
-                .willReturn(Optional.empty());
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(),
+                marketplaceCard.getDescription())).willReturn(Optional.empty());
 
-        payloadJson = String.format(cardPayloadJson, card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription(),
-                "[\"Vege\", \"Green\", \"Fresh\"]");
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(),
+                marketplaceCard.getTitle(), marketplaceCard.getDescription(), "[\"Vege\", \"Green\", \"Fresh\"]");
 
         // when
         // The UUID is invalid because a user can't be found with the supplied UUID
@@ -342,12 +341,12 @@ public class MarketplaceCardResourceIntegrationTests {
     public void cantCreateCardWhenCreatorIdIsForAnotherUserWithUserNotBeingAGAAOrDGAA() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(anotherUser));
-        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                anotherCard.getCreatorId(), anotherCard.getSection(), anotherCard.getTitle(), anotherCard.getDescription()))
-                .willReturn(Optional.empty());
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                anotherMarketplaceCard.getCreatorId(), anotherMarketplaceCard.getSection(), anotherMarketplaceCard.getTitle(),
+                anotherMarketplaceCard.getDescription())).willReturn(Optional.empty());
 
-        payloadJson = String.format(cardPayloadJson, anotherCard.getCreatorId(), anotherCard.getSection(), anotherCard.getTitle(), anotherCard.getDescription(),
-                "[\"Vege\", \"Green\", \"Fresh\"]");
+        payloadJson = String.format(cardPayloadJson, anotherMarketplaceCard.getCreatorId(), anotherMarketplaceCard.getSection(),
+                anotherMarketplaceCard.getTitle(), anotherMarketplaceCard.getDescription(), "[\"Vege\", \"Green\", \"Fresh\"]");
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/cards")
@@ -369,15 +368,15 @@ public class MarketplaceCardResourceIntegrationTests {
     public void canCreateCardWhenCreatorIdIsForAnotherUserWithUserBeingGAA() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(anotherUser));
-        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                anotherCard.getCreatorId(), anotherCard.getSection(), anotherCard.getTitle(), anotherCard.getDescription()))
-                .willReturn(Optional.empty());
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                anotherMarketplaceCard.getCreatorId(), anotherMarketplaceCard.getSection(), anotherMarketplaceCard.getTitle(),
+                anotherMarketplaceCard.getDescription())).willReturn(Optional.empty());
 
-        payloadJson = String.format(cardPayloadJson, anotherCard.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription(),
-                "[\"Vege\", \"Green\", \"Fresh\"]");
+        payloadJson = String.format(cardPayloadJson, anotherMarketplaceCard.getCreatorId(), marketplaceCard.getSection(),
+                marketplaceCard.getTitle(), marketplaceCard.getDescription(), "[\"Vege\", \"Green\", \"Fresh\"]");
 
         when(userRepository.findBySessionUUID(gaa.getSessionUUID())).thenReturn(Optional.ofNullable(gaa));
-        when(cardRepository.save(any(MarketplaceCard.class))).thenReturn(anotherCard);
+        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(anotherMarketplaceCard);
         response = mvc.perform(post("/cards")
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", gaa.getSessionUUID())))

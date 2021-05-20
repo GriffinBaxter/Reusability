@@ -78,12 +78,11 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
     @Before
     public void createMockMvc() {
         userRepository = mock(UserRepository.class);
-        addressRepository = mock(AddressRepository.class);
         marketplaceCardRepository = mock(MarketplaceCardRepository.class);
         keywordRepository = mock(KeywordRepository.class);
 
         this.cardMVC = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, addressRepository, keywordRepository)).build();
+                marketplaceCardRepository, userRepository, keywordRepository)).build();
         this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
@@ -95,7 +94,8 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("Bob",
                 "Smith",

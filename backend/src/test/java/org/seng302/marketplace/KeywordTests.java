@@ -29,7 +29,8 @@ public class KeywordTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         User user = new User("testfirst",
                 "testlast",

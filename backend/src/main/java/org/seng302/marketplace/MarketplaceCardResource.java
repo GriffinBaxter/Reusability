@@ -46,10 +46,7 @@ import java.util.Optional;
 public class MarketplaceCardResource {
 
     @Autowired
-    private MarketplaceCardRepository cardRepository;
-
-    @Autowired
-    private AddressRepository addressRepository;
+    private MarketplaceCardRepository marketplaceCardRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -61,18 +58,16 @@ public class MarketplaceCardResource {
 
     /**
      * A constructor for MarketplaceCardResource which is used for mocking purposes.
-     * @param cardRepository - Stores cards.
+     * @param marketplaceCardRepository - Stores cards.
      * @param userRepository - Stores user.
-     * @param addressRepository - Stores addresses.
      * @param keywordRepository - Stores keywords.
      */
     public MarketplaceCardResource(
-             MarketplaceCardRepository cardRepository, UserRepository userRepository,
-             AddressRepository addressRepository, KeywordRepository keywordRepository
+             MarketplaceCardRepository marketplaceCardRepository, UserRepository userRepository,
+             KeywordRepository keywordRepository
     ) {
-        this.cardRepository = cardRepository;
+        this.marketplaceCardRepository = marketplaceCardRepository;
         this.userRepository = userRepository;
-        this.addressRepository = addressRepository;
         this.keywordRepository = keywordRepository;
     }
 
@@ -96,7 +91,7 @@ public class MarketplaceCardResource {
         // Otherwise the user is forbidden from creating the card.
         if (Authorization.isGAAorDGAA(currentUser) || (currentUser.getId() == cardPayload.getCreatorId())) {
             // Check to see if card already exists.
-            Optional<MarketplaceCard> storedCard = cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+            Optional<MarketplaceCard> storedCard = marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                     cardPayload.getCreatorId(), cardPayload.getSection(), cardPayload.getTitle(), cardPayload.getDescription());
 
             // If card does not exist create a new one.
@@ -133,7 +128,7 @@ public class MarketplaceCardResource {
                                 keywordRepository.save(newKeyword);
                             }
                         }
-                        MarketplaceCard createdCard = cardRepository.save(card);
+                        MarketplaceCard createdCard = marketplaceCardRepository.save(card);
                         logger.info("Successful Card Creation - {}", createdCard.toString());
                         return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceCardIdPayload(createdCard.getId()));
                     } else {

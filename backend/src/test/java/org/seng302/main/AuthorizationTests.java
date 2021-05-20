@@ -29,7 +29,8 @@ public class AuthorizationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
     }
 
