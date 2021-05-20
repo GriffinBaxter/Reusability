@@ -407,4 +407,24 @@ public class User {
     public void setBusinessesAdministeredObjects(List<Business> businessesAdministeredObjects) {
         this.businessesAdministeredObjects = businessesAdministeredObjects;
     }
+
+    public UserPayloadSecure toUserPayloadSecure() throws Exception {
+        List<Business> administrators = businessesAdministeredObjects;
+        for (Business administrator : administrators) {
+            administrator.setAdministrators(new ArrayList<>());
+        }
+        return new UserPayloadSecure(
+                id,
+                firstName,
+                lastName,
+                middleName,
+                nickname,
+                bio,
+                email,
+                homeAddress.toAddressPayloadSecure(),
+                created,
+                role,
+                administrators
+        );
+    }
 }
