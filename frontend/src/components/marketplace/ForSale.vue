@@ -2,10 +2,16 @@
   <div>
     <div class="container py-5">
 
-      <!-- First Row [For Sale Items]-->
-      <h2 class="font-weight-bold mb-2">For Sale Items</h2>
-      <p class="font-italic text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-        tempor incididunt.</p>
+        <h2 class="font-weight-bold mb-2">For Sale Items</h2>
+        <p class="font-italic text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p>
+
+        <!---------------------------------------------- ordering menu ------------------------------------------------>
+
+        <div id="ordering-options-menu-container">
+          <OrderingOptionsMenu></OrderingOptionsMenu>
+        </div>
+
+        <!------------------------------------------------ cards ------------------------------------------------------>
 
       <div class="row pb-5 mb-4">
         <!-- Card-->
@@ -28,6 +34,7 @@
 
 <script>
 import ForSaleCard from './ForSaleCard'
+import OrderingOptionsMenu from "./OrderingOptionsMenu";
 
 export default {
   name: "ForSale",
@@ -38,6 +45,7 @@ export default {
     }
   },
   components: {
+    OrderingOptionsMenu,
     ForSaleCard,
   },
   methods: {
@@ -61,5 +69,10 @@ export default {
 </script>
 
 <style scoped>
+
+#ordering-options-menu-container {
+  margin-top: 4%;
+  margin-bottom: 4%;
+}
 
 </style>
