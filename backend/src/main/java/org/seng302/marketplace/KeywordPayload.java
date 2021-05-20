@@ -1,7 +1,7 @@
 package org.seng302.marketplace;
 
 /**
- * KeywordPayload class
+ * KeywordPayload class used when sending a response for a GET request.
  */
 public class KeywordPayload {
 

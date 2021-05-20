@@ -5,6 +5,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 
+/**
+ * KeywordRepository class.
+ * This is used to store keywords.
+ */
 @RepositoryRestResource
 public interface KeywordRepository extends JpaRepository<Keyword, Integer> {
 

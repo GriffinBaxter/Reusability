@@ -2,7 +2,6 @@ package org.seng302.marketplace;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.NoArgsConstructor;
-import org.seng302.user.User;
 import org.seng302.validation.KeywordValidation;
 
 import javax.persistence.*;
@@ -12,6 +11,7 @@ import java.util.List;
 
 /**
  * Class for keywords used in the marketplace.
+ * A marketplace can have many keywords.
  */
 @Embeddable
 @NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
@@ -35,7 +35,7 @@ public class Keyword {
 
     /**
      * Marketplace Keyword constructor.
-     *
+     * It validates the name of when constructed.
      * @throws Exception Validation exception thrown when a new keyword does not contain valid info.
      */
     public Keyword(String name, LocalDateTime created, MarketplaceCard card) throws Exception {

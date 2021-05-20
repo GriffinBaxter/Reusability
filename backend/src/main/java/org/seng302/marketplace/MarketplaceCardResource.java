@@ -2,7 +2,6 @@ package org.seng302.marketplace;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
 import org.seng302.main.Authorization;
 import org.seng302.user.User;
@@ -17,6 +16,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MarketplaceCard Resource class.
+ * This class contains the endpoints for cards.
+ * The POST /cards endpoint is used to create cards.
+ * The GET /cards endpoint is used to retrieve all cards that are stored.
+ * The GET /cards/id endpoint is used to retrieve the details for a single card.
+ */
 @RestController
 public class MarketplaceCardResource {
 
@@ -34,6 +40,13 @@ public class MarketplaceCardResource {
 
     private static final Logger logger = LogManager.getLogger(MarketplaceCardResource.class.getName());
 
+    /**
+     * A constructor for MarketplaceCardResource which is used for mocking purposes.
+     * @param cardRepository - Stores cards.
+     * @param userRepository - Stores user.
+     * @param addressRepository - Stores addresses.
+     * @param keywordRepository - Stores keywords.
+     */
     public MarketplaceCardResource(
              MarketplaceCardRepository cardRepository, UserRepository userRepository,
              AddressRepository addressRepository, KeywordRepository keywordRepository
@@ -44,10 +57,16 @@ public class MarketplaceCardResource {
         this.keywordRepository = keywordRepository;
     }
 
+    // TODO Code comments
+    // TODO Helper functions
+    // TODO GAA
+    // TODO Cucumber tests
+    // TODO Integration tests for 403/GAA
     /**
      * Create a new card.
+     * The response status and reason is returned for the corresponding scenario.
      * @param sessionToken Session token
-     * @return
+     * @return ResponseEntity<MarketplaceCardIdPayload> this payload contains the id of a successfully created card.
      */
     @PostMapping("/cards")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Card created successfully.")
