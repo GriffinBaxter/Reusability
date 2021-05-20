@@ -58,4 +58,9 @@ export default {
 
 <style scoped>
 
+#ordering-options-menu-container {
+  margin-top: 4%;
+  margin-bottom: 4%;
+}
+
 </style>

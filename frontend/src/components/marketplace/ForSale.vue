@@ -86,8 +86,8 @@ export default {
 <style scoped>
 
 #ordering-options-menu-container {
-  margin-top: 2%;
-  padding-bottom: 40px;
+  margin-top: 4%;
+  margin-bottom: 4%;
 }
 
 </style>

@@ -131,15 +131,18 @@ export default {
 
 #order-by-btn {
   max-width: 20%;
+  height: 40px;
 }
 
 #order-by-options-text, #order-direction-options-text {
-  padding-right: 30px;
+  margin-right: 30px;
+  margin-top:8px;
 }
 
 .order-by-options-btn, .order-direction-options-btn {
   width: 200px;
-  margin-right: 30px;
+  height: 40px;
+  margin: 0
 }
 
 .dropdown-menu {
