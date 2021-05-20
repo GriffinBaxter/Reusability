@@ -57,10 +57,9 @@ public class MarketplaceCardResource {
         this.keywordRepository = keywordRepository;
     }
 
-    // TODO Helper functions
-    // TODO GAA
     // TODO Cucumber tests
     // TODO Integration tests for 403/GAA
+    // TODO Manual Tests
     /**
      * Create a new card.
      * The response status and reason is returned for the corresponding scenario.
@@ -77,54 +76,76 @@ public class MarketplaceCardResource {
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        // Check to see if card already exists.
-        Optional<MarketplaceCard> storedCard = cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                cardPayload.getCreatorId(), cardPayload.getSection(), cardPayload.getTitle(), cardPayload.getDescription());
+        // If user is GAA, DGAA or the user is also the creator than a card can be created.
+        // Otherwise the user is forbidden from creating the card.
+        if (Authorization.isGAAorDGAA(currentUser) || (currentUser.getId() == cardPayload.getCreatorId())) {
+            // Check to see if card already exists.
+            Optional<MarketplaceCard> storedCard = cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                    cardPayload.getCreatorId(), cardPayload.getSection(), cardPayload.getTitle(), cardPayload.getDescription());
 
-        // If card does not exist create a new one.
-        // This is done to prevent duplicate cards.
-        if (storedCard.isEmpty()) {
-            try {
-                MarketplaceCard card = new MarketplaceCard(
-                        cardPayload.getCreatorId(),
-                        currentUser,
-                        cardPayload.getSection(),
-                        LocalDateTime.now(),
-                        cardPayload.getTitle(),
-                        cardPayload.getDescription()
-                );
-
-                List<String> keywords = cardPayload.getKeywords();
-                for (String keyword: keywords) {
-                    Optional<Keyword> existingKeyword = keywordRepository.findByName(keyword);
-                    if (existingKeyword.isPresent()) { // If keyword exists then update existing keyword.
-                        Keyword existingKeywordPresent = existingKeyword.get();
-                        existingKeywordPresent.addCard(card);
-                        keywordRepository.save(existingKeywordPresent);
-                    } else { // If no keyword existing create a new one and save.
-                        Keyword newKeyword = new Keyword(
-                                keyword,
+            // If card does not exist create a new one.
+            // This is done to prevent duplicate cards.
+            if (storedCard.isEmpty()) {
+                try {
+                    // Retrieve the user who matches the creator id.
+                    Optional<User> creator = userRepository.findById(cardPayload.getCreatorId());
+                    // If creator exists create card, otherwise return a 404 not found.
+                    if (creator.isPresent()) {
+                        MarketplaceCard card = new MarketplaceCard(
+                                cardPayload.getCreatorId(),
+                                creator.get(),
+                                cardPayload.getSection(),
                                 LocalDateTime.now(),
-                                card
+                                cardPayload.getTitle(),
+                                cardPayload.getDescription()
                         );
-                        keywordRepository.save(newKeyword);
+
+                        // Loop through keywords and update card and keywords accordingly.
+                        List<String> keywords = cardPayload.getKeywords();
+                        for (String keyword: keywords) {
+                            Optional<Keyword> existingKeyword = keywordRepository.findByName(keyword);
+                            if (existingKeyword.isPresent()) { // If keyword exists then update existing keyword.
+                                Keyword existingKeywordPresent = existingKeyword.get();
+                                existingKeywordPresent.addCard(card);
+                                keywordRepository.save(existingKeywordPresent);
+                            } else { // If no keyword existing create a new one and save.
+                                Keyword newKeyword = new Keyword(
+                                        keyword,
+                                        LocalDateTime.now(),
+                                        card
+                                );
+                                keywordRepository.save(newKeyword);
+                            }
+                        }
+                        MarketplaceCard createdCard = cardRepository.save(card);
+                        logger.info("Successful Card Creation - {}", createdCard.toString());
+                        return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceCardIdPayload(createdCard.getId()));
+                    } else {
+                        logger.error("User with ID: {} not found", cardPayload.getCreatorId());
+                        throw new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                String.format("User with ID: {} does not exist.", cardPayload.getCreatorId())
+                        );
                     }
+                } catch (Exception e) {
+                    logger.error("Card Creation Failure - {}", e.getMessage());
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            e.getMessage()
+                    );
                 }
-                MarketplaceCard createdCard = cardRepository.save(card);
-                logger.info("Successful Card Creation - {}", createdCard.toString());
-                return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceCardIdPayload(createdCard.getId()));
-            } catch (Exception e) {
-                logger.error("Card Creation Failure - {}", e.getMessage());
+            } else {
+                logger.error("Card already exists.");
                 throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Invalid card"
+                        HttpStatus.CONFLICT,
+                        "Card already exists."
                 );
             }
         } else {
-            logger.error("Card already exists.");
+            logger.error("User with ID: {} does no have permission to create this card.", currentUser.getId());
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Card already exists."
+                    HttpStatus.FORBIDDEN,
+                    "User does not have the permission to create this card."
             );
         }
     }

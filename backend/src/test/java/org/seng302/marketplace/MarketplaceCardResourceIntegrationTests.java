@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
+import org.seng302.business.Business;
 import org.seng302.business.product.Product;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
@@ -72,6 +73,9 @@ public class MarketplaceCardResourceIntegrationTests {
 
     private User user;
     private MarketplaceCard card;
+    private User anotherUser;
+    private MarketplaceCard anotherCard;
+    private User gaa;
 
     /**
      * Before all create a user that will be used in all tests when creating cards.
@@ -93,7 +97,7 @@ public class MarketplaceCardResourceIntegrationTests {
                 "middle",
                 "nick",
                 "bio",
-                "example@example.com",
+                "user@example.com",
                 LocalDate.of(2000, 1, 1),
                 "123456789",
                 address,
@@ -104,6 +108,38 @@ public class MarketplaceCardResourceIntegrationTests {
         user.setId(1);
         user.setSessionUUID(User.generateSessionUUID());
 
+        anotherUser = new User("Another",
+                "User",
+                "",
+                "AU",
+                "bio",
+                "anotheruser@example.com",
+                LocalDate.of(2000, 1, 1),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        anotherUser.setId(2);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
+
+        gaa = new User("Global",
+                "Admin",
+                "Application",
+                "GAA",
+                "bio",
+                "gaa@example.com",
+                LocalDate.of(2000, 1, 1),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.GLOBALAPPLICATIONADMIN);
+        gaa.setId(3);
+        gaa.setSessionUUID(User.generateSessionUUID());
+
         card = new MarketplaceCard(
                 user.getId(),
                 user,
@@ -112,6 +148,17 @@ public class MarketplaceCardResourceIntegrationTests {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
+        card.setId(1);
+
+        anotherCard = new MarketplaceCard(
+                anotherUser.getId(),
+                anotherUser,
+                Section.WANTED,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                "Hayley's Birthday",
+                "Come join Hayley and help her celebrate her birthday!"
+        );
+        anotherCard.setId(2);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
                 cardRepository, userRepository, addressRepository, keywordRepository))
@@ -258,4 +305,58 @@ public class MarketplaceCardResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    /**
+     * Tests that a FORBIDDEN status is received when sending a marketplace card creation payload to the
+     * /cards API endpoint that contains valid data and an existing creator ID for another user but the current user
+     * is not a GAA or DGAA.
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    public void cantCreateCardWhenCreatorIdIsForAnotherUserWithUserNotBeingAGAAOrDGAA() throws Exception {
+        // given
+        given(userRepository.findById(2)).willReturn(Optional.ofNullable(anotherUser));
+        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                anotherCard.getCreatorId(), anotherCard.getSection(), anotherCard.getTitle(), anotherCard.getDescription()))
+                .willReturn(Optional.empty());
+
+        payloadJson = String.format(cardPayloadJson, anotherCard.getCreatorId(), anotherCard.getSection(), anotherCard.getTitle(), anotherCard.getDescription(),
+                "[\"Vege\", \"Green\", \"Fresh\"]");
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that a CREATED status is received when sending a marketplace card creation payload to the
+     * /cards API endpoint that contains valid data and an existing creator ID for another user and the current user
+     * is a GAA.
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    public void canCreateCardWhenCreatorIdIsForAnotherUserWithUserBeingGAA() throws Exception {
+        // given
+        given(userRepository.findById(2)).willReturn(Optional.ofNullable(anotherUser));
+        given(cardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                anotherCard.getCreatorId(), anotherCard.getSection(), anotherCard.getTitle(), anotherCard.getDescription()))
+                .willReturn(Optional.empty());
+
+        payloadJson = String.format(cardPayloadJson, anotherCard.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription(),
+                "[\"Vege\", \"Green\", \"Fresh\"]");
+
+        when(userRepository.findBySessionUUID(gaa.getSessionUUID())).thenReturn(Optional.ofNullable(gaa));
+        when(cardRepository.save(any(MarketplaceCard.class))).thenReturn(anotherCard);
+        response = mvc.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", gaa.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
 }
