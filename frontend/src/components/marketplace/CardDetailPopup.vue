@@ -9,8 +9,7 @@
           <!--section-->
           <div class="modal-header" style="padding: 20px 40px 15px">
             <h2 id="cardDetailPopUpLabel" style="margin: 0px">
-              <!--show link work-->{{ index }}<!--delete after data populate-->
-              {{ section }}
+              {{ convertSection(section) }}
             </h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -21,6 +20,7 @@
 
                 <!--title-->
                 <h4 class="card-subtitle mb-2">{{ title }}</h4>
+                <!--show link work-->{{ index }}<!--delete after data populate-->
 
                 <!--description-->
                 <p class="card-text">
@@ -95,6 +95,7 @@ export default {
   name: "CardDetail",
   data() {
     return {
+      sectionDisplay: null,
       avatar: require("../../../public/sample_profile_image.jpg"),
       title: "1982 Lada Samara",
       description: "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.",
@@ -108,11 +109,13 @@ export default {
     }
   },
   props: {
+    // TODO:show link work, delete after data populate
     index: {
       type: Number,
       default: 0,
       required: true
     },
+    //
     section: {
       type: String,
       default: null,
@@ -120,9 +123,20 @@ export default {
     }
 
   },
-  methods: {},
+  methods: {
+    convertSection(section) {
+      switch (section) {
+        case 'ForSale':
+          return "For Sale";
+        case 'Wanted':
+          return "Wanted";
+        case 'Exchange':
+          return "Exchange";
+      }
+    }
+  },
   mounted() {
-    this.creator = this.firstName + " " + this.middleName + " " + this.lastName
+    this.creator = this.firstName + " " + this.middleName + " " + this.lastName;
   }
 }
 </script>
