@@ -49,13 +49,11 @@ public class MarketplaceCardRepositoryIntegrationTests {
     private MarketplaceCard marketplaceCard4;
     private MarketplaceCard marketplaceCard5;
 
-    private int marketplaceCardId;
-    private int marketplaceCardId3;
-    private int marketplaceCardId5;
-
-
+    /**
+     * Sets up data for testing
+     */
     @BeforeEach
-    public void before() throws Exception {
+    public void beforeEach() throws Exception {
         // Address
         Address address = new Address(
                 "3/24",
@@ -88,7 +86,6 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
-        marketplaceCardId = marketplaceCard.getId();
         entityManager.persist(marketplaceCard);
         entityManager.flush();
 
@@ -111,7 +108,6 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 "Your dignity",
                 ""
         );
-        marketplaceCardId3 = marketplaceCard3.getId();
         entityManager.persist(marketplaceCard3);
         entityManager.flush();
 
@@ -134,7 +130,6 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 "WordArt Title's",
                 ""
         );
-        marketplaceCardId5 = marketplaceCard5.getId();
         entityManager.persist(marketplaceCard5);
         entityManager.flush();
     }
