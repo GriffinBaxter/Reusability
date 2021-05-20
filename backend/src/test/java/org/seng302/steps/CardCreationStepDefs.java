@@ -207,14 +207,99 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
                 .andReturn().getResponse();
     }
 
+    @When("I try to create a card without a title.")
+    public void iTryToCreateACardWithoutATitle() throws Exception {
+        card = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.EXCHANGE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                "Hayley's Birthday",
+                "Come join Hayley and help her celebrate her birthday!"
+        );
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+
+        // Empty string for no title.
+        cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), "",
+                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(card);
+        response = cardMVC.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(cardPayloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @When("I create a card with more than one keyword.")
+    public void iCreateACardWithMoreThanOneKeyword() throws Exception {
+        card = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.EXCHANGE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                "Hayley's Birthday",
+                "Come join Hayley and help her celebrate her birthday!"
+        );
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+
+        cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
+                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(card);
+        response = cardMVC.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(cardPayloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @When("I create a card with a keyword that is {int} characters long.")
+    public void iCreateACardWithAKeywordThatIs_CharactersLong(Integer lengthKeyword) throws Exception {
+        card = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.EXCHANGE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                "Hayley's Birthday",
+                "Come join Hayley and help her celebrate her birthday!"
+        );
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+
+        String keyword = "H".repeat(lengthKeyword);
+        cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
+                card.getDescription(), "[\"Party\", \"Celebrate\", \"" + keyword + "\"]");
+
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(card);
+        response = cardMVC.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(cardPayloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
     @Then("The card is successfully created.")
-    public void TheCardIsSuccessfullyCreated() {
+    public void theCardIsSuccessfullyCreated() {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-
-    //TODO AC3 Negative
-    //TODO AC5 Keywords
+    @Then("The card is not created.")
+    public void theCardIsNotCreated() {
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
 
 
