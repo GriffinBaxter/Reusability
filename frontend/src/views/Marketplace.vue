@@ -2,12 +2,12 @@
 
   <div>
 
-    <!--Nav bar; displays either business account or individual account nav bar-->
+    <!------------------------- Nav bar; displays either business account or individual account nav bar --------------->
     <Navbar></Navbar>
 
     <div id="marketplace-container">
 
-      <OrderingOptionsMenu></OrderingOptionsMenu>
+      <!------------------------------------------------ marketplace tabs---------------------------------------------->
 
       <ul class="nav nav-tabs" id="marketplace-tabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -48,12 +48,10 @@ import Navbar from '../components/main/Navbar';
 import ForSale from '../components/marketplace/ForSale';
 import Wanted from '../components/marketplace/Wanted';
 import Exchange from '../components/marketplace/Exchange';
-import OrderingOptionsMenu from "../components/marketplace/OrderingOptionsMenu";
 
 export default {
   name: "Marketplace",
   components: {
-    OrderingOptionsMenu,
     Footer,
     Navbar,
     ForSale,

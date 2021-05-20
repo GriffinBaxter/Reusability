@@ -2,45 +2,58 @@
 
   <div id="ordering-options-menu">
 
-    <div id="order-by-option-menu">
+    <div id="ordering-option-container">
 
-      <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-        <!--order by title-->
-        <button type="button" class="btn green-button-transparent col-12"
-                @click="orderListings(true, false)">
-          Title
-          <i id="titleIcon"></i>
+      <div class="btn-group col-md-3 py-1" role="group">
+        Order By Option
+        <button type="button" class="btn green-button dropdown-toggle"
+                data-bs-toggle="dropdown" aria-expanded="false">{{orderByOption}}
         </button>
 
-        <!--order by date-->
-        <button type="button" class="btn green-button-transparent col-12"
-                @click="orderListings(false, true)">
-          Date
-          <i id="dateIcon"></i>
-        </button>
-      </ul>
+        <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+          <!--order by title-->
+          <button type="button" class="btn green-button-transparent col-12"
+                  @click="setOrderByOption(true, false)">
+            Title
+          </button>
 
+          <!--order by location-->
+          <button type="button" class="btn green-button-transparent col-12"
+                  @click="setOrderByOption(false, true)">
+            Location
+          </button>
+        </ul>
+      </div>
     </div>
 
-    <div id="order-direction-option-menu">
+    <div id="ordering-direction-container">
 
-      <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop2">
-        <!--order by ascending-->
-        <button type="button" class="btn green-button-transparent col-12"
-                @click="orderListings(true, false)">
-          Ascending
-          <i id="descendingIcon"></i>
+      <div class="btn-group col-md-3 py-1" role="group">
+        Order Direction
+        <button type="button" class="btn green-button dropdown-toggle"
+                data-bs-toggle="dropdown" aria-expanded="false">{{orderDirectionOption}}
         </button>
 
-        <!--order by date-->
-        <button type="button" class="btn green-button-transparent col-12"
-                @click="orderListings(false, true)">
-          Descending
-          <i id="descending-icon"></i>
-        </button>
-      </ul>
+        <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+          <!--order by ascending direction -->
+          <button type="button" class="btn green-button-transparent col-12"
+                  @click="setOrderDirectionOption(true)">
+            Ascending
+          </button>
 
+          <!--order by descending direction -->
+          <button type="button" class="btn green-button-transparent col-12"
+                  @click="setOrderDirectionOption(false)">
+            Descending
+          </button>
+        </ul>
+      </div>
     </div>
+
+    <button type="button" class="btn green-button-transparent col-12"
+            @click="orderCards()">
+      Order Cards
+    </button>
 
 
   </div>
@@ -51,11 +64,52 @@
 export default {
   name: "OrderingOptionsMenu",
   data() {
-    orderBy: "",
-    quantityAscending: false,
-    priceAscending: false,
-    closesAscending: false,
-    createdAscending: false,
+    return {
+      orderByOption: "",         // default
+      orderDirectionOption: "",  // default
+      orderBy: "dateDESC",
+    }
+  },
+  methods: {
+
+    /**
+     * Sets the order by option
+     */
+    setOrderByOption(title, location) {
+      if(title) {
+        this.orderByOption = "Title"
+      } else if(location) {
+        this.orderByOption = "Location"
+      }
+    },
+    /**
+     * Sets the order by direction
+     */
+    setOrderDirectionOption(ascending) {
+      if(ascending) {
+        this.orderDirectionOption = "Ascending"
+      } else {
+        this.orderDirectionOption = "Descending"
+      }
+    },
+
+    /**
+     * Builds the order by value that will be sent to the backend to order the cards by
+     */
+    createOrderByParams() {
+      const direction = (this.orderDirectionOption === "Ascending") ? "ASC" : "DESC"
+      this.orderBy = `${this.orderByOption.toLocaleLowerCase()}${direction}`
+    },
+
+    /**
+     * Order the cards
+     */
+    orderCards() {
+      this.createOrderByParams()
+
+      // now can use this.orderBy to request cards from backend
+
+    },
   }
 }
 </script>
