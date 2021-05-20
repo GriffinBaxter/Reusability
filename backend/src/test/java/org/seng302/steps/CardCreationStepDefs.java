@@ -2,6 +2,7 @@ package org.seng302.steps;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
@@ -18,6 +19,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,8 +27,10 @@ import java.time.Month;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 public class CardCreationStepDefs extends CucumberSpringConfiguration {
@@ -54,12 +58,22 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
     private KeywordRepository keywordRepository;
 
     private MockHttpServletResponse response;
+
     private User user;
     private Address address;
     private MarketplaceCard card;
+
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
             "\"password\": \"%s\"}";
     private final String expectedUserIdJson = "{\"userId\":%s}";
+
+    private final String cardPayloadJsonFormat = "{\"creatorId\":\"%d\"," +
+            "\"section\":\"%s\"," +
+            "\"title\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"keywords\":%s}";
+
+    private String cardPayloadJson;
 
     @Before
     public void createMockMvc() {
@@ -121,8 +135,21 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+
+        cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
+                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(card);
+        response = cardMVC.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(cardPayloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
     }
 
     @When("I create a card with the Wanted section selected.")
@@ -135,8 +162,22 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+
+        cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
+                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(card);
+        response = cardMVC.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(cardPayloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        System.out.println(response.getStatus());
     }
 
     @When("I create a card with the Exchange section selected.")
@@ -149,9 +190,31 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+
+        cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
+                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
+                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(card);
+        response = cardMVC.perform(post("/cards")
+                .contentType(MediaType.APPLICATION_JSON).content(cardPayloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
     }
+
+    @Then("The card is successfully created.")
+    public void TheCardIsSuccessfullyCreated() {
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+
+    //TODO AC3 Negative
+    //TODO AC5 Keywords
 
 
 

@@ -57,9 +57,6 @@ public class MarketplaceCardResource {
         this.keywordRepository = keywordRepository;
     }
 
-    // TODO Cucumber tests
-    // TODO Integration tests for 403/GAA
-    // TODO Manual Tests
     /**
      * Create a new card.
      * The response status and reason is returned for the corresponding scenario.

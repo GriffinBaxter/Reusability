@@ -5,12 +5,12 @@ Feature: UCM2 - Card Creation
 
   Scenario: AC1 - I can create a card to be displayed in the For Sale section.
     When I create a card with the For Sale section selected.
-    Then The card is created for the For Sale section.
+    Then The card is successfully created.
 
   Scenario: AC1 - I can create a card to be displayed in the Wanted section.
     When I create a card with the Wanted section selected.
-    Then The card is created for the Wanted section.
+    Then The card is successfully created.
 
   Scenario: AC1 - I can create a card to be displayed in the Exchange section.
     When I create a card with the Exchange section selected.
-    Then The card is created for the Exchange section.
+    Then The card is successfully created.
