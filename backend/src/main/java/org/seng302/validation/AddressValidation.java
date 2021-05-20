@@ -31,6 +31,9 @@ public class AddressValidation {
     private static final Integer POSTCODE_MIN_LENGTH = 0;
     private static final Integer POSTCODE_MAX_LENGTH = 255;
 
+    private static final Integer SUBURB_MIN_LENGTH = 0;
+    private static final Integer SUBURB_MAX_LENGTH = 255;
+
     /**
      * Checks to see whether street number is valid based on its length.
      * This method can be updated in the future if there is additional constraints.
@@ -89,6 +92,16 @@ public class AddressValidation {
      */
     public static boolean isValidPostcode(String postcode) {
         return (postcode.length() >= POSTCODE_MIN_LENGTH) && (postcode.length() <= POSTCODE_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether suburb is valid based on its length.
+     * This method can be updated in the future if there is additional constraints.
+     * @param suburb The suburb to be checked.
+     * @return true when the suburb is within its range of length constraints.
+     */
+    public static boolean isValidSuburb(String suburb) {
+        return (suburb.length() >= SUBURB_MIN_LENGTH) && (suburb.length() <= SUBURB_MAX_LENGTH);
     }
 
 

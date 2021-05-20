@@ -14,7 +14,8 @@ public class AddressTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
+                "\"suburb\":\"Ilam\"" +
                 "}";
         Address address = new Address(
                 "3/24",
@@ -22,7 +23,8 @@ public class AddressTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         assertEquals(expected, address.toString());
     }
@@ -37,7 +39,8 @@ public class AddressTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
+                "\"suburb\":\"Ilam\"" +
                 "}";
         Address address = Address.toAddress(string);
 
@@ -47,6 +50,7 @@ public class AddressTests {
         assertEquals("Canterbury", address.getRegion());
         assertEquals("New Zealand", address.getCountry());
         assertEquals("90210", address.getPostcode());
+        assertEquals("Ilam", address.getSuburb());
     }
 
     @Test
@@ -57,9 +61,11 @@ public class AddressTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
+                "\"suburb\":\"Ilam\"" +
                 "}";
         Address address = Address.toAddress(string);
+
 
         assertEquals("3/24", address.getStreetNumber());
         assertEquals("Ilam Road", address.getStreetName());
@@ -67,5 +73,6 @@ public class AddressTests {
         assertEquals("Canterbury", address.getRegion());
         assertEquals("New Zealand", address.getCountry());
         assertEquals("90210", address.getPostcode());
+        assertEquals("Ilam", address.getSuburb());
     }
 }
