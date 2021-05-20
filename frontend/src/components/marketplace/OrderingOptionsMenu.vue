@@ -1,11 +1,15 @@
 <template>
 
-  <div id="ordering-options-menu">
+  <div id="ordering-options-menu" class="row">
 
-    <div id="ordering-option-container">
+    <!------------------------------------------- ordering by options menu ----------------------------------------->
+
+    <div id="ordering-option-container" class="col">
+
 
       <div class="btn-group col-md-3 py-1" role="group">
-        Order By Option
+
+        <h id="order-by-options-text">Order By Option</h>
         <button type="button" class="btn green-button dropdown-toggle"
                 data-bs-toggle="dropdown" aria-expanded="false">{{orderByOption}}
         </button>
@@ -26,7 +30,9 @@
       </div>
     </div>
 
-    <div id="ordering-direction-container">
+    <!------------------------------------------- ordering direction options menu ------------------------------------->
+
+    <div id="ordering-direction-container" class="col">
 
       <div class="btn-group col-md-3 py-1" role="group">
         Order Direction
@@ -50,11 +56,14 @@
       </div>
     </div>
 
-    <button type="button" class="btn green-button-transparent col-12"
-            @click="orderCards()">
-      Order Cards
-    </button>
+    <!------------------------------------------- order button -------------------------------------------------------->
 
+    <div id="order-by-btn" class="col">
+      <button type="button" class="btn green-button-transparent col-12"
+              @click="orderCards()">
+        Order Cards
+      </button>
+    </div>
 
   </div>
 
@@ -115,5 +124,13 @@ export default {
 </script>
 
 <style scoped>
+
+#ordering-option-container, #ordering-direction-container {
+  max-width: 40%;
+}
+
+#order-by-btn {
+  max-width: 20%;
+}
 
 </style>
