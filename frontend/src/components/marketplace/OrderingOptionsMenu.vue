@@ -9,7 +9,7 @@
 
       <div class="btn-group col" role="group">
 
-        <label id="order-by-options-text" class="">Order By</label>
+<!--        <label id="order-by-options-text" class="">Order By</label>-->
         <button type="button" class="btn green-button dropdown-toggle order-by-options-btn"
                 data-bs-toggle="dropdown" aria-expanded="false">{{orderByOption}}
         </button>
@@ -35,7 +35,7 @@
     <div id="ordering-direction-container" class="col">
 
       <div class="btn-group col" role="group">
-        <label id="order-direction-options-text">Order Direction</label>
+<!--        <label id="order-direction-options-text">Order Direction</label>-->
         <button type="button" class="btn green-button dropdown-toggle order-direction-options-btn"
                 data-bs-toggle="dropdown" aria-expanded="false">{{orderDirectionOption}}
         </button>
@@ -74,8 +74,8 @@ export default {
   name: "OrderingOptionsMenu",
   data() {
     return {
-      orderByOption: "",         // default
-      orderDirectionOption: "",  // default
+      orderByOption: "Select Order By",         // default
+      orderDirectionOption: "Select Direction",  // default
       orderBy: "dateDESC",
     }
   },
@@ -126,7 +126,7 @@ export default {
 <style scoped>
 
 #ordering-option-container, #ordering-direction-container {
-  max-width: 34%;
+  max-width: 20%;
 }
 
 #order-by-btn {
