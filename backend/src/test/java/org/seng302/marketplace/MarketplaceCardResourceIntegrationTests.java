@@ -96,7 +96,8 @@ public class MarketplaceCardResourceIntegrationTests {
             "\"created\":\"%s\"," +
             "\"displayPeriodEnd\":\"%s\"," +
             "\"title\":\"%s\"," +
-            "\"description\":\"%s\"" +
+            "\"description\":\"%s\"," +
+            "\"keywords\":%s" +
             "}";
 
     private String expectedJson;
@@ -397,7 +398,7 @@ public class MarketplaceCardResourceIntegrationTests {
                 user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
                 user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard.getSection().toString(),
                 marketplaceCard.getCreated(), marketplaceCard.getDisplayPeriodEnd(), marketplaceCard.getTitle(),
-                marketplaceCard.getDescription());
+                marketplaceCard.getDescription(), marketplaceCard.getKeywords());
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
         // when

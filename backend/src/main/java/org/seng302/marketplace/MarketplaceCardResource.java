@@ -117,8 +117,8 @@ public class MarketplaceCardResource {
                             Optional<Keyword> existingKeyword = keywordRepository.findByName(keyword);
                             if (existingKeyword.isPresent()) { // If keyword exists then update existing keyword.
                                 Keyword existingKeywordPresent = existingKeyword.get();
-                                existingKeywordPresent.addCard(card);
                                 keywordRepository.save(existingKeywordPresent);
+                                card.addKeyword(existingKeywordPresent);
                             } else { // If no keyword existing create a new one and save.
                                 Keyword newKeyword = new Keyword(
                                         keyword,
@@ -126,6 +126,7 @@ public class MarketplaceCardResource {
                                         card
                                 );
                                 keywordRepository.save(newKeyword);
+                                card.addKeyword(newKeyword);
                             }
                         }
                         MarketplaceCard createdCard = marketplaceCardRepository.save(card);

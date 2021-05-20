@@ -215,8 +215,23 @@ public class MarketplaceCard {
                 created,
                 displayPeriodEnd,
                 title,
-                description
+                description,
+                toKeywordPayloads(keywords)
         );
+    }
+
+    /**
+     * Converts the keywords belonging to a card to Keyword Payloads (needed by GET requests).
+     * @param keywords the list of keywords belonging to the card.
+     * @return a list of keywords converted to keyword payloads.
+     */
+    public List<KeywordPayload> toKeywordPayloads(List<Keyword> keywords) {
+        List<KeywordPayload> keywordPayloads = new ArrayList<>();
+        for (Keyword keyword: keywords) {
+            KeywordPayload keywordPayload = new KeywordPayload(keyword.getId(), keyword.getName(), keyword.getCreated());
+            keywordPayloads.add(keywordPayload);
+        }
+        return keywordPayloads;
     }
 
 }

@@ -44,7 +44,6 @@ public class Keyword {
         }
         this.name = name;
         this.created = created;
-        cards.add(card);
     }
 
     /**
