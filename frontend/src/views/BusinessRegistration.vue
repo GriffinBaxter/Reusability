@@ -65,23 +65,44 @@
             <input :class="toggleInvalidClass(businessStreetNameErrorMsg)" tabindex="5" id="streetName"
                    name="streetName" ref="streetName" autocomplete="off">
             <div class="invalid-feedback">
-              {{businessStreetNumberErrorMsg}}
+              {{businessStreetNameErrorMsg}}
             </div>
           </div>
         </div>
+
         <div class="row my-lg-2">
           <div class="col-lg-6 my-2 my-lg-0">
+            <label for="suburb">Suburb</label>
+            <input :class="toggleInvalidClass(businessSuburbErrorMsg)" tabindex="6" name="suburb" id="suburb"
+                   ref="suburb" autocomplete="off">
+            <div class="invalid-feedback">
+              {{businessSuburbErrorMsg}}
+            </div>
+          </div>
+
+          <div class="col-lg-6 my-2 my-lg-0">
             <label for="city">City</label>
-            <input :class="toggleInvalidClass(businessCityErrorMsg)" tabindex="6" name="city" id="city" ref="city"
+            <input :class="toggleInvalidClass(businessCityErrorMsg)" tabindex="7" name="city" id="city" ref="city"
                    autocomplete="off">
             <div class="invalid-feedback">
               {{businessCityErrorMsg}}
             </div>
           </div>
+        </div>
+
+        <div class="row my-lg-2">
+          <div class="col-lg-6 my-2 my-lg-0">
+            <label for="region">State/Region</label>
+            <input :class="toggleInvalidClass(businessRegionErrorMsg)" tabindex="8" name="region" id="region" ref="region"
+                   autocomplete="off">
+            <div class="invalid-feedback">
+              {{businessRegionErrorMsg}}
+            </div>
+          </div>
 
           <div class="col-lg-6 my-2 my-lg-0">
             <label for="postcode">Postcode</label>
-            <input :class="toggleInvalidClass(businessPostcodeErrorMsg)" tabindex="7" id="postcode" name="postcode"
+            <input :class="toggleInvalidClass(businessPostcodeErrorMsg)" tabindex="9" id="postcode" name="postcode"
                    ref="postcode" autocomplete="off">
             <div class="invalid-feedback">
               {{businessPostcodeErrorMsg}}
@@ -90,18 +111,9 @@
         </div>
 
         <div class="row my-lg-2">
-            <div class="col-lg-6 my-2 my-lg-0">
-              <label for="region">State/Region</label>
-              <input :class="toggleInvalidClass(businessRegionErrorMsg)" tabindex="8" name="region" id="region" ref="region"
-                     autocomplete="off">
-              <div class="invalid-feedback">
-                {{businessRegionErrorMsg}}
-              </div>
-            </div>
-
-          <div class="col-lg-6 my-2 my-lg-0">
+          <div class="col my-2 my-lg-0">
             <label for="country">Country*</label>
-            <input :class="toggleInvalidClass(businessCountryErrorMsg)" tabindex="9" id="country" name="country"
+            <input :class="toggleInvalidClass(businessCountryErrorMsg)" tabindex="10" id="country" name="country"
                    ref="country" autocomplete="off" required>
             <div class="invalid-feedback">
               {{businessCountryErrorMsg}}
@@ -112,7 +124,7 @@
         <div class="row my-lg-2">
           <div class="col my-2 my-lg-0">
             <label for="description">Description</label>
-            <textarea id="description" name="description" tabindex="10" rows="5" cols="70" v-model="description"
+            <textarea id="description" name="description" tabindex="11" rows="5" cols="70" v-model="description"
                       :maxlength="config.description.maxLength" :class="toggleInvalidClass(descriptionErrorMsg)"
                       style="resize: none"/>
             <div class="invalid-feedback">
@@ -131,8 +143,8 @@
           </div>
 
           <div class="d-grid gap-2 d-lg-block">
-            <button class="btn btn-lg green-button-transparent" type="button" tabindex="12" @click="$router.push('/profile')">Back to Profile</button>
-            <button id="register-button" tabindex="11" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewBusiness($event)">Register</button>
+            <button class="btn btn-lg green-button-transparent" type="button" tabindex="13" @click="$router.push('/profile')">Back to Profile</button>
+            <button id="register-button" tabindex="12" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewBusiness($event)">Register</button>
           </div>
 
         </form>
@@ -188,6 +200,9 @@ export default {
 
       // Business street name related variables
       businessStreetNameErrorMsg: "",
+
+      // Business suburb related variables
+      businessSuburbErrorMsg: "",
 
       // Business city related variables
       businessCityErrorMsg: "",
@@ -298,6 +313,7 @@ export default {
       this.$refs.region.value = this.$refs.region.value.trim();
       this.$refs.streetNumber.value = this.$refs.streetNumber.value.trim();
       this.$refs.streetName.value = this.$refs.streetName.value.trim();
+      this.$refs.suburb.value = this.$refs.suburb.value.trim();
     },
 
     /**
@@ -388,6 +404,17 @@ export default {
         requestIsInvalid = true
       }
 
+      // Suburb error checking
+      this.businessSuburbErrorMsg = this.getErrorMessage(
+          this.config.suburb.name,
+          this.$refs.suburb.value,
+          this.config.suburb.minLength,
+          this.config.suburb.maxLength
+      )
+      if (this.businessSuburbErrorMsg) {
+        requestIsInvalid = true
+      }
+
       // Postcode error checking
       this.businessPostcodeErrorMsg = this.getErrorMessage(
           this.config.postcode.name,
@@ -442,6 +469,7 @@ export default {
       const addressData = {
         streetNumber: this.$refs.streetNumber.value,
         streetName: this.$refs.streetName.value,
+        suburb: this.$refs.suburb.value,
         city: this.$refs.city.value,
         region: this.$refs.region.value,
         country: this.$refs.country.value,
@@ -536,7 +564,7 @@ export default {
         let { properties } = features[index];
         if (properties) {
 
-          let {country, city, postcode, state, street, housenumber, name} = properties;
+          let {country, city, postcode, state, street, housenumber, name, district} = properties;
 
           if (name) {
             address += name + ", ";
@@ -548,6 +576,10 @@ export default {
 
           if (street) {
             address += " " + street + ", ";
+          }
+
+          if (district) {
+            address += " " + district + ", ";
           }
 
           if (city) {
@@ -626,13 +658,16 @@ export default {
             document.getElementById('business-address').value = "";
             const id = event.target.id;
 
-            let {country, city, state, postcode, street, housenumber} = self.addressResultProperties[id];
+            let {country, city, state, postcode, street, housenumber, district} = self.addressResultProperties[id];
 
             if (housenumber) {
               document.getElementById('streetNumber').value = housenumber;
             }
             if (street) {
               document.getElementById('streetName').value = street;
+            }
+            if (district) {
+              document.getElementById('suburb').value = district;
             }
             if (city) {
               document.getElementById('city').value = city;

@@ -119,7 +119,8 @@ public class UserResourceIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         dGAA = new User(
                 "John",
@@ -177,7 +178,8 @@ public class UserResourceIntegrationTests {
                 "Frank Sound",
                 "Cayman Islands",
                 "Caribbean",
-                "North America");
+                "North America",
+                "Pirate Cove");
 
         searchUser1= new User(
                 "Alex",
@@ -195,7 +197,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser1.setId(4);
 
-        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China");
+        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China", "Barryville");
 
         searchUser2 = new User(
                 "Chad",
@@ -213,7 +215,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser2.setId(5);
 
-        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa");
+        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "Buri");
 
         searchUser3 = new User(
                 "Naomi",
@@ -231,7 +233,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser3.setId(6);
 
-        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand");
+        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand", "Ilam");
 
         searchUser4 = new User(
                 "Seth",
@@ -249,7 +251,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser4.setId(7);
 
-        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand");
+        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand", "Ilam");
 
         searchUser5 = new User(
                 "Minttu",
@@ -267,7 +269,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser5.setId(8);
 
-        Address address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand");
+        Address address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand", "Frankton");
 
         searchUser6 = new User(
                 "Francisca",
@@ -285,7 +287,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser6.setId(9);
 
-        Address address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand");
+        Address address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand", "Wanaka");
 
         searchUser7 = new User(
                 "Francisca",
@@ -436,7 +438,8 @@ public class UserResourceIntegrationTests {
                         "\"city\": \"Christchurch\"," +
                         "\"region\": \"Canterbury\"," +
                         "\"country\": \"New Zealand\"," +
-                        "\"postcode\": \"90210\"" +
+                        "\"postcode\": \"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"Testpassword123!\"}";
 
@@ -472,7 +475,8 @@ public class UserResourceIntegrationTests {
                         "\"city\": \"Christchurch\"," +
                         "\"region\": \"Canterbury\"," +
                         "\"country\": \"New Zealand\"," +
-                        "\"postcode\": \"90210\"" +
+                        "\"postcode\": \"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
@@ -510,7 +514,8 @@ public class UserResourceIntegrationTests {
                         "\"city\": \"Christchurch\"," +
                         "\"region\": \"Canterbury\"," +
                         "\"country\": \"New Zealand\"," +
-                        "\"postcode\": \"90210\"" +
+                        "\"postcode\": \"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
@@ -546,7 +551,8 @@ public class UserResourceIntegrationTests {
                         "\"city\": \"Christchurch\"," +
                         "\"region\": \"Canterbury\"," +
                         "\"country\": \"New Zealand\"," +
-                        "\"postcode\": \"90210\"" +
+                        "\"postcode\": \"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";

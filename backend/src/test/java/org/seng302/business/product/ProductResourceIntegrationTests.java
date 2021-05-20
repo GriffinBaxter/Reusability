@@ -105,7 +105,8 @@ public class ProductResourceIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
 
         dGAA = new User(
