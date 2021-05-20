@@ -2,8 +2,10 @@
   <div>
     <div class="container py-5">
 
-      <h2 class="font-weight-bold mb-2">For Sale Items</h2>
-      <p class="font-italic text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p>
+      <!-- First Row -->
+      <h2 class="font-weight-bold mb-2">{{ section }}</h2>
+      <p class="font-italic text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt.</p>
 
       <!---------------------------------------------- ordering menu ------------------------------------------------>
 
@@ -13,7 +15,6 @@
 
       <!------------------------------------------------ cards ------------------------------------------------------>
 
-      <!-- First Row [Wanted Items]-->
       <div class="row pb-5 mb-4">
         <!-- Card-->
         <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"
@@ -24,7 +25,7 @@
                @click="selectACard(card.index)"
                data-bs-toggle="modal"
                data-bs-target="#cardDetailPopUp">
-            <WantedCard v-bind:index="card.index"/>
+            <Card v-bind:index="card.index"/>
           </div>
         </div>
       </div>
@@ -35,20 +36,27 @@
 </template>
 
 <script>
-import WantedCard from './WantedCard'
+import Card from "@/components/marketplace/Card";
 import OrderingOptionsMenu from "./OrderingOptionsMenu";
 
 export default {
-  name: "Wanted",
+  name: "MarketplaceTabSection",
   data() {
     return {
       cards: [],
       selectedCard: 0
     }
   },
+  props: {
+    section: {
+      type: String,
+      default: "For Sale",
+      required: true
+    }
+  },
   components: {
     OrderingOptionsMenu,
-    WantedCard,
+    Card,
   },
   methods: {
     selectACard(index) {
@@ -65,7 +73,6 @@ export default {
     this.cards.push({index: 6})
     this.cards.push({index: 7})
     this.cards.push({index: 8})
-
   }
 }
 </script>

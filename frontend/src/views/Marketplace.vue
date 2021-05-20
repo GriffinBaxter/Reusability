@@ -38,13 +38,13 @@
       </ul>
       <div class="tab-content" id="marketplace-tabs-content">
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
-          <ForSale @openCardDetail="openCardDetail" :sendData="selectedCard"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'For Sale'"/>
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
-          <Wanted @openCardDetail="openCardDetail" :sendData="selectedCard"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'Wanted'"/>
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
-          <Exchange @openCardDetail="openCardDetail" :sendData="selectedCard"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'Exchange'"/>
         </div>
       </div>
 
@@ -62,9 +62,7 @@
 import CardDetail from "@/components/marketplace/CardDetailPopup";
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
-import ForSale from '../components/marketplace/ForSale';
-import Wanted from '../components/marketplace/Wanted';
-import Exchange from '../components/marketplace/Exchange';
+import MarketplaceTabSection from "@/components/marketplace/MarketplaceTabSection";
 
 export default {
   name: "Marketplace",
@@ -75,12 +73,10 @@ export default {
     }
   },
   components: {
+    MarketplaceTabSection,
     CardDetail,
     Footer,
     Navbar,
-    ForSale,
-    Wanted,
-    Exchange
   },
   methods: {
     changeSection(newSection) {
