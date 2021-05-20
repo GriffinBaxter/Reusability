@@ -9,7 +9,7 @@
           <!--section-->
           <div class="modal-header" style="padding: 20px 40px 15px">
             <h2 id="cardDetailPopUpLabel" style="margin: 0px">
-              {{ convertSection(section) }}
+              {{ section }}
             </h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -20,7 +20,7 @@
 
                 <!--title-->
                 <h4 class="card-subtitle mb-2">{{ title }}</h4>
-                <!--show link work-->{{ index }}<!--delete after data populate-->
+                <!--show link work-->{{ id }}<!--delete after data populate-->
 
                 <!--description-->
                 <p class="card-text">
@@ -67,7 +67,7 @@
                   </div>
                   <div class="col" align="right">
                     <h6 class="text-muted">
-                      {{ city }}
+                      {{ address }}
                     </h6>
                   </div>
                 </div>
@@ -91,37 +91,34 @@
 </template>
 
 <script>
+import Api from "@/Api";
+
 export default {
   name: "CardDetail",
   data() {
     return {
-      sectionDisplay: null,
       avatar: require("../../../public/sample_profile_image.jpg"),
-      title: "1982 Lada Samara",
-      description: "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.",
+      section: "",
+      title: "",
+      description: "",
       keyword: [],
-      created: "2021-07-15T05:10:00Z",
-      firstName: "John",
-      lastName: "Smith",
-      middleName: "Hector",
+      created: "",
       creator: "",
-      city: "Christchurch",
+      address: "",
     }
   },
   props: {
-    // TODO:show link work, delete after data populate
-    index: {
+    id: {
       type: Number,
       default: 0,
       required: true
     },
-    //
-    section: {
-      type: String,
-      default: null,
-      required: true,
-    }
-
+    // //
+    // section: {
+    //   type: String,
+    //   default: null,
+    //   required: true,
+    // }
   },
   methods: {
     convertSection(section) {
@@ -133,10 +130,39 @@ export default {
         case 'Exchange':
           return "Exchange";
       }
-    }
+    },
+  /**
+   * populate data from back end
+   */
+  populateData(data){
+    this.section = this.convertSection(data.section);
+    this.title = data.title;
+    this.description = data.description;
+    this.created = data.created; //TODO: length Error
+    this.address = [data.creator.homeAddress.suburb, data.creator.homeAddress.city].join(" ");
+    this.creator = [data.creator.firstName, data.creator.middleName, data.creator.lastName].join(" ")
+  },
+  retrieveCardDetail(id) {
+    Api.retrieveCardDetail(id).then(response => (this.populateData(response.data))).cache((error) => {
+      if (error.require && !error.response) {
+        this.$router.push({path: '/timeout'});
+      } else if (error.response.status === 400) {
+        this.$router.push({path: '/pageDoesNotExist'}); //TODO: add error page
+      } else if (error.response.status === 401) {
+        this.$router.push({path: '/invalidtoken'});
+      } else if (error.response.status === 406) {
+        this.$router.push({path: '/noCard'});
+      } else {
+        this.$router.push({path: '/noCard'});
+        console.log(error.message);
+      }
+    })
+  }
   },
   mounted() {
-    this.creator = this.firstName + " " + this.middleName + " " + this.lastName;
+  },
+  beforeMount() {
+
   }
 }
 </script>
