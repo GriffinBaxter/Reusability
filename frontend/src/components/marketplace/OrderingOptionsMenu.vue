@@ -7,22 +7,22 @@
     <div id="ordering-option-container" class="col">
 
 
-      <div class="btn-group col-md-3 py-1" role="group">
+      <div class="btn-group col" role="group">
 
-        <h id="order-by-options-text">Order By Option</h>
-        <button type="button" class="btn green-button dropdown-toggle"
+        <label id="order-by-options-text" class="">Order By</label>
+        <button type="button" class="btn green-button dropdown-toggle order-by-options-btn"
                 data-bs-toggle="dropdown" aria-expanded="false">{{orderByOption}}
         </button>
 
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
           <!--order by title-->
-          <button type="button" class="btn green-button-transparent col-12"
+          <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
                   @click="setOrderByOption(true, false)">
             Title
           </button>
 
           <!--order by location-->
-          <button type="button" class="btn green-button-transparent col-12"
+          <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
                   @click="setOrderByOption(false, true)">
             Location
           </button>
@@ -34,21 +34,21 @@
 
     <div id="ordering-direction-container" class="col">
 
-      <div class="btn-group col-md-3 py-1" role="group">
-        Order Direction
-        <button type="button" class="btn green-button dropdown-toggle"
+      <div class="btn-group col" role="group">
+        <label id="order-direction-options-text">Order Direction</label>
+        <button type="button" class="btn green-button dropdown-toggle order-direction-options-btn"
                 data-bs-toggle="dropdown" aria-expanded="false">{{orderDirectionOption}}
         </button>
 
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
           <!--order by ascending direction -->
-          <button type="button" class="btn green-button-transparent col-12"
+          <button type="button" class="btn green-button-transparent col-12 order-direction-options-btn"
                   @click="setOrderDirectionOption(true)">
             Ascending
           </button>
 
           <!--order by descending direction -->
-          <button type="button" class="btn green-button-transparent col-12"
+          <button type="button" class="btn green-button-transparent col-12 order-direction-options-btn"
                   @click="setOrderDirectionOption(false)">
             Descending
           </button>
@@ -126,11 +126,26 @@ export default {
 <style scoped>
 
 #ordering-option-container, #ordering-direction-container {
-  max-width: 40%;
+  max-width: 34%;
 }
 
 #order-by-btn {
   max-width: 20%;
+}
+
+#order-by-options-text, #order-direction-options-text {
+  padding-right: 30px;
+}
+
+.order-by-options-btn, .order-direction-options-btn {
+  width: 200px;
+  margin-right: 30px;
+}
+
+.dropdown-menu {
+  margin-top: 0;
+  border: none;
+  width: 200px;
 }
 
 </style>
