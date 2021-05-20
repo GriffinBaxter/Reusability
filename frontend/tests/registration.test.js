@@ -2,10 +2,16 @@ import {test, expect} from "@jest/globals"
 import reg from '../src/views/Registration'
 import User from '../src/configs/User'
 import Api from '../src/Api';
-import {shallowMount} from "@vue/test-utils";
-import Registration from "@/views/Registration";
-const registrationTestData = require('registrationTestData.js');
+import {createLocalVue, shallowMount} from "@vue/test-utils";
+import VueLogger from "vuejs-logger";
+import VueRouter from "vue-router";
+import router from '../src/router/index'
+
 jest.mock("../src/Api.js");
+
+const localVue = createLocalVue();
+localVue.use(VueLogger, {isEnabled : false});
+localVue.use(VueRouter);
 
 /**
  * Jest tests for registration.vue.
@@ -2022,11 +2028,11 @@ test( 'Testing for the postcode with symbols', () => {
 // ************************************************ Suburb Tests *******************************************************
 // Waiting for confirmation from PO
 
-/*/!**
+/**
  * Testing that an error message is returned when the suburb has a length greater than the maximum length of 255
  * characters.
  *  @result message raised is Input must be between 1 and 255.
- *!/
+ */
 test( 'Test for the suburb for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
@@ -2039,11 +2045,11 @@ test( 'Test for the suburb for the max length', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing that an error message is returned when we submit the empty string. This is also a test for the minimum length
  * which allows for the empty string i.e. length of 0.
  * @result messaged raised is "Please enter input".
- *!/
+ */
 test( 'Test for the suburb for the minimum length and empty string', () => {
     const inputValue = ""
     const expectedValue = '';
@@ -2056,10 +2062,10 @@ test( 'Test for the suburb for the minimum length and empty string', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for valid input of suburb.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for a valid suburb', () => {
     const inputValue = "Some suburb"
     const expectedValue = ""
@@ -2072,10 +2078,10 @@ test( 'Testing for a valid suburb', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for suburb with numbers.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for suburb with numbers', () => {
     const inputValue = "suburb 13"
     const expectedValue = ""
@@ -2088,10 +2094,10 @@ test( 'Testing for suburb with numbers', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for suburb with symbols.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for the suburb with symbols', () => {
     const inputValue = "!@#!@ suburb"
     const expectedValue = ""
@@ -2102,7 +2108,7 @@ test( 'Testing for the suburb with symbols', () => {
         User.config.suburb.minLength,
         User.config.suburb.maxLength
     )).toBe(expectedValue)
-})*/
+})
 
 // ************************************************ between() Tests ****************************************************
 
@@ -2163,23 +2169,51 @@ test('Test if value 1 > value 2 = value 3 gives false', () => {
     ).toBe(expectedMessage);
 })
 
-// ************************************************ Testing API call ****************************************************
+// ************************************************ Testing API call ***************************************************
 
-describe('Testing the registration API', async function () {
+describe('Testing the registration',  () => {
 
-    let wrapper = shallowMount(Registration.vue);
-    let registerButton = wrapper.find("#register-button");
+    test('Test the registration API', async () => {
+        const validRegistrationPayload = {
+            "firstName": "John",
+            "lastName": "Smith",
+            "middleName": "Hector",
+            "nickname": "Jonny",
+            "bio": "Likes long walks on the beach",
+            "email": "johnsmith99@gmail.com",
+            "dateOfBirth": "1999-04-27",
+            "phoneNumber": "+64 3 555 0129",
+            "homeAddress": {
+                "streetNumber": "3/24",
+                "streetName": "Ilam Road",
+                "city": "Christchurch",
+                "region": "Canterbury",
+                "country": "New Zealand",
+                "postcode": "90210"
+            },
+            "password": "1337-H%nt3r2"
+        };
 
-    test('Test the registration', async () => {
-        await Api.addNewUser(registrationTestData.validRegistrationPayload).mockResolvedValue({
+        const data = {
             status: 201,
             data: {
                 userId: 1
             }
-        });
+        }
 
-        await registerButton.trigger("click");
-        expect(wrapper.vm.$data.clicked).toBeTruthy();
+        Api.addNewUser.mockImplementation(() => Promise.resolve(data));
+
+        const returnData = await Api.addNewUser(validRegistrationPayload)
+
+        expect(returnData).toBe(data)
     })
 
-});
+    test("Successful login and registration after clicking registration button", async () => {
+        const wrapper = await shallowMount(reg, {localVue, router});
+        const registerButton = wrapper.find("#register-button");
+
+        await registerButton.trigger("click");
+
+        expect(wrapper.vm.$route.name).toStrictEqual("Login");
+    })
+})
