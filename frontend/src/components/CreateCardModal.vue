@@ -33,14 +33,14 @@
                   <label for="section-selection" class="form-label">What section would you like to post your card?*</label>
                 </div>
                 <div class="col-md-6 my-2 my-lg-0">
-                  <select id="section-selection" name="section-selection" :class="`form-select ${isInvalid(formError.sectionSelection)}`" v-model="sectionSelected" >
+                  <select id="section-selection" name="section-selection" :class="`form-select ${isInvalid(formError.sectionSelectionError)}`" v-model="sectionSelected" >
                     <option value="" disabled selected>Select section</option>
                     <option :value="sections.FOR_SALE">For Sale</option>
                     <option :value="sections.EXCHANGE">Exchange</option>
                     <option :value="sections.WANTED">Wanted</option>
                   </select>
-                  <div class="invalid-feedback" v-if="formError.sectionSelection">
-                    {{formError.sectionSelection}}
+                  <div class="invalid-feedback" v-if="formError.sectionSelectionError">
+                    {{formError.sectionSelectionError}}
                   </div>
               </div>
               </div>
@@ -65,20 +65,52 @@
 
               <!-- Card title -->
               <div class="row my-lg-2">
-                <div class="col-md-2 ">
+                <div class="col-md-3 ">
                   <label for="card-title" class="fw-bold">Title:</label>
                 </div>
                 <div class="col-md">
-                  <input id="card-title" class="form-control">
+                  <input id="card-title" :class="`form-control ${isInvalid(formError.titleError)}`" v-model="title">
+                  <div class="invalid-feedback" v-if="formError.titleError">
+                    {{formError.titleError}}
+                  </div>
                 </div>
               </div>
+
+              <!-- Card Description -->
+              <div class="row my-4">
+                <div class="col-md-3 ">
+                  <label for="card-description" class="fw-bold">Description:</label>
+                </div>
+                <div class="col-md">
+                  <textarea id="card-description" :class="`form-control ${isInvalid(formError.descriptionError)}`" v-model="description" style="resize: none"/>
+                  <div class="invalid-feedback" v-if="formError.descriptionError">
+                    {{formError.descriptionError}}
+                  </div>
+                </div>
+              </div>
+
+
+
+              <!-- Card Keywords -->
+              <div class="row my-4">
+                <div class="col-md-3 ">
+                  <label for="card-keywords" class="fw-bold">Keywords:</label>
+                </div>
+                <div class="col-md">
+                  <textarea id="card-keywords" :class="`form-control ${isInvalid(formError.keywordsError)}`" style="resize: none"/>
+                  <div class="invalid-feedback" v-if="formError.keywordsError">
+                    {{formError.keywordsError}}
+                  </div>
+                </div>
+              </div>
+
 
             </form>
           </div>
 
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary order-1">Create</button>
+            <button type="button" class="btn btn-primary green-button order-1">Create</button>
             <button type="button" class="btn btn-secondary order-0" data-bs-dismiss="modal">Cancel</button>
           </div>
         </div>
@@ -112,11 +144,17 @@ export default {
       userFullName: "Your full name",
       /** Contains the prefilled value of the user's address (only city and suburb)*/
       userLocation: "Your city, suburb",
-
+      /** Keeps track of the user's title input */
+      title: "",
+      /** Keeps track of the user's description input.*/
+      description: "",
 
       /** Error messages */
       formError: {
-        sectionSelection: ""
+        sectionSelectionError: "",
+        titleError: "",
+        descriptionError: "",
+        keywordsError: ""
       }
     }
   },
@@ -134,7 +172,15 @@ export default {
      */
     isInvalid(errorMessage) {
       return errorMessage !== "" ? 'is-invalid' : "";
+    },
+    /** Verifys that a section choice is valid (i.e., is within the expected sections).
+     *
+     * @return boolean true if the section choice is valid. Otherwise false.*/
+    isSectionSelectionValid() {
+      return Object.values(this.sections).indexOf(this.sectionSelected) > -1;
     }
+
+
   },
   mounted() {
     this.modal = new Modal(this.$refs.createCardModal);
