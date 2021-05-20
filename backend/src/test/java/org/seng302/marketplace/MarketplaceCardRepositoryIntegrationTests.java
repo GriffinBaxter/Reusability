@@ -50,7 +50,8 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -102,7 +103,8 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
