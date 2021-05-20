@@ -57,7 +57,6 @@ public class MarketplaceCardResource {
         this.keywordRepository = keywordRepository;
     }
 
-    // TODO Code comments
     // TODO Helper functions
     // TODO GAA
     // TODO Cucumber tests
