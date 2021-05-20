@@ -20,42 +20,18 @@
 
                 <!--title-->
                 <h4 class="card-subtitle mb-2">{{ title }}</h4>
-                <!--show link work-->{{ id }}<!--delete after data populate-->
 
                 <!--description-->
                 <p class="card-text">
                   {{ description }}
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
                 </p>
-
+                <br>
+                <p class="btn btn-outline-secondary"
+                   v-for="keyword in keywords"
+                   v-bind:key="keyword.id"
+                   style="padding: 0px 3px; margin: 3px 5px">
+                  # {{ keyword.name }}
+                </p>
                 <hr style="margin: 16px 0px 12px">
 
                 <!--creator info-->
@@ -101,7 +77,7 @@ export default {
       section: "",
       title: "",
       description: "",
-      keyword: [],
+      keywords: [],
       created: "",
       creator: "",
       address: "",
@@ -112,57 +88,61 @@ export default {
       type: Number,
       default: 0,
       required: true
-    },
-    // //
-    // section: {
-    //   type: String,
-    //   default: null,
-    //   required: true,
-    // }
+    }
   },
   methods: {
     convertSection(section) {
       switch (section) {
-        case 'ForSale':
+        case 'FORSALE':
           return "For Sale";
-        case 'Wanted':
+        case 'WANTED':
           return "Wanted";
-        case 'Exchange':
+        case 'EXCHANGE':
           return "Exchange";
       }
     },
-  /**
-   * populate data from back end
-   */
-  populateData(data){
-    this.section = this.convertSection(data.section);
-    this.title = data.title;
-    this.description = data.description;
-    this.created = data.created; //TODO: length Error
-    this.address = [data.creator.homeAddress.suburb, data.creator.homeAddress.city].join(" ");
-    this.creator = [data.creator.firstName, data.creator.middleName, data.creator.lastName].join(" ")
+    /**
+     * populate data from back end
+     */
+    populateData(data) {
+      console.log(data)
+      this.section = this.convertSection(data.section);
+      this.title = data.title;
+      this.description = data.description;
+      this.created = data.created; //TODO: length Error
+      this.address = [data.creator.homeAddress.suburb, data.creator.homeAddress.city].join(" ");
+      this.creator = [data.creator.firstName, data.creator.middleName, data.creator.lastName].join(" ");
+      this.keywords = [];
+      data.keywords.forEach(keyword => {
+        this.keywords.push({id: keyword.id, name: keyword.name});
+      })
+    },
+    retrieveCardDetail(id) {
+      Api.getDetailForACard(id).then(response => (this.populateData(response.data))).catch((error) => {
+        if (error.require && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 400) {
+          this.$router.push({path: '/pageDoesNotExist'}); //TODO: add error page
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noCard'});
+        } else {
+          this.$router.push({path: '/noCard'});
+          console.log(error.message);
+        }
+      })
+    }
   },
-  retrieveCardDetail(id) {
-    Api.retrieveCardDetail(id).then(response => (this.populateData(response.data))).cache((error) => {
-      if (error.require && !error.response) {
-        this.$router.push({path: '/timeout'});
-      } else if (error.response.status === 400) {
-        this.$router.push({path: '/pageDoesNotExist'}); //TODO: add error page
-      } else if (error.response.status === 401) {
-        this.$router.push({path: '/invalidtoken'});
-      } else if (error.response.status === 406) {
-        this.$router.push({path: '/noCard'});
-      } else {
-        this.$router.push({path: '/noCard'});
-        console.log(error.message);
+  watch: {
+    id: {
+      deep: true,
+      handler(newVal) {
+        if (newVal !== 0) {
+          this.retrieveCardDetail(newVal)
+        }
       }
-    })
-  }
-  },
-  mounted() {
-  },
-  beforeMount() {
-
+    }
   }
 }
 </script>
