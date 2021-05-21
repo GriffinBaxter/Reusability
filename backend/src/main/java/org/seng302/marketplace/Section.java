@@ -10,6 +10,9 @@
  */
 package org.seng302.marketplace;
 
+/**
+ * Enum used for the section a card should appear in.
+ */
 public enum Section {
     FORSALE,
     WANTED,

@@ -230,14 +230,6 @@ public class Business {
     }
 
     /**
-     * Returns a list of User objects who are administrators of this business
-     * @return administrators A list of User objects.
-     */
-    public List<User> Administrators() {
-        return administrators;
-    }
-
-    /**
      * Adds a new user as an administrator for this business.
      * Also adds this business to the list of businesses administered by the user.
      * @param user An user which is an administrator for this business.
