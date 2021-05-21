@@ -38,13 +38,25 @@
       </ul>
       <div class="tab-content" id="marketplace-tabs-content">
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'For Sale'"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 :sendData="selectedCard"
+                                 v-bind:section="'For Sale'"
+                                 v-bind:sectionCards="allCards.ForSale"
+          />
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'Wanted'"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 :sendData="selectedCard"
+                                 v-bind:section="'Wanted'"
+                                 v-bind:sectionCards="allCards.Wanted"
+          />
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'Exchange'"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 :sendData="selectedCard"
+                                 v-bind:section="'Exchange'"
+                                 v-bind:sectionCards="allCards.Exchange"
+          />
         </div>
       </div>
 
