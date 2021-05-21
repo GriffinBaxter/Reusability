@@ -63,13 +63,19 @@ import CardDetail from "@/components/marketplace/CardDetailPopup";
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import MarketplaceTabSection from "@/components/marketplace/MarketplaceTabSection";
+import Api from "@/Api";
 
 export default {
   name: "Marketplace",
   data() {
     return {
       selectSection: "ForSale",
-      selectedCard: 0
+      selectedCard: 0,
+      allCards: {
+        ForSale: [],
+        Wanted: [],
+        Exchange: [],
+      },
     }
   },
   components: {
@@ -79,11 +85,34 @@ export default {
     Navbar,
   },
   methods: {
+
+    /**
+     * Change the current tab that the user is viewing in the marketplace.
+     * @param newSection the section that the user is switching to
+     */
     changeSection(newSection) {
       this.selectSection = newSection
     },
+
+    /**
+     * Sets the card to open
+     * @param selectedCard the card that will be opened.
+     */
     openCardDetail(selectedCard) {
       this.selectedCard = selectedCard
+    },
+
+    /**
+     * Retrieve the cards for the given marketplace section.
+     * The allowed sections are "ForSale", "Wanted" and "Exchange".
+     * @param section the section that cards will be retrieved for.
+     */
+    retrieveAllCardsForSection(section) {
+      Api.getAllCards(section).then(response => {
+        this.allCards[section] = response.data;
+      }).catch((error) => {
+        console.log(error.message)
+      })
     }
   },
 
@@ -91,8 +120,14 @@ export default {
    * When mounted, if cookie is not present, redirect to login page.
    */
   mounted() {
-
+    this.retrieveAllCardsForSection("ForSale");
+    this.retrieveAllCardsForSection("Wanted");
+    this.retrieveAllCardsForSection("Exchange");
   },
+
+
+
+
 }
 </script>
 

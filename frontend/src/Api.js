@@ -239,4 +239,10 @@ export default {
         })
     },
 
+    getAllCards: (section) => {
+        return instance.get(`/cards?section=${section}`, {
+            withCredentials: true
+        })
+    }
+
 }
