@@ -53,7 +53,7 @@
                 <!--user's detail-->
                 <div style="vertical-align:middle; font-size:15px;">
                   <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
-                  <a style="font-size: 17px"> {{ creator }} </a>
+                  <a v-bind:title="creator" style="font-size: 17px"> {{ displayCreator }} </a>
                 </div>
 
               </div>
@@ -80,6 +80,7 @@ export default {
       keywords: [],
       created: "",
       creator: "",
+      displayCreator: "",
       address: "",
     }
   },
@@ -109,9 +110,14 @@ export default {
       this.section = this.convertSection(data.section);
       this.title = data.title;
       this.description = data.description;
-      this.created = data.created; //TODO: length Error
+      this.created = data.created;
       this.address = [data.creator.homeAddress.suburb, data.creator.homeAddress.city].join(" ");
       this.creator = [data.creator.firstName, data.creator.middleName, data.creator.lastName].join(" ");
+      if (this.creator.length >= 40) {
+        this.displayCreator = this.creator.slice(0, 40) + '...';
+      } else {
+        this.displayCreator = this.creator;
+      }
       this.keywords = [];
       data.keywords.forEach(keyword => {
         this.keywords.push({id: keyword.id, name: keyword.name});
@@ -122,7 +128,7 @@ export default {
         if (error.require && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 400) {
-          this.$router.push({path: '/pageDoesNotExist'}); //TODO: add error page
+          this.$router.push({path: '/pageDoesNotExist'});
         } else if (error.response.status === 401) {
           this.$router.push({path: '/invalidtoken'});
         } else if (error.response.status === 406) {
