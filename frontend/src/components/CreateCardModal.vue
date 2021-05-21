@@ -122,6 +122,8 @@
 
 <script>
 import { Modal } from 'bootstrap';
+import Api from "@/Api";
+import Cookies from "js-cookie";
 
 export default {
   name: "CreateCardModal",
@@ -141,9 +143,9 @@ export default {
       },
 
       /** Contains the user's full name to be displayed as a prefilled value*/
-      userFullName: "Your full name",
+      userFullName: "",
       /** Contains the prefilled value of the user's address (only city and suburb)*/
-      userLocation: "Your city, suburb",
+      userLocation: "",
       /** Keeps track of the user's title input */
       title: "",
       /** Keeps track of the user's description input.*/
@@ -178,12 +180,38 @@ export default {
      * @return boolean true if the section choice is valid. Otherwise false.*/
     isSectionSelectionValid() {
       return Object.values(this.sections).indexOf(this.sectionSelected) > -1;
-    }
+    },
 
+    /**
+     * Populates the user's full name (first, last) and location (suburb, city) fields.
+     * @param currentID Current User ID
+     */
+    populateUserInfo(currentID) {
+      Api.getUser(currentID).then(response => {
+        this.userFullName = response.data.firstName + " " + response.data.lastName
+
+        const city = response.data.homeAddress.city;
+        const suburb = response.data.homeAddress.suburb;
+        if (suburb && city) {
+          this.userLocation = suburb + ", " + city
+        } else if (suburb) {
+          this.userLocation = suburb
+        } else if (city) {
+          this.userLocation = city
+        } else {
+          this.userLocation = "N/A"
+        }
+      })
+    }
 
   },
   mounted() {
     this.modal = new Modal(this.$refs.createCardModal);
+
+    const currentID = Cookies.get('userID');
+    if (currentID) {
+      this.populateUserInfo(currentID)
+    }
   }
 }
 </script>
