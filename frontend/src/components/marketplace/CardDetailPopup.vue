@@ -9,7 +9,7 @@
           <!--section-->
           <div class="modal-header" style="padding: 20px 40px 15px">
             <h2 id="cardDetailPopUpLabel" style="margin: 0px">
-              {{ convertSection(section) }}
+              {{ section }}
             </h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -20,42 +20,18 @@
 
                 <!--title-->
                 <h4 class="card-subtitle mb-2">{{ title }}</h4>
-                <!--show link work-->{{ index }}<!--delete after data populate-->
 
                 <!--description-->
                 <p class="card-text">
                   {{ description }}
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  <br>
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
-                  Some quick example text to build on the card title and make up the bulk of the card's
-                  content.
                 </p>
-
+                <br>
+                <p class="btn btn-outline-secondary"
+                   v-for="keyword in keywords"
+                   v-bind:key="keyword.id"
+                   style="padding: 0px 3px; margin: 3px 5px">
+                  # {{ keyword.name }}
+                </p>
                 <hr style="margin: 16px 0px 12px">
 
                 <!--creator info-->
@@ -67,7 +43,7 @@
                   </div>
                   <div class="col" align="right">
                     <h6 class="text-muted">
-                      {{ city }}
+                      {{ address }}
                     </h6>
                   </div>
                 </div>
@@ -77,7 +53,7 @@
                 <!--user's detail-->
                 <div style="vertical-align:middle; font-size:15px;">
                   <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
-                  <a style="font-size: 17px"> {{ creator }} </a>
+                  <a v-bind:title="creator" style="font-size: 17px"> {{ displayCreator }} </a>
                 </div>
 
               </div>
@@ -91,52 +67,88 @@
 </template>
 
 <script>
+import Api from "@/Api";
+
 export default {
   name: "CardDetail",
   data() {
     return {
-      sectionDisplay: null,
       avatar: require("../../../public/sample_profile_image.jpg"),
-      title: "1982 Lada Samara",
-      description: "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.",
-      keyword: [],
-      created: "2021-07-15T05:10:00Z",
-      firstName: "John",
-      lastName: "Smith",
-      middleName: "Hector",
+      section: "",
+      title: "",
+      description: "",
+      keywords: [],
+      created: "",
       creator: "",
-      city: "Christchurch",
+      displayCreator: "",
+      address: "",
     }
   },
   props: {
-    // TODO:show link work, delete after data populate
-    index: {
+    id: {
       type: Number,
       default: 0,
       required: true
-    },
-    //
-    section: {
-      type: String,
-      default: null,
-      required: true,
     }
-
   },
   methods: {
     convertSection(section) {
       switch (section) {
-        case 'ForSale':
+        case 'FORSALE':
           return "For Sale";
-        case 'Wanted':
+        case 'WANTED':
           return "Wanted";
-        case 'Exchange':
+        case 'EXCHANGE':
           return "Exchange";
       }
+    },
+    /**
+     * populate data from back end
+     */
+    populateData(data) {
+      console.log(data)
+      this.section = this.convertSection(data.section);
+      this.title = data.title;
+      this.description = data.description;
+      this.created = data.created;
+      this.address = [data.creator.homeAddress.suburb, data.creator.homeAddress.city].join(" ");
+      this.creator = [data.creator.firstName, data.creator.middleName, data.creator.lastName].join(" ");
+      if (this.creator.length >= 40) {
+        this.displayCreator = this.creator.slice(0, 40) + '...';
+      } else {
+        this.displayCreator = this.creator;
+      }
+      this.keywords = [];
+      data.keywords.forEach(keyword => {
+        this.keywords.push({id: keyword.id, name: keyword.name});
+      })
+    },
+    retrieveCardDetail(id) {
+      Api.getDetailForACard(id).then(response => (this.populateData(response.data))).catch((error) => {
+        if (error.require && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 400) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noCard'});
+        } else {
+          this.$router.push({path: '/noCard'});
+          console.log(error.message);
+        }
+      })
     }
   },
-  mounted() {
-    this.creator = this.firstName + " " + this.middleName + " " + this.lastName;
+  watch: {
+    id: {
+      deep: true,
+      handler(newVal) {
+        if (newVal !== 0) {
+          this.retrieveCardDetail(newVal)
+        }
+      }
+    }
   }
 }
 </script>
