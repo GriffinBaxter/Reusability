@@ -4,7 +4,7 @@
 
 <template>
   <div>
-
+    <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
 
@@ -95,19 +95,22 @@
         </div>
       </div>
 
-
     </div>
+    </div>
+    <Footer/>
   </div>
 </template>
 
 <script>
 import Api from '../Api';
 import Cookies from 'js-cookie';
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/main/Navbar";
+import Footer from "@/components/main/Footer";
 
 export default {
   name: "Search",
   components: {
+    Footer,
     Navbar
   },
   data() {
@@ -616,9 +619,6 @@ export default {
       ).catch(
           (e) => console.log(e)
       )
-      //this.orderUsers();
-    } else {
-      this.$router.push({name: 'Login'});
     }
 
     document.addEventListener('page-routing', this.requestUsersListener);
@@ -678,5 +678,4 @@ export default {
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
-
 </style>

@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ListingRepository.
+ *
+ * Description. This file contains the defintion for the ListingRepository.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/listing/ListingRepository
+ * @file   This file contains the definition for ListingRepository.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.listing;
 
 import org.seng302.business.product.Product;

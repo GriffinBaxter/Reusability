@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the User.
+ *
+ * Description. This file contains the defintion for the User.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/User
+ * @file   This file contains the definition for User.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import java.io.UnsupportedEncodingException;
@@ -15,6 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
+import org.seng302.marketplace.MarketplaceCard;
 import org.seng302.validation.UserValidation;
 import org.seng302.validation.Validation;
 
@@ -43,7 +54,7 @@ public class User {
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "bio")
+    @Column(name = "bio", length = 600)
     private String bio;
 
     @Column(name = "email", nullable = false)
@@ -79,6 +90,9 @@ public class User {
     @Column(name = "session_uuid")
     private String sessionUUID;
 
+    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<MarketplaceCard> cards = new ArrayList<>();
 
     /**
      * User account constructor.
@@ -316,11 +330,36 @@ public class User {
         return businessesAdministeredObjects;
     }
 
+    /**
+     * Returns a list of MarketplaceCard objects created by the user.
+     * @return cards a list of MarketplaceCard objects.
+     */
+    public List<MarketplaceCard> getCards() {
+        return cards;
+    }
+
+    /**
+     * Removes the given business from the businessesAdministeredObjects
+     * @param business
+     */
     public void removeABusinessesAdministeredObjects(Business business){
         int id = business.getId();
         for (int i = 0; i < businessesAdministeredObjects.size(); i++){
             if (businessesAdministeredObjects.get(i).getId() == id){
                 this.businessesAdministeredObjects.remove(i);
+            }
+        }
+    }
+
+    /**
+     * Removes the given card from the list of cards created by the user.
+     * @param card the card to be removed
+     */
+    public void removeACardFromMarketplaceCards(MarketplaceCard card){
+        int id = card.getId();
+        for (int i = 0; i < this.cards.size(); i++){
+            if (this.cards.get(i).getId() == id){
+                this.cards.remove(i);
             }
         }
     }
@@ -367,5 +406,25 @@ public class User {
 
     public void setBusinessesAdministeredObjects(List<Business> businessesAdministeredObjects) {
         this.businessesAdministeredObjects = businessesAdministeredObjects;
+    }
+
+    public UserPayloadSecure toUserPayloadSecure() throws Exception {
+        List<Business> administrators = businessesAdministeredObjects;
+        for (Business administrator : administrators) {
+            administrator.setAdministrators(new ArrayList<>());
+        }
+        return new UserPayloadSecure(
+                id,
+                firstName,
+                lastName,
+                middleName,
+                nickname,
+                bio,
+                email,
+                homeAddress.toAddressPayloadSecure(),
+                created,
+                role,
+                administrators
+        );
     }
 }

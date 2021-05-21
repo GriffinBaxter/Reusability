@@ -6,6 +6,7 @@
 
   <div>
 
+    <div id="main">
     <!--Nav bar; displays either business account or individual account nav bar-->
     <Navbar></Navbar>
 
@@ -83,6 +84,7 @@
       </div>
     </div>
 
+    </div>
     <!--Footer contains links that are the same as those in the nav bar-->
     <Footer></Footer>
 
@@ -92,8 +94,8 @@
 <script>
 // import Api from '../Api';
 // import Cookies from 'js-cookie';
-import Footer from '../components/Footer';
-import Navbar from '../components/Navbar'
+import Footer from '../components/main/Footer';
+import Navbar from '../components/main/Navbar'
 
 export default {
   name: "Home",
@@ -212,15 +214,6 @@ div.container{
 .post-description {
   margin-bottom: 30px;
 }
-
-/**
- * TODO remove once footer is sticky
- * Calculates where footer should be.
- */
-.all-but-footer {
-  min-height: calc(100vh - 240px);
-}
-
 /*-------------------------------------------- Medium break point styling -------------------------------------------*/
 
 /*Medium break point*/
@@ -244,5 +237,4 @@ div.container{
     margin: auto;
   }
 }
-
 </style>

@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the Business.
+ *
+ * Description. This file contains the defintion for the Business.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/Business
+ * @file   This file contains the definition for Business.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business;
 
 import javax.persistence.*;
@@ -13,7 +23,17 @@ import org.seng302.user.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Business Class
+ *
+ * Business Class for defining business by id, admins, primary admin, business name,
+ * business description, address, business type and created date.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/Business.java
+ * @file   Business.java.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 @NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
 @Entity // declare this class as a JPA entity (that can be mapped to a SQL table)
 public class Business {
@@ -33,10 +53,10 @@ public class Business {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 600)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 

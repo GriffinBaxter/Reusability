@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserPayload.
+ *
+ * Description. This file contains the defintion for the UserPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/UserPayload
+ * @file   This file contains the definition for UserPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import org.seng302.address.AddressPayload;

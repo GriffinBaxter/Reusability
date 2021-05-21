@@ -1,5 +1,6 @@
 import VueRouter from 'vue-router'
 import Vue from 'vue'
+import Cookies from "js-cookie";
 
 Vue.use(VueRouter)
 
@@ -167,6 +168,18 @@ const routes = [
         component: () => import('../views/Listings')
     },
     {
+        path: '/marketplace',
+        name: 'Marketplace',
+        meta: {
+            title: 'Marketplace'
+        },
+        props: true,
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/Marketplace')
+    },
+    {
         path: '*',
         name: 'catchAll',
         component: () => import('../views/Login')
@@ -178,5 +191,17 @@ const router = new VueRouter({
     base: process.env.VUE_APP_BASE_URL,
     routes
 })
+router.beforeEach((to, from, next) => {
+    if(to.name !== "Login" && to.name !== "Registration") {
+        if (!Cookies.get('userID')) {
+            next({ name: "Login"});
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
+});
 
 export default router
+

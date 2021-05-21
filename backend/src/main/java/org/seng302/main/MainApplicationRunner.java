@@ -99,7 +99,8 @@ public class MainApplicationRunner implements ApplicationRunner {
                     "Christchurch",
                     "Canterbury",
                     "New Zealand",
-                    "90210"
+                    "90210",
+                    "Ilam"
             );
             addressRepository.save(address);
             User dGAA = new User(

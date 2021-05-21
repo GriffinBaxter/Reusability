@@ -1,10 +1,20 @@
+/**
+ * Summary. Contains the definition for the InventoryItem class.
+ *
+ * Description. Contains the definition for the InventoryItem class, which contains
+ * the JPA entity for InventoryItem.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/inventoryItem/InventoryItem
+ * @file   This file contains the InventoryItem JPA entity definition.
+ * @author team-400
+ * @since  5.5.2021
+ */
 package org.seng302.business.inventoryItem;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.business.listing.Listing;
 import org.seng302.business.product.Product;
-import org.seng302.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -60,7 +70,7 @@ public class InventoryItem {
 
     @OneToMany(mappedBy = "inventoryItem", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    private List<Listing> listings = new ArrayList<Listing>();;
+    private List<Listing> listings = new ArrayList<>();
 
     /**
      * Constructor for inventory items.
@@ -211,6 +221,10 @@ public class InventoryItem {
         this.expires = expires;
     }
 
+    public void setListings(List<Listing> listings) {
+        this.listings = listings;
+    }
+
     /**
      * Adds a new listing for this inventory item.
      * This function will need to be called in the endpoint when creating a listing.
@@ -247,5 +261,4 @@ public class InventoryItem {
         }
         return totalListed;
     }
-
 }

@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the BusinessRegistrationPayload.
+ *
+ * Description. This file contains the defintion for the BusinessRegistrationPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/BusinessRegistrationPayload
+ * @file   This file contains the definition for BusinessRegistrationPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business;
 
 import org.seng302.address.Address;
