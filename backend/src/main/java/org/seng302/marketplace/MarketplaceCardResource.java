@@ -65,7 +65,6 @@ public class MarketplaceCardResource {
      * @return ResponseEntity<MarketplaceCardIdPayload> this payload contains the id of a successfully created card.
      */
     @PostMapping("/cards")
-    @ResponseStatus(value = HttpStatus.CREATED, reason = "Card created successfully.")
     public ResponseEntity<MarketplaceCardIdPayload> createCard(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestBody MarketplaceCardCreationPayload cardPayload
