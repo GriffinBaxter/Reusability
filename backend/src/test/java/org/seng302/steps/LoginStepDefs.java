@@ -73,7 +73,8 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("Bob",
                 "Smith",
@@ -122,7 +123,8 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("Bob",
                 "Smith",

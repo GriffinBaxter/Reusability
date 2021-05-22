@@ -4,7 +4,9 @@
       <!--nav bar-->
       <navbar/>
     <!--creation popup-->
-    <inventory-item-creation @updateInventoryItem="afterCreation"/>
+    <inventory-item-creation @updateInventoryItem="afterCreation"
+                             v-bind:currency-code="currencyCode"
+                             v-bind:currency-symbol="currencySymbol"/>
 
     <!--inventory container-->
     <div class="container p-5 mt-3" id="profileContainer">
@@ -127,9 +129,18 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col" align="center">New Inventory Item Created</div>
+                <div class="col">New Inventory Item Created</div>
+                <div class="col" align="right">
+                  <button type="button" class="btn green-button px-1 py-0" @click="closeMessage">X</button>
+                </div>
               </div>
             </div>
+
+            <UpdateInventoryItemModal ref="updateInventoryItemModal"
+                                      :business-id="businessId"
+                                      :currency-code="currencyCode"
+                                      :currency-symbol="currencySymbol"
+                                      v-model="currentInventoryItem"/>
 
             <!--inventory items-->
             <inventory-item
@@ -148,6 +159,7 @@
                 v-bind:expires="inventory.expires"
                 v-bind:currency-code="currencyCode"
                 v-bind:currency-symbol="currencySymbol"
+                v-on:click="triggerUpdateInventoryItemModal(inventory)"
             />
 
             <!--space-->
@@ -215,9 +227,11 @@ import InventoryItemCreation from "@/components/inventory/CreateInventoryItemMod
 import Api from "@/Api";
 import Cookies from "js-cookie";
 import CurrencyAPI from "@/currencyInstance";
+import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
 
 export default {
   components: {
+    UpdateInventoryItemModal,
     InventoryItemCreation,
     Navbar,
     InventoryItem,
@@ -248,13 +262,14 @@ export default {
       bestBeforeAscending: false,
       expiresAscending: false,
 
-      businessId: null,
+      businessId: 0,
       creationSuccess: false,
 
       businessName: null,
       businessDescription: null,
 
       inventories: null,
+      currentInventoryItem: null,
 
       // Currency related variables
       currencyCode: "",
@@ -263,6 +278,16 @@ export default {
   },
   methods: {
     /**
+     * Sets the current inventory item to the one from the card you've clicked on
+     * and triggers the showModal method of UpdateInventoryItemModal.
+     */
+    async triggerUpdateInventoryItemModal(inventory) {
+      this.currentInventoryItem = await inventory;
+      await this.$forceUpdate();
+      this.$refs.updateInventoryItemModal.showModal();
+    },
+
+     /**
      * convert orderByString to more readable for user
      */
     convertToString() {
@@ -571,6 +596,7 @@ export default {
             }
             this.inventories.push({
               index: i,
+              id: this.InventoryItemList[i].id,
               productName: this.InventoryItemList[i].product.name,
               productId: this.InventoryItemList[i].product.id,
               quantity: this.InventoryItemList[i].quantity,

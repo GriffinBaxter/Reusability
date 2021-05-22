@@ -1,7 +1,7 @@
 /**
  * Summary. This file contains the definition for the ProductResource.
  *
- * Description. This file contains the defintion for the ProductResource.
+ * Description. This file contains the definition for the ProductResource.
  *
  * @link   team-400/src/main/java/org/seng302/business/product/ProductResource
  * @file   This file contains the definition for ProductResource.
@@ -338,7 +338,7 @@ public class ProductResource {
             logger.debug("updatedProduct contains a new ID: {}", updatedProduct.getId());
             // No point in checking this if it is already the same value.
             if (!productId.equals(updatedProduct.getId())) {
-                logger.debug("New product ID: {} differs then the origin product id: {}", updatedProduct.getId(), product.get().getId());
+                logger.debug("New product ID: {} differs then the origin product id: {}", updatedProduct.getId(), product.get().getProductId());
                 // Verify the new id is unique are valid
                 if (!ProductValidation.isValidProductId(updatedProduct.getId()) || productRepository.findProductByIdAndBusinessId(updatedProduct.getId(), businessId).isPresent()) {
                     logger.error("Product Modify Failure - 400 [BAD REQUEST] - New product ID {} either already exists OR is invalid.", updatedProduct.getId());

@@ -21,6 +21,7 @@ public class AddressPayload {
     private String region;
     private String country;
     private String postcode;
+    private String suburb;
 
 
     public AddressPayload(
@@ -29,7 +30,8 @@ public class AddressPayload {
             String city,
             String region,
             String country,
-            String postcode
+            String postcode,
+            String suburb
     ) throws Exception {
         this.streetNumber = streetNumber;
         this.streetName = streetName;
@@ -37,6 +39,7 @@ public class AddressPayload {
         this.region = region;
         this.country = country;
         this.postcode = postcode;
+        this.suburb = suburb;
     }
 
     public AddressPayload() {
@@ -90,11 +93,32 @@ public class AddressPayload {
         this.postcode = postcode;
     }
 
+    /**
+     * Returns suburb
+     * @return suburb of this Address payload
+     */
+    public String getSuburb() {
+        return suburb;
+    }
+
+    /**
+     * Set this suburb to incoming suburb
+     * @param suburb incoming suburb.
+     */
+    public void setSuburb(String suburb) {
+        this.suburb = suburb;
+    }
+
+    /**
+     * Overridden for debugging purposes.
+     * @return string representing this Address payload.
+     */
     @Override
     public String toString() {
         return "Address(" +
                 "streetNumber=" + streetNumber +
                 ", streetName=" + streetName +
+                ", suburb=" + suburb +
                 ", city=" + city +
                 ", postcode=" + postcode +
                 ", region=" + region +

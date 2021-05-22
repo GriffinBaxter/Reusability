@@ -12,7 +12,9 @@
     "sonarqube": "node sonarqube-analysis.js"
   },
   "dependencies": {
+    "@jest/globals": "^26.6.2",
     "@popperjs/core": "^2.9.2",
+    "@vue/test-utils": "^1.2.0",
     "axios": "^0.21.1",
     "bootstrap": "^5.0.0-beta2",
     "core-js": "^3.8.3",
@@ -46,7 +48,8 @@
   "eslintConfig": {
     "root": true,
     "env": {
-      "node": true
+      "node": true,
+      "jest": true
     },
     "extends": [
       "plugin:vue/essential",
@@ -74,14 +77,14 @@
         }
       }
     },
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ],
     "testResultsProcessor": "jest-sonar-reporter",
     "transform": {
-      "^.+\\.vue$": "vue-jest",
-      "^.+\\.js$": "babel-jest"
+      ".*\\.(vue)$": "vue-jest",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
     }
   },
   "jestSonar": {

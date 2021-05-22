@@ -4,7 +4,9 @@
     <!-- Navbar -->
     <Navbar/>
     <!-- Listing Creation -->
-    <create-listing @updateListings="afterCreation"></create-listing>
+    <create-listing @updateListings="afterCreation"
+                    v-bind:currency-code="currencyCode"
+                    v-bind:currency-symbol="currencySymbol"/>
     <!-- Listing Container -->
     <div class="container">
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>

@@ -557,6 +557,9 @@ export default {
       if (data.homeAddress.streetName) {
         this.streetName = data.homeAddress.streetName;
       }
+      if (data.homeAddress.suburb) {
+        this.suburb = data.homeAddress.suburb;
+      }
       if (data.homeAddress.city) {
         this.city = data.homeAddress.city;
       }
@@ -575,6 +578,9 @@ export default {
       } else {
         this.address.push({line: this.streetNumber + this.streetName});
       }
+      if (this.suburb !== "") {
+        this.address.push({line: this.suburb});
+      }
       if (this.city !== "" && this.postcode !== "") {
         this.address.push({line: this.city + ", " + this.postcode});
       } else {
@@ -590,7 +596,7 @@ export default {
       this.actingBusinessId = Cookies.get("actAs");
       data.businessesAdministered.forEach(business => {
         if (business !== null) {
-          if (business.id === this.actingBusinessId) {
+          if (business.id.toString() === this.actingBusinessId) {
             this.isBusinessAdministrator = true;
           }
           this.businessesAdministered.push({name: business.name, id: business.id});
@@ -653,13 +659,14 @@ export default {
 
       if (this.otherUser) {
         this.loadingAction = true;
-
+        let success = true;
         await Api.makeAdministrator(Cookies.get("actAs"), this.urlID).then(response => {
               if (response.status !== 200) {
                 this.actionErrorMessage = "Sorry, but something went wrong..."
               }
             }
         ).catch(error => {
+          success = false
           if (error.response) {
             // Code is not 2xx
             if (error.response.status === 401) {
@@ -685,11 +692,14 @@ export default {
             this.actionErrorMessage = "Sorry, but something went wrong..."
           }
         });
-        //add the business
-        Api.getBusiness(this.actingBusinessId).then(response => {
-          this.businessesAdministered.push({name: response.data.name, id: response.data.id});
-        })
-        this.isBusinessAdministrator = true;
+        //add the business if makeAdministrator successful
+        if (success) {
+          Api.getBusiness(this.actingBusinessId).then(response => {
+            this.businessesAdministered.push({name: response.data.name, id: response.data.id});
+          })
+          this.actionErrorMessage = "" // resets error message
+          this.isBusinessAdministrator = true;
+        }
         this.loadingAction = false;
       }
     },
@@ -708,13 +718,16 @@ export default {
 
       if (this.otherUser) {
         this.loadingAction = true;
+        let success = true;
 
         await Api.removeAdministrator(Cookies.get("actAs"), this.urlID).then(response => {
               if (response.status !== 200) {
                 this.actionErrorMessage = "Sorry, but something went wrong..."
+                success = false
               }
             }
         ).catch(error => {
+          success = false
           if (error.response) {
             // Code is not 2xx
             if (error.response.status === 401) {
@@ -740,17 +753,18 @@ export default {
             this.actionErrorMessage = "Sorry, but something went wrong..."
           }
         });
-        //pop the business which has been removed
-        Api.getBusiness(this.actingBusinessId).then(response => {
-          const newBusinessesAdministered = [];
+        //pop the business which has been removed if successful
+        if (success) {
+          this.actionErrorMessage = "" // resets error message
+          let index = 0;
           this.businessesAdministered.forEach(business => {
-            if (business.id !== response.data.id) {
-              newBusinessesAdministered.push({name: response.data.name, id: response.data.id});
+            if (business.id.toString() === this.actingBusinessId) {
+              this.businessesAdministered.splice(index);
             }
+            index++
           })
-          this.businessesAdministered = newBusinessesAdministered;
-        })
-        this.isBusinessAdministrator = false;
+          this.isBusinessAdministrator = false;
+        }
         this.loadingAction = false;
       }
     },
