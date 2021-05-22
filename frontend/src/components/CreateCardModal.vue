@@ -99,9 +99,9 @@
                   <label for="card-keywords" class="fw-bold">Keywords:</label>
                 </div>
                 <div class="col-md">
-                  <div style="position: relative; height: 60px">
-                    <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop pe-0" style="resize: none; border: none; overflow: auto" disabled />
-                    <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input" style="resize: none; overflow: auto" v-model="keywordsInput"
+                  <div style="position: relative; height: 80px; ">
+                    <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; overflow-y: scroll" disabled />
+                    <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input" style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
                     @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
                   </div>
                 </div>
@@ -195,15 +195,6 @@ export default {
       this.modal.show();
     },
     /**
-     * Given a error message deetermines if to return the is-invalid class.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {string}, which is 'is-invalid' if there is an error message. Otherwise an empty string.
-     */
-    isInvalid(errorMessage) {
-      return errorMessage !== "" ? 'is-invalid' : "";
-    },
-    /**
      * Determines if a section choice made by the user is valid. And updates the error
      * message accordingly and returns the class state.
      *
@@ -253,6 +244,7 @@ export default {
     },
     handleKeywordsScroll() {
       this.$refs.keywordsBackdrop.scrollTop = this.$refs.keywordsInput.scrollTop;
+      this.$refs.keywordsInput.scrollTop = this.$refs.keywordsBackdrop.scrollTop;
     },
     /**
      * Populates the user's full name (first, last) and location (suburb, city) fields.
@@ -287,25 +279,40 @@ export default {
   },
   watch: {
     keywordsInput: function (val) {
+      // Only allow spaces. new line --> space
+      val = val.replaceAll(" ", "\n").replaceAll(/\n\s*\n/g, '\n');
+
+      // Prevent string from being over the maximum length
+      let strings = val.split("\n");
+      for (let i = 0; i < strings.length; i++ ) {
+        if (strings[i].length >= this.config.config.keyword.maxLength) {
+          strings[i] = strings[i].substring(0, this.config.config.keyword.maxLength);
+        }
+      }
+      val = strings.join("\n")
+
+      // Assign the process val to the keyword input
+      this.keywordsInput = val;
+
       // Defines the highlight tag
-      const highlightHtml =  (text) => `<strong style='color: transparent;background-color: #1EBA8C; border-radius: 3px'>${text}</strong>`
+      const highlightHtml = (text) => `<strong class="keywordHighlight">${text}</strong>`
 
       // Get a list of unique strings from the array
-      const uniqueStrings = [...new Set(val.split(" "))];
-      let result = val.split(" ");
+      const uniqueStrings = [...new Set(val.split("\n"))];
+      let result = val.split("\n");
 
       // For each unique string we replace it with a highlight to surround it.
       for (const uniqueString of uniqueStrings) {
         if (uniqueString !== "") {
           for (let i = 0; i < result.length; i++) {
             if (result[i] === uniqueString) {
-              // result[i] = highlightHtml(result[i]);
+              result[i] = highlightHtml(result[i]);
             }
           }
         }
       }
       // Add the text back with the highlights
-      this.keywordsBackdrop = result.join(" ")
+      this.keywordsBackdrop = result.join("\n")
 
       // Ensures when new data is added the scroll bar is updated along with it.
       this.handleKeywordsScroll();
@@ -314,7 +321,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style >
 
   textarea.form-control {
     resize: none;
@@ -326,7 +333,6 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    letter-spacing: 1px;
   }
   div.keywords-backdrop {
     background-color: #fff;
@@ -335,13 +341,27 @@ export default {
     white-space: -o-pre-wrap;
     word-wrap: break-word;
     -ms-word-wrap: break-word;
-    color: orange;
+    margin: 0;
+    border: 1px solid transparent;
+    color: transparent;
   }
 
-  textarea.keywords-input {
+  textarea.keywords-input, textarea.keywords-input:focus {
     background-color: transparent;
-    /*caret-color: #000;*/
+    color: black;
+    caret-color: #000;
     z-index: 10;
+    letter-spacing: 2px;
+    line-height: 2em;
+  }
+
+  strong.keywordHighlight {
+    color: transparent;
+    outline: #404040 solid 1px;
+    outline-offset: 1px;
+    font-weight: normal;
+    letter-spacing: 2px;
+    line-height: 2em;
   }
 
 </style>
