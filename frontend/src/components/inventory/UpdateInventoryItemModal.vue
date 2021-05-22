@@ -366,7 +366,11 @@ export default {
                   if (error.response) {
                     // There was something wrong with the user data!
                     if (error.response.status === 400) {
-                      this.formErrorModalMessage = "Some of the information you have entered is invalid."
+                      if (error.response.data.message !== "") {
+                        this.formErrorModalMessage = error.response.data.message;
+                      } else {
+                        this.formErrorModalMessage = "Some of the information you have entered is invalid."
+                      }
                     } else if (error.response.status === 403) {
                       this.formErrorModalMessage = "You do not have permission to perform this action!"
                       this.$router.push({path: "/forbidden"})

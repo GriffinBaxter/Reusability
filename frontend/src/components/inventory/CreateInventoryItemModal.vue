@@ -379,6 +379,8 @@ export default {
         if (error.response) {
           if (error.response.status === 400) {
             this.toastErrorMessage = 'Invalid Product Data. Please check the product ID';
+          } else if (error.response.status === 401) {
+            this.toastErrorMessage = "You must be logged in to perform this action.";
           } else if (error.response.status === 403) {
             this.toastErrorMessage = 'User is not an administer of this business.';
           } else {

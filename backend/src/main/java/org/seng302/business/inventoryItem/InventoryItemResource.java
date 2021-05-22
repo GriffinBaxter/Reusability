@@ -539,9 +539,10 @@ public class InventoryItemResource {
             errorMessage = "Invalid product ID";
         }
         // The new quantity cannot be lower than the total amount currently in listings for the given inventory item.
-        else if (quantity == null || quantity <= 0 || quantity < totalQuantityFromListings) {
-            errorMessage = "Invalid quantity, must have at least one item " +
-                    "AND must be more than the total quantity in your current listings";
+        else if (quantity == null || quantity <= 0) {
+            errorMessage = "Invalid quantity, must have at least one item";
+        } else if (quantity < totalQuantityFromListings) {
+            errorMessage = "Invalid quantity, must be more than the total quantity in your current listings";
         } else if (pricePerItem != null && pricePerItem < 0) {
             errorMessage = "Invalid price per item, must not be negative";
         } else if (totalPrice != null && totalPrice < 0) {
