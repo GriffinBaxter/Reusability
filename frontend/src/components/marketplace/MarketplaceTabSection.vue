@@ -22,7 +22,7 @@
              v-for="card in sectionCards"
              v-bind:key="card.index">
           <div type="button"
-               @click="selectACard(card.index)"
+               @click="selectACard(card.id)"
                data-bs-toggle="modal"
                data-bs-target="#cardDetailPopUp">
             <Card v-bind:index="card.index"
@@ -74,16 +74,6 @@ export default {
       this.selectedCard = index
     }
   },
-  mounted() {
-    this.cards.push({index: 1})
-    this.cards.push({index: 2})
-    this.cards.push({index: 3})
-    this.cards.push({index: 4})
-    this.cards.push({index: 5})
-    this.cards.push({index: 6})
-    this.cards.push({index: 7})
-    this.cards.push({index: 8})
-  }
 }
 </script>
 
