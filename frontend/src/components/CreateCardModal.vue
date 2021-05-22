@@ -33,7 +33,7 @@
                   <label for="section-selection" class="form-label">What section would you like to post your card?*</label>
                 </div>
                 <div class="col-md-6 my-2 my-lg-0">
-                  <select id="section-selection" name="section-selection" :class="`form-select ${isInvalid(formError.sectionSelectionError)}`" v-model="sectionSelected" >
+                  <select id="section-selection" name="section-selection" :class="`form-select ${isSectionSelectedInvalid()}`" v-model="sectionSelected" >
                     <option value="" disabled selected>Select section</option>
                     <option :value="sections.FOR_SALE">For Sale</option>
                     <option :value="sections.EXCHANGE">Exchange</option>
@@ -66,10 +66,11 @@
               <!-- Card title -->
               <div class="row my-lg-2">
                 <div class="col-md-3 ">
-                  <label for="card-title" class="fw-bold">Title:</label>
+                  <label for="card-title" class="fw-bold">Title*:</label>
                 </div>
                 <div class="col-md">
-                  <input id="card-title" :class="`form-control ${isInvalid(formError.titleError)}`" v-model="title">
+                  <input id="card-title" :class="`form-control ${isTitleInvalid()}`" v-model="title"
+                  :maxlength="config.config.title.maxLength">
                   <div class="invalid-feedback" v-if="formError.titleError">
                     {{formError.titleError}}
                   </div>
@@ -82,7 +83,8 @@
                   <label for="card-description" class="fw-bold">Description:</label>
                 </div>
                 <div class="col-md">
-                  <textarea id="card-description" :class="`form-control ${isInvalid(formError.descriptionError)}`" v-model="description" style="resize: none"/>
+                  <textarea id="card-description" :class="`form-control ${isDescriptionInvalid()}`" v-model="description"
+                  :maxlength="config.config.description.maxLength"/>
                   <div class="invalid-feedback" v-if="formError.descriptionError">
                     {{formError.descriptionError}}
                   </div>
@@ -97,8 +99,8 @@
                   <label for="card-keywords" class="fw-bold">Keywords:</label>
                 </div>
                 <div class="col-md">
-                  <textarea id="card-keywords" :class="`form-control ${isInvalid(formError.keywordsError)}`" style="resize: none"/>
-                  <div class="invalid-feedback" v-if="formError.keywordsError">
+                  <textarea id="card-keywords" class="form-control" style="resize: none"/>
+                  <div class="invalid-feedback">
                     {{formError.keywordsError}}
                   </div>
                 </div>
@@ -110,7 +112,7 @@
 
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary green-button order-1">Create</button>
+            <button type="button" class="btn btn-primary green-button order-1" @click="submitAttempted=true">Create</button>
             <button type="button" class="btn btn-secondary order-0" data-bs-dismiss="modal">Cancel</button>
           </div>
         </div>
@@ -123,6 +125,7 @@
 <script>
 import { Modal } from 'bootstrap';
 import Api from "@/Api";
+import cardConfig from "../configs/MarketplaceCard"
 import Cookies from "js-cookie";
 
 export default {
@@ -131,16 +134,22 @@ export default {
     return {
       modal: null,
 
+      /** For api error we display the error through this model error */
       modalError: "",
+      /** */
+      config: cardConfig,
+      /** Keep one string to contain the invalid class mark*/
+      isInvalidClass: "is-invalid",
 
       /** Keeps track of the selected section */
       sectionSelected: "",
       /** Contains all the possible section values for the select field */
       sections: {
-        FOR_SALE: "for-sale",
-        WANTED: "wanted",
-        EXCHANGE: "exchange"
+        FOR_SALE: "ForSale",
+        WANTED: "Wanted",
+        EXCHANGE: "Exchange"
       },
+
 
       /** Contains the user's full name to be displayed as a prefilled value*/
       userFullName: "",
@@ -150,6 +159,8 @@ export default {
       title: "",
       /** Keeps track of the user's description input.*/
       description: "",
+      /** Used to detect if the submit button was attempted*/
+      submitAttempted: false,
 
       /** Error messages */
       formError: {
@@ -161,9 +172,21 @@ export default {
     }
   },
   methods: {
+    /**
+     * Shows the card creations modal
+     *
+     * @param event The click event.
+     * */
     showModal(event) {
+      // Prevent any default events by button clicks
       event.preventDefault();
+      // Resetting all the variables between card creations.
+      this.submitAttempted = false;
+      this.description = ""
+      this.title = ""
+      this.sectionSelected = ""
 
+      // Show the modal itself.
       this.modal.show();
     },
     /**
@@ -175,13 +198,54 @@ export default {
     isInvalid(errorMessage) {
       return errorMessage !== "" ? 'is-invalid' : "";
     },
-    /** Verifys that a section choice is valid (i.e., is within the expected sections).
+    /**
+     * Determines if a section choice made by the user is valid. And updates the error
+     * message accordingly and returns the class state.
      *
-     * @return boolean true if the section choice is valid. Otherwise false.*/
-    isSectionSelectionValid() {
-      return Object.values(this.sections).indexOf(this.sectionSelected) > -1;
+     *  @return {String} Returns the class that determines if the field is invalid. Otherwise an empty string.
+     * */
+    isSectionSelectedInvalid() {
+      if (this.submitAttempted) {
+        if (Object.values(this.sections).indexOf(this.sectionSelected) === -1) {
+          this.formError.sectionSelectionError = "Please select a valid choice.";
+          return this.isInvalidClass;
+        }
+      }
+      this.formError.sectionSelectionError = "";
+      return "";
     },
-
+    /**
+     * Determines if a title inputted by the user is valid. This also updated the title error
+     * message accordingly and returns the class state.
+     *
+     * @return {String} Returns the class that determines if the field is invalid. Otherwise an empty string.
+     * */
+    isTitleInvalid() {
+      if (this.submitAttempted) {
+        if (this.title.length >= cardConfig.config.title.maxLength || this.title.length < cardConfig.config.title.minLength) {
+          this.formError.titleError = `The title must be between ${cardConfig.config.title.minLength} and ${cardConfig.config.title.maxLength} in length.`
+          return this.isInvalidClass
+        }
+      }
+      this.formError.titleError = ""
+      return ""
+    },
+    /**
+     * Determines if the description inputted is valid within the rules of the Card. This updates the description
+     * error message.
+     *
+     * @return {String} The invalid class when the form is invalid. Otherwise an empty string.
+     * */
+    isDescriptionInvalid() {
+      if (this.submitAttempted) {
+        if (this.description.length >= cardConfig.config.description.maxLength || this.description.length < cardConfig.config.description.minLength) {
+          this.formError.descriptionError = `The description length must be between ${cardConfig.config.description.minLength} and ${cardConfig.config.description.maxLength} in length.`
+          return this.isInvalidClass
+        }
+      }
+      this.formError.descriptionError = ""
+      return ""
+    },
     /**
      * Populates the user's full name (first, last) and location (suburb, city) fields.
      * @param currentID Current User ID
@@ -217,5 +281,9 @@ export default {
 </script>
 
 <style scoped>
+
+  textarea.form-control {
+    resize: none;
+  }
 
 </style>
