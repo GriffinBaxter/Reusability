@@ -134,9 +134,7 @@ export default {
 
     orderedCards(orderByValue) {
       this.sortBy = orderByValue;
-      console.log(this.sortBy)
       this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
-      console.log(this.selectSection.replace(" ", ""))
     }
   },
 
