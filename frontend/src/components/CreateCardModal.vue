@@ -99,9 +99,9 @@
                   <label for="card-keywords" class="fw-bold">Keywords:</label>
                 </div>
                 <div class="col-md">
-                  <textarea id="card-keywords" class="form-control" style="resize: none"/>
-                  <div class="invalid-feedback">
-                    {{formError.keywordsError}}
+                  <div style="position: relative; height: 60px">
+                    <div v-html="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; border: none" disabled />
+                    <textarea ref="keywords-input" id="card-keywords" class="form-control keywords-input" style="resize: none" v-model="keywordsInput"/>
                   </div>
                 </div>
               </div>
@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import { Modal } from 'bootstrap';
+import {Modal} from 'bootstrap';
 import Api from "@/Api";
 import cardConfig from "../configs/MarketplaceCard"
 import Cookies from "js-cookie";
@@ -159,6 +159,10 @@ export default {
       title: "",
       /** Keeps track of the user's description input.*/
       description: "",
+      /** */
+      keywordsInput: "",
+      /** */
+      keywordsBackdrop: "",
       /** Used to detect if the submit button was attempted*/
       submitAttempted: false,
 
@@ -246,6 +250,9 @@ export default {
       this.formError.descriptionError = ""
       return ""
     },
+    handleKeywords(event) {
+      console.log(event)
+    },
     /**
      * Populates the user's full name (first, last) and location (suburb, city) fields.
      * @param currentID Current User ID
@@ -276,6 +283,12 @@ export default {
     if (currentID) {
       this.populateUserInfo(currentID)
     }
+  },
+  watch: {
+    keywordsInput: function (val) {
+      const highlightHtml = "<strong style='color: transparent;background-color: #1EBA8C; border-radius: 3px'>$&</strong>"
+      this.keywordsBackdrop = val.replaceAll("ASD", highlightHtml)
+    }
   }
 }
 </script>
@@ -284,6 +297,30 @@ export default {
 
   textarea.form-control {
     resize: none;
+  }
+
+  div.keywords-backdrop, textarea.keywords-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    letter-spacing: 1px;
+  }
+  div.keywords-backdrop {
+    background-color: #fff;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+    -ms-word-wrap: break-word;
+    color: transparent;
+  }
+
+  textarea.keywords-input {
+    background-color: transparent;
+    /*caret-color: #000;*/
+    z-index: 10;
   }
 
 </style>
