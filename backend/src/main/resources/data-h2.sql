@@ -154,6 +154,30 @@ INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_it
 INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Selling quick.', 11.96, 4, 24, 3);
 INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 249.00, 100, 25, 4);
 
+/* Keywords (10) */
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (1, '2021-05-22 11:28:29', 'Coffee');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (2, '2021-05-22 11:28:29', 'Drink');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (3, '2021-05-22 11:28:29', 'Tea');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (4, '2021-05-22 11:28:29', 'Frozen');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (5, '2021-05-22 11:28:29', 'Vegetables');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (6, '2021-05-22 11:28:29', 'Meat');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (7, '2021-05-22 11:28:29', 'Chicken');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (8, '2021-05-22 11:28:29', 'Fish');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (9, '2021-05-22 11:28:29', 'Beef');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (10, '2021-05-22 11:28:29', 'Fresh');
+
+/* For Sale Cards for Users (10) */
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'FORSALE', DATE'2021-05-12', DATE'2022-05-19', 'Nescafe Cafe Menu Coffee Mix Caramel Latte 170G', 'Nescafé café menu caramel is made with quality coffee beans with a delicious caramel flavour, a great frothy afternoon treat!');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'FORSALE', DATE'2021-05-15', DATE'2022-05-19', 'Red Bull Energy Drink Sugar Free', 'red bull sugar free special formula contains ingredients of high quality: caffeine, taurine, b-group vitamins, sucralose & acesulfame k, alpine water.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'FORSALE', DATE'2021-05-10', DATE'2022-05-19', 'Chanui Organic Green Tea 170G', 'A lovely, organic chun mee-style green tea. Without green tea''s typical astringency, this gentle tea tastes too good to be good for you!.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (3, 'FORSALE', DATE'2021-05-09', DATE'2022-05-19', 'Mccain Mixed Vegetables Peas, Corn & Carrots', 'Our recipe is simple: good food starts from real ingredients. A mixture of peas, corn and carrot picked for perfection & snap frozen for freshness.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'FORSALE', DATE'2021-04-12', DATE'2022-05-19', 'Tegel Take Outs Chicken Tenders Louisiana Style', 'Proudly made right here in New Zealand from local and imported ingredients.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'FORSALE', DATE'2021-05-12', DATE'2022-05-19', 'Mccain Corn Super Juicy Kernels', 'Our recipe is simple: good food starts from real ingredients. Sweet and tender super juicy corn kernels picked for perfection & snap frozen for freshness.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'FORSALE', DATE'2021-05-15', DATE'2022-05-19', 'Sealord Fish Fillets Hoki Classic Crumbed', 'Wild caught new zealand hoki pieces, coated in a crunchy crumb. Pair this flaky, white fish with potatoes for a take on traditional fish and chips, or serve with vegetables or salad for an easy, healthy meal for the family.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (7, 'FORSALE', DATE'2021-05-12', DATE'2022-05-19', 'Peas Baby', 'Snap frozen for freshness. Baby peas are a source of fibre for healthy digestion, a source of vitamin c for a healthy immune system, and a source of iron to reduce fatigue and tiredness (as part of a healthy balanced diet).');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (8, 'FORSALE', DATE'2021-05-20', DATE'2022-05-19', 'Beef Frying', 'Approx 5 pieces per 1kg - but actual quantity may vary.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (9, 'FORSALE', DATE'2021-05-18', DATE'2022-05-19', 'Beef Mince Premium', 'Premium beef mince typically 95% meat, 5% fat with nothing else added.');
+
 /* Exchange Cards for Users (10) */
 INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'EXCHANGE', DATE'2021-05-12', DATE'2021-05-19', '1L Trim Milk', 'Looking to exchange a 1L bottle of trim milk for whole milk. Bought by mistake.');
 INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'EXCHANGE', DATE'2021-05-15', DATE'2021-05-22', 'Punnet of Strawberries', 'Looking to exchange a punnet of around 10 strawberries for another fruit.');
@@ -165,3 +189,27 @@ INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end
 INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (4, 'EXCHANGE', DATE'2021-05-02', DATE'2021-05-09', '12 Banana Muffins', 'Looking to exchange banana muffins for other baked goods. I have 12 available, will exchange for 12 of the same baked good or for a variety.');
 INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'EXCHANGE', DATE'2021-05-12', DATE'2021-05-19', 'Pokemon Ruby for Pokemon Sapphire', 'Looking to exchange Pokemon Ruby for Pokemon Sapphire. Open to a permanent or temporary trade.');
 INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (6, 'EXCHANGE', DATE'2021-05-13', DATE'2021-05-20', '20 Feijoa', 'Looking to exchange feijoa for other fruit, preferably peaches. Homegrown and organic.');
+
+/* Relation Between Card And Keyword (22) */
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('1', '1');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('1', '2');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('2', '2');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('3', '2');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('3', '3');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('4', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('4', '5');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('5', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('5', '6');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('5', '7');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('6', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('6', '5');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('7', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('7', '8');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('8', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('8', '5');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('9', '6');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('9', '9');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('9', '10');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('10', '6');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('10', '9');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('10', '10');
