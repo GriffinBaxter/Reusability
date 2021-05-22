@@ -39,6 +39,7 @@
       <div class="tab-content" id="marketplace-tabs-content">
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 @orderedCards="orderedCards"
                                  :sendData="selectedCard"
                                  v-bind:section="'For Sale'"
                                  v-bind:sectionCards="allCards.ForSale"
@@ -46,6 +47,7 @@
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 @orderedCards="orderedCards"
                                  :sendData="selectedCard"
                                  v-bind:section="'Wanted'"
                                  v-bind:sectionCards="allCards.Wanted"
@@ -53,6 +55,7 @@
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 @orderedCards="orderedCards"
                                  :sendData="selectedCard"
                                  v-bind:section="'Exchange'"
                                  v-bind:sectionCards="allCards.Exchange"
@@ -88,6 +91,8 @@ export default {
         Wanted: [],
         Exchange: [],
       },
+      sortBy: "createdDESC",
+      page: 0
     }
   },
   components: {
@@ -120,11 +125,18 @@ export default {
      * @param section the section that cards will be retrieved for.
      */
     retrieveAllCardsForSection(section) {
-      Api.getAllCards(section).then(response => {
+      Api.getAllCards(section, this.sortBy, this.page).then(response => {
         this.allCards[section] = response.data;
       }).catch((error) => {
         console.log(error.message)
       })
+    },
+
+    orderedCards(orderByValue) {
+      this.sortBy = orderByValue;
+      console.log(this.sortBy)
+      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
+      console.log(this.selectSection.replace(" ", ""))
     }
   },
 

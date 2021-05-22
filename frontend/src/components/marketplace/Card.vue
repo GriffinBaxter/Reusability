@@ -12,6 +12,7 @@
 
         <img :src="creatorImage" id="avatar-image" alt="User Avatar">
         {{ creator.firstName }} {{ creator.lastName }}
+        {{ creator.homeAddress.suburb }} {{ creator.homeAddress.city }}
 
 <!--      <h5><a class="text-dark">{{ index }} {{ title }} {{ created }}</a></h5>-->
 <!--      <p class="small text-muted font-italic">{{ description }} {{ creator.firstName }}</p>-->
@@ -39,7 +40,7 @@ export default {
       required: true
     },
     created: {
-      type: Date,
+      type: String,
       default: "",
       required: true
     },
@@ -49,14 +50,14 @@ export default {
       required: true
     },
     cardImage: {
-      type: Image,
+      type: String,
       default: require("../../../public/apples.jpg"),
-      required: true
+      required: false
     },
     creatorImage: {
-      type: Image,
+      type: String,
       default: require("../../../public/sample_profile_image.jpg"),
-      required: true
+      required: false
     },
   }
 }

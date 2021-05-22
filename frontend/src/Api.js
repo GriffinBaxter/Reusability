@@ -239,8 +239,8 @@ export default {
         })
     },
 
-    getAllCards: (section) => {
-        return instance.get(`/cards?section=${section}`, {
+    getAllCards: (section, sortBy, page) => {
+        return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     }
