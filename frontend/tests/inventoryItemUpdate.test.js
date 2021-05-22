@@ -260,7 +260,10 @@ describe("Testing the update inventory item functionality", () => {
 
         const data = {
             response: {
-                status: 400
+                status: 400,
+                data: {
+                    message: ""
+                }
             }
         }
 
