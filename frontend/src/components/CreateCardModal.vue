@@ -101,7 +101,7 @@
                 <div class="col-md">
                   <div style="position: relative; height: 80px; ">
                     <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; overflow-y: scroll" disabled />
-                    <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input" style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
+                    <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
                     @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
                   </div>
                 </div>
@@ -280,16 +280,16 @@ export default {
   watch: {
     keywordsInput: function (val) {
       // Only allow spaces. new line --> space
-      val = val.replaceAll(" ", "\n").replaceAll(/\n\s*\n/g, '\n');
+      val = val.replaceAll("\n", " ")//.replaceAll(/\n\s*\n/g, '\n');
 
       // Prevent string from being over the maximum length
-      let strings = val.split("\n");
+      let strings = val.split(" ");
       for (let i = 0; i < strings.length; i++ ) {
         if (strings[i].length >= this.config.config.keyword.maxLength) {
           strings[i] = strings[i].substring(0, this.config.config.keyword.maxLength);
         }
       }
-      val = strings.join("\n")
+      val = strings.join(" ")
 
       // Assign the process val to the keyword input
       this.keywordsInput = val;
@@ -298,8 +298,8 @@ export default {
       const highlightHtml = (text) => `<strong class="keywordHighlight">${text}</strong>`
 
       // Get a list of unique strings from the array
-      const uniqueStrings = [...new Set(val.split("\n"))];
-      let result = val.split("\n");
+      const uniqueStrings = [...new Set(val.split(" "))];
+      let result = val.split(" ");
 
       // For each unique string we replace it with a highlight to surround it.
       for (const uniqueString of uniqueStrings) {
@@ -312,7 +312,7 @@ export default {
         }
       }
       // Add the text back with the highlights
-      this.keywordsBackdrop = result.join("\n")
+      this.keywordsBackdrop = result.join(" ") + " "
 
       // Ensures when new data is added the scroll bar is updated along with it.
       this.handleKeywordsScroll();
@@ -357,7 +357,7 @@ export default {
 
   strong.keywordHighlight {
     color: transparent;
-    outline: #404040 solid 1px;
+    border: 1px solid black;
     outline-offset: 1px;
     font-weight: normal;
     letter-spacing: 2px;
