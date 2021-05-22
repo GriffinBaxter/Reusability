@@ -107,7 +107,13 @@ export default {
      */
     createOrderByParams() {
       const direction = (this.orderDirectionOption === "Ascending") ? "ASC" : "DESC"
-      this.orderBy = `${this.orderByOption.toLocaleLowerCase()}${direction}`
+
+      let orderByOptionString = this.orderByOption.toLocaleLowerCase();
+      if (this.orderByOption === "Select Order By") {
+        orderByOptionString = "created"
+      }
+
+      this.orderBy = `${orderByOptionString}${direction}`
     },
 
     /**
@@ -115,6 +121,8 @@ export default {
      */
     orderCards() {
       this.createOrderByParams()
+
+      this.$parent.$emit("orderedCards", this.orderBy)
 
       // now can use this.orderBy to request cards from backend
 
