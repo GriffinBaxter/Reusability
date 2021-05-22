@@ -18,7 +18,7 @@
             <div class="col-7 form-group py-1 px-3">
               <label for="product-id">Product ID*: </label>
               <input id="product-id" name="product-id" type="text" v-model="productId"
-                     :class="toggleInvalidClass(productIdErrorMsg)" :maxlength="config.productId.maxLength" required>
+                     :class="inventoryValidationHelper.toggleInvalidClass(productIdErrorMsg)" :maxlength="config.productId.maxLength" required>
               <div class="invalid-feedback">
                 {{ productIdErrorMsg }}
               </div>
@@ -28,7 +28,7 @@
             <div class="col-5 form-group py-1 px-3">
               <label for="quantity">Quantity*: </label>
               <input id="quantity" name="quantity" type="number" v-model="quantity" min="0"
-                     :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
+                     :class="inventoryValidationHelper.toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
               <div class="invalid-feedback">
                 {{ quantityErrorMsg }}
               </div>
@@ -44,7 +44,7 @@
                 </div>
                 <input id="price-per-item" name="price-per-item" type="number" step="0.01"
                        v-model="pricePerItem"
-                       min="0" :class="toggleInvalidClass(pricePerItemErrorMsg)"
+                       min="0" :class="inventoryValidationHelper.toggleInvalidClass(pricePerItemErrorMsg)"
                        :maxlength="config.pricePerItem.maxLength">
                 <div class="invalid-feedback">
                   {{ pricePerItemErrorMsg }}
@@ -60,7 +60,7 @@
                   <span class="input-group-text">{{ currencySymbol }}</span>
                 </div>
                 <input id="total-price" name="total-price" type="number" step="0.01" v-model="totalPrice"
-                       min="0" :class="toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
+                       min="0" :class="inventoryValidationHelper.toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
                 <div class="invalid-feedback">
                   {{ totalPriceErrorMsg }}
                 </div>
@@ -71,7 +71,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="manufactured">Manufactured: </label>
               <input id="manufactured" name="manufactured" type="date" v-model="manufactured"
-                     :class="toggleInvalidClass(manufacturedErrorMsg)">
+                     :class="inventoryValidationHelper.toggleInvalidClass(manufacturedErrorMsg)">
               <div class="invalid-feedback">
                 {{ manufacturedErrorMsg }}
               </div>
@@ -81,7 +81,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="sell-by">Sell By: </label>
               <input id="sell-by" name="sell-by" type="date" v-model="sellBy"
-                     :class="toggleInvalidClass(sellByErrorMsg)">
+                     :class="inventoryValidationHelper.toggleInvalidClass(sellByErrorMsg)">
               <div class="invalid-feedback">
                 {{ sellByErrorMsg }}
               </div>
@@ -91,7 +91,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="best-before">Best Before: </label>
               <input id="best-before" name="best-before" type="date" v-model="bestBefore"
-                     :class="toggleInvalidClass(bestBeforeErrorMsg)">
+                     :class="inventoryValidationHelper.toggleInvalidClass(bestBeforeErrorMsg)">
               <div class="invalid-feedback">
                 {{ bestBeforeErrorMsg }}
               </div>
@@ -101,7 +101,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="expires">Expires*: </label>
               <input class="col-6" id="expires" name="expires" type="date" v-model="expires"
-                     :class="toggleInvalidClass(expiresErrorMsg)" required>
+                     :class="inventoryValidationHelper.toggleInvalidClass(expiresErrorMsg)" required>
               <div class="invalid-feedback">
                 {{ expiresErrorMsg }}
               </div>
@@ -131,7 +131,7 @@
 import {Modal} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
-import {endOfToday, format, compareAsc} from 'date-fns'
+const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');
 
 export default {
   name: 'InventoryItemCreation',
@@ -174,7 +174,9 @@ export default {
       expires: "",
       expiresErrorMsg: "",
 
-      toastErrorMessage: ""
+      toastErrorMessage: "",
+
+      inventoryValidationHelper: inventoryValidationHelper
     }
   },
   props: {
@@ -191,58 +193,6 @@ export default {
   },
   methods: {
     /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
-
-    /**
-     * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
-     *
-     * @param val, int, the value to be tested for being within the range.
-     * @param min, int, the minimum value in the range.
-     * @param max, int, the maximum value in the range.
-     * @returns Boolean, true if within range, false is not within range.
-     */
-    between(val, min, max) {
-      return min <= val && val <= max;
-    },
-
-    /**
-     * This method determines the error message to be generated for a given input value based on the field type and
-     * its associated validity (determined by a regex).
-     *
-     * @param name, string, name of the input field.
-     * @param inputVal, string, the value entered in the stated field.
-     * @param minLength, number, the minimum allowed length of the inputVal.
-     * @param maxLength, number, the maximum allowed length of the inputVal.
-     * @param regexMessage, string, the tailored message about the expected syntax for the inputVal if it does not
-     *                              meet the regex given.
-     * @param regex, string, the allowed format for the given input field.
-     * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
-     */
-    getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = "";
-      if (inputVal === "" && minLength >= 1) {
-        errorMessage = "Please enter input";
-      } else if (!regex.test(inputVal)) {
-        errorMessage = regexMessage;
-      } else if (!this.between(inputVal.length, minLength, maxLength)) {
-        errorMessage = `Input must be between ${minLength} and ${maxLength} characters long.`
-      }
-      return errorMessage;
-    },
-
-    /**
      * This method removes white space from the beginning and end of all the input field's input values.
      */
     trimTextInputFields() {
@@ -256,251 +206,6 @@ export default {
       this.expires = this.expires.trim();
     },
 
-    /**
-     * This method parses the given date and separates it into a year, day and month, provided it meets
-     * the expected format.
-     *
-     * Note that the date format is yyyy-MM-dd (e.g. '2029-12-30') to use the compareAsc() in the date validation methods.
-     * So, this must be consistent!
-     *
-     * @param dateString, string, the date to validate and separate.
-     * @returns {{year: string, day: string, month: string}|null}, {year, day, month}, if the date meets the expected
-     * format, else null.
-     */
-    parseSelectedDate(dateString) {
-
-      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,3}-[0-9]{1,3}$/
-
-      if (verifyRegex.test(dateString)) {
-        const dateParts = dateString.split("-", 3);
-
-        const year = dateParts[0];
-        let month = dateParts[1];
-        let day = dateParts[2];
-
-        month = (month.length === 1) ? `0${month}` : month;
-        day = (day.length === 1) ? `0${day}` : day;
-
-        return {
-          year: year,
-          month: month,
-          day: day,
-        }
-      } else {
-        return null
-      }
-    },
-
-    /**
-     * This function will check the validity of the manufactured date of an inventory item i.e. that the manufactured
-     * date of the inventory item is prior to today's date
-     * @return true if the date is before today's date or today's date, otherwise false.
-     */
-    isValidManufactureDate(selectedManufacturedDate) {
-
-      const selectedDate = this.parseSelectedDate(selectedManufacturedDate);
-
-      if (selectedDate === null) {
-        return true
-      } else {
-
-        const givenDateYear = selectedDate.year
-        const givenDateMonth = selectedDate.month
-        const givenDateDay = selectedDate.day
-        const todayDateYear = format(endOfToday(new Date()), 'yyyy');
-        const todayDateMonth = format(endOfToday(new Date()), 'MM');
-        const todayDateDay = format(endOfToday(new Date()), 'dd');
-
-        // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
-        // second or 0 if dates are equal.
-        const comparisonValue = compareAsc(new Date(givenDateYear, givenDateMonth, givenDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
-
-        return ((comparisonValue === -1) || (comparisonValue === 0));
-
-      }
-
-    },
-
-    /**
-     * This function will check the validity of the sell by date of an inventory item i.e. that the sell by date of the
-     * inventory item is after to today's date but not today's date, and after the manufacture date and before the expiry date (not including).
-     *
-     * @return true if the date meets the above conditions, otherwise false
-     */
-    isValidSellByDate(selectedSellByDate, selectedManufacturedDate, selectedExpiryDate) {
-
-      let isValid = false;
-      const sellByDate = this.parseSelectedDate(selectedSellByDate);
-      const manufacturedDate = this.parseSelectedDate(selectedManufacturedDate);
-      const expiryDate = this.parseSelectedDate(selectedExpiryDate);
-
-      if (sellByDate === null) {
-        return true;
-      }
-      const sellByDateYear = sellByDate.year
-      const sellByDateMonth = sellByDate.month
-      const sellByDateDay = sellByDate.day
-
-      if (manufacturedDate !== null) {
-        const manufacturedDateYear = manufacturedDate.year
-        const manufacturedDateMonth = manufacturedDate.month
-        const manufacturedDateDay = manufacturedDate.day
-
-        const comparisonWithManufacturedValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
-        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
-
-        if (!isAfterManufactureDateAndNotManufactureDate) {
-          return isValid;
-        }
-      }
-      if (expiryDate !== null) {
-        const expiredDateYear = expiryDate.year
-        const expiredDateMonth = expiryDate.month
-        const expiredDateDay = expiryDate.day
-
-        const comparisonWithExpiryValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(expiredDateYear, expiredDateMonth, expiredDateDay))
-        const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1);
-
-        if (!isBeforeExpiryAndNotExpiryDate) {
-          return isValid;
-        }
-      }
-
-      const todayDateYear = format(endOfToday(new Date()), 'yyyy');
-      const todayDateMonth = format(endOfToday(new Date()), 'MM');
-      const todayDateDay = format(endOfToday(new Date()), 'dd');
-
-      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
-      // second or 0 if dates are equal.
-
-      const comparisonWithTodayValue = compareAsc(new Date(sellByDateYear, sellByDateMonth, sellByDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
-      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
-
-      if (isAfterTodayAndNotToday) {
-        isValid = true;
-      }
-
-      return isValid
-
-    },
-
-    /**
-     * This function will check the validity of the best before date of an inventory item i.e. that the best before date
-     * of the inventory item is after today's date but not today's date (and implicitly after the manufacture date)
-     * and before expiry date.
-     *
-     * @return true if the date meets the above conditions, otherwise false
-     */
-    isValidBestBeforeDate(selectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate) {
-
-      let isValid = false;
-      const bestBeforeDate = this.parseSelectedDate(selectedBestBeforeDate);
-      const manufacturedDate = this.parseSelectedDate(selectedManufacturedDate);
-      const expiryDate = this.parseSelectedDate(selectedExpiryDate);
-
-      if (bestBeforeDate === null) {
-        return true
-      }
-
-      const bestBeforeDateYear = bestBeforeDate.year
-      const bestBeforeDateMonth = bestBeforeDate.month
-      const bestBeforeDateDay = bestBeforeDate.day
-
-      if (manufacturedDate !== null) {
-        const manufacturedDateYear = manufacturedDate.year
-        const manufacturedDateMonth = manufacturedDate.month
-        const manufacturedDateDay = manufacturedDate.day
-
-        const comparisonWithManufacturedValue = compareAsc(new Date(bestBeforeDateYear, bestBeforeDateMonth, bestBeforeDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
-        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
-
-        if (!isAfterManufactureDateAndNotManufactureDate) {
-          return isValid;
-        }
-      }
-      if (expiryDate !== null) {
-        const expiredDateYear = expiryDate.year
-        const expiredDateMonth = expiryDate.month
-        const expiredDateDay = expiryDate.day
-
-        const comparisonWithExpiryValue = compareAsc(new Date(bestBeforeDateYear, bestBeforeDateMonth, bestBeforeDateDay), new Date(expiredDateYear, expiredDateMonth, expiredDateDay))
-        const isBeforeExpiryAndNotExpiryDate = (comparisonWithExpiryValue === -1);
-
-        if (!isBeforeExpiryAndNotExpiryDate) {
-          return isValid;
-        }
-      }
-
-      const todayDateYear = format(endOfToday(new Date()), 'yyyy');
-      const todayDateMonth = format(endOfToday(new Date()), 'MM');
-      const todayDateDay = format(endOfToday(new Date()), 'dd');
-
-      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
-      // second or 0 if dates are equal.
-
-      const comparisonWithTodayValue = compareAsc(new Date(bestBeforeDateYear, bestBeforeDateMonth, bestBeforeDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
-      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
-
-      if (isAfterTodayAndNotToday) {
-        isValid = true;
-      }
-
-      return isValid
-
-    },
-
-    /**
-     * This function will check the validity of the expires date of an inventory item i.e. that the expiry date
-     * of the inventory item is after today's date, after the manufacture date, and after or equal to the best before
-     * date.
-     *
-     * @return true if the date meets the above conditions, otherwise false
-     */
-    isValidExpiryDate(selectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate) {
-
-      let isValid = false;
-      const manufacturedDate = this.parseSelectedDate(selectedManufacturedDate);
-      const expiryDate = this.parseSelectedDate(selectedExpiryDate);
-
-      if (expiryDate === null) {
-        return isValid
-      }
-
-      const expiredDateYear = expiryDate.year
-      const expiredDateMonth = expiryDate.month
-      const expiredDateDay = expiryDate.day
-
-      if (manufacturedDate !== null) {
-        const manufacturedDateYear = manufacturedDate.year
-        const manufacturedDateMonth = manufacturedDate.month
-        const manufacturedDateDay = manufacturedDate.day
-
-        const comparisonWithManufacturedValue = compareAsc(new Date(expiredDateYear, expiredDateMonth, expiredDateDay), new Date(manufacturedDateYear, manufacturedDateMonth, manufacturedDateDay))
-        const isAfterManufactureDateAndNotManufactureDate = (comparisonWithManufacturedValue === 1);
-
-        if (!isAfterManufactureDateAndNotManufactureDate) {
-          return isValid;
-        }
-      }
-
-
-      const todayDateYear = format(endOfToday(new Date()), 'yyyy');
-      const todayDateMonth = format(endOfToday(new Date()), 'MM');
-      const todayDateDay = format(endOfToday(new Date()), 'dd');
-
-      // Compare the two dates and return 1 if the first date is after the second, -1 if the first date is before the
-      // second or 0 if dates are equal.
-
-      const comparisonWithTodayValue = compareAsc(new Date(expiredDateYear, expiredDateMonth, expiredDateDay), new Date(todayDateYear, todayDateMonth, todayDateDay))
-      const isAfterTodayAndNotToday = (comparisonWithTodayValue === 1);
-
-      if (isAfterTodayAndNotToday) {
-        isValid = true;
-      }
-
-      return isValid
-
-    },
     /**
      * reset all input file
      */
@@ -555,7 +260,7 @@ export default {
       // ===================================== START OF INPUT FIELDS VALIDATION ========================================
 
       // Product Id error checking
-      this.productIdErrorMsg = this.getErrorMessage(
+      this.productIdErrorMsg = inventoryValidationHelper.getErrorMessage(
           this.config.productId.name,
           this.productId,
           this.config.productId.minLength,
@@ -568,7 +273,7 @@ export default {
       }
 
       // Quantity error checking
-      this.quantityErrorMsg = this.getErrorMessage(
+      this.quantityErrorMsg = inventoryValidationHelper.getErrorMessage(
           this.config.quantity.name,
           this.quantity,
           this.config.quantity.minLength,
@@ -577,14 +282,14 @@ export default {
           this.config.quantity.regex
       )
       if (this.quantity <= 0) {
-        this.quantityErrorMsg = "At less one"
+        this.quantityErrorMsg = "At least one"
       }
       if (this.quantityErrorMsg) {
         requestIsInvalid = true
       }
 
       // Price per item error checking
-      this.pricePerItemErrorMsg = this.getErrorMessage(
+      this.pricePerItemErrorMsg = inventoryValidationHelper.getErrorMessage(
           this.config.pricePerItem.name,
           this.pricePerItem,
           this.config.pricePerItem.minLength,
@@ -597,7 +302,7 @@ export default {
       }
 
       // Total price error checking
-      this.totalPriceErrorMsg = this.getErrorMessage(
+      this.totalPriceErrorMsg = inventoryValidationHelper.getErrorMessage(
           this.config.totalPrice.name,
           this.totalPrice,
           this.config.totalPrice.minLength,
@@ -609,7 +314,7 @@ export default {
         requestIsInvalid = true
       }
       // Manufacture date error checking
-      if (!this.isValidManufactureDate(this.manufactured)) {
+      if (!inventoryValidationHelper.isValidManufactureDate(this.manufactured)) {
         this.manufacturedErrorMsg = "Manufactured date must be prior to today's date";
         requestIsInvalid = true;
       } else {
@@ -617,7 +322,7 @@ export default {
       }
 
       // Sell by date error checking
-      if (!this.isValidSellByDate(this.sellBy, this.manufactured, this.expires)) {
+      if (!inventoryValidationHelper.isValidSellByDate(this.sellBy, this.manufactured, this.expires)) {
         this.sellByErrorMsg = "Sell by date must be after today's date but not today's date, and after the manufacture date and before the expiry date (not including)";
         requestIsInvalid = true;
       } else {
@@ -625,7 +330,7 @@ export default {
       }
 
       // Best best date before error checking
-      if (!this.isValidBestBeforeDate(this.bestBefore, this.manufactured, this.expires)) {
+      if (!inventoryValidationHelper.isValidBestBeforeDate(this.bestBefore, this.manufactured, this.expires)) {
         this.bestBeforeErrorMsg = "Best before date must be after today's date but not today's date, after the manufacture date and before expiry date";
         requestIsInvalid = true;
       } else {
@@ -633,7 +338,7 @@ export default {
       }
 
       // Expiry date error checking
-      if (!this.isValidExpiryDate(this.expires, this.bestBefore, this.manufactured)) {
+      if (!inventoryValidationHelper.isValidExpiryDate(this.expires, this.bestBefore, this.manufactured)) {
         this.expiresErrorMsg = "Expiry date of the inventory item is after today's date, after the manufacture date, and after or equal to the best before date";
         requestIsInvalid = true;
       } else {
@@ -696,7 +401,7 @@ export default {
 
 <style scoped>
 
-/* Styles the input and textarea's borders to be green when they are focused/tabbed to */
+/* Styles the input and text area's borders to be green when they are focused/tabbed to */
 input:focus, textarea:focus {
   outline: none;
   box-shadow: 0 0 2px 2px #1EBA8C;

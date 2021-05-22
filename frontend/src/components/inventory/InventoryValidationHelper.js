@@ -1,6 +1,21 @@
 import {compareAsc, endOfToday, format} from "date-fns";
 
 /**
+ * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
+ * if an error message needs to be presented to the user.
+ *
+ * @param errorMessage, string, the error message relating to invalid input of a field.
+ * @returns {[string]}, classList, a list containing the classes for an invalid message.
+ */
+export function toggleInvalidClass(errorMessage) {
+    let classList = ['form-control']
+    if (errorMessage !== "") {
+        classList.push('is-invalid')
+    }
+    return classList
+}
+
+/**
  * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
  *
  * @param val, int, the value to be tested for being within the range.
@@ -26,18 +41,15 @@ export function between(val, min, max) {
  * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
  */
 export function getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
+    let errorMessage = "";
     if (inputVal === "" && minLength >= 1) {
-        return "Please enter input";
+        errorMessage = "Please enter input";
     } else if (!regex.test(inputVal)) {
-        return regexMessage;
-    } else if (inputVal !== null) {
-        if (!this.between(inputVal.length, minLength, maxLength)) {
-            return `Input must be between ${minLength} and ${maxLength} characters long.`;
-        }
-    } else if (minLength >= 1) {
-        return `Input must be between ${minLength} and ${maxLength} characters long.`;
+        errorMessage = regexMessage;
+    } else if (!between(inputVal.length, minLength, maxLength)) {
+        errorMessage = `Input must be between ${minLength} and ${maxLength} characters long.`
     }
-    return "";
+    return errorMessage;
 }
 
 /**
