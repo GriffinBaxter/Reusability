@@ -12,7 +12,7 @@
             <!--Creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col" align="center">{{ addedMessage }}</div>
+                <div class="col" align="center">{{ userAlertMessage }}</div>
               </div>
             </div>
           </div>
@@ -263,8 +263,8 @@ export default {
       toastErrorMessage: "",
       cannotProceed: false,
 
-      // Message to display that product has been added to catalogue
-      addedMessage: "",
+      // Message to display that product has been added to catalogue or has been edited.
+      userAlertMessage: "",
 
       // Currency related variables
       currencyCode: "",
@@ -613,7 +613,7 @@ export default {
             if (res.status === 201) {
               this.modal.hide();
               // Set message so user knows product has been added.
-              this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
+              this.userAlertMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts();
@@ -652,7 +652,7 @@ export default {
      * After edit success, show the edit info.
      */
     afterEdit() {
-      this.addedMessage = "Product Edited"
+      this.userAlertMessage = "Product Edited";
       this.creationSuccess = true;
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {
