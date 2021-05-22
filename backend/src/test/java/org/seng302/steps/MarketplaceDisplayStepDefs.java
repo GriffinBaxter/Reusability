@@ -6,10 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
-import org.seng302.marketplace.MarketplaceCard;
-import org.seng302.marketplace.MarketplaceCardRepository;
-import org.seng302.marketplace.MarketplaceCardResource;
-import org.seng302.marketplace.Section;
+import org.seng302.marketplace.*;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
@@ -48,6 +45,11 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private UserRepository userRepository;
 
+    @Autowired
+    @MockBean
+    private KeywordRepository keywordRepository;
+
+
     private MarketplaceCard marketplaceCard;
     private User user;
     private Address address;
@@ -73,14 +75,16 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
             "\"created\":\"%s\"," +
             "\"displayPeriodEnd\":\"%s\"," +
             "\"title\":\"%s\"," +
-            "\"description\":\"%s\"" +
+            "\"description\":\"%s\"," +
+            "\"keywords\":%s" +
             "}";
 
     @Before
     public void createMockMvc() {
         marketplaceCardRepository = mock(MarketplaceCardRepository.class);
         userRepository = mock(UserRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(marketplaceCardRepository, userRepository)).build();
+        keywordRepository = mock(KeywordRepository.class);
+        this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(marketplaceCardRepository, userRepository, keywordRepository)).build();
     }
 
     @Given("A card with ID {int} exists in the database.")
@@ -144,6 +148,6 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
                 user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
                 user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard.getSection().toString(),
                 marketplaceCard.getCreated(), marketplaceCard.getDisplayPeriodEnd(), marketplaceCard.getTitle(),
-                marketplaceCard.getDescription()));
+                marketplaceCard.getDescription(), marketplaceCard.getKeywords()));
     }
 }
