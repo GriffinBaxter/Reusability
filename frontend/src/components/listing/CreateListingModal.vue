@@ -17,14 +17,25 @@
             <div class="row">
               <div class="col form-group py-1 px-3">
                 <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
-                  <label for="autofill-input">Inventory ID*: </label>
-                  <input type="text" id="autofill-input" ref="autofill-input" :class="toggleInvalidClass(inventoryIdErrorMsg)" v-model="autofillInput">
+                  <label for="autofill-input">Select an inventory item*: </label>
+                  <input type="text" id="autofill-input" ref="autofill-input" class="form-control" v-model="autofillInput">
+                  <span class="iconSpan">
+                    <i class="fas fa-angle-down"></i>
+                  </span>
                   <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
-                    <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1"><strong>{{ item.product.id }}</strong><br>{{ 'Quantity: ' + item.quantity + ' Price: ' + (currencySymbol) + item.totalPrice + ' Expires: ' + item.expires + '' }}</li>
+                    <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1" v-bind:value="item.id"><strong>{{ item.product.id }}</strong><br>{{ 'Quantity: ' + item.quantity + ' Price: ' + (currencySymbol) + item.totalPrice + ' Expires: ' + item.expires + '' }}</li>
                   </ul>
                 </div>
-                <div class="invalid-feedback">
-                  {{ inventoryIdErrorMsg }}
+<!--                <div class="invalid-feedback">-->
+<!--                  {{ inventoryIdErrorMsg }}-->
+<!--                </div>-->
+              </div>
+            </div>
+            <!--Selected Inventory Item-->
+            <div class="row">
+              <div class="col form-group py-3 px-3">
+                <div id="currentlySelected">
+                  <label for="autofill-input" class="currentlySelectedLabel" ref="currentlySelectedLabel">Currently Selected: <br>{{formatCurrentlySelected(currentInventoryItem) || 'None'}}</label>
                 </div>
               </div>
             </div>
@@ -181,6 +192,8 @@ export default {
       this.moreInfoErrorMsg = "";
       this.closes = "";
       this.closesErrorMsg = "";
+      this.$refs.currentlySelectedLabel.className = 'currentlySelectedLabel';
+      this.currentInventoryItem = null;
     },
     closeModal() {
       this.modal.hide();
@@ -240,6 +253,17 @@ export default {
       }
     },
     /**
+     * Formats the currently selected inventory item string based on the given item.
+     */
+    formatCurrentlySelected(item) {
+      console.log(item);
+      let finalString;
+      if (item !== null) {
+        finalString = 'ID: ' + item.product.id + ' Name: ' + item.product.name + ' RRP: ' + this.currencySymbol + item.product.recommendedRetailPrice + ' ' + this.currencyCode + ' Expires: ' + item.expires;
+      }
+      return finalString;
+    },
+    /**
      * Click event handler for the inventory ID input. Will toggle the autofill options display when needed and
      * also calls fillData, if applicable.
      *
@@ -283,10 +307,21 @@ export default {
      * This function is based off of the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
      * https://24ways.org/2019/making-a-better-custom-select-element/
      */
-    fillData(item) {
-      //const itemID = item.querySelector('strong');
-      const itemID = item;
-      this.autofillInput = itemID.textContent;
+    fillData(currentItem) {
+      let finalItem = null;
+      for (let item of this.allInventoryItems) {
+        if (item.id === currentItem.value) {
+          finalItem = item;
+        }
+      }
+      this.currentInventoryItem = finalItem;
+      this.quantity = finalItem.quantity;
+      this.price = finalItem.totalPrice;
+
+      const newDateTime = new Date(finalItem.expires);
+      this.closes = datefns.format(new Date(newDateTime.getFullYear(), newDateTime.getMonth(), newDateTime.getDate()), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+      this.autofillInput = '';
+      this.$refs.currentlySelectedLabel.className = "";
     },
     /**
      * Opens or hides the autofill list items based on the given input.
@@ -778,6 +813,18 @@ input:focus, textarea:focus {
   display: none;
 }
 
+.iconSpan {
+  position: absolute;
+  top: 2em;
+  right: 0.75em;
+  z-index: 20;
+  background: transparent;
+}
+
 /*********************************************************************/
+
+.currentlySelectedLabel {
+  color: red;
+}
 
 </style>
