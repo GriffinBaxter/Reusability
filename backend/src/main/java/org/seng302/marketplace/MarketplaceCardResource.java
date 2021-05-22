@@ -87,7 +87,7 @@ public class MarketplaceCardResource {
         Sort sortBy = null;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
-        switch (orderBy) { // TODO location orderBy
+        switch (orderBy) {
             case "createdASC":
                 sortBy = Sort.by(Sort.Order.asc("created").ignoreCase());
                 break;
@@ -99,6 +99,12 @@ public class MarketplaceCardResource {
                 break;
             case "titleDESC":
                 sortBy = Sort.by(Sort.Order.desc("title").ignoreCase());
+                break;
+            case "addressASC":
+                sortBy = Sort.by(Sort.Order.asc("creator.homeAddress.suburb").ignoreCase()).and(Sort.by(Sort.Order.asc("creator.homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("created").ignoreCase())));
+                break;
+            case "addressDESC":
+                sortBy = Sort.by(Sort.Order.desc("creator.homeAddress.suburb").ignoreCase()).and(Sort.by(Sort.Order.desc("creator.homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("created").ignoreCase())));
                 break;
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
