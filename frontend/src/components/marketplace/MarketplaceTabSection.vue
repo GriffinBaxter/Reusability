@@ -27,6 +27,9 @@
                data-bs-target="#cardDetailPopUp">
             <Card v-bind:index="card.index"
                   v-bind:title="card.title"
+                  v-bind:description="card.description"
+                  v-bind:created="card.created"
+                  v-bind:creator="card.creator"
             />
           </div>
         </div>

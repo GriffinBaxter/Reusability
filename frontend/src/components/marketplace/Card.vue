@@ -1,13 +1,20 @@
 <template>
   <div class="card rounded shadow-sm border-0">
     <div class="card-body p-4"><img src="" alt="" class="img-fluid d-block mx-auto mb-3">
-      <h5><a class="text-dark">{{ index }} {{ title }}</a></h5>
-      <p class="small text-muted font-italic">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing
-        elit.
-      </p>
-      <ul class="list-inline small">
-      </ul>
+      <div class="row">
+        <div class="col">{{ index }} {{ title }}</div>
+        <div class="col">{{ created }}</div>
+      </div>
+
+      <div class="row">
+        <img :src="cardImage" alt="Card Image">
+      </div>
+
+        <img :src="creatorImage" id="avatar-image" alt="User Avatar">
+        {{ creator.firstName }} {{ creator.lastName }}
+
+<!--      <h5><a class="text-dark">{{ index }} {{ title }} {{ created }}</a></h5>-->
+<!--      <p class="small text-muted font-italic">{{ description }} {{ creator.firstName }}</p>-->
     </div>
   </div>
 </template>
@@ -25,11 +32,41 @@ export default {
       type: String,
       default: "",
       required: true
-    }
+    },
+    description: {
+      type: String,
+      default: "",
+      required: true
+    },
+    created: {
+      type: Date,
+      default: "",
+      required: true
+    },
+    creator: {
+      type: Object,
+      default: function () {return {}},
+      required: true
+    },
+    cardImage: {
+      type: Image,
+      default: require("../../../public/apples.jpg"),
+      required: true
+    },
+    creatorImage: {
+      type: Image,
+      default: require("../../../public/sample_profile_image.jpg"),
+      required: true
+    },
   }
 }
 </script>
 
 <style scoped>
+
+#avatar-image {
+  width: 30px;
+  border-radius: 50px;
+}
 
 </style>
