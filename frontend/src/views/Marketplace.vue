@@ -6,7 +6,7 @@
     <!------------------------- Nav bar; displays either business account or individual account nav bar --------------->
     <Navbar></Navbar>
 
-    <CardDetail v-bind:index="selectedCard"
+    <CardDetail v-bind:id="selectedCard"
                 v-bind:section="selectSection"/>
 
     <div id="marketplace-container">

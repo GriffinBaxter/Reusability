@@ -3,6 +3,7 @@ package org.seng302.marketplace;
 import org.seng302.user.UserPayloadSecure;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MarketplaceCardPayload {
 
@@ -13,6 +14,7 @@ public class MarketplaceCardPayload {
     private String displayPeriodEnd;
     private String title;
     private String description;
+    private List<KeywordPayload> keywords;
 
     public MarketplaceCardPayload(Integer id,
                                   UserPayloadSecure creator,
@@ -20,7 +22,8 @@ public class MarketplaceCardPayload {
                                   LocalDateTime created,
                                   LocalDateTime displayPeriodEnd,
                                   String title,
-                                  String description) {
+                                  String description,
+                                  List<KeywordPayload> keywords) {
         this.id = id;
         this.creator = creator;
         this.section = section.toString();
@@ -28,6 +31,7 @@ public class MarketplaceCardPayload {
         this.displayPeriodEnd = displayPeriodEnd.toString();
         this.title = title;
         this.description = description;
+        this.keywords = keywords;
     }
 
     public Integer getId() {
@@ -57,4 +61,6 @@ public class MarketplaceCardPayload {
     public String getDescription() {
         return description;
     }
+
+    public List<KeywordPayload> getKeywords() { return keywords; }
 }

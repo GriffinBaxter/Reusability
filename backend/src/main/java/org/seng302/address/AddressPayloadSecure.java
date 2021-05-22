@@ -15,18 +15,29 @@ package org.seng302.address;
  * AddressPayloadSecure class
  */
 public class AddressPayloadSecure {
+    private String suburb;
     private String city;
     private String region;
     private String country;
 
     public AddressPayloadSecure(
+            String suburb,
             String city,
             String region,
             String country
     ) throws Exception {
+        this.suburb = suburb;
         this.city = city;
         this.region = region;
         this.country = country;
+    }
+
+    public String getSuburb() {
+        return suburb;
+    }
+
+    public void setSuburb(String suburb) {
+        this.suburb = suburb;
     }
 
     public String getCity() {
@@ -56,6 +67,7 @@ public class AddressPayloadSecure {
     @Override
     public String toString() {
         return "Address(" +
+                "suburb=" + suburb +
                 "city=" + city +
                 ", region=" + region +
                 ", country=" + country +

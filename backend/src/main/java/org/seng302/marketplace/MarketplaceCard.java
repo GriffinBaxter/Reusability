@@ -1,10 +1,14 @@
 package org.seng302.marketplace;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.seng302.user.User;
 import org.seng302.validation.MarketplaceCardValidation;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for a marketplace card
@@ -41,7 +45,13 @@ public class MarketplaceCard {
     @Column(name = "description", length = 500)
     private String description;
 
-    // TODO: add keywordIds;
+    @JsonManagedReference
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "card_keywords",
+            joinColumns = { @JoinColumn(name = "card_id") },
+            inverseJoinColumns = { @JoinColumn(name = "keyword_id") })
+    private List<Keyword> keywords = new ArrayList<>();
 
     /**
      * Marketplace card constructor
@@ -146,6 +156,54 @@ public class MarketplaceCard {
     }
 
     /**
+     * Returns a list of keywords that the card contains.
+     * @return keywords a list of keyword entities.
+     */
+    public List<Keyword> getKeywords() {
+        return keywords;
+    }
+
+    /**
+     * Add a keyword to the list of keywords for this card.
+     * Called when a new keyword is created.
+     * @return keyword a keyword that is to be added to this card.
+     */
+    public void addKeyword(Keyword keyword) {
+        keywords.add(keyword);
+    }
+
+    /**
+     * Remove a keyword from the list of keywords for this card.
+     * @return keyword a keyword that is to be removed from this card.
+     */
+    public void removeKeyword(Keyword keyword) {
+        int id = keyword.getId();
+        for (int i = 0; i < keywords.size(); i++){
+            if (keywords.get(i).getId() == id){
+                this.keywords.remove(i);
+            }
+        }
+    }
+
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the marketplace card.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"creatorId\":\"" + creatorId + "\"" +
+                ",\"creator\":\"" + creator + "\"" +
+                ",\"section\":\"" + section + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                ",\"title\":\"" + title + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                //TODO add keyword stuff
+                "}";
+    }
+
+
+    /**
      * Convert a Marketplace object into a MarketplacePayload
      * @return a MarketplacePayload object
      */
@@ -157,8 +215,23 @@ public class MarketplaceCard {
                 created,
                 displayPeriodEnd,
                 title,
-                description
+                description,
+                toKeywordPayloads(keywords)
         );
+    }
+
+    /**
+     * Converts the keywords belonging to a card to Keyword Payloads (needed by GET requests).
+     * @param keywords the list of keywords belonging to the card.
+     * @return a list of keywords converted to keyword payloads.
+     */
+    public List<KeywordPayload> toKeywordPayloads(List<Keyword> keywords) {
+        List<KeywordPayload> keywordPayloads = new ArrayList<>();
+        for (Keyword keyword: keywords) {
+            KeywordPayload keywordPayload = new KeywordPayload(keyword.getId(), keyword.getName(), keyword.getCreated());
+            keywordPayloads.add(keywordPayload);
+        }
+        return keywordPayloads;
     }
 
 }

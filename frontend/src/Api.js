@@ -38,9 +38,6 @@ const instance = axios.create({
 });
 
 
-
-
-
 export class InventoryItem {
 
     // This is a config for the Inventory Item requirement details
@@ -87,26 +84,30 @@ export class InventoryItem {
         },
     };
 
-  constructor({productId, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires}) {
-    this.data = {
-      productId,
-      quantity,
-      pricePerItem,
-      totalPrice,
-      manufactured,
-      sellBy,
-      bestBefore,
-      expires
-    }
+    constructor({productId, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires}) {
+        this.data = {
+            productId,
+            quantity,
+            pricePerItem,
+            totalPrice,
+            manufactured,
+            sellBy,
+            bestBefore,
+            expires
+        }
 
-  }
+    }
 
 }
 
 export default {
 
     // Sends a post request to the backend with a new user object to store
-    addNewUser: (user) => instance.post('/users', {...user.data}, {withCredentials: true}),
+    addNewUser: (user) => instance.post('/users', {
+        ...user.data
+    }, {
+        withCredentials: true
+    }),
 
     // Sends a post request to the backend with the user's login details
     signIn: (email, password) => instance.post('login', {email, password}, {
@@ -133,7 +134,11 @@ export default {
     },
 
     // Sends a post request to the backend with a new business object to store
-    addNewBusiness: (business) => instance.post('/businesses', {...business.data}, {withCredentials: true}),
+    addNewBusiness: (business) => instance.post('/businesses', {
+        ...business.data
+    }, {
+        withCredentials: true
+    }),
 
     sortProducts: (businessID, sortBy, page) => {
         return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`, {
@@ -186,47 +191,58 @@ export default {
     },
     // Sends a PUT request to modify a product from some given business ID
     modifyProduct: (productId, businessId, newProduct) => {
-      return instance.put(`/businesses/${businessId}/products/${productId}`, {...newProduct.data}, {
-        withCredentials: true
-      })
+        return instance.put(`/businesses/${businessId}/products/${productId}`, {
+            ...newProduct.data
+        }, {
+            withCredentials: true
+        })
     },
-  // Sends a post request to the backend with a new product object to store
-  addNewProduct: (businessID, product) => {
-    return instance.post('/businesses/'+businessID+'/products', {...product.data}, {withCredentials: true})
-  },
+    // Sends a post request to the backend with a new product object to store
+    addNewProduct: (businessID, product) => {
+        return instance.post('/businesses/' + businessID + '/products', {
+            ...product.data
+        }, {
+            withCredentials: true})
+    },
 
-  sortListings: (businessId, sortBy, page) => {
-    return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
-      withCredentials: true,
-    })
-  },
+    sortListings: (businessId, sortBy, page) => {
+        return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
+            withCredentials: true,
+        })
+    },
 
-  addNewInventoryItem: (id, inventoryItem) => {
-    return instance.post(`/businesses/${id}/inventory/`, {
-      ...inventoryItem.data
-    }, {
-      withCredentials: true
-    })
-  },
+    addNewInventoryItem: (id, inventoryItem) => {
+        return instance.post(`/businesses/${id}/inventory/`, {
+            ...inventoryItem.data
+        }, {
+            withCredentials: true
+        })
+    },
 
-  addNewBusinessListing: (businessId, listing) => {
-    return instance.post(`/businesses/${businessId}/listings`, {
-        ...listing.data
-    }, {
-        withCredentials: true
-    })
-  },
+    addNewBusinessListing: (businessId, listing) => {
+        return instance.post(`/businesses/${businessId}/listings`, {
+            ...listing.data
+        }, {
+            withCredentials: true
+        })
+    },
 
-  getEveryInventoryItem: (businessID) => {
-     return instance.get(`/businesses/${businessID}/inventoryAll`, {
-        withCredentials: true
-     })
-  },
+    getEveryInventoryItem: (businessID) => {
+        return instance.get(`/businesses/${businessID}/inventoryAll`, {
+            withCredentials: true
+        })
+    },
 
-  modifyInventoryItem: (inventoryItemId, businessId, newInventoryItem) => {
-      return instance.put(`/businesses/${businessId}/inventory/${inventoryItemId}`, {...newInventoryItem.data}, {
-          withCredentials: true
-      })
-  }
+      modifyInventoryItem: (inventoryItemId, businessId, newInventoryItem) => {
+          return instance.put(`/businesses/${businessId}/inventory/${inventoryItemId}`, {...newInventoryItem.data}, {
+              withCredentials: true
+          })
+      },
+
+    getDetailForACard: (id) => {
+        return instance.get(`/cards/${id}`, {
+            withCredentials: true
+        })
+    },
 
 }
