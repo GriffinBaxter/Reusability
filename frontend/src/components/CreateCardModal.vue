@@ -100,8 +100,9 @@
                 </div>
                 <div class="col-md">
                   <div style="position: relative; height: 60px">
-                    <div v-html="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; border: none" disabled />
-                    <textarea ref="keywords-input" id="card-keywords" class="form-control keywords-input" style="resize: none" v-model="keywordsInput"/>
+                    <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop pe-0" style="resize: none; border: none; overflow: auto" disabled />
+                    <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input" style="resize: none; overflow: auto" v-model="keywordsInput"
+                    @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
                   </div>
                 </div>
               </div>
@@ -250,8 +251,8 @@ export default {
       this.formError.descriptionError = ""
       return ""
     },
-    handleKeywords(event) {
-      console.log(event)
+    handleKeywordsScroll() {
+      this.$refs.keywordsBackdrop.scrollTop = this.$refs.keywordsInput.scrollTop;
     },
     /**
      * Populates the user's full name (first, last) and location (suburb, city) fields.
@@ -286,8 +287,28 @@ export default {
   },
   watch: {
     keywordsInput: function (val) {
-      const highlightHtml = "<strong style='color: transparent;background-color: #1EBA8C; border-radius: 3px'>$&</strong>"
-      this.keywordsBackdrop = val.replaceAll("ASD", highlightHtml)
+      // Defines the highlight tag
+      const highlightHtml =  (text) => `<strong style='color: transparent;background-color: #1EBA8C; border-radius: 3px'>${text}</strong>`
+
+      // Get a list of unique strings from the array
+      const uniqueStrings = [...new Set(val.split(" "))];
+      let result = val.split(" ");
+
+      // For each unique string we replace it with a highlight to surround it.
+      for (const uniqueString of uniqueStrings) {
+        if (uniqueString !== "") {
+          for (let i = 0; i < result.length; i++) {
+            if (result[i] === uniqueString) {
+              // result[i] = highlightHtml(result[i]);
+            }
+          }
+        }
+      }
+      // Add the text back with the highlights
+      this.keywordsBackdrop = result.join(" ")
+
+      // Ensures when new data is added the scroll bar is updated along with it.
+      this.handleKeywordsScroll();
     }
   }
 }
@@ -314,7 +335,7 @@ export default {
     white-space: -o-pre-wrap;
     word-wrap: break-word;
     -ms-word-wrap: break-word;
-    color: transparent;
+    color: orange;
   }
 
   textarea.keywords-input {
