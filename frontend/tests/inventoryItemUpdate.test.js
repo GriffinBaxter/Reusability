@@ -9,17 +9,12 @@ const format = require('date-fns/format');
 const add = require('date-fns/add');
 const sub = require('date-fns/sub');
 import Api from "../src/Api"
-import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
-import VueLogger from "vuejs-logger"
-import VueRouter from 'vue-router'
+import {shallowMount} from "@vue/test-utils";
 import InventoryItem from "../src/configs/InventoryItem";
 import UpdateInventoryItemModal from "../src/components/inventory/UpdateInventoryItemModal.vue";
 
 jest.mock("../src/Api");
 
-const localVue = createLocalVue();
-localVue.use(VueLogger, {isEnabled : false});
-localVue.use(VueRouter);
 
 describe("Testing the update inventory item functionality", () => {
 
@@ -78,9 +73,15 @@ describe("Testing the update inventory item functionality", () => {
             bestBefore: inventoryItem.bestBefore,
             expires: inventoryItem.expires,
         }
-        const updateInventoryItemWrapper = await mount(
+        const $router = {
+            push: jest.fn()
+        }
+        const updateInventoryItemWrapper = await shallowMount(
             UpdateInventoryItemModal,
             {
+                mocks: {
+                    $router,
+                },
                 propsData: {
                     value,
                     businessId,
@@ -122,7 +123,7 @@ describe("Testing the update inventory item functionality", () => {
         const businessId = 1;
         const currencyCode = "NZD";
         const currencySymbol = "$";
-        const inventoryItemProp = {
+        const value = {
             index: 1,
             productName: "NAME",
             productId: "DEFAULT",
@@ -134,11 +135,17 @@ describe("Testing the update inventory item functionality", () => {
             bestBefore: inventoryItem.bestBefore,
             expires: inventoryItem.expires,
         }
-        const updateInventoryItemWrapper = await mount(
+        const $router = {
+            push: jest.fn()
+        }
+        const updateInventoryItemWrapper = await shallowMount(
             UpdateInventoryItemModal,
             {
+                mocks: {
+                    $router,
+                },
                 propsData: {
-                    inventoryItemProp,
+                    value,
                     businessId,
                     currencyCode,
                     currencySymbol
@@ -168,7 +175,7 @@ describe("Testing the update inventory item functionality", () => {
         const businessId = 1;
         const currencyCode = "NZD";
         const currencySymbol = "$";
-        const inventoryItemProp = {
+        const value = {
             index: 1,
             productName: "NAME",
             productId: "DEFAULT",
@@ -180,11 +187,17 @@ describe("Testing the update inventory item functionality", () => {
             bestBefore: add(todayDate, {months: 2}),
             expires: add(todayDate, {months: 3}),
         }
+        const $router = {
+            push: jest.fn()
+        }
         const updateInventoryItemWrapper = await shallowMount(
             UpdateInventoryItemModal,
             {
+                mocks: {
+                    $router,
+                },
                 propsData: {
-                    inventoryItemProp,
+                    value,
                     businessId,
                     currencyCode,
                     currencySymbol
@@ -226,9 +239,15 @@ describe("Testing the update inventory item functionality", () => {
             bestBefore: inventoryItem.bestBefore,
             expires: inventoryItem.expires,
         }
-        const updateInventoryItemWrapper = await mount(
+        const $router = {
+            push: jest.fn()
+        }
+        const updateInventoryItemWrapper = await shallowMount(
             UpdateInventoryItemModal,
             {
+                mocks: {
+                    $router,
+                },
                 propsData: {
                     value,
                     businessId,
@@ -281,9 +300,15 @@ describe("Testing the update inventory item functionality", () => {
             bestBefore: inventoryItem.bestBefore,
             expires: inventoryItem.expires,
         }
-        const updateInventoryItemWrapper = await mount(
+        const $router = {
+            push: jest.fn()
+        }
+        const updateInventoryItemWrapper = await shallowMount(
             UpdateInventoryItemModal,
             {
+                mocks: {
+                    $router,
+                },
                 propsData: {
                     value,
                     businessId,
@@ -336,9 +361,15 @@ describe("Testing the update inventory item functionality", () => {
             bestBefore: inventoryItem.bestBefore,
             expires: inventoryItem.expires,
         }
-        const updateInventoryItemWrapper = await mount(
+        const $router = {
+            push: jest.fn()
+        }
+        const updateInventoryItemWrapper = await shallowMount(
             UpdateInventoryItemModal,
             {
+                mocks: {
+                    $router,
+                },
                 propsData: {
                     value,
                     businessId,
@@ -391,9 +422,15 @@ describe("Testing the update inventory item functionality", () => {
             bestBefore: inventoryItem.bestBefore,
             expires: inventoryItem.expires,
         }
-        const updateInventoryItemWrapper = await mount(
+        const $router = {
+            push: jest.fn()
+        }
+        const updateInventoryItemWrapper = await shallowMount(
             UpdateInventoryItemModal,
             {
+                mocks: {
+                    $router,
+                },
                 propsData: {
                     value,
                     businessId,
