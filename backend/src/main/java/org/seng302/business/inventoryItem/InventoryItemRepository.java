@@ -41,8 +41,12 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, St
      */
     Page<InventoryItem> findInventoryItemsByBusinessId(Integer businessId, Pageable paging);
 
+    /**
+     * Finds all inventory items with the given business ID (no pagination)
+     * @param businessId A business ID.
+     * @return A list of inventory items with the given business ID.
+     */
     List<InventoryItem> findAllByBusinessId(Integer businessId);
-
 
 
 }

@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.inventoryItem.InventoryItem;
+import org.seng302.business.inventoryItem.InventoryItemPayload;
 import org.seng302.main.Authorization;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -424,6 +426,45 @@ public class ProductResource {
 
         logger.info("Product Modify Success - 200 [OK] - Product with ID {} for business with ID {} has been updated.", productId, businessId);
         logger.debug("Product update for business with ID {} with product ID {}: {}", businessId, productId, product);
+    }
+
+    /**
+     * Get method for retrieving all products at once (no pagination). To be used with CreateInventoryItem modal.
+     * @param sessionToken The current user's session token
+     * @param id The current business ID (from the URL path)
+     * @return A list of all products for the given business.
+     */
+    @GetMapping("/businesses/{id}/productAll")
+    public ResponseEntity<List<ProductPayload>> retrieveAllInventoryItems(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer id) {
+        logger.debug("Product catalogue retrieval request (all items) received with business ID {}", id);
+
+        // Checks user logged in - 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // Checks business at ID exists - 406
+        Optional<Business> currentBusiness = businessRepository.findBusinessById(id);
+        if (currentBusiness.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Business Does Not Exist"
+            );
+        }
+
+        List<Product> products = productRepository.findAllByBusinessId(id);
+
+        logger.info("Product Retrieval Success - 200 [OK] -  " +
+                "All products retrieved for business with ID {}: {}", id, products);
+
+        List<ProductPayload> productPayloads = convertToPayload(products);
+
+        logger.debug("All product payloads created for business with ID {}: {}",
+                id,
+                products);
+
+        return ResponseEntity.ok()
+                .body(productPayloads);
     }
 
 

@@ -233,6 +233,12 @@ export default {
         })
     },
 
+    getEveryProduct: (businessID) => {
+        return instance.get(`/businesses/${businessID}/productAll`, {
+            withCredentials: true
+        })
+    },
+
     getDetailForACard: (id) => {
         return instance.get(`/cards/${id}`, {
             withCredentials: true

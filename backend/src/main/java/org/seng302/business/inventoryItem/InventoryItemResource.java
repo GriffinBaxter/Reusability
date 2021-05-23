@@ -298,7 +298,7 @@ public class InventoryItemResource {
     }
 
     /**
-     * Get method for retrieving all inventory items at once (not pagination). To be used with CreateListing modal.
+     * Get method for retrieving all inventory items at once (no pagination). To be used with CreateListing modal.
      * @param sessionToken The current user's session token
      * @param id The current business ID (from the URL path)
      * @return A list of all inventory items for the given business

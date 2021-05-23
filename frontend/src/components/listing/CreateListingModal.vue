@@ -26,9 +26,6 @@
                     <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1" v-bind:value="item.id"><strong>{{ item.product.id }}</strong><br>{{ 'Quantity: ' + item.quantity + ' Price: ' + (currencySymbol) + item.totalPrice + ' Expires: ' + item.expires + '' }}</li>
                   </ul>
                 </div>
-<!--                <div class="invalid-feedback">-->
-<!--                  {{ inventoryIdErrorMsg }}-->
-<!--                </div>-->
               </div>
             </div>
             <!--Selected Inventory Item-->
@@ -246,7 +243,7 @@ export default {
      * Updates the price when the quantity input is modified based on the price per item of the currently selected inventory item.
      * */
     updatePriceFromQuantity() {
-      if (!isNaN(this.quantity)) {
+      if (!isNaN(this.quantity) && this.currentInventoryItem) {
         if (this.currentInventoryItem.pricePerItem && !isNaN(this.currentInventoryItem.pricePerItem)) {
           this.price = this.quantity * this.currentInventoryItem.pricePerItem;
         }
@@ -256,7 +253,6 @@ export default {
      * Formats the currently selected inventory item string based on the given item.
      */
     formatCurrentlySelected(item) {
-      console.log(item);
       let finalString;
       if (item !== null) {
         finalString = 'ID: ' + item.product.id + ' Name: ' + item.product.name + ' RRP: ' + this.currencySymbol + item.product.recommendedRetailPrice + ' ' + this.currencyCode + ' Expires: ' + item.expires;
@@ -302,7 +298,7 @@ export default {
       }
     },
     /**
-     * Sets the value of the inventory ID input to the ID of the given item.
+     * Sets the value of the inventory ID input to the ID of the given item. Does the same for quantity, total price and expiry date.
      *
      * This function is based off of the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
      * https://24ways.org/2019/making-a-better-custom-select-element/
@@ -513,41 +509,6 @@ export default {
           break;
       }
     },
-    // /** OLD AUTOFILL FOR REFERENCE (WILL BE DELETED)
-    //  *  Checks the ID of the current input value, then finds the inventory item with that ID (in allInventoryItems) to autofill
-    //  *  that item's quantity and price in the quantity and price input fields.
-    //  * */
-    // autofillData() {
-    //   // Datalists are not flexible enough to allow nice event handlers and formatting so
-    //   // changing this to a custom dropdown would be ideal for future sprints.
-    //   const value = this.$refs.productInput.value;
-    //   if (!value) return;
-    //
-    //   let result = null;
-    //
-    //   let i = 0;
-    //   let itemNotFound = true;
-    //   while (i < this.allInventoryItems.length && itemNotFound) {
-    //     let itemID = this.allInventoryItems[i].id;
-    //     // This split depends on the formatting in the :value for the <option> inside the productDataList.
-    //     let inputID = parseInt(value.split(' ')[4]);
-    //     if (itemID === inputID) {
-    //       result = this.allInventoryItems[i];
-    //       itemNotFound = false;
-    //     }
-    //     i += 1;
-    //   }
-    //
-    //   if (result !== null) {
-    //     this.currentInventoryItem = result;
-    //     this.quantity = result.quantity;
-    //     this.price = result.totalPrice;
-    //
-    //     const newDateTime = new Date(result.expires);
-    //     this.closes = datefns.format(new Date(newDateTime.getFullYear(), newDateTime.getMonth(), newDateTime.getDate()), "yyyy-MM-dd'T'HH:mm:ss.SSS");
-    //   }
-    // },
-
     /**
      * This method parses the given date and separates it into a year, day and month, provided it meets
      * the expected format.
@@ -751,7 +712,7 @@ export default {
     // Global event listener to toggle autofill list display
     let self = this;
     document.addEventListener('click', function(event) {
-      if (!event.target.closest('#autofill-container')) {
+      if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed') {
         self.toggleList('closed');
         self.autofillState = 'initial';
       }
