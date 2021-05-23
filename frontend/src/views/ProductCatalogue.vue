@@ -101,9 +101,10 @@
                   </div>
                   <!--recommended retail price-->
                   <div class="form-group">
-                    <label for="product-price">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-if="currencyCode != ''">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-else>Recommended Retail Price</label>
                     <div class="input-group">
-                      <div class="input-group-prepend">
+                      <div class="input-group-prepend" v-if="currencySymbol != ''">
                         <span class="input-group-text">{{ currencySymbol }}</span>
                       </div>
                       <input id="product-price" class="input-styling" name="product-price" type="text"
@@ -394,10 +395,10 @@ export default {
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
 
-      // Perfrom the call to sort the products and get them back.
+      // Perform the call to sort the products and get them back.
       await Api.sortProducts(this.businessId, this.orderByString, this.currentPage).then(response => {
 
-        // Parsing the orderby string to get the orderBy and isAscending components to update the table.
+        // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
         this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
 
