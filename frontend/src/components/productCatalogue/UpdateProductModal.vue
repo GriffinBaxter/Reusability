@@ -322,7 +322,8 @@ export default {
                   if (error.response.status === 400) {
                     // There is no way to tell if this is caused by the product ID already existing or not, which is not very helpful
                     // when this happens!
-                    this.formErrorModalMessage = "Some of the information you have entered is invalid."
+                    this.formErrorModalMessage = "Some of the information you have entered is invalid. " +
+                        "(The ID for a product that already has an inventory item cannot be modified)."
 
                     // Invalid token was used
                   } else if (error.response.status === 403) {

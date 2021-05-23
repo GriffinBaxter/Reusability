@@ -251,6 +251,13 @@ export default {
     validateFields() {
       let requestIsInvalid = false;
 
+      if (this.newInventoryItem.data.pricePerItem == null) {
+        this.newInventoryItem.data.pricePerItem = "";
+      }
+      if (this.newInventoryItem.data.totalPrice == null) {
+        this.newInventoryItem.data.totalPrice = "";
+      }
+
       // Product Id error checking
       this.productIdErrorMsg = inventoryValidationHelper.getErrorMessage(
           this.config.productId.name,
