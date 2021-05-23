@@ -212,10 +212,10 @@ public class MarketplaceCardResource {
             case "titleDESC":
                 sortBy = Sort.by(Sort.Order.desc("title").ignoreCase());
                 break;
-            case "addressASC":
+            case "locationASC":
                 sortBy = Sort.by(Sort.Order.asc("creator.homeAddress.suburb").ignoreCase()).and(Sort.by(Sort.Order.asc("creator.homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("created").ignoreCase())));
                 break;
-            case "addressDESC":
+            case "locationDESC":
                 sortBy = Sort.by(Sort.Order.desc("creator.homeAddress.suburb").ignoreCase()).and(Sort.by(Sort.Order.desc("creator.homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("created").ignoreCase())));
                 break;
             default:
