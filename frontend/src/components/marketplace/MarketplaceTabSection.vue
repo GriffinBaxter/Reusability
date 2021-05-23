@@ -17,7 +17,7 @@
 
       <div class="row pb-5 mb-4">
         <!-- Card-->
-        <div class="col-lg-4 col-md-6 mb-4 mb-lg-0"
+        <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
              style="padding: 12px"
              v-for="card in sectionCards"
              v-bind:key="card.index">

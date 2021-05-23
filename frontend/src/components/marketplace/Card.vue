@@ -17,7 +17,7 @@
       {{ creator.firstName }} {{ creator.lastName }}
 
       <div id="address-container" class="col">
-        <p class="small text-muted font-italic">{{ address }}</p>
+        <p class="small text-muted font-italic" style="margin: 0px">{{ address }}</p>
       </div>
 
     </div>
@@ -75,8 +75,7 @@ export default {
 <style scoped>
 
 #card-container {
-  width: 400px;
-  padding-bottom: 10px;
+  /*padding-bottom: 10px;*/
 }
 
 #avatar-image {
