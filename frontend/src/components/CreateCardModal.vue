@@ -476,7 +476,7 @@ export default {
       Api.addNewCard(newCard).then(
           (res) => {
             if (res.status === 201) {
-              console.log(res.data || "RESPONSE EMPTY");
+              this.modal.hide();
             }
           }
       ).catch(

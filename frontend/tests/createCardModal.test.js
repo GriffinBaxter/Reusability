@@ -4,7 +4,6 @@ import Cookies from "js-cookie"
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import VueLogger from "vuejs-logger"
 import VueRouter from 'vue-router'
-import router from '../src/router/index'
 import CreateCardModal from "../src/components/CreateCardModal";
 import {UserRole} from "../src/configs/User";
 
@@ -790,6 +789,56 @@ describe("Testing the keywords field", () => {
 
 describe("Testing required fields", () => {
 
+    let createCardWrapper;
 
+    beforeEach( async () => {
+        // Mock all the API calls needed.
+        const getUserMockResponse = {
+            status: 200,
+            data: {
+                role: UserRole.DEFAULTGLOBALAPPLICATIONADMIN,
+                firstName: "FIRST",
+                lastName: "LAST",
+                homeAddress: {
+                    city: "CITY",
+                    suburb: "SUBURB"
+                }
+            }
+        }
+        Api.getUser.mockImplementation( () => Promise.resolve(getUserMockResponse))
+        Cookies.get.mockReturnValue(36);
+        Api.addNewCard.mockImplementation( () => Promise.resolve( {status: 201} ) )
+
+        // Shallow mount the component
+        createCardWrapper = await shallowMount(CreateCardModal, {localVue});
+        await createCardWrapper.vm.$nextTick();
+
+        // Open the modal
+        await createCardWrapper.find("#open-create-card-modal-button").trigger("click");
+        await createCardWrapper.vm.$nextTick();
+    } )
+
+    test("Submitting the create new card form with minimum required fields", async () => {
+        // Set the section & verify it is there.
+        expect(createCardWrapper.find("#section-selection").exists()).toBe(true)
+        expect(createCardWrapper.find("#for-sale-option").exists()).toBe(true);
+        createCardWrapper.find("#for-sale-option").setSelected();
+        expect(createCardWrapper.vm.$data.sectionSelected).toBe("ForSale");
+
+        // Verify that the creator Id is set.
+        expect(createCardWrapper.find("#card-creator-id").exists()).toBe(true);
+        expect(createCardWrapper.vm.$data.creatorId).toBe(36);
+        expect(createCardWrapper.find("#card-creator-id").element.value).toBe("36");
+
+        // Set and verify the title.
+        expect(createCardWrapper.find("#card-title").exists()).toBe(true);
+        createCardWrapper.find("#card-title").setValue("A Title");
+        expect(createCardWrapper.find("#card-title").element.value).toBe("A Title");
+        expect(createCardWrapper.vm.$data.title).toBe("A Title");
+
+        // Attempt to create the card.
+        createCardWrapper.find("#create-card-button").trigger("click");
+        expect(Api.addNewCard).toBeCalledTimes(1);
+    })
 
 })
