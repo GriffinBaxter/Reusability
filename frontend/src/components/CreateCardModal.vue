@@ -36,11 +36,11 @@
                   <select id="section-selection" name="section-selection" :class="`form-select ${formErrorClasses.sectionSelectionError}`"
                           v-model="sectionSelected" @click="isSectionSelectedInvalid">
                     <option value="" disabled selected>Select section</option>
-                    <option :value="sections.FOR_SALE">For Sale</option>
-                    <option :value="sections.EXCHANGE">Exchange</option>
-                    <option :value="sections.WANTED">Wanted</option>
+                    <option id="for-sale-option" :value="sections.FOR_SALE">For Sale</option>
+                    <option id="exchange-option" :value="sections.EXCHANGE">Exchange</option>
+                    <option id="wanted-option" :value="sections.WANTED">Wanted</option>
                   </select>
-                  <div class="invalid-feedback" v-if="formError.sectionSelectionError">
+                  <div id="section-selection-invalid-feedback" class="invalid-feedback" v-if="formError.sectionSelectionError">
                     {{formError.sectionSelectionError}}
                   </div>
               </div>
@@ -51,10 +51,10 @@
               <!-- Creator id input -->
               <div class="row my-lg-2 my-4" v-if="isAdministrator()">
                 <div class="col-md-3 ">
-                  <label for="card-creator" class="fw-bold">Creator Id*:</label>
+                  <label for="card-creator-id" class="fw-bold">Creator Id*:</label>
                 </div>
                 <div class="col-md">
-                  <input id="card-creator" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorId" @input="isCreatorIdInvalid" @focusout="() => populateUserInfo(creatorId)">
+                  <input id="card-creator-id" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorId" @input="isCreatorIdInvalid" @focusout="() => populateUserInfo(creatorId)">
                   <div class="invalid-feedback" v-if="formError.creatorIdError">
                     {{formError.creatorIdError}}
                   </div>
@@ -84,7 +84,7 @@
                 <div class="col-md">
                   <input id="card-title" :class="`form-control ${formErrorClasses.titleError}`" v-model="title"
                   :maxlength="config.config.title.maxLength" @input="isTitleInvalid">
-                  <div class="invalid-feedback" v-if="formError.titleError">
+                  <div id="card-title-invalid-feedback" class="invalid-feedback" v-if="formError.titleError">
                     {{formError.titleError}}
                   </div>
                 </div>
@@ -98,7 +98,7 @@
                 <div class="col-md">
                   <textarea id="card-description" :class="`form-control ${formErrorClasses.descriptionError}`" v-model="description"
                   :maxlength="config.config.description.maxLength" @input="isDescriptionInvalid"/>
-                  <div class="invalid-feedback" v-if="formError.descriptionError">
+                  <div id="card-description-invalid-feedback" class="invalid-feedback" v-if="formError.descriptionError">
                     {{formError.descriptionError}}
                   </div>
                 </div>
@@ -129,7 +129,7 @@
 
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="button" class="btn green-button order-1" @click="createNewCard">Create</button>
+            <button id="create-card-button" type="button" class="btn green-button order-1" @click="createNewCard">Create</button>
             <button type="button" class="btn btn-secondary order-0" data-bs-dismiss="modal">Cancel</button>
           </div>
         </div>
@@ -141,7 +141,7 @@
 
 <script>
 import {Modal} from 'bootstrap';
-import Api from "@/Api";
+import Api from "../Api";
 import cardConfig from "../configs/MarketplaceCard"
 import Cookies from "js-cookie";
 import { UserRole } from "../configs/User"
