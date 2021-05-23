@@ -1,3 +1,6 @@
+/**
+ * This file contains shared JS functions for use with the similar autofill dropdowns on the CreateInventoryItemModal and CreateListingModal components.
+ */
 export default {
     /**
      * Opens or hides the autofill list items based on the given input.
