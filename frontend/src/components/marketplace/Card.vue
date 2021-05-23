@@ -1,10 +1,10 @@
 <template>
-  <div class="card rounded shadow-sm border-0">
+  <div class="card rounded shadow-sm border-0" id="card-container">
     <div class="card-body p-4"><img src="" alt="" class="img-fluid d-block mx-auto mb-3">
-      <div class="row">
-        <div class="col">{{ title }}</div>
-        <div class="col">{{ created }}</div>
-      </div>
+<!--      <div class="row">-->
+        <h3 class="col">{{ title }}</h3>
+        <p class="col text-secondary">{{ created }}</p>
+<!--      </div>-->
 
       <div class="row">
         <img :src="cardImage" alt="Card Image">
@@ -64,6 +64,10 @@ export default {
 </script>
 
 <style scoped>
+
+#card-container {
+  width: 400px;
+}
 
 #avatar-image {
   width: 30px;

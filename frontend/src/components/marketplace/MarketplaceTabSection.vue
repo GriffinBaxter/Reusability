@@ -17,7 +17,7 @@
 
       <div class="row pb-5 mb-4">
         <!-- Card-->
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"
+        <div class="col-lg-4 col-md-6 mb-4 mb-lg-0"
              style="padding: 12px"
              v-for="card in sectionCards"
              v-bind:key="card.index">
@@ -28,7 +28,7 @@
             <Card v-bind:index="card.index"
                   v-bind:title="card.title"
                   v-bind:description="card.description"
-                  v-bind:created="card.created"
+                  v-bind:created="styleDate(card.created)"
                   v-bind:creator="card.creator"
             />
           </div>
@@ -43,6 +43,7 @@
 <script>
 import Card from "@/components/marketplace/Card";
 import OrderingOptionsMenu from "./OrderingOptionsMenu";
+import {formatDate} from "@/dateUtils";
 
 export default {
   name: "MarketplaceTabSection",
@@ -72,6 +73,9 @@ export default {
     selectACard(index) {
       this.$emit('openCardDetail', index);
       this.selectedCard = index
+    },
+    styleDate(date){
+      return formatDate(date, false);
     }
   },
 }
