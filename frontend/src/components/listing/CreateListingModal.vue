@@ -615,7 +615,7 @@ export default {
     // Global event listener to toggle autofill list display
     let self = this;
     document.addEventListener('click', function(event) {
-      if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed') {
+      if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed' && self.$refs["autofill-list"]) {
         Autofill.toggleList('closed', self.$refs["autofill-list"]);
         self.autofillState = 'initial';
       }
