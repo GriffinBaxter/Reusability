@@ -296,6 +296,47 @@ export default {
           this.userLocation = "N/A"
         }
       })
+    },
+    /**
+     * Takes a string and adds the keyword prefix symbol to the front of the string.
+     *  @param keyword {string} The keyword string
+     *
+     *  @return {String} The keyword modified to include the prefix if it is longer then 0.
+     * */
+    addKeywordPrefix(keyword) {
+
+      // If the keyword is not a string, do not process it.
+      if (typeof keyword !== "string") {
+        throw new Error("keyword must be string!")
+      }
+
+      // Add the prefix to all strings that are not "" or do not already have that prefix
+      if (keyword.length > 0) {
+        if (keyword[0] !== "#") {
+          keyword = "#" + keyword;
+        }
+      }
+      return keyword;
+    },
+    /**
+     * Takes a keyword and ensures and returns the string such that it cannot have characters longer then the allocated
+     * amount.
+     * @param keyword {string} Takes the keyword string.
+     *
+     * @return {string} The modified keyword string that only includes the first {maxlength} characters.
+     * */
+    enforceKeywordMaxLength(keyword) {
+      // If the keyword is not a string, do not process it.
+      if (typeof keyword !== "string") {
+        throw new Error("keyword must be string!")
+      }
+
+      // 'Cut off' the extra characters.
+      if (keyword.length >= this.config.config.keyword.maxLength) {
+        keyword = keyword.substring(0, this.config.config.keyword.maxLength);
+      }
+
+      return keyword
     }
 
   },
@@ -314,16 +355,19 @@ export default {
      */
     keywordsInput: function (val) {
       // Only allow spaces. new line --> space
-      val = val.replaceAll("\n", " ").replaceAll(/\n\s*\n/g, '\n');
-      val = val.replaceAll("\n", " ").replaceAll(/\s+/g, ' ');
+      val = val.replaceAll("\n", " ").replaceAll(/\n\s*\n/g, ' ');
+      val = val.replaceAll(/\s+/g, ' ').replaceAll(/\s+#*/g, " ");
 
-      // Prevent string from being over the maximum length
+
       let strings = val.split(" ");
       for (let i = 0; i < strings.length; i++ ) {
-        if (strings[i].length >= this.config.config.keyword.maxLength) {
-          strings[i] = strings[i].substring(0, this.config.config.keyword.maxLength);
-        }
+        // Add a hashtag in front of all strings besides
+        strings[i] = this.addKeywordPrefix(strings[i])
+
+        // Prevent string from being over the maximum length
+        strings[i] = this.enforceKeywordMaxLength(strings[i])
       }
+
       val = strings.join(" ")
 
       // Assign the process val to the keyword input
@@ -358,6 +402,8 @@ export default {
 
 <style >
 
+/** ensure that any changes made here happen on both the front and back layer!!!! */
+
   textarea.form-control {
     resize: none;
   }
@@ -368,6 +414,9 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
+    letter-spacing: 2px;
+    word-spacing: 2px;
+    line-height: 2em;
   }
   div.keywords-backdrop {
     background-color: #fff;
@@ -386,16 +435,15 @@ export default {
     color: black;
     caret-color: #000;
     z-index: 10;
-    letter-spacing: 2px;
-    line-height: 2em;
   }
 
   strong.keywordHighlight {
-    color: transparent;
-    border: 1px solid black;
+    color: orange;
+    outline: 1px solid #888888;
     outline-offset: 1px;
-    font-weight: normal;
+    font-weight: 400;
     letter-spacing: 2px;
+    word-spacing: 2px;
     line-height: 2em;
   }
 
