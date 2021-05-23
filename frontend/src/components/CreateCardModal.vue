@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Used to create a card -->
-    <button class="btn btn-outline-primary green-button" @click="showModal">Create Card</button>
+    <button id="open-create-card-modal-button" class="btn green-button" @click="showModal">Create Card</button>
 
     <!-- Create Card Modal -->
     <div class="modal fade" ref="createCardModal" id="create-card-modal">
@@ -129,7 +129,7 @@
 
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary green-button order-1" @click="createNewCard">Create</button>
+            <button type="button" class="btn green-button order-1" @click="createNewCard">Create</button>
             <button type="button" class="btn btn-secondary order-0" data-bs-dismiss="modal">Cancel</button>
           </div>
         </div>

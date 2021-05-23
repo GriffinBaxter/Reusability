@@ -11,6 +11,8 @@
 
     <div id="marketplace-container">
 
+      <CreateCardModal class="my-4"></CreateCardModal>
+
       <!------------------------------------------------ marketplace tabs---------------------------------------------->
 
       <ul class="nav nav-tabs" id="marketplace-tabs" role="tablist">
@@ -79,6 +81,7 @@ import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import MarketplaceTabSection from "@/components/marketplace/MarketplaceTabSection";
 import Api from "@/Api";
+import CreateCardModal from "@/components/CreateCardModal";
 
 export default {
   name: "Marketplace",
@@ -96,6 +99,7 @@ export default {
     }
   },
   components: {
+    CreateCardModal,
     MarketplaceTabSection,
     CardDetail,
     Footer,
