@@ -25,7 +25,10 @@
                 <p class="card-text">
                   {{ description }}
                 </p>
+
                 <br>
+
+                <!--keywords-->
                 <p class="btn btn-outline-secondary"
                    v-for="keyword in keywords"
                    v-bind:key="keyword.id"
@@ -106,7 +109,6 @@ export default {
      * populate data from back end
      */
     populateData(data) {
-      console.log(data)
       this.section = this.convertSection(data.section);
       this.title = data.title;
       this.description = data.description;
