@@ -15,6 +15,7 @@ const localVue = createLocalVue();
 localVue.use(VueLogger, {isEnabled : false});
 localVue.use(VueRouter);
 
+/** White box testing ... */
 
 describe("Testing the selection behaviour of the select section.", () => {
 
@@ -469,7 +470,7 @@ describe("Testing the description field", () => {
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(false);
         expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
 
-        // Set the title input value.
+        // Set the description input value.
         createCardModalWrapper.find("#card-title").setValue("A");
 
         // Ensure that the data was updated.
@@ -485,13 +486,13 @@ describe("Testing the description field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.descriptionError).toBe("")
     })
 
-    test("Testing with 19 characters string (107 characters)", async () => {
+    test("Testing with 107 characters string", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-description").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(false);
         expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
 
-        // Set the title input value.
+        // Set the description input value.
         createCardModalWrapper.find("#card-description").setValue("A".repeat(107));
 
         // Ensure that the data was updated.
@@ -507,13 +508,13 @@ describe("Testing the description field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.descriptionError).toBe("")
     })
 
-    test("Testing with 20 characters string (108 characters)", async () => {
+    test("Testing with 108 characters string", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-description").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(false);
         expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
 
-        // Set the title input value.
+        // Set the description input value.
         createCardModalWrapper.find("#card-description").setValue("A".repeat(108));
 
         // Ensure that the data was updated.
@@ -537,7 +538,7 @@ describe("Testing the description field", () => {
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(false);
         expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
 
-        // Set the title input value.
+        // Set the description input value.
         createCardModalWrapper.find("#card-description").setValue("😋");
 
         // Ensure that the data was updated.
@@ -555,3 +556,240 @@ describe("Testing the description field", () => {
 
 })
 
+describe("Testing the keywords field", () => {
+
+    let createCardModalWrapper;
+
+    beforeEach(async () => {
+        const mockGetUserApiResponse = {
+            status: 200,
+            data: {
+                firstName: "FIRST_NAME",
+                lastName: "LAST_NAME",
+                role: UserRole.DEFAULTGLOBALAPPLICATIONADMIN,
+                homeAddress: {
+                    city: "CITY",
+                    suburb: "SUBURB"
+                },
+            }
+        }
+
+        Api.getUser.mockImplementation( () => Promise.resolve(mockGetUserApiResponse) );
+        Api.addNewCard.mockImplementation( () => {} );
+        Cookies.get.mockReturnValue(36);
+
+        createCardModalWrapper = await shallowMount(CreateCardModal, {localVue});
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Mock opening the modal
+        await createCardModalWrapper.find("#open-create-card-modal-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+    })
+
+    test("Testing an empty keywords input field", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
+    })
+
+    test("Testing a single character string (A)", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Set the title input value.
+        createCardModalWrapper.find("#card-keywords").setValue("A");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure that the data was updated.
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#A");
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(true);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("All keywords need to be between 2 and 20 in length.");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("is-invalid")
+    })
+
+    test("Testing a single character string (#)", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Set the title input value.
+        createCardModalWrapper.find("#card-keywords").setValue("#");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure that the data was updated.
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#");
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(true);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("All keywords need to be between 2 and 20 in length.");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("is-invalid")
+    })
+
+    test("Testing with 3 character string (123)", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Set the title input value.
+        createCardModalWrapper.find("#card-keywords").setValue("123");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure that the data was updated.
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#"+"123");
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
+    })
+
+    test("Testing with 19 characters string", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Set the title input value.
+        createCardModalWrapper.find("#card-keywords").setValue("A".repeat(19));
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure that the data was updated.
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#"+"A".repeat(19));
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
+    })
+
+    test("Testing with 20 characters string", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Set the title input value.
+        createCardModalWrapper.find("#card-keywords").setValue("A".repeat(20));
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure that the data was updated. and the extra characters are removed!
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#"+"A".repeat(19));
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
+    })
+
+    test("Testing the title can handle emojis 😋😋😋", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Set the title input value.
+        createCardModalWrapper.find("#card-keywords").setValue("😋😋😋");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure that the data was updated.
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#😋😋😋");
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
+    })
+
+    test("Testing the title can handle emojis 😋", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Set the title input value.
+        createCardModalWrapper.find("#card-keywords").setValue("😋");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure that the data was updated.
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#😋");
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
+    })
+
+    test("Testing the title can handle emojis 😋😋", async () => {
+        // Checking all necessary elements are exist and do not.
+        expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
+
+        // Set the title input value.
+        createCardModalWrapper.find("#card-keywords").setValue("😋😋");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure that the data was updated.
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#😋😋");
+
+        // Perform a submission
+        await createCardModalWrapper.find("#create-card-button").trigger("click");
+        await createCardModalWrapper.vm.$nextTick();
+
+        // Ensure invalid feedback is not provided.
+        expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
+        expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("");
+        expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
+    })
+
+})
+
+describe("Testing required fields", () => {
+
+
+
+})

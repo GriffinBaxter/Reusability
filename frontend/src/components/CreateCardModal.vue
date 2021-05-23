@@ -115,9 +115,9 @@
                   <div style="position: relative; height: 80px;" :class="`form-control ${formErrorClasses.keywordsError}`">
                     <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; overflow-y: scroll" disabled />
                     <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
-                    @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll" @input="isKeywordsInvalid"/>
+                    @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
                   </div>
-                  <div class="invalid-feedback" v-if="formError.keywordsError">
+                  <div id="card-keywords-invalid-feedback" class="invalid-feedback" v-if="formError.keywordsError">
                     {{formError.keywordsError}}
                   </div>
                 </div>
@@ -314,13 +314,11 @@ export default {
         let invalidKeywords = [];
         for (const keyword of this.getKeywords()) {
           if (keyword.length >= this.config.config.keyword.maxLength || keyword.length < this.config.config.keyword.minLength) {
-            if (keyword !== "") {
-              invalidKeywords.push(keyword)
-            }
+            invalidKeywords.push(keyword)
           }
         }
         if (invalidKeywords.length > 0 ) {
-          this.formError.keywordsError = `All keywords need to be between ${this.config.config.keyword.minLength} and ${this.config.config.keyword.maxLength} in length,`
+          this.formError.keywordsError = `All keywords need to be between ${this.config.config.keyword.minLength} and ${this.config.config.keyword.maxLength} in length.`
           this.formErrorClasses.keywordsError = this.isInvalidClass
           return true
         }
@@ -414,7 +412,8 @@ export default {
           keywords[i] = keywords[i].substring(this.keywordPrefix.length);
         }
       }
-      return keywords.filter( (keyword) => keyword !== "" && keyword !== "\n");
+
+      return keywords;
     },
     /**
      * Ensures all the card data provided is valid.
@@ -559,9 +558,8 @@ export default {
      */
     keywordsInput: function (val) {
       // Only allow spaces. new line --> space
-      val = val.replaceAll("\n", " ").replaceAll(/\n\s*\n/g, ' ');
-      val = val.replaceAll(/\s+/g, ' ').replaceAll(/\s+#*/g, " ");
-
+      val = val.replace(/\n/g, " ").replace(/\n\s*\n/g, ' ');
+      val = val.replace(/\s+/g, ' ').replace(/\s+#*/g, " ");
 
       let strings = val.split(" ");
       for (let i = 0; i < strings.length; i++ ) {
@@ -599,6 +597,9 @@ export default {
 
       // Ensures when new data is added the scroll bar is updated along with it.
       this.handleKeywordsScroll();
+
+      // Update any error messages.
+      this.isKeywordsInvalid()
     }
   }
 }
@@ -621,6 +622,7 @@ export default {
     letter-spacing: 2px;
     word-spacing: 2px;
     line-height: 2em;
+    font-family: 'Roboto', sans-serif;
   }
   div.keywords-backdrop {
     background-color: #fff;
@@ -642,6 +644,7 @@ export default {
   }
 
   strong.keywordHighlight {
+    font-family: 'Roboto', sans-serif;
     color: transparent;
     outline: 1px solid #888888;
     outline-offset: 1px;
