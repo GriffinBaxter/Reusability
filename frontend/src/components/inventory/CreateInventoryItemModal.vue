@@ -135,7 +135,8 @@
 import {Modal} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
-import {endOfToday, format, compareAsc} from 'date-fns'
+import {endOfToday, format, compareAsc} from 'date-fns';
+import Autofill from '../autofill';
 
 export default {
   name: 'InventoryItemCreation',
@@ -180,7 +181,7 @@ export default {
 
       toastErrorMessage: "",
 
-      allProducts: ['test', 'test2', 'test3'],
+      allProducts: [],
       autofillInput: '',
       autofillState: 'initial',
       currentProduct: null
@@ -291,44 +292,30 @@ export default {
       const input = this.$refs["autofill-input"];
       switch (this.autofillState) {
         case "initial":
-          this.toggleList('open');
+          Autofill.toggleList('open', this.$refs["autofill-list"]);
           this.autofillState = 'opened';
           break;
         case 'opened':
           if (currentFocus === input) {
-            this.toggleList('closed');
+            Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'initial';
           } else if (currentFocus.tagName === 'LI') {
             this.fillData(currentFocus);
-            this.toggleList('closed');
+            Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'closed';
           }
           break;
         case 'filtered':
           if (currentFocus.tagName === 'LI') {
             this.fillData(currentFocus);
-            this.toggleList('closed');
+            Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'closed';
           }
           break;
         case 'closed':
-          this.toggleList('open');
+          Autofill.toggleList('open', this.$refs["autofill-list"]);
           this.autofillState = 'filtered';
           break;
-      }
-    },
-    /**
-     * Opens or hides the autofill list items based on the given input.
-     *
-     * This function is based off of the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
-     * https://24ways.org/2019/making-a-better-custom-select-element/
-     */
-    toggleList(direction) {
-      const list = this.$refs["autofill-list"];
-      if (direction === 'open') {
-        list.classList.remove('hidden-all');
-      } else {
-        list.classList.add('hidden-all');
       }
     },
     /**
@@ -365,163 +352,79 @@ export default {
         case 'Enter':
           if (this.autofillState === 'initial') {
             // If state = initial, toggle open and set state to opened
-            this.toggleList('open');
+            Autofill.toggleList('open', this.$refs["autofill-list"]);
             this.autofillState = 'opened';
           } else if (this.autofillState === 'opened' && currentFocus.tagName === 'LI') {
             // If state = opened and focus on list, fill data and set state to closed
             this.fillData(currentFocus)
-            this.toggleList('closed')
+            Autofill.toggleList('closed', this.$refs["autofill-list"])
             this.autofillState = 'closed';
           } else if (this.autofillState === 'opened' && currentFocus === input) {
             // If state = opened and focus on input, close it
-            this.toggleList('closed')
+            Autofill.toggleList('closed', this.$refs["autofill-list"])
             this.autofillState = 'closed';
           } else if (this.autofillState === 'filtered' && currentFocus.tagName === 'LI') {
             // If state = filtered and focus on list, fill data and set state to closed
             this.fillData(currentFocus)
-            this.toggleList('closed')
+            Autofill.toggleList('closed', this.$refs["autofill-list"])
             this.autofillState = 'closed';
           } else if (this.autofillState === 'filtered' && currentFocus === input) {
             // If state = filtered and focus on input, set state to opened
-            this.toggleList('open')
+            Autofill.toggleList('open', this.$refs["autofill-list"])
             this.autofillState = 'opened';
           } else {
             // If state = closed, set state to filtered. I.e. open but keep existing input.
-            this.toggleList('open')
+            Autofill.toggleList('open', this.$refs["autofill-list"])
             this.autofillState = ('filtered');
           }
           break;
         case 'Escape':
           if (this.autofillState === 'opened' || this.autofillState === 'filtered') {
             // Close the list
-            this.toggleList('closed');
+            Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'initial';
           }
           break;
         case 'ArrowDown':
           if (this.autofillState === 'initial' || this.autofillState === 'closed') {
             // If state = initial or closed, set state to opened and moveFocus to first
-            this.toggleList('open')
-            this.moveFocus(input, 'forward')
+            Autofill.toggleList('open', this.$refs["autofill-list"])
+            Autofill.moveFocus(input, 'forward', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
             this.autofillState = 'opened';
           } else {
             // If state = opened/filtered and focus on input/list, moveFocus to first/next
-            this.toggleList('open')
-            this.moveFocus(currentFocus, 'forward')
+            Autofill.toggleList('open', this.$refs["autofill-list"])
+            Autofill.moveFocus(currentFocus, 'forward', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
           }
           break;
         case 'ArrowUp':
           if (this.autofillState === 'initial' || this.autofillState === 'closed') {
             // If state = initial, set state to opened and moveFocus to last
             // If state = closed, set state to opened and moveFocus to last
-            this.toggleList('Open')
-            this.moveFocus(input, 'back')
+            Autofill.toggleList('Open', this.$refs["autofill-list"])
+            Autofill.moveFocus(input, 'back', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
             this.autofillState = 'opened';
           } else {
             // If state = opened/filtered and focus on input/list, moveFocus to last/previous
-            this.moveFocus(currentFocus, 'back')
+            Autofill.moveFocus(currentFocus, 'back', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
           }
           break;
         default:
           if (this.autofillState === 'initial') {
             // If state = initial, toggle open, filter and set state to filtered
-            this.toggleList('open')
-            this.filterOptions();
+            Autofill.toggleList('open', this.$refs["autofill-list"])
+            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
             this.autofillState = 'filtered';
           } else if (this.autofillState === 'opened') {
             // If state = opened, filter and set state to filtered
-            this.filterOptions();
+            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
             this.autofillState = 'filtered';
           } else if (this.autofillState === 'closed') {
             // If state = closed, filter and set state to filtered
-            this.filterOptions();
+            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
             this.autofillState = 'filtered';
           } else { // Already filtered
-            this.filterOptions();
-          }
-          break;
-      }
-    },
-    /**
-     * Filters current autofill list items based on the input.
-     *
-     * This function is adapted from the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
-     * https://24ways.org/2019/making-a-better-custom-select-element/
-     */
-    filterOptions() {
-
-      const inputValue = this.$refs["autofill-input"].value;
-      const listItems = Array.from(this.$refs["autofill-list"].children);
-
-      const filteredOptions = listItems.filter(function(item) {
-        if (item.innerText.toUpperCase().includes(inputValue.toUpperCase())) {
-          return true;
-        }
-      })
-
-      listItems.forEach(item => item.style.display = "none")
-      filteredOptions.forEach(function(item) {
-        item.style.display = "";
-      })
-      this.autofillState = 'filtered';
-    },
-    /**
-     * Move the current focus up and down the autofill list based on the given 'to' and 'from' values.
-     *
-     * This function is adapted from the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
-     * https://24ways.org/2019/making-a-better-custom-select-element/
-     */
-    moveFocus(from, to) {
-      const input = this.$refs["autofill-input"];
-      const listItems = Array.from(this.$refs["autofill-list"].children);
-      // Get the currently showing items, which might have been filtered
-      const currentOptions = listItems.filter(function(item) {
-        if (item.style.display === '') {
-          return true
-        }
-      })
-      // Don't move if all options have been filtered out
-      if (currentOptions.length === 0) {
-        return;
-      }
-      if (to === 'input') {
-        input.focus()
-      }
-
-      const currentItem = document.activeElement;
-      const whichOne = currentOptions.indexOf(currentItem);
-      // Possible start points
-      switch(from) {
-        case input:
-          if (to === 'forward') {
-            currentOptions[0].focus()
-          } else if (to === 'back') {
-            currentOptions[currentOptions.length - 1].focus()
-          }
-          break;
-        case currentOptions[0]:
-          if (to === 'forward') {
-            currentOptions[1].focus()
-          } else if (to === 'back') {
-            input.focus()
-          }
-          break;
-        case currentOptions[currentOptions.length - 1]:
-          if (to === 'forward') {
-            currentOptions[0].focus()
-          } else if (to === 'back') {
-            currentOptions[currentOptions.length - 2].focus()
-          }
-          break;
-        default: // In the middle of list or filtered items
-          if (to === 'forward') {
-            const nextOne = currentOptions[whichOne + 1]
-            nextOne.focus()
-          } else if (to === 'back' && whichOne > 0) {
-            const previousOne = currentOptions[whichOne - 1]
-            previousOne.focus()
-          } else { // if whichOne = 0
-            input.focus()
+            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
           }
           break;
       }
@@ -978,7 +881,7 @@ export default {
     let self = this;
     document.addEventListener('click', function(event) {
       if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed') {
-        self.toggleList('closed');
+        Autofill.toggleList('closed', self.$refs["autofill-list"]);
         self.autofillState = 'initial';
       }
     })

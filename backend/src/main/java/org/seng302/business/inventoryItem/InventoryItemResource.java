@@ -310,29 +310,28 @@ public class InventoryItemResource {
         logger.debug("Product inventory retrieval request (all items) received with business ID {}", id);
 
         // Checks user logged in - 401
-        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        Integer businessId = Integer.valueOf(id);
         // Checks business at ID exists - 406
-
-        Optional<Business> currentBusiness = businessRepository.findBusinessById(businessId);
-
+        Optional<Business> currentBusiness = businessRepository.findBusinessById(id);
         if (currentBusiness.isEmpty()) {
+            logger.error("Product inventory retrieval request (all items) Failure - 406 [NOT ACCEPTABLE] - " +
+                    "Business with ID {} does not exist", id);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "Business Does Not Exist"
             );
         }
 
-        List<InventoryItem> inventoryItems = inventoryItemRepository.findAllByBusinessId(businessId);
+        List<InventoryItem> inventoryItems = inventoryItemRepository.findAllByBusinessId(id);
 
         logger.info("Inventory Retrieval Success - 200 [OK] -  " +
-                "All inventory items retrieved for business with ID {}", businessId);
+                "All inventory items retrieved for business with ID {}", id);
 
         List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(inventoryItems);
 
         logger.debug("All inventory items retrieved for business with ID {}: {}",
-                businessId,
+                id,
                 inventoryItemPayloads);
 
         return ResponseEntity.ok()

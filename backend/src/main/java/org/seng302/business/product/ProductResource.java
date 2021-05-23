@@ -441,11 +441,13 @@ public class ProductResource {
         logger.debug("Product catalogue retrieval request (all items) received with business ID {}", id);
 
         // Checks user logged in - 401
-        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Checks business at ID exists - 406
         Optional<Business> currentBusiness = businessRepository.findBusinessById(id);
         if (currentBusiness.isEmpty()) {
+            logger.error("Product catalogue retrieval request (all items) Failure - 406 [NOT ACCEPTABLE] - " +
+                    "Business with ID {} does not exist", id);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "Business Does Not Exist"

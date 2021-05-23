@@ -1235,6 +1235,7 @@ public class ProductResourceIntegrationTests {
     public void cantRetrieveAllProductsWhenBusinessDoesNotExistWithBusinessAdministratorUserCookie() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.empty());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
