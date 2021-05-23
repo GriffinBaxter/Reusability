@@ -634,9 +634,6 @@ export default {
               this.cannotProceed = false;
 
               this.requestProducts().then(
-                  () => {
-
-                  }
               ).catch(
                   (e) => console.log(e)
               )
@@ -744,6 +741,10 @@ export default {
         if ((this.currencyCode.length > 0) && (this.currencySymbol.length > 0)) {
           this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
         }
+        this.requestProducts().then(
+        ).catch(
+            (e) => console.log(e)
+        )
       } else {
         this.$router.push({name: 'Login'});
       }
