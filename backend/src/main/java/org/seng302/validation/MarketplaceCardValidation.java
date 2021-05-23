@@ -1,5 +1,8 @@
 package org.seng302.validation;
 
+/**
+ * This class is used to validate a marketplace card when it is created.
+ */
 public class MarketplaceCardValidation {
 
     // Values need for validation.

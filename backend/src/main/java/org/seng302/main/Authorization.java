@@ -67,4 +67,16 @@ public class Authorization {
         return businessRepository.findBusinessById(businessId).isPresent();
     }
 
+    /**
+     * Checks to see whether the current user is a GAA or DGAA.
+     * This is important because GAA and DGAA users have additional
+     * permissions.
+     * @param currentUser The user who is being checked to see if they are a GAA or DGAA.
+     * @return boolean Returns true if a user is a GAA or DGAA.
+     */
+    public static boolean isGAAorDGAA(User currentUser) {
+        return (currentUser.getRole() == Role.GLOBALAPPLICATIONADMIN) ||
+                (currentUser.getRole() == Role.DEFAULTGLOBALAPPLICATIONADMIN);
+    }
+
 }

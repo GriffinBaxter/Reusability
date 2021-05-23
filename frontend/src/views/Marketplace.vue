@@ -6,7 +6,7 @@
     <!------------------------- Nav bar; displays either business account or individual account nav bar --------------->
     <Navbar></Navbar>
 
-    <CardDetail v-bind:index="selectedCard"
+    <CardDetail v-bind:id="selectedCard"
                 v-bind:section="selectSection"/>
 
     <div id="marketplace-container">
@@ -38,13 +38,28 @@
       </ul>
       <div class="tab-content" id="marketplace-tabs-content">
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'For Sale'"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 @orderedCards="orderedCards"
+                                 :sendData="selectedCard"
+                                 v-bind:section="'For Sale'"
+                                 v-bind:sectionCards="allCards.ForSale"
+          />
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'Wanted'"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 @orderedCards="orderedCards"
+                                 :sendData="selectedCard"
+                                 v-bind:section="'Wanted'"
+                                 v-bind:sectionCards="allCards.Wanted"
+          />
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail" :sendData="selectedCard" v-bind:section="'Exchange'"/>
+          <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                 @orderedCards="orderedCards"
+                                 :sendData="selectedCard"
+                                 v-bind:section="'Exchange'"
+                                 v-bind:sectionCards="allCards.Exchange"
+          />
         </div>
       </div>
 
@@ -63,13 +78,21 @@ import CardDetail from "@/components/marketplace/CardDetailPopup";
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import MarketplaceTabSection from "@/components/marketplace/MarketplaceTabSection";
+import Api from "@/Api";
 
 export default {
   name: "Marketplace",
   data() {
     return {
       selectSection: "ForSale",
-      selectedCard: 0
+      selectedCard: 0,
+      allCards: {
+        ForSale: [],
+        Wanted: [],
+        Exchange: [],
+      },
+      sortBy: "createdDESC",
+      page: 0
     }
   },
   components: {
@@ -79,11 +102,39 @@ export default {
     Navbar,
   },
   methods: {
+
+    /**
+     * Change the current tab that the user is viewing in the marketplace.
+     * @param newSection the section that the user is switching to
+     */
     changeSection(newSection) {
       this.selectSection = newSection
     },
+
+    /**
+     * Sets the card to open
+     * @param selectedCard the card that will be opened.
+     */
     openCardDetail(selectedCard) {
       this.selectedCard = selectedCard
+    },
+
+    /**
+     * Retrieve the cards for the given marketplace section.
+     * The allowed sections are "ForSale", "Wanted" and "Exchange".
+     * @param section the section that cards will be retrieved for.
+     */
+    retrieveAllCardsForSection(section) {
+      Api.getAllCards(section, this.sortBy, this.page).then(response => {
+        this.allCards[section] = response.data;
+      }).catch((error) => {
+        console.log(error.message)
+      })
+    },
+
+    orderedCards(orderByValue) {
+      this.sortBy = orderByValue;
+      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
     }
   },
 
@@ -91,8 +142,14 @@ export default {
    * When mounted, if cookie is not present, redirect to login page.
    */
   mounted() {
-
+    this.retrieveAllCardsForSection("ForSale");
+    this.retrieveAllCardsForSection("Wanted");
+    this.retrieveAllCardsForSection("Exchange");
   },
+
+
+
+
 }
 </script>
 

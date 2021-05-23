@@ -271,6 +271,7 @@ public class Address {
      */
     public AddressPayloadSecure toAddressPayloadSecure() throws Exception {
         return new AddressPayloadSecure(
+                this.suburb,
                 this.city,
                 this.region,
                 this.country
@@ -301,6 +302,7 @@ public class Address {
 
     public String toSecureString() {
         return "{" +
+                "\"suburb\":\""        + suburb         + "\"," +
                 "\"city\":\""        + city         + "\"," +
                 "\"region\":\""       + region       + "\"," +
                 "\"country\":\""      + country      + "\"" +
