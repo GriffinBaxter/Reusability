@@ -12,7 +12,7 @@ export default class MarketplaceCard {
             maxLength: 108
         },
         keyword: {
-            minLength: 1,
+            minLength: 2,
             maxLength: 20
         }
     }

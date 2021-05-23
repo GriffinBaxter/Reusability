@@ -243,6 +243,13 @@ export default {
         return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
+    },
+
+    /** Creates a new card given the newCard object. */
+    addNewCard: (newCard) => {
+        return instance.post(`/cards`, newCard,{
+            withCredentials: true
+        })
     }
 
 }
