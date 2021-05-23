@@ -1,21 +1,25 @@
 <template>
   <div class="card rounded shadow-sm border-0" id="card-container">
-    <div class="card-body p-4"><img src="" alt="" class="img-fluid d-block mx-auto mb-3">
-<!--      <div class="row">-->
-        <h3 class="col">{{ title }}</h3>
-        <p class="col text-secondary">{{ created }}</p>
-<!--      </div>-->
+    <div class="card-body p-4">
+        <h4 id="card-title" class="col">{{ title }}</h4>
 
       <div class="row">
-        <img :src="cardImage" alt="Card Image">
+        <div class="col">
+          <p class="col text-secondary">{{ created }}</p>
+        </div>
       </div>
 
-        <img :src="creatorImage" id="avatar-image" alt="User Avatar">
-        {{ creator.firstName }} {{ creator.lastName }}
-        {{ creator.homeAddress.suburb }} {{ creator.homeAddress.city }}
+      <div id="card-img-container" class="row">
+        <img id="card-img" :src="cardImage" alt="Card Image">
+      </div>
 
-<!--      <h5><a class="text-dark">{{ index }} {{ title }} {{ created }}</a></h5>-->
-<!--      <p class="small text-muted font-italic">{{ description }} {{ creator.firstName }}</p>-->
+      <img :src="creatorImage" id="avatar-image" alt="User Avatar">
+      {{ creator.firstName }} {{ creator.lastName }}
+
+      <div id="address-container" class="col">
+        <p class="small text-muted font-italic">{{ address }}</p>
+      </div>
+
     </div>
   </div>
 </template>
@@ -59,6 +63,11 @@ export default {
       default: require("../../../public/sample_profile_image.jpg"),
       required: false
     },
+    address: {
+      type: String,
+      default: "",
+      required: true
+    }
   }
 }
 </script>
@@ -67,6 +76,7 @@ export default {
 
 #card-container {
   width: 400px;
+  padding-bottom: 10px;
 }
 
 #avatar-image {
@@ -74,4 +84,24 @@ export default {
   border-radius: 50px;
 }
 
+#card-title {
+  height: 70px;
+  padding-bottom: 0px;
+}
+
+#card-img-container {
+  margin-bottom: 20px;
+}
+
+#card-img {
+  border-radius: 35px;
+}
+
+#address-container {
+  margin-top: 14px;
+}
+
+/*.card-body.p-4 {*/
+/*  padding-bottom: 0px;*/
+/*}*/
 </style>

@@ -30,6 +30,7 @@
                   v-bind:description="card.description"
                   v-bind:created="styleDate(card.created)"
                   v-bind:creator="card.creator"
+                  v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
             />
           </div>
         </div>
@@ -76,6 +77,9 @@ export default {
     },
     styleDate(date){
       return formatDate(date, false);
+    },
+    combineSuburbAndCity(suburb, city) {
+      return (suburb === null) ? city : suburb + ", " + city;
     }
   },
 }
