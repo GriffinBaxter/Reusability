@@ -430,9 +430,7 @@ name: "Listings",
 
       await this.currencyRequest();
 
-      this.getListings().then(
-          () => {}
-      ).catch(
+      this.getListings().catch(
           (e) => console.log(e)
       )
     }

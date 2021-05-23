@@ -658,10 +658,7 @@ export default {
         await this.currencyRequest();
 
         this.retrieveBusinessInfo();
-        this.retrieveInventoryItems().then(
-            () => {
-            }
-        ).catch(
+        this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
       }
