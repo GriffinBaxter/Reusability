@@ -99,10 +99,13 @@
                   <label for="card-keywords" class="fw-bold">Keywords:</label>
                 </div>
                 <div class="col-md">
-                  <div style="position: relative; height: 80px; ">
+                  <div style="position: relative; height: 80px;" :class="`form-control ${isKeywordsInvalid()}`">
                     <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; overflow-y: scroll" disabled />
                     <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
                     @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
+                  </div>
+                  <div class="invalid-feedback" v-if="formError.keywordsError">
+                    {{formError.keywordsError}}
                   </div>
                 </div>
               </div>
@@ -242,6 +245,33 @@ export default {
       this.formError.descriptionError = ""
       return ""
     },
+    /**
+     * Determines if the keywords inputted is valid within the rules of the Card. This updates the keywords
+     * error message.
+     *
+     * @return {String} The invalid class when the form is invalid. Otherwise an empty string.
+     * */
+    isKeywordsInvalid() {
+      if (this.submitAttempted) {
+        let invalidKeywords = [];
+        for (const keyword of this.keywordsInput.split(" ")) {
+          if (keyword.length >= this.config.config.keyword.maxLength || keyword.length < this.config.config.keyword.minLength) {
+            if (keyword !== "") {
+              invalidKeywords.push(keyword)
+            }
+          }
+        }
+        if (invalidKeywords.length > 0 ) {
+          this.formError.keywordsError = `All keywords need to be between ${this.config.config.keyword.minLength} and ${this.config.config.keyword.maxLength} in length,`
+          return this.isInvalidClass
+        }
+      }
+      this.formError.keywordsError = ""
+      return ""
+    },
+    /**
+     * Ensures when the table scrolls that they remain at the same height.
+     * */
     handleKeywordsScroll() {
       this.$refs.keywordsBackdrop.scrollTop = this.$refs.keywordsInput.scrollTop;
       this.$refs.keywordsInput.scrollTop = this.$refs.keywordsBackdrop.scrollTop;
@@ -278,9 +308,14 @@ export default {
     }
   },
   watch: {
+    /**
+     * Prevents the value from breaking the expected rules.
+     * @param val The new value.
+     */
     keywordsInput: function (val) {
       // Only allow spaces. new line --> space
-      val = val.replaceAll("\n", " ")//.replaceAll(/\n\s*\n/g, '\n');
+      val = val.replaceAll("\n", " ").replaceAll(/\n\s*\n/g, '\n');
+      val = val.replaceAll("\n", " ").replaceAll(/\s+/g, ' ');
 
       // Prevent string from being over the maximum length
       let strings = val.split(" ");
