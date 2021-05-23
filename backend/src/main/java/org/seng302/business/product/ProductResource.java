@@ -435,7 +435,7 @@ public class ProductResource {
      * @return A list of all products for the given business.
      */
     @GetMapping("/businesses/{id}/productAll")
-    public ResponseEntity<List<ProductPayload>> retrieveAllInventoryItems(
+    public ResponseEntity<List<ProductPayload>> retrieveAllProducts(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer id) {
         logger.debug("Product catalogue retrieval request (all items) received with business ID {}", id);
