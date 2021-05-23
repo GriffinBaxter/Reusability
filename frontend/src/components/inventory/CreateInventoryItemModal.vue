@@ -131,7 +131,7 @@
 import {Modal} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
-import {endOfToday, format, compareAsc} from 'date-fns'
+import {endOfToday, format, compareAsc, parseISO} from 'date-fns'
 
 export default {
   name: 'InventoryItemCreation',
@@ -651,10 +651,10 @@ export default {
         quantity: this.quantity,
         pricePerItem: this.pricePerItem,
         totalPrice: this.totalPrice,
-        manufactured: this.manufactured,
-        sellBy: this.sellBy,
-        bestBefore: this.bestBefore,
-        expires: this.expires
+        manufactured: parseISO(this.manufactured),
+        sellBy: parseISO(this.sellBy),
+        bestBefore: parseISO(this.bestBefore),
+        expires: parseISO(this.expires)
       }
       const newInventoryItem = new InventoryItem(inventoryItemData);
 
