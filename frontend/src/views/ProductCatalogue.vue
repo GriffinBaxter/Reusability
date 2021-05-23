@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="main">
-      <navbar></navbar>
+      <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
 
       <div id="outerContainer" class="container">
 
@@ -26,8 +26,7 @@
                  :order-by-override="tableOrderBy" :table-data-is-page="true"
                  @update-current-page="event => updatePage(event)"
                  @order-by-header-index="event => orderProducts(event)"
-                 @row-selected="event => showRowModal(event.index)"></Table>
-
+                 @row-selected="event => showRowModal(event.index)"/>
         </div>
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
@@ -265,9 +264,30 @@ export default {
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+
+      // List of Business account current user account administrated
+      linkBusinessAccount: [],
     }
   },
   methods: {
+    /**
+     * Check current user's permission
+     */
+    checkAccessPermission(){
+      let permission = false;
+      this.linkBusinessAccount.forEach(business => {
+        if (business.id === this.$route.params.id){
+          permission = true;
+        }
+      })
+      return permission && Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs');
+    },
+    /**
+     * set link business accounts
+     */
+    setLinkBusinessAccount(data){
+      this.linkBusinessAccount = data;
+    },
     /**
      * Shows a modal containing the details about a product.
      *
@@ -725,8 +745,7 @@ export default {
 
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
-
-    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+    if (this.checkAccessPermission()) {
       this.$router.push({path: '/forbidden'});
     } else {
       /**

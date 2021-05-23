@@ -2,7 +2,7 @@
   <div>
     <div id="main">
       <!--nav bar-->
-      <navbar/>
+      <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
     <!--creation popup-->
     <inventory-item-creation @updateInventoryItem="afterCreation"
                              v-bind:currency-code="currencyCode"
@@ -264,9 +264,30 @@ export default {
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+
+      // List of Business account current user account administrated
+      linkBusinessAccount:[],
     }
   },
   methods: {
+    /**
+     * Check current user's permission
+     */
+    checkAccessPermission(){
+      let permission = false;
+      this.linkBusinessAccount.forEach(business => {
+        if (business.id === this.$route.params.id){
+          permission = true;
+        }
+      })
+      return permission && Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs');
+    },
+    /**
+     * set link business accounts
+     */
+    setLinkBusinessAccount(data){
+      this.linkBusinessAccount = data;
+    },
     /**
      * convert orderByString to more readable for user
      */
@@ -588,9 +609,7 @@ export default {
             })
           }
         }
-
       }).catch((error) => {
-        console.log(error);
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 400) {
@@ -644,7 +663,7 @@ export default {
   },
 
   async mounted() {
-    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+    if (this.checkAccessPermission()) {
       this.$router.push({path: '/forbidden'});
     } else {
       /**
