@@ -32,7 +32,7 @@
             <div class="col-5 form-group py-1 px-3">
               <label for="quantity">Quantity*: </label>
               <input id="quantity" name="quantity" type="number" v-model="quantity" min="0"
-                     :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" required>
+                     :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" @input="updatePriceFromQuantity" required>
               <div class="invalid-feedback">
                 {{ quantityErrorMsg }}
               </div>
@@ -49,7 +49,7 @@
                 <input id="price-per-item" name="price-per-item" type="number" step="0.01"
                        v-model="pricePerItem"
                        min="0" :class="toggleInvalidClass(pricePerItemErrorMsg)"
-                       :maxlength="config.pricePerItem.maxLength">
+                       :maxlength="config.pricePerItem.maxLength" @input="updatePriceFromQuantity">
                 <div class="invalid-feedback">
                   {{ pricePerItemErrorMsg }}
                 </div>
@@ -346,7 +346,9 @@ export default {
       }
       this.currentProduct = finalProduct;
       this.autofillInput = finalProduct.id;
+      this.quantity = 1;
       this.pricePerItem = finalProduct.recommendedRetailPrice;
+      this.totalPrice = finalProduct.recommendedRetailPrice * this.quantity;
     },
     /**
      * Handles keyboard input when navigating autofill dropdown menu
@@ -522,6 +524,14 @@ export default {
             input.focus()
           }
           break;
+      }
+    },
+    /**
+     * Updates the total price when the quantity input or price per item are modified.
+     * */
+    updatePriceFromQuantity() {
+      if (!isNaN(this.quantity) && !isNaN(this.pricePerItem)) {
+        this.totalPrice = this.quantity * this.pricePerItem;
       }
     },
     /**
@@ -849,7 +859,7 @@ export default {
           this.config.quantity.regex
       )
       if (this.quantity <= 0) {
-        this.quantityErrorMsg = "At less one"
+        this.quantityErrorMsg = "At least one"
       }
       if (this.quantityErrorMsg) {
         requestIsInvalid = true
@@ -858,7 +868,7 @@ export default {
       // Price per item error checking
       this.pricePerItemErrorMsg = this.getErrorMessage(
           this.config.pricePerItem.name,
-          this.pricePerItem,
+          this.pricePerItem.toString(),
           this.config.pricePerItem.minLength,
           this.config.pricePerItem.maxLength,
           this.config.pricePerItem.regexMessage,
@@ -871,7 +881,7 @@ export default {
       // Total price error checking
       this.totalPriceErrorMsg = this.getErrorMessage(
           this.config.totalPrice.name,
-          this.totalPrice,
+          this.totalPrice.toString(),
           this.config.totalPrice.minLength,
           this.config.totalPrice.maxLength,
           this.config.totalPrice.regexMessage,
