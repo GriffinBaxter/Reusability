@@ -1189,5 +1189,111 @@ public class ProductResourceIntegrationTests {
     }
 
 
+    //---------------------------------- Tests for /businesses/{id}/productAll endpoint ----------------------------------
+
+    /**
+     * Tests that an OK status and a list of product payloads is received when the business ID in the
+     * /businesses/{id}/productAll API endpoint exists.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveAllProductsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated()) + "," + String.format(expectedProductJson, anotherProduct.getProductId(),
+                anotherProduct.getName(), anotherProduct.getDescription(), anotherProduct.getManufacturer(),
+                anotherProduct.getRecommendedRetailPrice(), anotherProduct.getCreated()) + "]";
+
+        // when
+        List<Product> list = List.of(product, anotherProduct);
+        when(productRepository.findAllByBusinessId(1)).thenReturn(list);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get(String.format("/businesses/%d/productAll", business.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a NOT ACCEPTABLE status is received when the business ID in the
+     * /businesses/{id}/productAll API endpoint does not exist.
+     * Test specifically for when the cookie contains an ID belonging to an authorized user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantRetrieveAllProductsWhenBusinessDoesNotExistWithBusinessAdministratorUserCookie() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get(String.format("/businesses/%d/productAll", business.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a UNAUTHORIZED status is received when the user has an invalid cookie when
+     * trying to retrieve all products.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void cantRetrieveAllProductsWhenCookieIsInvalid() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/productAll", business.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an OK status and an empty list of product payloads is received when the business ID in the
+     * /businesses/{id}/productAll API endpoint exists but the business has no products.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void canRetrieveAllProductsWhenBusinessExistsWithBusinessAdministratorUserCookieAndWithNoProducts() throws Exception {
+        // given
+        given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "[]";
+
+        // when
+        List<Product> list = List.of();
+        when(productRepository.findAllByBusinessId(1)).thenReturn(list);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get(String.format("/businesses/%d/productAll", business.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
 
 }

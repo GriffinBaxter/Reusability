@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -672,6 +673,166 @@ public class ProductRepositoryIntegrationTests {
 
         // then
         assertThat(foundProduct.isEmpty()).isFalse();
+    }
+
+    /**
+     * Tests that we retrieve all products without pagination with a valid business ID.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void whenRetrievingAllProductsWithValidBusinessID() throws Exception {
+        // given
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        entityManager.persist(business);
+        entityManager.flush();
+
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        Product product2 = new Product(
+                "APPL",
+                business,
+                "Apple",
+                "Description",
+                "Manufacturer",
+                30.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        // when
+        List<Product> foundProducts = productRepository.findAllByBusinessId(business.getId());;
+
+        // then
+        assertThat(foundProducts.isEmpty()).isFalse();
+    }
+
+    /**
+     * Tests that when we retrieve all products without pagination with an invalid business ID that no errors are thrown.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    public void whenRetrievingAllProductsWithInValidBusinessID() throws Exception {
+        // given
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        entityManager.persist(business);
+        entityManager.flush();
+
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        Product product2 = new Product(
+                "APPL",
+                business,
+                "Apple",
+                "Description",
+                "Manufacturer",
+                30.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        // when
+        List<Product> foundProducts = productRepository.findAllByBusinessId(20000);;
+
+        // then
+        assertThat(foundProducts.isEmpty()).isTrue();
     }
 
 
