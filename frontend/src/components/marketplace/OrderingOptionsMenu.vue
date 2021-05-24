@@ -50,7 +50,7 @@
       <div id="order-by-btn" class="col">
         <button type="button" class="btn green-button-transparent col-12 go-btn"
                 @click="orderCards()">
-          GO
+          Order Cards
         </button>
       </div>
     </div>
