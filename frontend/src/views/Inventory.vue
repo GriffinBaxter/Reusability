@@ -604,9 +604,13 @@ export default {
               pricePerItem: this.InventoryItemList[i].pricePerItem,
               totalPrice: this.InventoryItemList[i].totalPrice,
               manufactured: formatDate(this.InventoryItemList[i].manufactured, false),
+              manufacturedUnformatted: this.InventoryItemList[i].manufactured,
               sellBy: formatDate(this.InventoryItemList[i].sellBy, false),
+              sellByUnformatted: this.InventoryItemList[i].sellBy,
               bestBefore: formatDate(this.InventoryItemList[i].bestBefore, false),
-              expires: formatDate(this.InventoryItemList[i].expires, false)
+              bestBeforeUnformatted: this.InventoryItemList[i].bestBefore,
+              expires: formatDate(this.InventoryItemList[i].expires, false),
+              expiresUnformatted: this.InventoryItemList[i].expires
             })
           }
         }

@@ -221,10 +221,10 @@ export default {
         this.newInventoryItem.data.quantity = this.value.quantity;
         this.newInventoryItem.data.pricePerItem = this.value.pricePerItem;
         this.newInventoryItem.data.totalPrice = this.value.totalPrice;
-        this.newInventoryItem.data.manufactured = this.value.manufactured;
-        this.newInventoryItem.data.sellBy = this.value.sellBy;
-        this.newInventoryItem.data.bestBefore = this.value.bestBefore;
-        this.newInventoryItem.data.expires = this.value.expires;
+        this.newInventoryItem.data.manufactured = this.value.manufacturedUnformatted;
+        this.newInventoryItem.data.sellBy = this.value.sellByUnformatted;
+        this.newInventoryItem.data.bestBefore = this.value.bestBeforeUnformatted;
+        this.newInventoryItem.data.expires = this.value.expiresUnformatted;
 
         // Reset all the error messages
         this.productIdErrorMsg = "";
