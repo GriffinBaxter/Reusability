@@ -10,19 +10,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Authorization Test Class.
  * This class contains tests for the method isGAAorDGAA()
  */
-public class AuthorizationTests {
+class AuthorizationTests {
 
     private static Address address;
     private static User user;
 
     @BeforeAll
-    public static void before() throws Exception {
+    static void before() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -39,7 +39,7 @@ public class AuthorizationTests {
      * @throws Exception thrown when a new user does not contain valid info.
      */
     @Test
-    public void testIsGAAOrDGAAReturnsFalseWhenUserHasRoleUser() throws Exception {
+    void testIsGAAOrDGAAReturnsFalseWhenUserHasRoleUser() throws Exception {
         user = new User("Thomas",
                 "Wayne",
                 "Gabriel",
@@ -53,7 +53,7 @@ public class AuthorizationTests {
                 LocalDateTime.of(LocalDate.of(2021, 05, 20),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        assertEquals(false, Authorization.isGAAorDGAA((user)));
+        assertFalse(Authorization.isGAAorDGAA((user)));
     }
 
     /**
@@ -61,7 +61,7 @@ public class AuthorizationTests {
      * @throws Exception thrown when a new user does not contain valid info.
      */
     @Test
-    public void testIsGAAOrDGAAReturnsTrueWhenUserHasRoleGAA() throws Exception {
+    void testIsGAAOrDGAAReturnsTrueWhenUserHasRoleGAA() throws Exception {
         user = new User("Thomas",
                 "Wayne",
                 "Gabriel",
@@ -75,7 +75,7 @@ public class AuthorizationTests {
                 LocalDateTime.of(LocalDate.of(2021, 05, 20),
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
-        assertEquals(true, Authorization.isGAAorDGAA((user)));
+        assertTrue(Authorization.isGAAorDGAA((user)));
     }
 
     /**
@@ -83,7 +83,7 @@ public class AuthorizationTests {
      * @throws Exception thrown when a new user does not contain valid info.
      */
     @Test
-    public void testIsGAAOrDGAAReturnsTrueWhenUserHasRoleDGAA() throws Exception {
+    void testIsGAAOrDGAAReturnsTrueWhenUserHasRoleDGAA() throws Exception {
         user = new User("Thomas",
                 "Wayne",
                 "Gabriel",
@@ -97,6 +97,6 @@ public class AuthorizationTests {
                 LocalDateTime.of(LocalDate.of(2021, 05, 20),
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
-        assertEquals(true, Authorization.isGAAorDGAA((user)));
+        assertTrue(Authorization.isGAAorDGAA((user)));
     }
 }

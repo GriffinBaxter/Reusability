@@ -12,16 +12,12 @@ package org.seng302.business.inventoryItem;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.listing.Listing;
-import org.seng302.business.listing.ListingPayload;
 import org.seng302.business.product.Product;
 import org.seng302.business.product.ProductPayload;
 import org.seng302.business.product.ProductRepository;
-import org.seng302.business.product.ProductUpdatePayload;
 import org.seng302.main.Authorization;
-import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,24 +129,10 @@ public class InventoryItemResource {
         // user is retrieved if access token is provided and valid
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        if (!Authorization.verifyBusinessExists(id, businessRepository)) {
-            logger.error("Product Inventory Retrieval Failure - 406 [NOT ACCEPTABLE] - " +
-                    "Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
-            );
-        }
-        if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(id)) {
-            logger.error("Product Inventory Retrieval Failure - 403 [FORBIDDEN] - User with ID {} is not an " +
-                    "admin of business with ID {}", currentUser.getId(), id);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The account performing the request is neither an administrator of the business, " +
-                            "nor a global application admin."
-            );
-        }
+        Authorization.verifyBusinessExists(id, businessRepository);
+
+        Authorization.verifyBusinessAdmin(currentUser, id);
+
         //200: Inventory retrieved successfully. This could be an empty array.
 
         int pageNo;
@@ -313,15 +295,7 @@ public class InventoryItemResource {
         Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Checks business at ID exists - 406
-        Optional<Business> currentBusiness = businessRepository.findBusinessById(id);
-        if (currentBusiness.isEmpty()) {
-            logger.error("Product inventory retrieval request (all items) Failure - 406 [NOT ACCEPTABLE] - " +
-                    "Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "Business Does Not Exist"
-            );
-        }
+        Authorization.verifyBusinessExists(id, businessRepository);
 
         List<InventoryItem> inventoryItems = inventoryItemRepository.findAllByBusinessId(id);
 
@@ -392,28 +366,10 @@ public class InventoryItemResource {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         //406
-        Optional<Business> optionalCurrentBusiness = businessRepository.findBusinessById(id);
-        if (optionalCurrentBusiness.isEmpty()) {
-            logger.error("Inventory Item Creation Failure - 406 [NOT ACCEPTABLE] - " +
-                    "Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "selected business does not exist"
-            );
-        }
-        Business currentBusiness = optionalCurrentBusiness.get();
+        Authorization.verifyBusinessExists(id, businessRepository);
 
         //403
-        if (currentUser.getRole() == Role.USER &&
-                !currentBusiness.isAnAdministratorOfThisBusiness(currentUser)) {
-            logger.error("Inventory Item Creation Failure - 403 [FORBIDDEN] - User with ID {} is not an " +
-                    "admin of business with ID {} or a GAA or DGAA", currentUser.getId(), id);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The account performing the request is neither an administrator of the business, nor a global " +
-                            "application admin."
-            );
-        }
+        Authorization.verifyBusinessAdmin(currentUser, id);
 
         //400
         String productId = inventoryRegistrationPayload.getProductId();
@@ -470,29 +426,10 @@ public class InventoryItemResource {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         //406
-        Optional<Business> optionalCurrentBusiness = businessRepository.findBusinessById(businessId);
-        if (optionalCurrentBusiness.isEmpty()) {
-            logger.error("Inventory Item Updating Failure - 406 [NOT ACCEPTABLE] - " +
-                    "Business with ID {} does not exist", businessId);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "selected business does not exist"
-            );
-        }
-        Business currentBusiness = optionalCurrentBusiness.get();
-        logger.debug("Business {} has been find.", currentBusiness.getName());
+        Authorization.verifyBusinessExists(businessId, businessRepository);
 
         //403
-        if (currentUser.getRole() == Role.USER &&
-                !currentBusiness.isAnAdministratorOfThisBusiness(currentUser)) {
-            logger.error("Inventory Item Updating Failure - 403 [FORBIDDEN] - User with ID {} is not an " +
-                    "admin of business with ID {} or a GAA or DGAA", currentUser.getId(), businessId);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The account performing the request is neither an administrator of the business, nor a global " +
-                            "application admin."
-            );
-        }
+        Authorization.verifyBusinessAdmin(currentUser, businessId);
 
         //400
         Optional<InventoryItem> optionalSelectInventoryItem = inventoryItemRepository

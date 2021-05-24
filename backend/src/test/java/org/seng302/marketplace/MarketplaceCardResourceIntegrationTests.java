@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.seng302.address.Address;
-import org.seng302.address.AddressRepository;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -45,7 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class MarketplaceCardResourceIntegrationTests {
+class MarketplaceCardResourceIntegrationTests {
 
     @Autowired
     private MockMvc mvc;
@@ -55,9 +54,6 @@ public class MarketplaceCardResourceIntegrationTests {
 
     @MockBean
     private MarketplaceCardRepository marketplaceCardRepository;
-
-    @MockBean
-    private AddressRepository addressRepository;
 
     @MockBean
     private KeywordRepository keywordRepository;
@@ -109,7 +105,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * @throws Exception thrown if there is an error when creating an address or user.
      */
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -200,7 +196,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
-    public void canCreateCardWhenUserExistsAndDataValid() throws Exception {
+    void canCreateCardWhenUserExistsAndDataValid() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
 
@@ -230,7 +226,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
-    public void cantCreateCardWhenCreatorExistsButCardAlreadyExists() throws Exception {
+    void cantCreateCardWhenCreatorExistsButCardAlreadyExists() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
@@ -257,14 +253,14 @@ public class MarketplaceCardResourceIntegrationTests {
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
-    public void cantCreateCardWhenUserExistsButDataIsInvalid() throws Exception {
+    void cantCreateCardWhenUserExistsButDataIsInvalid() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(),
                 marketplaceCard.getDescription())).willReturn(Optional.empty());
         String title = "Title";
-        title.repeat(20);
+
         payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(),
                 title, marketplaceCard.getDescription(), "[\"Vege\", \"Green\", \"Fresh\"]");
 
@@ -287,7 +283,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
-    public void cantCreateCardWhenUserExistsAndDataValidWithNoCookie() throws Exception {
+    void cantCreateCardWhenUserExistsAndDataValidWithNoCookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
 
@@ -312,7 +308,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
-    public void cantCreateCardWhenUserExistsAndDataValidWithInvalidUUID() throws Exception {
+    void cantCreateCardWhenUserExistsAndDataValidWithInvalidUUID() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
@@ -341,7 +337,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
-    public void cantCreateCardWhenCreatorIdIsForAnotherUserWithUserNotBeingAGAAOrDGAA() throws Exception {
+    void cantCreateCardWhenCreatorIdIsForAnotherUserWithUserNotBeingAGAAOrDGAA() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(anotherUser));
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
@@ -368,7 +364,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
-    public void canCreateCardWhenCreatorIdIsForAnotherUserWithUserBeingGAA() throws Exception {
+    void canCreateCardWhenCreatorIdIsForAnotherUserWithUserBeingGAA() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(anotherUser));
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
@@ -394,7 +390,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * Test specifically for when the cookie contains a valid UUID.
      */
     @Test
-    public void canRetrieveCardWhenCardExistsWithValidCookie() throws Exception {
+    void canRetrieveCardWhenCardExistsWithValidCookie() throws Exception {
         // given
         expectedJson = String.format(expectedCardJson, marketplaceCard.getId(), user.getId(), user.getFirstName(),
                 user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
@@ -419,7 +415,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * but the cookie contains an invalid UUID
      */
     @Test
-    public void cantRetrieveCardWhenCardExistsWithInvalidCookie() throws Exception {
+    void cantRetrieveCardWhenCardExistsWithInvalidCookie() throws Exception {
         // given
         String nonExistingSessionUUID = User.generateSessionUUID();
         given(userRepository.findBySessionUUID(nonExistingSessionUUID)).willReturn(Optional.empty());
@@ -441,7 +437,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * but there is no cookie
      */
     @Test
-    public void cantRetrieveCardWhenCardExistsWithNoCookie() throws Exception {
+    void cantRetrieveCardWhenCardExistsWithNoCookie() throws Exception {
         // given
         expectedJson = "";
 
@@ -460,7 +456,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * the /cards/{id} API endpoint does not exist
      */
     @Test
-    public void cantRetrieveCardWhenCardDoesntExist() throws Exception {
+    void cantRetrieveCardWhenCardDoesntExist() throws Exception {
         // given
         expectedJson = "";
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
@@ -481,7 +477,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * the /cards/{id} API endpoint is invalid, i.e. is not an integer.
      */
     @Test
-    public void cantRetrieveCardWithInvalidId() throws Exception {
+    void cantRetrieveCardWithInvalidId() throws Exception {
         // given
         expectedJson = "";
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
@@ -503,7 +499,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * Test specifically for when the cookie contains a valid UUID.
      */
     @Test
-    public void canRetrieveCardsWithValidSectionAndCookie() throws Exception {
+    void canRetrieveCardsWithValidSectionAndCookie() throws Exception {
         // given
         expectedJson = "[" + String.format(expectedCardJson, marketplaceCard.getId(), user.getId(), user.getFirstName(),
                 user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
@@ -513,7 +509,7 @@ public class MarketplaceCardResourceIntegrationTests {
 
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
-        Sort sort = Sort.by(Sort.Order.desc("created").ignoreCase());;
+        Sort sort = Sort.by(Sort.Order.desc("created").ignoreCase());
         Pageable page = PageRequest.of(0, 20, sort);
 
         List<MarketplaceCard> list = List.of(marketplaceCard);
@@ -534,7 +530,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * Test specifically for when the cookie contains a valid UUID and orderBy and page are valid.
      */
     @Test
-    public void canRetrieveCardsWithValidSectionAndCookieAndOrderByAndPage() throws Exception {
+    void canRetrieveCardsWithValidSectionAndCookieAndOrderByAndPage() throws Exception {
         // given
         expectedJson = "[" + String.format(expectedCardJson, marketplaceCard.getId(), user.getId(), user.getFirstName(),
                 user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
@@ -544,7 +540,7 @@ public class MarketplaceCardResourceIntegrationTests {
 
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
-        Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase());;
+        Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase());
         Pageable page = PageRequest.of(0, 20, sort);
 
         List<MarketplaceCard> list = List.of(marketplaceCard);
@@ -565,10 +561,10 @@ public class MarketplaceCardResourceIntegrationTests {
      * Tests that the user cannot retrieve cards with an invalid JSESSIONID
      */
     @Test
-    public void cantRetrieveCardsWithInvalidJSESSIONID() throws Exception {
+    void cantRetrieveCardsWithInvalidJSESSIONID() throws Exception {
         // given
         String fakeSessionID = "xxx";
-        given(userRepository.findBySessionUUID(fakeSessionID)).willReturn(Optional.ofNullable(null));
+        given(userRepository.findBySessionUUID(fakeSessionID)).willReturn(Optional.empty());
 
         // when
         response = mvc.perform(get("/cards").param("section", "FORSALE")
@@ -582,9 +578,9 @@ public class MarketplaceCardResourceIntegrationTests {
      * Tests that the user cannot retrieve cards without a invalid JSESSIONID
      */
     @Test
-    public void cantRetrieveCardsWithNoJSESSIONID() throws Exception {
+    void cantRetrieveCardsWithNoJSESSIONID() throws Exception {
         // given
-        given(userRepository.findBySessionUUID(null)).willReturn(Optional.ofNullable(null));
+        given(userRepository.findBySessionUUID(null)).willReturn(Optional.empty());
 
         // when
         response = mvc.perform(get("/cards").param("section", "FORSALE")).andReturn().getResponse();
@@ -597,7 +593,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * Tests that the user cannot retrieve cards with an invalid Page number parameter
      */
     @Test
-    public void cantRetrieveCardsWithInvalidPage() throws Exception {
+    void cantRetrieveCardsWithInvalidPage() throws Exception {
         // given
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
@@ -614,7 +610,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * Tests that the user cannot retrieve cards with an invalid OrderBy parameter
      */
     @Test
-    public void cantRetrieveCardsWithInvalidOrderBy() throws Exception {
+    void cantRetrieveCardsWithInvalidOrderBy() throws Exception {
         // given
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
@@ -631,7 +627,7 @@ public class MarketplaceCardResourceIntegrationTests {
      * Tests that the user cannot retrieve cards with an invalid Section parameter
      */
     @Test
-    public void cantRetrieveCardsWithInvalidSection() throws Exception {
+    void cantRetrieveCardsWithInvalidSection() throws Exception {
         // given
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 

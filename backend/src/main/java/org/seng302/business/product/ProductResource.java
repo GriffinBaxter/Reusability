@@ -12,12 +12,8 @@ package org.seng302.business.product;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
-import org.seng302.business.inventoryItem.InventoryItem;
-import org.seng302.business.inventoryItem.InventoryItemPayload;
 import org.seng302.main.Authorization;
-import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.seng302.validation.ProductValidation;
@@ -90,26 +86,9 @@ public class ProductResource {
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        if (!Authorization.verifyBusinessExists(id, businessRepository)) {
-            logger.error("Product Creation Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
-            );
-        }
+        Authorization.verifyBusinessExists(id, businessRepository);
 
-        Optional<Business> currentBusiness = businessRepository.findBusinessById(id);
-        logger.debug("Business found with ID {}: {}", id, currentBusiness);
-
-        if (currentUser.getRole() == Role.USER && !(currentBusiness.get().getAdministrators().contains(currentUser))) {
-            logger.error("Product Creation Failure - 403 [FORBIDDEN] - User with ID {} is not an admin of business with ID {}", currentUser.getId(), id);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Forbidden: Returned when a user tries to add a product to business they do not administer " +
-                            "AND the user is not a global application admin"
-            );
-        }
+        Authorization.verifyBusinessAdmin(currentUser, id);
 
         try {
             if (productRepository.findProductByIdAndBusinessId(productPayload.getId(), id).isPresent()) {
@@ -160,22 +139,9 @@ public class ProductResource {
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        if (!Authorization.verifyBusinessExists(id, businessRepository)) {
-            logger.error("Product Catalogue Retrieval Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
-            );
-        }
+        Authorization.verifyBusinessExists(id, businessRepository);
 
-        if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(id)) {
-            logger.error("Product Catalogue Retrieval Failure - 403 [FORBIDDEN] - User with ID {} is not an admin of business with ID {}", currentUser.getId(), id);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The account performing the request is neither an administrator of the business, nor a global application admin."
-            );
-        }
+        Authorization.verifyBusinessAdmin(currentUser, id);
 
         int pageNo;
         try {
@@ -300,10 +266,7 @@ public class ProductResource {
 
 
         // Check the businessId given is associated with a real business.
-        if (!Authorization.verifyBusinessExists(businessId, businessRepository)) {
-            logger.error("Product Modify Failure - 400 [BAD REQUEST] - Business with ID {} does not exist", businessId);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The business id supplied is invalid.");
-        }
+        Authorization.verifyBusinessExists(businessId, businessRepository);
 
 
         // Verify that the business has this product with the given productId.
@@ -318,11 +281,7 @@ public class ProductResource {
 
 
         // Verify the user has permission to update that product.
-        if (requestingUser.getRole() == Role.USER && !requestingUser.getBusinessesAdministered().contains(businessId)) {
-            logger.error("Product Modify Failure - 403 [FORBIDDEN] - User tried to update a product for a business they do not administer AND they are not GAA.");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to update a product for a business they do not administer AND the user is not a global application admin.");
-        }
-        logger.debug("The requesting user has either GAA/DGAA role OR is a business admin.");
+        Authorization.verifyBusinessAdmin(requestingUser, businessId);
 
         // Verify there is a payload. Otherwise we are wasting processing time.
         if (updatedProduct == null) {
@@ -444,15 +403,7 @@ public class ProductResource {
         Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Checks business at ID exists - 406
-        Optional<Business> currentBusiness = businessRepository.findBusinessById(id);
-        if (currentBusiness.isEmpty()) {
-            logger.error("Product catalogue retrieval request (all items) Failure - 406 [NOT ACCEPTABLE] - " +
-                    "Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "Business Does Not Exist"
-            );
-        }
+        Authorization.verifyBusinessExists(id, businessRepository);
 
         List<Product> products = productRepository.findAllByBusinessId(id);
 

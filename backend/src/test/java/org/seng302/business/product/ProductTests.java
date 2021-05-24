@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Product test class
  */
-public class ProductTests {
+class ProductTests {
 
     private Address address;
 
@@ -30,7 +30,7 @@ public class ProductTests {
 
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -72,7 +72,7 @@ public class ProductTests {
      * @throws Exception Exception error
      */
     @Test
-    public void TestValidProduct() throws Exception {
+    void TestValidProduct() throws Exception {
         Product product = new Product(
                 "PROD",
                 business,
@@ -101,7 +101,7 @@ public class ProductTests {
      * @throws Exception Exception error
      */
     @Test
-    public void TestProductOptionalFields() throws Exception {
+    void TestProductOptionalFields() throws Exception {
         Product product = new Product(
                 "PROD",
                 business,
@@ -122,7 +122,7 @@ public class ProductTests {
      * Tests that an invalid product code throws an error.
      */
     @Test
-    public void TestInvalidProductCode() {
+    void TestInvalidProductCode() {
         try {
             Product product = new Product(
                     "",
@@ -143,7 +143,7 @@ public class ProductTests {
      * Tests that an invalid (null) business object throws an error.
      */
     @Test
-    public void TestInvalidBusiness() {
+    void TestInvalidBusiness() {
         try {
             Product product = new Product(
                     "PROD",
@@ -164,7 +164,7 @@ public class ProductTests {
      * Tests that an invalid name throws an error.
      */
     @Test
-    public void TestInvalidName() {
+    void TestInvalidName() {
         try {
             Product product = new Product(
                     "PROD",
@@ -185,7 +185,7 @@ public class ProductTests {
      * Tests that an invalid description throws an error.
      */
     @Test
-    public void TestInvalidDescription() {
+    void TestInvalidDescription() {
         try {
             Product product = new Product(
                     "PROD",
@@ -206,7 +206,7 @@ public class ProductTests {
      * Tests that an invalid manufacturer throws an error.
      */
     @Test
-    public void TestInvalidManufacturer() {
+    void TestInvalidManufacturer() {
         try {
             Product product = new Product(
                     "PROD",
@@ -227,7 +227,7 @@ public class ProductTests {
      * Tests that an invalid creation date throws an error.
      */
     @Test
-    public void TestInvalidCreatedDate() {
+    void TestInvalidCreatedDate() {
         try {
             Product product = new Product(
                     "PROD",

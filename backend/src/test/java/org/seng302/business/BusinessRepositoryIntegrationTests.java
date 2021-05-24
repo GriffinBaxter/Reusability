@@ -2,7 +2,6 @@ package org.seng302.business;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.seng302.address.Address;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class BusinessRepositoryIntegrationTests {
+class BusinessRepositoryIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -43,7 +41,7 @@ public class BusinessRepositoryIntegrationTests {
     private static User user;
 
     @BeforeAll
-    public static void before() throws Exception {
+    static void before() throws Exception {
         user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -63,7 +61,7 @@ public class BusinessRepositoryIntegrationTests {
      * Tests that a business is returned when calling findBusinessById() with an existing id
      */
     @Test
-    public void whenFindByExistingId_thenReturnABusiness() throws Exception {
+    void whenFindByExistingId_thenReturnABusiness() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -93,7 +91,7 @@ public class BusinessRepositoryIntegrationTests {
         found = businessRepository.findBusinessById(business.getId());
 
         // then
-        assertThat(found.isPresent()).isTrue();
+        assertThat(found).isPresent();
 
         assertThat(business.getId()).isEqualTo(found.get().getId());
         assertThat(business.getName()).isEqualTo(found.get().getName());
@@ -107,7 +105,7 @@ public class BusinessRepositoryIntegrationTests {
      * Tests that no user is returned when calling findBusinessById() with a non-existing id
      */
     @Test
-    public void whenFindByNonExistingId_thenDontReturnBusiness() throws Exception {
+    void whenFindByNonExistingId_thenDontReturnBusiness() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -137,14 +135,14 @@ public class BusinessRepositoryIntegrationTests {
         found = businessRepository.findBusinessById(Integer.valueOf("0"));
 
         // then
-        assertThat(found.isEmpty()).isTrue();
+        assertThat(found).isEmpty();
     }
 
     /**
      * Tests that a list which contain an user is returned when calling findBusinessesByName() with a existing name
      */
     @Test
-    public void whenFindByExistingName_thenReturnAListContainBusinesses() throws Exception {
+    void whenFindByExistingName_thenReturnAListContainBusinesses() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -175,14 +173,14 @@ public class BusinessRepositoryIntegrationTests {
         listFound = businessRepository.findBusinessesByName("example name");
 
         // then
-        assertThat(business.equals(listFound.get(0))).isTrue();
+        assertThat(business).isEqualTo(listFound.get(0));
     }
 
     /**
      * Tests that a empty list is returned when calling findBusinessesByName() with a non-existing name
      */
     @Test
-    public void whenFindByNonExistingName_thenReturnAEmptyList() throws Exception {
+    void whenFindByNonExistingName_thenReturnAEmptyList() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -220,7 +218,7 @@ public class BusinessRepositoryIntegrationTests {
      * existing address
      */
     @Test
-    public void whenFindByExistingAddress_thenReturnAListContainBusinesses() throws Exception {
+    void whenFindByExistingAddress_thenReturnAListContainBusinesses() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -250,7 +248,7 @@ public class BusinessRepositoryIntegrationTests {
         listFound = businessRepository.findBusinessesByAddress(address);
 
         // then
-        assertThat(business.equals(listFound.get(0))).isTrue();
+        assertThat(business).isEqualTo(listFound.get(0));
     }
 
     /**
@@ -258,7 +256,7 @@ public class BusinessRepositoryIntegrationTests {
      * existing address
      */
     @Test
-    public void whenFindByNonExistingAddress_thenReturnAEmptyList() throws Exception {
+    void whenFindByNonExistingAddress_thenReturnAEmptyList() throws Exception {
         // given
         address = new Address(
                 "3/24",

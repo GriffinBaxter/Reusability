@@ -61,10 +61,18 @@ public class Authorization {
      *
      * @param businessId An integer that may be the ID of a business.
      * @param businessRepository A business repository.
-     * @return boolean Returns true if a business exists with the given ID.
      */
-    public static boolean verifyBusinessExists(Integer businessId, BusinessRepository businessRepository) {
-        return businessRepository.findBusinessById(businessId).isPresent();
+    public static void verifyBusinessExists(Integer businessId, BusinessRepository businessRepository) {
+        if (businessRepository.findBusinessById(businessId).isEmpty()) {
+            logger.error("406 [NOT ACCEPTABLE] - Business with ID {} does not exist", businessId);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                            "for example trying to access a resource by an ID that does not exist."
+            );
+        } else {
+            logger.debug("Business found with ID {}", businessId);
+        }
     }
 
     /**
@@ -77,6 +85,23 @@ public class Authorization {
     public static boolean isGAAorDGAA(User currentUser) {
         return (currentUser.getRole() == Role.GLOBALAPPLICATIONADMIN) ||
                 (currentUser.getRole() == Role.DEFAULTGLOBALAPPLICATIONADMIN);
+    }
+
+    /**
+     * Checks to see whether the current user is an administrator of the given business.
+     * Throws a 403 FORBIDDEN error if they are not.
+     *
+     * @param currentUser The current user.
+     * @param businessId The ID of the business you want to check if the user is administrator for.
+     */
+    public static void verifyBusinessAdmin(User currentUser, Integer businessId) {
+        if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(businessId)) {
+            logger.error("403 [FORBIDDEN] - User with ID {} is not an admin of business with ID {}", currentUser.getId(), businessId);
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "The account performing the request is neither an administrator of the business, nor a global application admin."
+            );
+        }
     }
 
 }

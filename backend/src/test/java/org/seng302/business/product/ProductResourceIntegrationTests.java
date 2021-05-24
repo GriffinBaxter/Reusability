@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class ProductResourceIntegrationTests {
+class ProductResourceIntegrationTests {
 
     @Autowired
     private MockMvc mvc;
@@ -98,7 +98,7 @@ public class ProductResourceIntegrationTests {
     private Product anotherProduct;
 
     @BeforeAll
-    public void setup() throws Exception {
+    void setup() throws Exception {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -231,7 +231,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateProductWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
+    void canCreateProductWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -273,7 +273,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateProductWhenBusinessExistsAndDataValidWithDgaaCookie() throws Exception {
+    void canCreateProductWhenBusinessExistsAndDataValidWithDgaaCookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -315,7 +315,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateProductWhenBusinessExistsAndDataValidWithGaaCookie() throws Exception {
+    void canCreateProductWhenBusinessExistsAndDataValidWithGaaCookie() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(gAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -357,7 +357,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateProductWithProductIdThatExistsForAnotherBusiness() throws Exception {
+    void canCreateProductWithProductIdThatExistsForAnotherBusiness() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -401,7 +401,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantCreateProductWhenBusinessExistsButProductIdAlreadyExists() throws Exception {
+    void cantCreateProductWhenBusinessExistsButProductIdAlreadyExists() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -429,7 +429,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantCreateProductWhenBusinessExistsButDataIsInvalid() throws Exception {
+    void cantCreateProductWhenBusinessExistsButDataIsInvalid() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -458,7 +458,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantCreateProductWhenBusinessExistsAndDataValidWithNonAdminCookie() throws Exception {
+    void cantCreateProductWhenBusinessExistsAndDataValidWithNonAdminCookie() throws Exception {
         // given
         given(userRepository.findById(4)).willReturn(Optional.ofNullable(anotherUser));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -497,7 +497,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantCreateProductWhenBusinessExistsAndDataValidWithNoCookie() throws Exception {
+    void cantCreateProductWhenBusinessExistsAndDataValidWithNoCookie() throws Exception {
         // given
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         Product newProduct = new Product(
@@ -532,7 +532,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantCreateProductWhenBusinessDoesntExist() throws Exception {
+    void cantCreateProductWhenBusinessDoesntExist() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         payloadJson = String.format(productPayloadJson, "PRO", "name", "desc", "manu", 30.00);
@@ -558,7 +558,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveProductsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -592,7 +592,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveProductsWhenBusinessExistsWithDGAACookie() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithDGAACookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -626,7 +626,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveProductsWhenBusinessExistsWithGAACookie() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithGAACookie() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(gAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -660,7 +660,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveProductsWhenBusinessExistsWithValidOrderByAndPageParams() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithValidOrderByAndPageParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -696,7 +696,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveProductsWhenBusinessExistsWithInvalidOrderByParam() throws Exception {
+    void cantRetrieveProductsWhenBusinessExistsWithInvalidOrderByParam() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -724,7 +724,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveProductsWhenBusinessExistsWithInvalidPageParam() throws Exception {
+    void cantRetrieveProductsWhenBusinessExistsWithInvalidPageParam() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -751,7 +751,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveProductsWhenBusinessDoesntExist() throws Exception {
+    void cantRetrieveProductsWhenBusinessDoesntExist() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         expectedJson = "";
@@ -775,7 +775,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveProductsWhenBusinessExistsWithNonExistingIdCookie() throws Exception {
+    void cantRetrieveProductsWhenBusinessExistsWithNonExistingIdCookie() throws Exception {
         // given
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         expectedJson = "";
@@ -797,7 +797,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveProductsWhenBusinessExistsWithNonAdminUserCookie() throws Exception {
+    void cantRetrieveProductsWhenBusinessExistsWithNonAdminUserCookie() throws Exception {
         // given
         given(userRepository.findById(4)).willReturn(Optional.ofNullable(anotherUser));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -821,7 +821,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveProductsWhenBusinessExistsWithNoCookie() throws Exception {
+    void cantRetrieveProductsWhenBusinessExistsWithNoCookie() throws Exception {
         // given
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         expectedJson = "";
@@ -843,7 +843,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cannotModifyAProductWithoutASessionCookie() throws Exception {
+    void cannotModifyAProductWithoutASessionCookie() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -865,7 +865,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cannotModifyAProductWithInvalidProductId() throws Exception {
+    void cannotModifyAProductWithInvalidProductId() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -892,7 +892,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canModifyProductAsDGAA() throws Exception {
+    void canModifyProductAsDGAA() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -918,7 +918,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canModifyProductAsGAA() throws Exception {
+    void canModifyProductAsGAA() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -944,7 +944,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canModifyProductAsUserAdmin() throws Exception {
+    void canModifyProductAsUserAdmin() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -970,7 +970,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canModifyProductAsUserNonAdmin() throws Exception {
+    void canModifyProductAsUserNonAdmin() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -996,7 +996,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canModifyProductWithEmptyPayloadAndNoEffectsOnProduct() throws Exception {
+    void canModifyProductWithEmptyPayloadAndNoEffectsOnProduct() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -1021,7 +1021,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cannotModifyAProductIfTheNewIdAlreadyExists() throws Exception {
+    void cannotModifyAProductIfTheNewIdAlreadyExists() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -1048,7 +1048,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cannotModifyAProductWithMissingNewName() throws Exception {
+    void cannotModifyAProductWithMissingNewName() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -1074,7 +1074,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cannotModifyAProductWithMissingNewId() throws Exception {
+    void cannotModifyAProductWithMissingNewId() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -1104,7 +1104,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cannotModifyAProductWithMissingNewDescription() throws Exception {
+    void cannotModifyAProductWithMissingNewDescription() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -1134,7 +1134,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cannotModifyAProductWithMissingNewManufacturer() throws Exception {
+    void cannotModifyAProductWithMissingNewManufacturer() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -1164,7 +1164,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cannotModifyAProductWithMissingNewRecommendedRetailPrice() throws Exception {
+    void cannotModifyAProductWithMissingNewRecommendedRetailPrice() throws Exception {
         // given
         given(businessRepository.findBusinessById(product.getBusinessId())).willReturn(Optional.of(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), product.getBusinessId())).willReturn(Optional.of(product));
@@ -1199,7 +1199,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveAllProductsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
+    void canRetrieveAllProductsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -1232,7 +1232,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveAllProductsWhenBusinessDoesNotExistWithBusinessAdministratorUserCookie() throws Exception {
+    void cantRetrieveAllProductsWhenBusinessDoesNotExistWithBusinessAdministratorUserCookie() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.empty());
@@ -1255,7 +1255,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveAllProductsWhenCookieIsInvalid() throws Exception {
+    void cantRetrieveAllProductsWhenCookieIsInvalid() throws Exception {
         // given
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.empty());
 
@@ -1276,7 +1276,7 @@ public class ProductResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveAllProductsWhenBusinessExistsWithBusinessAdministratorUserCookieAndWithNoProducts() throws Exception {
+    void canRetrieveAllProductsWhenBusinessExistsWithBusinessAdministratorUserCookieAndWithNoProducts() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));

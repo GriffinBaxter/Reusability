@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class AddressTests {
+class AddressTests {
 
     @Test
-    public void testToStringJSON() throws Exception {
+    void testToStringJSON() throws Exception {
         String expected = "{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +
@@ -32,7 +32,7 @@ public class AddressTests {
     //TODO write tests that tests toString
 
     @Test
-    public void testToAddressWithJsonFormat() throws Exception {
+    void testToAddressWithJsonFormat() throws Exception {
         String string = "{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +
@@ -54,7 +54,7 @@ public class AddressTests {
     }
 
     @Test
-    public void testToAddressWithoutJsonFormat() throws Exception {
+    void testToAddressWithoutJsonFormat() throws Exception {
         String string = "{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +

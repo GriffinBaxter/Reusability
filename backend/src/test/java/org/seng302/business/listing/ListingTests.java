@@ -17,9 +17,8 @@ import java.time.LocalTime;
 import java.time.Month;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-public class ListingTests {
+class ListingTests {
 
     private Address address;
 
@@ -32,7 +31,7 @@ public class ListingTests {
     private InventoryItem inventoryItem;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -94,7 +93,7 @@ public class ListingTests {
      * @throws Exception
      */
     @Test
-    public void testCalculatePriceWhenPriceNotExistAndQuantityLessThenInventoryQuantity() throws Exception {
+    void testCalculatePriceWhenPriceNotExistAndQuantityLessThenInventoryQuantity() throws Exception {
         Listing listing = new Listing(
                 inventoryItem,
                 3,
@@ -103,7 +102,7 @@ public class ListingTests {
                 LocalDateTime.now(),
                 null
         );
-        assertTrue(listing.getPrice() == 19.50);
+        assertEquals(19.50, listing.getPrice(), 0.0);
     }
 
     /**
@@ -111,7 +110,7 @@ public class ListingTests {
      * @throws Exception
      */
     @Test
-    public void testCalculatePriceWhenPriceNotExistAndQuantityEqualToInventoryQuantity() throws Exception {
+    void testCalculatePriceWhenPriceNotExistAndQuantityEqualToInventoryQuantity() throws Exception {
         Listing listing = new Listing(
                 inventoryItem,
                 4,
@@ -120,7 +119,7 @@ public class ListingTests {
                 LocalDateTime.now(),
                 null
         );
-        assertTrue(listing.getPrice() == 21.99);
+        assertEquals(21.99, listing.getPrice(), 0.0);
     }
 
     /**
@@ -128,7 +127,7 @@ public class ListingTests {
      * @throws Exception
      */
     @Test
-    public void testCalculatePriceWillBeOverriddenWhenPriceExist() throws Exception {
+    void testCalculatePriceWillBeOverriddenWhenPriceExist() throws Exception {
         Listing listing = new Listing(
                 inventoryItem,
                 4,
@@ -137,7 +136,7 @@ public class ListingTests {
                 LocalDateTime.now(),
                 null
         );
-        assertTrue(listing.getPrice() == 30.00);
+        assertEquals(30.00, listing.getPrice(), 0.0);
     }
 
     /**
@@ -145,7 +144,7 @@ public class ListingTests {
      * @throws Exception
      */
     @Test
-    public void testCalculatePriceWillBeOverriddenWhenPriceExistEvenQuantityNotEqualToInventory() throws Exception {
+    void testCalculatePriceWillBeOverriddenWhenPriceExistEvenQuantityNotEqualToInventory() throws Exception {
         Listing listing = new Listing(
                 inventoryItem,
                 3,
@@ -154,15 +153,14 @@ public class ListingTests {
                 LocalDateTime.now(),
                 null
         );
-        assertTrue(listing.getPrice() == 30.00);
+        assertEquals(30.00, listing.getPrice(), 0.0);
     }
 
     /**
      * Test an exception is thrown when no inventoryItem exists (null).
-     * @throws Exception 'Invalid inventory item'
      */
     @Test
-    public void TestInvalidInventoryItem() throws Exception {
+    void TestInvalidInventoryItem() {
         try {
             Listing listing = new Listing(
                     null,
@@ -179,10 +177,9 @@ public class ListingTests {
 
     /**
      * Test an exception is thrown when created doesn't exist (null).
-     * @throws Exception 'Invalid creation date'
      */
     @Test
-    public void TestInvalidCreated() throws Exception {
+    void TestInvalidCreated() {
         try {
             Listing listing = new Listing(
                     inventoryItem,
@@ -199,10 +196,9 @@ public class ListingTests {
 
     /**
      * Test an exception is thrown when closes date occurs before current date.
-     * @throws Exception 'Invalid closing date'
      */
     @Test
-    public void TestInvalidClosingDate() throws Exception {
+    void TestInvalidClosingDate() {
         try {
             Listing listing = new Listing(
                     inventoryItem,
@@ -222,7 +218,7 @@ public class ListingTests {
      * @throws Exception if field of Listing is not valid.
      */
     @Test
-    public void TestNoClosingDateSet() throws Exception {
+    void TestNoClosingDateSet() throws Exception {
         Listing listing = new Listing(
                     inventoryItem,
                     3,
@@ -239,7 +235,7 @@ public class ListingTests {
      * @throws Exception if field of Listing is not valid.
      */
     @Test
-    public void TestClosingDateSupplied() throws Exception {
+    void TestClosingDateSupplied() throws Exception {
         Listing listing = new Listing(
                 inventoryItem,
                 3,
