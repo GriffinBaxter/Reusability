@@ -3,6 +3,7 @@ package org.seng302.marketplace;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.seng302.business.Business;
 import org.seng302.user.User;
 import org.seng302.validation.MarketplaceCardValidation;
 import javax.persistence.*;
@@ -23,8 +24,8 @@ public class MarketplaceCard {
     @Column(name = "id", nullable = false)
     private int id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false) //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
-    @JoinColumn(name = "creator", nullable = false)
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER) //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
+    @JoinColumn(name = "creator_id", insertable = false, updatable = false)
     private User creator;
 
     @Column(name = "creator_id")

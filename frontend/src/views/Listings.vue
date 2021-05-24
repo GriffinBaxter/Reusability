@@ -139,6 +139,7 @@ import Cookies from "js-cookie";
 import CreateListing from "@/components/listing/CreateListingModal";
 import Footer from "@/components/main/Footer";
 import CurrencyAPI from "@/currencyInstance";
+import {formatDate} from "../dateUtils";
 
 export default {
 name: "Listings",
@@ -365,10 +366,10 @@ name: "Listings",
             productId: response.data[i].inventoryItem.product.id,
             quantity: response.data[i].quantity,
             price: response.data[i].price,
-            listDate: response.data[i].created,
-            closeDate: response.data[i].closes,
+            listDate: formatDate(response.data[i].created, false),
+            closeDate: formatDate(response.data[i].closes, false),
             moreInfo: response.data[i].moreInfo,
-            expires: response.data[i].inventoryItem.expires
+            expires: formatDate(response.data[i].inventoryItem.expires, false)
           })
         }
       }
