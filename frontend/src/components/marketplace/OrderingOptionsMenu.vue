@@ -4,7 +4,6 @@
     <div class="btn-group me-2" role="group" aria-label="First group" style="">
       <!------------------------------------------ ordering by options menu ------------------------------------------->
       <div class="btn-group col" role="group">
-        <!--        <label id="order-by-options-text" class="">Order By</label>-->
         <button type="button" class="btn green-button dropdown-toggle order-by-options-btn"
                 data-bs-toggle="dropdown" aria-expanded="false">{{ orderByOption }}
         </button>
@@ -26,7 +25,6 @@
 
       <!---------------------------------------- ordering direction options menu -------------------------------------->
       <div class="btn-group col" role="group">
-        <!--        <label id="order-direction-options-text">Order Direction</label>-->
         <button type="button" class="btn green-button dropdown-toggle order-direction-options-btn"
                 data-bs-toggle="dropdown" aria-expanded="false">{{ orderDirectionOption }}
         </button>
