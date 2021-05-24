@@ -272,7 +272,7 @@ export default {
       currencySymbol: "",
 
       // If product creation was successful the user will be altered.
-      creationSuccess: false
+      creationSuccess: false,
 
       // List of Business account current user account administrated
       linkBusinessAccount: [],
