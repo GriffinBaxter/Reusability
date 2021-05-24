@@ -5,12 +5,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.address.Address;
-import org.seng302.address.AddressRepository;
 import org.seng302.marketplace.*;
 import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
-import org.seng302.user.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -129,7 +126,7 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findById(id)).willReturn(Optional.ofNullable(marketplaceCard));
 
-        assertThat(marketplaceCardRepository.findById(id).isEmpty()).isFalse();
+        assertThat(marketplaceCardRepository.findById(id)).isPresent();
     }
 
     @When("The user attempts to retrieve the details for the card with ID {int}.")

@@ -48,8 +48,6 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
     private MockHttpServletResponse response;
     private User user;
     private Address address;
-    private final String loginPayloadJson = "{\"email\": \"%s\", " +
-            "\"password\": \"%s\"}";
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
     @Before
@@ -218,7 +216,7 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
     @Then("I receive a 409 response.")
     public void i_receive_a_409_response() throws Exception {
 
-        assertThat(response.getContentAsString()).isEqualTo("");
+        assertThat(response.getContentAsString()).isEmpty();
         assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
 
@@ -255,7 +253,7 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
     @Then("I receive a 400 response.")
     public void i_receive_a_400_response() throws UnsupportedEncodingException {
 
-        assertThat(response.getContentAsString()).isEqualTo("");
+        assertThat(response.getContentAsString()).isEmpty();
         assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 

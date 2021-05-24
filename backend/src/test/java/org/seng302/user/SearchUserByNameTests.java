@@ -677,8 +677,8 @@ class SearchUserByNameTests {
         Page<User> userPage = userRepository.findAllUsersByNames("ThisValueDoesNotExist", pageable);
 
         // then
-        assertThat(userPage.getTotalElements()).isEqualTo(0);
-        assertThat(userPage.getTotalPages()).isEqualTo(0);
+        assertThat(userPage.getTotalElements()).isZero();
+        assertThat(userPage.getTotalPages()).isZero();
 
     }
 

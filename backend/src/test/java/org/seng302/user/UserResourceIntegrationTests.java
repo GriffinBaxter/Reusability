@@ -3,7 +3,6 @@ package org.seng302.user;
 import org.junit.jupiter.api.*;
 import org.seng302.address.Address;
 import org.seng302.address.AddressRepository;
-import org.seng302.business.product.Product;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -100,16 +99,11 @@ class UserResourceIntegrationTests {
     private User searchUser3;
     private User searchUser4;
     private User searchUser5;
-    private User searchUser6;
-    private User searchUser7;
-    private List<User> searchUsers;
     private Address address1;
     private Address address2;
     private Address address3;
     private Address address4;
     private Address address5;
-    private Address address6;
-    private Address address7;
 
     @BeforeAll
     void setup() throws Exception {
@@ -269,45 +263,6 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser5.setId(8);
 
-        Address address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand", "Frankton");
-
-        searchUser6 = new User(
-                "Francisca",
-                "Benitez",
-                "T",
-                "Fran",
-                "Biography",
-                "francisca.benitez@example.com",
-                LocalDate.of(2000, 2, 2),
-                "0271316",
-                address6,
-                "Password123!",
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)),
-                Role.USER);
-        searchUser6.setId(9);
-
-        Address address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand", "Wanaka");
-
-        searchUser7 = new User(
-                "Francisca",
-                "Bznitez",
-                "T",
-                "Fran",
-                "Biography",
-                "francisca.benitez@example.com",
-                LocalDate.of(2000, 2, 2),
-                "0271316",
-                address7,
-                "Password123!",
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0)),
-                Role.USER);
-        searchUser7.setId(10);
-
-        searchUsers = List.of(dGAA, user, anotherUser, searchUser1, searchUser2, searchUser3, searchUser4,
-                searchUser5, searchUser6, searchUser7);
-
         // initializes the MockMVC object and tells it to use the userRepository
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
 
@@ -350,7 +305,7 @@ class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -372,7 +327,7 @@ class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -390,7 +345,7 @@ class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
-        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(0);
+        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isZero();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -406,7 +361,7 @@ class UserResourceIntegrationTests {
                 .andReturn().getResponse();
 
         // then
-        assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -489,7 +444,7 @@ class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
@@ -526,7 +481,7 @@ class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -565,7 +520,7 @@ class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-        assertThat(response.getCookie("JSESSIONID")).isEqualTo(null);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
@@ -742,7 +697,7 @@ class UserResourceIntegrationTests {
 
         // when
         List<User> list = List.of(user);
-        Page<User> pagedResponse = new PageImpl<User>(list);
+        Page<User> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
@@ -791,7 +746,7 @@ class UserResourceIntegrationTests {
 
         // when
         List<User> list = List.of(user);
-        Page<User> pagedResponse = new PageImpl<User>(list);
+        Page<User> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
@@ -842,7 +797,7 @@ class UserResourceIntegrationTests {
 
         // when
         List<User> list = List.of(user);
-        Page<User> pagedResponse = new PageImpl<User>(list);
+        Page<User> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
@@ -891,7 +846,7 @@ class UserResourceIntegrationTests {
 
         // when
         List<User> list = List.of(user);
-        Page<User> pagedResponse = new PageImpl<User>(list);
+        Page<User> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
@@ -937,7 +892,7 @@ class UserResourceIntegrationTests {
 
         // when
         List<User> list = List.of();
-        Page<User> pagedResponse = new PageImpl<User>(list);
+        Page<User> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
