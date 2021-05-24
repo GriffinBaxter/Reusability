@@ -4,14 +4,14 @@
     <button id="open-create-card-modal-button" class="btn green-button-transparent col-12" @click="showModal">Create Card</button>
 
     <!-- Create Card Modal -->
-    <div class="modal fade" ref="createCardModal" id="create-card-modal">
+    <div class="modal fade" ref="createCardModal" id="create-card-modal" tabindex="0">
       <div class="modal-dialog">
         <div class="modal-content">
 
           <!-- Modal header-->
           <div class="modal-header">
             <h5 class="modal-title">Create Card</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" tabindex="-1"  ></button>
           </div>
 
           <!-- Modal body -->
