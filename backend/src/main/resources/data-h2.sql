@@ -152,5 +152,5 @@ INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_it
 INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Fresh', 740.00, 200, 22, 3);
 INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-10', DATE'2021-05-12', 'Limited Stock.', 120.00, 13, 23, 3);
 INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Selling quick.', 11.96, 4, 24, 3);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 249.00, 100, 25, 4);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 249.00, 100, 25, 3);
 
