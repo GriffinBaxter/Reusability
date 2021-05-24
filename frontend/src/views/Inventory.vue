@@ -2,7 +2,7 @@
   <div>
     <div id="main">
       <!--nav bar-->
-      <navbar/>
+      <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
     <!--creation popup-->
     <inventory-item-creation @updateInventoryItem="afterCreation"
                              v-bind:currency-code="currencyCode"
@@ -129,12 +129,15 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col">New Inventory Item Create successfully!</div>
-                <div class="col" align="right">
-                  <button type="button" class="btn green-button px-1 py-0" @click="closeMessage">X</button>
-                </div>
+                <div class="col" align="center"> {{userAlertMessage}} </div>
               </div>
             </div>
+
+            <UpdateInventoryItemModal ref="updateInventoryItemModal"
+                                      :business-id="businessId"
+                                      :currency-code="currencyCode"
+                                      :currency-symbol="currencySymbol"
+                                      v-model="currentInventoryItem"/>
 
             <!--inventory items-->
             <inventory-item
@@ -153,6 +156,7 @@
                 v-bind:expires="inventory.expires"
                 v-bind:currency-code="currencyCode"
                 v-bind:currency-symbol="currencySymbol"
+                v-on:click="triggerUpdateInventoryItemModal(inventory)"
             />
 
             <!--space-->
@@ -213,16 +217,20 @@
 
 
 <script>
-import Footer from "@/components/main/Footer";
-import InventoryItem from "@/components/inventory/InventoryItem";
-import Navbar from "@/components/main/Navbar";
-import InventoryItemCreation from "@/components/inventory/CreateInventoryItemModal";
-import Api from "@/Api";
+import Footer from "../components/main/Footer";
+import InventoryItem from "../components/inventory/InventoryItem";
+import Navbar from "../components/main/Navbar";
+import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
+import Api from "../Api";
 import Cookies from "js-cookie";
-import CurrencyAPI from "@/currencyInstance";
+import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
+import CurrencyAPI from "../currencyInstance";
+import {checkAccessPermission} from "../views/helpFunction";
+import {formatDate} from "../dateUtils";
 
 export default {
   components: {
+    UpdateInventoryItemModal,
     InventoryItemCreation,
     Navbar,
     InventoryItem,
@@ -253,20 +261,41 @@ export default {
       bestBeforeAscending: false,
       expiresAscending: false,
 
-      businessId: null,
+      businessId: 0,
       creationSuccess: false,
+      userAlertMessage: "",
 
       businessName: null,
       businessDescription: null,
 
       inventories: null,
+      currentInventoryItem: null,
 
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+
+      // List of Business account current user account administrated
+      linkBusinessAccount:[],
     }
   },
   methods: {
+    /**
+     * Sets the current inventory item to the one from the card you've clicked on
+     * and triggers the showModal method of UpdateInventoryItemModal.
+     */
+    async triggerUpdateInventoryItemModal(inventory) {
+      this.currentInventoryItem = await inventory;
+      await this.$forceUpdate();
+      this.$refs.updateInventoryItemModal.showModal();
+    },
+
+     /**
+     * set link business accounts
+     */
+    setLinkBusinessAccount(data){
+      this.linkBusinessAccount = data;
+    },
     /**
      * convert orderByString to more readable for user
      */
@@ -576,21 +605,24 @@ export default {
             }
             this.inventories.push({
               index: i,
+              id: this.InventoryItemList[i].id,
               productName: this.InventoryItemList[i].product.name,
               productId: this.InventoryItemList[i].product.id,
               quantity: this.InventoryItemList[i].quantity,
               pricePerItem: this.InventoryItemList[i].pricePerItem,
               totalPrice: this.InventoryItemList[i].totalPrice,
-              manufactured: this.InventoryItemList[i].manufactured,
-              sellBy: this.InventoryItemList[i].sellBy,
-              bestBefore: this.InventoryItemList[i].bestBefore,
-              expires: this.InventoryItemList[i].expires
+              manufactured: formatDate(this.InventoryItemList[i].manufactured, false),
+              manufacturedUnformatted: this.InventoryItemList[i].manufactured,
+              sellBy: formatDate(this.InventoryItemList[i].sellBy, false),
+              sellByUnformatted: this.InventoryItemList[i].sellBy,
+              bestBefore: formatDate(this.InventoryItemList[i].bestBefore, false),
+              bestBeforeUnformatted: this.InventoryItemList[i].bestBefore,
+              expires: formatDate(this.InventoryItemList[i].expires, false),
+              expiresUnformatted: this.InventoryItemList[i].expires
             })
           }
         }
-
       }).catch((error) => {
-        console.log(error);
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 400) {
@@ -612,7 +644,23 @@ export default {
      */
     afterCreation() {
       this.creationSuccess = true;
+      this.userAlertMessage = "New Inventory Item Created";
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
       this.retrieveInventoryItems();
+    },
+    /**
+     * After edit success, show the edit info.
+     */
+    afterEdit() {
+      this.creationSuccess = true;
+      this.userAlertMessage = "Product Edited";
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
     },
     /**
      * Currency API requests.
@@ -644,7 +692,7 @@ export default {
   },
 
   async mounted() {
-    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+    if (checkAccessPermission(this.linkBusinessAccount)) {
       this.$router.push({path: '/forbidden'});
     } else {
       /**
@@ -653,15 +701,16 @@ export default {
        */
       const currentID = Cookies.get('userID');
       if (currentID) {
+        // If the edit is successful the UpdateInventoryItemModal component will emit an 'editedInventory' event.
+        // This code notices the emit and will alert the user that the edit was successful by calling the afterEdit function.
+        this.$root.$on('editedInventory', this.afterEdit);
+
         this.businessId = this.$route.params.id;
 
         await this.currencyRequest();
 
         this.retrieveBusinessInfo();
-        this.retrieveInventoryItems().then(
-            () => {
-            }
-        ).catch(
+        this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
       }

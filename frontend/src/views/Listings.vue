@@ -59,6 +59,16 @@
 
         </div>
 
+        <!--space-->
+        <br>
+
+        <!--creation success info-->
+        <div class="alert alert-success" role="alert" v-if="creationSuccess">
+          <div class="row">
+            <div class="col" align="center">New Listing Created</div>
+          </div>
+        </div>
+
         <!-- Listings -->
         <ListingItem
             v-for="item in listings"
@@ -139,6 +149,7 @@ import Cookies from "js-cookie";
 import CreateListing from "@/components/listing/CreateListingModal";
 import Footer from "@/components/main/Footer";
 import CurrencyAPI from "@/currencyInstance";
+import {formatDate} from "../dateUtils";
 
 export default {
 name: "Listings",
@@ -164,7 +175,9 @@ name: "Listings",
       createdAscending: false,
 
       currencyCode: "",
-      currencySymbol: ""
+      currencySymbol: "",
+
+      creationSuccess: false
     }
   },
   methods: {
@@ -365,10 +378,10 @@ name: "Listings",
             productId: response.data[i].inventoryItem.product.id,
             quantity: response.data[i].quantity,
             price: response.data[i].price,
-            listDate: response.data[i].created,
-            closeDate: response.data[i].closes,
+            listDate: formatDate(response.data[i].created, false),
+            closeDate: formatDate(response.data[i].closes, false),
             moreInfo: response.data[i].moreInfo,
-            expires: response.data[i].inventoryItem.expires
+            expires: formatDate(response.data[i].inventoryItem.expires, false)
           })
         }
       }
@@ -414,6 +427,11 @@ name: "Listings",
      * After creation success use endpoint to collect data from backend and display it.
      */
     afterCreation() {
+      this.creationSuccess = true;
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
       this.getListings();
     },
   },
@@ -430,9 +448,7 @@ name: "Listings",
 
       await this.currencyRequest();
 
-      this.getListings().then(
-          () => {}
-      ).catch(
+      this.getListings().catch(
           (e) => console.log(e)
       )
     }

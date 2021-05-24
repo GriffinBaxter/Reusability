@@ -1380,8 +1380,7 @@ class InventoryItemResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item " +
-                "AND must be more than the total quantity in your current listings");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item");
     }
 
     /**
@@ -1423,8 +1422,7 @@ class InventoryItemResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item " +
-                "AND must be more than the total quantity in your current listings");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item");
     }
 
     /**
@@ -1643,8 +1641,7 @@ class InventoryItemResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must have at least one item " +
-                "AND must be more than the total quantity in your current listings");
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid quantity, must be more than the total quantity in your current listings");
     }
 
 }

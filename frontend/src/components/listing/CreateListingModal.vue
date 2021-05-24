@@ -50,9 +50,10 @@
 
               <!--Price-->
               <div class="col-sm-6 form-group py-1 px-3">
-                <label for="price">Price ({{ currencyCode }})*: </label>
+                <label for="price" v-if="currencyCode != ''">Price ({{ currencyCode }})*: </label>
+                <label for="price" v-else>Price*: </label>
                 <div class="input-group">
-                  <div class="input-group-prepend">
+                  <div class="input-group-prepend" v-if="currencySymbol != ''">
                     <span class="input-group-text">{{ currencySymbol }}</span>
                   </div>
                   <input id="price" name="price" type="number" ref="price" step="0.01"
