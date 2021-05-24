@@ -65,13 +65,25 @@
       </button>
     </div>
 
+    <!------------------------------------- create card button -------------------------------------------------------->
+
+    <div id="create-card-btn" class="col">
+      <CreateCardModal></CreateCardModal>
+    </div>
+
   </div>
 
 </template>
 
 <script>
+
+import CreateCardModal from "@/components/CreateCardModal";
+
 export default {
   name: "OrderingOptionsMenu",
+  components: {
+    CreateCardModal
+  },
   data() {
     return {
       orderByOption: "Select Order By",         // default
@@ -137,14 +149,9 @@ export default {
   max-width: 20%;
 }
 
-#order-by-btn {
+#order-by-btn, #create-card-btn {
   max-width: 20%;
   height: 40px;
-}
-
-#order-by-options-text, #order-direction-options-text {
-  margin-right: 30px;
-  margin-top:8px;
 }
 
 .order-by-options-btn, .order-direction-options-btn {
