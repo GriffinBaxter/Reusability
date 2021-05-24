@@ -59,33 +59,34 @@
 
               <!-- Navbar toggle drop down -->
               <a class="nav-link dropdown-toggle" role="button" tabindex="4" @click="() => {
+                  this.shadowBusinessDropdown = !shadowBusinessDropdown;
                   this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links',
-                  'business-dropdown-links-wrapper', this.showBusinessDropdown)
+                  'business-dropdown-links-wrapper', showBusinessDropdown)
                 }" >
                 Business Pages
               </a>
 
               <!-- Dropdown links-->
-              <div id="business-dropdown-links-wrapper">
+              <div id="business-dropdown-links-wrapper" v-if="shadowBusinessDropdown">
                 <ul class="dropdown-menu show" id="business-dropdown-links">
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
-                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="4">
                       Listings
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="4">
                       Inventory
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="4">
                       Catalogue
                     </router-link>
                   </li>
@@ -105,18 +106,19 @@
             <!-- Interact As -->
             <li id="interactDrop" tabindex="5">
               <a role="button" @click="() => {
+                    this.shadowInteractMenu = !shadowInteractMenu;
                     this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
-                    'interact-dropdown-links-wrapper', this.showInteractMenu)
+                    'interact-dropdown-links-wrapper', showInteractMenu)
                     }">
 
                 <img src="../../../public/profile_icon_default.png" width="27px"
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/> {{ actAs }}
               </a>
 
-              <div id="interact-dropdown-links-wrapper">
+              <div id="interact-dropdown-links-wrapper" v-if="shadowInteractMenu">
                 <ul class="dropdown-menu show" id="interact-dropdown-links">
                   <li class="nav-item" v-for="(act, index) in interactAs" :key="index" @click="itemClicked(index)">
-                    <a class="nav-link">{{ act.name }}</a>
+                    <a class="nav-link" tabindex="5">{{ act.name }}</a>
                   </li>
                 </ul>
               </div>
@@ -158,8 +160,12 @@ export default {
 
       // business dropdown variables
       showBusinessDropdown: false,
+      shadowBusinessDropdown: false,
+
       // Interact as Menu
       showInteractMenu: false,
+      shadowInteractMenu: false,
+
       businesses: [],
       interactAs: [],
       actAsId: null,
