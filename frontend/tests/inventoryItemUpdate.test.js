@@ -72,11 +72,12 @@ describe("Testing the update inventory item functionality", () => {
             quantity: 10,
             pricePerItem: 0,
             totalPrice: 0,
-            manufactured: inventoryItem.manufactured,
-            sellBy: inventoryItem.sellBy,
-            bestBefore: inventoryItem.bestBefore,
-            expires: inventoryItem.expires,
+            manufacturedUnformatted: inventoryItem.manufactured,
+            sellByUnformatted: inventoryItem.sellBy,
+            bestBeforeUnformatted: inventoryItem.bestBefore,
+            expiresUnformatted: inventoryItem.expires
         }
+
 
         const $router = {
             push: jest.fn()
