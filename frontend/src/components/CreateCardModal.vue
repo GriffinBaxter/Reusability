@@ -489,7 +489,8 @@ export default {
                 title: this.title,
                 description: this.description,
                 keywords: newCard.keywords,
-                creator: this.creator
+                creator: this.creator,
+                created: new Date()
               }
               this.$emit("new-card-created", newCardUpdateValues);
               this.modal.hide();
