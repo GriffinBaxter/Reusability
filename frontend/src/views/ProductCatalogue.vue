@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="main">
-      <navbar></navbar>
+      <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
 
       <div id="outerContainer" class="container">
 
@@ -31,8 +31,7 @@
                  :order-by-override="tableOrderBy" :table-data-is-page="true"
                  @update-current-page="event => updatePage(event)"
                  @order-by-header-index="event => orderProducts(event)"
-                 @row-selected="event => showRowModal(event.index)"></Table>
-
+                 @row-selected="event => showRowModal(event.index)"/>
         </div>
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
@@ -106,9 +105,10 @@
                   </div>
                   <!--recommended retail price-->
                   <div class="form-group">
-                    <label for="product-price">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-if="currencyCode != ''">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-else>Recommended Retail Price</label>
                     <div class="input-group">
-                      <div class="input-group-prepend">
+                      <div class="input-group-prepend" v-if="currencySymbol != ''">
                         <span class="input-group-text">{{ currencySymbol }}</span>
                       </div>
                       <input id="product-price" class="input-styling" name="product-price" type="text"
@@ -184,6 +184,7 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
+import {checkAccessPermission} from "../views/helpFunction";
 
 export default {
   name: "ProductCatalogue",
@@ -272,9 +273,18 @@ export default {
 
       // If product creation was successful the user will be altered.
       creationSuccess: false
+
+      // List of Business account current user account administrated
+      linkBusinessAccount: [],
     }
   },
   methods: {
+    /**
+     * set link business accounts
+     */
+    setLinkBusinessAccount(data){
+      this.linkBusinessAccount = data;
+    },
     /**
      * Shows a modal containing the details about a product.
      *
@@ -402,10 +412,10 @@ export default {
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
 
-      // Perfrom the call to sort the products and get them back.
+      // Perform the call to sort the products and get them back.
       await Api.sortProducts(this.businessId, this.orderByString, this.currentPage).then(response => {
 
-        // Parsing the orderby string to get the orderBy and isAscending components to update the table.
+        // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
         this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
 
@@ -613,10 +623,39 @@ export default {
             if (res.status === 201) {
               this.modal.hide();
               // Set message so user knows product has been added.
+              this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
+
+              // Reset product id related variables
+              this.productID = "";
+              this.productIDErrorMsg = "";
+
+              // Reset product name related variables
+              this.productName = "";
+              this.productNameErrorMsg = "";
+
+              // Reset recommended retail price related variables
+              this.recommendedRetailPrice = "";
+              this.recommendedRetailPriceErrorMsg = "";
+
+              // Reset product description related variables
+              this.description = "";
+              this.descriptionErrorMsg = "";
+
+              // Reset product manufacturer related variables
+              this.manufacturer = "";
+              this.manufacturerErrorMsg = "";
+
+              // Reset toast related variables
+              this.toastErrorMessage = "";
+              this.cannotProceed = false;
+
+
               this.userAlertMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
               this.closeCreateProductModal();
               this.afterCreation();
-              this.requestProducts();
+              this.requestProducts().catch(
+                  (e) => console.log(e)
+              )
             }
           }
       ).catch((error) => {
@@ -732,9 +771,8 @@ export default {
     this.$root.$on('edits', this.afterEdit);
 
     // When mounted create instance of modal
-    this.modal = new Modal(this.$refs.CreateProductModal);
-
-    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+    this.modal = new Modal(this.$refs.CreateProductModal)
+    if (checkAccessPermission(this.linkBusinessAccount)) {
       this.$router.push({path: '/forbidden'});
     } else {
       /**
@@ -748,10 +786,7 @@ export default {
         if ((this.currencyCode.length > 0) && (this.currencySymbol.length > 0)) {
           this.tableHeaders[3] = "Recommended Retail Price <br> (" + this.currencySymbol + " " + this.currencyCode + ")";
         }
-        this.requestProducts().then(
-            () => {
-            }
-        ).catch(
+        this.requestProducts().catch(
             (e) => console.log(e)
         )
       } else {

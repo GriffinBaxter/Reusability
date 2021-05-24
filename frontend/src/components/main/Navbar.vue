@@ -404,6 +404,7 @@ export default {
           name: this.omitName(this.businesses[i].name, this.omitPoint)
         });
       }
+      this.$emit('getLinkBusinessAccount', this.businesses);
     },
     /**
      * Sets who the user is interacting as
