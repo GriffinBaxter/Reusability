@@ -755,7 +755,7 @@ export default {
       // Quantity error checking
       this.quantityErrorMsg = this.getErrorMessage(
           this.config.quantity.name,
-          this.quantity,
+          this.quantity.toString(),
           this.config.quantity.minLength,
           this.config.quantity.maxLength,
           this.config.quantity.regexMessage,
