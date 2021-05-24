@@ -34,11 +34,6 @@ export default {
       default: "",
       required: true
     },
-    description: {
-      type: String,
-      default: "",
-      required: true
-    },
     created: {
       type: String,
       default: "",
