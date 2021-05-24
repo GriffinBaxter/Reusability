@@ -17,15 +17,21 @@
 
       <div class="row pb-5 mb-4">
         <!-- Card-->
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"
+        <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
              style="padding: 12px"
-             v-for="card in cards"
+             v-for="card in sectionCards"
              v-bind:key="card.index">
           <div type="button"
-               @click="selectACard(card.index)"
+               @click="selectACard(card.id)"
                data-bs-toggle="modal"
                data-bs-target="#cardDetailPopUp">
-            <Card v-bind:index="card.index"/>
+            <Card v-bind:index="card.index"
+                  v-bind:title="card.title"
+                  v-bind:description="card.description"
+                  v-bind:created="styleDate(card.created)"
+                  v-bind:creator="card.creator"
+                  v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
+            />
           </div>
         </div>
       </div>
@@ -38,6 +44,7 @@
 <script>
 import Card from "@/components/marketplace/Card";
 import OrderingOptionsMenu from "./OrderingOptionsMenu";
+import {formatDate} from "@/dateUtils";
 
 export default {
   name: "MarketplaceTabSection",
@@ -52,6 +59,11 @@ export default {
       type: String,
       default: "For Sale",
       required: true
+    },
+    sectionCards: {
+      type: Array,
+      required: true,
+      default() { return []; }
     }
   },
   components: {
@@ -62,18 +74,14 @@ export default {
     selectACard(index) {
       this.$emit('openCardDetail', index);
       this.selectedCard = index
+    },
+    styleDate(date){
+      return formatDate(date, false);
+    },
+    combineSuburbAndCity(suburb, city) {
+      return (suburb === null) ? city : suburb + ", " + city;
     }
   },
-  mounted() {
-    this.cards.push({index: 1})
-    this.cards.push({index: 2})
-    this.cards.push({index: 3})
-    this.cards.push({index: 4})
-    this.cards.push({index: 5})
-    this.cards.push({index: 6})
-    this.cards.push({index: 7})
-    this.cards.push({index: 8})
-  }
 }
 </script>
 

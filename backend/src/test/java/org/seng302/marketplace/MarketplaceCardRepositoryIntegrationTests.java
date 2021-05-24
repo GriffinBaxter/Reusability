@@ -67,6 +67,18 @@ public class MarketplaceCardRepositoryIntegrationTests {
         entityManager.persist(address);
         entityManager.flush();
 
+        Address address2 = new Address(
+                "111",
+                "Grant Road",
+                "Invercargill",
+                "Southland",
+                "New Zealand",
+                "9879",
+                "Otatara"
+        );
+        entityManager.persist(address2);
+        entityManager.flush();
+
         // User
         User user = new User("testfirst", "testlast", "testmiddle", "testnick",
                 "testbiography", "testemail@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
@@ -74,7 +86,17 @@ public class MarketplaceCardRepositoryIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 Role.USER
         );
-        user = entityManager.persist(user);
+        entityManager.persist(user);
+        entityManager.flush();
+
+        // User 2
+        User user2 = new User("testfirstII", "testlastII", "testmiddleII", "testnickII",
+                "testbiographyII", "testemail2@email.com", LocalDate.of(2020, 2, 2).minusYears(13),
+                "6415216", address2, "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user2);
         entityManager.flush();
 
         //Cards
@@ -101,8 +123,8 @@ public class MarketplaceCardRepositoryIntegrationTests {
         entityManager.flush();
 
         marketplaceCard3 = new MarketplaceCard(
-                user.getId(),
-                user,
+                user2.getId(),
+                user2,
                 Section.FORSALE,
                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 21), LocalTime.of(0, 0)),
                 "Your dignity",
@@ -304,6 +326,49 @@ public class MarketplaceCardRepositoryIntegrationTests {
         for (int i = 0; i < cardPage.getContent().size(); i++) {
             assertThat(cardPage.getContent().get(i).getTitle()).isEqualTo(orderedCardTitles.get(i));
         }
+    }
+
+    /**
+     * Tests Ordering by Address Ascending for getting all Marketplace Cards by Section (findAllBySection)
+     */
+    @Test
+    public void whenFindAllMarketplaceCardsBySection_thenReturnAddressOrderedCardsAscending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 1;
+        Sort sortBy = Sort.by(Sort.Order.asc("creator.homeAddress.suburb").ignoreCase()).and(Sort.by(Sort.Order.asc("creator.homeAddress.city").ignoreCase()));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // Expected suburb
+        String suburb = "Ilam";
+
+        // when
+        Page<MarketplaceCard> cardPage = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable);
+
+        // then
+        assertThat(cardPage.getContent().get(0).getCreator().getHomeAddress().getSuburb()).isEqualTo(suburb);
+
+    }
+
+    /**
+     * Tests Ordering by Address Descending for getting all Marketplace Cards by Section (findAllBySection)
+     */
+    @Test
+    public void whenFindAllMarketplaceCardsBySection_thenReturnAddressOrderedCardsDescending() throws Exception {
+        // given
+        int pageNo = 0;
+        int pageSize = 1;
+        Sort sortBy = Sort.by(Sort.Order.desc("creator.homeAddress.suburb").ignoreCase()).and(Sort.by(Sort.Order.desc("creator.homeAddress.city").ignoreCase()));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // Expected suburb
+        String suburb = "Otatara";
+
+        // when
+        Page<MarketplaceCard> cardPage = marketplaceCardRepository.findAllBySection(Section.FORSALE, pageable);
+
+        // then
+        assertThat(cardPage.getContent().get(0).getCreator().getHomeAddress().getSuburb()).isEqualTo(suburb);
     }
 
     /**
