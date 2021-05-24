@@ -1,17 +1,11 @@
 <template>
 
-  <div id="ordering-options-menu" class="row">
-
-    <!------------------------------------------- ordering by options menu ----------------------------------------->
-
-    <div id="ordering-option-container" class="col">
-
-
+  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group me-2" role="group" aria-label="First group" style="">
+      <!------------------------------------------ ordering by options menu ------------------------------------------->
       <div class="btn-group col" role="group">
-
-<!--        <label id="order-by-options-text" class="">Order By</label>-->
         <button type="button" class="btn green-button dropdown-toggle order-by-options-btn"
-                data-bs-toggle="dropdown" aria-expanded="false">{{orderByOption}}
+                data-bs-toggle="dropdown" aria-expanded="false">{{ orderByOption }}
         </button>
 
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
@@ -28,16 +22,11 @@
           </button>
         </ul>
       </div>
-    </div>
 
-    <!------------------------------------------- ordering direction options menu ------------------------------------->
-
-    <div id="ordering-direction-container" class="col">
-
+      <!---------------------------------------- ordering direction options menu -------------------------------------->
       <div class="btn-group col" role="group">
-<!--        <label id="order-direction-options-text">Order Direction</label>-->
         <button type="button" class="btn green-button dropdown-toggle order-direction-options-btn"
-                data-bs-toggle="dropdown" aria-expanded="false">{{orderDirectionOption}}
+                data-bs-toggle="dropdown" aria-expanded="false">{{ orderDirectionOption }}
         </button>
 
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
@@ -54,23 +43,20 @@
           </button>
         </ul>
       </div>
+
+      <!--------------------------------------------- order button ---------------------------------------------------->
+      <div id="order-by-btn" class="col">
+        <button type="button" class="btn green-button-transparent col-12 go-btn"
+                @click="orderCards()">
+          Order Cards
+        </button>
+      </div>
     </div>
 
-    <!------------------------------------------- order button -------------------------------------------------------->
-
-    <div id="order-by-btn" class="col">
-      <button type="button" class="btn green-button-transparent col-12"
-              @click="orderCards()">
-        Order Cards
-      </button>
-    </div>
-
-    <!------------------------------------- create card button -------------------------------------------------------->
-
-    <div id="create-card-btn" class="col">
+    <!--------------------------------------- create card button ------------------------------------------------------>
+    <div class="btn-group me-2" role="group" aria-label="Second group" style="margin-top: 6px">
       <CreateCardModal @new-card-created="(e) => $emit('new-card-created', e)"></CreateCardModal>
     </div>
-
   </div>
 
 </template>
@@ -97,9 +83,9 @@ export default {
      * Sets the order by option
      */
     setOrderByOption(title, location) {
-      if(title) {
+      if (title) {
         this.orderByOption = "Title"
-      } else if(location) {
+      } else if (location) {
         this.orderByOption = "Location"
       }
     },
@@ -107,7 +93,7 @@ export default {
      * Sets the order by direction
      */
     setOrderDirectionOption(ascending) {
-      if(ascending) {
+      if (ascending) {
         this.orderDirectionOption = "Ascending"
       } else {
         this.orderDirectionOption = "Descending"
@@ -145,19 +131,14 @@ export default {
 
 <style scoped>
 
-#ordering-option-container, #ordering-direction-container {
-  max-width: 20%;
-}
-
-#order-by-btn, #create-card-btn {
-  max-width: 20%;
-  height: 40px;
-}
-
 .order-by-options-btn, .order-direction-options-btn {
-  width: 200px;
-  height: 40px;
-  margin: 0
+  width: 150px;
+  margin-top: 6px;
+}
+
+.go-btn {
+  width: 115px;
+  margin-top: 6px;
 }
 
 .dropdown-menu {
