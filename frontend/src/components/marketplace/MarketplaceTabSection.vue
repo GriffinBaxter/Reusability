@@ -53,7 +53,7 @@
 import Card from "./Card";
 import OrderingOptionsMenu from "./OrderingOptionsMenu";
 import PageButtons from "../PageButtons";
-import {formatDate} from "@/dateUtils";
+import {formatDate} from "../../dateUtils";
 
 export default {
   name: "MarketplaceTabSection",

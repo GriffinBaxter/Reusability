@@ -22,6 +22,7 @@ describe("Testing the marketplace methods", () => {
                 path: '/marketplace',
                 query: {'orderBy': "locationASC", 'page': "1"}
             }
+            Api.getAllCards.mockImplementation(() => Promise.resolve());
 
             const marketplaceWrapper = shallowMount(
                 Marketplace,
@@ -59,6 +60,7 @@ describe("Testing the marketplace methods", () => {
                 path: '/marketplace',
                 query: {'orderBy': "locationDESC", 'page': "2"}
             }
+            Api.getAllCards.mockImplementation(() => Promise.resolve());
 
             const marketplaceWrapper = shallowMount(
                 Marketplace,
@@ -96,6 +98,7 @@ describe("Testing the marketplace methods", () => {
                 path: '/marketplace',
                 query: {'orderBy': "createdASC", 'page': "3"}
             }
+            Api.getAllCards.mockImplementation(() => Promise.resolve());
 
             const marketplaceWrapper = shallowMount(
                 Marketplace,
@@ -127,7 +130,7 @@ describe("Testing the marketplace methods", () => {
 
     })
 
-    test("Testing that openCardDetail sets selected card to the input card", () => {
+    test("Testing that openCardDetail sets selected card to the input card", async () => {
         const $router = {
             push: jest.fn()
         }
@@ -135,15 +138,6 @@ describe("Testing the marketplace methods", () => {
             path: '/marketplace',
             query: {'orderBy': "createdASC", 'page': "1"}
         }
-
-        const marketplaceWrapper = shallowMount(
-            Marketplace,
-            {
-                mocks: {
-                    $router,
-                    $route
-                }
-            });
         const data = {
             status: 200,
             data: [
@@ -211,6 +205,15 @@ describe("Testing the marketplace methods", () => {
 
         Api.getAllCards.mockImplementation(() => Promise.resolve(data));
 
+        const marketplaceWrapper = shallowMount(
+            Marketplace,
+            {
+                mocks: {
+                    $router,
+                    $route
+                }
+            });
+
         const inputVal = {
             "id": 500,
             "creator": {
@@ -270,6 +273,9 @@ describe("Testing the marketplace methods", () => {
                 }
             ]
         };
+
+        const returnData = await Api.getAllCards("ForSale", "createdDESC", 0);
+        console.log(returnData)
 
         marketplaceWrapper.vm.openCardDetail(inputVal);
 
@@ -359,6 +365,73 @@ describe("Testing the marketplace methods", () => {
                 path: '/marketplace',
                 query: {'orderBy': "createdASC", 'page': "1"}
             }
+            const data = {
+                status: 200,
+                data: [
+                        {
+                            "id": 500,
+                            "creator": {
+                                "id": 100,
+                                "firstName": "John",
+                                "lastName": "Smith",
+                                "middleName": "Hector",
+                                "nickname": "Jonny",
+                                "bio": "Likes long walks on the beach",
+                                "email": "johnsmith99@gmail.com",
+                                "dateOfBirth": "1999-04-27",
+                                "phoneNumber": "+64 3 555 0129",
+                                "homeAddress": {
+                                    "streetNumber": "3/24",
+                                    "streetName": "Ilam Road",
+                                    "suburb": "Upper Riccarton",
+                                    "city": "Christchurch",
+                                    "region": "Canterbury",
+                                    "country": "New Zealand",
+                                    "postcode": "90210"
+                                },
+                                "created": "2020-07-14T14:32:00Z",
+                                "role": "user",
+                                "businessesAdministered": [
+                                    {
+                                        "id": 100,
+                                        "administrators": [
+                                            "string"
+                                        ],
+                                        "primaryAdministratorId": 20,
+                                        "name": "Lumbridge General Store",
+                                        "description": "A one-stop shop for all your adventuring needs",
+                                        "address": {
+                                            "streetNumber": "3/24",
+                                            "streetName": "Ilam Road",
+                                            "suburb": "Upper Riccarton",
+                                            "city": "Christchurch",
+                                            "region": "Canterbury",
+                                            "country": "New Zealand",
+                                            "postcode": "90210"
+                                        },
+                                        "businessType": "Accommodation and Food Services",
+                                        "created": "2020-07-14T14:52:00Z"
+                                    }
+                                ]
+                            },
+                            "section": "ForSale",
+                            "created": "2021-07-15T05:10:00Z",
+                            "displayPeriodEnd": "2021-07-29T05:10:00Z",
+                            "title": "1982 Lada Samara",
+                            "description": "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.",
+                            "keywords": [
+                                {
+                                    "id": 600,
+                                    "name": "Vehicle",
+                                    "created": "2021-07-15T05:10:00Z"
+                                }
+                            ]
+                        }
+                    ],
+                headers: {'total-pages': "1"}
+            }
+
+            Api.getAllCards.mockImplementation(() => Promise.resolve(data));
 
             const marketplaceWrapper = shallowMount(
                 Marketplace,
@@ -369,79 +442,11 @@ describe("Testing the marketplace methods", () => {
                     }
                 });
 
-            const data = {
-                status: 200,
-                data: [
-                    {
-                        "id": 500,
-                        "creator": {
-                            "id": 100,
-                            "firstName": "John",
-                            "lastName": "Smith",
-                            "middleName": "Hector",
-                            "nickname": "Jonny",
-                            "bio": "Likes long walks on the beach",
-                            "email": "johnsmith99@gmail.com",
-                            "dateOfBirth": "1999-04-27",
-                            "phoneNumber": "+64 3 555 0129",
-                            "homeAddress": {
-                                "streetNumber": "3/24",
-                                "streetName": "Ilam Road",
-                                "suburb": "Upper Riccarton",
-                                "city": "Christchurch",
-                                "region": "Canterbury",
-                                "country": "New Zealand",
-                                "postcode": "90210"
-                            },
-                            "created": "2020-07-14T14:32:00Z",
-                            "role": "user",
-                            "businessesAdministered": [
-                                {
-                                    "id": 100,
-                                    "administrators": [
-                                        "string"
-                                    ],
-                                    "primaryAdministratorId": 20,
-                                    "name": "Lumbridge General Store",
-                                    "description": "A one-stop shop for all your adventuring needs",
-                                    "address": {
-                                        "streetNumber": "3/24",
-                                        "streetName": "Ilam Road",
-                                        "suburb": "Upper Riccarton",
-                                        "city": "Christchurch",
-                                        "region": "Canterbury",
-                                        "country": "New Zealand",
-                                        "postcode": "90210"
-                                    },
-                                    "businessType": "Accommodation and Food Services",
-                                    "created": "2020-07-14T14:52:00Z"
-                                }
-                            ]
-                        },
-                        "section": "ForSale",
-                        "created": "2021-07-15T05:10:00Z",
-                        "displayPeriodEnd": "2021-07-29T05:10:00Z",
-                        "title": "1982 Lada Samara",
-                        "description": "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.",
-                        "keywords": [
-                            {
-                                "id": 600,
-                                "name": "Vehicle",
-                                "created": "2021-07-15T05:10:00Z"
-                            }
-                        ]
-                    }
-                ],
-                headers: {'total-pages': "1"}
-            }
-
-            Api.getAllCards.mockImplementation(() => Promise.resolve(data));
-
             const section = "ForSale";
 
             marketplaceWrapper.vm.retrieveAllCardsForSection(section);
 
-            expect(marketplaceWrapper.vm.allCards[section]).toBe(data);
+            expect(marketplaceWrapper.vm.allCards[section]).toBe(data.data);
             expect(marketplaceWrapper.vm.totalPages).toEqual(1);
         })
 

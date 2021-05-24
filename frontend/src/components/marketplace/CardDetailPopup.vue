@@ -71,7 +71,7 @@
 
 <script>
 import Api from "../../Api";
-import {formatDate} from "@/dateUtils";
+import {formatDate} from "../../dateUtils";
 
 export default {
   name: "CardDetail",
