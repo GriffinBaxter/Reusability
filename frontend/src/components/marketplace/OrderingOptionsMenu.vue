@@ -137,7 +137,7 @@ export default {
 }
 
 .go-btn {
-  width: 50px;
+  width: 115px;
   margin-top: 6px;
 }
 
