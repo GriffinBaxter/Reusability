@@ -274,9 +274,6 @@ describe("Testing the marketplace methods", () => {
             ]
         };
 
-        const returnData = await Api.getAllCards("ForSale", "createdDESC", 0);
-        console.log(returnData)
-
         marketplaceWrapper.vm.openCardDetail(inputVal);
 
         expect(marketplaceWrapper.vm.selectedCard).toBe(inputVal);
@@ -357,7 +354,7 @@ describe("Testing the marketplace methods", () => {
             expect(returnData).toBe(data);
         })
 
-        test("Testing the retrieveCardsForSection method", () => {
+        test("Testing the retrieveCardsForSection method", async () => {
             const $router = {
                 push: jest.fn()
             }
@@ -445,6 +442,8 @@ describe("Testing the marketplace methods", () => {
             const section = "ForSale";
 
             marketplaceWrapper.vm.retrieveAllCardsForSection(section);
+
+            await marketplaceWrapper.vm.$nextTick();
 
             expect(marketplaceWrapper.vm.allCards[section]).toBe(data.data);
             expect(marketplaceWrapper.vm.totalPages).toEqual(1);
