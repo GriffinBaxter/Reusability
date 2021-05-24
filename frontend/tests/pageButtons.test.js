@@ -268,11 +268,3 @@ describe("Testing the page buttons component methods", () => {
     })
 
 })
-
-// pageNumber = 0
-// pageNumber > 0 && pageNumber < totalPages
-// pageNumber = totalPages
-
-// check event emitted
-
-// need to shallow mount with props
