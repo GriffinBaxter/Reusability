@@ -9,7 +9,12 @@
 
           <div class="row mt-3">
             <h2 align="center">Product Catalogue</h2>
-            <h6 align="center">{{ addedMessage }}</h6>
+            <!--Creation success info-->
+            <div class="alert alert-success" role="alert" v-if="creationSuccess">
+              <div class="row">
+                <div class="col" align="center">{{ userAlertMessage }}</div>
+              </div>
+            </div>
           </div>
 
           <div class="row mb-3">
@@ -38,7 +43,7 @@
                 <div class="modal-dialog modal-">
                   <!-- Added an id to modal-content class. This is because the CSS for modal-content was being applied to
                   the create product modal as well. The CSS for this modal-content is now found under #product-modal-->
-                  <div class="modal-content" id="product-modal">
+                  <div class="modal-content" id="product-modal-content">
                     <div class="modal-body">
                       <product-modal
                           v-bind:product-id="productId"
@@ -259,12 +264,15 @@ export default {
       toastErrorMessage: "",
       cannotProceed: false,
 
-      // Message to display that product has been added to catalogue
-      addedMessage: "",
+      // Message to display that product has been added to catalogue or has been edited.
+      userAlertMessage: "",
 
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+
+      // If product creation was successful the user will be altered.
+      creationSuccess: false,
 
       // List of Business account current user account administrated
       linkBusinessAccount: [],
@@ -614,7 +622,6 @@ export default {
       ).then((res) => {
             if (res.status === 201) {
               this.modal.hide();
-
               // Set message so user knows product has been added.
               this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
 
@@ -642,6 +649,10 @@ export default {
               this.toastErrorMessage = "";
               this.cannotProceed = false;
 
+
+              this.userAlertMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
+              this.closeCreateProductModal();
+              this.afterCreation();
               this.requestProducts().catch(
                   (e) => console.log(e)
               )
@@ -663,6 +674,29 @@ export default {
           this.toastErrorMessage = 'Unexpected error occurred!';
         }
       })
+    },
+
+    /**
+     * After creation success, show the success info.
+     */
+    afterCreation() {
+      this.creationSuccess = true;
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
+    },
+
+    /**
+     * After edit success, show the edit info.
+     */
+    afterEdit() {
+      this.userAlertMessage = "Product Edited";
+      this.creationSuccess = true;
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
     },
 
     /**
@@ -732,6 +766,10 @@ export default {
 
   async mounted() {
 
+    // If the edit is successful the UpdateProductModal component will emit an 'edits' event. This code notices the emit
+    // and will alert the user that the edit was successful by calling the afterEdit function.
+    this.$root.$on('edits', this.afterEdit);
+
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
     if (checkAccessPermission(this.linkBusinessAccount)) {
@@ -759,7 +797,7 @@ export default {
   watch: {
     // If the current Product was updated we update the table.
     currentProduct: function () {
-      this.requestProducts()
+      this.requestProducts();
     }
   }
 }
@@ -768,7 +806,7 @@ export default {
 <style scoped>
 
 /*CSS for product modal modal-content section*/
-#product-modal {
+#product-modal-content {
   position: fixed;
   top: 50%;
   left: 50%;
