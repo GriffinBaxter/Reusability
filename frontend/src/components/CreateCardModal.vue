@@ -480,6 +480,7 @@ export default {
       }
 
       Api.addNewCard(newCard).then(
+
           (res) => {
             if (res.status === 201) {
               const newCardUpdateValues = {
