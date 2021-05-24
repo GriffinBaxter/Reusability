@@ -49,7 +49,7 @@
               <hr>
 
               <!-- Creator id input -->
-              <div class="row my-lg-2 my-4" v-if="isAdministrator()">
+              <div class="row my-lg-2 my-4" v-if="user.isAdministrator(userRole)">
                 <div class="col-md-3 ">
                   <label for="card-creator-id" class="fw-bold">Creator Id*:</label>
                 </div>
@@ -144,13 +144,14 @@ import {Modal} from 'bootstrap';
 import Api from "../Api";
 import cardConfig from "../configs/MarketplaceCard"
 import Cookies from "js-cookie";
-import { UserRole } from "../configs/User"
+import User, { UserRole} from "../configs/User"
 
 export default {
   name: "CreateCardModal",
   data() {
     return {
       modal: null,
+      user: User,
 
       /** For api error we display the error through this model error */
       modalError: "",
@@ -251,14 +252,6 @@ export default {
       this.modal.show();
     },
     /**
-     * Determines if the user has admin (Default Global Application Admin or Global Application Admin) rights.
-     *
-     * @return {boolean} true if the user has admin rights.
-     * */
-    isAdministrator() {
-      return this.userRole === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || this.userRole === UserRole.GLOBALAPPLICATIONADMIN;
-    },
-    /**
      * Determines if a section choice made by the user is valid. And updates the error
      * message accordingly and returns the class state. This also updates the form error class.
      *
@@ -344,7 +337,7 @@ export default {
      * */
     isCreatorIdInvalid() {
       if (this.submitAttempted) {
-          if (!this.isAdministrator()) {
+          if (!this.user.isAdministrator()) {
             this.creatorId = Cookies.get("userID")
 
             // If the user id token is missing we logout the user, as he is not allowed to create a card.
@@ -473,7 +466,7 @@ export default {
       }
 
       // If we are not an admin then we need to update the creatorId.
-      if (!this.isAdministrator()) {
+      if (!this.user.isAdministrator()) {
         this.creatorId = Cookies.get("userID")
       }
 
