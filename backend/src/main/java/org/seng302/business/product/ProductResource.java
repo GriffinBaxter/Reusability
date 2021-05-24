@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
+import org.seng302.business.inventoryItem.InventoryItem;
+import org.seng302.business.inventoryItem.InventoryItemRepository;
 import org.seng302.main.Authorization;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -52,6 +54,9 @@ public class ProductResource {
 
     @Autowired
     private ProductUpdateService productUpdateService;
+
+    @Autowired
+    private InventoryItemRepository inventoryItemRepository;
 
     private static final Logger logger = LogManager.getLogger(ProductResource.class.getName());
 
@@ -339,6 +344,14 @@ public class ProductResource {
             // No point in checking this if it is already the same value.
             if (!productId.equals(updatedProduct.getId())) {
                 logger.debug("New product ID: {} differs then the origin product id: {}", updatedProduct.getId(), product.get().getProductId());
+
+                // Verify that inventory items are not present with the same product ID
+                Optional<InventoryItem> inventoryItemsWithProductId = inventoryItemRepository.findInventoryItemByProductId(product.get().getId());
+                if (inventoryItemsWithProductId.isPresent()) {
+                    logger.error("Product Modify Failure - 400 [BAD REQUEST] - Product ID {} cannot be modified if it already exists as an inventory item.", product.get().getProductId());
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID cannot be modified with existing inventory item");
+                }
+
                 // Verify the new id is unique are valid
                 if (!ProductValidation.isValidProductId(updatedProduct.getId()) || productRepository.findProductByIdAndBusinessId(updatedProduct.getId(), businessId).isPresent()) {
                     logger.error("Product Modify Failure - 400 [BAD REQUEST] - New product ID {} either already exists OR is invalid.", updatedProduct.getId());

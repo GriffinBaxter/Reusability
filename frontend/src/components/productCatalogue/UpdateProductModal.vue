@@ -313,6 +313,7 @@ export default {
                   // Custom event so that ProductCatalogue.vue knows edit was a success and can alert the user.
                   this.$root.$emit('edits');
                   this.modal.hide();
+                  this.formErrorModalMessage = "";
                 }
               }
           )
@@ -322,9 +323,11 @@ export default {
 
                   // There was something wrong with the user data!
                   if (error.response.status === 400) {
-                    // There is no way to tell if this is caused by the product ID already existing or not, which is not very helpful
-                    // when this happens!
-                    this.formErrorModalMessage = "Some of the information you have entered is invalid."
+                    if (error.response.data.message !== "") {
+                      this.formErrorModalMessage = error.response.data.message;
+                    } else {
+                      this.formErrorModalMessage = "Some of the information you have entered is invalid.";
+                    }
 
                     // Invalid token was used
                   } else if (error.response.status === 403) {
