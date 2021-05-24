@@ -179,7 +179,7 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
-import {checkAccessPermission} from "@/views/helpFunction";
+import {checkAccessPermission} from "../views/helpFunction";
 
 export default {
   name: "ProductCatalogue",

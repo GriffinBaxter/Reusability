@@ -220,7 +220,7 @@ import InventoryItemCreation from "../components/inventory/CreateInventoryItemMo
 import Api from "../Api";
 import Cookies from "js-cookie";
 import CurrencyAPI from "../currencyInstance";
-import {checkAccessPermission} from "@/views/helpFunction";
+import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 
 export default {
