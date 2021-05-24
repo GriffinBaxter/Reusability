@@ -68,7 +68,7 @@
     <!------------------------------------- create card button -------------------------------------------------------->
 
     <div id="create-card-btn" class="col">
-      <CreateCardModal></CreateCardModal>
+      <CreateCardModal @new-card-created="(e) => $emit('new-card-created', e)"></CreateCardModal>
     </div>
 
   </div>

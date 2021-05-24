@@ -10,7 +10,7 @@
       <!---------------------------------------------- ordering menu ------------------------------------------------>
 
       <div id="ordering-options-menu-container">
-        <OrderingOptionsMenu></OrderingOptionsMenu>
+        <OrderingOptionsMenu @new-card-created="(e) => $emit('new-card-created', e)"></OrderingOptionsMenu>
       </div>
 
       <!------------------------------------------------ cards ------------------------------------------------------>
@@ -72,6 +72,9 @@ export default {
     selectACard(index) {
       this.$emit('openCardDetail', index);
       this.selectedCard = index
+    },
+    testing(e) {
+      console.log(e)
     }
   },
 }

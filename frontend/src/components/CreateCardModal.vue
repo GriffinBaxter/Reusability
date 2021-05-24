@@ -177,6 +177,15 @@ export default {
       userFullName: "",
       /** Contains the prefilled value of the user's address (only city and suburb)*/
       userLocation: "",
+      /** Creator object */
+      creator: {
+        firstName: "",
+        lastName: "",
+        homeAddress: {
+          suburb: "",
+          city: ""
+        }
+      },
       /** Keeps track of the user's title input */
       title: "",
       /** Keeps track of the user's description input.*/
@@ -374,12 +383,16 @@ export default {
     populateUserInfo(currentID) {
       Api.getUser(currentID).then(response => {
         this.userFullName = response.data.firstName + " " + response.data.lastName
+        this.creator.firstName = response.data.firstName;
+        this.creator.lastName = response.data.lastName;
         if (!this.userRole) {
           this.userRole = response.data.role || UserRole.USER;
         }
 
         const city = response.data.homeAddress.city;
         const suburb = response.data.homeAddress.suburb;
+        this.creator.homeAddress.city = response.data.homeAddress.city;
+        this.creator.homeAddress.suburb = response.data.homeAddress.suburb;
         if (suburb && city) {
           this.userLocation = suburb + ", " + city
         } else if (suburb) {
@@ -476,6 +489,15 @@ export default {
       Api.addNewCard(newCard).then(
           (res) => {
             if (res.status === 201) {
+              const newCardUpdateValues = {
+                id: res.data.cardId,
+                section: this.sectionSelected,
+                title: this.title,
+                description: this.description,
+                keywords: newCard.keywords,
+                creator: this.creator
+              }
+              this.$emit("new-card-created", newCardUpdateValues);
               this.modal.hide();
             }
           }
