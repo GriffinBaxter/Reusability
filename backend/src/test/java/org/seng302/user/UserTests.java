@@ -19,14 +19,14 @@ import static org.junit.Assert.assertEquals;
 /**
  * User test class.
  */
-public class UserTests {
+class UserTests {
 
     private static Address address;
 
     private static User user;
 
     @BeforeAll
-    public static void before() throws Exception {
+    static void before() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -56,7 +56,7 @@ public class UserTests {
      * @throws Exception Adding of administrator failed
      */
     @Test
-    public void testAddAdministrators() throws Exception {
+    void testAddAdministrators() throws Exception {
         Business business = new Business(
                 user.getId(),
                 "name",
@@ -237,7 +237,7 @@ public class UserTests {
      * the user has been registered for less than a year.
      */
     @Test
-    public void testMonthsSinceRegistration() throws Exception {
+    void testMonthsSinceRegistration() throws Exception {
         User user = new User(
                 "first",
                 "last",
@@ -260,7 +260,7 @@ public class UserTests {
      * the user has been registered for more than a year.
      */
     @Test
-    public void testYearsSinceRegistration() throws Exception {
+    void testYearsSinceRegistration() throws Exception {
         User user = new User(
                 "first",
                 "last",
@@ -282,7 +282,7 @@ public class UserTests {
      * Checks to see if the months are rounded down to the nearest month.
      */
     @Test
-    public void testMonthsRounded() throws Exception {
+    void testMonthsRounded() throws Exception {
         User user = new User(
                 "first",
                 "last",
@@ -304,7 +304,7 @@ public class UserTests {
      * Checks to see the password has been hashed when create new User object
      */
     @Test
-    public void testEncode() throws Exception{
+    void testEncode() throws Exception{
         User user = new User(
                 "first",
                 "last",
@@ -326,7 +326,7 @@ public class UserTests {
      * Checks to see the password has been hashed when create new User object
      */
     @Test
-    public void testVerifyPassword() throws Exception{
+    void testVerifyPassword() throws Exception{
         User user = new User(
                 "first",
                 "last",
@@ -350,7 +350,7 @@ public class UserTests {
      * @throws Exception
      */
     @Test
-    public void testGetBusinessesAdministered() throws Exception {
+    void testGetBusinessesAdministered() throws Exception {
         Business business = new Business(
                 user.getId(),
                 "name",

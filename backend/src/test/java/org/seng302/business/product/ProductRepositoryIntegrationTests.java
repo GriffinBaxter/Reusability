@@ -1,7 +1,6 @@
 package org.seng302.business.product;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
@@ -14,12 +13,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class ProductRepositoryIntegrationTests {
+class ProductRepositoryIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -48,7 +47,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenFindExistingProductsByExistingBusinessIdThenReturnProductList() throws Exception {
+    void whenFindExistingProductsByExistingBusinessIdThenReturnProductList() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -124,7 +123,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenFindNonExistingProductsByExistingBusinessIdThenReturnEmptyProductList() throws Exception {
+    void whenFindNonExistingProductsByExistingBusinessIdThenReturnEmptyProductList() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -169,7 +168,7 @@ public class ProductRepositoryIntegrationTests {
         foundProductList = productRepository.findProductsByBusinessId(business.getId(), null);
 
         // then
-        assertThat(foundProductList.get().findAny().isEmpty()).isTrue();
+        assertThat(foundProductList.get().findAny()).isEmpty();
     }
 
     /**
@@ -177,12 +176,12 @@ public class ProductRepositoryIntegrationTests {
      * the list of product payloads returned is empty.
      */
     @Test
-    public void whenFindProductsByNonExistingBusinessIdThenDontReturnProductPayload() {
+    void whenFindProductsByNonExistingBusinessIdThenDontReturnProductPayload() {
         // when
         foundProductList = productRepository.findProductsByBusinessId(1, null);
 
         // then
-        assertThat(foundProductList.get().findAny().isEmpty()).isTrue();
+        assertThat(foundProductList.get().findAny()).isEmpty();
     }
 
     /**
@@ -192,7 +191,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenFindExistingProductByExistingIdAndExistingBusinessIdThenReturnProduct() throws Exception {
+    void whenFindExistingProductByExistingIdAndExistingBusinessIdThenReturnProduct() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -250,7 +249,7 @@ public class ProductRepositoryIntegrationTests {
         Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId());
 
         // then
-        assertThat(foundProduct.isEmpty()).isFalse();
+        assertThat(foundProduct).isPresent();
         assertThat(foundProduct.get().getProductId()).isEqualTo("PROD");
         assertThat(foundProduct.get().getName()).isEqualTo("Beans");
         assertThat(foundProduct.get().getDescription()).isEqualTo("Description");
@@ -268,7 +267,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenFindExistingProductByExistingIdAndNonExistingBusinessIdThenDontReturnProduct() throws Exception {
+    void whenFindExistingProductByExistingIdAndNonExistingBusinessIdThenDontReturnProduct() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -326,7 +325,7 @@ public class ProductRepositoryIntegrationTests {
         Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId(product.getProductId(), 0);
 
         // then
-        assertThat(foundProduct.isEmpty()).isTrue();
+        assertThat(foundProduct).isEmpty();
     }
 
     /**
@@ -336,7 +335,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenFindExistingProductByNonExistingIdAndExistingBusinessIdThenDontReturnProduct() throws Exception {
+    void whenFindExistingProductByNonExistingIdAndExistingBusinessIdThenDontReturnProduct() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -394,7 +393,7 @@ public class ProductRepositoryIntegrationTests {
         Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PRO", business.getId());
 
         // then
-        assertThat(foundProduct.isEmpty()).isTrue();
+        assertThat(foundProduct).isEmpty();
     }
 
 
@@ -405,7 +404,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenDeletingProductWithValidProductAndBusinessIDs() throws Exception {
+    void whenDeletingProductWithValidProductAndBusinessIDs() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -464,7 +463,7 @@ public class ProductRepositoryIntegrationTests {
         Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
 
         // then
-        assertThat(foundProduct.isEmpty()).isTrue();
+        assertThat(foundProduct).isEmpty();
     }
 
 
@@ -474,7 +473,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenDeletingProductWithInvalidProductIdAndValidBusinessId() throws Exception {
+    void whenDeletingProductWithInvalidProductIdAndValidBusinessId() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -533,7 +532,7 @@ public class ProductRepositoryIntegrationTests {
         Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
 
         // then
-        assertThat(foundProduct.isEmpty()).isFalse();
+        assertThat(foundProduct).isPresent();
     }
 
 
@@ -543,7 +542,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenDeletingProductWithValidProductIdAndInvalidBusinessId() throws Exception {
+    void whenDeletingProductWithValidProductIdAndInvalidBusinessId() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -602,7 +601,7 @@ public class ProductRepositoryIntegrationTests {
         Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
 
         // then
-        assertThat(foundProduct.isEmpty()).isFalse();
+        assertThat(foundProduct).isPresent();
     }
 
 
@@ -612,7 +611,7 @@ public class ProductRepositoryIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void whenDeletingProductWithInvalidProductIdAndInvalidBusinessId() throws Exception {
+    void whenDeletingProductWithInvalidProductIdAndInvalidBusinessId() throws Exception {
         // given
         Address address = new Address(
                 "3/24",
@@ -671,7 +670,167 @@ public class ProductRepositoryIntegrationTests {
         Optional<Product> foundProduct = productRepository.findProductByIdAndBusinessId("PROD", business.getId());
 
         // then
-        assertThat(foundProduct.isEmpty()).isFalse();
+        assertThat(foundProduct).isPresent();
+    }
+
+    /**
+     * Tests that we retrieve all products without pagination with a valid business ID.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenRetrievingAllProductsWithValidBusinessID() throws Exception {
+        // given
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        entityManager.persist(business);
+        entityManager.flush();
+
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        Product product2 = new Product(
+                "APPL",
+                business,
+                "Apple",
+                "Description",
+                "Manufacturer",
+                30.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        // when
+        List<Product> foundProducts = productRepository.findAllByBusinessId(business.getId());
+
+        // then
+        assertThat(foundProducts.isEmpty()).isFalse();
+    }
+
+    /**
+     * Tests that when we retrieve all products without pagination with an invalid business ID that no errors are thrown.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenRetrievingAllProductsWithInValidBusinessID() throws Exception {
+        // given
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+        entityManager.persist(address);
+        entityManager.flush();
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        entityManager.persist(user);
+        entityManager.flush();
+        Business business = new Business(
+                user.getId(),
+                "example name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        entityManager.persist(business);
+        entityManager.flush();
+
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        Product product2 = new Product(
+                "APPL",
+                business,
+                "Apple",
+                "Description",
+                "Manufacturer",
+                30.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        entityManager.persist(product);
+        entityManager.flush();
+
+        // when
+        List<Product> foundProducts = productRepository.findAllByBusinessId(20000);
+
+        // then
+        assertThat(foundProducts.isEmpty()).isTrue();
     }
 
 

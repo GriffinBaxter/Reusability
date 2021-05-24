@@ -16,17 +16,23 @@
             <!--Inventory Item Select-->
             <div class="row">
               <div class="col form-group py-1 px-3">
-                <label for="productDataList" class="form-control-label">Inventory ID*: </label>
-                <input :class="toggleInvalidClass(inventoryIdErrorMsg)" @input="autofillData()" list="productDataList"
-                       id="productInput" name="productDataList" ref="productInput" required/>
-                <datalist id="productDataList" style="overflow-y: auto!important">
-                  <option v-for="item in allInventoryItems" v-bind:key="item.id"
-                          :value="item.product.id + ' (Expires: ' + item.expires + ')' + ' ID: ' + item.id">Quantity:
-                    {{ item.quantity }} Price: ({{currencySymbol}}{{ item.totalPrice }})
-                  </option>
-                </datalist>
-                <div class="invalid-feedback">
-                  {{ inventoryIdErrorMsg }}
+                <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
+                  <label for="autofill-input">Select an inventory item*: </label>
+                  <input type="text" id="autofill-input" ref="autofill-input" class="form-control" v-model="autofillInput">
+                  <span class="iconSpan">
+                    <i class="fas fa-angle-down"></i>
+                  </span>
+                  <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
+                    <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1" v-bind:value="item.id"><strong>{{ item.product.id }}</strong><br>{{ 'Quantity: ' + item.quantity + ' Price: ' + (currencySymbol) + item.totalPrice + ' Expires: ' + item.expires + '' }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!--Selected Inventory Item-->
+            <div class="row">
+              <div class="col form-group py-3 px-3">
+                <div id="currentlySelected">
+                  <label for="autofill-input" class="currentlySelectedLabel" ref="currentlySelectedLabel">Currently Selected: <br>{{formatCurrentlySelected(currentInventoryItem) || 'None'}}</label>
                 </div>
               </div>
             </div>
@@ -106,6 +112,7 @@
 <script>
 import Api from "@/Api";
 import Listing from "@/configs/Listings";
+import Autofill from '../autofill';
 
 import {Modal} from "bootstrap";
 
@@ -138,7 +145,9 @@ export default {
       closes: "",
       closesErrorMsg: "",
       businessId: this.$route.params.id,
-      creationErrorMessage: ""
+      creationErrorMessage: "",
+      autofillState: 'initial',
+      autofillInput: ''
     }
   },
   props: {
@@ -182,6 +191,8 @@ export default {
       this.moreInfoErrorMsg = "";
       this.closes = "";
       this.closesErrorMsg = "";
+      this.$refs.currentlySelectedLabel.className = 'currentlySelectedLabel';
+      this.currentInventoryItem = null;
     },
     closeModal() {
       this.modal.hide();
@@ -234,47 +245,174 @@ export default {
      * Updates the price when the quantity input is modified based on the price per item of the currently selected inventory item.
      * */
     updatePriceFromQuantity() {
-      if (!isNaN(this.quantity)) {
+      if (!isNaN(this.quantity) && this.currentInventoryItem) {
         if (this.currentInventoryItem.pricePerItem && !isNaN(this.currentInventoryItem.pricePerItem)) {
           this.price = this.quantity * this.currentInventoryItem.pricePerItem;
         }
       }
     },
     /**
-     *  Checks the ID of the current input value, then finds the inventory item with that ID (in allInventoryItems) to autofill
-     *  that item's quantity and price in the quantity and price input fields.
-     * */
-    autofillData() {
-      // Datalists are not flexible enough to allow nice event handlers and formatting so
-      // changing this to a custom dropdown would be ideal for future sprints.
-      const value = this.$refs.productInput.value;
-      if (!value) return;
-
-      let result = null;
-
-      let i = 0;
-      let itemNotFound = true;
-      while (i < this.allInventoryItems.length && itemNotFound) {
-        let itemID = this.allInventoryItems[i].id;
-        // This split depends on the formatting in the :value for the <option> inside the productDataList.
-        let inputID = parseInt(value.split(' ')[4]);
-        if (itemID === inputID) {
-          result = this.allInventoryItems[i];
-          itemNotFound = false;
-        }
-        i += 1;
+     * Formats the currently selected inventory item string based on the given item.
+     */
+    formatCurrentlySelected(item) {
+      let finalString;
+      if (item !== null) {
+        finalString = 'ID: ' + item.product.id + ' Name: ' + item.product.name + ' RRP: ' + this.currencySymbol + item.product.recommendedRetailPrice + ' ' + this.currencyCode + ' Expires: ' + item.expires;
       }
-
-      if (result !== null) {
-        this.currentInventoryItem = result;
-        this.quantity = result.quantity;
-        this.price = result.totalPrice;
-
-        const newDateTime = new Date(result.expires);
-        this.closes = datefns.format(new Date(newDateTime.getFullYear(), newDateTime.getMonth(), newDateTime.getDate()), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+      return finalString;
+    },
+    /**
+     * Click event handler for the inventory ID input. Will toggle the autofill options display when needed and
+     * also calls fillData, if applicable.
+     *
+     * This function is based off of the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
+     * https://24ways.org/2019/making-a-better-custom-select-element/
+     */
+    autofillClick() {
+      const currentFocus = document.activeElement;
+      const input = this.$refs["autofill-input"];
+      switch (this.autofillState) {
+        case "initial":
+          Autofill.toggleList('open', this.$refs["autofill-list"]);
+          this.autofillState = 'opened';
+          break;
+        case 'opened':
+          if (currentFocus === input) {
+            Autofill.toggleList('closed', this.$refs["autofill-list"]);
+            this.autofillState = 'initial';
+          } else if (currentFocus.tagName === 'LI') {
+            this.fillData(currentFocus);
+            Autofill.toggleList('closed', this.$refs["autofill-list"]);
+            this.autofillState = 'closed';
+          }
+          break;
+        case 'filtered':
+          if (currentFocus.tagName === 'LI') {
+            this.fillData(currentFocus);
+            Autofill.toggleList('closed', this.$refs["autofill-list"]);
+            this.autofillState = 'closed';
+          }
+          break;
+        case 'closed':
+          Autofill.toggleList('open', this.$refs["autofill-list"]);
+          this.autofillState = 'filtered';
+          break;
       }
     },
+    /**
+     * Sets the value of the inventory ID input to the ID of the given item. Does the same for quantity, total price and expiry date.
+     *
+     * This function is based off of the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
+     * https://24ways.org/2019/making-a-better-custom-select-element/
+     */
+    fillData(currentItem) {
+      let finalItem = null;
+      for (let item of this.allInventoryItems) {
+        if (item.id === currentItem.value) {
+          finalItem = item;
+        }
+      }
+      this.currentInventoryItem = finalItem;
+      this.quantity = finalItem.quantity;
+      this.price = finalItem.totalPrice;
 
+      const newDateTime = new Date(finalItem.expires);
+      this.closes = datefns.format(new Date(newDateTime.getFullYear(), newDateTime.getMonth(), newDateTime.getDate()), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+      this.autofillInput = '';
+      this.$refs.currentlySelectedLabel.className = "";
+    },
+    /**
+     * Handles keyboard input when navigating autofill dropdown menu
+     *
+     * This function is adapted from the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
+     * https://24ways.org/2019/making-a-better-custom-select-element/
+     */
+    keyPressedOnInput(event) {
+      const key = event.key;
+      const currentFocus = document.activeElement;
+      const input = this.$refs["autofill-input"];
+
+      switch (key) {
+        case 'Enter':
+          if (this.autofillState === 'initial') {
+            // If state = initial, toggle open and set state to opened
+            Autofill.toggleList('open', this.$refs["autofill-list"]);
+            this.autofillState = 'opened';
+          } else if (this.autofillState === 'opened' && currentFocus.tagName === 'LI') {
+            // If state = opened and focus on list, fill data and set state to closed
+            this.fillData(currentFocus)
+            Autofill.toggleList('closed', this.$refs["autofill-list"])
+            this.autofillState = 'closed';
+          } else if (this.autofillState === 'opened' && currentFocus === input) {
+            // If state = opened and focus on input, close it
+            Autofill.toggleList('closed', this.$refs["autofill-list"])
+            this.autofillState = 'closed';
+          } else if (this.autofillState === 'filtered' && currentFocus.tagName === 'LI') {
+            // If state = filtered and focus on list, fill data and set state to closed
+            this.fillData(currentFocus)
+            Autofill.toggleList('closed', this.$refs["autofill-list"])
+            this.autofillState = 'closed';
+          } else if (this.autofillState === 'filtered' && currentFocus === input) {
+            // If state = filtered and focus on input, set state to opened
+            Autofill.toggleList('open')
+            this.autofillState = 'opened';
+          } else {
+            // If state = closed, set state to filtered. I.e. open but keep existing input.
+            Autofill.toggleList('open', this.$refs["autofill-list"])
+            this.autofillState = ('filtered');
+          }
+          break;
+        case 'Escape':
+          if (this.autofillState === 'opened' || this.autofillState === 'filtered') {
+            // Close the list
+            Autofill.toggleList('closed', this.$refs["autofill-list"]);
+            this.autofillState = 'initial';
+          }
+          break;
+        case 'ArrowDown':
+          if (this.autofillState === 'initial' || this.autofillState === 'closed') {
+            // If state = initial or closed, set state to opened and moveFocus to first
+            Autofill.toggleList('open')
+            Autofill.moveFocus(input, 'forward', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
+            this.autofillState = 'opened';
+          } else {
+            // If state = opened/filtered and focus on input/list, moveFocus to first/next
+            Autofill.toggleList('open', this.$refs["autofill-list"])
+            Autofill.moveFocus(currentFocus, 'forward', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
+          }
+          break;
+        case 'ArrowUp':
+          if (this.autofillState === 'initial' || this.autofillState === 'closed') {
+            // If state = initial, set state to opened and moveFocus to last
+            // If state = closed, set state to opened and moveFocus to last
+            Autofill.toggleList('Open', this.$refs["autofill-list"])
+            Autofill.moveFocus(input, 'back', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
+            this.autofillState = 'opened';
+          } else {
+            // If state = opened/filtered and focus on input/list, moveFocus to last/previous
+            Autofill.moveFocus(currentFocus, 'back', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
+          }
+          break;
+        default:
+          if (this.autofillState === 'initial') {
+            // If state = initial, toggle open, filter and set state to filtered
+            Autofill.toggleList('open', this.$refs["autofill-list"]);
+            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
+            this.autofillState = 'filtered';
+          } else if (this.autofillState === 'opened') {
+            // If state = opened, filter and set state to filtered
+            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
+            this.autofillState = 'filtered';
+          } else if (this.autofillState === 'closed') {
+            // If state = closed, filter and set state to filtered
+            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
+            this.autofillState = 'filtered';
+          } else { // Already filtered
+            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
+          }
+          break;
+      }
+    },
     /**
      * This method parses the given date and separates it into a year, day and month, provided it meets
      * the expected format.
@@ -474,6 +612,16 @@ export default {
   mounted() {
     this.getAllInventoryItems().then(() => {});
     this.modal = new Modal(document.getElementById("listingCreationPopup"));
+
+    // Global event listener to toggle autofill list display
+    let self = this;
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed' && self.$refs["autofill-list"]) {
+        Autofill.toggleList('closed', self.$refs["autofill-list"]);
+        self.autofillState = 'initial';
+      }
+    })
+
   }
 }
 </script>
@@ -485,6 +633,63 @@ input:focus, textarea:focus {
   outline: none;
   box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
+}
+
+/*********************************************************************
+                          Autofill styling
+
+       This CSS is a modified version of the examples found on
+    Julie Grundy's tutorial for creating a custom select element:
+
+    https://24ways.org/2019/making-a-better-custom-select-element/
+ *********************************************************************/
+
+#autofill-container {
+  position: relative;
+}
+
+#autofill-input::-ms-expand {
+  display: none;
+}
+
+.autofill-options {
+  border: 1px solid lightgray;
+  border-radius: 0 0 0.25em 0.25em;
+  line-height: 1.25;
+  padding: 0;
+  list-style-type: none;
+  cursor: pointer;
+  z-index: 2;
+  position: absolute;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+.autofill-options li {
+  padding: 1em;
+}
+
+.autofill-options li:hover, .autofill-options li:focus {
+  background: #1EBA8C;
+  color: #fff;
+}
+
+.hidden-all {
+  display: none;
+}
+
+.iconSpan {
+  position: absolute;
+  top: 2em;
+  right: 0.75em;
+  z-index: 20;
+  background: transparent;
+}
+
+/*********************************************************************/
+
+.currentlySelectedLabel {
+  color: red;
 }
 
 </style>

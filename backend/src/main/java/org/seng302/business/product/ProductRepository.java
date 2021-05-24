@@ -10,6 +10,7 @@
  */
 package org.seng302.business.product;
 
+import org.seng302.business.inventoryItem.InventoryItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -47,5 +48,12 @@ public interface ProductRepository extends JpaRepository<Product, String> {
      * @param businessId The ID of the business
      */
     void deleteByIdAndBusinessId(String id, Integer businessId);
+
+    /**
+     * Finds all products with the given business ID (no pagination)
+     * @param businessId A business ID.
+     * @return A list of inventory items with the given business ID.
+     */
+    List<Product> findAllByBusinessId(Integer businessId);
 
 }

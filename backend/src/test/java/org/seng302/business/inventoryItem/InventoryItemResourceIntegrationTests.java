@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class InventoryItemResourceIntegrationTests {
+class InventoryItemResourceIntegrationTests {
 
     @Autowired
     private MockMvc mvc;
@@ -111,7 +111,7 @@ public class InventoryItemResourceIntegrationTests {
     private InventoryItem inventoryItem;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -165,6 +165,8 @@ public class InventoryItemResourceIntegrationTests {
                 user
         );
         business.setId(3);
+        user.setBusinessesAdministeredObjects(List.of(business));
+
         product = new Product(
                 "WATT-420-BEANS",
                 business,
@@ -203,7 +205,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateAnInventoryItemWithAdministrator() throws Exception {
+    void canCreateAnInventoryItemWithAdministrator() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -240,7 +242,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateAnInventoryItemWithGAA() throws Exception {
+    void canCreateAnInventoryItemWithGAA() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -278,7 +280,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateAnInventoryItemWithDGAA() throws Exception {
+    void canCreateAnInventoryItemWithDGAA() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -316,7 +318,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotCreateAnInventoryItemWhenCookieNotExist() throws Exception {
+    void canNotCreateAnInventoryItemWhenCookieNotExist() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -352,7 +354,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotCreateAnInventoryItemWithBusinessIsNotExist() throws Exception {
+    void canNotCreateAnInventoryItemWithBusinessIsNotExist() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -390,7 +392,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotCreateAnInventoryItemWithNon_Administrator() throws Exception {
+    void canNotCreateAnInventoryItemWithNon_Administrator() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -428,7 +430,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotCreateAnInventoryItemWithNotExistProductId() throws Exception {
+    void canNotCreateAnInventoryItemWithNotExistProductId() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -467,7 +469,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotCreateAnInventoryItemWithNotExistQuantity() throws Exception {
+    void canNotCreateAnInventoryItemWithNotExistQuantity() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -507,7 +509,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateAnInventoryItemWithNotExistPricePerItem() throws Exception {
+    void canCreateAnInventoryItemWithNotExistPricePerItem() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -546,7 +548,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateAnInventoryItemWithNotExistTotalPrice() throws Exception {
+    void canCreateAnInventoryItemWithNotExistTotalPrice() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -585,7 +587,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateAnInventoryItemWithNotExistManufactured() throws Exception {
+    void canCreateAnInventoryItemWithNotExistManufactured() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -634,7 +636,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateAnInventoryItemWithNotExistSellBy() throws Exception {
+    void canCreateAnInventoryItemWithNotExistSellBy() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -683,7 +685,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canCreateAnInventoryItemWithNotExistBestBefore() throws Exception {
+    void canCreateAnInventoryItemWithNotExistBestBefore() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -732,7 +734,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotCreateAnInventoryItemWithNotExistExpires() throws Exception {
+    void canNotCreateAnInventoryItemWithNotExistExpires() throws Exception {
         // given
         InventoryItem inventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -773,11 +775,10 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
+    void canRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
         // given
         given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
-        business.addAdministrators(user);
         expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
@@ -811,7 +812,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveInventoryItemsWhenBusinessExistsWithGAAUserCookie() throws Exception {
+    void canRetrieveInventoryItemsWhenBusinessExistsWithGAAUserCookie() throws Exception {
         // given
         given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
@@ -850,7 +851,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveInventoryItemsWhenBusinessExistsWithDGAAUserCookie() throws Exception {
+    void canRetrieveInventoryItemsWhenBusinessExistsWithDGAAUserCookie() throws Exception {
         // given
         given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
@@ -888,7 +889,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveInventoryWhenBusinessDoesntExist() throws Exception {
+    void cantRetrieveInventoryWhenBusinessDoesntExist() throws Exception {
         // given
         user.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
         given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
@@ -917,7 +918,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveInventoryWhenBusinessExistsWithNonExistingIdCookie() throws Exception {
+    void cantRetrieveInventoryWhenBusinessExistsWithNonExistingIdCookie() throws Exception {
 
         // given
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
@@ -943,7 +944,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveInventoryWhenBusinessExistsWithNonAdminUserCookie() throws Exception {
+    void cantRetrieveInventoryWhenBusinessExistsWithNonAdminUserCookie() throws Exception {
         // given
         given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
@@ -969,7 +970,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveInventoryWhenBusinessExistsWithNoCookie() throws Exception {
+    void cantRetrieveInventoryWhenBusinessExistsWithNoCookie() throws Exception {
         // given
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
         expectedJson = "";
@@ -994,11 +995,10 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorNoUserCookie() throws Exception {
+    void cantRetrieveInventoryItemsWhenBusinessExistsWithBusinessAdministratorNoUserCookie() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
-        business.addAdministrators(user);
         expectedJson = "";
 
         // when
@@ -1029,7 +1029,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canUpdateAnInventoryItemWithAdministrator() throws Exception {
+    void canUpdateAnInventoryItemWithAdministrator() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1068,7 +1068,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canUpdateAnInventoryItemWithGAA() throws Exception {
+    void canUpdateAnInventoryItemWithGAA() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1108,7 +1108,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canUpdateAnInventoryItemWithDGAA() throws Exception {
+    void canUpdateAnInventoryItemWithDGAA() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1148,7 +1148,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWhenCookieNotExist() throws Exception {
+    void canNotUpdateAnInventoryItemWhenCookieNotExist() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1186,7 +1186,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithBusinessIsNotExist() throws Exception {
+    void canNotUpdateAnInventoryItemWithBusinessIsNotExist() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1226,7 +1226,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithNon_Administrator() throws Exception {
+    void canNotUpdateAnInventoryItemWithNon_Administrator() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1266,7 +1266,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithNotExistInventoryItemId() throws Exception {
+    void canNotUpdateAnInventoryItemWithNotExistInventoryItemId() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1307,7 +1307,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithNoProductId() throws Exception {
+    void canNotUpdateAnInventoryItemWithNoProductId() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1349,7 +1349,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithNoQuantity() throws Exception {
+    void canNotUpdateAnInventoryItemWithNoQuantity() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1391,7 +1391,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithNegativeQuantity() throws Exception {
+    void canNotUpdateAnInventoryItemWithNegativeQuantity() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1433,7 +1433,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithNegativePricePerItem() throws Exception {
+    void canNotUpdateAnInventoryItemWithNegativePricePerItem() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1475,7 +1475,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithNegativeTotalPrice() throws Exception {
+    void canNotUpdateAnInventoryItemWithNegativeTotalPrice() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1517,7 +1517,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithManufactureDateAfterToday() throws Exception {
+    void canNotUpdateAnInventoryItemWithManufactureDateAfterToday() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1559,7 +1559,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithExpiresDateBeforeToday() throws Exception {
+    void canNotUpdateAnInventoryItemWithExpiresDateBeforeToday() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),
@@ -1601,7 +1601,7 @@ public class InventoryItemResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canNotUpdateAnInventoryItemWithQuantityLessThanTotalListings() throws Exception {
+    void canNotUpdateAnInventoryItemWithQuantityLessThanTotalListings() throws Exception {
         // given
         InventoryItem newInventoryItem = new InventoryItem(product,
                 product.getProductId(),

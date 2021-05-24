@@ -3,7 +3,7 @@ package org.seng302.validation;
 import org.junit.jupiter.api.Test;
 import static org.junit.Assert.assertEquals;
 
-public class AddressValidationTests {
+class AddressValidationTests {
 
     // ******************************* STREET NUMBER *********************************
 
@@ -12,7 +12,7 @@ public class AddressValidationTests {
      * is equal to the minimum length.
      */
     @Test
-    public void isValidStreetNumberTestEqualMinLength() {
+    void isValidStreetNumberTestEqualMinLength() {
         String streetNumber = ""; //minLength = 0
         assertEquals(true, AddressValidation.isValidStreetNumber(streetNumber));
     }
@@ -22,7 +22,7 @@ public class AddressValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isValidStreetNumberTestGreaterMaxLength() {
+    void isValidStreetNumberTestGreaterMaxLength() {
         String string = "2";
         String streetNumber = string.repeat(260); //maxLength = 255
         assertEquals(false, AddressValidation.isValidStreetNumber(streetNumber));
@@ -33,7 +33,7 @@ public class AddressValidationTests {
      * is equal to the max length.
      */
     @Test
-    public void isValidStreetNumberTestEqualMaxLength() {
+    void isValidStreetNumberTestEqualMaxLength() {
         String string = "2";
         String streetNumber = string.repeat(255); //maxLength = 255
         assertEquals(true, AddressValidation.isValidStreetNumber(streetNumber));
@@ -44,7 +44,7 @@ public class AddressValidationTests {
      * is in range of expected lengths.
      */
     @Test
-    public void isValidStreetNumberTestBetweenLengths() {
+    void isValidStreetNumberTestBetweenLengths() {
         String streetNumber = "3/24";
         assertEquals(true, AddressValidation.isValidStreetNumber(streetNumber));
     }
@@ -56,7 +56,7 @@ public class AddressValidationTests {
      * is equal to the minimum length.
      */
     @Test
-    public void isValidStreetNameTestEqualMinLength() {
+    void isValidStreetNameTestEqualMinLength() {
         String streetName = ""; //minLength = 0
         assertEquals(true, AddressValidation.isValidStreetName(streetName));
     }
@@ -66,7 +66,7 @@ public class AddressValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isValidStreetNameTestGreaterMaxLength() {
+    void isValidStreetNameTestGreaterMaxLength() {
         String string = "2";
         String streetName = string.repeat(260); //maxLength = 255
         assertEquals(false, AddressValidation.isValidStreetName(streetName));
@@ -77,7 +77,7 @@ public class AddressValidationTests {
      * is equal to the max length.
      */
     @Test
-    public void isValidStreetNameTestEqualMaxLength() {
+    void isValidStreetNameTestEqualMaxLength() {
         String string = "2";
         String streetName = string.repeat(255); //maxLength = 255
         assertEquals(true, AddressValidation.isValidStreetName(streetName));
@@ -88,7 +88,7 @@ public class AddressValidationTests {
      * is in range of expected lengths.
      */
     @Test
-    public void isValidStreetNameTestBetweenLengths() {
+    void isValidStreetNameTestBetweenLengths() {
         String streetName = "Ilam Road";
         assertEquals(true, AddressValidation.isValidStreetName(streetName));
     }
@@ -100,7 +100,7 @@ public class AddressValidationTests {
      * is equal to the minimum length.
      */
     @Test
-    public void isValidCityTestEqualMinLength() {
+    void isValidCityTestEqualMinLength() {
         String city = ""; //minLength = 0
         assertEquals(true, AddressValidation.isValidCity(city));
     }
@@ -110,7 +110,7 @@ public class AddressValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isValidCityTestGreaterMaxLength() {
+    void isValidCityTestGreaterMaxLength() {
         String string = "A";
         String city = string.repeat(260); //maxLength = 255
         assertEquals(false, AddressValidation.isValidCity(city));
@@ -121,7 +121,7 @@ public class AddressValidationTests {
      * is equal to the max length.
      */
     @Test
-    public void isValidCityTestEqualMaxLength() {
+    void isValidCityTestEqualMaxLength() {
         String string = "A";
         String city = string.repeat(255); //maxLength = 255
         assertEquals(true, AddressValidation.isValidCity(city));
@@ -132,7 +132,7 @@ public class AddressValidationTests {
      * is in range of expected lengths.
      */
     @Test
-    public void isValidCityTestBetweenLengths() {
+    void isValidCityTestBetweenLengths() {
         String city = "New York";
         assertEquals(true, AddressValidation.isValidCity(city));
     }
@@ -144,7 +144,7 @@ public class AddressValidationTests {
      * is equal to the minimum length.
      */
     @Test
-    public void isValidRegionTestEqualMinLength() {
+    void isValidRegionTestEqualMinLength() {
         String region = ""; //minLength = 0
         assertEquals(true, AddressValidation.isValidRegion(region));
     }
@@ -154,7 +154,7 @@ public class AddressValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isValidRegionTestGreaterMaxLength() {
+    void isValidRegionTestGreaterMaxLength() {
         String string = "A";
         String region = string.repeat(260); //maxLength = 255
         assertEquals(false, AddressValidation.isValidRegion(region));
@@ -165,7 +165,7 @@ public class AddressValidationTests {
      * is equal to the max length.
      */
     @Test
-    public void isValidRegionTestEqualMaxLength() {
+    void isValidRegionTestEqualMaxLength() {
         String string = "A";
         String region = string.repeat(255); //maxLength = 255
         assertEquals(true, AddressValidation.isValidRegion(region));
@@ -176,7 +176,7 @@ public class AddressValidationTests {
      * is in range of expected lengths.
      */
     @Test
-    public void isValidRegionTestBetweenLengths() {
+    void isValidRegionTestBetweenLengths() {
         String region = "Otago";
         assertEquals(true, AddressValidation.isValidRegion(region));
     }
@@ -188,7 +188,7 @@ public class AddressValidationTests {
      * is equal to the minimum length.
      */
     @Test
-    public void isValidCountryTestEqualMinLength() {
+    void isValidCountryTestEqualMinLength() {
         String country = "N"; //minLength = 1
         assertEquals(true, AddressValidation.isValidCountry(country));
     }
@@ -198,7 +198,7 @@ public class AddressValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isValidCountryTestGreaterMaxLength() {
+    void isValidCountryTestGreaterMaxLength() {
         String string = "N";
         String country = string.repeat(260); //maxLength = 255
         assertEquals(false, AddressValidation.isValidCountry(country));
@@ -209,7 +209,7 @@ public class AddressValidationTests {
      * is equal to the max length.
      */
     @Test
-    public void isValidCountryTestEqualMaxLength() {
+    void isValidCountryTestEqualMaxLength() {
         String string = "N";
         String country = string.repeat(255); //maxLength = 255
         assertEquals(true, AddressValidation.isValidCountry(country));
@@ -220,7 +220,7 @@ public class AddressValidationTests {
      * is in range of expected lengths.
      */
     @Test
-    public void isValidCountryTestBetweenLengths() {
+    void isValidCountryTestBetweenLengths() {
         String country = "Russia";
         assertEquals(true, AddressValidation.isValidCountry(country));
     }
@@ -230,7 +230,7 @@ public class AddressValidationTests {
      * is less than the min length.
      */
     @Test
-    public void isValidCountryTestLessThanMinLength() {
+    void isValidCountryTestLessThanMinLength() {
         String country = ""; //minLength = 1
         assertEquals(false, AddressValidation.isValidCountry(country));
     }
@@ -242,7 +242,7 @@ public class AddressValidationTests {
      * is equal to the minimum length.
      */
     @Test
-    public void isValidPostcodeTestEqualMinLength() {
+    void isValidPostcodeTestEqualMinLength() {
         String postcode = ""; //minLength = 0
         assertEquals(true, AddressValidation.isValidPostcode(postcode));
     }
@@ -252,7 +252,7 @@ public class AddressValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isValidPostcodeTestGreaterMaxLength() {
+    void isValidPostcodeTestGreaterMaxLength() {
         String string = "1";
         String postcode = string.repeat(260); //maxLength = 255
         assertEquals(false, AddressValidation.isValidPostcode(postcode));
@@ -263,7 +263,7 @@ public class AddressValidationTests {
      * is equal to the max length.
      */
     @Test
-    public void isValidPostcodeTestEqualMaxLength() {
+    void isValidPostcodeTestEqualMaxLength() {
         String string = "1";
         String postcode = string.repeat(255); //maxLength = 255
         assertEquals(true, AddressValidation.isValidPostcode(postcode));
@@ -274,7 +274,7 @@ public class AddressValidationTests {
      * is in range of expected lengths.
      */
     @Test
-    public void isValidPostcodeTestBetweenLengths() {
+    void isValidPostcodeTestBetweenLengths() {
         String postcode = "8041";
         assertEquals(true, AddressValidation.isValidPostcode(postcode));
     }
@@ -286,7 +286,7 @@ public class AddressValidationTests {
      * is equal to the minimum length.
      */
     @Test
-    public void isValidSuburbTestLengthEqualMinLength() {
+    void isValidSuburbTestLengthEqualMinLength() {
         String suburb = ""; //minLength = 0
         assertEquals(true, AddressValidation.isValidSuburb(suburb));
     }
@@ -296,7 +296,7 @@ public class AddressValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isValidSuburbTestLengthGreaterThanMaxLength() {
+    void isValidSuburbTestLengthGreaterThanMaxLength() {
         String string = "A";
         String suburb = string.repeat(260); //maxLength = 255
         assertEquals(false, AddressValidation.isValidSuburb(suburb));
@@ -307,7 +307,7 @@ public class AddressValidationTests {
      * is equal to the max length.
      */
     @Test
-    public void isValidSuburbTestLengthEqualMaxLength() {
+    void isValidSuburbTestLengthEqualMaxLength() {
         String string = "A";
         String suburb = string.repeat(255); //maxLength = 255
         assertEquals(true, AddressValidation.isValidSuburb(suburb));
@@ -318,7 +318,7 @@ public class AddressValidationTests {
      * is in range of expected lengths.
      */
     @Test
-    public void isValidSuburbTestLengthBetweenLengths() {
+    void isValidSuburbTestLengthBetweenLengths() {
         String suburb = "Ilam";
         assertEquals(true, AddressValidation.isValidSuburb(suburb));
     }

@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class MarketplaceCardRepositoryIntegrationTests {
+class MarketplaceCardRepositoryIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -53,7 +53,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Sets up data for testing
      */
     @BeforeEach
-    public void beforeEach() throws Exception {
+    void beforeEach() throws Exception {
         // Address
         Address address = new Address(
                 "3/24",
@@ -160,13 +160,13 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests that a (correct) marketplace card is returned when calling findById() with an existing id
      */
     @Test
-    public void whenFindByExistingId_thenReturnMarketplaceCard() throws Exception {
+    void whenFindByExistingId_thenReturnMarketplaceCard() {
 
         // when
         foundMarketplaceCard = marketplaceCardRepository.findById(marketplaceCard.getId());
 
         // then
-        assertThat(foundMarketplaceCard.isPresent()).isTrue();
+        assertThat(foundMarketplaceCard).isPresent();
 
         assertThat(marketplaceCard.getId()).isEqualTo(foundMarketplaceCard.get().getId());
         assertThat(marketplaceCard.getCreator()).isEqualTo(foundMarketplaceCard.get().getCreator());
@@ -181,20 +181,20 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests that no marketplace card is returned when calling findById() with a non-existing id
      */
     @Test
-    public void whenFindByNonExistingId_thenDontReturnMarketplaceCard() throws Exception {
+    void whenFindByNonExistingId_thenDontReturnMarketplaceCard() {
 
         // when
         foundMarketplaceCard = marketplaceCardRepository.findById(0);
 
         // then
-        assertThat(foundMarketplaceCard.isEmpty()).isTrue();
+        assertThat(foundMarketplaceCard).isEmpty();
     }
 
     /**
      * Tests that the correct marketplace cards are returned when calling findAllBySection() with a valid section
      */
     @Test
-    public void whenFindBySection_thenReturnMarketplaceCardsWithSection() throws Exception {
+    void whenFindBySection_thenReturnMarketplaceCardsWithSection() {
         // given
         Sort sortBy = Sort.by(Sort.Order.desc("created").ignoreCase());
         Pageable pageable = PageRequest.of(0, 10, sortBy);
@@ -212,7 +212,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests that no marketplace cards is returned when calling findAllBySection() with no cards in that section
      */
     @Test
-    public void whenNoCardsInSectionAndFindBySection_thenReturnNoMarketplaceCards() throws Exception {
+    void whenNoCardsInSectionAndFindBySection_thenReturnNoMarketplaceCards() {
         // given
         Sort sortBy = Sort.by(Sort.Order.desc("created").ignoreCase());
         Pageable pageable = PageRequest.of(0, 10, sortBy);
@@ -221,7 +221,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
         foundMarketplaceCards = marketplaceCardRepository.findAllBySection(Section.EXCHANGE, pageable);
 
         // then
-        assertThat(foundMarketplaceCards.getNumberOfElements()).isEqualTo(0);
+        assertThat(foundMarketplaceCards.getNumberOfElements()).isZero();
     }
 
 
@@ -231,7 +231,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests Ordering by Created Descending for getting all Marketplace Cards by Section (findAllBySection)
      */
     @Test
-    public void whenFindAllMarketplaceCardsBySection_thenReturnCreatedOrderedCardsDescending() throws Exception {
+    void whenFindAllMarketplaceCardsBySection_thenReturnCreatedOrderedCardsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 3;
@@ -256,7 +256,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests Ordering by Created Ascending for getting all Marketplace Cards by Section (findAllBySection)
      */
     @Test
-    public void whenFindAllMarketplaceCardsBySection_thenReturnCreatedOrderedCardsAscending() throws Exception {
+    void whenFindAllMarketplaceCardsBySection_thenReturnCreatedOrderedCardsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 3;
@@ -282,7 +282,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests Ordering by Title Descending for getting all Marketplace Cards by Section (findAllBySection)
      */
     @Test
-    public void whenFindAllMarketplaceCardsBySection_thenReturnTitleOrderedCardsDescending() throws Exception {
+    void whenFindAllMarketplaceCardsBySection_thenReturnTitleOrderedCardsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 3;
@@ -307,7 +307,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests Ordering by Title Ascending for getting all Marketplace Cards by Section (findAllBySection)
      */
     @Test
-    public void whenFindAllMarketplaceCardsBySection_thenReturnTitleOrderedCardsAscending() throws Exception {
+    void whenFindAllMarketplaceCardsBySection_thenReturnTitleOrderedCardsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 3;
@@ -332,7 +332,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests Ordering by Address Ascending for getting all Marketplace Cards by Section (findAllBySection)
      */
     @Test
-    public void whenFindAllMarketplaceCardsBySection_thenReturnAddressOrderedCardsAscending() throws Exception {
+    void whenFindAllMarketplaceCardsBySection_thenReturnAddressOrderedCardsAscending() throws Exception {
         // given
         int pageNo = 0;
         int pageSize = 1;
@@ -354,7 +354,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests Ordering by Address Descending for getting all Marketplace Cards by Section (findAllBySection)
      */
     @Test
-    public void whenFindAllMarketplaceCardsBySection_thenReturnAddressOrderedCardsDescending() throws Exception {
+    void whenFindAllMarketplaceCardsBySection_thenReturnAddressOrderedCardsDescending() throws Exception {
         // given
         int pageNo = 0;
         int pageSize = 1;
@@ -375,7 +375,7 @@ public class MarketplaceCardRepositoryIntegrationTests {
      * Tests Paging for getting all Marketplace Cards by Section (findAllBySection)
      */
     @Test
-    public void whenFindAllMarketplaceCardsBySection_thenReturnPagedCards() throws Exception {
+    void whenFindAllMarketplaceCardsBySection_thenReturnPagedCards() {
         // given
         int pageSize = 1;
         Sort sortBy = Sort.by(Sort.Order.desc("title").ignoreCase());
