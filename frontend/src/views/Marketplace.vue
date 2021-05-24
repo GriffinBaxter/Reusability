@@ -83,11 +83,11 @@
 
 <script>
 
-import CardDetail from "@/components/marketplace/CardDetailPopup";
+import CardDetail from "../components/marketplace/CardDetailPopup";
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
-import MarketplaceTabSection from "@/components/marketplace/MarketplaceTabSection";
-import Api from "@/Api";
+import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
+import Api from "../Api";
 
 export default {
   name: "Marketplace",
@@ -139,6 +139,7 @@ export default {
           this.page = this.exchangePage;
           break;
       }
+      this.updateUrl();
       this.retrieveAllCardsForSection(this.selectSection);
     },
 
@@ -156,6 +157,10 @@ export default {
      * @param section the section that cards will be retrieved for.
      */
     retrieveAllCardsForSection(section) {
+      // Getting query params from the route
+      this.sortBy = this.$route.query["orderBy"] || "createdDESC";
+      this.page = parseInt(this.$route.query["page"]) - 1 || 0;
+
       Api.getAllCards(section, this.sortBy, this.page).then(response => {
         this.allCards[section] = response.data;
         this.totalPages = parseInt(response.headers["total-pages"]);
@@ -177,6 +182,7 @@ export default {
           break;
       }
       this.sortBy = orderByValue;
+      this.updateUrl();
       this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
     },
 
@@ -196,9 +202,19 @@ export default {
           break;
       }
       this.page = newPageNumber;
+      this.updateUrl();
       this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
     },
 
+    /**
+     * Updates the URL to match the updated section, sortBy, or page.
+     */
+    updateUrl() {
+      this.$router.push({
+        path: `/marketplace`,
+        query: {"section": this.selectSection.replace(" ", ""), "orderBy": this.sortBy, "page": (this.page + 1).toString()}
+      })
+    }
   },
 
   /**
