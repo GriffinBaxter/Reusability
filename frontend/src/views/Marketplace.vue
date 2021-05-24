@@ -40,25 +40,34 @@
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'For Sale'"
                                  v-bind:sectionCards="allCards.ForSale"
+                                 v-bind:totalPages="totalPages"
+                                 v-bind:page="page"
           />
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'Wanted'"
                                  v-bind:sectionCards="allCards.Wanted"
+                                 v-bind:totalPages="totalPages"
+                                 v-bind:page="page"
           />
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'Exchange'"
                                  v-bind:sectionCards="allCards.Exchange"
+                                 v-bind:totalPages="totalPages"
+                                 v-bind:page="page"
           />
         </div>
       </div>
@@ -84,7 +93,7 @@ export default {
   name: "Marketplace",
   data() {
     return {
-      selectSection: "ForSale",
+      selectSection: "For Sale",
       selectedCard: 0,
       allCards: {
         ForSale: [],
@@ -92,7 +101,14 @@ export default {
         Exchange: [],
       },
       sortBy: "createdDESC",
-      page: 0
+      forSaleSortBy: "createdDESC",
+      wantedSortBy: "createdDESC",
+      exchangeSortBy: "createdDESC",
+      page: 0,
+      forSalePage: 0,
+      wantedPage: 0,
+      exchangePage: 0,
+      totalPages: 1
     }
   },
   components: {
@@ -108,7 +124,22 @@ export default {
      * @param newSection the section that the user is switching to
      */
     changeSection(newSection) {
-      this.selectSection = newSection
+      this.selectSection = newSection;
+      switch (this.selectSection) {
+        case "For Sale":
+          this.sortBy = this.forSaleSortBy;
+          this.page = this.forSalePage;
+          break;
+        case "Wanted":
+          this.sortBy = this.wantedSortBy;
+          this.page = this.wantedPage;
+          break;
+        case "Exchange":
+          this.sortBy = this.exchangeSortBy;
+          this.page = this.exchangePage;
+          break;
+      }
+      this.retrieveAllCardsForSection(this.selectSection);
     },
 
     /**
@@ -127,15 +158,47 @@ export default {
     retrieveAllCardsForSection(section) {
       Api.getAllCards(section, this.sortBy, this.page).then(response => {
         this.allCards[section] = response.data;
+        this.totalPages = parseInt(response.headers["total-pages"]);
       }).catch((error) => {
         console.log(error.message)
       })
     },
 
     orderedCards(orderByValue) {
+      switch (this.selectSection) {
+        case "For Sale":
+          this.forSaleSortBy = orderByValue;
+          break;
+        case "Wanted":
+          this.wantedSortBy = orderByValue;
+          break;
+        case "Exchange":
+          this.exchangeSortBy = orderByValue;
+          break;
+      }
       this.sortBy = orderByValue;
       this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
-    }
+    },
+
+    /**
+     * Updates the display to show the new page when a user clicks to move to a different page.
+     */
+    updatePage(newPageNumber) {
+      switch (this.selectSection) {
+        case "For Sale":
+          this.forSalePage = newPageNumber;
+          break;
+        case "Wanted":
+          this.wantedPage = newPageNumber;
+          break;
+        case "Exchange":
+          this.exchangePage = newPageNumber;
+          break;
+      }
+      this.page = newPageNumber;
+      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
+    },
+
   },
 
   /**

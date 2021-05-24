@@ -35,14 +35,23 @@
         </div>
       </div>
 
+      <!---------------------------------------------- page menu ------------------------------------------------>
+
+      <div id="page-menu-container">
+        <PageButtons
+          v-bind:totalPages="totalPages"
+          v-bind:currentPage="page"/>
+      </div>
+
     </div>
   </div>
 
 </template>
 
 <script>
-import Card from "@/components/marketplace/Card";
+import Card from "./Card";
 import OrderingOptionsMenu from "./OrderingOptionsMenu";
+import PageButtons from "../PageButtons";
 
 export default {
   name: "MarketplaceTabSection",
@@ -62,9 +71,20 @@ export default {
       type: Array,
       required: true,
       default() { return []; }
+    },
+    totalPages: {
+      type: Number,
+      default: 1,
+      required: true
+    },
+    page: {
+      type: Number,
+      default: 0,
+      required: true
     }
   },
   components: {
+    PageButtons,
     OrderingOptionsMenu,
     Card,
   },
