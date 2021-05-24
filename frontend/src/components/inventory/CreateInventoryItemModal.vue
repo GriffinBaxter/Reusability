@@ -184,7 +184,7 @@ export default {
       toastErrorMessage: "",
 
       allProducts: [],
-      inventoryValidationHelper: inventoryValidationHelper
+      inventoryValidationHelper: inventoryValidationHelper,
       autofillInput: '',
       autofillState: 'initial',
       currentProduct: null
