@@ -35,9 +35,9 @@
         </div>
       </div>
 
-      <!---------------------------------------------- page menu ------------------------------------------------>
+      <!---------------------------------------------- page buttons ------------------------------------------------>
 
-      <div id="page-menu-container">
+      <div id="page-button-container">
         <PageButtons
           v-bind:totalPages="totalPages"
           v-bind:currentPage="page"/>

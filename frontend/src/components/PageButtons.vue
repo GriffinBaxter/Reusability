@@ -65,6 +65,7 @@ export default {
      * @param newPageNumber The new page number
      */
     updatePage(newPageNumber) {
+      this.$emit('updatePage', newPageNumber);
       this.$parent.$emit('updatePage', newPageNumber);
     },
 

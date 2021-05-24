@@ -161,10 +161,21 @@ export default {
       this.sortBy = this.$route.query["orderBy"] || "createdDESC";
       this.page = parseInt(this.$route.query["page"]) - 1 || 0;
 
+      if (this.page < 0) {
+        this.$router.push({path: '/pageDoesNotExist'});
+      }
+
       Api.getAllCards(section, this.sortBy, this.page).then(response => {
         this.allCards[section] = response.data;
         this.totalPages = parseInt(response.headers["total-pages"]);
+
+        if (this.page > this.totalPages - 1) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
       }).catch((error) => {
+        if (error.response.status === 400) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
         console.log(error.message)
       })
     },
