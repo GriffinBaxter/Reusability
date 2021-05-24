@@ -129,10 +129,7 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col">New Inventory Item created successfully!</div>
-                <div class="col" align="right">
-                  <button type="button" class="btn green-button px-1 py-0" @click="closeMessage">X</button>
-                </div>
+                <div class="col" align="center"> {{userAlertMessage}} </div>
               </div>
             </div>
 
@@ -265,6 +262,7 @@ export default {
 
       businessId: 0,
       creationSuccess: false,
+      userAlertMessage: "",
 
       businessName: null,
       businessDescription: null,
@@ -638,7 +636,23 @@ export default {
      */
     afterCreation() {
       this.creationSuccess = true;
+      this.userAlertMessage = "New Inventory Item Created";
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
       this.retrieveInventoryItems();
+    },
+    /**
+     * After edit success, show the edit info.
+     */
+    afterEdit() {
+      this.creationSuccess = true;
+      this.userAlertMessage = "Product Edited";
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
     },
     /**
      * Currency API requests.
@@ -679,6 +693,10 @@ export default {
        */
       const currentID = Cookies.get('userID');
       if (currentID) {
+        // If the edit is successful the UpdateInventoryItemModal component will emit an 'editedInventory' event.
+        // This code notices the emit and will alert the user that the edit was successful by calling the afterEdit function.
+        this.$root.$on('editedInventory', this.afterEdit);
+
         this.businessId = this.$route.params.id;
 
         await this.currencyRequest();

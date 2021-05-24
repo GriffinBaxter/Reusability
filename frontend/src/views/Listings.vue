@@ -59,6 +59,16 @@
 
         </div>
 
+        <!--space-->
+        <br>
+
+        <!--creation success info-->
+        <div class="alert alert-success" role="alert" v-if="creationSuccess">
+          <div class="row">
+            <div class="col" align="center">New Listing Created</div>
+          </div>
+        </div>
+
         <!-- Listings -->
         <ListingItem
             v-for="item in listings"
@@ -165,7 +175,9 @@ name: "Listings",
       createdAscending: false,
 
       currencyCode: "",
-      currencySymbol: ""
+      currencySymbol: "",
+
+      creationSuccess: false
     }
   },
   methods: {
@@ -415,6 +427,11 @@ name: "Listings",
      * After creation success use endpoint to collect data from backend and display it.
      */
     afterCreation() {
+      this.creationSuccess = true;
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
       this.getListings();
     },
   },

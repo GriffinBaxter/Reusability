@@ -53,9 +53,13 @@ describe("Testing the update inventory item functionality", () => {
             pricePerItem: 0,
             totalPrice: 0,
             manufactured: format(sub(todayDate, {months: 1}), 'yyyy-MM-dd'),
+            manufacturedUnformatted: (new Date()),
             sellBy: format(add(todayDate, {months: 1}), 'yyyy-MM-dd'),
+            sellByUnformatted: (new Date()),
             bestBefore: format(add(todayDate, {months: 2}), 'yyyy-MM-dd'),
-            expires: format(add(todayDate, {months: 3}), 'yyyy-MM-dd')
+            bestBeforeUnformatted: (new Date()),
+            expires: format(add(todayDate, {months: 3}), 'yyyy-MM-dd'),
+            expiresUnformatted: (new Date())
         }
 
         const businessId = 1;

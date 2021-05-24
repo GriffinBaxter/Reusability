@@ -356,6 +356,8 @@ export default {
                 res => {
                   if (res.data.status === 200) {
                     this.updateValue(new InventoryItem(this.newInventoryItem.data));
+                    // Custom event so that Inventory.vue knows edit was a success and can alert the user.
+                    this.$root.$emit('editedInventory');
                     this.modal.hide();
                     this.$router.go();
                   }
