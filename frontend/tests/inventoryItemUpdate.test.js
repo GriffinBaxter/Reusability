@@ -77,6 +77,7 @@ describe("Testing the update inventory item functionality", () => {
             bestBefore: inventoryItem.bestBefore,
             expires: inventoryItem.expires,
         }
+
         const $router = {
             push: jest.fn()
         }
