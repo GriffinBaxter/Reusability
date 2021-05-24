@@ -222,15 +222,9 @@ describe("Testing the page buttons component methods", () => {
         const testInputVal = 1;
         const expectedOutput = {'updatePage': [[1]]};
 
-        pageButtonWrapper.vm.$emit('updatePage', testInputVal);
-        pageButtonWrapper.vm.$nextTick(() => {
-            expect(pageButtonWrapper.emitted()).toEqual(expectedOutput);
-            expect(pageButtonWrapper.emitted().updatePage.length).toBe(1);
-        })
-
         pageButtonWrapper.vm.updatePage(testInputVal);
         pageButtonWrapper.vm.$nextTick(() => {
-            // Number of emits stays the same as the event is emitted to the parent
+            expect(pageButtonWrapper.emitted()).toEqual(expectedOutput);
             expect(pageButtonWrapper.emitted().updatePage.length).toBe(1);
         })
     })
