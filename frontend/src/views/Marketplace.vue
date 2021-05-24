@@ -140,7 +140,7 @@ export default {
           break;
       }
       this.updateUrl();
-      this.retrieveAllCardsForSection(this.selectSection);
+      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
     },
 
     /**
@@ -161,10 +161,25 @@ export default {
       this.sortBy = this.$route.query["orderBy"] || "createdDESC";
       this.page = parseInt(this.$route.query["page"]) - 1 || 0;
 
+      switch (section) {
+        case "ForSale":
+          this.forSaleSortBy = this.sortBy;
+          this.forSalePage = this.page;
+          break;
+        case "Wanted":
+          this.wantedSortBy = this.sortBy;
+          this.wantedPage = this.page;
+          break;
+        case "Exchange":
+          this.exchangeSortBy = this.sortBy;
+          this.exchangePage = this.page;
+          break;
+      }
+
       if (this.page < 0) {
         this.$router.push({path: '/pageDoesNotExist'});
       }
-
+      
       Api.getAllCards(section, this.sortBy, this.page).then(response => {
         this.allCards[section] = response.data;
         this.totalPages = parseInt(response.headers["total-pages"]);
