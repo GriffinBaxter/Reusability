@@ -136,7 +136,7 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
                 Role.GLOBALAPPLICATIONADMIN);
         user.setId(1);
 
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(userRepository.findByEmail(email)).willReturn(Optional.empty());
     }
 
     @When("The user enters an email of {string} that is not registered")
