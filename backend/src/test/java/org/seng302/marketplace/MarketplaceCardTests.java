@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * MarketplaceCard test class.
  */
-public class MarketplaceCardTests {
+class MarketplaceCardTests {
 
     private static Address address;
     private static User user;
 
     @BeforeAll
-    public static void before() throws Exception {
+    static void before() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",

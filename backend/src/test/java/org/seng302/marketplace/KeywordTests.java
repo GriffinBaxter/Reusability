@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Keyword test class.
  */
-public class KeywordTests {
+class KeywordTests {
 
     /**
      * Tests that an invalid name for a keyword (greater than max length) throws an error.

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class KeywordValidationTests {
+class KeywordValidationTests {
 
     // *********************************** NAME **************************************
 
@@ -13,7 +13,7 @@ public class KeywordValidationTests {
      * is less than the minimum length. Also a test for when no keyword is inputted.
      */
     @Test
-    public void isInvalidKeywordNameWhenLengthLessThanMinLengthTest() {
+    void isInvalidKeywordNameWhenLengthLessThanMinLengthTest() {
         String name = ""; //minLength = 2
         assertEquals(false, KeywordValidation.isValidName(name));
     }
@@ -23,7 +23,7 @@ public class KeywordValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isInvalidKeywordNameWhenLengthGreaterThanMaxLengthTest() {
+    void isInvalidKeywordNameWhenLengthGreaterThanMaxLengthTest() {
         String string = "A";
         String name = string.repeat(30); //maxLength = 20
         assertEquals(false, KeywordValidation.isValidName(name));
@@ -34,7 +34,7 @@ public class KeywordValidationTests {
      * is of the right length and contains symbols.
      */
     @Test
-    public void isValidKeywordNameWhenOfRightLengthAndContainsSymbolsTest() {
+    void isValidKeywordNameWhenOfRightLengthAndContainsSymbolsTest() {
         String name = "Money Maker $$$'*!";
         assertEquals(true, KeywordValidation.isValidName(name));
     }
@@ -44,7 +44,7 @@ public class KeywordValidationTests {
      * has the same length as the min length.
      */
     @Test
-    public void isValidKeywordNameWhenLengthEqualsMinLengthTest() {
+    void isValidKeywordNameWhenLengthEqualsMinLengthTest() {
         String name = "IT"; // minLength = 2
         assertEquals(true, KeywordValidation.isValidName(name));
     }
@@ -54,7 +54,7 @@ public class KeywordValidationTests {
      * has the same length as the max length.
      */
     @Test
-    public void isValidKeywordNameWhenLengthEqualsMaxLengthTest() {
+    void isValidKeywordNameWhenLengthEqualsMaxLengthTest() {
         String string = "Z";
         String name = string.repeat(20); //maxLength = 20
         assertEquals(true, KeywordValidation.isValidName(name));

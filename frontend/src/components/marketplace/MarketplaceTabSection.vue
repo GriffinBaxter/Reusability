@@ -17,7 +17,7 @@
 
       <div class="row pb-5 mb-4">
         <!-- Card-->
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"
+        <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
              style="padding: 12px"
              v-for="card in sectionCards"
              v-bind:key="card.index">
@@ -28,8 +28,9 @@
             <Card v-bind:index="card.index"
                   v-bind:title="card.title"
                   v-bind:description="card.description"
-                  v-bind:created="card.created"
+                  v-bind:created="styleDate(card.created)"
                   v-bind:creator="card.creator"
+                  v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
             />
           </div>
         </div>
@@ -52,6 +53,7 @@
 import Card from "./Card";
 import OrderingOptionsMenu from "./OrderingOptionsMenu";
 import PageButtons from "../PageButtons";
+import {formatDate} from "@/dateUtils";
 
 export default {
   name: "MarketplaceTabSection",
@@ -92,6 +94,12 @@ export default {
     selectACard(index) {
       this.$emit('openCardDetail', index);
       this.selectedCard = index
+    },
+    styleDate(date){
+      return formatDate(date, false);
+    },
+    combineSuburbAndCity(suburb, city) {
+      return (suburb === null) ? city : suburb + ", " + city;
     }
   },
 }

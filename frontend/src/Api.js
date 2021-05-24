@@ -233,6 +233,17 @@ export default {
         })
     },
 
+    getEveryProduct: (businessID) => {
+        return instance.get(`/businesses/${businessID}/productAll`, {
+            withCredentials: true
+        })
+    },
+      modifyInventoryItem: (inventoryItemId, businessId, newInventoryItem) => {
+          return instance.put(`/businesses/${businessId}/inventory/${inventoryItemId}`, {...newInventoryItem.data}, {
+              withCredentials: true
+          })
+      },
+
     getDetailForACard: (id) => {
         return instance.get(`/cards/${id}`, {
             withCredentials: true
