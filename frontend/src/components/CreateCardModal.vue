@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Used to create a card -->
-    <button id="open-create-card-modal-button" class="btn green-button" @click="showModal">Create Card</button>
+    <button id="open-create-card-modal-button" class="btn green-button-transparent col-12" @click="showModal">Create Card</button>
 
     <!-- Create Card Modal -->
     <div class="modal fade" ref="createCardModal" id="create-card-modal" tabindex="0">
