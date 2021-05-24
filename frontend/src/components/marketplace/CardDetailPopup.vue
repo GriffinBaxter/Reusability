@@ -71,6 +71,7 @@
 
 <script>
 import Api from "@/Api";
+import {formatDate} from "@/dateUtils";
 
 export default {
   name: "CardDetail",
@@ -95,6 +96,9 @@ export default {
     }
   },
   methods: {
+    /**
+     * convert section with space
+     */
     convertSection(section) {
       switch (section) {
         case 'FORSALE':
@@ -112,7 +116,7 @@ export default {
       this.section = this.convertSection(data.section);
       this.title = data.title;
       this.description = data.description;
-      this.created = data.created;
+      this.created = formatDate(data.created);
       this.address = [data.creator.homeAddress.suburb, data.creator.homeAddress.city].join(" ");
       this.creator = [data.creator.firstName, data.creator.middleName, data.creator.lastName].join(" ");
       if (this.creator.length >= 40) {

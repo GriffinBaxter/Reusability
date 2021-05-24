@@ -2,7 +2,7 @@
   <div>
     <div id="main">
       <!--nav bar-->
-      <navbar/>
+      <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
     <!--creation popup-->
     <inventory-item-creation @updateInventoryItem="afterCreation"
                              v-bind:currency-code="currencyCode"
@@ -213,13 +213,15 @@
 
 
 <script>
-import Footer from "@/components/main/Footer";
-import InventoryItem from "@/components/inventory/InventoryItem";
-import Navbar from "@/components/main/Navbar";
-import InventoryItemCreation from "@/components/inventory/CreateInventoryItemModal";
-import Api from "@/Api";
+import Footer from "../components/main/Footer";
+import InventoryItem from "../components/inventory/InventoryItem";
+import Navbar from "../components/main/Navbar";
+import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
+import Api from "../Api";
 import Cookies from "js-cookie";
-import CurrencyAPI from "@/currencyInstance";
+import CurrencyAPI from "../currencyInstance";
+import {checkAccessPermission} from "../views/helpFunction";
+import {formatDate} from "../dateUtils";
 
 export default {
   components: {
@@ -264,9 +266,18 @@ export default {
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+
+      // List of Business account current user account administrated
+      linkBusinessAccount:[],
     }
   },
   methods: {
+    /**
+     * set link business accounts
+     */
+    setLinkBusinessAccount(data){
+      this.linkBusinessAccount = data;
+    },
     /**
      * convert orderByString to more readable for user
      */
@@ -581,16 +592,14 @@ export default {
               quantity: this.InventoryItemList[i].quantity,
               pricePerItem: this.InventoryItemList[i].pricePerItem,
               totalPrice: this.InventoryItemList[i].totalPrice,
-              manufactured: this.InventoryItemList[i].manufactured,
-              sellBy: this.InventoryItemList[i].sellBy,
-              bestBefore: this.InventoryItemList[i].bestBefore,
-              expires: this.InventoryItemList[i].expires
+              manufactured: formatDate(this.InventoryItemList[i].manufactured, false),
+              sellBy: formatDate(this.InventoryItemList[i].sellBy, false),
+              bestBefore: formatDate(this.InventoryItemList[i].bestBefore, false),
+              expires: formatDate(this.InventoryItemList[i].expires, false)
             })
           }
         }
-
       }).catch((error) => {
-        console.log(error);
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 400) {
@@ -644,7 +653,7 @@ export default {
   },
 
   async mounted() {
-    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+    if (checkAccessPermission(this.linkBusinessAccount)) {
       this.$router.push({path: '/forbidden'});
     } else {
       /**
@@ -658,10 +667,7 @@ export default {
         await this.currencyRequest();
 
         this.retrieveBusinessInfo();
-        this.retrieveInventoryItems().then(
-            () => {
-            }
-        ).catch(
+        this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
       }

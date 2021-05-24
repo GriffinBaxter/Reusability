@@ -37,9 +37,10 @@
 
             <!--price per item-->
             <div class="col-6 form-group py-1 px-3">
-              <label for="price-per-item">Price Per Item ({{ currencyCode }}): </label>
+              <label for="price-per-item" v-if="currencyCode != ''">Price Per Item ({{ currencyCode }}): </label>
+              <label for="price-per-item" v-else>Price Per Item: </label>
               <div class="input-group">
-                <div class="input-group-prepend">
+                <div class="input-group-prepend" v-if="currencySymbol != ''">
                   <span class="input-group-text">{{ currencySymbol }}</span>
                 </div>
                 <input id="price-per-item" name="price-per-item" type="number" step="0.01"
@@ -54,9 +55,10 @@
 
             <!--total price-->
             <div class="col-6 form-group py-1 px-3">
-              <label for="total-price">Total Price ({{ currencyCode }}): </label>
+              <label for="total-price" v-if="currencyCode != ''">Total Price ({{ currencyCode }}): </label>
+              <label for="total-price" v-else>Total Price: </label>
               <div class="input-group">
-                <div class="input-group-prepend">
+                <div class="input-group-prepend" v-if="currencySymbol != ''">
                   <span class="input-group-text">{{ currencySymbol }}</span>
                 </div>
                 <input id="total-price" name="total-price" type="number" step="0.01" v-model="totalPrice"
@@ -131,7 +133,7 @@
 import {Modal} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
-import {endOfToday, format, compareAsc} from 'date-fns'
+import {endOfToday, format, compareAsc, parseISO} from 'date-fns'
 
 export default {
   name: 'InventoryItemCreation',
@@ -651,10 +653,10 @@ export default {
         quantity: this.quantity,
         pricePerItem: this.pricePerItem,
         totalPrice: this.totalPrice,
-        manufactured: this.manufactured,
-        sellBy: this.sellBy,
-        bestBefore: this.bestBefore,
-        expires: this.expires
+        manufactured: parseISO(this.manufactured),
+        sellBy: parseISO(this.sellBy),
+        bestBefore: parseISO(this.bestBefore),
+        expires: parseISO(this.expires)
       }
       const newInventoryItem = new InventoryItem(inventoryItemData);
 
