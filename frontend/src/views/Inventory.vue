@@ -213,13 +213,14 @@
 
 
 <script>
-import Footer from "@/components/main/Footer";
-import InventoryItem from "@/components/inventory/InventoryItem";
-import Navbar from "@/components/main/Navbar";
-import InventoryItemCreation from "@/components/inventory/CreateInventoryItemModal";
-import Api from "@/Api";
+import Footer from "../components/main/Footer";
+import InventoryItem from "../components/inventory/InventoryItem";
+import Navbar from "../components/main/Navbar";
+import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
+import Api from "../Api";
 import Cookies from "js-cookie";
-import CurrencyAPI from "@/currencyInstance";
+import CurrencyAPI from "../currencyInstance";
+import {checkAccessPermission} from "@/views/helpFunction";
 
 export default {
   components: {
@@ -270,18 +271,6 @@ export default {
     }
   },
   methods: {
-    /**
-     * Check current user's permission
-     */
-    checkAccessPermission(){
-      let permission = false;
-      this.linkBusinessAccount.forEach(business => {
-        if (business.id === this.$route.params.id){
-          permission = true;
-        }
-      })
-      return permission && Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs');
-    },
     /**
      * set link business accounts
      */
@@ -663,7 +652,7 @@ export default {
   },
 
   async mounted() {
-    if (this.checkAccessPermission()) {
+    if (checkAccessPermission(this.linkBusinessAccount)) {
       this.$router.push({path: '/forbidden'});
     } else {
       /**

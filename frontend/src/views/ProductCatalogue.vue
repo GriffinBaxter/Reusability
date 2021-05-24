@@ -179,6 +179,7 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
+import {checkAccessPermission} from "@/views/helpFunction";
 
 export default {
   name: "ProductCatalogue",
@@ -270,18 +271,6 @@ export default {
     }
   },
   methods: {
-    /**
-     * Check current user's permission
-     */
-    checkAccessPermission(){
-      let permission = false;
-      this.linkBusinessAccount.forEach(business => {
-        if (business.id === this.$route.params.id){
-          permission = true;
-        }
-      })
-      return permission && Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs');
-    },
     /**
      * set link business accounts
      */
@@ -745,7 +734,7 @@ export default {
 
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
-    if (this.checkAccessPermission()) {
+    if (checkAccessPermission(this.linkBusinessAccount)) {
       this.$router.push({path: '/forbidden'});
     } else {
       /**
