@@ -18,10 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.AbstractList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.ArgumentMatchers.*;
 
 public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
 
@@ -271,7 +274,7 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
                 user.getId(),
                 user,
                 Section.EXCHANGE,
-                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 7), LocalTime.of(0, 0)),
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 8), LocalTime.of(0, 0)),
                 "Card 8",
                 "Card 8 description"
         );
@@ -292,11 +295,21 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
         List<MarketplaceCard> list = List.of(marketplaceCard1, marketplaceCard2, marketplaceCard3,
                 marketplaceCard4, marketplaceCard5, marketplaceCard6, marketplaceCard7,
                 marketplaceCard8, marketplaceCard9);
+
+        List<MarketplaceCard> listForSale = List.of(marketplaceCard1, marketplaceCard2, marketplaceCard3);
+        List<MarketplaceCard> listWanted = List.of(marketplaceCard4, marketplaceCard5, marketplaceCard6);
+        List<MarketplaceCard> listExchange = List.of(marketplaceCard7, marketplaceCard8, marketplaceCard9);
+
         Page<MarketplaceCard> pagedResponse = new PageImpl<>(list);
+        Page<MarketplaceCard> pagedResponseForSale = new PageImpl<>(listForSale);
+        Page<MarketplaceCard> pagedResponseWanted = new PageImpl<>(listWanted);
+        Page<MarketplaceCard> pagedResponseExchange = new PageImpl<>(listExchange);
+
+         given(marketplaceCardRepository.findAllBySection(eq(Section.EXCHANGE), any(Pageable.class))).willReturn(pagedResponseExchange);
+        given(marketplaceCardRepository.findAllBySection(eq(Section.WANTED), any(Pageable.class))).willReturn(pagedResponseWanted);
+        given(marketplaceCardRepository.findAllBySection(eq(Section.FORSALE), any(Pageable.class))).willReturn(pagedResponseForSale);
+
         Pageable paging = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("created").ignoreCase()));
-        given(marketplaceCardRepository.findAllBySection(Section.EXCHANGE, paging)).willReturn(pagedResponse);
-        given(marketplaceCardRepository.findAllBySection(Section.WANTED, paging)).willReturn(pagedResponse);
-        given(marketplaceCardRepository.findAllBySection(Section.FORSALE, paging)).willReturn(pagedResponse);
 
         assertThat(marketplaceCardRepository.findAllBySection(Section.EXCHANGE, paging)).isNotEmpty();
         assertThat(marketplaceCardRepository.findAllBySection(Section.WANTED, paging)).isNotEmpty();
@@ -305,15 +318,88 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
     }
 
     @When("The user attempts to view the {string} section.")
-    public void the_user_attempts_to_view_the_section(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void the_user_attempts_to_view_the_section(String sectionStr ) throws Exception {
+
+        response = mvc.perform(get("/cards")
+                .param("section", sectionStr)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
     }
 
     @Then("Only the {string} section cards are retrieved.")
-    public void only_the_section_cards_are_retrieved(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void only_the_section_cards_are_retrieved(String sectionStr) throws Exception {
+
+        String forSaleCardJSON = "[" +
+                                String.format(expectedCardJson, marketplaceCard1.getId(), user.getId(), user.getFirstName(),
+                                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard1.getSection().toString(),
+                                        marketplaceCard1.getCreated(), marketplaceCard1.getDisplayPeriodEnd(), marketplaceCard1.getTitle(),
+                                        marketplaceCard1.getDescription(), marketplaceCard1.getKeywords()) +
+                                "," +
+                                String.format(expectedCardJson, marketplaceCard2.getId(), user.getId(), user.getFirstName(),
+                                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard2.getSection().toString(),
+                                        marketplaceCard2.getCreated(), marketplaceCard2.getDisplayPeriodEnd(), marketplaceCard2.getTitle(),
+                                        marketplaceCard2.getDescription(), marketplaceCard2.getKeywords()) +
+                                "," +
+                                String.format(expectedCardJson, marketplaceCard3.getId(), user.getId(), user.getFirstName(),
+                                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard3.getSection().toString(),
+                                        marketplaceCard3.getCreated(), marketplaceCard3.getDisplayPeriodEnd(), marketplaceCard3.getTitle(),
+                                        marketplaceCard3.getDescription(), marketplaceCard3.getKeywords()) +
+                                "]";
+
+        String wantCardJSON = "[" +
+                String.format(expectedCardJson, marketplaceCard4.getId(), user.getId(), user.getFirstName(),
+                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard4.getSection().toString(),
+                        marketplaceCard4.getCreated(), marketplaceCard4.getDisplayPeriodEnd(), marketplaceCard4.getTitle(),
+                        marketplaceCard4.getDescription(), marketplaceCard4.getKeywords()) +
+                "," +
+                String.format(expectedCardJson, marketplaceCard5.getId(), user.getId(), user.getFirstName(),
+                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard5.getSection().toString(),
+                        marketplaceCard5.getCreated(), marketplaceCard5.getDisplayPeriodEnd(), marketplaceCard5.getTitle(),
+                        marketplaceCard5.getDescription(), marketplaceCard5.getKeywords()) +
+                "," +
+                String.format(expectedCardJson, marketplaceCard6.getId(), user.getId(), user.getFirstName(),
+                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard6.getSection().toString(),
+                        marketplaceCard6.getCreated(), marketplaceCard6.getDisplayPeriodEnd(), marketplaceCard6.getTitle(),
+                        marketplaceCard6.getDescription(), marketplaceCard6.getKeywords()) +
+                "]";
+
+        String exchangeCardJSON = "[" +
+                String.format(expectedCardJson, marketplaceCard7.getId(), user.getId(), user.getFirstName(),
+                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard7.getSection().toString(),
+                        marketplaceCard7.getCreated(), marketplaceCard7.getDisplayPeriodEnd(), marketplaceCard7.getTitle(),
+                        marketplaceCard7.getDescription(), marketplaceCard7.getKeywords()) +
+                "," +
+                String.format(expectedCardJson, marketplaceCard8.getId(), user.getId(), user.getFirstName(),
+                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard8.getSection().toString(),
+                        marketplaceCard8.getCreated(), marketplaceCard8.getDisplayPeriodEnd(), marketplaceCard8.getTitle(),
+                        marketplaceCard8.getDescription(), marketplaceCard8.getKeywords()) +
+                "," +
+                String.format(expectedCardJson, marketplaceCard9.getId(), user.getId(), user.getFirstName(),
+                        user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                        user.getCreated(), user.getRole(), user.getHomeAddress().toSecureString(), marketplaceCard9.getSection().toString(),
+                        marketplaceCard9.getCreated(), marketplaceCard9.getDisplayPeriodEnd(), marketplaceCard9.getTitle(),
+                        marketplaceCard9.getDescription(), marketplaceCard9.getKeywords()) +
+                "]";
+
+        String comparisonString = null;
+        if (sectionStr.equals("For Sale")) {
+            comparisonString = forSaleCardJSON;
+        } else if (sectionStr.equals("Wanted")) {
+            comparisonString = wantCardJSON;
+        } else if (sectionStr.equals("Exchange")) {
+            comparisonString = exchangeCardJSON;
+        }
+        
+        assertThat(response.getContentAsString()).isEqualTo(comparisonString);
+
     }
 
     @Then("The most recently created \\(or renewed) items appear first.")
