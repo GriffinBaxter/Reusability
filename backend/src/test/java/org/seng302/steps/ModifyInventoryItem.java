@@ -36,6 +36,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -81,6 +82,8 @@ public class ModifyInventoryItem {
             "\"bestBefore\":\"%s\"," +
             "\"expires\":\"%s\"" +
             "}";
+
+    private String payloadJson;
 
     private MockHttpServletResponse response;
 
@@ -177,7 +180,7 @@ public class ModifyInventoryItem {
     }
 
 
-    @When("I modified this inventory with new Product Id {string}, new quantity {int}, new price per item {string}, new total price {string}, new manufactured {string}, new sell by {string}, new best before {string} and new expires {string}.")
+    @Given("New Product Id {string}, new quantity {int}, new price per item {string}, new total price {string}, new manufactured {string}, new sell by {string}, new best before {string} and new expires {string}.")
     public void i_modified_this_inventory_with_new_name_new_product_id_new_quantity_new_price_per_item_new_total_price_new_manufactured_new_sell_by_new_best_before_and_new_expires(String productId, Integer quantity, String pricePerItem, String totalPrice, String manufactured, String sellBy, String bestBefore, String expires) throws Exception {
         InventoryItem newInventoryItem = new InventoryItem(newProduct,
                 productId,
@@ -189,23 +192,19 @@ public class ModifyInventoryItem {
                 LocalDate.parse(bestBefore),
                 LocalDate.parse(expires));
         newInventoryItem.setQuantity(quantity);
-        String payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
                 newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
                 newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
-        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
-        when(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
-                .thenReturn(Optional.ofNullable(newProduct));
-        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
-                .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
-        response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn().getResponse();
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
+                .willReturn(Optional.ofNullable(newProduct));
+        given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .willReturn(Optional.ofNullable(inventoryItem));
+        given(inventoryItemRepository.save(any(InventoryItem.class))).willReturn(newInventoryItem);
     }
 
-    @When("I modified this inventory with new Product Id {string}, new quantity {int}, new price per item {string}, new total price {string}, new manufactured {string}, new sell by {string}, new best before {string} and no expires.")
+    @Given("New Product Id {string}, new quantity {int}, new price per item {string}, new total price {string}, new manufactured {string}, new sell by {string}, new best before {string} and no expires.")
     public void i_modified_this_inventory_with_new_name_new_product_id_new_quantity_new_price_per_item_new_total_price_new_manufactured_new_sell_by_new_best_before_and_no_expires(String productId, Integer quantity, String pricePerItem, String totalPrice, String manufactured, String sellBy, String bestBefore) throws Exception {
         InventoryItem newInventoryItem = new InventoryItem(newProduct,
                 productId,
@@ -217,16 +216,20 @@ public class ModifyInventoryItem {
                 LocalDate.parse(bestBefore),
                 LocalDate.parse(bestBefore));
         newInventoryItem.setExpires(null);
-        String payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
+        payloadJson = String.format(inventoryItemPayloadJson, newInventoryItem.getProductId(), newInventoryItem.getQuantity(),
                 newInventoryItem.getPricePerItem(), newInventoryItem.getTotalPrice(), newInventoryItem.getManufactured(),
                 newInventoryItem.getSellBy(), newInventoryItem.getBestBefore(), newInventoryItem.getExpires());
-        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
-        when(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
-                .thenReturn(Optional.ofNullable(newProduct));
-        when(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
-                .thenReturn(Optional.ofNullable(inventoryItem));
-        when(inventoryItemRepository.save(any(InventoryItem.class))).thenReturn(newInventoryItem);
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(productRepository.findProductByIdAndBusinessId(newProduct.getProductId(), business.getId()))
+                .willReturn(Optional.ofNullable(newProduct));
+        given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId()))
+                .willReturn(Optional.ofNullable(inventoryItem));
+        given(inventoryItemRepository.save(any(InventoryItem.class))).willReturn(newInventoryItem);
+    }
+
+    @When("I modified the inventory.")
+    public void i_modified_the_inventory() throws Exception {
         response = mvc.perform(put(String.format("/businesses/%d/inventory/%d", business.getId(), inventoryItem.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
