@@ -40,29 +40,38 @@
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'For Sale'"
                                  v-bind:sectionCards="allCards.ForSale"
                                  @new-card-created="e => allCards.ForSale.unshift(e)"
 
+                                 v-bind:totalPages="totalPages"
+                                 v-bind:page="page"
           />
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'Wanted'"
                                  v-bind:sectionCards="allCards.Wanted"
                                  @new-card-created="e => allCards.Wanted.unshift(e)"
+                                 v-bind:totalPages="totalPages"
+                                 v-bind:page="page"
           />
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'Exchange'"
                                  v-bind:sectionCards="allCards.Exchange"
                                  @new-card-created="e => allCards.Exchange.unshift(e)"
+                                 v-bind:totalPages="totalPages"
+                                 v-bind:page="page"
           />
         </div>
       </div>
@@ -78,17 +87,17 @@
 
 <script>
 
-import CardDetail from "@/components/marketplace/CardDetailPopup";
+import CardDetail from "../components/marketplace/CardDetailPopup";
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
-import MarketplaceTabSection from "@/components/marketplace/MarketplaceTabSection";
-import Api from "@/Api";
+import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
+import Api from "../Api";
 
 export default {
   name: "Marketplace",
   data() {
     return {
-      selectSection: "ForSale",
+      selectSection: "For Sale",
       selectedCard: 0,
       allCards: {
         ForSale: [],
@@ -96,7 +105,14 @@ export default {
         Exchange: [],
       },
       sortBy: "createdDESC",
-      page: 0
+      forSaleSortBy: "createdDESC",
+      wantedSortBy: "createdDESC",
+      exchangeSortBy: "createdDESC",
+      page: 0,
+      forSalePage: 0,
+      wantedPage: 0,
+      exchangePage: 0,
+      totalPages: 1
     }
   },
   components: {
@@ -112,7 +128,23 @@ export default {
      * @param newSection the section that the user is switching to
      */
     changeSection(newSection) {
-      this.selectSection = newSection
+      this.selectSection = newSection;
+      switch (this.selectSection) {
+        case "For Sale":
+          this.sortBy = this.forSaleSortBy;
+          this.page = this.forSalePage;
+          break;
+        case "Wanted":
+          this.sortBy = this.wantedSortBy;
+          this.page = this.wantedPage;
+          break;
+        case "Exchange":
+          this.sortBy = this.exchangeSortBy;
+          this.page = this.exchangePage;
+          break;
+      }
+      this.updateUrl();
+      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
     },
 
     /**
@@ -129,16 +161,89 @@ export default {
      * @param section the section that cards will be retrieved for.
      */
     retrieveAllCardsForSection(section) {
+      // Getting query params from the route
+      this.sortBy = this.$route.query["orderBy"] || "createdDESC";
+      this.page = parseInt(this.$route.query["page"]) - 1 || 0;
+
+      switch (section) {
+        case "ForSale":
+          this.forSaleSortBy = this.sortBy;
+          this.forSalePage = this.page;
+          break;
+        case "Wanted":
+          this.wantedSortBy = this.sortBy;
+          this.wantedPage = this.page;
+          break;
+        case "Exchange":
+          this.exchangeSortBy = this.sortBy;
+          this.exchangePage = this.page;
+          break;
+      }
+
+      if (this.page < 0) {
+        this.$router.push({path: '/pageDoesNotExist'});
+      }
+      
       Api.getAllCards(section, this.sortBy, this.page).then(response => {
         this.allCards[section] = response.data;
+        this.totalPages = parseInt(response.headers["total-pages"]);
+
+        if (this.page > this.totalPages - 1) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
       }).catch((error) => {
+        if (error.response.status === 400) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
         console.log(error.message)
       })
     },
 
     orderedCards(orderByValue) {
+      switch (this.selectSection) {
+        case "For Sale":
+          this.forSaleSortBy = orderByValue;
+          break;
+        case "Wanted":
+          this.wantedSortBy = orderByValue;
+          break;
+        case "Exchange":
+          this.exchangeSortBy = orderByValue;
+          break;
+      }
       this.sortBy = orderByValue;
+      this.updateUrl();
       this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
+    },
+
+    /**
+     * Updates the display to show the new page when a user clicks to move to a different page.
+     */
+    updatePage(newPageNumber) {
+      switch (this.selectSection) {
+        case "For Sale":
+          this.forSalePage = newPageNumber;
+          break;
+        case "Wanted":
+          this.wantedPage = newPageNumber;
+          break;
+        case "Exchange":
+          this.exchangePage = newPageNumber;
+          break;
+      }
+      this.page = newPageNumber;
+      this.updateUrl();
+      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
+    },
+
+    /**
+     * Updates the URL to match the updated section, sortBy, or page.
+     */
+    updateUrl() {
+      this.$router.push({
+        path: `/marketplace`,
+        query: {"section": this.selectSection.replace(" ", ""), "orderBy": this.sortBy, "page": (this.page + 1).toString()}
+      })
     }
   },
 

@@ -789,7 +789,6 @@ class BusinessResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
-        //when(business.getAdministrators()).thenReturn(List.of(user));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         // then
@@ -1283,7 +1282,7 @@ class BusinessResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(business.getAdministrators().size()).isEqualTo(0);
+        assertThat(business.getAdministrators().size()).isZero();
     }
 
     /**
@@ -1806,7 +1805,7 @@ class BusinessResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(business.getAdministrators().size()).isEqualTo(0);
+        assertThat(business.getAdministrators().size()).isZero();
     }
 
     /**

@@ -194,7 +194,7 @@ public class MarketplaceCardResource {
         }
 
         // Front-end displays 20 cards per page
-        int pageSize = 20; // NOTE if changed must also be changed in MarketplaceCardResourceIntegrationTests
+        int pageSize = 6; // NOTE if changed must also be changed in MarketplaceCardResourceIntegrationTests
 
         Sort sortBy = null;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.

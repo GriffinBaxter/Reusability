@@ -57,53 +57,29 @@
       <div v-else>
         No results found
       </div>
-      <!-- Paginiation -->
-      <div v-if="totalPages > 0" class="col-lg btn-group">
+      <!---------------------------------------------- page buttons ------------------------------------------------>
 
-        <!-- This is only enabled when there is a previous page -->
-        <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updateCurrentPage(currentPage-1)">
-          Previous
-        </button>
-
-        <!-- This is shown when there are more then 2 pages and you are at page 1-->
-        <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updateCurrentPage(currentPage-2)">
-          {{currentPage-1}}
-        </button>
-
-        <!-- Only shows when we are past at least the first page -->
-        <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage-1)" @click="updateCurrentPage(currentPage-1)">
-          {{currentPage}}
-        </button>
-
-        <!-- This converts the current page into 1 origin.-->
-        <button type="button" class="btn btn-outline-primary active">
-          {{currentPage+1}}
-        </button>
-
-        <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
-        <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+1)" @click="updateCurrentPage(currentPage+1)">
-          {{currentPage+2}}
-        </button>
-
-        <!-- This is shown when there are more then 2 pages and you are at page 1-->
-        <button type="button" class="btn btn-outline-primary" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updateCurrentPage(currentPage+2)">
-          {{currentPage+3}}
-        </button>
-
-        <!-- The next button only enabled if there is another page.-->
-        <button type="button" :class="`btn btn-outline-primary ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updateCurrentPage(currentPage+1)">
-          Next
-        </button>
-
+      <div id="page-button-container">
+        <PageButtons
+            v-bind:totalPages="totalPages"
+            v-bind:currentPage="currentPage"
+            @updatePage="updatePage"/>
       </div>
+
     </div>
 
   </div>
 </template>
 
 <script>
+
+import PageButtons from "./PageButtons";
+
 export default {
   name: "Table",
+  components: {
+    PageButtons,
+  },
   props: {
     // Table ID must be unqiue within the page it is placed!
     // This is used to identify the icons per table.
@@ -227,7 +203,7 @@ export default {
      * Given a new page number. The function will either emit an update current page event. Or update the table to show the new page.
      * @param newPageNumber The 0 origin page number.
      */
-    updateCurrentPage(newPageNumber) {
+    updatePage(newPageNumber) {
       // If the current page is controlled through the parent we notify the parent of the update that needs to occur.
       if (this.currentPageOverride !== null) {
         this.$emit(this.eventTypes.UPDATE_CURRENT_PAGE, {tableId: this.tableId, newPageNumber: newPageNumber});
@@ -236,14 +212,6 @@ export default {
         this.currentPage = newPageNumber;
         this.updateTable();
       }
-    },
-    /**
-     * Given a page number check that the page is within the acceptable range.
-     * NOTE this is a 0 origin.
-     * @param pageNumber The page number to be checked.
-     */
-    isValidPageNumber(pageNumber) {
-      return 0 <= pageNumber && pageNumber < this.totalPages;
     },
     /**
      * Update orderBy updates the current orderBy value and direction within the Table component (for visual purposes).
@@ -362,6 +330,10 @@ export default {
       // If the current page override is specified this means that we must set the current page to it.
       if (this.currentPageOverride) {
         this.currentPage = this.currentPageOverride;
+      }
+
+      if (this.currentPage > this.totalPages){
+        this.$router.push({path: '/pageDoesNotExist'});
       }
 
       // If the override has been specified we can update these values, as it means that we want the table to represent what the override is specifying.

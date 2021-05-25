@@ -63,7 +63,7 @@
 
 <script>
 
-import CreateCardModal from "@/components/CreateCardModal";
+import CreateCardModal from "../CreateCardModal";
 
 export default {
   name: "OrderingOptionsMenu",

@@ -1,6 +1,5 @@
 package org.seng302.validation;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.address.Address;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 class ListingValidationTests {
 
@@ -100,7 +99,7 @@ class ListingValidationTests {
     @Test
     void isValidMoreInfoEqualMinLength() {
         String moreInfo = ""; // minLength = 0
-        assertEquals(true, ListingValidation.isValidMoreInfo(moreInfo));
+        assertTrue(ListingValidation.isValidMoreInfo(moreInfo));
     }
 
     /**
@@ -111,7 +110,7 @@ class ListingValidationTests {
     void isValidMoreInfoGreaterThanMaxLength() {
         String string = "Z";
         String moreInfo = string.repeat(601); //maxLength = 600
-        assertEquals(false, ListingValidation.isValidMoreInfo(moreInfo));
+        assertFalse(ListingValidation.isValidMoreInfo(moreInfo));
     }
 
     /**
@@ -122,7 +121,7 @@ class ListingValidationTests {
     void isValidMoreInfoEqualToMaxLength() {
         String string = "Z";
         String moreInfo = string.repeat(600); //maxLength = 600
-        assertEquals(true, ListingValidation.isValidMoreInfo(moreInfo));
+        assertTrue(ListingValidation.isValidMoreInfo(moreInfo));
     }
 
     /**
@@ -132,7 +131,7 @@ class ListingValidationTests {
     @Test
     void isValidMoreInfoCorrectLengthContainsSymbolsAndNumbers() {
         String moreInfo = "Willing t0 accept low3r offers !^#9p4039*$";
-        assertEquals(true, ListingValidation.isValidMoreInfo(moreInfo));
+        assertTrue(ListingValidation.isValidMoreInfo(moreInfo));
     }
 
     // ********************************** QUANTITY **************************************
@@ -144,7 +143,7 @@ class ListingValidationTests {
     @Test
     void isValidQuantityLessThanMinQuantity() {
         int quantity = 0;
-        assertEquals(false, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertFalse(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -154,7 +153,7 @@ class ListingValidationTests {
     @Test
     void isValidQuantityInRange() {
         int quantity = 10;
-        assertEquals(true, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertTrue(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -164,7 +163,7 @@ class ListingValidationTests {
     @Test
     void isValidQuantityEqualToMaxQuantity() {
         int quantity = 30;
-        assertEquals(true, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertTrue(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -174,7 +173,7 @@ class ListingValidationTests {
     @Test
     void isValidQuantityGreaterMaxQuantityNoOtherListings() {
         int quantity = 35;
-        assertEquals(false, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertFalse(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -193,7 +192,7 @@ class ListingValidationTests {
         );
         inventoryItem.addListing(listing);
         int quantity = 20;
-        assertEquals(false, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertFalse(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -212,7 +211,7 @@ class ListingValidationTests {
         );
         inventoryItem.addListing(listing);
         int quantity = 10;
-        assertEquals(true, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertTrue(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
 }
