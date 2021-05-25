@@ -196,6 +196,7 @@ import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItem
 import PageButtons from "../components/PageButtons";
 import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
+import {checkAccessPermission} from "../views/helpFunction";
 
 export default {
   components: {
@@ -665,7 +666,7 @@ export default {
   },
 
   async mounted() {
-    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+    if (checkAccessPermission()) {
       this.$router.push({path: `/businessProfile/${Cookies.get('actAs')}/inventory`});
     } else {
       /**
