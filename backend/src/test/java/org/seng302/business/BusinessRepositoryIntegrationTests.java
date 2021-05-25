@@ -96,7 +96,7 @@ class BusinessRepositoryIntegrationTests {
         assertThat(business.getId()).isEqualTo(found.get().getId());
         assertThat(business.getName()).isEqualTo(found.get().getName());
         assertThat(business.getDescription()).isEqualTo(found.get().getDescription());
-        assertThat(business.getAddress().toString()).isEqualTo(found.get().getAddress().toString());
+        assertThat(business.getAddress()).hasToString(found.get().getAddress().toString());
         assertThat(business.getBusinessType()).isEqualTo(found.get().getBusinessType());
 
     }

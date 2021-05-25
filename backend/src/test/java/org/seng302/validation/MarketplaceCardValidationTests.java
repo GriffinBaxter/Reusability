@@ -1,7 +1,8 @@
 package org.seng302.validation;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.Assert.*;
 
 class MarketplaceCardValidationTests {
 
@@ -15,7 +16,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidTitle_GivenTitleLessThanMinLength_ExpectFalse() {
         String title = "a"; //minLength = 2
-        assertEquals(false, MarketplaceCardValidation.isValidTitle(title));
+        assertFalse(MarketplaceCardValidation.isValidTitle(title));
     }
 
     /**
@@ -25,7 +26,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidTitle_GivenTitleIsEqualMinLength_ExpectTrue() {
         String title = "Ha"; // minLength = 2
-        assertEquals(true, MarketplaceCardValidation.isValidTitle(title));
+        assertTrue(MarketplaceCardValidation.isValidTitle(title));
     }
 
     /**
@@ -35,7 +36,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidTitle_GivenTitleIsCorrectLength_ExpectTrue() {
         String title = "Hayley";
-        assertEquals(true, MarketplaceCardValidation.isValidTitle(title));
+        assertTrue(MarketplaceCardValidation.isValidTitle(title));
     }
 
     /**
@@ -46,7 +47,7 @@ class MarketplaceCardValidationTests {
     void isValidTitle_GivenTitleIsEqualMaxLength_ExpectTrue() {
         String string = "H";
         String title = string.repeat(70); //maxLength = 70
-        assertEquals(true, MarketplaceCardValidation.isValidTitle(title));
+        assertTrue(MarketplaceCardValidation.isValidTitle(title));
     }
 
     /**
@@ -57,7 +58,7 @@ class MarketplaceCardValidationTests {
     void isValidTitle_GivenTitleGreaterThanMaxLength_ExpectFalse() {
         String string = "H";
         String title = string.repeat(71); //maxLength = 70
-        assertEquals(false, MarketplaceCardValidation.isValidTitle(title));
+        assertFalse(MarketplaceCardValidation.isValidTitle(title));
     }
 
     /**
@@ -67,7 +68,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidTitle_GivenTitleContainsNumbers_ExpectTrue() {
         String title = "Hayley's 99th Birthday";
-        assertEquals(true, MarketplaceCardValidation.isValidTitle(title));
+        assertTrue(MarketplaceCardValidation.isValidTitle(title));
     }
 
     /**
@@ -77,7 +78,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidTitle_GivenTitleContainsValidSymbols_ExpectTrue() {
         String title = "Hayley !@#$%^&*()_-+=[]{}|?<>,.";
-        assertEquals(true, MarketplaceCardValidation.isValidTitle(title));
+        assertTrue(MarketplaceCardValidation.isValidTitle(title));
     }
 
     /**
@@ -87,7 +88,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidTitle_GivenTitleContainsSpace_ExpectTrue() {
         String title = "Hayley Krippner";
-        assertEquals(true, MarketplaceCardValidation.isValidTitle(title));
+        assertTrue(MarketplaceCardValidation.isValidTitle(title));
     }
 
     // *********************************************** DESCRIPTION *****************************************************
@@ -99,7 +100,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidDescription_GivenDescriptionIsEqualMinLength_ExpectTrue() {
         String title = ""; // minLength = 0
-        assertEquals(true, MarketplaceCardValidation.isValidDescription(title));
+        assertTrue(MarketplaceCardValidation.isValidDescription(title));
     }
     /**
      * Test to see whether true (i.e valid) is returned when description
@@ -109,7 +110,7 @@ class MarketplaceCardValidationTests {
     void isValidDescription_GivenDescriptionIsCorrectLength_ExpectTrue() {
         String string = "H";
         String title = string.repeat(400);
-        assertEquals(true, MarketplaceCardValidation.isValidDescription(title));
+        assertTrue(MarketplaceCardValidation.isValidDescription(title));
     }
 
     /**
@@ -120,7 +121,7 @@ class MarketplaceCardValidationTests {
     void isValidDescription_GivenDescriptionIsEqualMaxLength_ExpectTrue() {
         String string = "H";
         String title = string.repeat(500); //maxLength = 500
-        assertEquals(true, MarketplaceCardValidation.isValidDescription(title));
+        assertTrue(MarketplaceCardValidation.isValidDescription(title));
     }
 
     /**
@@ -131,7 +132,7 @@ class MarketplaceCardValidationTests {
     void isValidDescription_GivenDescriptionGreaterThanMaxLength_ExpectFalse() {
         String string = "H";
         String description = string.repeat(501); //maxLength = 500
-        assertEquals(false, MarketplaceCardValidation.isValidDescription(description));
+        assertFalse(MarketplaceCardValidation.isValidDescription(description));
     }
 
     /**
@@ -141,7 +142,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidDescription_GivenDescriptionContainsNumbers_ExpectTrue() {
         String title = "Hayley's 99th Birthday";
-        assertEquals(true, MarketplaceCardValidation.isValidDescription(title));
+        assertTrue(MarketplaceCardValidation.isValidDescription(title));
     }
 
     /**
@@ -151,7 +152,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidDescription_GivenTitleContainsNumbers_ExpectTrue() {
         String title = "11111111111111111111111111111111111111111111";
-        assertEquals(true, MarketplaceCardValidation.isValidDescription(title));
+        assertTrue(MarketplaceCardValidation.isValidDescription(title));
     }
 
     /**
@@ -161,7 +162,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidDescription_GivenDescriptionContainsValidSymbols_ExpectTrue() {
         String title = "Hayley !@#$%^&*()_-+=[]{}|?<>,.";
-        assertEquals(true, MarketplaceCardValidation.isValidDescription(title));
+        assertTrue(MarketplaceCardValidation.isValidDescription(title));
     }
 
     /**
@@ -171,7 +172,7 @@ class MarketplaceCardValidationTests {
     @Test
     void isValidDescription_GivenDescriptionContainsSpace_ExpectTrue() {
         String title = "Hayley Krippner";
-        assertEquals(true, MarketplaceCardValidation.isValidDescription(title));
+        assertTrue(MarketplaceCardValidation.isValidDescription(title));
     }
 
 }

@@ -2,7 +2,6 @@ package org.seng302.business.listing;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
@@ -20,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -620,8 +618,8 @@ class FindListingsByBusinessIdTests {
         Page<Listing> listingPage = listingRepository.findListingsByBusinessId(anotherBusinessId, pageable);
 
         // then
-        assertThat(listingPage.getTotalElements()).isEqualTo(0);
-        assertThat(listingPage.getTotalPages()).isEqualTo(0);
+        assertThat(listingPage.getTotalElements()).isZero();
+        assertThat(listingPage.getTotalPages()).isZero();
     }
 
     /**

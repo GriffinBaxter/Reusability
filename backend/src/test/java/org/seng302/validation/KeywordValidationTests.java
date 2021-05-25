@@ -2,7 +2,7 @@ package org.seng302.validation;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 class KeywordValidationTests {
 
@@ -15,7 +15,7 @@ class KeywordValidationTests {
     @Test
     void isInvalidKeywordNameWhenLengthLessThanMinLengthTest() {
         String name = ""; //minLength = 2
-        assertEquals(false, KeywordValidation.isValidName(name));
+        assertFalse(KeywordValidation.isValidName(name));
     }
 
     /**
@@ -26,7 +26,7 @@ class KeywordValidationTests {
     void isInvalidKeywordNameWhenLengthGreaterThanMaxLengthTest() {
         String string = "A";
         String name = string.repeat(30); //maxLength = 20
-        assertEquals(false, KeywordValidation.isValidName(name));
+        assertFalse(KeywordValidation.isValidName(name));
     }
 
     /**
@@ -36,7 +36,7 @@ class KeywordValidationTests {
     @Test
     void isValidKeywordNameWhenOfRightLengthAndContainsSymbolsTest() {
         String name = "Money Maker $$$'*!";
-        assertEquals(true, KeywordValidation.isValidName(name));
+        assertTrue(KeywordValidation.isValidName(name));
     }
 
     /**
@@ -46,7 +46,7 @@ class KeywordValidationTests {
     @Test
     void isValidKeywordNameWhenLengthEqualsMinLengthTest() {
         String name = "IT"; // minLength = 2
-        assertEquals(true, KeywordValidation.isValidName(name));
+        assertTrue(KeywordValidation.isValidName(name));
     }
 
     /**
@@ -57,7 +57,7 @@ class KeywordValidationTests {
     void isValidKeywordNameWhenLengthEqualsMaxLengthTest() {
         String string = "Z";
         String name = string.repeat(20); //maxLength = 20
-        assertEquals(true, KeywordValidation.isValidName(name));
+        assertTrue(KeywordValidation.isValidName(name));
     }
 
 }

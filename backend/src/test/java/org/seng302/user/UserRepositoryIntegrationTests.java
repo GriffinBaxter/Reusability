@@ -3,7 +3,6 @@ package org.seng302.user;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.seng302.address.Address;
 import org.seng302.address.AddressPayload;
 import org.seng302.main.Main;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,7 +68,7 @@ class UserRepositoryIntegrationTests {
         foundUser = userRepository.findByEmail(user.getEmail());
 
         // then
-        assertThat(foundUser.isPresent()).isTrue();
+        assertThat(foundUser).isPresent();
 
         assertThat(user.getId()).isEqualTo(foundUser.get().getId());
         assertThat(user.getEmail()).isEqualTo(foundUser.get().getEmail());
@@ -81,7 +79,7 @@ class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUser.get().getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUser.get().getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUser.get().getPhoneNumber());
-        assertThat(user.getHomeAddress().toString()).isEqualTo(foundUser.get().getHomeAddress().toString());
+        assertThat(user.getHomeAddress()).hasToString(foundUser.get().getHomeAddress().toString());
         assertThat(user.getCreated()).isEqualTo(foundUser.get().getCreated());
         assertThat(user.getPassword()).isEqualTo(foundUser.get().getPassword());
     }
@@ -117,7 +115,7 @@ class UserRepositoryIntegrationTests {
         foundUser = userRepository.findByEmail("123test@email.com");
 
         // then
-        assertThat(foundUser.isEmpty()).isTrue();
+        assertThat(foundUser).isEmpty();
     }
 
     /**
@@ -151,7 +149,7 @@ class UserRepositoryIntegrationTests {
         foundUser = userRepository.findById(user.getId());
 
         // then
-        assertThat(foundUser.isPresent()).isTrue();
+        assertThat(foundUser).isPresent();
 
         assertThat(user.getId()).isEqualTo(foundUser.get().getId());
         assertThat(user.getEmail()).isEqualTo(foundUser.get().getEmail());
@@ -162,7 +160,7 @@ class UserRepositoryIntegrationTests {
         assertThat(user.getBio()).isEqualTo(foundUser.get().getBio());
         assertThat(user.getDateOfBirth()).isEqualTo(foundUser.get().getDateOfBirth());
         assertThat(user.getPhoneNumber()).isEqualTo(foundUser.get().getPhoneNumber());
-        assertThat(user.getHomeAddress().toString()).isEqualTo(foundUser.get().getHomeAddress().toString());
+        assertThat(user.getHomeAddress().toString()).hasToString(foundUser.get().getHomeAddress().toString());
         assertThat(user.getCreated()).isEqualTo(foundUser.get().getCreated());
         assertThat(user.getPassword()).isEqualTo(foundUser.get().getPassword());
     }
@@ -176,7 +174,7 @@ class UserRepositoryIntegrationTests {
         foundUser = userRepository.findById(0);
 
         // then
-        assertThat(foundUser.isEmpty()).isTrue();
+        assertThat(foundUser).isEmpty();
     }
 
     /**
@@ -213,7 +211,7 @@ class UserRepositoryIntegrationTests {
         ));
 
         // then
-        assertThat(foundUserPayloadList.size() == 1).isTrue();
+        assertThat(foundUserPayloadList.size()).isSameAs(1);
         assertThat(user.getId()).isEqualTo(foundUserPayloadList.get(0).getId());
         assertThat(user.getEmail()).isEqualTo(foundUserPayloadList.get(0).getEmail());
         assertThat(user.getFirstName()).isEqualTo(foundUserPayloadList.get(0).getFirstName());
@@ -305,7 +303,7 @@ class UserRepositoryIntegrationTests {
         foundUserPayloadList = UserPayload.convertToPayload(userRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCase("TESTFIRST", "TESTLAST"));
 
         // then
-        assertThat(foundUserPayloadList.size() == 1).isTrue();
+        assertThat(foundUserPayloadList.size()).isSameAs(1);
         assertThat(user.getId()).isEqualTo(foundUserPayloadList.get(0).getId());
         assertThat(user.getEmail()).isEqualTo(foundUserPayloadList.get(0).getEmail());
         assertThat(user.getFirstName()).isEqualTo(foundUserPayloadList.get(0).getFirstName());
@@ -404,10 +402,10 @@ class UserRepositoryIntegrationTests {
         );
 
         // then
-        assertThat(foundUserPayloadListNickname.size() == 1).isTrue();
-        assertThat(foundUserPayloadListFirst.size() == 1).isTrue();
-        assertThat(foundUserPayloadListLast.size() == 1).isTrue();
-        assertThat(foundUserPayloadListMiddle.size() == 1).isTrue();
+        assertThat(foundUserPayloadListNickname.size()).isSameAs(1);
+        assertThat(foundUserPayloadListFirst.size()).isSameAs(1);
+        assertThat(foundUserPayloadListLast.size()).isSameAs(1);
+        assertThat(foundUserPayloadListMiddle.size()).isSameAs(1);
 
         for (UserPayload foundUserPayload: foundUserPayloads) {
             assertThat(user.getId()).isEqualTo(foundUserPayload.getId());

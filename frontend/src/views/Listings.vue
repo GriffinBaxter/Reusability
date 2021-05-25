@@ -90,45 +90,14 @@
         <!--space-->
         <br>
 
-        <!--pagination-->
-        <nav>
-          <ul v-if="totalPages > 0" class="pagination justify-content-center">
-            <!-- This is only enabled when there is a previous page -->
-            <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
-              Previous
-            </button>
+        <!---------------------------------------------- page buttons ------------------------------------------------>
 
-            <!-- This is shown when there are more then 2 pages and you are at page 1-->
-            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
-              {{currentPage-1}}
-            </button>
-
-            <!-- Only shows when we are past at least the first page -->
-            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
-              {{currentPage}}
-            </button>
-
-            <!-- This converts the current page into 1 origin.-->
-            <button type="button" class="btn green-button-transparent active">
-              {{currentPage+1}}
-            </button>
-
-            <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
-            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
-              {{currentPage+2}}
-            </button>
-
-            <!-- This is shown when there are more then 2 pages and you are at page 1-->
-            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
-              {{currentPage+3}}
-            </button>
-
-            <!-- The next button only enabled if there is another page.-->
-            <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
-              Next
-            </button>
-          </ul>
-        </nav>
+        <div id="page-button-container">
+          <PageButtons
+              v-bind:totalPages="totalPages"
+              v-bind:currentPage="currentPage"
+              @updatePage="updatePage"/>
+        </div>
 
       </div>
     </div>
@@ -149,11 +118,13 @@ import Cookies from "js-cookie";
 import CreateListing from "@/components/listing/CreateListingModal";
 import Footer from "@/components/main/Footer";
 import CurrencyAPI from "@/currencyInstance";
+import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
+
 
 export default {
 name: "Listings",
-  components: {Footer, CreateListing, ListingItem, Navbar},
+  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons},
   data() {
     return {
       allListings: [],
@@ -199,10 +170,9 @@ name: "Listings",
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
      *
-     * @param event The click event
      * @param newPageNumber The new page number
      */
-    updatePage(event, newPageNumber) {
+    updatePage(newPageNumber) {
       this.currentPage = newPageNumber;
       this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
       this.getListings();
@@ -312,6 +282,13 @@ name: "Listings",
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
 
       await Api.sortListings(this.businessId, this.orderBy, this.currentPage).then(response => {
+        this.totalRows = parseInt(response.headers["total-rows"]);
+        this.totalPages = parseInt(response.headers["total-pages"]);
+
+        if (this.currentPage > this.totalPages - 1) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
+
         this.populatePage(response);
 
       }).catch((error) => {
@@ -363,9 +340,6 @@ name: "Listings",
         this.totalPages = 0;
         // Generate the tableData to be placed in the table & get the total number of rows.
       } else {
-        this.totalRows = parseInt(response.headers["total-rows"]);
-        this.totalPages = parseInt(response.headers["total-pages"]);
-
         this.listings = [];
 
         for (let i = 0; i < this.rowsPerPage; i++) {

@@ -15,7 +15,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 class BusinessValidationTests {
 
@@ -68,7 +68,7 @@ class BusinessValidationTests {
     @Test
     void isValidNameLessThanMinLength() {
         String businessName = ""; //minLength = 1
-        assertEquals(false, BusinessValidation.isValidName(businessName));
+        assertFalse(BusinessValidation.isValidName(businessName));
     }
 
     /**
@@ -79,7 +79,7 @@ class BusinessValidationTests {
     void isValidNameGreaterThanMaxLength() {
         String string = "A";
         String businessName = string.repeat(101); //maxLength = 100
-        assertEquals(false, BusinessValidation.isValidName(businessName));
+        assertFalse(BusinessValidation.isValidName(businessName));
     }
 
     /**
@@ -89,7 +89,7 @@ class BusinessValidationTests {
     @Test
     void isValidNameInvalidSymbols() {
         String businessName = "New %@!";
-        assertEquals(false, BusinessValidation.isValidName(businessName));
+        assertFalse(BusinessValidation.isValidName(businessName));
     }
 
     /**
@@ -99,7 +99,7 @@ class BusinessValidationTests {
     @Test
     void isValidNameValidSymbolsAndSpaces() {
         String businessName = "New '#,.&()-";
-        assertEquals(true, BusinessValidation.isValidName(businessName));
+        assertTrue(BusinessValidation.isValidName(businessName));
     }
 
     /**
@@ -109,7 +109,7 @@ class BusinessValidationTests {
     @Test
     void isValidNameContainsNumbers() {
         String businessName = "New123";
-        assertEquals(true, BusinessValidation.isValidName(businessName));
+        assertTrue(BusinessValidation.isValidName(businessName));
     }
 
     /**
@@ -119,7 +119,7 @@ class BusinessValidationTests {
     @Test
     void isValidNameEqualToMinLength() {
         String businessName = "3"; // minLength = 1
-        assertEquals(true, BusinessValidation.isValidName(businessName));
+        assertTrue(BusinessValidation.isValidName(businessName));
     }
 
     /**
@@ -130,7 +130,7 @@ class BusinessValidationTests {
     void isValidNameEqualToMaxLength() {
         String string = "A"; // maxLength = 100
         String businessName = string.repeat(100);
-        assertEquals(true, BusinessValidation.isValidName(businessName));
+        assertTrue(BusinessValidation.isValidName(businessName));
     }
 
     // ******************************** DESCRIPTION **************************************
@@ -142,7 +142,7 @@ class BusinessValidationTests {
     @Test
     void isValidDescriptionEqualMinLength() {
         String description = ""; // minLength = 0
-        assertEquals(true, BusinessValidation.isValidDescription(description));
+        assertTrue(BusinessValidation.isValidDescription(description));
     }
 
     /**
@@ -153,7 +153,7 @@ class BusinessValidationTests {
     void isValidDescriptionGreaterThanMaxLength() {
         String string = "Z";
         String description = string.repeat(601); //maxLength = 600
-        assertEquals(false, BusinessValidation.isValidDescription(description));
+        assertFalse(BusinessValidation.isValidDescription(description));
     }
 
     /**
@@ -164,7 +164,7 @@ class BusinessValidationTests {
     void isValidDescriptionEqualToMaxLength() {
         String string = "Z";
         String description = string.repeat(600); //maxLength = 600
-        assertEquals(true, BusinessValidation.isValidDescription(description));
+        assertTrue(BusinessValidation.isValidDescription(description));
     }
 
     /**
@@ -175,7 +175,7 @@ class BusinessValidationTests {
     void isValidDescriptionCorrectLengthContainsSymbolsAndNumbers() {
         String description = "Hello welcome to New World12345!!!!!!!!. Contact us" +
                 " at top@bga.com. Now %$&#$*#(#";
-        assertEquals(true, BusinessValidation.isValidDescription(description));
+        assertTrue(BusinessValidation.isValidDescription(description));
     }
 
 
@@ -186,9 +186,9 @@ class BusinessValidationTests {
      * doesn't exist.
      */
     @Test
-    void isValidBusinessNotExist() throws Exception {
+    void isValidBusinessNotExist() {
         businesses.add(business);
-        assertEquals(true, BusinessValidation.isNewBusiness(businesses, "New World"));
+        assertTrue(BusinessValidation.isNewBusiness(businesses, "New World"));
     }
 
     /**
@@ -196,9 +196,9 @@ class BusinessValidationTests {
      * already exists
      */
     @Test
-    void isValidBusinessExists() throws Exception {
+    void isValidBusinessExists() {
         businesses.add(business);
-        assertEquals(false, BusinessValidation.isNewBusiness(businesses, "Countdown"));
+        assertFalse(BusinessValidation.isNewBusiness(businesses, "Countdown"));
     }
 
     /**
@@ -206,8 +206,8 @@ class BusinessValidationTests {
      * businesses.
      */
     @Test
-    void isValidBusinessNoBusinesses() throws Exception {
-        assertEquals(true, BusinessValidation.isNewBusiness(businesses, "Countdown"));
+    void isValidBusinessNoBusinesses() {
+        assertTrue(BusinessValidation.isNewBusiness(businesses, "Countdown"));
     }
 
 }

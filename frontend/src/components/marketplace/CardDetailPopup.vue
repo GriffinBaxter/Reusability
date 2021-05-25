@@ -70,8 +70,8 @@
 </template>
 
 <script>
-import Api from "@/Api";
-import {formatDate} from "@/dateUtils";
+import Api from "../../Api";
+import {formatDate} from "../../dateUtils";
 
 export default {
   name: "CardDetail",
