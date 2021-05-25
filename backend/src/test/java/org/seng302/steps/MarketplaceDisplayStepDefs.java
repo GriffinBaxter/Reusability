@@ -60,12 +60,25 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
     private MarketplaceCard marketplaceCard7;
     private MarketplaceCard marketplaceCard8;
     private MarketplaceCard marketplaceCard9;
+    private MarketplaceCard marketplaceCard10;
+    private MarketplaceCard marketplaceCard11;
+    private MarketplaceCard marketplaceCard12;
+
     private String title1;
     private String title2;
     private String title3;
+    private String location1;
+    private String location2;
+    private String location3;
 
     private User user;
+    private User user2;
+    private User user3;
+    private User user4;
     private Address address;
+    private Address address2;
+    private Address address3;
+    private Address address4;
 
     private MockHttpServletResponse response;
 
@@ -476,7 +489,6 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
 
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
-
     }
 
     @When("The user attempts to order the cards by title in {string} order.")
@@ -531,6 +543,201 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
         }
 
         assertThat(responseTitles).isEqualTo(orderedTitles);
+    }
+
+    @Given("There are three cards and the location of the creator associated with them are {string}, {string}, {string} {string}, {string}, {string}.")
+    public void there_are_three_cards_and_the_location_of_the_creator_associated_with_them_are(String suburb1, String city1, String suburb2, String city2, String suburb3, String city3) throws Exception {
+
+        address2 = new Address(
+                "3/24",
+                "Ilam Road",
+                city1,
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                suburb1
+        );
+
+        user2 = new User(
+                "Johnny",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address2,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user2.setId(2);
+        user2.setSessionUUID(User.generateSessionUUID());
+
+        address3 = new Address(
+                "3/24",
+                "Some Road",
+                city2,
+                "Wellington",
+                "New Zealand",
+                "90210",
+                suburb2
+        );
+
+        user3 = new User(
+                "Johnson",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address3,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user3.setId(3);
+        user3.setSessionUUID(User.generateSessionUUID());
+
+        address4 = new Address(
+                "3/24",
+                "Some Road",
+                city3,
+                "Wellington",
+                "New Zealand",
+                "90210",
+                suburb3
+        );
+
+        user4 = new User(
+                "Jimmy",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address4,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user4.setId(4);
+        user4.setSessionUUID(User.generateSessionUUID());
+
+
+        // ********************************************************
+
+        marketplaceCard10 = new MarketplaceCard(
+                user2.getId(),
+                user2,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                "inputTitle1",
+                "Come join Hayley and help her celebrate her birthday!"
+        );
+        marketplaceCard10.setId(10);
+
+        marketplaceCard11 = new MarketplaceCard(
+                user3.getId(),
+                user3,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 2), LocalTime.of(0, 0)),
+                "inputTitle2",
+                "Card 2 description"
+        );
+        marketplaceCard11.setId(11);
+
+        marketplaceCard12 = new MarketplaceCard(
+                user4.getId(),
+                user4,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 3), LocalTime.of(0, 0)),
+                "inputTitle3",
+                "Card 3 description"
+        );
+        marketplaceCard12.setId(12);
+
+        given(userRepository.findBySessionUUID(user2.getSessionUUID())).willReturn(Optional.ofNullable(user2));
+        given(userRepository.findBySessionUUID(user3.getSessionUUID())).willReturn(Optional.ofNullable(user3));
+        given(userRepository.findBySessionUUID(user4.getSessionUUID())).willReturn(Optional.ofNullable(user4));
+
+        location1 = user2.getHomeAddress().getSuburb() + user2.getHomeAddress().getCity();
+        location2 = user3.getHomeAddress().getSuburb() + user3.getHomeAddress().getCity();
+        location3 = user4.getHomeAddress().getSuburb() + user4.getHomeAddress().getCity();
+
+    }
+
+    @When("The user attempts to order the cards by location in {string} order.")
+    public void the_user_attempts_to_order_the_cards_by_location_in_order(String sortBy) throws Exception {
+
+        ArrayList<MarketplaceCard> list = new ArrayList<>();
+        list.add(marketplaceCard10);
+        list.add(marketplaceCard11);
+        list.add(marketplaceCard12);
+
+        Sort sort = null;
+
+        Collections.sort(list, (option1, option2) ->
+        {
+            try {
+                return (option1.getCreator().getHomeAddress().getSuburb() + option1.getCreator().getHomeAddress().getCity())
+                        .compareTo(option2.getCreator().getHomeAddress().getSuburb() + option2.getCreator().getHomeAddress().getCity());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return 0;
+        });
+
+        if (sortBy.equals("ascending")) {
+            sort = Sort.by(Sort.Order.asc("creator.homeAddress.suburb").ignoreCase()).and(Sort.by(Sort.Order.asc("creator.homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("created").ignoreCase())));
+        } else {
+            Collections.reverse(list);
+            sort = Sort.by(Sort.Order.desc("creator.homeAddress.suburb").ignoreCase()).and(Sort.by(Sort.Order.desc("creator.homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("created").ignoreCase())));
+        }
+
+        Page<MarketplaceCard> pagedResponse = new PageImpl<>(list);
+        given(marketplaceCardRepository.findAllBySection(any(Section.class), any(Pageable.class))).willReturn(pagedResponse);
+        Pageable paging = PageRequest.of(0, 10, sort);
+        assertThat(marketplaceCardRepository.findAllBySection(Section.EXCHANGE, paging)).isNotEmpty();
+
+        response = mvc.perform(get("/cards")
+                .param("section", "Wanted")
+                .cookie(new Cookie("JSESSIONID", user2.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @Then("The retrieved cards are ordered by location in {string} order.")
+    public void the_retrieved_cards_are_ordered_by_location_in_order(String direction) throws UnsupportedEncodingException {
+
+        // Locations from response
+        String[] locationArray = response.getContentAsString().split("\"");
+        ArrayList<String> responseLocations = new ArrayList<>();
+        for (int i = 0; i < locationArray.length; i++) {
+            if (locationArray[i].equals("suburb")) {
+                int suburbIndex = i + 2;
+                int cityIndex = i + 6;
+                String suburbAndCity = locationArray[suburbIndex] + locationArray[cityIndex];
+                responseLocations.add(suburbAndCity);
+            }
+        }
+
+        // Locations from GIVEN, manually sorted.
+        ArrayList<String> orderedLocations = new ArrayList<>();
+        orderedLocations.add(location1);
+        orderedLocations.add(location2);
+        orderedLocations.add(location3);
+        Collections.sort(orderedLocations);
+
+        if (direction.equals("descending")) {
+            Collections.reverse(orderedLocations);
+        }
+
+        assertThat(responseLocations).isEqualTo(orderedLocations);
     }
 
 }

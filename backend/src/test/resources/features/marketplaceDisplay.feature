@@ -33,7 +33,11 @@ Feature: UCM3 - Marketplace Section Display
     Then The retrieved cards are ordered by title in "descending" order.
 
   Scenario: AC3 - I can order cards in ascending order by location
-    Given
+    Given There are three cards and the location of the creator associated with them are "Ilam", "Christchurch", "Trentham" "Upper Hutt", "Addington", "Christchurch".
+    When The user attempts to order the cards by location in "ascending" order.
+    Then The retrieved cards are ordered by location in "ascending" order.
 
   Scenario: AC3 - I can order cards in descending order by location
-    Given
+    Given There are three cards and the location of the creator associated with them are "Ilam", "Christchurch", "Trentham" "Upper Hutt", "Addington", "Christchurch".
+    When The user attempts to order the cards by location in "descending" order.
+    Then The retrieved cards are ordered by location in "descending" order.
