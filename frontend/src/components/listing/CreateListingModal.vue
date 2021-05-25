@@ -471,7 +471,9 @@ export default {
 
       return isValid
     },
-
+    /**
+     * Retrieves a list of all inventory items for the given business, to be put into the autofill dropdown.
+     */
     async getAllInventoryItems() {
       await Api.getEveryInventoryItem(this.businessId).then((response) => {
         this.allInventoryItems = [...response.data];

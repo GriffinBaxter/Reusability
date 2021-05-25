@@ -212,6 +212,9 @@ export default {
       this.bestBefore = this.bestBefore.trim();
       this.expires = this.expires.trim();
     },
+    /**
+     * Retrieves a list of all products for the given business, to be put into the autofill dropdown.
+     */
     async getAllProducts() {
       await Api.getEveryProduct(this.businessId).then((response) => {
         this.allProducts = [...response.data];
