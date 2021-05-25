@@ -332,7 +332,7 @@ export default {
         this.currentPage = this.currentPageOverride;
       }
 
-      if (this.currentPage > this.totalPages){
+      if (this.totalPages > 0 && this.currentPage > this.totalPages){
         this.$router.push({path: '/pageDoesNotExist'});
       }
 

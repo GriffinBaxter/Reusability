@@ -285,7 +285,7 @@ name: "Listings",
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
-        if (this.currentPage > this.totalPages - 1) {
+        if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
           this.$router.push({path: '/pageDoesNotExist'});
         }
 
