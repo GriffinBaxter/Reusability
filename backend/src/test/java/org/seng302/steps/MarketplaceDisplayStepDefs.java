@@ -23,9 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.AbstractList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -62,7 +60,9 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
     private MarketplaceCard marketplaceCard7;
     private MarketplaceCard marketplaceCard8;
     private MarketplaceCard marketplaceCard9;
-
+    private String title1;
+    private String title2;
+    private String title3;
 
     private User user;
     private Address address;
@@ -409,6 +409,128 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
 
         assertThat(response.getContentAsString()).isEqualTo(comparisonString);
 
+    }
+
+    @Given("There are three cards with titles {string}, {string}, {string}.")
+    public void there_are_three_cards_with_titles(String inputTitle1, String inputTitle2, String inputTitle3) throws Exception {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+
+        user = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+
+        marketplaceCard1 = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                inputTitle1,
+                "Come join Hayley and help her celebrate her birthday!"
+        );
+        marketplaceCard1.setId(1);
+
+        marketplaceCard2 = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 2), LocalTime.of(0, 0)),
+                inputTitle2,
+                "Card 2 description"
+        );
+        marketplaceCard2.setId(2);
+
+        marketplaceCard3 = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 3), LocalTime.of(0, 0)),
+                inputTitle3,
+                "Card 3 description"
+        );
+        marketplaceCard3.setId(3);
+
+        title1 = inputTitle1;
+        title2 = inputTitle2;
+        title3 = inputTitle3;
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+
+    }
+
+    @When("The user attempts to order the cards by title in {string} order.")
+    public void the_user_attempts_to_order_the_cards_by_title_in_order(String sortBy) throws Exception {
+        ArrayList<MarketplaceCard> list = new ArrayList<>();
+        list.add(marketplaceCard1);
+        list.add(marketplaceCard2);
+        list.add(marketplaceCard3);
+
+        Sort sort = null;
+        if (sortBy.equals("ascending")) {
+            sort = Sort.by(Sort.Order.asc("title").ignoreCase());
+            list.sort(Comparator.comparing(MarketplaceCard::getTitle));
+        } else {
+            list.sort(Comparator.comparing(MarketplaceCard::getTitle));
+            Collections.reverse(list);
+            sort = Sort.by(Sort.Order.desc("title").ignoreCase());
+        }
+
+        Page<MarketplaceCard> pagedResponse = new PageImpl<>(list);
+        given(marketplaceCardRepository.findAllBySection(any(Section.class), any(Pageable.class))).willReturn(pagedResponse);
+        Pageable paging = PageRequest.of(0, 10, sort);
+        assertThat(marketplaceCardRepository.findAllBySection(Section.EXCHANGE, paging)).isNotEmpty();
+
+        response = mvc.perform(get("/cards")
+                .param("section", "Wanted")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @Then("The retrieved cards are ordered by title in {string} order.")
+    public void the_retrieved_cards_are_ordered_by_title_in_order(String direction) throws Exception {
+
+        // Titles from response
+        String[] titleArray = response.getContentAsString().split("\"");
+        ArrayList<String> responseTitles = new ArrayList<>();
+        for (int i = 0; i < titleArray.length; i++) {
+            if (titleArray[i].equals("title")) {
+                responseTitles.add(titleArray[i+2]);
+            }
+        }
+
+        // Titles from GIVEN, manually sorted.
+        ArrayList<String> orderedTitles = new ArrayList<>();
+        orderedTitles.add(title1);
+        orderedTitles.add(title2);
+        orderedTitles.add(title3);
+        Collections.sort(orderedTitles);
+
+        if (direction.equals("descending")) {
+            Collections.reverse(orderedTitles);
+        }
+
+        assertThat(responseTitles).isEqualTo(orderedTitles);
     }
 
 }
