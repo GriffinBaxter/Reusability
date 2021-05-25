@@ -650,7 +650,7 @@ export default {
               this.cannotProceed = false;
 
 
-              this.userAlertMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
+              this.userAlertMessage = this.addedMessage;
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
