@@ -79,7 +79,7 @@
 
             <!--Close Date-->
             <div class="row form-group py-1 px-3">
-              <label for="closes">Close Date: </label>
+              <label for="closes">Close Date*: </label>
               <input id="closes" name="closes" type="datetime-local" v-model="closes"
                      :class="toggleInvalidClass(closesErrorMsg)">
               <div class="invalid-feedback">
