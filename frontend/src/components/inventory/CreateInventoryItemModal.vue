@@ -32,7 +32,7 @@
             <div class="col-5 form-group py-1 px-3">
               <label for="quantity">Quantity*: </label>
               <input id="quantity" name="quantity" type="number" v-model="quantity" min="0"
-                     :class="toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" @input="updatePriceFromQuantity" required>
+                     :class="inventoryValidationHelper.toggleInvalidClass(quantityErrorMsg)" :maxlength="config.quantity.maxLength" @input="updatePriceFromQuantity" required>
               <div class="invalid-feedback">
                 {{ quantityErrorMsg }}
               </div>
@@ -48,7 +48,7 @@
                 </div>
                 <input id="price-per-item" name="price-per-item" type="number" step="0.01"
                        v-model="pricePerItem"
-                       min="0" :class="toggleInvalidClass(pricePerItemErrorMsg)"
+                       min="0" :class="inventoryValidationHelper.toggleInvalidClass(pricePerItemErrorMsg)"
                        :maxlength="config.pricePerItem.maxLength" @input="updatePriceFromQuantity">
                 <div class="invalid-feedback">
                   {{ pricePerItemErrorMsg }}
@@ -64,7 +64,7 @@
                   <span class="input-group-text">{{ currencySymbol }}</span>
                 </div>
                 <input id="total-price" name="total-price" type="number" step="0.01" v-model="totalPrice"
-                       min="0" :class="toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
+                       min="0" :class="inventoryValidationHelper.toggleInvalidClass(totalPriceErrorMsg)" :maxlength="config.totalPrice.maxLength">
                 <div class="invalid-feedback">
                   {{ totalPriceErrorMsg }}
                 </div>
@@ -75,7 +75,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="manufactured">Manufactured: </label>
               <input id="manufactured" name="manufactured" type="date" v-model="manufactured"
-                     :class="toggleInvalidClass(manufacturedErrorMsg)">
+                     :class="inventoryValidationHelper.toggleInvalidClass(manufacturedErrorMsg)">
               <div class="invalid-feedback">
                 {{ manufacturedErrorMsg }}
               </div>
@@ -85,7 +85,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="sell-by">Sell By: </label>
               <input id="sell-by" name="sell-by" type="date" v-model="sellBy"
-                     :class="toggleInvalidClass(sellByErrorMsg)">
+                     :class="inventoryValidationHelper.toggleInvalidClass(sellByErrorMsg)">
               <div class="invalid-feedback">
                 {{ sellByErrorMsg }}
               </div>
@@ -95,7 +95,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="best-before">Best Before: </label>
               <input id="best-before" name="best-before" type="date" v-model="bestBefore"
-                     :class="toggleInvalidClass(bestBeforeErrorMsg)">
+                     :class="inventoryValidationHelper.toggleInvalidClass(bestBeforeErrorMsg)">
               <div class="invalid-feedback">
                 {{ bestBeforeErrorMsg }}
               </div>
@@ -105,7 +105,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="expires">Expires*: </label>
               <input class="col-6" id="expires" name="expires" type="date" v-model="expires"
-                     :class="toggleInvalidClass(expiresErrorMsg)" required>
+                     :class="inventoryValidationHelper.toggleInvalidClass(expiresErrorMsg)" required>
               <div class="invalid-feedback">
                 {{ expiresErrorMsg }}
               </div>
