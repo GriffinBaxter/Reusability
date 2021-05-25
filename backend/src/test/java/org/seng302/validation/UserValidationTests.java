@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.Month;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 class UserValidationTests {
 
@@ -18,7 +19,7 @@ class UserValidationTests {
     @Test
     void isValidFirstNameLessThanMinLength() {
         String firstName = ""; //minLength = 2
-        assertEquals(false, UserValidation.isValidFirstName(firstName));
+        assertFalse(UserValidation.isValidFirstName(firstName));
     }
 
     /**
@@ -29,7 +30,7 @@ class UserValidationTests {
     void isValidFirstNameGreaterThanMaxLength() {
         String string = "A";
         String firstName = string.repeat(260); //maxLength = 255
-        assertEquals(false, UserValidation.isValidFirstName(firstName));
+        assertFalse(UserValidation.isValidFirstName(firstName));
     }
 
     /**
@@ -39,7 +40,7 @@ class UserValidationTests {
     @Test
     void isValidFirstNameInvalidSymbols() {
         String firstName = "Zac!@#";
-        assertEquals(false, UserValidation.isValidFirstName(firstName));
+        assertFalse(UserValidation.isValidFirstName(firstName));
     }
 
     /**
@@ -49,7 +50,7 @@ class UserValidationTests {
     @Test
     void isValidFirstNameContainsNumbers() {
         String firstName = "Zac123";
-        assertEquals(false, UserValidation.isValidFirstName(firstName));
+        assertFalse(UserValidation.isValidFirstName(firstName));
     }
 
     /**
@@ -59,7 +60,7 @@ class UserValidationTests {
     @Test
     void isValidFirstNameValidSymbols() {
         String firstName = "Za-c'bd";
-        assertEquals(true, UserValidation.isValidFirstName(firstName));
+        assertTrue(UserValidation.isValidFirstName(firstName));
     }
 
     /**
@@ -69,7 +70,7 @@ class UserValidationTests {
     @Test
     void isValidFirstNameContainsSpace() {
         String firstName = "Za c";
-        assertEquals(true, UserValidation.isValidFirstName(firstName));
+        assertTrue(UserValidation.isValidFirstName(firstName));
     }
 
     /**
@@ -79,7 +80,7 @@ class UserValidationTests {
     @Test
     void isValidFirstNameCorrectLength() {
         String firstName = "Zachary";
-        assertEquals(true, UserValidation.isValidFirstName(firstName));
+        assertTrue(UserValidation.isValidFirstName(firstName));
     }
 
     /**
@@ -89,7 +90,7 @@ class UserValidationTests {
     @Test
     void isValidFirstNameEqualMinLength() {
         String firstName = "Za"; // minLength = 2
-        assertEquals(true, UserValidation.isValidFirstName(firstName));
+        assertTrue(UserValidation.isValidFirstName(firstName));
     }
 
     /**
@@ -100,7 +101,7 @@ class UserValidationTests {
     void isValidFirstNameEqualMaxLength() {
         String string = "Z";
         String firstName = string.repeat(255); //maxLength = 255
-        assertEquals(true, UserValidation.isValidFirstName(firstName));
+        assertTrue(UserValidation.isValidFirstName(firstName));
     }
 
     // ******************************** MIDDLE NAME **********************************
@@ -113,7 +114,7 @@ class UserValidationTests {
     void isValidMiddleNameGreaterThanMaxLength() {
         String string = "F";
         String middleName = string.repeat(260); //maxLength = 255
-        assertEquals(false, UserValidation.isValidMiddleName(middleName));
+        assertFalse(UserValidation.isValidMiddleName(middleName));
     }
 
     /**
@@ -123,7 +124,7 @@ class UserValidationTests {
     @Test
     void isValidMiddleNameInvalidSymbols() {
         String middleName = "Finlay!@#";
-        assertEquals(false, UserValidation.isValidMiddleName(middleName));
+        assertFalse(UserValidation.isValidMiddleName(middleName));
     }
 
     /**
@@ -133,7 +134,7 @@ class UserValidationTests {
     @Test
     void isValidMiddleNameContainsNumbers() {
         String middleName = "Finaly123";
-        assertEquals(false, UserValidation.isValidMiddleName(middleName));
+        assertFalse(UserValidation.isValidMiddleName(middleName));
     }
 
     /**
@@ -143,7 +144,7 @@ class UserValidationTests {
     @Test
     void isValidMiddleNameValidSymbols() {
         String middleName = "Za-c'bd";
-        assertEquals(true, UserValidation.isValidMiddleName(middleName));
+        assertTrue(UserValidation.isValidMiddleName(middleName));
     }
 
     /**
@@ -153,7 +154,7 @@ class UserValidationTests {
     @Test
     void isValidMiddleNameContainsSpace() {
         String middleName = "Za c";
-        assertEquals(true, UserValidation.isValidMiddleName(middleName));
+        assertTrue(UserValidation.isValidMiddleName(middleName));
     }
 
     /**
@@ -163,7 +164,7 @@ class UserValidationTests {
     @Test
     void isValidMiddleNameCorrectLength() {
         String middleName = "Finlay";
-        assertEquals(true, UserValidation.isValidMiddleName(middleName));
+        assertTrue(UserValidation.isValidMiddleName(middleName));
     }
 
     /**
@@ -173,7 +174,7 @@ class UserValidationTests {
     @Test
     void isValidMiddleNameEqualMinLength() {
         String middleName = ""; // minLength = 0
-        assertEquals(true, UserValidation.isValidMiddleName(middleName));
+        assertTrue(UserValidation.isValidMiddleName(middleName));
     }
 
     /**
@@ -184,7 +185,7 @@ class UserValidationTests {
     void isValidMiddleNameEqualMaxLength() {
         String string = "Z";
         String middleName = string.repeat(255); //maxLength = 255
-        assertEquals(true, UserValidation.isValidMiddleName(middleName));
+        assertTrue(UserValidation.isValidMiddleName(middleName));
     }
 
     // ********************************* LAST NAME ***********************************
@@ -196,7 +197,7 @@ class UserValidationTests {
     @Test
     void isValidLastNameLessThanMinLength() {
         String lastName = ""; //minLength = 2
-        assertEquals(false, UserValidation.isValidLastName(lastName));
+        assertFalse(UserValidation.isValidLastName(lastName));
     }
 
     /**
@@ -207,7 +208,7 @@ class UserValidationTests {
     void isValidLastNameGreaterThanMaxLength() {
         String string = "A";
         String lastName = string.repeat(260); //maxLength = 255
-        assertEquals(false, UserValidation.isValidLastName(lastName));
+        assertFalse(UserValidation.isValidLastName(lastName));
     }
 
     /**
@@ -217,7 +218,7 @@ class UserValidationTests {
     @Test
     void isValidLastNameInvalidSymbols() {
         String LastName = "Jones!@#";
-        assertEquals(false, UserValidation.isValidLastName(LastName));
+        assertFalse(UserValidation.isValidLastName(LastName));
     }
 
     /**
@@ -227,7 +228,7 @@ class UserValidationTests {
     @Test
     void isValidLastNameContainsNumbers() {
         String lastName = "Jones123";
-        assertEquals(false, UserValidation.isValidLastName(lastName));
+        assertFalse(UserValidation.isValidLastName(lastName));
     }
 
     /**
@@ -237,7 +238,7 @@ class UserValidationTests {
     @Test
     void isValidLastNameValidSymbols() {
         String lastName = "Za-c'bd";
-        assertEquals(true, UserValidation.isValidLastName(lastName));
+        assertTrue(UserValidation.isValidLastName(lastName));
     }
 
     /**
@@ -247,7 +248,7 @@ class UserValidationTests {
     @Test
     void isValidLastNameContainsSpace() {
         String lastName = "Za c";
-        assertEquals(true, UserValidation.isValidLastName(lastName));
+        assertTrue(UserValidation.isValidLastName(lastName));
     }
 
     /**
@@ -257,7 +258,7 @@ class UserValidationTests {
     @Test
     void isValidLastNameCorrectLength() {
         String lastName = "Jones";
-        assertEquals(true, UserValidation.isValidLastName(lastName));
+        assertTrue(UserValidation.isValidLastName(lastName));
     }
 
     /**
@@ -267,7 +268,7 @@ class UserValidationTests {
     @Test
     void isValidLastNameEqualMinLength() {
         String lastName = "Jo"; // minLength = 2
-        assertEquals(true, UserValidation.isValidLastName(lastName));
+        assertTrue(UserValidation.isValidLastName(lastName));
     }
 
     /**
@@ -278,7 +279,7 @@ class UserValidationTests {
     void isValidLastNameEqualMaxLength() {
         String string = "J";
         String lastName = string.repeat(255); //maxLength = 255
-        assertEquals(true, UserValidation.isValidLastName(lastName));
+        assertTrue(UserValidation.isValidLastName(lastName));
     }
 
     // ********************************* NICKNAME ************************************
@@ -291,7 +292,7 @@ class UserValidationTests {
     void isValidNicknameGreaterThanMaxLength() {
         String string = "A";
         String nickname = string.repeat(260); //maxLength = 255
-        assertEquals(false, UserValidation.isValidNickname(nickname));
+        assertFalse(UserValidation.isValidNickname(nickname));
     }
 
     /**
@@ -301,7 +302,7 @@ class UserValidationTests {
     @Test
     void isValidNicknameInvalidSymbols() {
         String nickname = "Zac!@#";
-        assertEquals(false, UserValidation.isValidNickname(nickname));
+        assertFalse(UserValidation.isValidNickname(nickname));
     }
 
     /**
@@ -311,7 +312,7 @@ class UserValidationTests {
     @Test
     void isValidNicknameContainsNumbers() {
         String nickname = "Zac123";
-        assertEquals(false, UserValidation.isValidNickname(nickname));
+        assertFalse(UserValidation.isValidNickname(nickname));
     }
 
     /**
@@ -321,7 +322,7 @@ class UserValidationTests {
     @Test
     void isValidNicknameValidSymbols() {
         String nickname = "Za-c'bd";
-        assertEquals(true, UserValidation.isValidNickname(nickname));
+        assertTrue(UserValidation.isValidNickname(nickname));
     }
 
     /**
@@ -331,7 +332,7 @@ class UserValidationTests {
     @Test
     void isValidNicknameContainsSpace() {
         String nickname = "Za c";
-        assertEquals(true, UserValidation.isValidNickname(nickname));
+        assertTrue(UserValidation.isValidNickname(nickname));
     }
 
     /**
@@ -341,7 +342,7 @@ class UserValidationTests {
     @Test
     void isValidNicknameCorrectLength() {
         String nickname = "Peps";
-        assertEquals(true, UserValidation.isValidNickname(nickname));
+        assertTrue(UserValidation.isValidNickname(nickname));
     }
 
     /**
@@ -351,7 +352,7 @@ class UserValidationTests {
     @Test
     void isValidNicknameEqualMinLength() {
         String nickname = ""; // minLength = 0
-        assertEquals(true, UserValidation.isValidNickname(nickname));
+        assertTrue(UserValidation.isValidNickname(nickname));
     }
 
     /**
@@ -362,7 +363,7 @@ class UserValidationTests {
     void isValidNicknameEqualMaxLength() {
         String string = "Z";
         String nickname = string.repeat(255); //maxLength = 255
-        assertEquals(true, UserValidation.isValidNickname(nickname));
+        assertTrue(UserValidation.isValidNickname(nickname));
     }
 
     // *********************************** BIO ***************************************
@@ -374,7 +375,7 @@ class UserValidationTests {
     @Test
     void isValidBioEqualMinLength() {
         String bio = ""; // minLength = 0
-        assertEquals(true, UserValidation.isValidBio(bio));
+        assertTrue(UserValidation.isValidBio(bio));
     }
 
     /**
@@ -385,7 +386,7 @@ class UserValidationTests {
     void isValidBioGreaterThanMaxLength() {
         String string = "Z";
         String bio = string.repeat(601); //maxLength = 600
-        assertEquals(false, UserValidation.isValidBio(bio));
+        assertFalse(UserValidation.isValidBio(bio));
     }
 
     /**
@@ -396,7 +397,7 @@ class UserValidationTests {
     void isValidBioEqualToMaxLength() {
         String string = "Z";
         String bio = string.repeat(600); //maxLength = 600
-        assertEquals(true, UserValidation.isValidBio(bio));
+        assertTrue(UserValidation.isValidBio(bio));
     }
 
     /**
@@ -407,7 +408,7 @@ class UserValidationTests {
     void isValidBioCorrectLengthContainsSymbolsAndNumbers() {
         String bio = "Hello my name is Euan1234. My email is top@bga.com." +
                 "Hello!!!! #$%&&**";
-        assertEquals(true, UserValidation.isValidBio(bio));
+        assertTrue(UserValidation.isValidBio(bio));
     }
 
     // ********************************** EMAIL **************************************
@@ -419,7 +420,7 @@ class UserValidationTests {
     @Test
     void isValidEmailLessThanMinLength() {
         String email = "z@"; // minLength = 3
-        assertEquals(false, UserValidation.isValidEmail(email));
+        assertFalse(UserValidation.isValidEmail(email));
     }
 
     /**
@@ -429,7 +430,7 @@ class UserValidationTests {
     @Test
     void isValidEmailGreaterThanMaxLength() {
         String email = "z@abbbbbbbbbbbbbbbbbbbbbbbbbbb.co.nz"; // maxLength = 30
-        assertEquals(false, UserValidation.isValidEmail(email));
+        assertFalse(UserValidation.isValidEmail(email));
     }
 
     /**
@@ -439,7 +440,7 @@ class UserValidationTests {
     @Test
     void isValidEmailEqualToMinLength() {
         String email = "z@c.a"; // minLength = 5
-        assertEquals(true, UserValidation.isValidEmail(email));
+        assertTrue(UserValidation.isValidEmail(email));
     }
 
     /**
@@ -449,7 +450,7 @@ class UserValidationTests {
     @Test
     void isValidEmailEqualToMaxLength() {
         String email = "zzzzzzzzzzzz@ccccccccccc.co.nz"; // maxLength = 30
-        assertEquals(true, UserValidation.isValidEmail(email));
+        assertTrue(UserValidation.isValidEmail(email));
     }
 
     /**
@@ -459,7 +460,7 @@ class UserValidationTests {
     @Test
     void isValidEmailNoAtSymbol() {
         String email = "zac.gmail.com";
-        assertEquals(false, UserValidation.isValidEmail(email));
+        assertFalse(UserValidation.isValidEmail(email));
     }
 
     /**
@@ -469,7 +470,7 @@ class UserValidationTests {
     @Test
     void isValidEmailCorrectFormat() {
         String email = "zac@gmail.com";
-        assertEquals(true, UserValidation.isValidEmail(email));
+        assertTrue(UserValidation.isValidEmail(email));
     }
 
     /**
@@ -479,7 +480,7 @@ class UserValidationTests {
     @Test
     void isValidEmailCorrectFormatContainsNumbers() {
         String email = "zac123@gmail.com";
-        assertEquals(true, UserValidation.isValidEmail(email));
+        assertTrue(UserValidation.isValidEmail(email));
     }
 
     /**
@@ -489,7 +490,7 @@ class UserValidationTests {
     @Test
     void isValidEmailContainsSpaces() {
         String email = "zac 123@gmail.com";
-        assertEquals(false, UserValidation.isValidEmail(email));
+        assertFalse(UserValidation.isValidEmail(email));
     }
 
     /**
@@ -499,7 +500,7 @@ class UserValidationTests {
     @Test
     void isValidEmailInvalidSymbols() {
         String email = "zac#***123@gmail.com";
-        assertEquals(false, UserValidation.isValidEmail(email));
+        assertFalse(UserValidation.isValidEmail(email));
     }
 
     // ******************************* DATE OF BIRTH *********************************
@@ -511,7 +512,7 @@ class UserValidationTests {
     @Test
     void isValidDOBNotOldEnough() {
         LocalDate currentDate = LocalDate.now();
-        assertEquals(false, UserValidation.isValidDOB(currentDate));
+        assertFalse(UserValidation.isValidDOB(currentDate));
     }
 
     /**
@@ -521,7 +522,7 @@ class UserValidationTests {
     @Test
     void isValidDOBOldEnough() {
         LocalDate birthDate = LocalDate.of(2000, Month.JANUARY, 1);
-        assertEquals(true, UserValidation.isValidDOB(birthDate));
+        assertTrue(UserValidation.isValidDOB(birthDate));
     }
 
     /**
@@ -531,7 +532,7 @@ class UserValidationTests {
     @Test
     void isValidDOBEqualToMinAge() {
         LocalDate birthDate = LocalDate.now().minusYears(13); // minAge = 13
-        assertEquals(true, UserValidation.isValidDOB(birthDate));
+        assertTrue(UserValidation.isValidDOB(birthDate));
     }
 
     // ******************************* PHONE NUMBER **********************************
@@ -543,7 +544,7 @@ class UserValidationTests {
     @Test
     void isValidPhoneNumberNoInput() {
         String phoneNumber = ""; // minLength = 0
-        assertEquals(true, UserValidation.isValidPhoneNumber(phoneNumber));
+        assertTrue(UserValidation.isValidPhoneNumber(phoneNumber));
     }
 
     /**
@@ -553,7 +554,7 @@ class UserValidationTests {
     @Test
     void isValidPhoneNumberGreaterThanMaxLength() {
         String phoneNumber = "123 456 789 102 345"; // maxLength = 15
-        assertEquals(false, UserValidation.isValidPhoneNumber(phoneNumber));
+        assertFalse(UserValidation.isValidPhoneNumber(phoneNumber));
     }
 
     /**
@@ -563,7 +564,7 @@ class UserValidationTests {
     @Test
     void isValidPhoneNumberInvalidSyntax() {
         String phoneNumber = "111-222-333%!@#";
-        assertEquals(false, UserValidation.isValidPhoneNumber(phoneNumber));
+        assertFalse(UserValidation.isValidPhoneNumber(phoneNumber));
     }
 
     /**
@@ -573,7 +574,7 @@ class UserValidationTests {
     @Test
     void isValidPhoneNumberValidSyntax() {
         String phoneNumber = "+64 3 555 0129";
-        assertEquals(true, UserValidation.isValidPhoneNumber(phoneNumber));
+        assertTrue(UserValidation.isValidPhoneNumber(phoneNumber));
     }
 
     /**
@@ -583,7 +584,7 @@ class UserValidationTests {
     @Test
     void isValidPhoneNumberValidSyntaxAndEqualToMaxLength() {
         String phoneNumber = "+64 32 555 0129"; // maxLength = 15
-        assertEquals(true, UserValidation.isValidPhoneNumber(phoneNumber));
+        assertTrue(UserValidation.isValidPhoneNumber(phoneNumber));
     }
 
     // ********************************* PASSWORD ************************************
@@ -595,7 +596,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordLessThanMinLength() {
         String password = "1234567"; // minLength = 8
-        assertEquals(false, UserValidation.isValidPassword(password));
+        assertFalse(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -606,7 +607,7 @@ class UserValidationTests {
     void isValidPasswordGreaterThanMaxLength() {
         String string = "1234567";
         String password = string.repeat(5); // maxLength = 30
-        assertEquals(false, UserValidation.isValidPassword(password));
+        assertFalse(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -616,7 +617,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordCorrectLengthAndAllFields() {
         String password = "123ASD!@#asd";
-        assertEquals(true, UserValidation.isValidPassword(password));
+        assertTrue(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -626,7 +627,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordEqualToMinLengthAndAllFields() {
         String password = "1AD!@#as";
-        assertEquals(true, UserValidation.isValidPassword(password));
+        assertTrue(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -636,7 +637,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordEqualToMaxLengthAndAllFields() {
         String password = "1AD!@#asaaaaaaaaaaaaaaaaaaaaaa"; // maxLength = 30
-        assertEquals(true, UserValidation.isValidPassword(password));
+        assertTrue(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -647,7 +648,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordContainsSpace() {
         String password = "1AD!@#asaa aaa";
-        assertEquals(true, UserValidation.isValidPassword(password));
+        assertTrue(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -657,7 +658,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordCorrectLengthNoUppercase() {
         String password = "123!@#asd";
-        assertEquals(false, UserValidation.isValidPassword(password));
+        assertFalse(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -667,7 +668,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordCorrectLengthNoNumber() {
         String password = "ASD!@#asd";
-        assertEquals(false, UserValidation.isValidPassword(password));
+        assertFalse(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -677,7 +678,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordCorrectLengthNoSymbol() {
         String password = "ASD124asd";
-        assertEquals(false, UserValidation.isValidPassword(password));
+        assertFalse(UserValidation.isValidPassword(password));
     }
 
     /**
@@ -687,7 +688,7 @@ class UserValidationTests {
     @Test
     void isValidPasswordCorrectLengthNoLowerCase() {
         String password = "ASD124#!";
-        assertEquals(false, UserValidation.isValidPassword(password));
+        assertFalse(UserValidation.isValidPassword(password));
     }
 
 }

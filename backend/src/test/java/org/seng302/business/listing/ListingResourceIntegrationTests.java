@@ -4,7 +4,6 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mockito;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
@@ -13,7 +12,6 @@ import org.seng302.business.inventoryItem.InventoryItem;
 import org.seng302.business.inventoryItem.InventoryItemRepository;
 import org.seng302.business.product.Product;
 import org.seng302.business.product.ProductRepository;
-import org.seng302.business.product.ProductResource;
 import org.seng302.main.Main;
 import org.seng302.user.Role;
 import org.seng302.user.User;
@@ -602,7 +600,7 @@ class ListingResourceIntegrationTests {
 
         // when
         List<Listing> list = List.of(listing);
-        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
@@ -638,7 +636,7 @@ class ListingResourceIntegrationTests {
 
         // when
         List<Listing> list = List.of(listing);
-        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
@@ -668,7 +666,7 @@ class ListingResourceIntegrationTests {
         
         // when
         List<Listing> list = List.of(listing);
-        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
@@ -751,7 +749,7 @@ class ListingResourceIntegrationTests {
 
         // when
         List<Listing> list = List.of(listing);
-        Page<Listing> pagedResponse = new PageImpl<Listing>(list);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
         when(listingRepository.findListingsByBusinessId(1, paging)).thenReturn(pagedResponse);

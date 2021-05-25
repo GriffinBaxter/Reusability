@@ -135,7 +135,6 @@
 import {Modal} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
-import {endOfToday, format, compareAsc} from 'date-fns';
 import Autofill from '../autofill';
 import {parseISO} from 'date-fns'
 const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');

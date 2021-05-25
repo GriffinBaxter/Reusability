@@ -84,4 +84,5 @@ public class UserPayloadSecure extends UserPayloadParent {
     public void setHomeAddress(AddressPayloadSecure homeAddress) {
         this.homeAddress = homeAddress;
     }
+
 }

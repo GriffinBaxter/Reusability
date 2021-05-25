@@ -773,8 +773,8 @@ export default {
 
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
-    if (checkAccessPermission(this.linkBusinessAccount)) {
-      this.$router.push({path: '/forbidden'});
+    if (checkAccessPermission()) {
+      this.$router.push({path: `/businessProfile/${Cookies.get('actAs')}/productCatalogue`});
     } else {
       /**
        * When mounted, initiate population of page.

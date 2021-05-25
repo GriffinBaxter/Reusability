@@ -63,11 +63,11 @@ class MarketplaceCardTests {
         );
         Assertions.assertEquals(marketplaceCard.getCreatorId(), user.getId());
         Assertions.assertEquals(marketplaceCard.getCreator(), user);
-        Assertions.assertEquals(marketplaceCard.getSection(), Section.FORSALE);
+        Assertions.assertEquals(Section.FORSALE, marketplaceCard.getSection());
         Assertions.assertEquals(marketplaceCard.getCreated(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)));
         Assertions.assertEquals(marketplaceCard.getDisplayPeriodEnd(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 8), LocalTime.of(0, 0)));
-        Assertions.assertEquals(marketplaceCard.getTitle(), "Hayley's Birthday");
-        Assertions.assertEquals(marketplaceCard.getDescription(), "Come join Hayley and help her celebrate her birthday!");
+        Assertions.assertEquals("Hayley's Birthday", marketplaceCard.getTitle());
+        Assertions.assertEquals("Come join Hayley and help her celebrate her birthday!", marketplaceCard.getDescription());
     }
 
     /**

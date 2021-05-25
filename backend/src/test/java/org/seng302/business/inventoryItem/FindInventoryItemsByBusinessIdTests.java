@@ -2,7 +2,6 @@ package org.seng302.business.inventoryItem;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -1080,8 +1078,8 @@ class FindInventoryItemsByBusinessIdTests {
         Page<InventoryItem> inventoryPage = inventoryItemRepository.findInventoryItemsByBusinessId(1, pageable);
 
         // then
-        assertThat(inventoryPage.getTotalElements()).isEqualTo(0);
-        assertThat(inventoryPage.getTotalPages()).isEqualTo(0);
+        assertThat(inventoryPage.getTotalElements()).isZero();
+        assertThat(inventoryPage.getTotalPages()).isZero();
     }
 
     /**
