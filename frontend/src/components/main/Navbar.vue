@@ -96,7 +96,7 @@
 
             <!-- Log out link-->
             <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)">Log out</a>
+              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
             </li>
 
           </ul>
