@@ -63,4 +63,21 @@ public class MarketplaceCardPayload {
     }
 
     public List<KeywordPayload> getKeywords() { return keywords; }
+
+    /**
+     * Override the toString method for debugging and testing purposes.
+     * @return a string representing the marketplace card payload.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"creator\":\"" + creator.toString() + "\"" +
+                ",\"section\":\"" + section + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                ",\"displayPeriodEnd\":\"" + displayPeriodEnd + "\"" +
+                ",\"title\":\"" + title + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                ",\"keywords\":\"" + keywords + "\"" +
+                "}";
+    }
 }
