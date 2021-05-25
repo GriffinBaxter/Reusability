@@ -43,6 +43,8 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'For Sale'"
                                  v-bind:sectionCards="allCards.ForSale"
+                                 @new-card-created="e => allCards.ForSale.unshift(e)"
+
           />
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
@@ -51,6 +53,7 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'Wanted'"
                                  v-bind:sectionCards="allCards.Wanted"
+                                 @new-card-created="e => allCards.Wanted.unshift(e)"
           />
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
@@ -59,6 +62,7 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'Exchange'"
                                  v-bind:sectionCards="allCards.Exchange"
+                                 @new-card-created="e => allCards.Exchange.unshift(e)"
           />
         </div>
       </div>
@@ -162,6 +166,10 @@ export default {
 #for-sale-tab, #wanted-tab, #exchange-tab {
   font-family: 'Roboto', sans-serif;
 
+}
+
+#create-card-button {
+  float: right;
 }
 
 </style>

@@ -1,4 +1,4 @@
-import {expect, test} from "@jest/globals";
+import {describe, expect, test} from "@jest/globals";
 import Login from "../src/views/Login"
 import Api from "../src/Api"
 import {createLocalVue, shallowMount} from "@vue/test-utils";
