@@ -305,7 +305,7 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
         Page<MarketplaceCard> pagedResponseWanted = new PageImpl<>(listWanted);
         Page<MarketplaceCard> pagedResponseExchange = new PageImpl<>(listExchange);
 
-         given(marketplaceCardRepository.findAllBySection(eq(Section.EXCHANGE), any(Pageable.class))).willReturn(pagedResponseExchange);
+        given(marketplaceCardRepository.findAllBySection(eq(Section.EXCHANGE), any(Pageable.class))).willReturn(pagedResponseExchange);
         given(marketplaceCardRepository.findAllBySection(eq(Section.WANTED), any(Pageable.class))).willReturn(pagedResponseWanted);
         given(marketplaceCardRepository.findAllBySection(eq(Section.FORSALE), any(Pageable.class))).willReturn(pagedResponseForSale);
 
@@ -318,7 +318,12 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
     }
 
     @When("The user attempts to view the {string} section.")
-    public void the_user_attempts_to_view_the_section(String sectionStr ) throws Exception {
+    public void the_user_attempts_to_view_the_section(String sectionStr) throws Exception {
+
+        // Remove space for valid enum conversion.
+        if (sectionStr.equals("For Sale")) {
+            sectionStr = "FORSALE";
+        }
 
         response = mvc.perform(get("/cards")
                 .param("section", sectionStr)
@@ -326,8 +331,8 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
                 .andReturn().getResponse();
     }
 
-    @Then("Only the {string} section cards are retrieved.")
-    public void only_the_section_cards_are_retrieved(String sectionStr) throws Exception {
+    @Then("Only the {string} section cards are retrieved in the correct order \\(recently created\\/renewed first).")
+    public void only_the_section_cards_are_retrieved_in_the_correct_order_recently_created_renewed_first(String sectionStr) throws Exception {
 
         String forSaleCardJSON = "[" +
                                 String.format(expectedCardJson, marketplaceCard1.getId(), user.getId(), user.getFirstName(),
@@ -390,21 +395,20 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
                 "]";
 
         String comparisonString = null;
-        if (sectionStr.equals("For Sale")) {
-            comparisonString = forSaleCardJSON;
-        } else if (sectionStr.equals("Wanted")) {
-            comparisonString = wantCardJSON;
-        } else if (sectionStr.equals("Exchange")) {
-            comparisonString = exchangeCardJSON;
+        switch (sectionStr) {
+            case "For Sale":
+                comparisonString = forSaleCardJSON;
+                break;
+            case "Wanted":
+                comparisonString = wantCardJSON;
+                break;
+            case "Exchange":
+                comparisonString = exchangeCardJSON;
+                break;
         }
-        
+
         assertThat(response.getContentAsString()).isEqualTo(comparisonString);
 
     }
 
-    @Then("The most recently created \\(or renewed) items appear first.")
-    public void the_most_recently_created_or_renewed_items_appear_first() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
-    }
 }
