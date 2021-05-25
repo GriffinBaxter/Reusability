@@ -2,7 +2,6 @@ package org.seng302.business.product;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.seng302.address.Address;
 import org.seng302.business.Business;
 import org.seng302.business.BusinessType;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class FindProductsByBusinessIdTests {
+class FindProductsByBusinessIdTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -63,7 +61,7 @@ public class FindProductsByBusinessIdTests {
      *  Any exception.
      */
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -71,7 +69,8 @@ public class FindProductsByBusinessIdTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -167,7 +166,7 @@ public class FindProductsByBusinessIdTests {
      * in ascending order i.e. in alphabetical order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnProductIdOrderedProductsAscending() {
+    void whenFindAllProductsByBusinessId_thenReturnProductIdOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -194,7 +193,7 @@ public class FindProductsByBusinessIdTests {
      * in descending order i.e. in reverse alphabetical order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnProductIdOrderedProductsDescending() {
+    void whenFindAllProductsByBusinessId_thenReturnProductIdOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -221,7 +220,7 @@ public class FindProductsByBusinessIdTests {
      * in ascending order i.e. in alphabetical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnNameOrderedProductsAscending() {
+    void whenFindAllProductsByBusinessId_thenReturnNameOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -255,7 +254,7 @@ public class FindProductsByBusinessIdTests {
      * in descending order i.e. in reverse alphabetical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnNameOrderedProductsDescending() {
+    void whenFindAllProductsByBusinessId_thenReturnNameOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -289,7 +288,7 @@ public class FindProductsByBusinessIdTests {
      * in ascending order i.e. in alphabetical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnDescriptionOrderedProductsAscending() {
+    void whenFindAllProductsByBusinessId_thenReturnDescriptionOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -323,7 +322,7 @@ public class FindProductsByBusinessIdTests {
      * in descending order i.e. in reverse alphabetical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnDescriptionOrderedProductsDescending() {
+    void whenFindAllProductsByBusinessId_thenReturnDescriptionOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -357,7 +356,7 @@ public class FindProductsByBusinessIdTests {
      * in ascending order i.e. in alphabetical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnManufacturerOrderedProductsAscending() {
+    void whenFindAllProductsByBusinessId_thenReturnManufacturerOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -391,7 +390,7 @@ public class FindProductsByBusinessIdTests {
      * in descending order i.e. in reverse alphabetical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnManufacturerOrderedProductsDescending() {
+    void whenFindAllProductsByBusinessId_thenReturnManufacturerOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -425,7 +424,7 @@ public class FindProductsByBusinessIdTests {
      * in ascending order i.e. in numerical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnRecommendedRetailPriceOrderedProductsAscending() {
+    void whenFindAllProductsByBusinessId_thenReturnRecommendedRetailPriceOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -459,7 +458,7 @@ public class FindProductsByBusinessIdTests {
      * in descending order i.e. in reverse numerical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnRecommendedRetailPriceOrderedProductsDescending() {
+    void whenFindAllProductsByBusinessId_thenReturnRecommendedRetailPriceOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -493,7 +492,7 @@ public class FindProductsByBusinessIdTests {
      * in ascending order i.e. in numerical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnCreatedOrderedProductsAscending() {
+    void whenFindAllProductsByBusinessId_thenReturnCreatedOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -527,7 +526,7 @@ public class FindProductsByBusinessIdTests {
      * in descending order i.e. in reverse numerical order and a secondary sort of product ID in ascending order.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnCreatedOrderedProductsDescending() {
+    void whenFindAllProductsByBusinessId_thenReturnCreatedOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -561,7 +560,7 @@ public class FindProductsByBusinessIdTests {
      * when the page is not full with products.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnPageHalfFull() {
+    void whenFindAllProductsByBusinessId_thenReturnPageHalfFull() {
         // given
         int pageNo = 0;
         // Page size 20 means page will be half full with the default 13 users inserted
@@ -583,7 +582,7 @@ public class FindProductsByBusinessIdTests {
      * business ID that does not match anything in the database.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnEmptyPage() {
+    void whenFindAllProductsByBusinessId_thenReturnEmptyPage() {
         // given
         int pageNo = 0;
         int pageSize = 20;
@@ -593,8 +592,8 @@ public class FindProductsByBusinessIdTests {
         Page<Product> productPage = productRepository.findProductsByBusinessId(1, pageable);
 
         // then
-        assertThat(productPage.getTotalElements()).isEqualTo(0);
-        assertThat(productPage.getTotalPages()).isEqualTo(0);
+        assertThat(productPage.getTotalElements()).isZero();
+        assertThat(productPage.getTotalPages()).isZero();
     }
 
     /**
@@ -602,7 +601,7 @@ public class FindProductsByBusinessIdTests {
      * than the first one with correct products.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnPagesFromTwoOnward() {
+    void whenFindAllProductsByBusinessId_thenReturnPagesFromTwoOnward() {
         // given
         int pageSize = 1;
         Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
@@ -626,7 +625,7 @@ public class FindProductsByBusinessIdTests {
      * page is full.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnFullPage() {
+    void whenFindAllProductsByBusinessId_thenReturnFullPage() {
         // given
         int pageNo = 0;
         int pageSize = 4;
@@ -650,7 +649,7 @@ public class FindProductsByBusinessIdTests {
      * not just the few values that are returned are correctly ordered.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnGloballyOrderedProducts() {
+    void whenFindAllProductsByBusinessId_thenReturnGloballyOrderedProducts() {
         // given
         int pageNo = 1;
         int pageSize = 2;

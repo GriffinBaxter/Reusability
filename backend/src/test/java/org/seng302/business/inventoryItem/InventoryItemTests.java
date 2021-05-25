@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * InventoryItem test class
  */
-public class InventoryItemTests {
+class InventoryItemTests {
 
     private Address address;
 
@@ -31,14 +31,15 @@ public class InventoryItemTests {
     private Product product;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User(
                 "first",
@@ -84,7 +85,7 @@ public class InventoryItemTests {
      * @throws Exception Exception error
      */
     @Test
-    public void TestValidInventoryItem() throws Exception {
+    void TestValidInventoryItem() throws Exception {
         InventoryItem inventoryItem = new InventoryItem(
                 product,
                 "PROD",
@@ -142,7 +143,7 @@ public class InventoryItemTests {
      * @throws Exception Exception error
      */
     @Test
-    public void TestInventoryItemOptionalFields() throws Exception {
+    void TestInventoryItemOptionalFields() throws Exception {
         InventoryItem inventoryItem = new InventoryItem(
                 product,
                 "PROD",
@@ -166,7 +167,7 @@ public class InventoryItemTests {
      * Tests that an invalid (null) product object throws an error.
      */
     @Test
-    public void TestInvalidProduct() {
+    void TestInvalidProduct() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     null,
@@ -188,7 +189,7 @@ public class InventoryItemTests {
      * Tests that an invalid product ID (doesn't match the one on the product) throws an error.
      */
     @Test
-    public void TestInvalidProductId() {
+    void TestInvalidProductId() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -210,7 +211,7 @@ public class InventoryItemTests {
      * Tests that an invalid quantity (less than or equal to 0) throws an error.
      */
     @Test
-    public void TestInvalidQuantity() {
+    void TestInvalidQuantity() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -248,7 +249,7 @@ public class InventoryItemTests {
      * Tests that an invalid price per item (less than 0) throws an error.
      */
     @Test
-    public void TestInvalidPricePerItem() {
+    void TestInvalidPricePerItem() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -270,7 +271,7 @@ public class InventoryItemTests {
      * Tests that an invalid total price (less than 0) throws an error.
      */
     @Test
-    public void TestInvalidTotalPrice() {
+    void TestInvalidTotalPrice() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -292,7 +293,7 @@ public class InventoryItemTests {
      * Tests that an invalid manufacture date (after current date) throws an error.
      */
     @Test
-    public void TestInvalidManufactured() {
+    void TestInvalidManufactured() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -314,7 +315,7 @@ public class InventoryItemTests {
      * Tests that an invalid expiration date (null or before current date) throws an error.
      */
     @Test
-    public void TestInvalidExpires() {
+    void TestInvalidExpires() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,

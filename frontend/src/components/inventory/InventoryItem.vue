@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-secondary mb-3 px-2 py-2 shadow">
+  <div class="card border-secondary mb-3 px-2 py-2 shadow" @click="$emit('click')">
     <div class="row no-gutters">
 
       <!--image-->
@@ -58,14 +58,14 @@
 
 </template>
 
-
 <script>
+
 export default {
   name: "InventoryItem",
   props: {
     image: {
       type: String,
-      default: require("../../public/apples.jpg"),
+      default: require("../../../public/apples.jpg"),
       required: false
     },
     productName: {

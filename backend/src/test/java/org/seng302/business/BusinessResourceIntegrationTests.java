@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class BusinessResourceIntegrationTests {
+class BusinessResourceIntegrationTests {
 
     @Autowired
     private MockMvc mvc;
@@ -72,14 +72,15 @@ public class BusinessResourceIntegrationTests {
     private Address address;
 
     @BeforeAll
-    public void setup() throws Exception {
+    void setup() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User("testfirst",
                 "testlast",
@@ -132,7 +133,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void setAdministratorComplete() throws Exception {
+    void setAdministratorComplete() throws Exception {
         // given
         Business newBusiness = new Business(
                 user.getId(),
@@ -144,7 +145,8 @@ public class BusinessResourceIntegrationTests {
                         "Christchurch",
                         "Canterbury",
                         "New Zealand",
-                        "90210"
+                        "90210",
+                        "Ilam"
                 ),
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
@@ -163,7 +165,8 @@ public class BusinessResourceIntegrationTests {
                                 "\"city\": \"Christchurch\"," +
                                 "\"region\": \"Canterbury\"," +
                                 "\"country\": \"New Zealand\"," +
-                                "\"postcode\": \"90210\"" +
+                                "\"postcode\": \"90210\"," +
+                                "\"suburb\": \"Ilam\"" +
                                 "}," +
                         "\"businessType\": \"Accommodation and Food Services\"" +
                         "}";
@@ -186,7 +189,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void setPrimaryAdministratorComplete() throws Exception {
+    void setPrimaryAdministratorComplete() throws Exception {
         // given
         Business newBusiness = new Business(
                 user.getId(),
@@ -198,7 +201,8 @@ public class BusinessResourceIntegrationTests {
                         "Christchurch",
                         "Canterbury",
                         "New Zealand",
-                        "90210"
+                        "90210",
+                        "Ilam"
                 ),
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
@@ -217,7 +221,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90210\"" +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -243,7 +248,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description, address, businessType and a create cookie belongs to an user.
      */
     @Test
-    public void canCreateWhenDataValidAndCookieExists() throws Exception {
+    void canCreateWhenDataValidAndCookieExists() throws Exception {
         // given
         payloadJson = "{" +
                 "\"primaryAdministratorId\": " + user.getId() + "," +
@@ -255,7 +260,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90211\"" +
+                "\"postcode\": \"90211\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -277,7 +283,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name(empty), description, address, businessType.
      */
     @Test
-    public void canNotCreateWhenNameEmpty() throws Exception {
+    void canNotCreateWhenNameEmpty() throws Exception {
         // given
         payloadJson = "{" +
                 "\"primaryAdministratorId\": " + user.getId() + "," +
@@ -289,7 +295,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -311,7 +318,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name(only space), description, address, businessType.
      */
     @Test
-    public void canNotCreateWhenNameOnlySpace() throws Exception {
+    void canNotCreateWhenNameOnlySpace() throws Exception {
         // given
         payloadJson = "{" +
                 "\"primaryAdministratorId\": " + user.getId() + "," +
@@ -323,7 +330,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -345,7 +353,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name(length = 101), description, address, businessType.
      */
     @Test
-    public void canNotCreateWhenNameLengthLargerThan100() throws Exception {
+    void canNotCreateWhenNameLengthLargerThan100() throws Exception {
         // given
         String aName = "a".repeat(101);
         payloadJson = "{" +
@@ -358,7 +366,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -380,7 +389,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description(length = 601), address, businessType.
      */
     @Test
-    public void canNotCreateWhenDescriptionLengthLargerThan600() throws Exception {
+    void canNotCreateWhenDescriptionLengthLargerThan600() throws Exception {
         // given
         String aDescription = "a".repeat(601);
         payloadJson = "{" +
@@ -393,7 +402,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -415,7 +425,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description, address(length = 256), businessType.
      */
     @Test
-    public void canNotCreateWhenAddressLengthLargerThan255() throws Exception {
+    void canNotCreateWhenAddressLengthLargerThan255() throws Exception {
         // given
         String aString = "a".repeat(256);
         payloadJson = "{" +
@@ -428,7 +438,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"" + aString + "\"," +
                     "\"region\": \"" + aString + "\"," +
                     "\"country\": \"" + aString + "\"," +
-                    "\"postcode\": \"9\"" +
+                    "\"postcode\": \"9\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -450,7 +461,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description, address(country = ""), businessType.
      */
     @Test
-    public void canNotCreateWhenAddressContainAnEmptyCountry() throws Exception {
+    void canNotCreateWhenAddressContainAnEmptyCountry() throws Exception {
         // given
         payloadJson = "{" +
                 "\"primaryAdministratorId\": " + user.getId() + "," +
@@ -462,7 +473,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -484,7 +496,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description, address, businessType(not exist).
      */
     @Test
-    public void canNotCreateWhenBusinessTypeIsNotExist() throws Exception {
+    void canNotCreateWhenBusinessTypeIsNotExist() throws Exception {
         // given
         payloadJson = "{" +
                 "\"primaryAdministratorId\": " + user.getId() + "," +
@@ -496,7 +508,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"example\"" +
                 "}";
@@ -518,7 +531,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description, address, businessType but a wrong cookie.
      */
     @Test
-    public void canNotCreateWhenDataValidAndCookieNotExists() throws Exception {
+    void canNotCreateWhenDataValidAndCookieNotExists() throws Exception {
         // given
         payloadJson = "{" +
                 "\"primaryAdministratorId\": " + user.getId() + "," +
@@ -530,7 +543,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\": \"Christchurch\"," +
                     "\"region\": \"Canterbury\"," +
                     "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"" +
+                    "\"postcode\": \"90210\"," +
+                    "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -549,7 +563,7 @@ public class BusinessResourceIntegrationTests {
      * that contains business name, description, address, businessType but a wrong primaryAdministratorId.
      */
     @Test
-    public void canNotCreateWhenDataValidAndPrimaryAdministratorIdDifferent() throws Exception {
+    void canNotCreateWhenDataValidAndPrimaryAdministratorIdDifferent() throws Exception {
         // given
         payloadJson = "{" +
                 "\"primaryAdministratorId\": " + (user.getId()+1) + "," +
@@ -561,7 +575,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\": \"Christchurch\"," +
                 "\"region\": \"Canterbury\"," +
                 "\"country\": \"New Zealand\"," +
-                "\"postcode\": \"90210\"" +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -584,7 +599,7 @@ public class BusinessResourceIntegrationTests {
      * primary administrator id will be display(As current user is administrator of this business).
      */
     @Test
-    public void administratorCanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
+    void administratorCanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
         // given
         id = business.getId();
         expectedJson = "{" +
@@ -609,7 +624,8 @@ public class BusinessResourceIntegrationTests {
                         "\"city\":\"Christchurch\"," +
                         "\"region\":\"Canterbury\"," +
                         "\"country\":\"New Zealand\"," +
-                        "\"postcode\":\"90210\"" +
+                        "\"postcode\":\"90210\"," +
+                        "\"suburb\":\"Ilam\"" +
                         "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
@@ -621,7 +637,8 @@ public class BusinessResourceIntegrationTests {
                     "\"city\":\"" + address.getCity() + "\"," +
                     "\"region\":\"" + address.getRegion() + "\"," +
                     "\"country\":\"" + address.getCountry() + "\"," +
-                    "\"postcode\":\"" + address.getPostcode() + "\"" +
+                    "\"postcode\":\"" + address.getPostcode() + "\"," +
+                    "\"suburb\":\"" + address.getSuburb() + "\"" +
                     "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
@@ -644,7 +661,7 @@ public class BusinessResourceIntegrationTests {
      * primary administrator id will be display(As current user is not administrator of this business and not a DGAA).
      */
     @Test
-    public void nonAdministratorCanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
+    void nonAdministratorCanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
         // given
         id = business.getId();
         expectedJson = "{" +
@@ -669,7 +686,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
+                "\"suburb\":\"Ilam\"" +
                 "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":null," +
@@ -681,7 +699,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\":\"" + address.getCity() + "\"," +
                 "\"region\":\"" + address.getRegion() + "\"," +
                 "\"country\":\"" + address.getCountry() + "\"," +
-                "\"postcode\":\"" + address.getPostcode() + "\"" +
+                "\"postcode\":\"" + address.getPostcode() + "\"," +
+                "\"suburb\":\"" + address.getSuburb() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
@@ -704,7 +723,7 @@ public class BusinessResourceIntegrationTests {
      * primary administrator id will be display(As current user is DGAA).
      */
     @Test
-    public void DGAACanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
+    void DGAACanRetrieveBusinessWhenBusinessDoesExist() throws Exception {
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -745,7 +764,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"" +
+                "\"postcode\":\"90210\"," +
+                "\"suburb\":\"Ilam\"" +
                 "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
@@ -757,7 +777,8 @@ public class BusinessResourceIntegrationTests {
                 "\"city\":\"" + address.getCity() + "\"," +
                 "\"region\":\"" + address.getRegion() + "\"," +
                 "\"country\":\"" + address.getCountry() + "\"," +
-                "\"postcode\":\"" + address.getPostcode() + "\"" +
+                "\"postcode\":\"" + address.getPostcode() + "\"," +
+                "\"suburb\":\"" + address.getSuburb() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
@@ -768,7 +789,6 @@ public class BusinessResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
-        //when(business.getAdministrators()).thenReturn(List.of(user));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         // then
@@ -780,7 +800,7 @@ public class BusinessResourceIntegrationTests {
      * Tests that a UNAUTHORIZED(401) status is received when cookie wrong
      */
     @Test
-    public void canNotRetrieveBusinessWhenCookieNotExist() throws Exception {
+    void canNotRetrieveBusinessWhenCookieNotExist() throws Exception {
         // given
         String nonExistingSessionUUID = User.generateSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", nonExistingSessionUUID);
@@ -802,7 +822,7 @@ public class BusinessResourceIntegrationTests {
      * Tests that a NOT_ACCEPTABLE(406) status is received when the user id in the /businesses/{id} API endpoint does exist
      */
     @Test
-    public void canNotRetrieveBusinessWhenBusinessDoesNotExist() throws Exception {
+    void canNotRetrieveBusinessWhenBusinessDoesNotExist() throws Exception {
         // given
         int nonExistentBusinessId = 0;
         sessionToken = user.getSessionUUID();
@@ -830,7 +850,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void anBusinessAdministratorCanMakeUserBecomeAdministrator() throws Exception {
+    void anBusinessAdministratorCanMakeUserBecomeAdministrator() throws Exception {
         // given
         User anotherUser = new User(
                 "John",
@@ -905,7 +925,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void aDGAACanMakeUserBecomeAdministrator() throws Exception {
+    void aDGAACanMakeUserBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -976,7 +996,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void anBusinessAdministratorCanNotMakeANotExistUserBecomeAdministrator() throws Exception {
+    void anBusinessAdministratorCanNotMakeANotExistUserBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1050,7 +1070,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void anBusinessAdministratorCanNotMakeOtherAdministratorBecomeAdministrator() throws Exception {
+    void anBusinessAdministratorCanNotMakeOtherAdministratorBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1127,7 +1147,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void whenSessionTokenMissing_MakingUserBecomeAdministratorNotWork() throws Exception {
+    void whenSessionTokenMissing_MakingUserBecomeAdministratorNotWork() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1199,7 +1219,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void aNormalUserCanNotMakeUserBecomeAdministrator() throws Exception {
+    void aNormalUserCanNotMakeUserBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1262,7 +1282,7 @@ public class BusinessResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(business.getAdministrators().size()).isEqualTo(0);
+        assertThat(business.getAdministrators().size()).isZero();
     }
 
     /**
@@ -1272,7 +1292,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void CanNotMakeUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
+    void CanNotMakeUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1348,7 +1368,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void aBusinessAdministratorCanRemoveUserBecomeAdministrator() throws Exception {
+    void aBusinessAdministratorCanRemoveUserBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1424,7 +1444,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void aDGAACanRemoveUserBecomeAdministrator() throws Exception {
+    void aDGAACanRemoveUserBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1502,7 +1522,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void anBusinessAdministratorCanNotRemoveANotExistUserBecomeAdministrator() throws Exception {
+    void anBusinessAdministratorCanNotRemoveANotExistUserBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1576,7 +1596,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void anBusinessAdministratorCanNotRemoveOtherAdministratorBecomeAdministrator() throws Exception {
+    void anBusinessAdministratorCanNotRemoveOtherAdministratorBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1650,7 +1670,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void whenSessionTokenMissing_RemovingUserBecomeAdministratorNotWork() throws Exception {
+    void whenSessionTokenMissing_RemovingUserBecomeAdministratorNotWork() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1722,7 +1742,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void aNormalUserCanNotRemoveUserBecomeAdministrator() throws Exception {
+    void aNormalUserCanNotRemoveUserBecomeAdministrator() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1785,7 +1805,7 @@ public class BusinessResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(business.getAdministrators().size()).isEqualTo(0);
+        assertThat(business.getAdministrators().size()).isZero();
     }
 
     /**
@@ -1794,7 +1814,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void aAdministratorCanNotRemoveItsSelf() throws Exception {
+    void aAdministratorCanNotRemoveItsSelf() throws Exception {
         User user = new User("testfirst",
                 "testlast",
                 "testmiddle",
@@ -1850,7 +1870,7 @@ public class BusinessResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void CanNotRemoveUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
+    void CanNotRemoveUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",

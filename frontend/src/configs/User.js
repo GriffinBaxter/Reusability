@@ -82,6 +82,12 @@ export default class User{
             maxLength: 255
         },
 
+        suburb: {
+            name: "Suburb",
+            minLength: 0,
+            maxLength: 255
+        },
+
         city: {
             name: "City",
             minLength: 0,
@@ -121,6 +127,15 @@ export default class User{
             // Regex resource: https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
         }
     };
+
+    /**
+     * Determines if the user has admin (Default Global Application Admin or Global Application Admin) rights.
+     *
+     * @return {boolean} true if the user has admin rights.
+     * */
+    static isAdministrator(userRole) {
+        return userRole === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || userRole === UserRole.GLOBALAPPLICATIONADMIN
+    }
 
     constructor({firstName, lastName, middleName, nickname, bio, email, dateOfBirth, phoneNumber, homeAddress, password}) {
         this.data = {

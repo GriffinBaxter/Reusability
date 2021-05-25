@@ -1,3 +1,13 @@
+/**
+ * Summary. The file contains the InventoryItemRepository interface.
+ *
+ * Description. This file contains the InventoryItemRepository interface.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/inventoryItem/InventoryItemRepository
+ * @file   This file contains the definition for InventoryItemRepository interface.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.inventoryItem;
 
 import org.springframework.data.domain.Page;
@@ -31,8 +41,12 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, St
      */
     Page<InventoryItem> findInventoryItemsByBusinessId(Integer businessId, Pageable paging);
 
+    /**
+     * Finds all inventory items with the given business ID (no pagination)
+     * @param businessId A business ID.
+     * @return A list of inventory items with the given business ID.
+     */
     List<InventoryItem> findAllByBusinessId(Integer businessId);
-
 
 
 }

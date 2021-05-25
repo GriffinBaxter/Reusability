@@ -1,16 +1,23 @@
+/**
+ * Summary. This file contains the definition for the InventoryItemResource.
+ *
+ * Description. This file contains the defintion for the InvetoryItemResource.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/inventoryItem/InventoryItemResource
+ * @file   This file contains the definition for InventoryItemResource.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.inventoryItem;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.listing.Listing;
-import org.seng302.business.listing.ListingPayload;
 import org.seng302.business.product.Product;
 import org.seng302.business.product.ProductPayload;
 import org.seng302.business.product.ProductRepository;
 import org.seng302.main.Authorization;
-import org.seng302.user.Role;
 import org.seng302.user.User;
 import org.seng302.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,22 +129,10 @@ public class InventoryItemResource {
         // user is retrieved if access token is provided and valid
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        if (!Authorization.verifyBusinessExists(id, businessRepository)) {
-            logger.error("Product Inventory Retrieval Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
-            );
-        }
-        if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(id)) {
-            logger.error("Product Inventory Retrieval Failure - 403 [FORBIDDEN] - User with ID {} is not an " +
-                    "admin of business with ID {}", currentUser.getId(), id);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The account performing the request is neither an administrator of the business, nor a global application admin."
-            );
-        }
+        Authorization.verifyBusinessExists(id, businessRepository);
+
+        Authorization.verifyBusinessAdmin(currentUser, id);
+
         //200: Inventory retrieved successfully. This could be an empty array.
 
         int pageNo;
@@ -270,7 +265,8 @@ public class InventoryItemResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Product Inventory Retrieval Success - 200 [OK] - Product inventory retrieved for business with ID {}", id);
+        logger.info("Product Inventory Retrieval Success - 200 [OK] - " +
+                "Product inventory retrieved for business with ID {}", id);
 
         List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(pagedResult.getContent());
 
@@ -284,38 +280,33 @@ public class InventoryItemResource {
     }
 
     /**
-     * Get method for retrieving all inventory items at once (not pagination). To be used with CreateListing modal.
+     * Get method for retrieving all inventory items at once (no pagination). To be used with CreateListing modal.
      * @param sessionToken The current user's session token
      * @param id The current business ID (from the URL path)
      * @return A list of all inventory items for the given business
      */
     @GetMapping("/businesses/{id}/inventoryAll")
-    public ResponseEntity<List<InventoryItemPayload>> retrieveAllInventoryItems(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                                                    @PathVariable Integer id) {
+    public ResponseEntity<List<InventoryItemPayload>> retrieveAllInventoryItems(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer id) {
         logger.debug("Product inventory retrieval request (all items) received with business ID {}", id);
 
         // Checks user logged in - 401
-        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        Integer businessId = Integer.valueOf(id);
         // Checks business at ID exists - 406
+        Authorization.verifyBusinessExists(id, businessRepository);
 
-        Optional<Business> currentBusiness = businessRepository.findBusinessById(businessId);
+        List<InventoryItem> inventoryItems = inventoryItemRepository.findAllByBusinessId(id);
 
-        if (currentBusiness.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "Business Does Not Exist"
-            );
-        }
-
-        List<InventoryItem> inventoryItems = inventoryItemRepository.findAllByBusinessId(businessId);
-
-        logger.info("Inventory Retrieval Success - 200 [OK] -  All inventory items retrieved for business with ID {}", businessId);
+        logger.info("Inventory Retrieval Success - 200 [OK] -  " +
+                "All inventory items retrieved for business with ID {}", id);
 
         List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(inventoryItems);
 
-        logger.debug("All inventory items retrieved for business with ID {}: {}", businessId, inventoryItemPayloads);
+        logger.debug("All inventory items retrieved for business with ID {}: {}",
+                id,
+                inventoryItemPayloads);
 
         return ResponseEntity.ok()
                 .body(inventoryItemPayloads);
@@ -375,33 +366,17 @@ public class InventoryItemResource {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         //406
-        Optional<Business> optionalCurrentBusiness = businessRepository.findBusinessById(id);
-        if (optionalCurrentBusiness.isEmpty()) {
-            logger.error("Inventory Item Creation Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "selected business does not exist"
-            );
-        }
-        Business currentBusiness = optionalCurrentBusiness.get();
+        Authorization.verifyBusinessExists(id, businessRepository);
 
         //403
-        if (currentUser.getRole() == Role.USER &&
-                !currentBusiness.isAnAdministratorOfThisBusiness(currentUser)) {
-            logger.error("Inventory Item Creation Failure - 403 [FORBIDDEN] - User with ID {} is not an " +
-                    "admin of business with ID {} or a GAA or DGAA", currentUser.getId(), id);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The account performing the request is neither an administrator of the business, nor a global " +
-                            "application admin."
-            );
-        }
+        Authorization.verifyBusinessAdmin(currentUser, id);
 
         //400
         String productId = inventoryRegistrationPayload.getProductId();
         Optional<Product> optionalSelectProduct = productRepository.findProductByIdAndBusinessId(productId, id);
         if (optionalSelectProduct.isEmpty()) {
-            logger.error("Inventory Item Creation Failure - 406 [NOT ACCEPTABLE] - Inventory Item with ID {} does not exist", productId);
+            logger.error("Inventory Item Creation Failure - 400 [BAD REQUEST] - " +
+                    "Inventory Item with ID {} does not exist", productId);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "selected product does not exist"
@@ -420,6 +395,8 @@ public class InventoryItemResource {
                     inventoryRegistrationPayload.getBestBefore(),
                     inventoryRegistrationPayload.getExpires()
             ));
+            logger.info("Inventory Item Create Success - 200 [OK] - " +
+                    "An inventory item has been create for business with ID {}", id);
         } catch (Exception e) {
             logger.error("Inventory Item Creation Failure - {}", e.getMessage());
             throw new ResponseStatusException(
@@ -427,6 +404,125 @@ public class InventoryItemResource {
                     e.getMessage()
             );
         }
+    }
+
+    /**
+     * A PUT request used to update a inventory item by given a business ID, inventory Item ID and the new updated
+     * attributes.
+     *
+     * @param inventoryRegistrationPayload The inventory item payload containing the new attributes to be changed.
+     * @param businessId The ID of the business of which it's product will be updated.
+     * @param inventoryItemId The ID of the inventory item to be updated.
+     * @param sessionToken The token used to identify the user.
+     */
+    @PutMapping("/businesses/{businessId}/inventory/{inventoryItemId}")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Inventory item updated successfully")
+    public void modifyInventoryItem(
+            @RequestBody(required = false) InventoryRegistrationPayload inventoryRegistrationPayload,
+            @PathVariable Integer businessId,
+            @PathVariable Integer inventoryItemId,
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+        //401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        //406
+        Authorization.verifyBusinessExists(businessId, businessRepository);
+
+        //403
+        Authorization.verifyBusinessAdmin(currentUser, businessId);
+
+        //400
+        Optional<InventoryItem> optionalSelectInventoryItem = inventoryItemRepository
+                .findInventoryItemById(inventoryItemId);
+        if (optionalSelectInventoryItem.isEmpty()) {
+            logger.error("Inventory Item Updating Failure - 400 [BAD REQUEST] - " +
+                    "Inventory Item with ID {} not exist", inventoryItemId);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "selected inventory item does not exist"
+            );
+        }
+        InventoryItem selectInventoryItem = optionalSelectInventoryItem.get();
+        logger.debug("One inventory item has been find.");
+
+        String errorMessage = null;
+        String productId = inventoryRegistrationPayload.getProductId();
+        Integer quantity = inventoryRegistrationPayload.getQuantity();
+        Double pricePerItem = inventoryRegistrationPayload.getPricePerItem();
+        Double totalPrice = inventoryRegistrationPayload.getTotalPrice();
+        LocalDate manufactured = inventoryRegistrationPayload.getManufactured();
+        LocalDate expires = inventoryRegistrationPayload.getExpires();
+
+        Optional<Product> optionalSelectProduct = productRepository.findProductByIdAndBusinessId(productId, businessId);
+        if (optionalSelectProduct.isEmpty()) {
+            logger.error("Inventory Item Creation Failure - 400 [BAD REQUEST] - " +
+                    "Product with ID {} not exist", productId);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid product ID"
+            );
+        }
+        Product selectProduct = optionalSelectProduct.get();
+
+        // Calculates the total quantity of the inventory item being changed from all listings (if any).
+        int totalQuantityFromListings = 0;
+        for (Listing listing: selectInventoryItem.getListings()) {
+            totalQuantityFromListings += listing.getQuantity();
+        }
+        logger.debug("Total quantity from listings: {}.", totalQuantityFromListings);
+
+        if (!productId.equals(selectProduct.getProductId())) {
+            errorMessage = "Invalid product ID";
+        }
+        // The new quantity cannot be lower than the total amount currently in listings for the given inventory item.
+        else if (quantity == null || quantity <= 0) {
+            errorMessage = "Invalid quantity, must have at least one item";
+        } else if (quantity < totalQuantityFromListings) {
+            errorMessage = "Invalid quantity, must be more than the total quantity in your current listings";
+        } else if (pricePerItem != null && pricePerItem < 0) {
+            errorMessage = "Invalid price per item, must not be negative";
+        } else if (totalPrice != null && totalPrice < 0) {
+            errorMessage = "Invalid total price, must not be negative";
+        } else if (manufactured != null && manufactured.isAfter(LocalDate.now())) {
+            errorMessage = "Invalid manufacture date";
+        } else if (expires == null || expires.isBefore(LocalDate.now())) {
+            errorMessage = "Invalid expiration date, must have expiration date and cannot add expired item";
+        }
+
+        //400
+        if (errorMessage != null){
+            logger.error("Inventory Item Updating Failure - 400 [BAD REQUEST] - {}", errorMessage);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    errorMessage
+            );
+        }
+
+        selectInventoryItem.setProductId(productId);
+        logger.debug("Inventory item's productId has been change to {}.", productId);
+        selectInventoryItem.setProduct(selectProduct);
+        selectInventoryItem.setQuantity(quantity);
+        logger.debug("Inventory item's quantity has been change to {}.", quantity);
+        selectInventoryItem.setPricePerItem(pricePerItem);
+        logger.debug("Inventory item's pricePerItem has been change to {}.", pricePerItem);
+        selectInventoryItem.setTotalPrice(totalPrice);
+        logger.debug("Inventory item's totalPrice has been change to {}.", totalPrice);
+        selectInventoryItem.setManufactured(manufactured);
+        logger.debug("Inventory item's manufactured has been change to {}.", manufactured);
+        selectInventoryItem.setSellBy(inventoryRegistrationPayload.getSellBy());
+        logger.debug("Inventory item's sellBy has been change to {}.",
+                inventoryRegistrationPayload.getSellBy());
+        selectInventoryItem.setBestBefore(inventoryRegistrationPayload.getBestBefore());
+        logger.debug("Inventory item's bestBefore has been change to {}.",
+                inventoryRegistrationPayload.getBestBefore());
+        selectInventoryItem.setExpires(expires);
+        logger.debug("Inventory item's expires has been change to {}.", expires);
+
+
+        inventoryItemRepository.saveAndFlush(selectInventoryItem);
+        logger.info("Inventory Item Updating Success - 200 [OK] - " +
+                "Inventory item (Id: {}) has been update for business with ID {}", inventoryItemId, businessId);
+
     }
 
 }

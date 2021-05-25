@@ -1,14 +1,117 @@
 /**
- * Jest tests for CreateNewInventoryItem.vue.
+ * Jest tests for InventoryValidationHelper.js.
  * @jest-environment jsdom
  */
 
 import {test, expect} from "@jest/globals"
-import reg from '../src/components/CreateNewInventoryItem'
+import * as reg from '../src/components/inventory/InventoryValidationHelper'
 import InventoryItem from '../src/configs/InventoryItem'
 
 const endOfToday = require('date-fns/endOfToday');
 const format = require('date-fns/format');
+
+// ***************************************** toggleInvalidClass() Tests ***************************************************
+/**
+ * Test for ensuring that when an error message is passed in, the is-invalid class is added to the messages.
+ * @result class list contains 'form-control' and 'is-invalid'
+ */
+test('Toggle invalid class with error message', () => {
+    const testInputVal = "Error message";
+    const expectedOutput = ['form-control', 'is-invalid'];
+
+    expect(
+        reg.toggleInvalidClass(testInputVal)
+    ).toEqual(expectedOutput);
+})
+
+/**
+ * Test for ensuring that when no error message is passed in, the is-invalid class is not added to the messages.
+ * @result class list contains 'form-control'
+ */
+test('Toggle invalid class with error message', () => {
+    const testInputVal = "";
+    const expectedOutput = ['form-control'];
+
+    expect(
+        reg.toggleInvalidClass(testInputVal)
+    ).toEqual(expectedOutput);
+})
+
+// ***************************************** between() Tests ***************************************************
+/**
+ * Test for ensuring that when the value is less than the minimum that between() returns false.
+ * @result boolean returned equals false
+ */
+test('Between test with value less than minimum', () => {
+    const testInputVal = 1;
+    const testInputMin = 2;
+    const testInputMax = 3;
+    const expectedOutput = false;
+
+    expect(
+        reg.between(testInputVal, testInputMin, testInputMax)
+    ).toBe(expectedOutput);
+})
+
+/**
+ * Test for ensuring that when the value equals the minimum that between() returns true.
+ * @result boolean returned equals true
+ */
+test('Between test with value equal to minimum', () => {
+    const testInputVal = 1;
+    const testInputMin = 1;
+    const testInputMax = 3;
+    const expectedOutput = true;
+
+    expect(
+        reg.between(testInputVal, testInputMin, testInputMax)
+    ).toBe(expectedOutput);
+})
+
+/**
+ * Test for ensuring that when the value is between the minimum and maximum that between() returns true.
+ * @result boolean returned equals true
+ */
+test('Between test with value between minimum and maximum', () => {
+    const testInputVal = 2;
+    const testInputMin = 1;
+    const testInputMax = 3;
+    const expectedOutput = true;
+
+    expect(
+        reg.between(testInputVal, testInputMin, testInputMax)
+    ).toBe(expectedOutput);
+})
+
+/**
+ * Test for ensuring that when the value equals the maximum that between() returns true.
+ * @result boolean returned equals true
+ */
+test('Between test with value equal to maximum', () => {
+    const testInputVal = 3;
+    const testInputMin = 1;
+    const testInputMax = 3;
+    const expectedOutput = true;
+
+    expect(
+        reg.between(testInputVal, testInputMin, testInputMax)
+    ).toBe(expectedOutput);
+})
+
+/**
+ * Test for ensuring that when the value is greater than the maximum that between() returns false.
+ * @result boolean returned equals false
+ */
+test('Between test with value greater than minimum', () => {
+    const testInputVal = 4;
+    const testInputMin = 2;
+    const testInputMax = 3;
+    const expectedOutput = false;
+
+    expect(
+        reg.between(testInputVal, testInputMin, testInputMax)
+    ).toBe(expectedOutput);
+})
 
 // ***************************************** getErrorMessage() Tests ***************************************************
 /**
@@ -21,7 +124,7 @@ test('Product id with no input', () => {
     const expectedMessage = "Please enter input";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -42,7 +145,7 @@ test('Product id with length greater than max length', () => {
     const expectedMessage = "Input must be between 3 and 15 characters long.";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -62,7 +165,7 @@ test('Product id with length equal to min length', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -82,7 +185,7 @@ test('Product id with length equal to max length', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -103,7 +206,7 @@ test('Product id with valid length but contains lowercase letters', () => {
     const expectedMessage = "Must only contain uppercase alphanumeric characters, numbers, or -";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -123,7 +226,7 @@ test('Product id with valid length and contains hyphen', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -143,7 +246,7 @@ test('Product id with valid length and contains numbers', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -163,7 +266,7 @@ test('Product id is sample data.', () => {
     const expectedMessage = "";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -183,7 +286,7 @@ test('Product id contains invalid symbols', () => {
     const expectedMessage = "Must only contain uppercase alphanumeric characters, numbers, or -";
 
     expect(
-        reg.methods.getErrorMessage(
+        reg.getErrorMessage(
             InventoryItem.config.productId.name,
             testInputVal,
             InventoryItem.config.productId.minLength,
@@ -203,7 +306,7 @@ test('Product id contains invalid symbols', () => {
  */
 test('parseSelectedDate_GivenValidDateString_ReturnYearMonthAndDay', () => {
     expect(
-        reg.methods.parseSelectedDate('2021-01-01')).toStrictEqual({
+        reg.parseSelectedDate('2021-01-01')).toStrictEqual({
         year: '2021',
         month: '01',
         day: '01'
@@ -217,7 +320,7 @@ test('parseSelectedDate_GivenValidDateString_ReturnYearMonthAndDay', () => {
  */
 test('parseSelectedDate_GivenInvalidDateString_ReturnYearMonthAndDay', () => {
     expect(
-        reg.methods.parseSelectedDate('21-01-2001')).toStrictEqual(
+        reg.parseSelectedDate('21-01-2001')).toStrictEqual(
             null
     );
 })
@@ -231,7 +334,7 @@ test('parseSelectedDate_GivenInvalidDateString_ReturnYearMonthAndDay', () => {
  */
 test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
     expect(
-        reg.methods.isValidManufactureDate('2000-30-10')).toBe(true);
+        reg.isValidManufactureDate('2000-30-10')).toBe(true);
 
 })
 
@@ -248,7 +351,7 @@ test('isValidManufactureDate_DateIsToday_ReturnTrue', () => {
     const todayDate = `${todayDateYear}-${todayDateMonth}-${todayDateDay}`;
 
     expect(
-        reg.methods.isValidManufactureDate(todayDate)).toBe(true);
+        reg.isValidManufactureDate(todayDate)).toBe(true);
 
 })
 
@@ -259,7 +362,7 @@ test('isValidManufactureDate_DateIsToday_ReturnTrue', () => {
  */
 test('isValidManufactureDate_DateIsAfterToday_ReturnFalse', () => {
     expect(
-        reg.methods.isValidManufactureDate('2029-04-30')).toBe(false);
+        reg.isValidManufactureDate('2029-04-30')).toBe(false);
 
 })
 
@@ -271,7 +374,7 @@ test('isValidManufactureDate_DateIsAfterToday_ReturnFalse', () => {
  */
 test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
     expect(
-        reg.methods.isValidManufactureDate('2000-09-02')).toBe(true);
+        reg.isValidManufactureDate('2000-09-02')).toBe(true);
 
 })
 
@@ -283,7 +386,7 @@ test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
  */
 test('isValidManufactureDate_DateIsPriorToday_ReturnTrue', () => {
     expect(
-        reg.methods.isValidManufactureDate('2000-01-04')).toBe(true);
+        reg.isValidManufactureDate('2000-01-04')).toBe(true);
 
 })
 
@@ -298,7 +401,7 @@ test('isValidBestBeforeDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpi
     const testSelectedManufactureDate = "16-10-2021";
 
     expect(
-        reg.methods.isValidBestBeforeDate(testSelectedManufactureDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
+        reg.isValidBestBeforeDate(testSelectedManufactureDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
 })
 
 //------------------------------ date validation tests for isValidSellByDate -------------------------------------------
@@ -315,7 +418,7 @@ test('isValidSellByDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpiryDa
     const testSelectedSellByDate = "2022-11-10";
 
     expect(
-        reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
+        reg.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
 })
 
 /**
@@ -329,13 +432,13 @@ test('isValidSellByDate_DateIsTodayAndAfterManufactureDateAndBeforeExpiryDate_Re
     const todayDateMonth = format(endOfToday(new Date()), 'MM');
     const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`; // selected sell by date
+    const todayDate = `${todayDateYear}-${todayDateMonth}-${todayDateDay}`; // selected sell by date
 
     const selectedManufacturedDate = "2019-21-10";
     const selectedExpiryDate = "2022-21-10";
 
     expect(
-        reg.methods.isValidSellByDate(todayDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+        reg.isValidSellByDate(todayDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })
 
@@ -351,7 +454,7 @@ test('isValidSellByDate_DateIsBeforeTodayAndAfterManufactureDateAndBeforeExpiryD
     const testSelectedSellByDate = '2020-11-10';
 
     expect(
-        reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+        reg.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })
 
@@ -367,7 +470,7 @@ test('isValidSellByDate_DateIsAfterTodayAndAfterManufactureDateAndAfterExpiryDat
     const testSelectedSellByDate = '2024-11-10';
 
     expect(
-        reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+        reg.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })
 
@@ -383,7 +486,7 @@ test('isValidSellByDate_DateIsNotTodayAndAfterManufactureDateAndIsExpiryDate_Ret
     const testSelectedSellByDate = "2022-21-10";
 
     expect(
-        reg.methods.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+        reg.isValidSellByDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })
 
@@ -398,7 +501,7 @@ test('isValidBestBeforeDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpi
     const testSelectedSellByDate = "16-10-2021";
 
     expect(
-        reg.methods.isValidBestBeforeDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
+        reg.isValidBestBeforeDate(testSelectedSellByDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
 })
 
 
@@ -416,7 +519,7 @@ test('isValidBestBeforeDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpi
     const testSelectedBestBeforeDate = "2022-11-10";
 
     expect(
-        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
+        reg.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
 })
 
 /**
@@ -430,13 +533,13 @@ test('isValidBestBeforeDate_DateIsTodayAndAfterManufactureDateAndBeforeExpiryDat
     const todayDateMonth = format(endOfToday(new Date()), 'MM');
     const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`; // selected best before date
+    const todayDate = `${todayDateYear}-${todayDateMonth}-${todayDateDay}`; // selected best before date
 
     const selectedManufacturedDate = "2019-21-10";
     const selectedExpiryDate = "2022-21-10";
 
     expect(
-        reg.methods.isValidBestBeforeDate(todayDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+        reg.isValidBestBeforeDate(todayDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })
 
@@ -452,7 +555,7 @@ test('isValidBestBeforeDate_DateIsBeforeTodayAndAfterManufactureDateAndBeforeExp
     const testSelectedBestBeforeDate = '2020-11-10';
 
     expect(
-        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+        reg.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })
 
@@ -468,7 +571,7 @@ test('isValidBestBeforeDate_DateIsAfterTodayAndAfterManufactureDateAndAfterExpir
     const testSelectedBestBeforeDate = '2024-11-10';
 
     expect(
-        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+        reg.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })
 
@@ -484,7 +587,7 @@ test('isValidBestBeforeDate_DateIsNotTodayAndAfterManufactureDateAndIsExpiryDate
     const testSelectedBestBeforeDate = "2022-21-10";
 
     expect(
-        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
+        reg.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(false);
 
 })
 
@@ -499,7 +602,7 @@ test('isValidBestBeforeDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpi
     const testSelectedBestBeforeDate = "10-11-2022";
 
     expect(
-        reg.methods.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
+        reg.isValidBestBeforeDate(testSelectedBestBeforeDate, selectedManufacturedDate, selectedExpiryDate)).toBe(true);
 })
 
 
@@ -518,7 +621,7 @@ test('isValidExpiryDate_DateIsAfterTodayAndAfterManufactureDateAndEqualToBestBef
     const testSelectedExpiryDate = "2029-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(true);
+        reg.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(true);
 })
 
 /**
@@ -534,7 +637,7 @@ test('isValidExpiryDate_DateIsAfterTodayAndAfterManufactureDateAndAfterBestBefor
     const testSelectedExpiryDate = "2030-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(true);
+        reg.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(true);
 })
 
 
@@ -549,13 +652,13 @@ test('isValidExpiryDate_DateIsTodayAndAfterManufactureDateAndAfterBestBeforeDate
     const todayDateMonth = format(endOfToday(new Date()), 'MM');
     const todayDateDay = format(endOfToday(new Date()), 'dd');
 
-    const todayDate = `${todayDateYear}-${todayDateDay}-${todayDateMonth}`; // selected expiry date
+    const todayDate = `${todayDateYear}-${todayDateMonth}-${todayDateDay}`; // selected expiry date
 
     const selectedManufacturedDate = "2019-21-10";
     const selectedBestBeforeDate = "2020-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(todayDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
+        reg.isValidExpiryDate(todayDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 
 })
 
@@ -571,7 +674,7 @@ test('isValidExpiryDate_DateIsBeforeTodayAndAfterManufactureDateAndAfterBestBefo
     const testSelectedExpiryDate = "2021-02-02";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
+        reg.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 })
 
 
@@ -586,7 +689,7 @@ test('isValidExpiryDate_DateIsAfterTodayAndBeforeManufactureDateAndAfterBestBefo
     const testSelectedExpiryDate = "2018-21-10";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
+        reg.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 })
 
 /**
@@ -600,7 +703,7 @@ test('isValidBestBeforeDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeBest
     const testSelectedExpiryDate = "2020-21-10";
 
     expect(
-        reg.methods.isValidBestBeforeDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
+        reg.isValidBestBeforeDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 })
 
 
@@ -615,5 +718,5 @@ test('isValidExpiryDate_DateIsAfterTodayAndAfterManufactureDateAndBeforeExpiryDa
     const testSelectedExpiryDate = "10-21-2029";
 
     expect(
-        reg.methods.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
+        reg.isValidExpiryDate(testSelectedExpiryDate, selectedBestBeforeDate, selectedManufacturedDate)).toBe(false);
 })

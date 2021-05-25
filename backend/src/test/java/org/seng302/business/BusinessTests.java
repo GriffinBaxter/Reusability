@@ -18,20 +18,21 @@ import static org.junit.Assert.*;
 /**
  * BusinessAccount test class
  */
-public class BusinessTests {
+class BusinessTests {
 
     private static User user;
     private static Address address;
 
     @BeforeAll
-    public static void before() throws Exception {
+    static void before() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User(
                 "first",
@@ -50,7 +51,7 @@ public class BusinessTests {
     }
 
     @Test
-    public void TestInvalidName() {
+    void TestInvalidName() {
         try {
             Business businessAccount = new Business(
                     user.getId(),
@@ -67,7 +68,7 @@ public class BusinessTests {
     }
 
     @Test
-    public void TestInvalidAddress() {
+    void TestInvalidAddress() {
         try {
             Business businessAccount = new Business(
                     user.getId(),
@@ -84,7 +85,7 @@ public class BusinessTests {
     }
 
     @Test
-    public void TestOptionalFields() throws Exception {
+    void TestOptionalFields() throws Exception {
         Business businessAccount = new Business(
                 user.getId(),
                 "name",
@@ -104,7 +105,7 @@ public class BusinessTests {
      * @throws Exception
      */
     @Test
-    public void testAddAdministrators() throws Exception {
+    void testAddAdministrators() throws Exception {
         Business business = new Business(
                 user.getId(),
                 "name",
@@ -139,7 +140,7 @@ public class BusinessTests {
      * @throws Exception
      */
     @Test
-    public void testRemoveAdministrators() throws Exception {
+    void testRemoveAdministrators() throws Exception {
         User user = new User("first",
                 "last",
                 "middle",
@@ -175,7 +176,7 @@ public class BusinessTests {
      * @throws Exception business or user creat fail
      */
     @Test
-    public void testAnUserIsAdministrator() throws Exception {
+    void testAnUserIsAdministrator() throws Exception {
         Business business = new Business(
                 user.getId(),
                 "name",
@@ -209,7 +210,7 @@ public class BusinessTests {
      * @throws Exception business or user creat fail
      */
     @Test
-    public void testAnUserIsNotAdministrator() throws Exception {
+    void testAnUserIsNotAdministrator() throws Exception {
         Business business = new Business(
                 user.getId(),
                 "name",

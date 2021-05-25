@@ -92,12 +92,20 @@ html {
   border: 1px solid #1EBABC;
 }
 
-input:focus, textarea:focus, button:focus, #create-product-button:focus{
+input:focus, textarea:focus, button:focus, #create-product-button:focus, textarea.form-control:focus, input.form-control:focus{
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
 
+/* Fix Footer */
+#main{
+  min-height: calc(100vh - 72px); /* 100px is the height of Footer */
+}
+
+Footer{
+  height: 72px;
+}
 
 /****************************************
                Login Page

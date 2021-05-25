@@ -1,15 +1,22 @@
+/**
+ * Summary. This file contains the definition for the ListingResource.
+ *
+ * Description. This file contains the defintion for the ListingResource.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/listing/ListingResource
+ * @file   This file contains the definition for ListingResource.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.listing;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.seng302.business.Business;
 import org.seng302.business.BusinessRepository;
 import org.seng302.business.inventoryItem.InventoryItemRepository;
 import org.seng302.business.inventoryItem.InventoryItem;
 import org.seng302.business.inventoryItem.InventoryItemResource;
-import org.seng302.business.product.Product;
-import org.seng302.business.product.ProductPayload;
 import org.seng302.business.product.ProductRepository;
 import org.seng302.business.product.ProductResource;
 
@@ -17,9 +24,6 @@ import org.seng302.main.Authorization;
 
 import org.seng302.user.UserRepository;
 import org.seng302.user.User;
-import org.seng302.user.Role;
-
-import org.seng302.validation.Validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -98,16 +102,9 @@ public class ListingResource {
         logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
         // Checks user logged in - 401
-        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        if (!Authorization.verifyBusinessExists(id, businessRepository)) {
-            logger.error("Product Catalogue Retrieval Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
-            );
-        }
+        Authorization.verifyBusinessExists(id, businessRepository);
 
         // Checks Page Num valid - 400
         int pageNo;
@@ -201,24 +198,11 @@ public class ListingResource {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Checks Business Exists 406
-        if (!Authorization.verifyBusinessExists(id, businessRepository)) {
-            logger.error("Listing Creation Failure - 406 [NOT ACCEPTABLE] - Business with ID {} does not exist", id);
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
-            );
-        }
+        Authorization.verifyBusinessExists(id, businessRepository);
+
         // Checks User is Admin 403
-        Optional<Business> business = businessRepository.findBusinessById(id);
-        if ((currentUser.getRole() == Role.USER) && !(business.get().isAnAdministratorOfThisBusiness(currentUser))) {
-            logger.error("Listing Creation Failure - 403 [NOT AUTHORIZED] - User with ID {} is not admin of business with ID {}", currentUser.getId(), id);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Forbidden: User is not an administrator of business" +
-                        " AND the user is not a global application admin"
-            );
-        }
+        Authorization.verifyBusinessAdmin(currentUser, id);
+
         // Checks InventoryItem exists and gets InventoryItem
         Optional<InventoryItem> inventoryItem = inventoryItemRepository.findInventoryItemById(Integer.parseInt(listingPayload.getInventoryItemId()));
         if (inventoryItem.isEmpty()) {

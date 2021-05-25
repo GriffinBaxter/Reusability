@@ -1,9 +1,12 @@
 <template>
   <div>
+    <div id="main">
     <!-- Navbar -->
     <Navbar/>
     <!-- Listing Creation -->
-    <create-listing @updateListings="afterCreation"></create-listing>
+    <create-listing @updateListings="afterCreation"
+                    v-bind:currency-code="currencyCode"
+                    v-bind:currency-symbol="currencySymbol"/>
     <!-- Listing Container -->
     <div class="container">
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
@@ -51,7 +54,21 @@
           <div class="col-md" v-if="businessAdmin">
             <button type="button" class="btn green-button w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
           </div>
+
+          <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+
         </div>
+
+        <!--space-->
+        <br>
+
+        <!--creation success info-->
+        <div class="alert alert-success" role="alert" v-if="creationSuccess">
+          <div class="row">
+            <div class="col" align="center">New Listing Created</div>
+          </div>
+        </div>
+
         <!-- Listings -->
         <ListingItem
             v-for="item in listings"
@@ -73,50 +90,20 @@
         <!--space-->
         <br>
 
-        <!--pagination-->
-        <nav>
-          <ul v-if="totalPages > 0" class="pagination justify-content-center">
-            <!-- This is only enabled when there is a previous page -->
-            <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
-              Previous
-            </button>
+        <!---------------------------------------------- page buttons ------------------------------------------------>
 
-            <!-- This is shown when there are more then 2 pages and you are at page 1-->
-            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
-              {{currentPage-1}}
-            </button>
-
-            <!-- Only shows when we are past at least the first page -->
-            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
-              {{currentPage}}
-            </button>
-
-            <!-- This converts the current page into 1 origin.-->
-            <button type="button" class="btn green-button-transparent active">
-              {{currentPage+1}}
-            </button>
-
-            <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
-            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
-              {{currentPage+2}}
-            </button>
-
-            <!-- This is shown when there are more then 2 pages and you are at page 1-->
-            <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
-              {{currentPage+3}}
-            </button>
-
-            <!-- The next button only enabled if there is another page.-->
-            <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
-              Next
-            </button>
-          </ul>
-        </nav>
+        <div id="page-button-container">
+          <PageButtons
+              v-bind:totalPages="totalPages"
+              v-bind:currentPage="currentPage"
+              @updatePage="updatePage"/>
+        </div>
 
       </div>
     </div>
     <div class="card p-1" v-if="listings.length < 1">
       <p class="h2 py-5" align="center">No Listings Found</p>
+    </div>
     </div>
     <!-- Footer -->
     <Footer class="footer"/>
@@ -124,17 +111,20 @@
 </template>
 
 <script>
-import Navbar from "@/components/Navbar";
-import ListingItem from "@/components/ListingItem";
+import Navbar from "@/components/main/Navbar";
+import ListingItem from "@/components/listing/ListingItem";
 import Api from "@/Api";
 import Cookies from "js-cookie";
-import CreateListing from "@/components/CreateListing";
-import Footer from "@/components/Footer";
+import CreateListing from "@/components/listing/CreateListingModal";
+import Footer from "@/components/main/Footer";
 import CurrencyAPI from "@/currencyInstance";
+import PageButtons from "../components/PageButtons";
+import {formatDate} from "../dateUtils";
+
 
 export default {
 name: "Listings",
-  components: {Footer, CreateListing, ListingItem, Navbar},
+  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons},
   data() {
     return {
       allListings: [],
@@ -156,17 +146,33 @@ name: "Listings",
       createdAscending: false,
 
       currencyCode: "",
-      currencySymbol: ""
+      currencySymbol: "",
+
+      creationSuccess: false
     }
   },
   methods: {
     /**
+     * convert orderByString to more readable for user
+     */
+    convertToString() {
+      switch (this.orderBy) {
+        case 'quantityASC': return "Quantity Ascending";
+        case 'quantityDESC': return "Quantity Descending";
+        case 'priceASC': return "Price Ascending";
+        case 'priceDESC': return "Price Descending";
+        case 'closesASC': return "Closes Ascending";
+        case 'closesDESC': return "Closes Descending";
+        case 'createdASC': return "Created Ascending";
+        case 'createdDESC': return "Created Descending";
+      }
+    },
+    /**
      * Updates the display to show the new page when a user clicks to move to a different page.
      *
-     * @param event The click event
      * @param newPageNumber The new page number
      */
-    updatePage(event, newPageNumber) {
+    updatePage(newPageNumber) {
       this.currentPage = newPageNumber;
       this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
       this.getListings();
@@ -276,6 +282,13 @@ name: "Listings",
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
 
       await Api.sortListings(this.businessId, this.orderBy, this.currentPage).then(response => {
+        this.totalRows = parseInt(response.headers["total-rows"]);
+        this.totalPages = parseInt(response.headers["total-pages"]);
+
+        if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
+
         this.populatePage(response);
 
       }).catch((error) => {
@@ -327,9 +340,6 @@ name: "Listings",
         this.totalPages = 0;
         // Generate the tableData to be placed in the table & get the total number of rows.
       } else {
-        this.totalRows = parseInt(response.headers["total-rows"]);
-        this.totalPages = parseInt(response.headers["total-pages"]);
-
         this.listings = [];
 
         for (let i = 0; i < this.rowsPerPage; i++) {
@@ -342,10 +352,10 @@ name: "Listings",
             productId: response.data[i].inventoryItem.product.id,
             quantity: response.data[i].quantity,
             price: response.data[i].price,
-            listDate: response.data[i].created,
-            closeDate: response.data[i].closes,
+            listDate: formatDate(response.data[i].created, false),
+            closeDate: formatDate(response.data[i].closes, false),
             moreInfo: response.data[i].moreInfo,
-            expires: response.data[i].inventoryItem.expires
+            expires: formatDate(response.data[i].inventoryItem.expires, false)
           })
         }
       }
@@ -391,6 +401,11 @@ name: "Listings",
      * After creation success use endpoint to collect data from backend and display it.
      */
     afterCreation() {
+      this.creationSuccess = true;
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
       this.getListings();
     },
   },
@@ -407,27 +422,17 @@ name: "Listings",
 
       await this.currencyRequest();
 
-      this.getListings().then(
-          () => {}
-      ).catch(
+      this.getListings().catch(
           (e) => console.log(e)
       )
-    } else {
-      this.$router.push({name: 'Login'});
     }
   }
 }
 </script>
 
 <style scoped>
-
-.footer {
-  margin-top: 20%;
-}
-
 #pageTitle {
   padding: 10px;
   text-align: center;
 }
-
 </style>

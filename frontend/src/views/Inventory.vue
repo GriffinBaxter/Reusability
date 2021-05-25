@@ -1,10 +1,12 @@
 <template>
   <div>
-    <!--nav bar-->
-    <navbar/>
-
+    <div id="main">
+      <!--nav bar-->
+      <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
     <!--creation popup-->
-    <inventory-item-creation @updateInventoryItem="afterCreation"/>
+    <inventory-item-creation @updateInventoryItem="afterCreation"
+                             v-bind:currency-code="currencyCode"
+                             v-bind:currency-symbol="currencySymbol"/>
 
     <!--inventory container-->
     <div class="container p-5 mt-3" id="profileContainer">
@@ -48,11 +50,11 @@
                 </button>
               </div>
               <!--search bar-->
-              <div class="input-group col-md py-1">
-                <input type="text" class="form-control" placeholder="This is for later use."
-                       aria-label="Input group example" aria-describedby="btnGroupAddon">
-                <button type="button" class="btn green-button-transparent">Search</button>
-              </div>
+<!--              <div class="input-group col-md py-1">-->
+<!--                <input type="text" class="form-control" placeholder="This is for later use."-->
+<!--                       aria-label="Input group example" aria-describedby="btnGroupAddon">-->
+<!--                <button type="button" class="btn btn-outline-primary">Search</button>-->
+<!--              </div>-->
 
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">
@@ -118,7 +120,7 @@
                   </button>
                 </ul>
               </div>
-
+              <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
             </div>
 
             <!--space-->
@@ -127,12 +129,15 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col">New Inventory Item Create successfully!</div>
-                <div class="col" align="right">
-                  <button type="button" class="btn green-button px-1 py-0" @click="closeMessage">X</button>
-                </div>
+                <div class="col" align="center"> {{userAlertMessage}} </div>
               </div>
             </div>
+
+            <UpdateInventoryItemModal ref="updateInventoryItemModal"
+                                      :business-id="businessId"
+                                      :currency-code="currencyCode"
+                                      :currency-symbol="currencySymbol"
+                                      v-model="currentInventoryItem"/>
 
             <!--inventory items-->
             <inventory-item
@@ -151,50 +156,20 @@
                 v-bind:expires="inventory.expires"
                 v-bind:currency-code="currencyCode"
                 v-bind:currency-symbol="currencySymbol"
+                v-on:click="triggerUpdateInventoryItemModal(inventory)"
             />
 
             <!--space-->
             <br>
 
-            <!--pagination-->
-            <nav>
-              <ul v-if="totalPages > 0" class="pagination justify-content-center">
-                <!-- This is only enabled when there is a previous page -->
-                <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage-1) ? '': 'disabled'}`" @click="updatePage($event, currentPage-1)">
-                  Previous
-                </button>
+            <!---------------------------------------------- page buttons ------------------------------------------------>
 
-                <!-- This is shown when there are more then 2 pages and you are at page 1-->
-                <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-2) && currentPage === totalPages-1" @click="updatePage($event, currentPage-2)">
-                  {{currentPage-1}}
-                </button>
-
-                <!-- Only shows when we are past at least the first page -->
-                <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage-1)" @click="updatePage($event, currentPage-1)">
-                  {{currentPage}}
-                </button>
-
-                <!-- This converts the current page into 1 origin.-->
-                <button type="button" class="btn green-button-transparent active">
-                  {{currentPage+1}}
-                </button>
-
-                <!-- This converts the current page into 1 origin And only shows the option if there is another page-->
-                <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+1)" @click="updatePage($event, currentPage+1)">
-                  {{currentPage+2}}
-                </button>
-
-                <!-- This is shown when there are more then 2 pages and you are at page 1-->
-                <button type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage($event, currentPage-2)">
-                  {{currentPage+3}}
-                </button>
-
-                <!-- The next button only enabled if there is another page.-->
-                <button type="button" :class="`btn green-button-transparent ${isValidPageNumber(currentPage+1) ? '': 'disabled'}`" @click="updatePage($event, currentPage+1)">
-                  Next
-                </button>
-              </ul>
-            </nav>
+            <div id="page-button-container">
+              <PageButtons
+                  v-bind:totalPages="totalPages"
+                  v-bind:currentPage="currentPage"
+                  @updatePage="updatePage"/>
+            </div>
 
           </div>
         </div>
@@ -202,6 +177,7 @@
       </div>
     </div>
 
+    </div>
     <!--footer-->
     <Footer></Footer>
 
@@ -210,20 +186,26 @@
 
 
 <script>
-import Footer from "@/components/Footer";
-import InventoryItem from "@/components/InventoryItem";
-import Navbar from "@/components/Navbar";
-import InventoryItemCreation from "@/components/CreateNewInventoryItem";
-import Api from "@/Api";
+import Footer from "../components/main/Footer";
+import InventoryItem from "../components/inventory/InventoryItem";
+import Navbar from "../components/main/Navbar";
+import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
+import Api from "../Api";
 import Cookies from "js-cookie";
-import CurrencyAPI from "@/currencyInstance";
+import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
+import PageButtons from "../components/PageButtons";
+import CurrencyAPI from "../currencyInstance";
+import {formatDate} from "../dateUtils";
+import {checkAccessPermission} from "../views/helpFunction";
 
 export default {
   components: {
+    UpdateInventoryItemModal,
     InventoryItemCreation,
     Navbar,
     InventoryItem,
-    Footer
+    Footer,
+    PageButtons
   },
   data() {
     return {
@@ -250,30 +232,80 @@ export default {
       bestBeforeAscending: false,
       expiresAscending: false,
 
-      businessId: null,
+      businessId: 0,
       creationSuccess: false,
+      userAlertMessage: "",
 
       businessName: null,
       businessDescription: null,
 
-      inventories: [],
-      image: require("../../public/apples.jpg"),
-      productName: "Watties Baked Beans - 420g can",
-      productId: "WATT-420-BEANS",
-      quantity: 4,
-      pricePerItem: 6.5,
-      totalPrice: 21.99,
-      manufactured: "2021-04-23",
-      sellBy: "2021-04-23",
-      bestBefore: "2021-04-23",
-      expires: "2021-04-23",
+      inventories: null,
+      currentInventoryItem: null,
 
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+
+      // List of Business account current user account administrated
+      linkBusinessAccount:[],
     }
   },
   methods: {
+    /**
+     * Sets the current inventory item to the one from the card you've clicked on
+     * and triggers the showModal method of UpdateInventoryItemModal.
+     */
+    async triggerUpdateInventoryItemModal(inventory) {
+      this.currentInventoryItem = await inventory;
+      await this.$forceUpdate();
+      this.$refs.updateInventoryItemModal.showModal();
+    },
+
+     /**
+     * set link business accounts
+     */
+    setLinkBusinessAccount(data){
+      this.linkBusinessAccount = data;
+    },
+    /**
+     * convert orderByString to more readable for user
+     */
+    convertToString() {
+      switch (this.orderByString) {
+        case 'productIdASC':
+          return "Product ID Ascending";
+        case 'productIdDESC':
+          return "Product ID Descending";
+        case 'quantityASC':
+          return "Quantity Ascending";
+        case 'quantityDESC':
+          return "Quantity Descending";
+        case 'pricePerItemASC':
+          return "Price Per Item Ascending";
+        case 'pricePerItemDESC':
+          return "Price Per Item Descending";
+        case 'totalPriceASC':
+          return "Total Price Ascending";
+        case 'totalPriceDESC':
+          return "Total Price Descending";
+        case 'manufacturedASC':
+          return "Manufactured Ascending";
+        case 'manufacturedDESC':
+          return "Manufactured Descending";
+        case 'sellByASC':
+          return "Sell By Ascending";
+        case 'sellByDESC':
+          return "Sell By Descending";
+        case 'bestBeforeASC':
+          return "Best Before Ascending";
+        case 'bestBeforeDESC':
+          return "Best Before Descending";
+        case 'expiresASC':
+          return "Expires Ascending";
+        case 'expiresDESC':
+          return "Expires Descending";
+      }
+    },
     /**
      * close creation message
      */
@@ -284,12 +316,14 @@ export default {
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
      *
-     * @param event The click event
      * @param newPageNumber The new page number
      */
-    updatePage(event, newPageNumber) {
+    updatePage(newPageNumber) {
       this.currentPage = newPageNumber;
-      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}})
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+      })
       this.retrieveInventoryItems();
     },
 
@@ -483,7 +517,10 @@ export default {
 
       }
 
-      this.$router.push({path: `/businessProfile/${this.businessId}/inventory`, query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}});
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+      });
       this.retrieveInventoryItems();
     },
 
@@ -516,6 +553,12 @@ export default {
 
       // Perform the call to sort the products and get them back.
       await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage).then(response => {
+        this.totalRows = parseInt(response.headers["total-rows"]);
+        this.totalPages = parseInt(response.headers["total-pages"]);
+
+        if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
 
         this.InventoryItemList = [...response.data];
 
@@ -527,32 +570,33 @@ export default {
           this.totalPages = 0;
           // Generate the tableData to be placed in the table & get the total number of rows.
         } else {
-          this.totalRows = parseInt(response.headers["total-rows"]);
-          this.totalPages = parseInt(response.headers["total-pages"]);
 
           this.inventories = [];
 
           for (let i = 0; i < this.rowsPerPage; i++) {
-            if (i === this.InventoryItemList.length){
+            if (i === this.InventoryItemList.length) {
               return
             }
             this.inventories.push({
               index: i,
+              id: this.InventoryItemList[i].id,
               productName: this.InventoryItemList[i].product.name,
               productId: this.InventoryItemList[i].product.id,
               quantity: this.InventoryItemList[i].quantity,
               pricePerItem: this.InventoryItemList[i].pricePerItem,
               totalPrice: this.InventoryItemList[i].totalPrice,
-              manufactured: this.InventoryItemList[i].manufactured,
-              sellBy: this.InventoryItemList[i].sellBy,
-              bestBefore: this.InventoryItemList[i].bestBefore,
-              expires: this.InventoryItemList[i].expires
+              manufactured: formatDate(this.InventoryItemList[i].manufactured, false),
+              manufacturedUnformatted: this.InventoryItemList[i].manufactured,
+              sellBy: formatDate(this.InventoryItemList[i].sellBy, false),
+              sellByUnformatted: this.InventoryItemList[i].sellBy,
+              bestBefore: formatDate(this.InventoryItemList[i].bestBefore, false),
+              bestBeforeUnformatted: this.InventoryItemList[i].bestBefore,
+              expires: formatDate(this.InventoryItemList[i].expires, false),
+              expiresUnformatted: this.InventoryItemList[i].expires
             })
           }
         }
-
       }).catch((error) => {
-        console.log(error);
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 400) {
@@ -574,7 +618,23 @@ export default {
      */
     afterCreation() {
       this.creationSuccess = true;
+      this.userAlertMessage = "New Inventory Item Created";
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
       this.retrieveInventoryItems();
+    },
+    /**
+     * After edit success, show the edit info.
+     */
+    afterEdit() {
+      this.creationSuccess = true;
+      this.userAlertMessage = "Product Edited";
+      // The corresponding alert will close automatically after 5000ms.
+      setTimeout(() => {
+        this.creationSuccess = false
+      }, 5000);
     },
     /**
      * Currency API requests.
@@ -606,32 +666,33 @@ export default {
   },
 
   async mounted() {
-
-    /**
-     * When mounted, initiate population of page.
-     * If cookies are invalid or not present, redirect to login page.
-     */
-    const currentID = Cookies.get('userID');
-    if (currentID) {
-      this.businessId = this.$route.params.id;
-
-      await this.currencyRequest();
-
-      this.retrieveBusinessInfo();
-      this.retrieveInventoryItems().then(
-          () => {}
-      ).catch(
-          (e) => console.log(e)
-      );
+    if (checkAccessPermission()) {
+      this.$router.push({path: `/businessProfile/${Cookies.get('actAs')}/inventory`});
     } else {
-      this.$router.push({name: 'Login'});
-    }
+      /**
+       * When mounted, initiate population of page.
+       * If cookies are invalid or not present, redirect to login page.
+       */
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        // If the edit is successful the UpdateInventoryItemModal component will emit an 'editedInventory' event.
+        // This code notices the emit and will alert the user that the edit was successful by calling the afterEdit function.
+        this.$root.$on('editedInventory', this.afterEdit);
 
+        this.businessId = this.$route.params.id;
+
+        await this.currencyRequest();
+
+        this.retrieveBusinessInfo();
+        this.retrieveInventoryItems().catch(
+            (e) => console.log(e)
+        );
+      }
+    }
   }
 }
 </script>
 
 
 <style scoped>
-
 </style>

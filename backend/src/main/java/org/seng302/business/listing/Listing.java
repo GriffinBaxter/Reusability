@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the Listing.
+ *
+ * Description. This file contains the defintion for the Listing.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/listing/Listing
+ * @file   This file contains the definition for Listing.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.listing;
 
 import lombok.Data;
@@ -41,7 +51,7 @@ public class Listing {
     @Column (name = "price", nullable = false)
     private double price;
 
-    @Column (name = "moreInfo")
+    @Column (name = "moreInfo", length = 600)
     private String moreInfo;
 
     @Column (name = "created")

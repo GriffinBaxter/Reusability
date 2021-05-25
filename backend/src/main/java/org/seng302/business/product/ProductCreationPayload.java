@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the ProductCreationPayload.
+ *
+ * Description. This file contains the defintion for the ProductCreationPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/product/ProductCreationPayload
+ * @file   This file contains the definition for ProductCreationPayload.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.product;
 
 /**

@@ -1,6 +1,5 @@
 package org.seng302.validation;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.address.Address;
@@ -17,9 +16,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-public class ListingValidationTests {
+class ListingValidationTests {
 
     private Address address;
 
@@ -34,14 +33,15 @@ public class ListingValidationTests {
     private Listing listing;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         user = new User(
                 "first",
@@ -97,9 +97,9 @@ public class ListingValidationTests {
      * has the same length as the min length.
      */
     @Test
-    public void isValidMoreInfoEqualMinLength() {
+    void isValidMoreInfoEqualMinLength() {
         String moreInfo = ""; // minLength = 0
-        assertEquals(true, ListingValidation.isValidMoreInfo(moreInfo));
+        assertTrue(ListingValidation.isValidMoreInfo(moreInfo));
     }
 
     /**
@@ -107,10 +107,10 @@ public class ListingValidationTests {
      * has a length greater than the max length.
      */
     @Test
-    public void isValidMoreInfoGreaterThanMaxLength() {
+    void isValidMoreInfoGreaterThanMaxLength() {
         String string = "Z";
         String moreInfo = string.repeat(601); //maxLength = 600
-        assertEquals(false, ListingValidation.isValidMoreInfo(moreInfo));
+        assertFalse(ListingValidation.isValidMoreInfo(moreInfo));
     }
 
     /**
@@ -118,10 +118,10 @@ public class ListingValidationTests {
      * has a length equal to the max length.
      */
     @Test
-    public void isValidMoreInfoEqualToMaxLength() {
+    void isValidMoreInfoEqualToMaxLength() {
         String string = "Z";
         String moreInfo = string.repeat(600); //maxLength = 600
-        assertEquals(true, ListingValidation.isValidMoreInfo(moreInfo));
+        assertTrue(ListingValidation.isValidMoreInfo(moreInfo));
     }
 
     /**
@@ -129,9 +129,9 @@ public class ListingValidationTests {
      * has correct length and contains symbols, numbers etc.
      */
     @Test
-    public void isValidMoreInfoCorrectLengthContainsSymbolsAndNumbers() {
+    void isValidMoreInfoCorrectLengthContainsSymbolsAndNumbers() {
         String moreInfo = "Willing t0 accept low3r offers !^#9p4039*$";
-        assertEquals(true, ListingValidation.isValidMoreInfo(moreInfo));
+        assertTrue(ListingValidation.isValidMoreInfo(moreInfo));
     }
 
     // ********************************** QUANTITY **************************************
@@ -141,9 +141,9 @@ public class ListingValidationTests {
      * is less the min quantity i.e quantity = 0
      */
     @Test
-    public void isValidQuantityLessThanMinQuantity() {
+    void isValidQuantityLessThanMinQuantity() {
         int quantity = 0;
-        assertEquals(false, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertFalse(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -151,9 +151,9 @@ public class ListingValidationTests {
      * is in range
      */
     @Test
-    public void isValidQuantityInRange() {
+    void isValidQuantityInRange() {
         int quantity = 10;
-        assertEquals(true, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertTrue(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -161,9 +161,9 @@ public class ListingValidationTests {
      * equals the max quantity.
      */
     @Test
-    public void isValidQuantityEqualToMaxQuantity() {
+    void isValidQuantityEqualToMaxQuantity() {
         int quantity = 30;
-        assertEquals(true, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertTrue(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -171,9 +171,9 @@ public class ListingValidationTests {
      * is greater than max quantity and no other listings exist.
      */
     @Test
-    public void isValidQuantityGreaterMaxQuantityNoOtherListings() {
+    void isValidQuantityGreaterMaxQuantityNoOtherListings() {
         int quantity = 35;
-        assertEquals(false, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertFalse(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -181,7 +181,7 @@ public class ListingValidationTests {
      * is greater than max quantity due to other listings existing.
      */
     @Test
-    public void isValidQuantityGreaterMaxQuantityOtherListings() throws Exception {
+    void isValidQuantityGreaterMaxQuantityOtherListings() throws Exception {
         listing = new Listing(
                 inventoryItem,
                 15,
@@ -192,7 +192,7 @@ public class ListingValidationTests {
         );
         inventoryItem.addListing(listing);
         int quantity = 20;
-        assertEquals(false, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertFalse(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
     /**
@@ -200,7 +200,7 @@ public class ListingValidationTests {
      * is in range when other listings exist.
      */
     @Test
-    public void isValidQuantityInRangeOtherListings() throws Exception {
+    void isValidQuantityInRangeOtherListings() throws Exception {
         listing = new Listing(
                 inventoryItem,
                 15,
@@ -211,7 +211,7 @@ public class ListingValidationTests {
         );
         inventoryItem.addListing(listing);
         int quantity = 10;
-        assertEquals(true, ListingValidation.isValidQuantity(quantity, inventoryItem));
+        assertTrue(ListingValidation.isValidQuantity(quantity, inventoryItem));
     }
 
 }

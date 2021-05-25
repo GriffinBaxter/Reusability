@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserResource.
+ *
+ * Description. This file contains the defintion for the UserResource.
+ *
+ * @link   team-400/src/main/java/org/seng302/user/UserResource
+ * @file   This file contains the definition for UserResource.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.user;
 
 import org.seng302.address.Address;
@@ -140,10 +150,11 @@ public class UserResource {
             String region = addressJSON.getRegion();
             String country = addressJSON.getCountry();
             String postcode = addressJSON.getPostcode();
+            String suburb = addressJSON.getSuburb();
 
             // Check to see if address already exists.
-            Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcode(
-                    streetNumber, streetName, city, region, country, postcode);
+            Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(
+                    streetNumber, streetName, city, region, country, postcode, suburb);
 
             // If address already exists it is retrieved.
             // The businesses already existing are also retrieved. These businesses will be
@@ -159,7 +170,8 @@ public class UserResource {
                         city,
                         region,
                         country,
-                        postcode
+                        postcode,
+                        suburb
                 );
                 addressRepository.save(address);
                 // No businesses will exist at new address.

@@ -6,7 +6,7 @@
 
 <template>
   <div>
-
+    <div id="main">
     <!--body excluding footer-->
     <div class="container all-but-footer text-font">
 
@@ -199,7 +199,7 @@
             <!--eighth row of form-->
             <div class="row my-lg-2">
 
-                <!--street input field-->
+                <!--street number input field-->
                 <div class="col my-2 my-lg-0">
                   <label for="streetNumber">Street Number</label>
                   <input :class="toggleInvalidClass(streetNumberErrorMsg)" tabindex="12" id="streetNumber"
@@ -209,7 +209,7 @@
                 </div>
               </div>
 
-              <!--suburb input field-->
+              <!--street name input field-->
               <div class="col my-2 my-lg-0">
                 <label for="streetName">Street Name</label>
               <input :class="toggleInvalidClass(streetNameErrorMsg)" tabindex="13" id="streetName"
@@ -224,26 +224,25 @@
             <!--ninth row of form-->
             <div class="row my-lg-2">
 
+              <!--suburb input field-->
+              <div class="col-lg-6 my-2 my-lg-0">
+                <label for="suburb">Suburb</label>
+                <input :class="toggleInvalidClass(suburbErrorMsg)" tabindex="14" name="suburb" id="suburb" ref="suburb"
+                       autocomplete="off">
+                <div class="invalid-feedback">
+                  {{suburbErrorMsg}}
+                </div>
+              </div>
+
               <!--city input field-->
               <div class="col-lg-6 my-2 my-lg-0">
                 <label for="city">City</label>
-                <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="14" name="city" id="city" ref="city"
+                <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="15" name="city" id="city" ref="city"
                        autocomplete="off">
                 <div class="invalid-feedback">
                   {{cityErrorMsg}}
                 </div>
               </div>
-
-              <!--postcode input field-->
-              <div class="col-lg-6 my-2 my-lg-0">
-              <label for="postcode">Postcode</label>
-              <input :class="toggleInvalidClass(postcodeErrorMsg)" tabindex="15" name="postcode" id="postcode" ref="postcode"
-                     autocomplete="off">
-              <div class="invalid-feedback">
-                {{postcodeErrorMsg}}
-              </div>
-            </div>
-
           </div>
 
           <!--tenth row of form-->
@@ -259,10 +258,24 @@
               </div>
             </div>
 
-            <!--country input field-->
+            <!--postcode input field-->
             <div class="col-lg-6 my-2 my-lg-0">
+              <label for="postcode">Postcode</label>
+              <input :class="toggleInvalidClass(postcodeErrorMsg)" tabindex="17" name="postcode" id="postcode" ref="postcode"
+                     autocomplete="off">
+              <div class="invalid-feedback">
+                {{postcodeErrorMsg}}
+              </div>
+            </div>
+
+          </div>
+
+          <!--eleventh row of form-->
+          <div class="row my-lg-2">
+            <!--country input field-->
+            <div class="col my-2 my-lg-0">
               <label for="country">Country*</label>
-              <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="17" id="country" name="country"
+              <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="18" id="country" name="country"
                      ref="country" autocomplete="off" required>
               <div class="invalid-feedback">
                 {{countryErrorMsg}}
@@ -271,13 +284,13 @@
 
           </div>
 
-          <!--eleventh row of form-->
+          <!--twelfth row of form-->
           <div class="row my-lg-2">
 
             <!--bio field-->
             <div class="col my-2 my-lg-0">
               <label for="bio">Bio</label>
-              <textarea id="bio" name="bio" tabindex="18" rows="5" cols="70" v-model="bio"
+              <textarea id="bio" name="bio" tabindex="19" rows="5" cols="70" v-model="bio"
                         :class="toggleInvalidClass(bioErrorMsg)" :maxlength="config.bio.maxLength"
                         style="resize: none"/>
               <div class="invalid-feedback">
@@ -287,7 +300,7 @@
 
           </div>
 
-            <!--twelfth row of form-->
+            <!--thirteenth row of form-->
             <div class="row my-lg-2">
 
               <!--error message field-->
@@ -301,8 +314,8 @@
 
             <!--register button-->
             <div class="d-grid gap-2 d-lg-block">
-              <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="18" id="back-to-login-button" @click="$router.push('/')">Back to Login</button>
-              <button id="register-button" tabindex="17" class="btn btn-lg float-lg-end green-button" type="button" @click="addNewUser($event)">Register</button>
+              <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="21" id="back-to-login-button" @click="$router.push('/')">Back to Login</button>
+              <button id="register-button" tabindex="20" class="btn btn-lg float-lg-end green-button" type="button" @click="addNewUser($event)">Register</button>
             </div>
 
           </form>
@@ -313,6 +326,7 @@
 
     </div>
 
+    </div>
     <!--footer-->
     <FooterSecure></FooterSecure>
 
@@ -323,7 +337,7 @@
 import Api from "../Api";
 import User from "../configs/User"
 import Cookies from 'js-cookie';
-import FooterSecure from "../components/FooterSecure";
+import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
 
 export default {
@@ -392,6 +406,9 @@ export default {
 
       // Street name related variables
       streetNameErrorMsg: "",
+
+      // Suburb related variables
+      suburbErrorMsg: "",
 
       // Postcode related variables
       postcodeErrorMsg: "",
@@ -606,6 +623,7 @@ export default {
       this.$refs.region.value = this.$refs.region.value.trim();
       this.$refs.streetNumber.value = this.$refs.streetNumber.value.trim();
       this.$refs.streetName.value = this.$refs.streetName.value.trim();
+      this.$refs.suburb.value = this.$refs.suburb.value.trim();
     },
 
     /**
@@ -781,6 +799,17 @@ export default {
         requestIsInvalid = true
       }
 
+      // Suburb error checking
+      this.suburbErrorMsg = this.getErrorMessage(
+          this.config.suburb.name,
+          this.$refs.suburb.value,
+          this.config.suburb.minLength,
+          this.config.suburb.maxLength
+      )
+      if (this.suburbErrorMsg) {
+        requestIsInvalid = true
+      }
+
       // Postcode error checking
       this.postcodeErrorMsg = this.getErrorMessage(
           this.config.postcode.name,
@@ -835,6 +864,7 @@ export default {
       const addressData = {
         streetNumber: this.$refs.streetNumber.value,
         streetName: this.$refs.streetName.value,
+        suburb: this.$refs.suburb.value,
         city: this.$refs.city.value,
         region: this.$refs.region.value,
         country: this.$refs.country.value,
@@ -871,6 +901,7 @@ export default {
        */
       Api.addNewUser(user
       ).then( (res) => {
+            Cookies.remove('actAs');
             if (res.status === 201) {
               const {userId} = res.data;
               if (userId) {
@@ -938,7 +969,7 @@ export default {
         let { properties } = features[index];
         if (properties) {
 
-          let {country, city, postcode, state, street, housenumber, name} = properties;
+          let {country, city, postcode, state, street, housenumber, name, district} = properties;
 
           if (name) {
             address += name + ", ";
@@ -950,6 +981,10 @@ export default {
 
           if (street) {
             address += " " + street + ", ";
+          }
+
+          if (district) {
+            address += " " + district + ", ";
           }
 
           if (city) {
@@ -1028,13 +1063,17 @@ export default {
             document.getElementById('home-address').value = "";
             const id = event.target.id;
 
-            let {country, city, postcode, state, street, housenumber} = self.addressResultProperties[id];
+            let {country, city, postcode, state, street, housenumber, district} = self.addressResultProperties[id];
 
             if (housenumber) {
               document.getElementById('streetNumber').value = housenumber;
             }
             if (street) {
               document.getElementById('streetName').value = street;
+            }
+
+            if (district) {
+              document.getElementById('suburb').value = district;
             }
 
             if (city) {
@@ -1206,5 +1245,4 @@ input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus
 }
 
 /*------------------------------------------------------------------------*/
-
 </style>

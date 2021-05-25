@@ -36,6 +36,12 @@ For running locally using an in-memory H2 database, the following commands shoul
 
 Running on: http://localhost:9499/ by default
 
+To access the in-memory H2 database, route to http://localhost:9499/h2 in the browser.
+
+Use the Setting Name of `Generic H2 (Embedded)`.
+
+The driver class should be set to `org.h2.Driver`, JDBC URL should be `jdbc:h2:mem:testdb`, the username should be set to `sa` and there is no password.
+
 ### Backend / server (using a MariaDB database)
 
 For running using a MariaDB database, the following environment variables are **required** to be set:

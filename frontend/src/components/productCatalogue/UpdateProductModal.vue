@@ -95,8 +95,8 @@
 
 <script>
 import { Modal } from 'bootstrap'
-import Product from "../configs/Product"
-import Api from "../Api";
+import Product from "../../configs/Product"
+import Api from "../../Api";
 
 
 export default {
@@ -149,7 +149,7 @@ export default {
      * @param value The new value of the value prop.
      */
     updateValue(value) {
-      this.$emit('input', value)
+      this.$emit('input', value);
     },
     /**
      * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
@@ -310,7 +310,10 @@ export default {
                 // This means that the modification was successfull
                 if (res.data.status === 200) {
                   this.updateValue(new Product(this.newProduct.data));
+                  // Custom event so that ProductCatalogue.vue knows edit was a success and can alert the user.
+                  this.$root.$emit('edits');
                   this.modal.hide();
+                  this.formErrorModalMessage = "";
                 }
               }
           )
@@ -320,9 +323,11 @@ export default {
 
                   // There was something wrong with the user data!
                   if (error.response.status === 400) {
-                    // There is no way to tell if this is caused by the product ID already existing or not, which is not very helpful
-                    // when this happens!
-                    this.formErrorModalMessage = "Some of the information you have entered is invalid."
+                    if (error.response.data.message !== "") {
+                      this.formErrorModalMessage = error.response.data.message;
+                    } else {
+                      this.formErrorModalMessage = "Some of the information you have entered is invalid.";
+                    }
 
                     // Invalid token was used
                   } else if (error.response.status === 403) {
@@ -356,9 +361,10 @@ export default {
 
 <style scoped>
 
+/* Styles the input and textarea's borders to be green when they are focused/tabbed to */
 input:focus, textarea:focus, button:focus{
   outline: none;
-  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
 }
 </style>

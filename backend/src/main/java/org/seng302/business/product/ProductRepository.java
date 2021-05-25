@@ -1,5 +1,16 @@
+/**
+ * Summary. This file contains the definition for the ProductRepository.
+ *
+ * Description. This file contains the defintion for the ProductRepository.
+ *
+ * @link   team-400/src/main/java/org/seng302/business/product/ProductRepository
+ * @file   This file contains the definition for ProductRepository.
+ * @author team-400.
+ * @since  5.5.2021
+ */
 package org.seng302.business.product;
 
+import org.seng302.business.inventoryItem.InventoryItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,5 +48,12 @@ public interface ProductRepository extends JpaRepository<Product, String> {
      * @param businessId The ID of the business
      */
     void deleteByIdAndBusinessId(String id, Integer businessId);
+
+    /**
+     * Finds all products with the given business ID (no pagination)
+     * @param businessId A business ID.
+     * @return A list of inventory items with the given business ID.
+     */
+    List<Product> findAllByBusinessId(Integer businessId);
 
 }

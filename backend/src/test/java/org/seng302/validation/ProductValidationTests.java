@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Product validation test class
  */
-public class ProductValidationTests {
+class ProductValidationTests {
 
     // ******************************** PRODUCT ID ***********************************
 
@@ -19,7 +19,7 @@ public class ProductValidationTests {
      * product ID is equal to the minimum length.
      */
     @Test
-    public void isValidProductIdMinimumLength() {
+    void isValidProductIdMinimumLength() {
         String productId = "PRO";
         assertTrue(ProductValidation.isValidProductId(productId));
     }
@@ -29,7 +29,7 @@ public class ProductValidationTests {
      * product ID is equal to the maximum length.
      */
     @Test
-    public void isValidProductIdMaximumLength() {
+    void isValidProductIdMaximumLength() {
         String productId = "PRODUCTID-12345";
         assertTrue(ProductValidation.isValidProductId(productId));
     }
@@ -39,7 +39,7 @@ public class ProductValidationTests {
      * product ID is between the maximum and minimum length and contains valid symbols.
      */
     @Test
-    public void isValidProductIdValidSymbols() {
+    void isValidProductIdValidSymbols() {
         String productId = "PRODUCT-ID-123";
         assertTrue(ProductValidation.isValidProductId(productId));
     }
@@ -49,7 +49,7 @@ public class ProductValidationTests {
      * product ID is less than the minimum length.
      */
     @Test
-    public void isValidProductIdLessThanMinimumLength() {
+    void isValidProductIdLessThanMinimumLength() {
         String productId = "PR";
         assertFalse(ProductValidation.isValidProductId(productId));
     }
@@ -59,7 +59,7 @@ public class ProductValidationTests {
      * product ID is greater than the maximum length.
      */
     @Test
-    public void isValidProductIdGreaterThanMaximumLength() {
+    void isValidProductIdGreaterThanMaximumLength() {
         String productId = "PRODUCTID-123456";
         assertFalse(ProductValidation.isValidProductId(productId));
     }
@@ -69,7 +69,7 @@ public class ProductValidationTests {
      * product ID is between the maximum and minimum length but contains invalid symbols.
      */
     @Test
-    public void isValidProductIdInvalidSymbols() {
+    void isValidProductIdInvalidSymbols() {
         String productId = "PRODUCT- 123";
         assertFalse(ProductValidation.isValidProductId(productId));
 
@@ -84,7 +84,7 @@ public class ProductValidationTests {
      * product name is equal to the minimum length.
      */
     @Test
-    public void isValidNameMinimumLength() {
+    void isValidNameMinimumLength() {
         String name = "A";
         assertTrue(ProductValidation.isValidName(name));
     }
@@ -94,7 +94,7 @@ public class ProductValidationTests {
      * product name is equal to the maximum length.
      */
     @Test
-    public void isValidNameMaximumLength() {
+    void isValidNameMaximumLength() {
         String string = "A";
         String name = string.repeat(100);
         assertTrue(ProductValidation.isValidName(name));
@@ -105,7 +105,7 @@ public class ProductValidationTests {
      * product name is between the maximum and minimum length and contains valid symbols.
      */
     @Test
-    public void isValidNameValidSymbols() {
+    void isValidNameValidSymbols() {
         String name = "New '#,.&()- 123g";
         assertTrue(ProductValidation.isValidName(name));
     }
@@ -115,7 +115,7 @@ public class ProductValidationTests {
      * product name is less than the minimum length.
      */
     @Test
-    public void isValidNameLessThanMinimumLength() {
+    void isValidNameLessThanMinimumLength() {
         String name = "";
         assertFalse(ProductValidation.isValidName(name));
     }
@@ -125,7 +125,7 @@ public class ProductValidationTests {
      * product name is greater than the maximum length.
      */
     @Test
-    public void isValidNameGreaterThanMaximumLength() {
+    void isValidNameGreaterThanMaximumLength() {
         String string = "A";
         String name = string.repeat(101);
         assertFalse(ProductValidation.isValidName(name));
@@ -136,7 +136,7 @@ public class ProductValidationTests {
      * product name is between the maximum and minimum length but contains invalid symbols.
      */
     @Test
-    public void isValidNameInvalidSymbols() {
+    void isValidNameInvalidSymbols() {
         String name = "New %@!";
         assertFalse(ProductValidation.isValidName(name));
     }
@@ -148,7 +148,7 @@ public class ProductValidationTests {
      * product description is equal to the minimum length.
      */
     @Test
-    public void isValidDescriptionMinimumLength() {
+    void isValidDescriptionMinimumLength() {
         String description = "";
         assertTrue(ProductValidation.isValidDescription(description));
     }
@@ -158,7 +158,7 @@ public class ProductValidationTests {
      * product description is equal to the maximum length.
      */
     @Test
-    public void isValidDescriptionMaximumLength() {
+    void isValidDescriptionMaximumLength() {
         String string = "A";
         String description = string.repeat(600);
         assertTrue(ProductValidation.isValidDescription(description));
@@ -169,7 +169,7 @@ public class ProductValidationTests {
      * product description is between the maximum and minimum length.
      */
     @Test
-    public void isValidDescriptionValidLength() {
+    void isValidDescriptionValidLength() {
         String description = "Product description.";
         assertTrue(ProductValidation.isValidDescription(description));
     }
@@ -179,7 +179,7 @@ public class ProductValidationTests {
      * product description is greater than the maximum length.
      */
     @Test
-    public void isValidDescriptionGreaterThanMaximumLength() {
+    void isValidDescriptionGreaterThanMaximumLength() {
         String string = "A";
         String description = string.repeat(601);
         assertFalse(ProductValidation.isValidDescription(description));
@@ -192,7 +192,7 @@ public class ProductValidationTests {
      * manufacturer name is equal to the minimum length.
      */
     @Test
-    public void isValidManufacturerMinimumLength() {
+    void isValidManufacturerMinimumLength() {
         String manufacturer = "";
         assertTrue(ProductValidation.isValidManufacturer(manufacturer));
     }
@@ -202,7 +202,7 @@ public class ProductValidationTests {
      * manufacturer name is equal to the maximum length.
      */
     @Test
-    public void isValidManufacturerMaximumLength() {
+    void isValidManufacturerMaximumLength() {
         String string = "A";
         String manufacturer = string.repeat(100);
         assertTrue(ProductValidation.isValidManufacturer(manufacturer));
@@ -213,7 +213,7 @@ public class ProductValidationTests {
      * manufacturer name is between the maximum and minimum length and contains valid symbols.
      */
     @Test
-    public void isValidManufacturerValidSymbols() {
+    void isValidManufacturerValidSymbols() {
         String manufacturer = "New '#,.&()- 123g";
         assertTrue(ProductValidation.isValidManufacturer(manufacturer));
     }
@@ -223,7 +223,7 @@ public class ProductValidationTests {
      * manufacturer name is greater than the maximum length.
      */
     @Test
-    public void isValidManufacturerGreaterThanMaximumLength() {
+    void isValidManufacturerGreaterThanMaximumLength() {
         String string = "A";
         String manufacturer = string.repeat(101);
         assertFalse(ProductValidation.isValidManufacturer(manufacturer));
@@ -234,7 +234,7 @@ public class ProductValidationTests {
      * manufacturer name is between the maximum and minimum length but contains invalid symbols.
      */
     @Test
-    public void isValidManufacturerInvalidSymbols() {
+    void isValidManufacturerInvalidSymbols() {
         String manufacturer = "New %@!";
         assertFalse(ProductValidation.isValidManufacturer(manufacturer));
     }
