@@ -184,7 +184,6 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
-import {checkAccessPermission} from "../views/helpFunction";
 
 export default {
   name: "ProductCatalogue",
@@ -772,8 +771,8 @@ export default {
 
     // When mounted create instance of modal
     this.modal = new Modal(this.$refs.CreateProductModal)
-    if (checkAccessPermission(this.linkBusinessAccount)) {
-      this.$router.push({path: '/forbidden'});
+    if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+      this.$router.push({path: `/businessProfile/${Cookies.get('actAs')}/productCatalogue`});
     } else {
       /**
        * When mounted, initiate population of page.
