@@ -51,7 +51,7 @@ public class Listing {
     @Column (name = "price", nullable = false)
     private double price;
 
-    @Column (name = "moreInfo")
+    @Column (name = "moreInfo", length = 600)
     private String moreInfo;
 
     @Column (name = "created")

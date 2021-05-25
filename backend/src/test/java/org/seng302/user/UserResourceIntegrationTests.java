@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class UserResourceIntegrationTests {
+class UserResourceIntegrationTests {
 
     @Autowired
     private MockMvc mvc;
@@ -112,14 +112,15 @@ public class UserResourceIntegrationTests {
     private Address address7;
 
     @BeforeAll
-    public void setup() throws Exception {
+    void setup() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         dGAA = new User(
                 "John",
@@ -177,7 +178,8 @@ public class UserResourceIntegrationTests {
                 "Frank Sound",
                 "Cayman Islands",
                 "Caribbean",
-                "North America");
+                "North America",
+                "Pirate Cove");
 
         searchUser1= new User(
                 "Alex",
@@ -195,7 +197,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser1.setId(4);
 
-        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China");
+        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China", "Barryville");
 
         searchUser2 = new User(
                 "Chad",
@@ -213,7 +215,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser2.setId(5);
 
-        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa");
+        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "Buri");
 
         searchUser3 = new User(
                 "Naomi",
@@ -231,7 +233,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser3.setId(6);
 
-        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand");
+        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand", "Ilam");
 
         searchUser4 = new User(
                 "Seth",
@@ -249,7 +251,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser4.setId(7);
 
-        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand");
+        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand", "Ilam");
 
         searchUser5 = new User(
                 "Minttu",
@@ -267,7 +269,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser5.setId(8);
 
-        Address address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand");
+        Address address6 = new Address("14798", "Terry Highway", "", "Queenstown-Lakes", "District", "New Zealand", "Frankton");
 
         searchUser6 = new User(
                 "Francisca",
@@ -285,7 +287,7 @@ public class UserResourceIntegrationTests {
                 Role.USER);
         searchUser6.setId(9);
 
-        Address address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand");
+        Address address7 = new Address("3396", "", "Bertram Parkway", "", "Central Otago", "New Zealand", "Wanaka");
 
         searchUser7 = new User(
                 "Francisca",
@@ -316,7 +318,7 @@ public class UserResourceIntegrationTests {
      * that contains an email that belongs to an existing user as well as the correct password
      */
     @Test
-    public void canLoginWhenUserExistsAndPasswordCorrect() throws Exception {
+    void canLoginWhenUserExistsAndPasswordCorrect() throws Exception {
         // when
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/login")
@@ -336,7 +338,7 @@ public class UserResourceIntegrationTests {
      * that contains an email that does not belong to an existing user
      */
     @Test
-    public void cantLoginWhenUserDoesntExist() throws Exception {
+    void cantLoginWhenUserDoesntExist() throws Exception {
         // given
         expectedJson = "";
 
@@ -357,7 +359,7 @@ public class UserResourceIntegrationTests {
      * that contains an email that belongs to an existing user but an incorrect password
      */
     @Test
-    public void cantLoginWhenUserExistsButPasswordIncorrect() throws Exception {
+    void cantLoginWhenUserExistsButPasswordIncorrect() throws Exception {
         // given
         expectedJson = "";
 
@@ -379,7 +381,7 @@ public class UserResourceIntegrationTests {
      * with an existing JSESSIONID cookie
      */
     @Test
-    public void canLogoutWhenCookieExists() throws Exception {
+    void canLogoutWhenCookieExists() throws Exception {
         // when
         response = mvc.perform(post("/logout")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -397,7 +399,7 @@ public class UserResourceIntegrationTests {
      * with no existing JSESSIONID cookie
      */
     @Test
-    public void canLogoutWhenCookieDoesNotExist() throws Exception {
+    void canLogoutWhenCookieDoesNotExist() throws Exception {
         // when
         response = mvc.perform(post("/logout")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -413,7 +415,7 @@ public class UserResourceIntegrationTests {
      * that contains an email that doesn't belong to an existing user and contains valid data
      */
     @Test
-    public void canRegisterWhenUserDoesntExistAndDataValid() throws Exception {
+    void canRegisterWhenUserDoesntExistAndDataValid() throws Exception {
         // given
         User newUser = new User("Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
                           "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()), "01234567",
@@ -436,7 +438,8 @@ public class UserResourceIntegrationTests {
                         "\"city\": \"Christchurch\"," +
                         "\"region\": \"Canterbury\"," +
                         "\"country\": \"New Zealand\"," +
-                        "\"postcode\": \"90210\"" +
+                        "\"postcode\": \"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"Testpassword123!\"}";
 
@@ -456,7 +459,7 @@ public class UserResourceIntegrationTests {
      * that contains an email that belongs to an existing user but contains valid data
      */
     @Test
-    public void cantRegisterWhenUserAlreadyExistsButDataValid() throws Exception {
+    void cantRegisterWhenUserAlreadyExistsButDataValid() throws Exception {
         // given
         String registerJson = "{\"firstName\": \"testfirstname\", " +
                 "\"lastName\": \"testlastname\", " +
@@ -472,7 +475,8 @@ public class UserResourceIntegrationTests {
                         "\"city\": \"Christchurch\"," +
                         "\"region\": \"Canterbury\"," +
                         "\"country\": \"New Zealand\"," +
-                        "\"postcode\": \"90210\"" +
+                        "\"postcode\": \"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
@@ -494,7 +498,7 @@ public class UserResourceIntegrationTests {
      * that contains an email that doesn't belong to an existing user but contains invalid data
      */
     @Test
-    public void cantRegisterWhenUserDoesntExistButDataInvalid() throws Exception {
+    void cantRegisterWhenUserDoesntExistButDataInvalid() throws Exception {
         // given
         String registerJson = "{\"firstName\": \"\", " +
                 "\"lastName\": \"testlastname\", " +
@@ -510,7 +514,8 @@ public class UserResourceIntegrationTests {
                         "\"city\": \"Christchurch\"," +
                         "\"region\": \"Canterbury\"," +
                         "\"country\": \"New Zealand\"," +
-                        "\"postcode\": \"90210\"" +
+                        "\"postcode\": \"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
@@ -530,7 +535,7 @@ public class UserResourceIntegrationTests {
      * that contains an email that belongs to an existing user and contains invalid data
      */
     @Test
-    public void cantRegisterWhenUserDoesExistAndDataInvalid() throws Exception {
+    void cantRegisterWhenUserDoesExistAndDataInvalid() throws Exception {
         // given
         String registerJson = "{\"firstName\": \"\", " +
                 "\"lastName\": \"testlastname\", " +
@@ -546,7 +551,8 @@ public class UserResourceIntegrationTests {
                         "\"city\": \"Christchurch\"," +
                         "\"region\": \"Canterbury\"," +
                         "\"country\": \"New Zealand\"," +
-                        "\"postcode\": \"90210\"" +
+                        "\"postcode\": \"90210\"," +
+                        "\"suburb\": \"Ilam\"" +
                 " }, " +
                 "\"password\": \"testpassword\"}";
         expectedJson = "";
@@ -568,7 +574,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the cookie contains an ID belonging to a DGAA
      */
     @Test
-    public void canRetrieveUserWhenUserExistsWithDgaaCookie() throws Exception {
+    void canRetrieveUserWhenUserExistsWithDgaaCookie() throws Exception {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]",  user.getDateOfBirth(),
@@ -591,7 +597,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the cookie contains an ID belonging to a GAA
      */
     @Test
-    public void canRetrieveUserWhenUserExistsWithGaaCookie() throws Exception {
+    void canRetrieveUserWhenUserExistsWithGaaCookie() throws Exception {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
@@ -614,7 +620,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the cookie contains an ID belonging to a GAA
      */
     @Test
-    public void canRetrieveUserWhenUserExistsWithUserCookie() throws Exception {
+    void canRetrieveUserWhenUserExistsWithUserCookie() throws Exception {
         String expectedUserJson = "{\"id\":%d," +
                 "\"firstName\":\"%s\"," +
                 "\"lastName\":\"%s\"," +
@@ -651,7 +657,7 @@ public class UserResourceIntegrationTests {
      * but the cookie contains a non-existing ID
      */
     @Test
-    public void cantRetrieveUserWhenUserExistsWithNonExistingIdCookie() throws Exception {
+    void cantRetrieveUserWhenUserExistsWithNonExistingIdCookie() throws Exception {
         // given
         String nonExistingSessionUUID = User.generateSessionUUID();
         expectedJson = "";
@@ -673,7 +679,7 @@ public class UserResourceIntegrationTests {
      * but there is no cookie
      */
     @Test
-    public void cantRetrieveUserWhenUserExistsWithNoCookie() throws Exception {
+    void cantRetrieveUserWhenUserExistsWithNoCookie() throws Exception {
         // given
         expectedJson = "";
 
@@ -691,7 +697,7 @@ public class UserResourceIntegrationTests {
      * Tests that a NOT_ACCEPTABLE status is received when the user ID in the /users/{id} API endpoint does not exist
      */
     @Test
-    public void cantRetrieveUserWhenUserDoesntExist() throws Exception {
+    void cantRetrieveUserWhenUserDoesntExist() throws Exception {
         // given
         expectedJson = "";
 
@@ -719,7 +725,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the user searching for a user is a DGAA.
      */
     @Test
-    public void canSearchUsersWhenUserExistsWithDgaaCookie() throws Exception {
+    void canSearchUsersWhenUserExistsWithDgaaCookie() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -768,7 +774,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the order by and page params provided are valid.
      */
     @Test
-    public void canSearchUsersWhenUserExistsWithValidOrderByAndPageParams() throws Exception {
+    void canSearchUsersWhenUserExistsWithValidOrderByAndPageParams() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -819,7 +825,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the user searching for a user is a GAA.
      */
     @Test
-    public void canSearchUsersWhenUserExistsWithGaaCookie() throws Exception {
+    void canSearchUsersWhenUserExistsWithGaaCookie() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -868,7 +874,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the user searching for a user is a USER.
      */
     @Test
-    public void canSearchUsersWhenUserExistsWithUserCookie() throws Exception {
+    void canSearchUsersWhenUserExistsWithUserCookie() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -916,7 +922,7 @@ public class UserResourceIntegrationTests {
      * the following orders of the names: first, last, middle, first middle last, first last.
      */
     @Test
-    public void emptySearchUsersWhenUserDoesntExist() throws Exception {
+    void emptySearchUsersWhenUserDoesntExist() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "notFirst",
@@ -961,7 +967,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the order by param provided is invalid.
      */
     @Test
-    public void cantSearchUsersWithInvalidOrderByParam() throws Exception {
+    void cantSearchUsersWithInvalidOrderByParam() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -998,7 +1004,7 @@ public class UserResourceIntegrationTests {
      * Test specifically for when the page param provided is invalid.
      */
     @Test
-    public void cantSearchUsersWithInvalidPageParam() throws Exception {
+    void cantSearchUsersWithInvalidPageParam() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -1034,7 +1040,7 @@ public class UserResourceIntegrationTests {
      * when the cookie contains a non-existing ID
      */
     @Test
-    public void cantSearchUsersWithNonExistingIdCookie() throws Exception {
+    void cantSearchUsersWithNonExistingIdCookie() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -1068,7 +1074,7 @@ public class UserResourceIntegrationTests {
      * when there is no cookie
      */
     @Test
-    public void cantSearchUsersWithNoCookie() throws Exception {
+    void cantSearchUsersWithNoCookie() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -1101,7 +1107,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void canChangeUserToGaaWithDgaaCookie() throws Exception {
+    void canChangeUserToGaaWithDgaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
@@ -1125,7 +1131,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeUserToGaaWithGaaCookie() throws Exception {
+    void cantChangeUserToGaaWithGaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
 
@@ -1146,7 +1152,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeUserToGaaWithUserCookie() throws Exception {
+    void cantChangeUserToGaaWithUserCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
 
@@ -1167,7 +1173,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeUserToGaaWithNonExistingIdCookie() throws Exception {
+    void cantChangeUserToGaaWithNonExistingIdCookie() throws Exception {
         // given
         String nonExistingSessionUUID = User.generateSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", nonExistingSessionUUID);
@@ -1189,7 +1195,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeUserToGaaWithNoCookie() throws Exception {
+    void cantChangeUserToGaaWithNoCookie() throws Exception {
         // when
         when(userRepository.findById(anotherUser.getId())).thenReturn(Optional.ofNullable(anotherUser));
         response = mvc.perform(put(String.format("/users/%d/makeAdmin", anotherUser.getId()))).andReturn().getResponse();
@@ -1205,7 +1211,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeUserToGaaWithNonExistingUserAndDgaaCookie() throws Exception {
+    void cantChangeUserToGaaWithNonExistingUserAndDgaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
@@ -1225,7 +1231,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeGaaToGaaWithDgaaCookie() throws Exception {
+    void cantChangeGaaToGaaWithDgaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
@@ -1246,7 +1252,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeDgaaToGaaWithDgaaCookie() throws Exception {
+    void cantChangeDgaaToGaaWithDgaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
@@ -1267,7 +1273,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void canChangeGaaToUserWithDgaaCookie() throws Exception {
+    void canChangeGaaToUserWithDgaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
@@ -1291,7 +1297,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeGaaToUserWithGaaCookie() throws Exception {
+    void cantChangeGaaToUserWithGaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
 
@@ -1312,7 +1318,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeGaaToUserWithUserCookie() throws Exception {
+    void cantChangeGaaToUserWithUserCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
 
@@ -1333,7 +1339,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeGaaToUserWithNonExistingIdCookie() throws Exception {
+    void cantChangeGaaToUserWithNonExistingIdCookie() throws Exception {
         // given
         String nonExistingSessionUUID = User.generateSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", nonExistingSessionUUID);
@@ -1355,7 +1361,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeGaaToUserWithNoCookie() throws Exception {
+    void cantChangeGaaToUserWithNoCookie() throws Exception {
         // when
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(put(String.format("/users/%d/revokeAdmin", user.getId()))).andReturn().getResponse();
@@ -1371,7 +1377,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeGaaToUserWithNonExistingGaaAndDgaaCookie() throws Exception {
+    void cantChangeGaaToUserWithNonExistingGaaAndDgaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
@@ -1391,7 +1397,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeUserToUserWithDgaaCookie() throws Exception {
+    void cantChangeUserToUserWithDgaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
@@ -1412,7 +1418,7 @@ public class UserResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantChangeDgaaToUserWithDgaaCookie() throws Exception {
+    void cantChangeDgaaToUserWithDgaaCookie() throws Exception {
         // given
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 

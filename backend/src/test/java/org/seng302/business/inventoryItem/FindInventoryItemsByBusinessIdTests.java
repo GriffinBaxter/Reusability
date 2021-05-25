@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class FindInventoryItemsByBusinessIdTests {
+class FindInventoryItemsByBusinessIdTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -71,7 +71,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * Any exception.
      */
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -79,7 +79,8 @@ public class FindInventoryItemsByBusinessIdTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -234,7 +235,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessId_thenReturnProductIdOrderedProductsAscending() {
+    void whenFindInventoryItemsByBusinessId_thenReturnProductIdOrderedProductsAscending() {
 
         // given
         int pageNo = 0;
@@ -266,7 +267,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnProductIdOrderedProductsDescending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnProductIdOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -299,7 +300,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnQuantityOrderedProductsAscending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnQuantityOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -337,7 +338,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnQuantityOrderedProductsDescending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnQuantityOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -377,7 +378,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * from earliest to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnPricePerItemOrderedProductsAscending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnPricePerItemOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -415,7 +416,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * from earliest to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnPricePerItemOrderedProductsDescending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnPricePerItemOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -454,7 +455,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * sort of expiry date from earliest to more recent.
      */
     @Test
-    public void FindInventoryItemsByBusinessIdTests_WithPricePerItemOfOneInventoryItemIsNull() {
+    void FindInventoryItemsByBusinessIdTests_WithPricePerItemOfOneInventoryItemIsNull() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -495,7 +496,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * from earliest to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnTotalPriceOrderedProductsAscending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnTotalPriceOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -533,7 +534,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * from earliest to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnTotalPriceOrderedProductsDescending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnTotalPriceOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -572,7 +573,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * sort of expiry date from earliest to more recent.
      */
     @Test
-    public void FindInventoryItemsByBusinessIdTests_WithTotalPriceOfOneInventoryItemIsNull() {
+    void FindInventoryItemsByBusinessIdTests_WithTotalPriceOfOneInventoryItemIsNull() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -613,7 +614,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * from earliest to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnManufacturedOrderedProductsAscending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnManufacturedOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -651,7 +652,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * from earliest to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnRecommendedRetailPriceOrderedProductsDescending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnRecommendedRetailPriceOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -690,7 +691,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void FindInventoryItemsByBusinessIdTests_WithManufacturedOfOneInventoryItemIsNull() {
+    void FindInventoryItemsByBusinessIdTests_WithManufacturedOfOneInventoryItemIsNull() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -731,7 +732,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * from earliest to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnSellByOrderedProductsAscending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnSellByOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -769,7 +770,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * from earliest to more recent, and a tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnSellByOrderedProductsDescending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnSellByOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -809,7 +810,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * tertiary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void FindInventoryItemsByBusinessIdTests_WithSellByOfOneInventoryItemIsNull() {
+    void FindInventoryItemsByBusinessIdTests_WithSellByOfOneInventoryItemIsNull() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -851,7 +852,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnBestBeforeOrderedProductsAscending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnBestBeforeOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -888,7 +889,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnBestBeforeOrderedProductsDescending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnBestBeforeOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -925,7 +926,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * order (null will be last) and a secondary sort of expiry date from earliest to more recent.
      */
     @Test
-    public void FindInventoryItemsByBusinessIdTests_WithBestBeforeOfOneInventoryItemIsNull() {
+    void FindInventoryItemsByBusinessIdTests_WithBestBeforeOfOneInventoryItemIsNull() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -965,7 +966,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnExpiresOrderedProductsAscending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnExpiresOrderedProductsAscending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -1003,7 +1004,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * more recent.
      */
     @Test
-    public void whenFindInventoryItemsByBusinessIdTests_thenReturnExpiresOrderedProductsDescending() {
+    void whenFindInventoryItemsByBusinessIdTests_thenReturnExpiresOrderedProductsDescending() {
         // given
         int pageNo = 0;
         int pageSize = 5;
@@ -1042,7 +1043,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * when the page is not full with inventory items.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnPageHalfFull() {
+    void whenFindAllProductsByBusinessId_thenReturnPageHalfFull() {
         // given
         int pageNo = 0;
         int pageSize = 10;
@@ -1069,7 +1070,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * business ID that does not match anything in the database.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnEmptyPage() {
+    void whenFindAllProductsByBusinessId_thenReturnEmptyPage() {
         // given
         int pageNo = 0;
         int pageSize = 20;
@@ -1088,7 +1089,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * than the first one with correct products.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnPagesFromTwoOnward() {
+    void whenFindAllProductsByBusinessId_thenReturnPagesFromTwoOnward() {
         // given
         int pageSize = 1;
         Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase())
@@ -1113,7 +1114,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * page is full.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnFullPage() {
+    void whenFindAllProductsByBusinessId_thenReturnFullPage() {
         // given
         int pageNo = 0;
         int pageSize = 4;
@@ -1141,7 +1142,7 @@ public class FindInventoryItemsByBusinessIdTests {
      * not just the few values that are returned are correctly ordered.
      */
     @Test
-    public void whenFindAllProductsByBusinessId_thenReturnGloballyOrderedProducts() {
+    void whenFindAllProductsByBusinessId_thenReturnGloballyOrderedProducts() {
         // given
         int pageNo = 1;
         int pageSize = 2;

@@ -17,13 +17,13 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class BusinessValidationTests {
+class BusinessValidationTests {
 
     private List<Business> businesses;
     private Business business;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         businesses = new ArrayList<>();
         Address address = new Address (
                 "3/24",
@@ -31,7 +31,8 @@ public class BusinessValidationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         User user = new User (
                 "first",
@@ -65,7 +66,7 @@ public class BusinessValidationTests {
      * is less than the minimum length.
      */
     @Test
-    public void isValidNameLessThanMinLength() {
+    void isValidNameLessThanMinLength() {
         String businessName = ""; //minLength = 1
         assertEquals(false, BusinessValidation.isValidName(businessName));
     }
@@ -75,7 +76,7 @@ public class BusinessValidationTests {
      * is greater than the max length.
      */
     @Test
-    public void isValidNameGreaterThanMaxLength() {
+    void isValidNameGreaterThanMaxLength() {
         String string = "A";
         String businessName = string.repeat(101); //maxLength = 100
         assertEquals(false, BusinessValidation.isValidName(businessName));
@@ -86,7 +87,7 @@ public class BusinessValidationTests {
      * is of the correct length but contains invalid symbols.
      */
     @Test
-    public void isValidNameInvalidSymbols() {
+    void isValidNameInvalidSymbols() {
         String businessName = "New %@!";
         assertEquals(false, BusinessValidation.isValidName(businessName));
     }
@@ -96,7 +97,7 @@ public class BusinessValidationTests {
      * is of the correct length and contains valid symbols, spaces etc.
      */
     @Test
-    public void isValidNameValidSymbolsAndSpaces() {
+    void isValidNameValidSymbolsAndSpaces() {
         String businessName = "New '#,.&()-";
         assertEquals(true, BusinessValidation.isValidName(businessName));
     }
@@ -106,7 +107,7 @@ public class BusinessValidationTests {
      * is of the correct length and contains numbers.
      */
     @Test
-    public void isValidNameContainsNumbers() {
+    void isValidNameContainsNumbers() {
         String businessName = "New123";
         assertEquals(true, BusinessValidation.isValidName(businessName));
     }
@@ -116,7 +117,7 @@ public class BusinessValidationTests {
      * has the same length as the min length.
      */
     @Test
-    public void isValidNameEqualToMinLength() {
+    void isValidNameEqualToMinLength() {
         String businessName = "3"; // minLength = 1
         assertEquals(true, BusinessValidation.isValidName(businessName));
     }
@@ -126,7 +127,7 @@ public class BusinessValidationTests {
      * has the same length as the max length.
      */
     @Test
-    public void isValidNameEqualToMaxLength() {
+    void isValidNameEqualToMaxLength() {
         String string = "A"; // maxLength = 100
         String businessName = string.repeat(100);
         assertEquals(true, BusinessValidation.isValidName(businessName));
@@ -139,7 +140,7 @@ public class BusinessValidationTests {
      * has the same length as the min length.
      */
     @Test
-    public void isValidDescriptionEqualMinLength() {
+    void isValidDescriptionEqualMinLength() {
         String description = ""; // minLength = 0
         assertEquals(true, BusinessValidation.isValidDescription(description));
     }
@@ -149,7 +150,7 @@ public class BusinessValidationTests {
      * has a length greater than the max length.
      */
     @Test
-    public void isValidDescriptionGreaterThanMaxLength() {
+    void isValidDescriptionGreaterThanMaxLength() {
         String string = "Z";
         String description = string.repeat(601); //maxLength = 600
         assertEquals(false, BusinessValidation.isValidDescription(description));
@@ -160,7 +161,7 @@ public class BusinessValidationTests {
      * has a length equal to the max length.
      */
     @Test
-    public void isValidDescriptionEqualToMaxLength() {
+    void isValidDescriptionEqualToMaxLength() {
         String string = "Z";
         String description = string.repeat(600); //maxLength = 600
         assertEquals(true, BusinessValidation.isValidDescription(description));
@@ -171,7 +172,7 @@ public class BusinessValidationTests {
      * has correct length and contains symbols, numbers etc.
      */
     @Test
-    public void isValidDescriptionCorrectLengthContainsSymbolsAndNumbers() {
+    void isValidDescriptionCorrectLengthContainsSymbolsAndNumbers() {
         String description = "Hello welcome to New World12345!!!!!!!!. Contact us" +
                 " at top@bga.com. Now %$&#$*#(#";
         assertEquals(true, BusinessValidation.isValidDescription(description));
@@ -185,7 +186,7 @@ public class BusinessValidationTests {
      * doesn't exist.
      */
     @Test
-    public void isValidBusinessNotExist() throws Exception {
+    void isValidBusinessNotExist() throws Exception {
         businesses.add(business);
         assertEquals(true, BusinessValidation.isNewBusiness(businesses, "New World"));
     }
@@ -195,7 +196,7 @@ public class BusinessValidationTests {
      * already exists
      */
     @Test
-    public void isValidBusinessExists() throws Exception {
+    void isValidBusinessExists() throws Exception {
         businesses.add(business);
         assertEquals(false, BusinessValidation.isNewBusiness(businesses, "Countdown"));
     }
@@ -205,7 +206,7 @@ public class BusinessValidationTests {
      * businesses.
      */
     @Test
-    public void isValidBusinessNoBusinesses() throws Exception {
+    void isValidBusinessNoBusinesses() throws Exception {
         assertEquals(true, BusinessValidation.isNewBusiness(businesses, "Countdown"));
     }
 

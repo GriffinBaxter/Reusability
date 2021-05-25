@@ -13,6 +13,9 @@ package org.seng302.validation;
 import java.time.LocalDate;
 import java.time.Period;
 
+/**
+ * This class is used for validating the data used to create a User.
+ */
 public class UserValidation {
 
     // Values need for validation.

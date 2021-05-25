@@ -149,7 +149,7 @@ export default {
      * @param value The new value of the value prop.
      */
     updateValue(value) {
-      this.$emit('input', value)
+      this.$emit('input', value);
     },
     /**
      * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
@@ -310,7 +310,10 @@ export default {
                 // This means that the modification was successfull
                 if (res.data.status === 200) {
                   this.updateValue(new Product(this.newProduct.data));
+                  // Custom event so that ProductCatalogue.vue knows edit was a success and can alert the user.
+                  this.$root.$emit('edits');
                   this.modal.hide();
+                  this.formErrorModalMessage = "";
                 }
               }
           )
@@ -320,9 +323,11 @@ export default {
 
                   // There was something wrong with the user data!
                   if (error.response.status === 400) {
-                    // There is no way to tell if this is caused by the product ID already existing or not, which is not very helpful
-                    // when this happens!
-                    this.formErrorModalMessage = "Some of the information you have entered is invalid."
+                    if (error.response.data.message !== "") {
+                      this.formErrorModalMessage = error.response.data.message;
+                    } else {
+                      this.formErrorModalMessage = "Some of the information you have entered is invalid.";
+                    }
 
                     // Invalid token was used
                   } else if (error.response.status === 403) {

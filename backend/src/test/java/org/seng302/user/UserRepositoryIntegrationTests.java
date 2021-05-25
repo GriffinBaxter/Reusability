@@ -26,7 +26,7 @@ import java.util.Optional;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class UserRepositoryIntegrationTests {
+class UserRepositoryIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -43,7 +43,7 @@ public class UserRepositoryIntegrationTests {
      * Tests that a (correct) user is returned when calling findByEmail() with an existing email
      */
     @Test
-    public void whenFindByExistingEmail_thenReturnUser() throws Exception {
+    void whenFindByExistingEmail_thenReturnUser() throws Exception {
         // given
         address = new Address(
                 "1/24",
@@ -51,7 +51,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -89,7 +90,7 @@ public class UserRepositoryIntegrationTests {
      * Tests that no user is returned when calling findByEmail() with a non-existing email
      */
     @Test
-    public void whenFindByNonExistingEmail_thenDontReturnUser() throws Exception {
+    void whenFindByNonExistingEmail_thenDontReturnUser() throws Exception {
         // given
         address = new Address(
                 "2/24",
@@ -97,7 +98,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -122,7 +124,7 @@ public class UserRepositoryIntegrationTests {
      * Tests that a (correct) user is returned when calling findById() with an existing id
      */
     @Test
-    public void whenFindByExistingId_thenReturnUser() throws Exception {
+    void whenFindByExistingId_thenReturnUser() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -130,7 +132,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -168,7 +171,7 @@ public class UserRepositoryIntegrationTests {
      * Tests that no user is returned when calling findById() with a non-existing id
      */
     @Test
-    public void whenFindByNonExistingId_thenDontReturnUser() {
+    void whenFindByNonExistingId_thenDontReturnUser() {
         // when
         foundUser = userRepository.findById(0);
 
@@ -182,7 +185,7 @@ public class UserRepositoryIntegrationTests {
      * name.
      */
     @Test
-    public void whenFindByExistingFirstMiddleLastIgnoreCase_thenReturnUserPayload() throws Exception {
+    void whenFindByExistingFirstMiddleLastIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
         address = new Address(
                 "4/24",
@@ -190,7 +193,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -228,6 +232,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
         assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
         assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+        assertThat(userAddress.getSuburb()).isEqualTo(foundAddress.getSuburb());
 
         assertThat(user.getCreated()).isEqualTo(foundUserPayloadList.get(0).getCreated());
     }
@@ -238,7 +243,7 @@ public class UserRepositoryIntegrationTests {
      * last name.
      */
     @Test
-    public void whenFindByNonExistingFirstMiddleLast_thenDontReturnUserPayload() throws Exception {
+    void whenFindByNonExistingFirstMiddleLast_thenDontReturnUserPayload() throws Exception {
         // given
         address = new Address(
                 "5/24",
@@ -246,7 +251,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -273,7 +279,7 @@ public class UserRepositoryIntegrationTests {
      * with an existing first and last name.
      */
     @Test
-    public void whenFindByExistingFirstLastIgnoreCase_thenReturnUserPayload() throws Exception {
+    void whenFindByExistingFirstLastIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
         address = new Address(
                 "6/24",
@@ -281,7 +287,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -317,6 +324,7 @@ public class UserRepositoryIntegrationTests {
         assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
         assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
         assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+        assertThat(userAddress.getSuburb()).isEqualTo(foundAddress.getSuburb());
 
         assertThat(user.getCreated()).isEqualTo(foundUserPayloadList.get(0).getCreated());
     }
@@ -326,7 +334,7 @@ public class UserRepositoryIntegrationTests {
      * non-existing first and last name.
      */
     @Test
-    public void whenFindByNonExistingFirstLast_thenDontReturnUserPayload() throws Exception {
+    void whenFindByNonExistingFirstLast_thenDontReturnUserPayload() throws Exception {
         // given
         address = new Address(
                 "7/24",
@@ -334,7 +342,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -360,7 +369,7 @@ public class UserRepositoryIntegrationTests {
      * nickname, first, last and middle name respectively.
      */
     @Test
-    public void whenFindByExistingNicknameOrFirstOrLastOrMiddleIgnoreCase_thenReturnUserPayload() throws Exception {
+    void whenFindByExistingNicknameOrFirstOrLastOrMiddleIgnoreCase_thenReturnUserPayload() throws Exception {
         // given
         address = new Address(
                 "8/24",
@@ -368,7 +377,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -418,6 +428,7 @@ public class UserRepositoryIntegrationTests {
             assertThat(userAddress.getRegion()).isEqualTo(foundAddress.getRegion());
             assertThat(userAddress.getCountry()).isEqualTo(foundAddress.getCountry());
             assertThat(userAddress.getPostcode()).isEqualTo(foundAddress.getPostcode());
+            assertThat(userAddress.getSuburb()).isEqualTo(foundAddress.getSuburb());
 
             assertThat(user.getCreated()).isEqualTo(foundUserPayload.getCreated());
         }
@@ -429,7 +440,7 @@ public class UserRepositoryIntegrationTests {
      * name respectively.
      */
     @Test
-    public void whenFindByNonExistingNicknameOrFirstOrLastOrMiddle_thenDontReturnUserPayload() throws Exception {
+    void whenFindByNonExistingNicknameOrFirstOrLastOrMiddle_thenDontReturnUserPayload() throws Exception {
         // given
         address = new Address(
                 "9/24",
@@ -437,7 +448,8 @@ public class UserRepositoryIntegrationTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();

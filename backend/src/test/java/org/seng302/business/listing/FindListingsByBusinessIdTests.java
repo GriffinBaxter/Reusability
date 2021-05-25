@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class FindListingsByBusinessIdTests {
+class FindListingsByBusinessIdTests {
     @Autowired
     private TestEntityManager entityManager;
 
@@ -80,7 +80,7 @@ public class FindListingsByBusinessIdTests {
      * Any exception.
      */
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         // given
         address = new Address(
                 "3/24",
@@ -88,7 +88,8 @@ public class FindListingsByBusinessIdTests {
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
         entityManager.persist(address);
         entityManager.flush();
@@ -296,7 +297,7 @@ public class FindListingsByBusinessIdTests {
      * in ascending order i.e. from lowest to largest
      */
     @Test
-    public void whenFindListingByBusinessIdTests_thenReturnQuantityOrderedListingsAscending() {
+    void whenFindListingByBusinessIdTests_thenReturnQuantityOrderedListingsAscending() {
         // given
 
         int pageNo = 0;
@@ -332,7 +333,7 @@ public class FindListingsByBusinessIdTests {
      * in descending order i.e. from largest to lowest
      */
     @Test
-    public void whenFindListingByBusinessIdTests_thenReturnQuantityOrderedListingsDescending() {
+    void whenFindListingByBusinessIdTests_thenReturnQuantityOrderedListingsDescending() {
         // given
 
         int pageNo = 0;
@@ -368,7 +369,7 @@ public class FindListingsByBusinessIdTests {
      * in descending order i.e. from lowest to largest
      */
     @Test
-    public void whenFindListingByBusinessIdTests_thenReturnPriceOrderedListingsAscending() {
+    void whenFindListingByBusinessIdTests_thenReturnPriceOrderedListingsAscending() {
         // given
 
         int pageNo = 0;
@@ -404,7 +405,7 @@ public class FindListingsByBusinessIdTests {
      * in descending order i.e. from largest to lowest
      */
     @Test
-    public void whenFindListingByBusinessIdTests_thenReturnPriceOrderedListingsDescending() {
+    void whenFindListingByBusinessIdTests_thenReturnPriceOrderedListingsDescending() {
         // given
 
         int pageNo = 0;
@@ -440,7 +441,7 @@ public class FindListingsByBusinessIdTests {
      * in Ascending order i.e. from oldest to newest
      */
     @Test
-    public void whenFindListingByBusinessIdTests_thenReturnCreatedOrderedListingsAscending() {
+    void whenFindListingByBusinessIdTests_thenReturnCreatedOrderedListingsAscending() {
         // given
 
         int pageNo = 0;
@@ -477,7 +478,7 @@ public class FindListingsByBusinessIdTests {
      * in descending order i.e. from newest to oldest
      */
     @Test
-    public void whenFindListingByBusinessIdTests_thenReturnCreatedOrderedListingsDescending() {
+    void whenFindListingByBusinessIdTests_thenReturnCreatedOrderedListingsDescending() {
         // given
 
         int pageNo = 0;
@@ -513,7 +514,7 @@ public class FindListingsByBusinessIdTests {
      * in ascending order i.e. from newest to oldest
      */
     @Test
-    public void whenFindListingByBusinessIdTests_thenReturnClosesOrderedListingsAscending() {
+    void whenFindListingByBusinessIdTests_thenReturnClosesOrderedListingsAscending() {
         // given
 
         int pageNo = 0;
@@ -549,7 +550,7 @@ public class FindListingsByBusinessIdTests {
      * in descending order i.e. from newest to oldest
      */
     @Test
-    public void whenFindListingByBusinessIdTests_thenReturnClosesOrderedListingsDescending() {
+    void whenFindListingByBusinessIdTests_thenReturnClosesOrderedListingsDescending() {
         // given
 
         int pageNo = 0;
@@ -587,7 +588,7 @@ public class FindListingsByBusinessIdTests {
      * when the page is not full with listings.
      */
     @Test
-    public void whenFindAllListingsByBusinessId_thenReturnPageHalfFull() {
+    void whenFindAllListingsByBusinessId_thenReturnPageHalfFull() {
         // given
         int pageNo = 0;
         // Page size 20 means page will be half full with the default 13 users inserted
@@ -609,7 +610,7 @@ public class FindListingsByBusinessIdTests {
      * business ID that does not match anything in the database.
      */
     @Test
-    public void whenFindAllListingsByBusinessId_thenReturnEmptyPage() {
+    void whenFindAllListingsByBusinessId_thenReturnEmptyPage() {
         // given
         int pageNo = 0;
         int pageSize = 20;
@@ -628,7 +629,7 @@ public class FindListingsByBusinessIdTests {
      * than the first one with correct listings.
      */
     @Test
-    public void whenFindAllListingsByBusinessId_thenReturnPagesFromTwoOnward() {
+    void whenFindAllListingsByBusinessId_thenReturnPagesFromTwoOnward() {
         // given
         int pageSize = 1;
         Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
@@ -652,7 +653,7 @@ public class FindListingsByBusinessIdTests {
      * page is full.
      */
     @Test
-    public void whenFindAllListingsByBusinessId_thenReturnFullPage() {
+    void whenFindAllListingsByBusinessId_thenReturnFullPage() {
         // given
         int pageNo = 0;
         int pageSize = 4;
@@ -676,7 +677,7 @@ public class FindListingsByBusinessIdTests {
      * not just the few values that are returned are correctly ordered.
      */
     @Test
-    public void whenFindAllListingsByBusinessId_thenReturnGloballyOrderedListings() {
+    void whenFindAllListingsByBusinessId_thenReturnGloballyOrderedListings() {
         // given
         int pageNo = 1;
         int pageSize = 2;

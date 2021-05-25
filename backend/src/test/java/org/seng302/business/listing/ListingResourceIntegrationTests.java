@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class ListingResourceIntegrationTests {
+class ListingResourceIntegrationTests {
 
     @Autowired
     private MockMvc mvc;
@@ -125,14 +125,15 @@ public class ListingResourceIntegrationTests {
 
 
     @BeforeAll
-    public void setup() throws Exception {
+    void setup() throws Exception {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
                 "Canterbury",
                 "New Zealand",
-                "90210"
+                "90210",
+                "Ilam"
         );
 
         dGAA = new User(
@@ -267,7 +268,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void canCreateLisitngWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
+    void canCreateLisitngWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -302,7 +303,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void canCreateListingWhenBusinessExistsAndDataInvalidWithBusinessAdministratorUserCookie() throws Exception {
+    void canCreateListingWhenBusinessExistsAndDataInvalidWithBusinessAdministratorUserCookie() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -337,7 +338,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantCreateListingWhenBusinessDoesntExistButDataValid() throws Exception {
+    void cantCreateListingWhenBusinessDoesntExistButDataValid() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.empty());
 
@@ -369,7 +370,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void canCreateListingWhenBusinessExistsAndDataValidWithoutUserCookie() throws Exception {
+    void canCreateListingWhenBusinessExistsAndDataValidWithoutUserCookie() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -403,7 +404,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void canCreateListingWhenBusinessExistsAndDataValidWithUserCookieGAA() throws Exception {
+    void canCreateListingWhenBusinessExistsAndDataValidWithUserCookieGAA() throws Exception {
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(gAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
@@ -437,7 +438,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void canCreateListingWhenBusinessExistsAndDataValidWithUserCookieDGAA() throws Exception {
+    void canCreateListingWhenBusinessExistsAndDataValidWithUserCookieDGAA() throws Exception {
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(inventoryItemRepository.findInventoryItemById(1)).willReturn(Optional.ofNullable(inventoryItem));
@@ -472,7 +473,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantCreateListingWhenBusinessExistsButDataIsInvalid() throws Exception {
+    void cantCreateListingWhenBusinessExistsButDataIsInvalid() throws Exception {
         // given
         given(userRepository.findById(2)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -497,7 +498,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantCreateListingWhenBusinessExistsAndDataValidWithInvalidUserCookie() throws Exception {
+    void cantCreateListingWhenBusinessExistsAndDataValidWithInvalidUserCookie() throws Exception {
         Listing newListing = new Listing(
                 inventoryItem,
                 10,
@@ -525,7 +526,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantCreateListingWhenBusinessExistsAndDataValidWithNoCookie() throws Exception {
+    void cantCreateListingWhenBusinessExistsAndDataValidWithNoCookie() throws Exception {
         Listing newListing = new Listing(
                 inventoryItem,
                 10,
@@ -552,7 +553,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantCreateListingWhenBusinessExistsAndDataValidWithNonAdminUserCookie() throws Exception {
+    void cantCreateListingWhenBusinessExistsAndDataValidWithNonAdminUserCookie() throws Exception {
         given(userRepository.findById(4)).willReturn(Optional.ofNullable(anotherUser));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
 
@@ -588,7 +589,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveListingsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
+    void canRetrieveListingsWhenBusinessExistsWithBusinessAdministratorUserCookie() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
@@ -624,7 +625,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveListingsWhenBusinessExistsWithUserCookie() throws Exception {
+    void canRetrieveListingsWhenBusinessExistsWithUserCookie() throws Exception {
         // given
         given(userRepository.findById(4)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
@@ -658,7 +659,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    public void cantRetrieveListingsWhenBusinessDoesntExistWithUserCookie() throws Exception {
+    void cantRetrieveListingsWhenBusinessDoesntExistWithUserCookie() throws Exception {
         // given
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(0)).willReturn(Optional.empty());
@@ -691,7 +692,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveListingsWhenBusinessExistsWithoutUserCookie() throws Exception {
+    void cantRetrieveListingsWhenBusinessExistsWithoutUserCookie() throws Exception {
         // given
         expectedJSON = "";
 
@@ -713,7 +714,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveListingsWhenBusinessExistsWithInvalidUserCookie() throws Exception {
+    void cantRetrieveListingsWhenBusinessExistsWithInvalidUserCookie() throws Exception {
         // given
         expectedJSON = "";
 
@@ -737,7 +738,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void canRetrieveListingsWhenBusinessExistsWithValidOrderByAndPageParams() throws Exception {
+    void canRetrieveListingsWhenBusinessExistsWithValidOrderByAndPageParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -775,7 +776,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveListingsWhenBusinessExistsWithInvalidOrderByParam() throws Exception {
+    void cantRetrieveListingsWhenBusinessExistsWithInvalidOrderByParam() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -803,7 +804,7 @@ public class ListingResourceIntegrationTests {
      * @throws Exception Exception error
      */
     @Test
-    public void cantRetrieveListingsWhenBusinessExistsWithInvalidPageParam() throws Exception {
+    void cantRetrieveListingsWhenBusinessExistsWithInvalidPageParam() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));

@@ -53,7 +53,7 @@ public class Business {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 600)
     private String description;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -227,14 +227,6 @@ public class Business {
      */
     public void setPrimaryAdministratorId(Integer primaryAdministratorId) {
         this.primaryAdministratorId = primaryAdministratorId;
-    }
-
-    /**
-     * Returns a list of User objects who are administrators of this business
-     * @return administrators A list of User objects.
-     */
-    public List<User> Administrators() {
-        return administrators;
     }
 
     /**

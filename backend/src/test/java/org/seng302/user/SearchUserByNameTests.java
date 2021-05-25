@@ -2,9 +2,7 @@ package org.seng302.user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.seng302.address.Address;
-import org.seng302.address.AddressRepository;
 import org.seng302.main.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,14 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -31,16 +27,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class SearchUserByNameTests {
+class SearchUserByNameTests {
 
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private AddressRepository addressRepository;
 
     private User dGAA;
     private User user;
@@ -66,7 +59,6 @@ public class SearchUserByNameTests {
     private Address addressDGAA;
     private Address addressUser;
     private Address addressAnotherUser;
-    private List<Address> addresses;
 
     /**
      * Creates and inserts all users for testing.
@@ -75,9 +67,9 @@ public class SearchUserByNameTests {
      * @throws Exception Any exception.
      */
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
 
-        addressDGAA = new Address("325", "Citlalli Track", "New Lois", "Heard Island and McDonald Islands", "HM", "Antarctica");
+        addressDGAA = new Address("325", "Citlalli Track", "New Lois", "Heard Island and McDonald Islands", "HM", "Antarctica", "Pingu");
         entityManager.persist(addressDGAA);
         entityManager.flush();
 
@@ -96,7 +88,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
 
-        addressUser = new Address("57", "Sydney Highway", "Shire of Cocos Islands", "West Island", "Cocos (Keeling) Islands", "9732");
+        addressUser = new Address("57", "Sydney Highway", "Shire of Cocos Islands", "West Island", "Cocos (Keeling) Islands", "9732", "Sydney");
         entityManager.persist(addressUser);
         entityManager.flush();
 
@@ -114,7 +106,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
 
-        addressAnotherUser = new Address("47993", "Norwood Garden", "Mambere-Kadei", "Central African Republic", "Africa", "3428");
+        addressAnotherUser = new Address("47993", "Norwood Garden", "Mambere-Kadei", "Central African Republic", "Africa", "3428", "Norwood");
 
         entityManager.persist(addressAnotherUser);
         entityManager.flush();
@@ -133,7 +125,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address1 = new Address("129", "Mastic Trail", "Frank Sound Cayman Islands", "Caribbean", "North America", "3442");
+        address1 = new Address("129", "Mastic Trail", "Frank Sound Cayman Islands", "Caribbean", "North America", "3442", "Pirate Cove");
         entityManager.persist(address1);
         entityManager.flush();
 
@@ -152,7 +144,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address2 = new Address("80416", "Rodney Street", "Jon Loop", "Shaanxi", "China", "2113");
+        address2 = new Address("80416", "Rodney Street", "Jon Loop", "Shaanxi", "China", "2113", "Barryville");
         entityManager.persist(address2);
         entityManager.flush();
 
@@ -171,7 +163,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address3 = new Address("9205", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "1000");
+        address3 = new Address("9205", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "1000", "Buri");
         entityManager.persist(address3);
         entityManager.flush();
 
@@ -190,7 +182,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address4 = new Address("240", "Newson Street", "Bernhard Run", "Southland", "New Zealand", "2839");
+        address4 = new Address("240", "Newson Street", "Bernhard Run", "Southland", "New Zealand", "2839", "Ilam");
         entityManager.persist(address4);
         entityManager.flush();
 
@@ -209,7 +201,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address5 = new Address("186", "Simpsons Road",  "Ashburton", "Canterbury", "New Zealand", "2828");
+        address5 = new Address("186", "Simpsons Road",  "Ashburton", "Canterbury", "New Zealand", "2828", "Ilam");
 
         entityManager.persist(address5);
         entityManager.flush();
@@ -229,7 +221,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address6 = new Address("14798", "Terry Highway", "Queenstown-Lakes", "District", "New Zealand", "2982");
+        address6 = new Address("14798", "Terry Highway", "Queenstown-Lakes", "District", "New Zealand", "2982", "Frankton");
         entityManager.persist(address6);
         entityManager.flush();
 
@@ -248,7 +240,7 @@ public class SearchUserByNameTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
 
-        address7 = new Address("3396", "Bertram Parkway", "Central", "Central Otago", "New Zealand", "1111");
+        address7 = new Address("3396", "Bertram Parkway", "Central", "Central Otago", "New Zealand", "1111", "Wanaka");
 
         entityManager.persist(address7);
         entityManager.flush();
@@ -328,7 +320,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by nickname in ascending order i.e. in alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersAscending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersAscending() {
         // given
         int pageNo = 0;
         int pageSize = 11;
@@ -365,7 +357,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by nickname in descending order i.e. in reverse alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersDescending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersDescending() {
         // given
         int pageNo = 0;
         int pageSize = 11;
@@ -403,7 +395,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by email in ascending order i.e. in alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnEmailOrderedUsersAscending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnEmailOrderedUsersAscending() {
         // given
         int pageNo = 0;
         int pageSize = 11;
@@ -439,7 +431,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by email in descending order i.e. in reverse alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnEmailOrderedUsersDescending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnEmailOrderedUsersDescending() {
         // given
         int pageNo = 0;
         int pageSize = 11;
@@ -478,24 +470,24 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by address in ascending order i.e. in alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnAddressOrderedUsersAscending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnAddressOrderedUsersAscending() throws Exception {
         // given
         int pageNo = 0;
         int pageSize = 11;
         Sort sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
-        orderedAddress.add("186, Simpsons Road, Ashburton, Canterbury, New Zealand, 2828");
-        orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839");
-        orderedAddress.add("9205, Monique Vista, Bururi, Bigomogomo, Africa, 1000");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
-        orderedAddress.add("80416, Rodney Street, Jon Loop, Shaanxi, China, 2113");
-        orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("186, Simpsons Road, Ashburton, Canterbury, New Zealand, 2828, Ilam");
+        orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839, Ilam");
+        orderedAddress.add("9205, Monique Vista, Bururi, Bigomogomo, Africa, 1000, Buri");
+        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
+        orderedAddress.add("80416, Rodney Street, Jon Loop, Shaanxi, China, 2113, Barryville");
+        orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428, Norwood");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
 
 
         // when
@@ -514,7 +506,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by address in descending order i.e. in reverse alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnAddressOrderedUsersDescending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnAddressOrderedUsersDescending() throws Exception {
         // given
         int pageNo = 0;
         int pageSize = 11;
@@ -522,18 +514,18 @@ public class SearchUserByNameTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
 
-        orderedAddress.add("57, Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands, 9732");
-        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
-        orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428");
-        orderedAddress.add("80416, Rodney Street, Jon Loop, Shaanxi, China, 2113");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111");
-        orderedAddress.add("9205, Monique Vista, Bururi, Bigomogomo, Africa, 1000");
-        orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839");
+        orderedAddress.add("57, Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands, 9732, Sydney");
+        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
+        orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428, Norwood");
+        orderedAddress.add("80416, Rodney Street, Jon Loop, Shaanxi, China, 2113, Barryville");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
+        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
+        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
+        orderedAddress.add("9205, Monique Vista, Bururi, Bigomogomo, Africa, 1000, Buri");
+        orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839, Ilam");
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
@@ -550,7 +542,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by their full name (first+middle+last) in ascending order i.e. in alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFullNameOrderedUsersAscending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFullNameOrderedUsersAscending() {
         // given
         int pageNo = 0;
         int pageSize = 14;
@@ -587,7 +579,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will order users by their full name (first+middle+last) in descending order i.e. in reverse alphabetical order.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFullNameOrderedUsersDescending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFullNameOrderedUsersDescending() {
         // given
         int pageNo = 0;
         int pageSize = 14;
@@ -625,7 +617,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will return paginated results correctly when the page is not full with users.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnPageHalfFull() throws Exception {
+    void whenFindAllUsersByNames_thenReturnPageHalfFull() {
         // given
         int pageNo = 0;
         // Page size 20 means page will be half full with the default 13 users inserted
@@ -647,7 +639,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will return pages other than the first one with correct users.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnPagesFromTwoOnward() throws Exception {
+    void whenFindAllUsersByNames_thenReturnPagesFromTwoOnward() {
         // given
         int pageSize = 2;
 
@@ -675,7 +667,7 @@ public class SearchUserByNameTests {
      * that does not match anything in the database.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnEmptyPage() throws Exception {
+    void whenFindAllUsersByNames_thenReturnEmptyPage() {
         // given
         int pageNo = 0;
         int pageSize = 20;
@@ -694,7 +686,7 @@ public class SearchUserByNameTests {
      * Tests that the search functionality will return the page correctly when the page is full.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFullPage() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFullPage() {
         // given
         int pageNo = 0;
         // Page size 8 means tested page will be full as there are 13 total values
@@ -720,7 +712,7 @@ public class SearchUserByNameTests {
      *      not just the few values that are returned are correctly ordered.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnGloballyOrderedUsers() throws Exception {
+    void whenFindAllUsersByNames_thenReturnGloballyOrderedUsers() {
         // given
         int pageNo = 3;
         int pageSize = 3;
@@ -745,7 +737,7 @@ public class SearchUserByNameTests {
      * Tests that the filter functionality will give all Users when the search value is the empty string.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFilteredNoMatch() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFilteredNoMatch() {
 
         //given
         int pageNo = 0;
@@ -756,14 +748,14 @@ public class SearchUserByNameTests {
         Page<User> userPage = userRepository.findAllUsersByNames("nothing", pageable);
 
         // then
-        assertThat(userPage.getTotalElements()).isEqualTo(0);
+        assertThat(userPage.getTotalElements()).isZero();
     }
 
     /**
      * Tests that the filter functionality will give all Users when the search value is the empty string.
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFilteredNoSearchValue() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFilteredNoSearchValue() {
 
         //given
         int pageNo = 0;
@@ -785,7 +777,7 @@ public class SearchUserByNameTests {
      * are returned when the search value is "h".
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFilteredSingleLetter() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFilteredSingleLetter() {
 
         //given
         int pageNo = 0;
@@ -812,7 +804,7 @@ public class SearchUserByNameTests {
      * are returned when the search value is "den".
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFilteredSubstring() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFilteredSubstring() {
 
         //given
         int pageNo = 0;
@@ -838,7 +830,7 @@ public class SearchUserByNameTests {
      * are returned when the search value is "johnny".
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFilteredFirstName() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFilteredFirstName() {
 
         //given
         int pageNo = 0;
@@ -859,7 +851,7 @@ public class SearchUserByNameTests {
      * are returned when the search value is "tea".
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFilteredMiddleName() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFilteredMiddleName() {
 
         //given
         int pageNo = 0;
@@ -881,7 +873,7 @@ public class SearchUserByNameTests {
      * are returned when the search value is "hine".
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFilteredLastName() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFilteredLastName() {
 
         //given
         int pageNo = 0;
@@ -904,7 +896,7 @@ public class SearchUserByNameTests {
      * are returned when the search value is "Min".
      */
     @Test
-    public void whenFindAllUsersByNames_thenReturnFilteredNickname() throws Exception {
+    void whenFindAllUsersByNames_thenReturnFilteredNickname() {
 
         //given
         int pageNo = 0;

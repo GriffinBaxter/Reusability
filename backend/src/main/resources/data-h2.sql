@@ -60,7 +60,7 @@ INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (11, 2);
 INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (13, 2);
 INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (6, 3);
 
-/* Products for Business 1 (8) */
+/* Products for Business 1 (9) */
 INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (1, 'MANDARIN', DATE'2021-05-12', 'Fresh Produce Mandarins Satsuma', 'Countdown', 'Mandarins', 4.50);
 INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (1, 'TP-12PK', DATE'2021-05-12', 'Purex toilet tissue offers you the features of a premium toilet tissue at a midmarket price. Double embossed for softness. Biodegradable.', 'Purex', 'Purex Toilet Paper 12Pk', 4.80);
 INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (1, 'BEEF-MINCE', DATE'2021-05-12', 'Beef mince typically 82% meat, 18% fat with nothing else added.', 'Countdown', 'Countdown Beef Mince Value', 10.90);
@@ -83,10 +83,161 @@ INSERT INTO `product` (business_id, id, created, description, manufacturer, name
 
 /* Products for Business 3 (8) */
 INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'POTATO-CHIPS', DATE'2021-05-12', 'Made in New Zealand from local and imported ingredients.', 'Eta', 'Eta Ripple Cut Potato Chips Chicken', 2.20);
-INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'FRANGE-CHICKEN_TENDERS', DATE'2021-05-12', 'Proudly made right here in New Zealand from local and imported ingredients.', 'Tegel', 'Tegel Free Range Chicken Tenders Panko Bread Crumbs', 10.00);
-INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'KERI-OJ-W-APPLE', DATE'2021-05-12', 'Keri juices have been delighting New Zealanders for over 40 years. All our favourites are real crowd pleasers and packed full of deliciousness. This tasty orange with apple base is one of new zealand''s favourite flavours.', 'Keri', 'Keri Original Fruit Juice Orange With Apple 3L', 3.70);
+INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'FR-CHICKEN-TEND', DATE'2021-05-12', 'Proudly made right here in New Zealand from local and imported ingredients.', 'Tegel', 'Tegel Free Range Chicken Tenders Panko Bread Crumbs', 10.00);
+INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'KERI-OJ-W-APPLE', DATE'2021-05-12', 'Keri juices have been delighting New Zealanders for over 40 years. All our favourites are real crowd pleasers and packed full of deliciousness. This tasty orange with apple base is one of New Zealand''s favourite flavours.', 'Keri', 'Keri Original Fruit Juice Orange With Apple 3L', 3.70);
 INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'COFFEE-CARAMEL', DATE'2021-05-12', 'Made in Australia from at least 50% Australian ingredients.', 'Nescafe', 'Nescafe Coffee Mix Caramel 442G', 9.00);
-INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'ARNOTTS-CBUTTERSNAP', DATE'2021-05-12', 'Crunchy biscuits made with rolled oats golden syrup and coconut with a coating of delicious milk chocolate.', 'Arnotts', 'Arnotts Chocolate Biscuits Butternut Snap', 2.99);
-INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'POTATO-CHIPS-SALTED', DATE'2021-05-12', 'Made in New Zealand from local and imported ingredients.', 'Eta', 'Eta Ripple Cut Potato Chips Ready Salted', 2.20);
-INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'ARNOTTS-MINT-SLICE', DATE'2021-05-12', 'Smooth dark chocolate with crunchy chocolate biscuit and delicious mint cream hidden on the inside.', 'Arnotts', 'Arnotts Chocolate Biscuits Mint Slice', 3.65);
+INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'ARNOTTS-CSNAP', DATE'2021-05-12', 'Crunchy biscuits made with rolled oats golden syrup and coconut with a coating of delicious milk chocolate.', 'Arnotts', 'Arnotts Chocolate Biscuits Butternut Snap', 2.99);
+INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'PC-SALTED', DATE'2021-05-12', 'Made in New Zealand from local and imported ingredients.', 'Eta', 'Eta Ripple Cut Potato Chips Ready Salted', 2.20);
+INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'ARNOTTS-MINT', DATE'2021-05-12', 'Smooth dark chocolate with crunchy chocolate biscuit and delicious mint cream hidden on the inside.', 'Arnotts', 'Arnotts Chocolate Biscuits Mint Slice', 3.65);
 INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'COFFEE-MOCHA', DATE'2021-05-12', 'Made in Australia from at least 50% Australian ingredients.', 'Nescafe', 'Nescafe Coffee Mix Mocha 468G', 9.00);
+
+/* Inventory for Business 1 (9) */
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2021-11-12', DATE'2021-01-12', 4.50, 'MANDARIN', 99, DATE'2021-09-10', 445.50);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 1, DATE'2021-09-12', DATE'2021-01-12', 4.20, 'MANDARIN', 40, DATE'2021-06-10', 168.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-05-16', 1, DATE'2021-05-30', DATE'2021-05-10', 10.00, 'BEEF-MINCE', 68, DATE'2021-05-14', 680.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 1, DATE'2022-11-12', DATE'2020-06-29', 3.70, 'KERI-OJ', 244, DATE'2021-11-10', 900.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2021-11-12', DATE'2021-01-12', 2.99, 'ARNOTTS-CSCOTCH', 13, DATE'2021-09-10', 38.87);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 1, DATE'2021-06-12', DATE'2021-05-12', 5.69, 'BACON', 44, DATE'2021-06-10', 250.36);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2021-11-12', DATE'2021-05-12', 3.49, 'CARAMILK', 100, DATE'2021-09-10', 349.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 1, DATE'2021-08-12', DATE'2021-05-12', 2.99, 'SNIFTER', 40, DATE'2021-07-10', 120.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 1, DATE'2021-08-12', DATE'2021-05-12', 3.99, 'SNIFTER', 60, DATE'2021-07-10', 240.00);
+
+/* Inventory for Business 2 (9) */
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2021-11-12', DATE'2021-01-12', 3.99, 'CHOCOLATE', 99, DATE'2021-09-10', 395.01);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 2, DATE'2021-09-12', DATE'2021-01-12', 3.29, 'CHOCOLATE', 40, DATE'2021-06-10', 131.60);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2023-05-16', 2, DATE'2023-05-30', DATE'2021-05-10', 4.00, 'BLACK-FOREST', 68, DATE'2023-05-14', 250.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 2, DATE'2022-11-12', DATE'2020-06-29', 10.00, 'CHICKEN-NUGGETS', 244, DATE'2021-11-10', 2440.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2021-11-12', DATE'2021-01-12', 2.99, 'KERI-APPLE', 13, DATE'2021-09-10', 38.87);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 2, DATE'2021-06-12', DATE'2021-05-12', 9.99, 'CHICKEN-TENDERS', 44, DATE'2021-06-10', 439.56);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2021-11-12', DATE'2021-05-12', 3.49, 'CARAMELLO', 100, DATE'2021-09-10', 349.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 2, DATE'2021-08-12', DATE'2021-05-12', 2.20, 'POTATO-CHIPS', 40, DATE'2021-07-10', 88.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 2, DATE'2021-08-12', DATE'2021-05-12', 2.19, 'POTATO-CHIPS', 60, DATE'2021-07-10', 131.40);
+
+/* Inventory for Business 3 (9) */
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2021-11-12', DATE'2021-01-12', 2.20, 'POTATO-CHIPS', 99, DATE'2021-09-10', 215.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 3, DATE'2021-09-12', DATE'2021-01-12', 1.99, 'POTATO-CHIPS', 40, DATE'2021-06-10', 79.60);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2023-05-16', 3, DATE'2023-05-30', DATE'2021-05-10', 12.00, 'FR-CHICKEN-TEND', 68, DATE'2023-05-14', 816.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 3, DATE'2022-11-12', DATE'2020-06-29', 3.70, 'KERI-OJ-W-APPLE', 244, DATE'2021-11-10', 902.80);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2021-11-12', DATE'2021-01-12', 9.00, 'COFFEE-CARAMEL', 13, DATE'2021-09-10', 115.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 3, DATE'2021-06-12', DATE'2021-05-12', 2.99, 'ARNOTTS-CSNAP', 44, DATE'2021-06-10', 131.56);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2021-11-12', DATE'2021-05-12', 2.49, 'PC-SALTED', 100, DATE'2021-09-10', 249.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 3, DATE'2021-08-12', DATE'2021-05-12', 9.00, 'COFFEE-MOCHA', 40, DATE'2021-07-10', 360.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 3, DATE'2021-08-12', DATE'2021-05-12', 9.00, 'COFFEE-MOCHA', 60, DATE'2021-07-10', 500.00);
+
+/* Listings for Business 1 (8) */
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 180.00, 40, 1, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 250.00, 59, 1, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 168.00, 40, 2, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-05-14', DATE'2021-05-12', 'No low ballers.', 600.00, 60, 3, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Fresh', 800.00, 200, 4, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-10', DATE'2021-05-12', 'Limited Stock.', 38.87, 13, 5, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Selling quick.', 20.00, 4, 6, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 349.00, 100, 7, 1);
+
+/* Listings for Business 2 (8) */
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 140.00, 40, 10, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 206.00, 59, 10, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 139.60, 40, 11, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-05-14', DATE'2021-05-12', 'No low ballers.', 32.00, 8, 12, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Fresh', 2000.00, 200, 13, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-10', DATE'2021-05-12', 'Limited Stock.', 38.87, 13, 14, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Selling quick.', 40.00, 4, 15, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 349.00, 100, 16, 2);
+
+/* Listings for Business 3 (8) */
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 88.00, 40, 19, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 130.00, 59, 19, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 130.00, 40, 20, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-05-14', DATE'2021-05-12', 'No low ballers.', 69.69, 8, 21, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Fresh', 740.00, 200, 22, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-10', DATE'2021-05-12', 'Limited Stock.', 120.00, 13, 23, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Selling quick.', 11.96, 4, 24, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 249.00, 100, 25, 3);
+
+/* Keywords (15) */
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (1, '2021-04-22 11:28:29', 'Coffee');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (2, '2021-04-22 11:28:29', 'Drink');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (3, '2021-04-22 11:28:29', 'Tea');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (4, '2021-04-22 11:28:29', 'Frozen');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (5, '2021-04-22 11:28:29', 'Vegetables');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (6, '2021-04-22 11:28:29', 'Meat');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (7, '2021-04-22 11:28:29', 'Chicken');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (8, '2021-04-22 11:28:29', 'Fish');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (9, '2021-04-22 11:28:29', 'Beef');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (10, '2021-04-22 11:28:29', 'Fresh');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (11, '2021-04-22 11:28:29', 'Apple');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (12, '2021-04-22 11:28:29', 'Samsung');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (13, '2021-04-22 11:28:29', 'Table');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (14, '2021-04-22 11:28:29', 'Car');
+INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (15, '2021-04-22 11:28:29', 'Gaming');
+
+/* For Sale Cards for Users (10) */
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'FORSALE', DATE'2021-05-12', DATE'2022-05-12', 'Nescafe Cafe Menu Coffee Mix Caramel Latte 170G', 'Nescafé café menu caramel is made with quality coffee beans with a delicious caramel flavour, a great frothy afternoon treat!');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'FORSALE', DATE'2021-05-15', DATE'2022-05-15', 'Red Bull Energy Drink Sugar Free', 'red bull sugar free special formula contains ingredients of high quality: caffeine, taurine, b-group vitamins, sucralose & acesulfame k, alpine water.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'FORSALE', DATE'2021-05-10', DATE'2022-05-10', 'Chanui Organic Green Tea 170G', 'A lovely, organic chun mee-style green tea. Without green tea''s typical astringency, this gentle tea tastes too good to be good for you!.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (3, 'FORSALE', DATE'2021-05-09', DATE'2022-05-09', 'Mccain Mixed Vegetables Peas, Corn & Carrots', 'Our recipe is simple: good food starts from real ingredients. A mixture of peas, corn and carrot picked for perfection & snap frozen for freshness.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'FORSALE', DATE'2021-04-12', DATE'2022-04-12', 'Tegel Take Outs Chicken Tenders Louisiana Style', 'Proudly made right here in New Zealand from local and imported ingredients.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'FORSALE', DATE'2021-05-12', DATE'2022-05-12', 'Mccain Corn Super Juicy Kernels', 'Our recipe is simple: good food starts from real ingredients. Sweet and tender super juicy corn kernels picked for perfection & snap frozen for freshness.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'FORSALE', DATE'2021-05-15', DATE'2022-05-15', 'Sealord Fish Fillets Hoki Classic Crumbed', 'Wild caught new zealand hoki pieces, coated in a crunchy crumb. Pair this flaky, white fish with potatoes for a take on traditional fish and chips, or serve with vegetables or salad for an easy, healthy meal for the family.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (7, 'FORSALE', DATE'2021-05-12', DATE'2022-05-12', 'Peas Baby', 'Snap frozen for freshness. Baby peas are a source of fibre for healthy digestion, a source of vitamin c for a healthy immune system, and a source of iron to reduce fatigue and tiredness (as part of a healthy balanced diet).');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (8, 'FORSALE', DATE'2021-05-20', DATE'2022-05-20', 'Beef Frying', 'Approx 5 pieces per 1kg - but actual quantity may vary.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (9, 'FORSALE', DATE'2021-05-18', DATE'2022-05-18', 'Beef Mince Premium', 'Premium beef mince typically 95% meat, 5% fat with nothing else added.');
+
+/* Wanted Cards for Users (10) */
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'WANTED', DATE'2021-05-12', DATE'2022-06-19', 'PS5', 'I want a ps5.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (2, 'WANTED', DATE'2021-05-12', DATE'2022-01-19', 'IPHONE13', 'If exist right now, hhhh!');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'WANTED', DATE'2021-05-17', DATE'2022-05-19', 'Height Ajustable Standing Desk', 'Save my life!!!');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (3, 'WANTED', DATE'2021-05-15', DATE'2022-05-13', 'Samsung 49inch monitor', 'I want a second hand monitor, the new one is too expansive!!!');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (2, 'WANTED', DATE'2021-05-12', DATE'2022-05-13', 'New Ipad Pro 12.9 with M1 Chips', 'The miniLED and M1 is look so cool.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (2, 'WANTED', DATE'2021-05-12', DATE'2022-05-19', 'Apple Watch Series 6', 'Apple family!');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'WANTED', DATE'2021-05-19', DATE'2022-05-15', 'BMW i8', 'Let me know any one want to sale one!');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (2, 'WANTED', DATE'2021-05-12', DATE'2022-05-19', 'Pro Display XDR', 'I want two of them!');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (2, 'WANTED', DATE'2021-05-12', DATE'2022-05-10', 'New color Cable', 'The one come from new IMac');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (2, 'WANTED', DATE'2021-05-12', DATE'2022-05-11', 'New color Magic keyboard', 'The one come from new IMac');
+
+/* Exchange Cards for Users (10) */
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'EXCHANGE', DATE'2021-05-12', DATE'2021-05-19', '1L Trim Milk', 'Looking to exchange a 1L bottle of trim milk for whole milk. Bought by mistake.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (1, 'EXCHANGE', DATE'2021-05-15', DATE'2021-05-22', 'Punnet of Strawberries', 'Looking to exchange a punnet of around 10 strawberries for another fruit.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (2, 'EXCHANGE', DATE'2021-05-08', DATE'2021-05-15', 'Tinned Peaches for Tinned Apricots', 'Looking to exchange a tin of peaches for a tin of apricots. Bought by mistake.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (2, 'EXCHANGE', DATE'2021-05-01', DATE'2021-05-08', 'Whiskers Cat Food', 'Looking to exchange a 1KG bag of Whiskers cat biscuits for any other brand of cat biscuits.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (3, 'EXCHANGE', DATE'2021-05-13', DATE'2021-05-20', '1L Unsweetened Almond Milk', 'Looking to exchange a 1L bottle of unsweetened almond milk for original almond milk. Unopened.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (3, 'EXCHANGE', DATE'2021-05-12', DATE'2021-05-19', 'Hot Fuzz DVD', 'Looking to exchange Hot Fuzz DVD for another movie. Open to any offers.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (4, 'EXCHANGE', DATE'2021-05-11', DATE'2021-05-18', 'Freshly Caught Salmon', 'Looking to exchange some freshly caught salmon for some trout. I have 10 salmon available, make me an exchange offer if you have any freshly caught trout.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (4, 'EXCHANGE', DATE'2021-05-02', DATE'2021-05-09', '12 Banana Muffins', 'Looking to exchange banana muffins for other baked goods. I have 12 available, will exchange for 12 of the same baked good or for a variety.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (5, 'EXCHANGE', DATE'2021-05-12', DATE'2021-05-19', 'Pokemon Ruby for Pokemon Sapphire', 'Looking to exchange Pokemon Ruby for Pokemon Sapphire. Open to a permanent or temporary trade.');
+INSERT INTO `marketplace_card` (creator_id, section, created, display_period_end, title, description) VALUES (6, 'EXCHANGE', DATE'2021-05-13', DATE'2021-05-20', '20 Feijoa', 'Looking to exchange feijoa for other fruit, preferably peaches. Homegrown and organic.');
+
+/* Relation Between Card And Keyword (33) */
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('1', '1');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('1', '2');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('2', '2');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('3', '2');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('3', '3');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('4', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('4', '5');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('5', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('5', '6');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('5', '7');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('6', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('6', '5');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('7', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('7', '8');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('8', '4');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('8', '5');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('9', '6');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('9', '9');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('9', '10');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('10', '6');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('10', '9');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('10', '10');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('11', '15');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('12', '11');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('13', '13');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('14', '12');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('15', '11');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('16', '11');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('17', '14');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('18', '11');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('19', '11');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('20', '11');
+INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('14', '12');

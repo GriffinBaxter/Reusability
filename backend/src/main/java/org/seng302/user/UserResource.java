@@ -150,10 +150,11 @@ public class UserResource {
             String region = addressJSON.getRegion();
             String country = addressJSON.getCountry();
             String postcode = addressJSON.getPostcode();
+            String suburb = addressJSON.getSuburb();
 
             // Check to see if address already exists.
-            Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcode(
-                    streetNumber, streetName, city, region, country, postcode);
+            Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(
+                    streetNumber, streetName, city, region, country, postcode, suburb);
 
             // If address already exists it is retrieved.
             // The businesses already existing are also retrieved. These businesses will be
@@ -169,7 +170,8 @@ public class UserResource {
                         city,
                         region,
                         country,
-                        postcode
+                        postcode,
+                        suburb
                 );
                 addressRepository.save(address);
                 // No businesses will exist at new address.
