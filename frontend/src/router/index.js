@@ -73,7 +73,7 @@ const routes = [
         path: '/noUser',
         name: 'NoUser',
         meta: {
-            title: 'Error'
+            title: 'No User'
         },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
@@ -83,6 +83,9 @@ const routes = [
     {
         path: '/noBusiness',
         name: 'NoBusiness',
+        meta: {
+            title: 'No Business'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -91,6 +94,9 @@ const routes = [
     {
         path: '/pageDoesNotExist',
         name: 'NoSuchPage',
+        meta: {
+            title: 'No Such Page'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -107,6 +113,9 @@ const routes = [
     {
         path: '/forbidden',
         name: 'Forbidden',
+        meta: {
+            title: 'Forbidden'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -116,7 +125,7 @@ const routes = [
         path: '/timeout',
         name: 'ServerTimeout',
         meta: {
-            title: 'Error'
+            title: 'Server Timeout'
         },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
@@ -127,7 +136,7 @@ const routes = [
         path: '/invalidtoken',
         name: 'InvalidToken',
         meta: {
-            title: 'Error'
+            title: 'Invalid Token'
         },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
@@ -137,6 +146,9 @@ const routes = [
     {
         path: '/businessProfile/:id?',
         name: 'BusinessProfile',
+        meta: {
+            title: 'Business Profile'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -145,6 +157,9 @@ const routes = [
     {
         path: '/businessRegistration',
         name: 'BusinessRegistration',
+        meta: {
+            title: 'Business Registration'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -153,6 +168,9 @@ const routes = [
     {
         path: '/businessProfile/:id/productCatalogue',
         name: 'ProductCatalogue',
+        meta: {
+            title: 'Product Catalogue'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -161,6 +179,9 @@ const routes = [
     {
         path: '/businessProfile/:id/inventory',
         name: 'Inventory',
+        meta: {
+            title: 'Inventory'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -170,6 +191,9 @@ const routes = [
         path: '/businessProfile/:id/listings',
         name: 'Listings',
         props: true,
+        meta: {
+            title: 'Listings'
+        },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
