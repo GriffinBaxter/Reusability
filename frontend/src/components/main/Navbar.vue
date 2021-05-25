@@ -59,35 +59,33 @@
             <li class="nav-item dropdown" v-if="isActAsBusiness">
 
               <!-- Navbar toggle drop down -->
-              <a class="nav-link dropdown-toggle" role="button" tabindex="4" @click="() => {
-                  this.shadowBusinessDropdown = !shadowBusinessDropdown;
-                  this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links',
-                  'business-dropdown-links-wrapper', showBusinessDropdown)
-                }" >
+              <a class="nav-link dropdown-toggle" role="button" tabindex="4"
+              @click="() => {toggleBusinessDropdown()}"
+              @keyup.enter="() => {toggleBusinessDropdown()}">
                 Business Pages
               </a>
 
               <!-- Dropdown links-->
-              <div id="business-dropdown-links-wrapper" v-if="shadowBusinessDropdown">
+              <div id="business-dropdown-links-wrapper">
                 <ul class="dropdown-menu show" id="business-dropdown-links">
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
-                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="4">
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
                       Listings
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="4">
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
                       Inventory
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="4">
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
                       Catalogue
                     </router-link>
                   </li>
@@ -103,14 +101,11 @@
 
           </ul>
 
+
           <ul class="navbar-nav flex-column flex-xl-row">
             <!-- Interact As -->
-            <li id="interactDrop" tabindex="5">
-              <a class="" role="button" @click="() => {
-                    this.shadowInteractMenu = !shadowInteractMenu;
-                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
-                    'interact-dropdown-links-wrapper', showInteractMenu)
-                    }">
+            <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
+              <a class="" role="button">
                 <img src="../../../public/profile_icon_default.png" width="27px"
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
               </a>
@@ -118,26 +113,23 @@
           </ul>
 
           <ul class="no-space">
-            <div class="center" role="button" @click="() => {
-                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
-                    'interact-dropdown-links-wrapper', this.showInteractMenu)
-                    }">
+            <div class="center" role="button" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
               <div v-if="showOmitName">{{ actAsOmit }}</div>
               <div v-else>{{ actAs }}</div>
             </div>
-            <div id="interact-dropdown-links-wrapper" v-if="shadowInteractMenu">
+            <div id="interact-dropdown-links-wrapper">
               <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
 
                 <li class="nav-item">
                 </li>
                 <div v-if="showOmitName">
-                  <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index"
+                  <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
                       @click="itemClicked(index)">
                     <a class="nav-link">{{ act.name }}</a>
                   </li>
                 </div>
                 <div v-else>
-                  <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index"
+                  <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
                       @click="itemClicked(index)">
                     <a class="nav-link">{{ act.name }}</a>
                   </li>
@@ -180,11 +172,9 @@ export default {
     return {
       // business dropdown variables
       showBusinessDropdown: false,
-      shadowBusinessDropdown: false,
 
       // Interact as Menu
       showInteractMenu: false,
-      shadowInteractMenu: false,
 
       businesses: [],
       interactAs: [],
@@ -213,6 +203,20 @@ export default {
   },
 
   methods: {
+    /**
+     * Toggle the interactAs menu dropdown
+     */
+    toggleInteractAs() {
+      this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links',
+          'interact-dropdown-links-wrapper', this.showInteractMenu);
+    },
+    /**
+     * Toggle the business menu dropdown
+     */
+    toggleBusinessDropdown() {
+      this.showBusinessDropdown = this.toggleDropdownAnimated('business-dropdown-links',
+          'business-dropdown-links-wrapper', this.showBusinessDropdown);
+    },
     /**
      * omit name which length longer than max.
      */
@@ -291,9 +295,11 @@ export default {
         // Update the navbar to accommodate the changes
         this.toggleNavbar(true, targetHeight);
 
-        // So the toggle variable can be updated
-        return toggleVariable;
       }
+
+
+      // So the toggle variable can be updated
+      return toggleVariable;
     },
 
     /**
