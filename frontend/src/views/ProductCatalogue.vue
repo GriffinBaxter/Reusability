@@ -771,9 +771,10 @@ export default {
     this.$root.$on('edits', this.afterEdit);
 
     // When mounted create instance of modal
-    this.modal = new Modal(this.$refs.CreateProductModal)
-    if (checkAccessPermission()) {
-      this.$router.push({path: `/businessProfile/${Cookies.get('actAs')}/productCatalogue`});
+    this.modal = new Modal(this.$refs.CreateProductModal);
+    const actAs = Cookies.get('actAs');
+    if (checkAccessPermission(this.$route.params.id, actAs)) {
+      this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
     } else {
       /**
        * When mounted, initiate population of page.
