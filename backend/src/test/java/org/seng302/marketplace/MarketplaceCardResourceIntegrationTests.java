@@ -510,7 +510,7 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
         Sort sort = Sort.by(Sort.Order.desc("created").ignoreCase());
-        Pageable page = PageRequest.of(0, 20, sort);
+        Pageable page = PageRequest.of(0, 6, sort);
 
         List<MarketplaceCard> list = List.of(marketplaceCard);
         Page<MarketplaceCard> pagedResponse = new PageImpl<>(list);
@@ -541,7 +541,7 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
         Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase());
-        Pageable page = PageRequest.of(0, 20, sort);
+        Pageable page = PageRequest.of(0, 6, sort);
 
         List<MarketplaceCard> list = List.of(marketplaceCard);
         Page<MarketplaceCard> pagedResponse = new PageImpl<>(list);
