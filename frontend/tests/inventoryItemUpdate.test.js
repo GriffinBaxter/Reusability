@@ -96,7 +96,14 @@ describe("Testing the update inventory item functionality", () => {
                 },
             });
 
+        const data = {
+            status: 200
+        }
+
+        Api.getEveryProduct.mockImplementation(() => Promise.resolve(data));
+
         updateInventoryItemWrapper.vm.newInventoryItem = new InventoryItem(inventoryItem);
+
         await updateInventoryItemWrapper.vm.showModal();
         await Promise.resolve();
 

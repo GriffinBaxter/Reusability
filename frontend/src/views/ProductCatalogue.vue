@@ -19,7 +19,7 @@
 
           <div class="row mb-3">
             <div class="col">
-              <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="2"
+              <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="0"
                       @click="showCreateProductModal()">Create Product
               </button>
             </div>
@@ -185,6 +185,7 @@ import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
 import {checkAccessPermission} from "../views/helpFunction";
+import {formatDate} from "../dateUtils";
 
 export default {
   name: "ProductCatalogue",
@@ -438,7 +439,7 @@ export default {
             newtableData.push(this.productList[i].data.name);
             newtableData.push(this.productList[i].data.manufacturer);
             newtableData.push(this.productList[i].data.recommendedRetailPrice);
-            newtableData.push(this.productList[i].data.created);
+            newtableData.push(formatDate(this.productList[i].data.created));
           }
 
           this.tableData = newtableData;
@@ -650,7 +651,7 @@ export default {
               this.cannotProceed = false;
 
 
-              this.userAlertMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
+              this.userAlertMessage = this.addedMessage;
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
@@ -771,9 +772,10 @@ export default {
     this.$root.$on('edits', this.afterEdit);
 
     // When mounted create instance of modal
-    this.modal = new Modal(this.$refs.CreateProductModal)
-    if (checkAccessPermission()) {
-      this.$router.push({path: `/businessProfile/${Cookies.get('actAs')}/productCatalogue`});
+    this.modal = new Modal(this.$refs.CreateProductModal);
+    const actAs = Cookies.get('actAs');
+    if (checkAccessPermission(this.$route.params.id, actAs)) {
+      this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
     } else {
       /**
        * When mounted, initiate population of page.

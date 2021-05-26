@@ -666,8 +666,9 @@ export default {
   },
 
   async mounted() {
-    if (checkAccessPermission()) {
-      this.$router.push({path: `/businessProfile/${Cookies.get('actAs')}/inventory`});
+    const actAs = Cookies.get('actAs');
+    if (checkAccessPermission(this.$route.params.id, actAs)) {
+      this.$router.push({path: `/businessProfile/${actAs}/inventory`});
     } else {
       /**
        * When mounted, initiate population of page.
