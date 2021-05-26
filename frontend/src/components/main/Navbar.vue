@@ -125,8 +125,8 @@
                 <div v-if="showOmitName">
                   <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
                       @click="itemClicked(index)">
-                    <h6 class="ms-3" v-if="index==0"><br>User</h6>
-                    <div v-else-if="index==1">
+                    <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                    <div v-else-if="index===1">
                       <hr>
                       <h6 class="ms-3">Businesses</h6>
                     </div>
@@ -136,8 +136,8 @@
                 <div v-else>
                   <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
                       @click="itemClicked(index)">
-                    <h6 class="ms-3" v-if="index==0"><br>User</h6>
-                    <div v-else-if="index==1">
+                    <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                    <div v-else-if="index===1">
                       <hr>
                       <h6 class="ms-3">Businesses</h6>
                     </div>
