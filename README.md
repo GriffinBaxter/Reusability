@@ -73,13 +73,17 @@ The backend can be tested by using the examples from the [API specification](htt
 - Email: everblanxart@gmail.com
 - Password: Password123!
 
-#### Standard User without business
+#### Another Standard User with business
 - Email: emailUSER@email.com
 - Password: Password123!
 
-#### Admin
-- Email: DGAA@example.com
+#### Standard User without business
+- Email: seth.murphy@example.com
 - Password: Password123!
+
+#### Admin
+- Email: DGAA_EMAIL (environment variable)
+- Password: DGAA_PASSWORD (environment variable)
 
 
 ## Contributors
