@@ -67,6 +67,21 @@ Running on: http://localhost:8999/ by default
 
 The backend can be tested by using the examples from the [API specification](https://eng-git.canterbury.ac.nz/seng302-2021/seng302-api-spec-2021) in the [Swagger Editor](https://editor.swagger.io/).
 
+## Demo User Accounts
+
+#### Standard User with business
+- Email: everblanxart@gmail.com
+- Password: Password123!
+
+#### Standard User without business
+- Email: emailUSER@email.com
+- Password: Password123!
+
+#### Admin
+- Email: DGAA@example.com
+- Password: Password123!
+
+
 ## Contributors
 
 - SENG302 teaching team
