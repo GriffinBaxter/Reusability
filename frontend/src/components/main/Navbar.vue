@@ -59,10 +59,9 @@
             <li class="nav-item dropdown" v-if="isActAsBusiness">
 
               <!-- Navbar toggle drop down -->
-              <a class="nav-link dropdown-toggle" role="button" tabindex="4" @click="() => {
-                  this.showBusinessDropdown = toggleDropdownAnimated('business-dropdown-links',
-                  'business-dropdown-links-wrapper', this.showBusinessDropdown)
-                }">
+              <a class="nav-link dropdown-toggle" role="button" tabindex="4"
+              @click="() => {toggleBusinessDropdown()}"
+              @keyup.enter="() => {toggleBusinessDropdown()}">
                 Business Pages
               </a>
 
@@ -79,14 +78,14 @@
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="7">
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
                       Inventory
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link
                         :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="8">
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
                       Catalogue
                     </router-link>
                   </li>
@@ -97,18 +96,16 @@
 
             <!-- Log out link-->
             <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)">Log out</a>
+              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
             </li>
 
           </ul>
 
+
           <ul class="navbar-nav flex-column flex-xl-row">
             <!-- Interact As -->
-            <li id="interactDrop">
-              <a class="" role="button" @click="() => {
-                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
-                    'interact-dropdown-links-wrapper', this.showInteractMenu)
-                    }">
+            <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
+              <a class="" role="button">
                 <img src="../../../public/profile_icon_default.png" width="27px"
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
               </a>
@@ -116,10 +113,7 @@
           </ul>
 
           <ul class="no-space">
-            <div class="center" role="button" @click="() => {
-                    this.showInteractMenu = toggleDropdownAnimated('interact-dropdown-links',
-                    'interact-dropdown-links-wrapper', this.showInteractMenu)
-                    }">
+            <div class="center" role="button" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
               <div v-if="showOmitName">{{ actAsOmit }}</div>
               <div v-else>{{ actAs }}</div>
             </div>
@@ -129,7 +123,7 @@
                 <li class="nav-item">
                 </li>
                 <div v-if="showOmitName">
-                  <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index"
+                  <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
                       @click="itemClicked(index)">
                     <h6 class="ms-3" v-if="index==0"><br>User</h6>
                     <div v-else-if="index==1">
@@ -140,7 +134,7 @@
                   </li>
                 </div>
                 <div v-else>
-                  <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index"
+                  <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
                       @click="itemClicked(index)">
                     <h6 class="ms-3" v-if="index==0"><br>User</h6>
                     <div v-else-if="index==1">
@@ -188,8 +182,10 @@ export default {
     return {
       // business dropdown variables
       showBusinessDropdown: false,
+
       // Interact as Menu
       showInteractMenu: false,
+
       businesses: [],
       interactAs: [],
       actAsId: null,
@@ -217,6 +213,20 @@ export default {
   },
 
   methods: {
+    /**
+     * Toggle the interactAs menu dropdown
+     */
+    toggleInteractAs() {
+      this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links',
+          'interact-dropdown-links-wrapper', this.showInteractMenu);
+    },
+    /**
+     * Toggle the business menu dropdown
+     */
+    toggleBusinessDropdown() {
+      this.showBusinessDropdown = this.toggleDropdownAnimated('business-dropdown-links',
+          'business-dropdown-links-wrapper', this.showBusinessDropdown);
+    },
     /**
      * omit name which length longer than max.
      */
@@ -295,9 +305,11 @@ export default {
         // Update the navbar to accommodate the changes
         this.toggleNavbar(true, targetHeight);
 
-        // So the toggle variable can be updated
-        return toggleVariable;
       }
+
+
+      // So the toggle variable can be updated
+      return toggleVariable;
     },
 
     /**

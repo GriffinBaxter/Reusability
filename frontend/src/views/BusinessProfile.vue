@@ -350,6 +350,11 @@ export default {
     },
     checkIsAdmin(currentID) {
       Api.getUser(currentID).then(response => {
+        response.data.businessesAdministered.forEach(business => {
+          if (business.id.toString() === this.$route.params.id) {
+            this.isAdministrator = true;
+          }
+        });
         this.isAdministrator = this.isAdministrator ? true :
             (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
             || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);

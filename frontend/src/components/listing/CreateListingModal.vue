@@ -79,7 +79,7 @@
 
             <!--Close Date-->
             <div class="row form-group py-1 px-3">
-              <label for="closes">Close Date: </label>
+              <label for="closes">Close Date*: </label>
               <input id="closes" name="closes" type="datetime-local" v-model="closes"
                      :class="toggleInvalidClass(closesErrorMsg)">
               <div class="invalid-feedback">
@@ -471,7 +471,9 @@ export default {
 
       return isValid
     },
-
+    /**
+     * Retrieves a list of all inventory items for the given business, to be put into the autofill dropdown.
+     */
     async getAllInventoryItems() {
       await Api.getEveryInventoryItem(this.businessId).then((response) => {
         this.allInventoryItems = [...response.data];

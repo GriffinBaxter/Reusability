@@ -195,8 +195,8 @@ import Cookies from "js-cookie";
 import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
 import PageButtons from "../components/PageButtons";
 import CurrencyAPI from "../currencyInstance";
-import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
+import {checkAccessPermission} from "../views/helpFunction";
 
 export default {
   components: {
@@ -666,8 +666,9 @@ export default {
   },
 
   async mounted() {
-    if (checkAccessPermission(this.linkBusinessAccount)) {
-      this.$router.push({path: '/forbidden'});
+    const actAs = Cookies.get('actAs');
+    if (checkAccessPermission(this.$route.params.id, actAs)) {
+      this.$router.push({path: `/businessProfile/${actAs}/inventory`});
     } else {
       /**
        * When mounted, initiate population of page.

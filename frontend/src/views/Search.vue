@@ -15,8 +15,8 @@
       <div class="row">
         <div class="col search-bar-positioning">
           <div class="input-group my-4">
-            <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" tabindex="1" placeholder="Search all users">
-            <button class="btn green-search-button" tabindex="2" @click="searchClicked()"><i class="fas fa-search"></i></button>
+            <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" placeholder="Search all users">
+            <button class="btn green-search-button" @click="searchClicked()" id="search-btn"><i class="fas fa-search"></i></button>
           </div>
         </div>
       </div>
@@ -24,28 +24,28 @@
       <div class="row mb-3">
 
         <!--order by nickname-->
-        <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="3"
+        <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
              @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
           <b>Nickname</b>
           <i id="nickname-icon"></i>
         </div>
 
         <!--order by full name-->
-        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="4"
+        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
              @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
           <b>Full name</b>
           <i id="name-icon"></i>
         </div>
 
         <!--order by email-->
-        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="5"
+        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
              @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
           <b>Email</b>
           <i id="email-icon"></i>
         </div>
 
         <!--order by address-->
-        <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="6"
+        <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="0"
              @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
           <b>Address</b>
           <i id="address-icon"></i>
@@ -441,8 +441,7 @@ export default {
       if (this.userList.length > 0) {
 
         // 6 is the last index of the permanent items
-        let tabIndex = 7;
-
+        let tabIndex = 0;
 
         for (let i = startIndex; i < limit; i++) {
           // Check breakpoint
@@ -521,9 +520,6 @@ export default {
           })
 
           outerContainer.insertBefore(userRow, lastChild);
-
-          tabIndex += 1;
-
           }
       }
 

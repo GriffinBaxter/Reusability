@@ -34,7 +34,7 @@ const app = {
   },
   watch: {
     '$route'(to) {
-      document.title = to.meta.title || "Team 400";
+      document.title = to.meta.title ? `Reusability · ${to.meta.title}` : "Reusability";
       if (to.name === 'NoUser' || to.name === 'ServerTimeout' || to.name === 'InvalidToken') this.transitionName = "";
       const event = new CustomEvent('page-routing', {detail: ""})
       document.dispatchEvent(event);

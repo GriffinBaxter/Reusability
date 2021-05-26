@@ -133,6 +133,7 @@ name: "Listings",
       businessAdmin: false,
       businessId: -1,
       role: "",
+      currentUser: -1,
 
       orderBy: "",
       rowsPerPage: 5,
@@ -326,7 +327,12 @@ name: "Listings",
       const actAs = Cookies.get('actAs');
       this.businessAdmin = actAs === String(data.id);
       // Checks if user is a global admin
-      if (this.businessAdmin === false) {
+      if (actAs === undefined && this.businessAdmin === false) {
+        data.administrators.forEach(user => {
+          if (this.currentUser === user.id.toString()) {
+            this.businessAdmin = true;
+          }
+        });
         if (this.role === "DEFAULTGLOBALAPPLICATIONADMIN" || this.role === "GLOBALAPPLICATIONADMIN") {
           this.businessAdmin = true;
         }
@@ -414,9 +420,9 @@ name: "Listings",
      * When mounted, initiate population of page.
      * If cookies are invalid or not present, redirect to login page.
      */
-    const currentID = Cookies.get('userID');
-    if (currentID) {
-      await this.getUserRole(currentID);
+    this.currentUser = Cookies.get('userID');
+    if (this.currentUser) {
+      await this.getUserRole(this.currentUser);
       this.businessId = await parseInt(this.$route.params.id);
       await this.getBusiness(this.businessId);
 
