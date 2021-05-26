@@ -131,12 +131,22 @@
                 <div v-if="showOmitName">
                   <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index"
                       @click="itemClicked(index)">
+                    <h6 class="ms-3" v-if="index==0"><br>User</h6>
+                    <div v-else-if="index==1">
+                      <hr>
+                      <h6 class="ms-3">Businesses</h6>
+                    </div>
                     <a class="nav-link">{{ act.name }}</a>
                   </li>
                 </div>
                 <div v-else>
                   <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index"
                       @click="itemClicked(index)">
+                    <h6 class="ms-3" v-if="index==0"><br>User</h6>
+                    <div v-else-if="index==1">
+                      <hr>
+                      <h6 class="ms-3">Businesses</h6>
+                    </div>
                     <a class="nav-link">{{ act.name }}</a>
                   </li>
                 </div>
