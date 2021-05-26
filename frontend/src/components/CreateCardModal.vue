@@ -337,7 +337,7 @@ export default {
      * */
     isCreatorIdInvalid() {
       if (this.submitAttempted) {
-          if (!this.user.isAdministrator()) {
+          if (!this.user.isAdministrator(this.userRole)) {
             this.creatorId = Cookies.get("userID")
 
             // If the user id token is missing we logout the user, as he is not allowed to create a card.
@@ -466,7 +466,7 @@ export default {
       }
 
       // If we are not an admin then we need to update the creatorId.
-      if (!this.user.isAdministrator()) {
+      if (!this.user.isAdministrator(this.userRole)) {
         this.creatorId = Cookies.get("userID")
       }
 
