@@ -23,7 +23,7 @@
                     <i class="fas fa-angle-down"></i>
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
-                  <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" tabindex="-1" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + ' RRP: ' + currencySymbol + product.recommendedRetailPrice + ' ' + currencyCode}}</li>
+                  <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" tabindex="-1" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product)}}</li>
                 </ul>
               </div>
             </div>
@@ -211,6 +211,19 @@ export default {
       this.sellBy = this.sellBy.trim();
       this.bestBefore = this.bestBefore.trim();
       this.expires = this.expires.trim();
+    },
+    /**
+     * This method checks whether the RRP of the given product is null, and if not returns a formatted string including the RRP to display.
+     * Otherwise returns an empty string.
+     *
+     * Used with the autofill dropdown.
+     */
+    getAutofillCurrencyText(product) {
+      if (product.recommendedRetailPrice !== null) {
+        return ' RRP: ' + this.currencySymbol + product.recommendedRetailPrice + ' ' + this.currencyCode;
+      } else {
+        return '';
+      }
     },
     /**
      * Retrieves a list of all products for the given business, to be put into the autofill dropdown.
