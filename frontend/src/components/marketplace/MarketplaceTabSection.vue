@@ -4,8 +4,6 @@
 
       <!-- First Row -->
       <h2 class="font-weight-bold mb-2">{{ section }}</h2>
-      <p class="font-italic text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-        tempor incididunt.</p>
 
       <!---------------------------------------------- ordering menu ------------------------------------------------>
 
