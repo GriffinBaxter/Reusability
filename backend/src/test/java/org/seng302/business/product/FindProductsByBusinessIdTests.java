@@ -591,7 +591,7 @@ class FindProductsByBusinessIdTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<Product> productPage = productRepository.findProductsByBusinessId(1, pageable);
+        Page<Product> productPage = productRepository.findProductsByBusinessId(2, pageable);
 
         // then
         assertThat(productPage.getTotalElements()).isZero();
