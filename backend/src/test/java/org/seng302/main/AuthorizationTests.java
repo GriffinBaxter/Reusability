@@ -2,9 +2,10 @@ package org.seng302.main;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.seng302.address.Address;
-import org.seng302.user.Role;
-import org.seng302.user.User;
+import org.seng302.Authorization;
+import org.seng302.model.Address;
+import org.seng302.model.Role;
+import org.seng302.model.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

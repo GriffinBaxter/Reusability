@@ -2,12 +2,13 @@ package org.seng302.business.inventoryItem;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.seng302.address.Address;
-import org.seng302.business.Business;
-import org.seng302.business.BusinessType;
-import org.seng302.business.product.Product;
-import org.seng302.user.Role;
-import org.seng302.user.User;
+import org.seng302.model.Address;
+import org.seng302.model.Business;
+import org.seng302.model.BusinessType;
+import org.seng302.model.Product;
+import org.seng302.model.InventoryItem;
+import org.seng302.model.Role;
+import org.seng302.model.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

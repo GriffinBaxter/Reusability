@@ -1,9 +1,8 @@
 package org.seng302.marketplace;
 
 import org.junit.jupiter.api.Test;
-import org.seng302.address.Address;
-import org.seng302.user.Role;
-import org.seng302.user.User;
+import org.seng302.model.Address;
+import org.seng302.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

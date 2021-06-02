@@ -4,18 +4,21 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.seng302.address.Address;
-import org.seng302.business.Business;
-import org.seng302.business.BusinessRepository;
-import org.seng302.business.BusinessType;
-import org.seng302.business.inventoryItem.InventoryItem;
-import org.seng302.business.inventoryItem.InventoryItemRepository;
-import org.seng302.business.product.Product;
-import org.seng302.business.product.ProductRepository;
-import org.seng302.main.Main;
-import org.seng302.user.Role;
-import org.seng302.user.User;
-import org.seng302.user.UserRepository;
+import org.seng302.model.Address;
+import org.seng302.model.Business;
+import org.seng302.model.BusinessRepository;
+import org.seng302.model.BusinessType;
+import org.seng302.model.InventoryItem;
+import org.seng302.model.InventoryItemRepository;
+import org.seng302.model.Product;
+import org.seng302.model.ProductRepository;
+import org.seng302.controller.ListingResource;
+import org.seng302.Main;
+import org.seng302.model.Listing;
+import org.seng302.model.ListingRepository;
+import org.seng302.model.Role;
+import org.seng302.model.User;
+import org.seng302.model.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -663,7 +666,7 @@ class ListingResourceIntegrationTests {
         given(businessRepository.findBusinessById(0)).willReturn(Optional.empty());
 
         expectedJSON = "";
-        
+
         // when
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);

@@ -2,10 +2,13 @@ package org.seng302.business;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.seng302.address.Address;
-import org.seng302.main.Main;
-import org.seng302.user.Role;
-import org.seng302.user.User;
+import org.seng302.model.Address;
+import org.seng302.Main;
+import org.seng302.model.Business;
+import org.seng302.model.BusinessRepository;
+import org.seng302.model.BusinessType;
+import org.seng302.model.Role;
+import org.seng302.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -30,7 +33,7 @@ class BusinessRepositoryIntegrationTests {
     private TestEntityManager entityManager;
 
     @Autowired
-    private  BusinessRepository businessRepository;
+    private BusinessRepository businessRepository;
 
     private Optional<Business> found;
 
