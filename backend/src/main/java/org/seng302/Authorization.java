@@ -2,10 +2,10 @@ package org.seng302;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.seng302.model.BusinessRepository;
-import org.seng302.model.Role;
+import org.seng302.model.repository.BusinessRepository;
+import org.seng302.model.enums.Role;
 import org.seng302.model.User;
-import org.seng302.model.UserRepository;
+import org.seng302.model.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 

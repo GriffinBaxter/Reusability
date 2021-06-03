@@ -3,6 +3,8 @@ package org.seng302.marketplace;
 import org.junit.jupiter.api.Test;
 import org.seng302.model.Address;
 import org.seng302.model.*;
+import org.seng302.model.enums.Role;
+import org.seng302.model.enums.Section;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -13,8 +13,8 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.seng302.view.AddressPayload;
-import org.seng302.view.AddressPayloadSecure;
+import org.seng302.view.outgoing.AddressPayload;
+import org.seng302.view.outgoing.AddressPayloadSecure;
 import org.seng302.validation.AddressValidation;
 
 import javax.persistence.*;

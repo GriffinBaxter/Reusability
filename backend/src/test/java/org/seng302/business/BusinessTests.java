@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
-import org.seng302.model.BusinessType;
-import org.seng302.model.Role;
+import org.seng302.model.enums.BusinessType;
+import org.seng302.model.enums.Role;
 import org.seng302.model.User;
 
 

@@ -14,6 +14,7 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.NoArgsConstructor;
+import org.seng302.model.enums.BusinessType;
 import org.seng302.validation.BusinessValidation;
 import org.seng302.validation.Validation;
 

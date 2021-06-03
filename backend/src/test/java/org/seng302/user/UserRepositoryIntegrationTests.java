@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.seng302.model.Address;
-import org.seng302.view.AddressPayload;
+import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.Main;
-import org.seng302.model.Role;
+import org.seng302.model.enums.Role;
 import org.seng302.model.User;
-import org.seng302.model.UserRepository;
-import org.seng302.view.UserPayload;
+import org.seng302.model.repository.UserRepository;
+import org.seng302.view.outgoing.UserPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;

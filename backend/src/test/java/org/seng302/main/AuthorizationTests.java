@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.seng302.Authorization;
 import org.seng302.model.Address;
-import org.seng302.model.Role;
+import org.seng302.model.enums.Role;
 import org.seng302.model.User;
 
 import java.time.LocalDate;

@@ -12,7 +12,9 @@ package org.seng302.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.seng302.view.ProductUpdatePayload;
+import org.seng302.model.repository.ProductRepository;
+import org.seng302.model.repository.ProductUpdateService;
+import org.seng302.view.incoming.ProductUpdatePayload;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,7 +28,7 @@ import javax.persistence.PersistenceContext;
  */
 @Service
 @Transactional
-public class ProductUpdateServiceImplementation implements ProductUpdateService{
+public class ProductUpdateServiceImplementation implements ProductUpdateService {
 
     private static final Logger logger = LogManager.getLogger(ProductUpdateServiceImplementation.class.getName());
 

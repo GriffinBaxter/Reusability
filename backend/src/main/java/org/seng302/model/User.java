@@ -22,8 +22,9 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.seng302.model.enums.Role;
 import org.seng302.validation.UserValidation;
-import org.seng302.view.UserPayloadSecure;
+import org.seng302.view.outgoing.UserPayloadSecure;
 
 /**
  * Class for user accounts

@@ -13,18 +13,18 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.seng302.model.BusinessRepository;
-import org.seng302.model.InventoryItemRepository;
+import org.seng302.model.repository.BusinessRepository;
+import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.model.InventoryItem;
 import org.seng302.model.Listing;
-import org.seng302.view.ListingCreationPayload;
-import org.seng302.view.ListingPayload;
-import org.seng302.model.ListingRepository;
-import org.seng302.model.ProductRepository;
+import org.seng302.view.incoming.ListingCreationPayload;
+import org.seng302.view.outgoing.ListingPayload;
+import org.seng302.model.repository.ListingRepository;
+import org.seng302.model.repository.ProductRepository;
 
 import org.seng302.Authorization;
 
-import org.seng302.model.UserRepository;
+import org.seng302.model.repository.UserRepository;
 import org.seng302.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;

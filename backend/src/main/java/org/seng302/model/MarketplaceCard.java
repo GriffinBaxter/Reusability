@@ -3,9 +3,10 @@ package org.seng302.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.seng302.model.enums.Section;
 import org.seng302.validation.MarketplaceCardValidation;
-import org.seng302.view.KeywordPayload;
-import org.seng302.view.MarketplaceCardPayload;
+import org.seng302.view.outgoing.KeywordPayload;
+import org.seng302.view.outgoing.MarketplaceCardPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

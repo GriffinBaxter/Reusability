@@ -12,13 +12,18 @@ package org.seng302.controller;
 
 import org.seng302.model.Address;
 import org.seng302.Authorization;
-import org.seng302.view.AddressPayload;
-import org.seng302.model.AddressRepository;
+import org.seng302.view.incoming.UserIdPayload;
+import org.seng302.view.incoming.UserLoginPayload;
+import org.seng302.view.incoming.UserRegistrationPayload;
+import org.seng302.view.outgoing.AddressPayload;
+import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.Business;
-import org.seng302.model.Role;
+import org.seng302.model.enums.Role;
 import org.seng302.model.User;
-import org.seng302.model.UserRepository;
-import org.seng302.view.*;
+import org.seng302.model.repository.UserRepository;
+import org.seng302.view.outgoing.UserPayload;
+import org.seng302.view.outgoing.UserPayloadParent;
+import org.seng302.view.outgoing.UserPayloadSecure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +46,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.seng302.Authorization.*;
-import static org.seng302.model.Role.*;
+import static org.seng302.model.enums.Role.*;
 
 /**
  * UserResource class
