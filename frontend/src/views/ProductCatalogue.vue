@@ -19,7 +19,7 @@
 
           <div class="row mb-3">
             <div class="col">
-              <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="0"
+              <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end" tabindex="0"
                       @click="showCreateProductModal()">Create Product
               </button>
             </div>
@@ -839,22 +839,9 @@ export default {
   min-height: calc(100vh - 240px);
 }
 
-#create-product-button {
-  background-color: #1EBA8C;
-  border-color: #1EBA8C;
-}
-
-#create-product-button:hover {
-  background-color: transparent;
-  color: #1EBA8C;
-}
-
+/* Here because otherwise button appears blue for 2 seconds when clicked */
 #create-product-button:focus {
   background-color: transparent;
-  color: #1EBA8C;
-}
-
-h6 {
   color: #1EBA8C;
 }
 
@@ -887,22 +874,6 @@ label {
   display: flex;
   flex-direction: column;
 }
-
-
-/*------------------ Hide arrows from input numbers ---------------------*/
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-/*------------------------------------------------------------------------*/
 
 /* Styles the input and textarea's borders to be green when they are focused/tabbed to */
 input:focus, textarea:focus, button:focus, #create-product-button:focus {

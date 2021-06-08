@@ -13,7 +13,7 @@ export default class Product {
             name: "Product name",
             minLength: 1,
             maxLength: 100,
-            regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
+            regex: /^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]+$/,
             regexMessage: "Must only contain alphanumeric characters, numbers, spaces or '#,.&()-"
         },
         description: {
@@ -22,10 +22,10 @@ export default class Product {
             maxLength: 600
         },
         manufacturer: {
-            name: "manufacturer",
+            name: "Manufacturer",
             minLength: 0,
             maxLength: 100,
-            regex: /^[a-zA-Z0-9 '#,.&()-]*$/,
+            regex: /^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]*$/,
             regexMessage: "Must only contain alphanumeric characters, numbers, spaces or '#,.&()-"
         },
         recommendedRetailPrice: {
