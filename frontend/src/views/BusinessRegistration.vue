@@ -143,8 +143,8 @@
           </div>
 
           <div class="d-grid gap-2 d-lg-block">
-            <button class="btn btn-lg green-button-transparent" type="button" tabindex="13" @click="$router.push('/profile')">Back to Profile</button>
-            <button id="register-button" tabindex="12" class="btn btn-lg btn-primary float-lg-end" type="button" @click="addNewBusiness($event)">Register</button>
+            <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="13" @click="$router.push('/profile')">Back to Profile</button>
+            <button id="register-button" tabindex="12" class="btn btn-lg float-lg-end green-button" type="button" @click="addNewBusiness($event)">Register</button>
           </div>
 
         </form>
@@ -320,7 +320,6 @@ export default {
      * This method creates a new business.
      * @param e, the current event.
      */
-    //TODO user id for primary id, and authorised
     addNewBusiness(e) {
       // Steps required for the function before starting processing.
       e.preventDefault()  // prevents page from reloading
@@ -478,7 +477,7 @@ export default {
 
       // Wrapping up the business submitted fields into a class object (Business).
       const businessData = {
-        primaryAdministratorId: Cookies.get('userID'), //TODO change when session token is set up.
+        primaryAdministratorId: Cookies.get('userID'),
         name: this.businessName,
         description: this.description,
         /*
@@ -815,37 +814,7 @@ label {
   flex-direction: column;
 }
 
-#register-button {
-  background-color: #1EBA8C;
-  border-color: #1EBA8C;
-}
-
-#register-button:hover {
-  background-color: transparent;
-  color: #1EBA8C;
-}
-
 #register-form {
   border-radius: 2%;
 }
-
-/*------------------ Hide arrows from input numbers ---------------------*/
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-input:focus, textarea:focus, #register-button:focus{
-  outline: none;
-  box-shadow: 0 0 2px 2px #1EBA8C;
-  border: 1px solid #1EBABC;
-}
-/*------------------------------------------------------------------------*/
 </style>

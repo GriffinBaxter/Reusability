@@ -219,6 +219,28 @@ test('Business name with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the business name field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Business name with correct name syntax with diacritics', () => {
+    const testInputVal = "L'Oréal";
+    const expectedMessage = "";
+
+    expect(
+        businessRegistration.methods.getErrorMessage(
+            Business.config.businessName.name,
+            testInputVal,
+            Business.config.businessName.minLength,
+            Business.config.businessName.maxLength,
+            Business.config.businessName.regexMessage,
+            Business.config.businessName.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+
 // --------------------------------------------------- Description Tests -------------------------------------------------------
 
 /**
@@ -379,6 +401,27 @@ test('Business address with input that contains invalid symbols', () => {
  */
 test('Business address with input that contains the sample data\'s business address', () => {
     const testInputVal = "4 Rountree Street, Upper Riccarton";
+    const expectedMessage = "";
+
+    expect(
+        businessRegistration.methods.getErrorMessage(
+            Business.config.businessAddress.name,
+            testInputVal,
+            Business.config.businessAddress.minLength,
+            Business.config.businessAddress.maxLength,
+            Business.config.businessAddress.regexMessage,
+            Business.config.businessAddress.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring no error message is raised when input is entered into the business address field
+ * containing diacritics.
+ * @result message raised is the empty string.
+ */
+test('Business address with input that contains diacritics', () => {
+    const testInputVal = "Côte d'Ivoire";
     const expectedMessage = "";
 
     expect(
@@ -788,7 +831,7 @@ test( 'Testing for the country with symbols', () => {
  * Testing for country with valid symbols.
  * @result No messages should be raised.
  */
-test( 'Testing for the country with symbols', () => {
+test( 'Testing for country with symbols', () => {
     const inputValue = "'- country"
     const expectedValue = ""
 
@@ -802,19 +845,37 @@ test( 'Testing for the country with symbols', () => {
     )).toBe(expectedValue)
 })
 
-// ************************************************ Suburb Tests *******************************************************
-// Waiting for approval from PO
+/**
+ * Testing that error message is empty when country contains diacritics.
+ * @result No messages should be raised.
+ */
+test( 'Testing valid country when containing diacritics', () => {
+    const inputValue = "Côte d'Ivoire"
+    const expectedValue = ""
 
-/*/!*!/!**
+    expect(businessRegistration.methods.getErrorMessage(
+        Business.config.country.name,
+        inputValue,
+        Business.config.country.minLength,
+        Business.config.country.maxLength,
+        Business.config.country.regexMessage,
+        Business.config.country.regex
+    )).toBe(expectedValue)
+})
+
+
+// ************************************************ Suburb Tests *******************************************************
+
+/**
  * Testing that an error message is returned when the suburb has a length greater than the maximum length of 255
  * characters.
  *  @result message raised is Input must be between 0 and 255.
- *!/
+ */
 test( 'Test for the suburb for the max length', () => {
     const inputValue = "2555"*255
     const expectedValue = `Input must be between 0 and 255 characters long.`;
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.suburb.name,
         inputValue,
         Business.config.suburb.minLength,
@@ -822,15 +883,15 @@ test( 'Test for the suburb for the max length', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing that an error message is returned when we submit the empty string.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Test for the suburb for empty string', () => {
     const inputValue = ""
     const expectedValue = "";
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.suburb.name,
         inputValue,
         Business.config.suburb.minLength,
@@ -838,15 +899,15 @@ test( 'Test for the suburb for empty string', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for valid input of suburb.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for a valid suburb', () => {
     const inputValue = "Ilam"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.suburb.name,
         inputValue,
         Business.config.suburb.minLength,
@@ -854,15 +915,15 @@ test( 'Testing for a valid suburb', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for suburb with numbers.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for suburb with numbers', () => {
     const inputValue = "suburb 13"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.suburb.name,
         inputValue,
         Business.config.suburb.minLength,
@@ -870,21 +931,21 @@ test( 'Testing for suburb with numbers', () => {
     )).toBe(expectedValue)
 })
 
-/!**
+/**
  * Testing for suburb with symbols.
  * @result No messages should be raised.
- *!/
+ */
 test( 'Testing for the suburb with symbols', () => {
     const inputValue = "!@#!@ suburb"
     const expectedValue = ""
 
-    expect(reg.methods.getErrorMessage(
+    expect(businessRegistration.methods.getErrorMessage(
         Business.config.suburb.name,
         inputValue,
         Business.config.suburb.minLength,
         Business.config.suburb.maxLength
     )).toBe(expectedValue)
-})*/
+})
 
 // *********************************************** Postcode Tests ******************************************************
 
