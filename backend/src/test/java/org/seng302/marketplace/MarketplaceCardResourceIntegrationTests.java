@@ -225,8 +225,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Tests that a BAD_REQUEST status is received when sending a marketplace card creation payload to the
-     * /cards API endpoint that contains a card that already exists for an
-     * existing creator ID.
+     * /cards API endpoint that contains a card that already exists for an existing creator ID.
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -263,10 +262,12 @@ class MarketplaceCardResourceIntegrationTests {
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(),
                 marketplaceCard.getDescription())).willReturn(Optional.empty());
-        String title = "Title";
+        String string = "Title";
+        String title = string.repeat(20); // max length of title is 70, so invalid (current length = 100)
 
         payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(),
                 title, marketplaceCard.getDescription(), "[\"Vege\", \"Green\", \"Fresh\"]");
+
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
