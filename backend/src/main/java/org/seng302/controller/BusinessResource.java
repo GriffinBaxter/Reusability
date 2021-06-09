@@ -11,6 +11,7 @@
 package org.seng302.controller;
 
 import org.seng302.Authorization;
+import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.Address;
 import org.seng302.validation.Validation;
@@ -40,6 +41,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for businesses. This class includes:
+ * POST "/businesses" endpoint used for creating businesses.
+ * GET "/businesses/{id}" endpoint used for retrieving a single business.
+ * PUT "/businesses/{id}/makeAdministrator" endpoint for making a user an administrator of a business.
+ * PUT "/businesses/{id}/revokeAdministrator" endpoint for removing a user as administrator of a business.
+ */
 @RestController
 public class BusinessResource {
 
@@ -69,7 +77,6 @@ public class BusinessResource {
      * create a new business by info given by businessPayload
      * @param sessionToken value of cookie
      * @param businessRegistrationPayload contain new business info
-     * @throws Exception Access token is missing or invalid
      */
     @PostMapping("/businesses")
     public ResponseEntity<BusinessIdPayload> createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
@@ -132,7 +139,7 @@ public class BusinessResource {
                 addressRepository.save(address);
                 // No businesses will exist at new address.
                 businesses = new ArrayList<>();
-            } catch (Exception e) {
+            } catch (IllegalAddressArgumentException e) {
                 logger.error("Invalid Business Address");
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,

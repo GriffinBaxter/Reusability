@@ -14,8 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.seng302.validation.ListingValidation;
-
+import org.seng302.exceptions.IllegalListingArgumentException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -58,6 +57,11 @@ public class Listing {
 
     private static final Logger logger = LogManager.getLogger(Listing.class.getName());
 
+    // Values need for validation.
+    private final Integer MORE_INFO_MIN_LENGTH = 0;
+    private final Integer MORE_INFO_MAX_LENGTH = 600;
+    private final Integer MIN_QUANTITY = 0;
+
     /**
      * Create a new listing.
      * @param quantity the quantity of an item being listed.
@@ -72,26 +76,26 @@ public class Listing {
                    String moreInfo,
                    LocalDateTime created,
                    LocalDateTime closes
-    ) throws Exception {
+    ) throws IllegalListingArgumentException {
         if (inventoryItem == null) {
             logger.error("Listing Creation Error - Inventory item is null");
-            throw new Exception("Invalid inventory item");
+            throw new IllegalListingArgumentException("Invalid inventory item");
         }
-        if (!ListingValidation.isValidQuantity(quantity, inventoryItem)) {
+        if (!isValidQuantity(quantity, inventoryItem)) {
             logger.error("Listing Creation Error - Quantity {} is not valid", quantity);
-            throw new Exception("Invalid quantity");
+            throw new IllegalListingArgumentException("Invalid quantity");
         }
-        if (!ListingValidation.isValidMoreInfo(moreInfo)) {
+        if (!isValidMoreInfo(moreInfo)) {
             logger.error("Listing Creation Error - More Info {} is not valid", moreInfo);
-            throw new Exception("Invalid more info");
+            throw new IllegalListingArgumentException("Invalid more info");
         }
         if (created == null) {
             logger.error("Listing Creation Error - Created (Date-Time) is null");
-            throw new Exception("Invalid creation date");
+            throw new IllegalListingArgumentException("Invalid creation date");
         }
         if (closes != null && closes.isBefore(LocalDateTime.now())) {
             logger.error("Listing Creation Error - Closes (Date-Time) is Invalid");
-            throw new Exception("Invalid closing date.");
+            throw new IllegalListingArgumentException("Invalid closing date.");
         }
         this.inventoryItem = inventoryItem;
         this.businessId = inventoryItem.getProduct().getBusinessId();
@@ -161,8 +165,8 @@ public class Listing {
     }
 
     /**
-     * set price
-     * @return price
+     * Set price
+     * @param price the new price of the listing
      */
     public void setPrice(double price) {
         this.price = price;
@@ -219,7 +223,7 @@ public class Listing {
     /**
      * calculate the price of this Listing.
      */
-    public double calculatePrice(){
+    public double calculatePrice() {
         double calculatedPrice;
         if (this.inventoryItem.getQuantity() == this.quantity){
             calculatedPrice = this.inventoryItem.getTotalPrice();
@@ -227,5 +231,30 @@ public class Listing {
             calculatedPrice = this.inventoryItem.getPricePerItem() * this.quantity;
         }
         return calculatedPrice;
+    }
+
+    /* --------------------------------------------Validation--------------------------------------------*/
+
+    /**
+     * Checks to see whether more info is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param moreInfo The more info to be checked.
+     * @return true when more info is valid
+     */
+    private boolean isValidMoreInfo(String moreInfo) {
+        return (moreInfo.length() >= MORE_INFO_MIN_LENGTH) &&
+                (moreInfo.length() <= MORE_INFO_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether quantity is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param quantity The quantity to be checked.
+     * @param inventoryItem An inventoryItem which is needed to validate the quantity of a listing
+     * @return true when quantity is valid
+     */
+    private boolean isValidQuantity(int quantity, InventoryItem inventoryItem) {
+        return (quantity > MIN_QUANTITY) &&
+                ((quantity + inventoryItem.getInventoryItemQuantityListed()) <= inventoryItem.getQuantity());
     }
 }

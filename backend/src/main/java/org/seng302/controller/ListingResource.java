@@ -13,6 +13,7 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.seng302.exceptions.IllegalListingArgumentException;
 import org.seng302.model.repository.BusinessRepository;
 import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.model.InventoryItem;
@@ -89,7 +90,7 @@ public class ListingResource {
 
     /**
      * Get method for retrieving listings
-     * @param sessionToken
+     * @param sessionToken when a user is logged in they have a session token which can be used to identify them.
      * @param id business ID
      * @param orderBy ordering of results
      * @param page page number
@@ -123,7 +124,7 @@ public class ListingResource {
         // Front-end displays 10 listings per page
         int pageSize = 5;
 
-        Sort sortBy = null;
+        Sort sortBy;
 
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
@@ -233,7 +234,7 @@ public class ListingResource {
             listingRepository.save(listing);
 
             logger.info("Listing Creation Success - 201 [CREATED] - Listing created for business with ID {}", id);
-        } catch (Exception e) {
+        } catch (IllegalListingArgumentException e) {
             logger.error("Couldn't make listing {}", e.getMessage());
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
