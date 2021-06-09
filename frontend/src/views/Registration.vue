@@ -433,21 +433,6 @@ export default {
       addressResultProperties: []
     }
   },
-
-  /**
-   * This is used for creating a prefilled user for testing and bypassing manually filling in the registration page
-   */
-  created() {
-    if (this.DEBUG_MODE) {
-      this.firstName = "Dan";
-      this.lastName = "Ronen";
-      this.dateOfBirth = "2008-02-02";
-      this.email = "demo@example.com";
-      this.password = "1234AaAa@";
-      this.confirmPassword = "1234AaAa@";
-    }
-  },
-
   methods: {
 
     /**
@@ -1226,23 +1211,10 @@ label {
 }
 
 /*--------------------- Hide arrows from input numbers ---------------------*/
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
 input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus {
   outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
-
 /*------------------------------------------------------------------------*/
 </style>

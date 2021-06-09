@@ -231,6 +231,27 @@ test('First name with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the first name field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('First name with correct name syntax with diacritics', () => {
+    const testInputVal = "Fábíáñ";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.firstName.name,
+            testInputVal,
+            User.config.firstName.minLength,
+            User.config.firstName.maxLength,
+            User.config.firstName.regexMessage,
+            User.config.firstName.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
 
 // ------------------------------------------------ Middle Name Tests --------------------------------------------------
 
@@ -448,6 +469,28 @@ test('Middle name with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the middle name field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Middle name with correct name syntax with diacritics', () => {
+    const testInputVal = "Fábíáñ";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.middleName.name,
+            testInputVal,
+            User.config.middleName.minLength,
+            User.config.middleName.maxLength,
+            User.config.middleName.regexMessage,
+            User.config.middleName.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+
 // ------------------------------------------------- Last Name Tests ---------------------------------------------------
 
 /**
@@ -659,6 +702,28 @@ test('Last name with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the last name field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Last name with correct name syntax with diacritics', () => {
+    const testInputVal = "Fábíáñ";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.lastName.name,
+            testInputVal,
+            User.config.lastName.minLength,
+            User.config.lastName.maxLength,
+            User.config.lastName.regexMessage,
+            User.config.lastName.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+
 // ------------------------------------------------- Nickname Tests ----------------------------------------------------
 
 /**
@@ -859,6 +924,27 @@ test('Nick name with incorrect name syntax with symbols', () => {
  */
 test('Nickname with correct name syntax with apostrophes', () => {
     const testInputVal = "Y'orke";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.nickname.name,
+            testInputVal,
+            User.config.nickname.minLength,
+            User.config.nickname.maxLength,
+            User.config.nickname.regexMessage,
+            User.config.nickname.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring no error message is raised when the input entered into the nickname field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Nickname with correct name syntax with diacritics', () => {
+    const testInputVal = "Fábíáñ";
     const expectedMessage = "";
 
     expect(
@@ -1196,6 +1282,27 @@ test('Home address with input that contains the sample data\'s home address', ()
         )
     ).toBe(expectedMessage);
 })
+
+/**
+ * Test for ensuring no error message is raised when input is entered into the home address field and contains diacritics.
+ * @result message raised is the empty string.
+ */
+test('Home address with input that contains diacritics', () => {
+    const testInputVal = "4 Fábíáñ Way";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.homeAddress.name,
+            testInputVal,
+            User.config.homeAddress.minLength,
+            User.config.homeAddress.maxLength,
+            User.config.homeAddress.regexMessage,
+            User.config.homeAddress.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
 
 // ------------------------------------------------- Password Tests ----------------------------------------------------
 

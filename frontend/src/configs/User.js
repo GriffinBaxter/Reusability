@@ -13,28 +13,28 @@ export default class User{
             minLength: 2,
             maxLength: 255,
             regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-            regex: /^[a-zA-Z '-]+$/
+            regex: /^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]+$/
         },
         middleName: {
             name: "Middle name",
             minLength: 0,
             maxLength: 255,
             regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-            regex: /^[a-zA-Z '-]*$/
+            regex: /^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]*$/
         },
         lastName: {
             name: "Last name",
             minLength: 2,
             maxLength: 255,
             regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-            regex: /^[a-zA-Z '-]+$/
+            regex: /^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]+$/
         },
         nickname: {
             name: "Nickname",
             minLength: 0,
             maxLength: 255,
             regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-            regex: /^[a-zA-Z '-]*$/
+            regex: /^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]*$/
         },
         bio: {
             name: "Bio",
@@ -65,7 +65,7 @@ export default class User{
             name: "Home address",
             minLength: 0,
             maxLength: 255,
-            regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
+            regex: /^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]+$/,
             regexMessage: "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$",
 
         },
