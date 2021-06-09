@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.model.Address;
 
-
+/**
+ * Address test class.
+ * This class includes tests to see whether IllegalAddressArgumentException's are thrown when
+ * an address is created with invalid data.
+ */
 class AddressTests {
 
     private Address address;

@@ -52,7 +52,7 @@ public class ProductValidation {
     public static boolean isValidName(String productName) {
         return (productName.length() >= NAME_MIN_LENGTH) &&
                 (productName.length() <= NAME_MAX_LENGTH) &&
-                (productName.matches("^[a-zA-Z0-9 '#,.&()-]+$"));
+                (productName.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]+$"));
     }
 
     /**
@@ -74,7 +74,7 @@ public class ProductValidation {
     public static boolean isValidManufacturer(String manufacturer) {
         return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
                 (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
-                (manufacturer.matches("^[a-zA-Z0-9 '#,.&()-]*$"));
+                (manufacturer.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]*$"));
     }
 
     /**
