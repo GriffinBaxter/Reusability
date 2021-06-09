@@ -11,7 +11,9 @@
 package org.seng302.controller;
 
 import org.seng302.Authorization;
+import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.Address;
+import org.seng302.validation.Validation;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.Business;
@@ -19,7 +21,6 @@ import org.seng302.model.repository.BusinessRepository;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
 import org.seng302.view.incoming.UserIdPayload;
-import org.seng302.validation.BusinessValidation;
 import org.seng302.model.User;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.outgoing.BusinessIdPayload;
@@ -72,7 +73,7 @@ public class BusinessResource {
      */
     @PostMapping("/businesses")
     public ResponseEntity<BusinessIdPayload> createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                                            @RequestBody BusinessRegistrationPayload businessRegistrationPayload) throws Exception {
+                                                            @RequestBody BusinessRegistrationPayload businessRegistrationPayload) {
         //access token invalid
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -88,22 +89,6 @@ public class BusinessResource {
                     "Invalid Primary Administrator Id"
             );        }
 
-
-        if (!BusinessValidation.isValidName(name.trim())){
-            logger.error("Invalid Business Name - {}", name.trim());
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Invalid business name"
-            );
-        }
-
-        if (!BusinessValidation.isValidDescription(description)){
-            logger.error("Invalid Description - {}", description);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Invalid description"
-            );
-        }
 
         if (businessType == null){
             logger.error("Invalid Business Type (is null)");
@@ -157,11 +142,11 @@ public class BusinessResource {
 
         }
 
-        if (BusinessValidation.isNewBusiness(businesses, name)){
+        if (Validation.isNewBusiness(businesses, name)){
             try {
                 Business business = new Business(
                         currentUser.getId(),
-                        name,
+                        name.trim(),
                         description,
                         address,
                         businessType,
@@ -172,15 +157,15 @@ public class BusinessResource {
                 Business createdBusiness = businessRepository.save(business);
                 logger.info("Successful Business Registration - {}", createdBusiness.toString());
                 return ResponseEntity.status(HttpStatus.CREATED).body(new BusinessIdPayload(createdBusiness.getId()));
-            } catch (Exception e) {
+            } catch (IllegalBusinessArgumentException e) {
                 logger.error("Business Registration Failure - {}", e.getMessage());
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Invalid business"
+                        e.getMessage()
                 );
             }
 
-        } else { //TODO: 409 not in api spec
+        } else {
             logger.error("Name: {} and Address: {} already in use", name, address.toString());
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,

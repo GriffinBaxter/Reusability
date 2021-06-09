@@ -14,13 +14,14 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.NoArgsConstructor;
+import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.enums.BusinessType;
-import org.seng302.validation.BusinessValidation;
 import org.seng302.validation.Validation;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Business Class
  *
@@ -42,7 +43,7 @@ public class Business {
 
     @JsonBackReference
     @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.EAGER)
-    private List<User> administrators = new ArrayList<User>();
+    private List<User> administrators = new ArrayList<>();
 
     @Column(name = "primaryAdministratorId")
     private Integer primaryAdministratorId;
@@ -65,15 +66,21 @@ public class Business {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
+    // Values need for validation.
+    private final Integer NAME_MIN_LENGTH = 1;
+    private final Integer NAME_MAX_LENGTH = 100;
+
+    private final Integer DESCRIPTION_MIN_LENGTH = 0;
+    private final Integer DESCRIPTION_MAX_LENGTH = 600;
 
 
     /**
-     * create new BusinessAccount object with description
-     * @param name
-     * @param description
-     * @param address
-     * @param businessType
-     * @throws Exception
+     * Create new BusinessAccount object.
+     * @param name the name of the business (mandatory)
+     * @param description the description of the business (optional)
+     * @param address the address of the business (mandatory)
+     * @param businessType the type of the business (mandatory)
+     * @throws IllegalBusinessArgumentException thrown when parameter is not valid.
      */
     public Business(Integer primaryAdministratorId,
                     String name,
@@ -82,12 +89,12 @@ public class Business {
                     BusinessType businessType,
                     LocalDateTime created,
                     User administrator
-    ) throws Exception{
-        if (!BusinessValidation.isValidName(name)){
-            throw new Exception("Invalid business name.");
+    ) throws IllegalBusinessArgumentException {
+        if (!isValidName(name)){
+            throw new IllegalBusinessArgumentException("Invalid business name");
         }
-        if (!BusinessValidation.isValidDescription(name)){
-            throw new Exception("Invalid business description.");
+        if (!isValidDescription(description)){
+            throw new IllegalBusinessArgumentException("Invalid business description");
         }
 
         this.primaryAdministratorId = primaryAdministratorId;
@@ -99,8 +106,6 @@ public class Business {
         administrators.add(administrator);
 
     }
-
-    //getter
 
     /**
      * get id
@@ -130,7 +135,7 @@ public class Business {
      * get address
      * @return address
      */
-    public Address getAddress() throws Exception {
+    public Address getAddress() {
         return address;
     }
 
@@ -166,7 +171,6 @@ public class Business {
         return primaryAdministratorId;
     }
 
-    //setter
 
     /**
      * set id
@@ -298,5 +302,27 @@ public class Business {
                 ",\"businessType\":\"" + businessType + "\"" +
                 ",\"created\":\"" + created + "\"" +
                 "}";
+    }
+
+    /**
+     * Checks to see whether business name is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param businessName The business name to be checked.
+     * @return true when the business name is valid
+     */
+    private boolean isValidName(String businessName) {
+        return (businessName.length() >= NAME_MIN_LENGTH) &&
+                (businessName.length() <= NAME_MAX_LENGTH) &&
+                (businessName.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]+$"));
+    }
+
+    /**
+     * Checks to see whether description is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param description The description to be checked.
+     * @return true when the description is valid.
+     */
+    private boolean isValidDescription(String description) {
+        return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 }

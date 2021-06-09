@@ -10,6 +10,10 @@
  */
 package org.seng302.validation;
 
+import org.seng302.model.Business;
+
+import java.util.List;
+
 public class Validation {
 
     /**
@@ -32,6 +36,26 @@ public class Validation {
         for (String s: strings){
             if (!s.matches("^[a-zA-Z]*$") || isEmpty(string)){
                 flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * Checks to see whether a business already exists (i.e the business is in the business repository)
+     * @param businesses A list of businesses
+     * @param name Business name
+     * @return true when name and address have not been used
+     */
+    public static boolean isNewBusiness(List<Business> businesses, String name) {
+        boolean flag = true;
+        if (!businesses.isEmpty()){
+            for (Business business: businesses){
+                if (business.getName().equals(name)){
+                    flag = false;
+                    break;
+                }
             }
         }
         return flag;

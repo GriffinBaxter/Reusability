@@ -213,7 +213,7 @@ class AddressTests {
      * country as an empty field (check for min length).
      */
     @Test
-    void isIllegalAddressArgumentExceptionThrownWhenCountryIsEmpty() {
+    void isIllegalAddressArgumentExceptionThrownWhenCountryIsEmptyTest() {
         try {
             address = new Address(
                     "3/24",
