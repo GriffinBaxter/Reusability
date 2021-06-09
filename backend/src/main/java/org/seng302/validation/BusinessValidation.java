@@ -4,7 +4,7 @@
  * Description. This file contains the defintion for the BusinessValidation.
  *
  * @link   team-400/src/main/java/org/seng302/validation/BusinessValidation
- * @file   This file contains the definition for AddressValidation.
+ * @file   This file contains the definition for BusinessValidation.
  * @author team-400.
  * @since  5.5.2021
  */
@@ -58,6 +58,7 @@ public class BusinessValidation {
             for (Business business: businesses){
                 if (business.getName().equals(name)){
                     flag = false;
+                    break;
                 }
             }
         }
