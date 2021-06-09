@@ -3,6 +3,8 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
+import org.seng302.exceptions.IllegalKeywordArgumentException;
+import org.seng302.exceptions.IllegalMarketplaceCardArgumentException;
 import org.seng302.model.enums.Section;
 import org.seng302.model.*;
 import org.seng302.model.repository.KeywordRepository;
@@ -128,10 +130,10 @@ public class MarketplaceCardResource {
                         logger.error("User with ID: {} not found", cardPayload.getCreatorId());
                         throw new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
-                                String.format("User with ID: {} does not exist.", cardPayload.getCreatorId())
+                                String.format("User with ID: %s does not exist.", cardPayload.getCreatorId())
                         );
                     }
-                } catch (Exception e) {
+                } catch (IllegalMarketplaceCardArgumentException | IllegalKeywordArgumentException e) {
                     logger.error("Card Creation Failure - {}", e.getMessage());
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
@@ -161,7 +163,7 @@ public class MarketplaceCardResource {
      * @param orderBy Ordering
      * @param page Page number
      * @return List of MarketplaceCardPayloads
-     * @throws Exception
+     * @throws Exception when card can't be converted to payload (DTO).
      */
     @GetMapping("/cards")
     public ResponseEntity<List<MarketplaceCardPayload>> retrieveMarketplaceCards(
@@ -202,7 +204,7 @@ public class MarketplaceCardResource {
         // Front-end displays 20 cards per page
         int pageSize = 6; // NOTE if changed must also be changed in MarketplaceCardResourceIntegrationTests
 
-        Sort sortBy = null;
+        Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
