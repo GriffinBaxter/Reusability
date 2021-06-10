@@ -4,12 +4,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
+import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
-import org.seng302.validation.Validation;
+import org.seng302.Validation;
 
 
 import java.time.LocalDate;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.Assert.*;
 
 /**
  * BusinessAccount test class
@@ -203,10 +203,11 @@ class BusinessTests {
      * Test to see whether the list of administrators for a business are updated as well as the list of businesses
      * administered by a user are updated when a user becomes a new administrator for that business.
      *
-     * @throws Exception
+     * @throws IllegalBusinessArgumentException validation exception for a business.
+     * @throws IllegalUserArgumentException validation exception for a user.
      */
     @Test
-    void testAddAdministrators() throws Exception {
+    void testAddAdministrators() throws IllegalBusinessArgumentException, IllegalUserArgumentException {
         Business business = new Business(
                 user.getId(),
                 "name",
@@ -238,10 +239,11 @@ class BusinessTests {
      * Test to see whether the list of administrators for a business are updated as well as the list of businesses
      * administered by a user are updated when a user is removed as an administrator for that business.
      *
-     * @throws Exception
+     * @throws IllegalBusinessArgumentException validation exception for a business.
+     * @throws IllegalUserArgumentException validation exception for a user.
      */
     @Test
-    void testRemoveAdministrators() throws Exception {
+    void testRemoveAdministrators() throws IllegalUserArgumentException, IllegalBusinessArgumentException {
         User user = new User("first",
                 "last",
                 "middle",

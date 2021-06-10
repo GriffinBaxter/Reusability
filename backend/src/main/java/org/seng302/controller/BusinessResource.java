@@ -14,7 +14,7 @@ import org.seng302.Authorization;
 import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.Address;
-import org.seng302.validation.Validation;
+import org.seng302.Validation;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.Business;
@@ -162,7 +162,7 @@ public class BusinessResource {
                 );
                 business.addAdministrators(currentUser); //add user to administrators list
                 Business createdBusiness = businessRepository.save(business);
-                logger.info("Successful Business Registration - {}", createdBusiness.toString());
+                logger.info("Successful Business Registration - {}", createdBusiness);
                 return ResponseEntity.status(HttpStatus.CREATED).body(new BusinessIdPayload(createdBusiness.getId()));
             } catch (IllegalBusinessArgumentException e) {
                 logger.error("Business Registration Failure - {}", e.getMessage());
@@ -173,7 +173,7 @@ public class BusinessResource {
             }
 
         } else {
-            logger.error("Name: {} and Address: {} already in use", name, address.toString());
+            logger.error("Name: {} and Address: {} already in use", name, address);
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Name and Address already in use"
@@ -226,7 +226,7 @@ public class BusinessResource {
                 currentUser.getRole() == Role.DEFAULTGLOBALAPPLICATIONADMIN){
             primaryAdministratorId = selectBusiness.getPrimaryAdministratorId();
         }
-        logger.info("Business Found - {}", selectBusiness.toString());
+        logger.info("Business Found - {}", selectBusiness);
         return new BusinessPayload(
                 selectBusiness.getId(),
                 administrators,

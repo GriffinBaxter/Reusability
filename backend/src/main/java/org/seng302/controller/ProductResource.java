@@ -17,7 +17,7 @@ import org.seng302.model.*;
 import org.seng302.Authorization;
 import org.seng302.model.User;
 import org.seng302.model.repository.*;
-import org.seng302.validation.ProductValidation;
+import org.seng302.ProductValidation;
 import org.seng302.view.incoming.ProductCreationPayload;
 import org.seng302.view.outgoing.ProductPayload;
 import org.seng302.view.incoming.ProductUpdatePayload;

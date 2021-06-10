@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.enums.BusinessType;
-import org.seng302.validation.Validation;
+import org.seng302.Validation;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,11 +67,11 @@ public class Business {
     private LocalDateTime created;
 
     // Values need for validation.
-    private final Integer NAME_MIN_LENGTH = 1;
-    private final Integer NAME_MAX_LENGTH = 100;
+    private static final Integer NAME_MIN_LENGTH = 1;
+    private static final Integer NAME_MAX_LENGTH = 100;
 
-    private final Integer DESCRIPTION_MIN_LENGTH = 0;
-    private final Integer DESCRIPTION_MAX_LENGTH = 600;
+    private static final Integer DESCRIPTION_MIN_LENGTH = 0;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 600;
 
 
     /**
@@ -184,9 +184,9 @@ public class Business {
      * set name
      * @param name name
      */
-    public void setName(String name) throws Exception {
+    public void setName(String name) throws IllegalBusinessArgumentException {
         if (!Validation.isName(name)){
-            throw new Exception("Invalid business name");
+            throw new IllegalBusinessArgumentException("Invalid business name");
         }
         this.name = name;
     }
@@ -247,9 +247,9 @@ public class Business {
      * @param user An user who was an administrator for this business.
      */
     public void removeAdministrators(User user) {
-        int id = user.getId();
+        int userId = user.getId();
         for (int i = 0; i < administrators.size(); i++){
-            if (administrators.get(i).getId() == id){
+            if (administrators.get(i).getId() == userId){
                 this.administrators.remove(i);
             }
         }

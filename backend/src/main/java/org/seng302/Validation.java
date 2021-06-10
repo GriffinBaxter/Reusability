@@ -8,7 +8,7 @@
  * @author team-400.
  * @since  5.5.2021
  */
-package org.seng302.validation;
+package org.seng302;
 
 import org.seng302.model.Business;
 

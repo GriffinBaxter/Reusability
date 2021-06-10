@@ -451,7 +451,7 @@ class UserTests {
                     Role.USER
             );
         } catch (IllegalUserArgumentException e) {
-            assertEquals("Invalid password", e.getMessage());
+            Assertions.assertEquals("Invalid password", e.getMessage());
         }
     }
 
@@ -897,6 +897,283 @@ class UserTests {
         Assertions.assertEquals(lastName, user.getLastName());
     }
 
+    // *********************************** BIO ***************************************
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with the length of
+     * bio greater than the max length.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenBioLengthGreaterThanMaxLengthTest() {
+        String string = "Z";
+        String bio = string.repeat(601); // max length = 600
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    "nick",
+                    bio,
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    "Qwerty123!",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid bio", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether a user is successfully created when bio has valid length and contains symbols, numbers etc.
+     */
+    @Test
+    void isUserSuccessfullyCreatedWhenBioContainsSymbolsAndNumbersTest() throws IllegalUserArgumentException {
+        String bio = "Hello my name is Euan1234. My email is top@bga.com." +
+                "Hello!!!! #$%&&**";
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                bio,
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Qwerty123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        Assertions.assertNotNull(user);
+        Assertions.assertEquals(bio, user.getBio());
+    }
+
+    // ******************************** MIDDLE NAME **********************************
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with the length of
+     * middle name greater than the max length.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenMiddleNameLengthGreaterThanMaxLengthTest() {
+        String string = "F";
+        String middleName = string.repeat(256); // max length = 255;
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    middleName,
+                    "nick",
+                    "bio",
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    "Qwerty123!",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid middle name", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with the length of
+     * middle name valid, but middle name contains invalid symbols.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenMiddleNameHasValidLengthButContainsInvalidSymbolsTest() {
+        String middleName = "Cam!@#";
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    middleName,
+                    "nick",
+                    "bio",
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    "Qwerty123!",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid middle name", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with the length of
+     * middle name valid, but middle name contains numbers.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenMiddleNameHasValidLengthButContainsNumbersTest() {
+        String middleName = "Cam123";
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    middleName,
+                    "nick",
+                    "bio",
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    "Qwerty123!",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid middle name", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether a user is successfully created when middle name contains valid symbols, diacritics and spaces.
+     */
+    @Test
+    void isUserSuccessfullyCreatedWhenMiddleNameContainsValidSymbolsDiacriticsAndSpacesTest() throws IllegalUserArgumentException {
+        String middleName = "Ca-m'bd āâĕ";
+        User user = new User(
+                "first",
+                "last",
+                middleName,
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Qwerty123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        Assertions.assertNotNull(user);
+        Assertions.assertEquals(middleName, user.getMiddleName());
+    }
+
+    // ********************************* NICKNAME ************************************
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with the length of
+     * nick name greater than the max length.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenNickNameLengthGreaterThanMaxLengthTest() {
+        String string = "P";
+        String nickName = string.repeat(256); // max length = 255;
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    nickName,
+                    "bio",
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    "Qwerty123!",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid nickname", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with the length of
+     * nick name valid, but nick name contains invalid symbols.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenNickNameHasValidLengthButContainsInvalidSymbolsTest() {
+        String nickName = "Peps!@#";
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    nickName,
+                    "bio",
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    "Qwerty123!",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid nickname", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with the length of
+     * nick name valid, but nick name contains numbers.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenNickNameHasValidLengthButContainsNumbersTest() {
+        String nickName = "Peps123";
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    nickName,
+                    "bio",
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    "Qwerty123!",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid nickname", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether a user is successfully created when nick name contains valid symbols, diacritics and spaces.
+     */
+    @Test
+    void isUserSuccessfullyCreatedWhenNickNameContainsValidSymbolsDiacriticsAndSpacesTest() throws IllegalUserArgumentException {
+        String nickName = "Pep-s'bd āâĕ";
+        User user = new User(
+                "first",
+                "last",
+                "middle",
+                nickName,
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Qwerty123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        Assertions.assertNotNull(user);
+        Assertions.assertEquals(nickName, user.getNickname());
+    }
 
     // ******************************* ************ **********************************
 
@@ -945,7 +1222,7 @@ class UserTests {
                 LocalDateTime.now().minusMonths(2),
                 Role.USER
         );
-        assertEquals("2 Month(s)\n", user.getTimeSinceRegistration());
+        Assertions.assertEquals("2 Month(s)\n", user.getTimeSinceRegistration());
     }
 
     /**
@@ -968,7 +1245,7 @@ class UserTests {
                 LocalDateTime.now().minusYears(1).minusMonths(2),
                 Role.USER
         );
-        assertEquals("1 Year(s) and 2 Month(s)\n", user.getTimeSinceRegistration());
+        Assertions.assertEquals("1 Year(s) and 2 Month(s)\n", user.getTimeSinceRegistration());
     }
 
     /**
@@ -990,7 +1267,7 @@ class UserTests {
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
-        assertEquals("1 Month(s)\n", user.getTimeSinceRegistration());
+        Assertions.assertEquals("1 Month(s)\n", user.getTimeSinceRegistration());
     }
 
     /**
@@ -1012,7 +1289,7 @@ class UserTests {
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
-        assertEquals("UGFzc3dvcmQxMjMh", user.getPassword());
+        Assertions.assertEquals("UGFzc3dvcmQxMjMh", user.getPassword());
     }
 
     /**
@@ -1034,13 +1311,13 @@ class UserTests {
                 LocalDateTime.now().minusMonths(1).minusDays(10),
                 Role.USER
         );
-        assertTrue(user.verifyPassword("Password123!"));
+        Assertions.assertTrue(user.verifyPassword("Password123!"));
     }
 
     /**
      * Test to see whether the getBusinessesAdministered method returns a list of
      * ids' (integers) of the businesses administered by that user.
-     * @throws Exception
+     * @throws IllegalBusinessArgumentException validation exception for a business.
      */
     @Test
     void testGetBusinessesAdministered() throws IllegalBusinessArgumentException {
@@ -1057,7 +1334,7 @@ class UserTests {
 
         business.addAdministrators(user);
 
-        assertEquals(user, business.getAdministrators().get(0));
+        Assertions.assertEquals(user, business.getAdministrators().get(0));
     }
 
 
