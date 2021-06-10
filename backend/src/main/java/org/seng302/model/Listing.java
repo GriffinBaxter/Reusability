@@ -58,9 +58,9 @@ public class Listing {
     private static final Logger logger = LogManager.getLogger(Listing.class.getName());
 
     // Values need for validation.
-    private final Integer MORE_INFO_MIN_LENGTH = 0;
-    private final Integer MORE_INFO_MAX_LENGTH = 600;
-    private final Integer MIN_QUANTITY = 0;
+    private static final Integer MORE_INFO_MIN_LENGTH = 0;
+    private static final Integer MORE_INFO_MAX_LENGTH = 600;
+    private static final Integer MIN_QUANTITY = 0;
 
     /**
      * Create a new listing.

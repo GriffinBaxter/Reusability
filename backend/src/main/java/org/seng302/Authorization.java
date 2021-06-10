@@ -47,11 +47,7 @@ public class Authorization {
      * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
      */
     public static boolean verifyRole(User currentUser, Role role) {
-        if (currentUser.getRole().equals(role)) {
-            return true;
-        }
-        return false;
-
+        return currentUser.getRole().equals(role);
     }
 
     /**

@@ -58,11 +58,11 @@ public class MarketplaceCard {
     private List<Keyword> keywords = new ArrayList<>();
 
     // Values needed for validation.
-    private final Integer TITLE_MIN_LENGTH = 2;
-    private final Integer TITLE_MAX_LENGTH = 70;
+    private static final Integer TITLE_MIN_LENGTH = 2;
+    private static final Integer TITLE_MAX_LENGTH = 70;
 
-    private final Integer DESCRIPTION_MIN_LENGTH = 0;
-    private final Integer DESCRIPTION_MAX_LENGTH = 500;
+    private static final Integer DESCRIPTION_MIN_LENGTH = 0;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 500;
 
     /**
      * Marketplace card constructor
@@ -188,9 +188,9 @@ public class MarketplaceCard {
      * @param keyword a keyword that is to be removed from this card.
      */
     public void removeKeyword(Keyword keyword) {
-        int id = keyword.getId();
+        int keywordId = keyword.getId();
         for (int i = 0; i < keywords.size(); i++){
-            if (keywords.get(i).getId() == id){
+            if (keywords.get(i).getId() == keywordId){
                 this.keywords.remove(i);
             }
         }

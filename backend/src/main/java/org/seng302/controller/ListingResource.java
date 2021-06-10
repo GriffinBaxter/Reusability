@@ -64,7 +64,7 @@ public class ListingResource {
     @Autowired
     private UserRepository userRepository;
 
-    private static final Logger logger = LogManager.getLogger(ProductResource.class.getName());
+    private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
     /**
      * Constructor used to insert mocked repositories for testing.
@@ -176,7 +176,7 @@ public class ListingResource {
 
         List<ListingPayload> listingPayloads = convertToPayload(pagedResult.getContent());
 
-        logger.debug("Listings retrieved for business with ID {}: {}", id, listingPayloads.toString());
+        logger.debug("Listings retrieved for business with ID {}: {}", id, listingPayloads);
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
@@ -260,7 +260,7 @@ public class ListingResource {
                     listing.getCreated().toString(),
                     listing.getCloses().toString()
             );
-            logger.debug("Listing payload created: {}", newPayload.toString());
+            logger.debug("Listing payload created: {}", newPayload);
             payloads.add(newPayload);
         }
         return payloads;

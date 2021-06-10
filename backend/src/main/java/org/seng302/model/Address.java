@@ -64,26 +64,26 @@ public class Address {
     private List<Business> businesses;
 
     // Values need for validation.
-    private final Integer STREET_NUMBER_MIN_LENGTH = 0;
-    private final Integer STREET_NUMBER_MAX_LENGTH = 255;
+    private static final Integer STREET_NUMBER_MIN_LENGTH = 0;
+    private static final Integer STREET_NUMBER_MAX_LENGTH = 255;
 
-    private final Integer STREET_NAME_MIN_LENGTH = 0;
-    private final Integer STREET_NAME_MAX_LENGTH = 255;
+    private static final Integer STREET_NAME_MIN_LENGTH = 0;
+    private static final Integer STREET_NAME_MAX_LENGTH = 255;
 
-    private final Integer CITY_MIN_LENGTH = 0;
-    private final Integer CITY_MAX_LENGTH = 255;
+    private static final Integer CITY_MIN_LENGTH = 0;
+    private static final Integer CITY_MAX_LENGTH = 255;
 
-    private final Integer REGION_MIN_LENGTH = 0;
-    private final Integer REGION_MAX_LENGTH = 255;
+    private static final Integer REGION_MIN_LENGTH = 0;
+    private static final Integer REGION_MAX_LENGTH = 255;
 
-    private final Integer COUNTRY_MIN_LENGTH = 1;
-    private final Integer COUNTRY_MAX_LENGTH = 255;
+    private static final Integer COUNTRY_MIN_LENGTH = 1;
+    private static final Integer COUNTRY_MAX_LENGTH = 255;
 
-    private final Integer POSTCODE_MIN_LENGTH = 0;
-    private final Integer POSTCODE_MAX_LENGTH = 255;
+    private static final Integer POSTCODE_MIN_LENGTH = 0;
+    private static final Integer POSTCODE_MAX_LENGTH = 255;
 
-    private final Integer SUBURB_MIN_LENGTH = 0;
-    private final Integer SUBURB_MAX_LENGTH = 255;
+    private static final Integer SUBURB_MIN_LENGTH = 0;
+    private static final Integer SUBURB_MAX_LENGTH = 255;
 
     /**
      * Address constructor.
@@ -94,7 +94,7 @@ public class Address {
      * @param country Country (mandatory)
      * @param postcode Postcode (optional)
      * @param suburb Suburb (optional)
-     * @throws IllegalArgumentException Thrown when a parameter is not valid.
+     * @throws IllegalAddressArgumentException when a parameter is not valid.
      */
     public Address(String streetNumber,
                    String streetName,
@@ -290,7 +290,7 @@ public class Address {
      * @param string address in json form
      * @return an address object
      */
-    public static Address toAddress(String string) throws Exception {
+    public static Address toAddress(String string) throws IllegalAddressArgumentException {
         String[] infos = string.replace("{", "").replace("}", "").
                 replace("\"", "").replace("\n","").split(",");
 

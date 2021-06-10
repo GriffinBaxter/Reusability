@@ -121,7 +121,7 @@ public class ProductResource {
                 logger.info("Product Creation Success - 201 [CREATED] - Product created for business {} with ID {}", id, productPayload.getId());
                 logger.debug("Product created for business {} with ID {}: {}", id, productPayload.getId(), product);
             }
-        } catch (Exception e) {
+        } catch (IllegalProductArgumentException e) {
             logger.error("Product Creation Failure - 400 [BAD REQUEST] - Bad data");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,

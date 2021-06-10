@@ -34,8 +34,8 @@ public class Keyword {
     private List<MarketplaceCard> cards = new ArrayList<>();
 
     // Values need for validation.
-    private final Integer NAME_MIN_LENGTH = 2;
-    private final Integer NAME_MAX_LENGTH = 20;
+    private static final Integer NAME_MIN_LENGTH = 2;
+    private static final Integer NAME_MAX_LENGTH = 20;
 
 
     /**
@@ -115,9 +115,9 @@ public class Keyword {
      * @param card A card that used to contain this keyword (keyword to be removed).
      */
     public void removeCard(MarketplaceCard card) {
-        int id = card.getId();
+        int cardId = card.getId();
         for (int i = 0; i < cards.size(); i++){
-            if (cards.get(i).getId() == id){
+            if (cards.get(i).getId() == cardId){
                 this.cards.remove(i);
             }
         }

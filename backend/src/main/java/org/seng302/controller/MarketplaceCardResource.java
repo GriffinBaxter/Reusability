@@ -124,7 +124,7 @@ public class MarketplaceCardResource {
                             }
                         }
                         MarketplaceCard createdCard = marketplaceCardRepository.save(card);
-                        logger.info("Successful Card Creation - {}", createdCard.toString());
+                        logger.info("Successful Card Creation - {}", createdCard);
                         return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceCardIdPayload(createdCard.getId()));
                     } else {
                         logger.error("User with ID: {} not found", cardPayload.getCreatorId());
@@ -280,7 +280,7 @@ public class MarketplaceCardResource {
         }
 
         logger.info("Marketplace Card Retrieval Success - 200 [OK] -  Marketplace card retrieved with ID {}", id);
-        logger.debug("Marketplace card retrieved with ID {}: {}", id, optionalMarketplaceCard.get().toString());
+        logger.debug("Marketplace card retrieved with ID {}: {}", id, optionalMarketplaceCard.get());
 
         MarketplaceCard marketplaceCard = optionalMarketplaceCard.get();
 
