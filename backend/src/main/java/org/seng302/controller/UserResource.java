@@ -10,6 +10,8 @@
  */
 package org.seng302.controller;
 
+import org.seng302.exceptions.IllegalAddressArgumentException;
+import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
 import org.seng302.view.incoming.UserIdPayload;
@@ -49,7 +51,14 @@ import static org.seng302.Authorization.*;
 import static org.seng302.model.enums.Role.*;
 
 /**
- * UserResource class
+ * UserResource class. This class includes:
+ * POST "/login" endpoint used to allow a user to login.
+ * POST "/logout" endpoint used to allow a user to logout.
+ * POST "/users" endpoint used to create a new user account.
+ * GET "/users/{id}" endpoint used to retrieve the details of a user account.
+ * GET "/users/search" endpoint used to retrieve user accounts based on search criteria.
+ * PUT "/users/{id}/makeAdmin" endpoint used to make a user account a GAA.
+ * PUT "/users/{id}/revokeAdmin" endpoint used to revoke admin perms from user account (GAA -> normal user account)
  */
 @RestController
 public class UserResource {
@@ -139,7 +148,6 @@ public class UserResource {
     public ResponseEntity<UserIdPayload> registerUser(
             @RequestBody UserRegistrationPayload registration, HttpServletResponse response
     ) {
-        System.out.println(userRepository.findByEmail(registration.getEmail()));
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
             logger.error("Registration Failure - Email already in use {}", registration.getEmail());
             throw new ResponseStatusException(
@@ -208,7 +216,7 @@ public class UserResource {
             logger.info("Successful Registration - User Id {}", createdUser.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
 
-        } catch (Exception e) {
+        } catch (IllegalUserArgumentException | IllegalAddressArgumentException e) {
             logger.error("Registration Failure - {}", e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -243,8 +251,6 @@ public class UserResource {
 
         //base info
         Role role = null;
-        LocalDate dateOfBirth = null;
-        String phoneNumber = null;
 
         //stop payload loop
         List<Business> administrators = new ArrayList<>();
@@ -253,7 +259,7 @@ public class UserResource {
             administrator.setAdministrators(new ArrayList<>());
         }
 
-        logger.info("User Found - {}", selectUser.toString());
+        logger.info("User Found - {}", selectUser);
         if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
 
             // If the current user is a DGAA, show the role of the user
@@ -397,7 +403,7 @@ public class UserResource {
 
         logger.info("Search Success - 200 [OK] -  Users retrieved for search query {}, order by {}, page {}", searchQuery, orderBy, pageNo);
 
-        logger.debug("Users Found: {}", pagedResult.toList().toString());
+        logger.debug("Users Found: {}", pagedResult.toList());
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));

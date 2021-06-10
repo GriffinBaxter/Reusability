@@ -411,97 +411,6 @@ class UserValidationTests {
         assertTrue(UserValidation.isValidBio(bio));
     }
 
-    // ********************************** EMAIL **************************************
-
-    /**
-     * Test to see whether false (i.e invalid) is returned when email
-     * has length less than min length.
-     */
-    @Test
-    void isValidEmailLessThanMinLength() {
-        String email = "z@"; // minLength = 3
-        assertFalse(UserValidation.isValidEmail(email));
-    }
-
-    /**
-     * Test to see whether false (i.e invalid) is returned when email
-     * has length greater than max length.
-     */
-    @Test
-    void isValidEmailGreaterThanMaxLength() {
-        String email = "z@abbbbbbbbbbbbbbbbbbbbbbbbbbb.co.nz"; // maxLength = 30
-        assertFalse(UserValidation.isValidEmail(email));
-    }
-
-    /**
-     * Test to see whether true (i.e valid) is returned when email
-     * has length equal to min length
-     */
-    @Test
-    void isValidEmailEqualToMinLength() {
-        String email = "z@c.a"; // minLength = 5
-        assertTrue(UserValidation.isValidEmail(email));
-    }
-
-    /**
-     * Test to see whether true (i.e valid) is returned when email
-     * has length equal to max length
-     */
-    @Test
-    void isValidEmailEqualToMaxLength() {
-        String email = "zzzzzzzzzzzz@ccccccccccc.co.nz"; // maxLength = 30
-        assertTrue(UserValidation.isValidEmail(email));
-    }
-
-    /**
-     * Test to see whether false (i.e invalid) is returned when email
-     * does not contain @ symbol.
-     */
-    @Test
-    void isValidEmailNoAtSymbol() {
-        String email = "zac.gmail.com";
-        assertFalse(UserValidation.isValidEmail(email));
-    }
-
-    /**
-     * Test to see whether true (i.e valid) is returned when email
-     * is of correct format.
-     */
-    @Test
-    void isValidEmailCorrectFormat() {
-        String email = "zac@gmail.com";
-        assertTrue(UserValidation.isValidEmail(email));
-    }
-
-    /**
-     * Test to see whether true (i.e valid) is returned when email
-     * is of correct format and contains numbers.
-     */
-    @Test
-    void isValidEmailCorrectFormatContainsNumbers() {
-        String email = "zac123@gmail.com";
-        assertTrue(UserValidation.isValidEmail(email));
-    }
-
-    /**
-     * Test to see whether false (i.e invalid) is returned when email
-     * contains spaces.
-     */
-    @Test
-    void isValidEmailContainsSpaces() {
-        String email = "zac 123@gmail.com";
-        assertFalse(UserValidation.isValidEmail(email));
-    }
-
-    /**
-     * Test to see whether false (i.e invalid) is returned when email
-     * contains invalid symbols.
-     */
-    @Test
-    void isValidEmailInvalidSymbols() {
-        String email = "zac#***123@gmail.com";
-        assertFalse(UserValidation.isValidEmail(email));
-    }
 
     // ******************************* DATE OF BIRTH *********************************
 
@@ -589,26 +498,6 @@ class UserValidationTests {
 
     // ********************************* PASSWORD ************************************
 
-    /**
-     * Test to see whether false (i.e invalid) is returned when password
-     * length is less than the min length
-     */
-    @Test
-    void isValidPasswordLessThanMinLength() {
-        String password = "1234567"; // minLength = 8
-        assertFalse(UserValidation.isValidPassword(password));
-    }
-
-    /**
-     * Test to see whether false (i.e invalid) is returned when password
-     * length is greater than the max length
-     */
-    @Test
-    void isValidPasswordGreaterThanMaxLength() {
-        String string = "1234567";
-        String password = string.repeat(5); // maxLength = 30
-        assertFalse(UserValidation.isValidPassword(password));
-    }
 
     /**
      * Test to see whether true (i.e valid) is returned when password

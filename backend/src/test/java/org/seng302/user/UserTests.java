@@ -1,7 +1,11 @@
 package org.seng302.user;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.seng302.exceptions.IllegalAddressArgumentException;
+import org.seng302.exceptions.IllegalBusinessArgumentException;
+import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
 import org.seng302.model.enums.BusinessType;
@@ -28,7 +32,7 @@ class UserTests {
     private static User user;
 
     @BeforeAll
-    static void before() throws Exception {
+    static void before() throws IllegalAddressArgumentException, IllegalUserArgumentException {
         address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -55,10 +59,11 @@ class UserTests {
 
     /**
      * Tests that an administrator can be added to a business.
-     * @throws Exception Adding of administrator failed
+     * @throws IllegalBusinessArgumentException validation exception
+     * @throws IllegalUserArgumentException validation exception
      */
     @Test
-    void testAddAdministrators() throws Exception {
+    void testAddAdministrators() throws IllegalBusinessArgumentException, IllegalUserArgumentException {
         Business business = new Business(
                 user.getId(),
                 "name",
@@ -86,11 +91,17 @@ class UserTests {
         assertEquals(business.getAdministrators(), List.of(user, newUser));
     }
 
+
+    // ********************************** EMAIL **************************************
+
     /**
-     * Tests that an invalid email address throws an error.
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with
+     * the length of email address less than the min length.
      */
     @Test
-    void TestInvalidEmailAddress() {
+    void isIllegalUserArgumentExceptionThrownWhenEmailAddressLengthLessThanMinLengthTest() {
+        String email = "z@c"; // min length = 5
+
         try {
             User user = new User(
                     "first",
@@ -98,7 +109,7 @@ class UserTests {
                     "middle",
                     "nick",
                     "bio",
-                    "",
+                    email,
                     LocalDate.of(2021, Month.JANUARY, 1),
                     "123456789",
                     address,
@@ -106,8 +117,179 @@ class UserTests {
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                     Role.USER
             );
-        } catch (Exception e) {
-            assertEquals("Invalid email address", e.getMessage());
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid email address", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with
+     * the length of email address greater than the max length.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenEmailAddressLengthGreaterThanMaxLengthTest() {
+        String email = "z@abbbbbbbbbbbbbbbbbbbbbbbbbbb.co.nz"; // max length = 30
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    "nick",
+                    "bio",
+                    email,
+                    LocalDate.of(2021, Month.JANUARY, 1),
+                    "123456789",
+                    address,
+                    "password",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid email address", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with
+     * the email address not containing the @ symbol.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenEmailAddressDoesNotContainAtSymbolTest() {
+        String email = "zac.gmail.com";
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    "nick",
+                    "bio",
+                    email,
+                    LocalDate.of(2021, Month.JANUARY, 1),
+                    "123456789",
+                    address,
+                    "password",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid email address", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with
+     * the email address containing spaces
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenEmailAddressContainsSpacesTest() {
+        String email = "zac 123@gmail.com";
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    "nick",
+                    "bio",
+                    email,
+                    LocalDate.of(2021, Month.JANUARY, 1),
+                    "123456789",
+                    address,
+                    "password",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid email address", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with
+     * the email address containing invalid symbols.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenEmailAddressContainsInvalidSymbolsTest() {
+        String email = "zac#***123@gmail.com";
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    "nick",
+                    "bio",
+                    email,
+                    LocalDate.of(2021, Month.JANUARY, 1),
+                    "123456789",
+                    address,
+                    "password",
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid email address", e.getMessage());
+        }
+    }
+
+    // ********************************* PASSWORD ************************************
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with
+     * the length of password less than the min length.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenPasswordLengthLessThanMinLengthTest() {
+        String password = "1234567"; // min length = 8
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    "nick",
+                    "bio",
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    password,
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid password", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalUserArgumentException is thrown when trying to create a user with
+     * the length of password greater than the max length.
+     */
+    @Test
+    void isIllegalUserArgumentExceptionThrownWhenPasswordLengthGreaterThanMaxLengthTest() {
+        String string = "1234567";
+        String password = string.repeat(5); // maxLength = 30
+
+        try {
+            User user = new User(
+                    "first",
+                    "last",
+                    "middle",
+                    "nick",
+                    "bio",
+                    "test@example.com",
+                    LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                    "123456789",
+                    address,
+                    password,
+                    LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                    Role.USER
+            );
+        } catch (IllegalUserArgumentException e) {
+            Assertions.assertEquals("Invalid password", e.getMessage());
         }
     }
 
