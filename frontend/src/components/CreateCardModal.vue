@@ -480,19 +480,9 @@ export default {
       }
 
       Api.addNewCard(newCard).then(
-
           (res) => {
             if (res.status === 201) {
-              const newCardUpdateValues = {
-                id: res.data.cardId,
-                section: this.sectionSelected,
-                title: this.title,
-                description: this.description,
-                keywords: newCard.keywords,
-                creator: this.creator,
-                created: new Date()
-              }
-              this.$emit("new-card-created", newCardUpdateValues);
+              this.$emit("new-card-created");
               this.modal.hide();
             }
           }
