@@ -188,7 +188,7 @@ export default {
         this.allCards[section] = response.data;
         this.totalPages = parseInt(response.headers["total-pages"]);
 
-        if (this.totalPages > 0 && this.page > this.totalPages - 1) {
+        if (this.totalPages > 0 && this.page > this.totalPages) {
           this.$router.push({path: '/pageDoesNotExist'});
         }
       }).catch((error) => {
