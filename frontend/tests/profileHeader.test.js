@@ -14,12 +14,32 @@ describe("Testing the search type radio button functionality", () => {
         profileHeaderWrapper.vm.searchType = 'User'
 
         profileHeaderWrapper.vm.changeSearchType('Business');
-        profileHeaderWrapper.vm.$nextTick();
         expect(profileHeaderWrapper.vm.searchType).toEqual('Business');
 
         profileHeaderWrapper.vm.changeSearchType('User');
-        profileHeaderWrapper.vm.$nextTick();
         expect(profileHeaderWrapper.vm.searchType).toEqual('User');
+    });
+
+    test('Testing changeSearchType is called with User when the User radio button is clicked', () => {
+        const profileHeaderWrapper = shallowMount(ProfileHeader);
+        profileHeaderWrapper.vm.searchType = 'Business'
+        expect(profileHeaderWrapper.vm.searchType).toEqual('Business');
+
+        let radioButton = profileHeaderWrapper.find('#userRadioButton');
+        radioButton.trigger('click');
+
+        expect(profileHeaderWrapper.vm.searchType).toEqual('User');
+    });
+
+    test('Testing changeSearchType is called with Business when the Business radio button is clicked', () => {
+        const profileHeaderWrapper = shallowMount(ProfileHeader);
+        profileHeaderWrapper.vm.searchType = 'User'
+        expect(profileHeaderWrapper.vm.searchType).toEqual('User');
+
+        let radioButton = profileHeaderWrapper.find('#businessRadioButton');
+        radioButton.trigger('click');
+
+        expect(profileHeaderWrapper.vm.searchType).toEqual('Business');
     });
 
     test('Testing placeholder returns the correct value when the search type is User', () => {
