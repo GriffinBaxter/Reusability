@@ -5,8 +5,14 @@
     <div class="pt-3 text-font container-fluid" id="search-bar-container">
       <div class="row">
         <div class="col search-bar-positioning">
+          <div>
+            <div class="btn-group">
+              <button id="userRadioButton" type="button" :class="`btn green-button-transparent ${this.searchType === 'User' ? 'active': ''}`" @click="changeSearchType('User')">User</button>
+              <button id="businessRadioButton" type="button" :class="`btn green-button-transparent ${this.searchType === 'Business' ? 'active': ''}`" @click="changeSearchType('Business')">Business</button>
+            </div>
+          </div>
           <div class="input-group">
-            <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" placeholder="Search all users">
+            <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
             <button class="btn green-search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
           </div>
         </div>
@@ -19,6 +25,19 @@
 
 export default {
   name: "ProfileHeader",
+  data() {
+    return {
+      searchType: "User"
+    }
+  },
+  computed: {
+    /**
+     * Determines which placeholder text to use based on the search type.
+     */
+    placeholder() {
+      return this.searchType === 'User' ? 'Search all users' : "Search all businesses";
+    }
+  },
   methods: {
 
     /**
@@ -38,6 +57,13 @@ export default {
     searchClicked() {
       const inputQuery = this.$refs.searchInput.value;
       this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}})
+    },
+
+    /**
+     * Changes the search type to the received input.
+     */
+    changeSearchType(type) {
+      this.searchType = type;
     }
   }
 }
@@ -60,6 +86,12 @@ export default {
 
 #search-bar-container {
  max-width: 1200px;
+}
+
+.active {
+  color: #FFFFFF;
+  background-color: #1EBA8C;
+  border: 1px solid #1EBA8C;
 }
 
 </style>
