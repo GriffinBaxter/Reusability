@@ -3,14 +3,25 @@
 
 <template>
     <div class="pt-3 text-font container-fluid" id="search-bar-container">
-      <div class="row">
-        <div class="col search-bar-positioning">
-          <div>
+      <div class="col search-bar-positioning">
+        <div class="row">
+          <div class="col">
             <div class="btn-group">
               <button id="userRadioButton" type="button" :class="`btn green-button-transparent ${this.searchType === 'User' ? 'active': ''}`" @click="changeSearchType('User')">User</button>
               <button id="businessRadioButton" type="button" :class="`btn green-button-transparent ${this.searchType === 'Business' ? 'active': ''}`" @click="changeSearchType('Business')">Business</button>
             </div>
           </div>
+          <div v-if="searchType === 'Business'" class="col" style="margin-bottom: 10px;">
+            <label style="padding-right: 10px; padding-left: 70px;" for="businessTypeComboBox">Business Type:</label>
+            <select id="businessTypeComboBox" name="business-type" tabindex="2" v-model="selectedBusinessType">
+              <option value="">Any</option>
+              <option v-for="option in businessTypes" :key="option.businessType" :value="option.value">
+                {{ option.value }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
           <div class="input-group">
             <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
             <button class="btn green-search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
@@ -27,7 +38,15 @@ export default {
   name: "ProfileHeader",
   data() {
     return {
-      searchType: "User"
+      searchType: "User",
+      // Business type related variables
+      selectedBusinessType: "",
+      businessTypes: [
+        { businessType: 'ACCOMMODATION AND FOOD SERVICES', value: 'Accommodation and Food Services' },
+        { businessType: 'RETAIL TRADE', value: 'Retail Trade' },
+        { businessType: 'CHARITABLE ORGANISATION', value: 'Charitable Organisation' },
+        { businessType: 'NON PROFIT ORGANISATION', value: 'Non Profit Organisation' }
+      ],
     }
   },
   computed: {
