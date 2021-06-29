@@ -14,16 +14,9 @@ package org.seng302.view.incoming;
  * Creation Payload class for Keyword
  */
 public class KeywordCreationPayload {
-    private String keyword;
+    private String name;
 
-    public KeywordCreationPayload(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public KeywordCreationPayload() {
+    public String getName() {
+        return name;
     }
 }

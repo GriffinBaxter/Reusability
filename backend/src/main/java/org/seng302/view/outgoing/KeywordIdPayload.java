@@ -20,7 +20,7 @@ public class KeywordIdPayload {
         this.keywordId = keywordId;
     }
 
-    public int getBusinessId() {
+    public int getKeywordId() {
         return keywordId;
     }
 

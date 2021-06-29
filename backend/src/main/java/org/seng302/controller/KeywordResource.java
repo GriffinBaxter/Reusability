@@ -49,9 +49,11 @@ public class KeywordResource {
     @PostMapping("/keywords")
     public ResponseEntity<KeywordIdPayload> createKeyword(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                           @RequestBody KeywordCreationPayload keywordPayload) {
+        logger.debug("Card payload received: {}", keywordPayload);
+
         Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        String keyword = keywordPayload.getKeyword();
+        String keyword = keywordPayload.getName();
 
         // Checks if keyword already exists & returns ID if it does
         Optional<Keyword> foundKey = keywordRepository.findByName(keyword);
@@ -68,7 +70,7 @@ public class KeywordResource {
             logger.info("Keyword {} successfully created - [CREATED]", keyword);
             return ResponseEntity.status(HttpStatus.CREATED).body(new KeywordIdPayload(createdKeyword.getId()));
         } catch(Exception e) {
-            logger.info("Keyword creation Failure - [BAD REQUEST] - Invalid keyword name");
+            logger.info("Keyword creation Failure - [BAD REQUEST] - Invalid keyword name {}", keyword);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     e.getMessage()
