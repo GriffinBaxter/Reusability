@@ -13,9 +13,23 @@ package org.seng302.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.Authorization;
+import org.seng302.model.Keyword;
 import org.seng302.model.repository.KeywordRepository;
+import org.seng302.model.repository.UserRepository;
+import org.seng302.view.incoming.KeywordCreationPayload;
+import org.seng302.view.outgoing.KeywordIdPayload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RestController
 public class KeywordResource {
@@ -23,9 +37,42 @@ public class KeywordResource {
     @Autowired
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private static final Logger logger = LogManager.getLogger(KeywordResource.class.getName());
 
     public KeywordResource(KeywordRepository keywordRepository) {
         this.keywordRepository = keywordRepository;
+    }
+
+    @PostMapping("/keywords")
+    public ResponseEntity<KeywordIdPayload> createKeyword(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                                          @RequestBody KeywordCreationPayload keywordPayload) {
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        String keyword = keywordPayload.getKeyword();
+
+        // Checks if keyword already exists & returns ID if it does
+        Optional<Keyword> foundKey = keywordRepository.findByName(keyword);
+        if (foundKey.isPresent()) {
+            logger.info("Keyword already exists - [OK]");
+            return ResponseEntity.status(HttpStatus.OK).body(new KeywordIdPayload(foundKey.get().getId()));
+        }
+
+        LocalDateTime created = LocalDateTime.now();
+        try {
+            Keyword newKeyword = new Keyword(keyword, created);
+            Keyword createdKeyword = keywordRepository.save(newKeyword);
+
+            logger.info("Keyword {} successfully created - [CREATED]", keyword);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new KeywordIdPayload(createdKeyword.getId()));
+        } catch(Exception e) {
+            logger.info("Keyword creation Failure - [BAD REQUEST] - Invalid keyword name");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    e.getMessage()
+            );
+        }
     }
 }
