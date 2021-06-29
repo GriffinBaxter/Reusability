@@ -1,6 +1,7 @@
 package org.seng302.address;
 
 import org.junit.jupiter.api.Test;
+import org.seng302.model.Address;
 
 import static org.junit.Assert.assertEquals;
 

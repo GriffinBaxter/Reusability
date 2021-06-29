@@ -10,7 +10,7 @@
  */
 package org.seng302.validation;
 
-import org.seng302.business.inventoryItem.InventoryItem;
+import org.seng302.model.InventoryItem;
 
 /**
  * Class methods to validate listing fields

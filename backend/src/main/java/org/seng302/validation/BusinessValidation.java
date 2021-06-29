@@ -10,8 +10,7 @@
  */
 package org.seng302.validation;
 
-import org.seng302.business.Business;
-import org.seng302.business.BusinessType;
+import org.seng302.model.Business;
 
 import java.util.List;
 

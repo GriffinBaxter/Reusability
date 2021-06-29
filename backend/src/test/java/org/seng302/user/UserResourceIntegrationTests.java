@@ -1,9 +1,13 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
-import org.seng302.address.Address;
-import org.seng302.address.AddressRepository;
-import org.seng302.main.Main;
+import org.seng302.model.Address;
+import org.seng302.model.repository.AddressRepository;
+import org.seng302.controller.UserResource;
+import org.seng302.Main;
+import org.seng302.model.enums.Role;
+import org.seng302.model.User;
+import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
