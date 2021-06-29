@@ -1,5 +1,7 @@
-package org.seng302.marketplace;
+package org.seng302.keyword;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.seng302.model.Address;
 import org.seng302.model.*;
@@ -18,13 +20,17 @@ import static org.junit.Assert.assertEquals;
  */
 class KeywordTests {
 
+    private static Address address;
+    private static User user;
+    private static MarketplaceCard card;
+
     /**
-     * Tests that an invalid name for a keyword (greater than max length) throws an error.
-     * @exception Exception thrown if there is an error creating a new entity.
+     * Set up for all tests in KeywordTests
+     * @throws Exception thrown if there is an error creating a new entity.
      */
-    @Test
-    void TestKeywordNameExceedingMaxLengthThrowsError() throws Exception {
-        Address address = new Address(
+    @BeforeAll
+    static void before() throws Exception {
+        address = new Address(
                 "3/24",
                 "Ilam Road",
                 "Christchurch",
@@ -33,7 +39,7 @@ class KeywordTests {
                 "90210",
                 "Ilam"
         );
-        User user = new User("testfirst",
+        user = new User("testfirst",
                 "testlast",
                 "testmiddle",
                 "testnick",
@@ -46,7 +52,7 @@ class KeywordTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        MarketplaceCard card = new MarketplaceCard(
+        card = new MarketplaceCard(
                 user.getId(),
                 user,
                 Section.FORSALE,
@@ -54,12 +60,42 @@ class KeywordTests {
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
+    }
+
+    /**
+     * Tests that an invalid name for a keyword (greater than max length) throws an error.
+     */
+    @Test
+    void TestKeywordNameExceedingMaxLengthThrowsError() {
         try {
             String name = "A";
             Keyword keyword = new Keyword (name.repeat(50), LocalDateTime.now(), card);
         } catch (Exception e) {
-            assertEquals("Invalid name", e.getMessage());
+            Assertions.assertEquals("Invalid name", e.getMessage());
         }
     }
 
+    /**
+     * Tests that an invalid name for a keyword (less than min length) throws an error.
+     */
+    @Test
+    void TestKeywordNameLessThanMinLengthThrowsError() {
+
+        try {
+            String name = "A";
+            Keyword keyword = new Keyword (name, LocalDateTime.now(), card);
+        } catch (Exception e) {
+            Assertions.assertEquals("Invalid name", e.getMessage());
+        }
+    }
+
+    /**
+     * Tests than a valid name for a keyword creates a keyword
+     */
+    @Test
+    void TestKeywordNameIsValid() throws Exception {
+        String name = "TestKeyword";
+        Keyword keyword = new Keyword (name, LocalDateTime.now(), card);
+        Assertions.assertEquals(name, keyword.getName());
+    }
 }
