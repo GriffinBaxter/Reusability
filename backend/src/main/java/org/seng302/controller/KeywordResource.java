@@ -31,6 +31,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * Keyword Resource class.
+ * This class contains the endpoints for keywords.
+ * The POST /keywords endpoint is used to create keywords.
+ */
 @RestController
 public class KeywordResource {
 
