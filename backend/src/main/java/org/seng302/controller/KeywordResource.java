@@ -70,10 +70,10 @@ public class KeywordResource {
         LocalDateTime created = LocalDateTime.now();
         try {
             Keyword newKeyword = new Keyword(keyword, created);
-            Keyword createdKeyword = keywordRepository.save(newKeyword);
+            keywordRepository.save(newKeyword);
 
             logger.info("Keyword {} successfully created - [CREATED]", keyword);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new KeywordIdPayload(createdKeyword.getId()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new KeywordIdPayload(newKeyword.getId()));
         } catch(Exception e) {
             logger.info("Keyword creation Failure - [BAD REQUEST] - Invalid keyword name {}", keyword);
             throw new ResponseStatusException(
