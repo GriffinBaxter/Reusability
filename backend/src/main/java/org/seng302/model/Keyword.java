@@ -52,7 +52,7 @@ public class Keyword {
     }
 
     public Keyword(String name, LocalDateTime created) throws Exception {
-        if (!KeywordValidation.isValidName(name)) {
+        if (!isValidName(name)) {
             throw new Exception("Invalid name");
         }
         this.name = name;
