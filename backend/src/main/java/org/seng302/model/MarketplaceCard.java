@@ -3,8 +3,8 @@ package org.seng302.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.seng302.exceptions.IllegalMarketplaceCardArgumentException;
 import org.seng302.model.enums.Section;
-import org.seng302.validation.MarketplaceCardValidation;
 import org.seng302.view.outgoing.KeywordPayload;
 import org.seng302.view.outgoing.MarketplaceCardPayload;
 
@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class for a marketplace card
+ * Class for a marketplace card.
+ * Marketplace cards can have many keywords.
  */
 @Embeddable
 @NoArgsConstructor  // generate a no-args constructor needed by JPA (lombok pre-processor)
@@ -56,15 +57,22 @@ public class MarketplaceCard {
             inverseJoinColumns = { @JoinColumn(name = "keyword_id") })
     private List<Keyword> keywords = new ArrayList<>();
 
+    // Values needed for validation.
+    private static final Integer TITLE_MIN_LENGTH = 2;
+    private static final Integer TITLE_MAX_LENGTH = 70;
+
+    private static final Integer DESCRIPTION_MIN_LENGTH = 0;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 500;
+
     /**
      * Marketplace card constructor
-     * @param creatorId
-     * @param creator
-     * @param section
-     * @param created
-     * @param title
-     * @param description
-     * @throws Exception Validation exception
+     * @param creatorId the id of the user who created this card.
+     * @param creator the creator of this card.
+     * @param section the section the card appears in e.g FORSALE, WANTED, EXCHANGE.
+     * @param created the date and time the card was created.
+     * @param title the title of the card.
+     * @param description the description of the card.
+     * @throws IllegalMarketplaceCardArgumentException Validation exception
      */
     public MarketplaceCard(
             int creatorId,
@@ -73,12 +81,12 @@ public class MarketplaceCard {
             LocalDateTime created,
             String title,
             String description
-    ) throws Exception {
-        if (!MarketplaceCardValidation.isValidTitle(title)) {
-            throw new Exception("Invalid title");
+    ) throws IllegalMarketplaceCardArgumentException {
+        if (!isValidTitle(title)) {
+            throw new IllegalMarketplaceCardArgumentException("Invalid title");
         }
-        if (!MarketplaceCardValidation.isValidDescription(description)) {
-            throw new Exception("Invalid description");
+        if (!isValidDescription(description)) {
+            throw new IllegalMarketplaceCardArgumentException("Invalid description");
         }
 
         this.creatorId = creatorId;
@@ -169,7 +177,7 @@ public class MarketplaceCard {
     /**
      * Add a keyword to the list of keywords for this card.
      * Called when a new keyword is created.
-     * @return keyword a keyword that is to be added to this card.
+     * @param keyword a keyword that is to be added to this card.
      */
     public void addKeyword(Keyword keyword) {
         keywords.add(keyword);
@@ -177,12 +185,12 @@ public class MarketplaceCard {
 
     /**
      * Remove a keyword from the list of keywords for this card.
-     * @return keyword a keyword that is to be removed from this card.
+     * @param keyword a keyword that is to be removed from this card.
      */
     public void removeKeyword(Keyword keyword) {
-        int id = keyword.getId();
+        int keywordId = keyword.getId();
         for (int i = 0; i < keywords.size(); i++){
-            if (keywords.get(i).getId() == id){
+            if (keywords.get(i).getId() == keywordId){
                 this.keywords.remove(i);
             }
         }
@@ -235,6 +243,28 @@ public class MarketplaceCard {
             keywordPayloads.add(keywordPayload);
         }
         return keywordPayloads;
+    }
+
+    /**
+     * Checks to see whether title is valid based on its constraints.
+     * This method can be updated in the future if there are additional constraints.
+     * @param title The title to be checked.
+     * @return true when the title is valid
+     */
+    private boolean isValidTitle(String title) {
+        return (title.length() >= TITLE_MIN_LENGTH) &&
+                (title.length() <= TITLE_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether description is valid based on its constraints.
+     * This method can be updated in the future if there are additional constraints.
+     * @param description The description to be checked.
+     * @return true when the description is valid
+     */
+    private boolean isValidDescription(String description) {
+        return (description.length() >= DESCRIPTION_MIN_LENGTH) &&
+                (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
 }

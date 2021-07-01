@@ -3,6 +3,7 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.seng302.exceptions.IllegalListingArgumentException;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
 import org.seng302.model.enums.BusinessType;
@@ -17,8 +18,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 
-import static org.junit.Assert.assertEquals;
-
+/**
+ * Test class for Listing
+ * This class includes tests for validation of listings.
+ */
 class ListingTests {
 
     private Address address;
@@ -91,10 +94,10 @@ class ListingTests {
 
     /**
      * when price not exist and quantity less then inventory quantity
-     * @throws Exception
+     * @throws IllegalListingArgumentException when trying to create listing with invalid data.
      */
     @Test
-    void testCalculatePriceWhenPriceNotExistAndQuantityLessThenInventoryQuantity() throws Exception {
+    void testCalculatePriceWhenPriceNotExistAndQuantityLessThenInventoryQuantity() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 3,
@@ -103,15 +106,15 @@ class ListingTests {
                 LocalDateTime.now(),
                 null
         );
-        assertEquals(19.50, listing.getPrice(), 0.0);
+        Assertions.assertEquals(19.50, listing.getPrice(), 0.0);
     }
 
     /**
      * when price not exist and quantity equal to inventory quantity
-     * @throws Exception
+     * @throws IllegalListingArgumentException when trying to create listing with invalid data.
      */
     @Test
-    void testCalculatePriceWhenPriceNotExistAndQuantityEqualToInventoryQuantity() throws Exception {
+    void testCalculatePriceWhenPriceNotExistAndQuantityEqualToInventoryQuantity() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 4,
@@ -120,15 +123,15 @@ class ListingTests {
                 LocalDateTime.now(),
                 null
         );
-        assertEquals(21.99, listing.getPrice(), 0.0);
+        Assertions.assertEquals(21.99, listing.getPrice(), 0.0);
     }
 
     /**
      * when price exist and quantity equal to inventory quantity
-     * @throws Exception
+     * @throws IllegalListingArgumentException when trying to create listing with invalid data.
      */
     @Test
-    void testCalculatePriceWillBeOverriddenWhenPriceExist() throws Exception {
+    void testCalculatePriceWillBeOverriddenWhenPriceExist() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 4,
@@ -137,15 +140,15 @@ class ListingTests {
                 LocalDateTime.now(),
                 null
         );
-        assertEquals(30.00, listing.getPrice(), 0.0);
+        Assertions.assertEquals(30.00, listing.getPrice(), 0.0);
     }
 
     /**
      * when price exist and quantity less then inventory quantity
-     * @throws Exception
+     * @throws IllegalListingArgumentException when trying to create listing with invalid data.
      */
     @Test
-    void testCalculatePriceWillBeOverriddenWhenPriceExistEvenQuantityNotEqualToInventory() throws Exception {
+    void testCalculatePriceWillBeOverriddenWhenPriceExistEvenQuantityNotEqualToInventory() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 3,
@@ -154,7 +157,7 @@ class ListingTests {
                 LocalDateTime.now(),
                 null
         );
-        assertEquals(30.00, listing.getPrice(), 0.0);
+        Assertions.assertEquals(30.00, listing.getPrice(), 0.0);
     }
 
     /**
@@ -171,7 +174,7 @@ class ListingTests {
                     LocalDateTime.now(),
                     null
             );
-        } catch (Exception e) {
+        } catch (IllegalListingArgumentException e) {
             Assertions.assertEquals("Invalid inventory item", e.getMessage());
         }
     }
@@ -190,7 +193,7 @@ class ListingTests {
                     null,
                     null
             );
-        } catch (Exception e) {
+        } catch (IllegalListingArgumentException e) {
             Assertions.assertEquals("Invalid creation date", e.getMessage());
         }
     }
@@ -209,17 +212,17 @@ class ListingTests {
                     LocalDateTime.now(),
                     LocalDateTime.of(2000, 10, 11, 0,0)
             );
-        } catch (Exception e) {
+        } catch (IllegalListingArgumentException e) {
             Assertions.assertEquals("Invalid closing date.", e.getMessage());
         }
     }
 
     /**
      * Test closes date is set to expiry date of inventory time when not set (null)
-     * @throws Exception if field of Listing is not valid.
+     * @throws IllegalListingArgumentException when trying to create listing with invalid data.
      */
     @Test
-    void TestNoClosingDateSet() throws Exception {
+    void TestNoClosingDateSet() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                     inventoryItem,
                     3,
@@ -233,10 +236,10 @@ class ListingTests {
 
     /**
      * Test closes date is not overridden to expiry date of inventory item when supplied to constructor.
-     * @throws Exception if field of Listing is not valid.
+     * @throws IllegalListingArgumentException when trying to create listing with invalid data.
      */
     @Test
-    void TestClosingDateSupplied() throws Exception {
+    void TestClosingDateSupplied() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 3,
@@ -246,5 +249,170 @@ class ListingTests {
                 LocalDateTime.of(2022, 1, 1, 0, 0)
         );
         Assertions.assertEquals(listing.getCloses(), LocalDateTime.of(2022, 1, 1, 0, 0));
+    }
+
+    // ********************************* MORE INFO **************************************
+
+    /**
+     * Test to see whether an IllegalListingArgumentException is thrown when trying to create a listing with
+     * the length of more info greater than the max length.
+     */
+    @Test
+    void isIllegalListingArgumentExceptionThrownWhenMoreInfoLengthGreaterThanMaxLengthTest() {
+        String string = "A";
+        String moreInfo = string.repeat(601); // max length = 600
+
+        try {
+            Listing listing = new Listing(
+                    inventoryItem,
+                    3,
+                    30.00,
+                    moreInfo,
+                    LocalDateTime.now(),
+                    LocalDateTime.of(2022, 1, 1, 0, 0)
+            );
+        } catch (IllegalListingArgumentException e) {
+            Assertions.assertEquals("Invalid more info", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether a listing is successfully created when more info contains symbols and length is
+     * equal to max length.
+     */
+    @Test
+    void isListingSuccessfullyCreatedWhenMoreInfoContainsSymbolsAndLengthEqualsMaxLength() throws IllegalListingArgumentException {
+        String string = "Willing t0 accept low3r offers !^#9p40*$"; // 40 characters x 15 = 600
+        String moreInfo = string.repeat(15); // max length = 600
+
+        Listing listing = new Listing(
+                inventoryItem,
+                3,
+                30.00,
+                moreInfo,
+                LocalDateTime.now(),
+                LocalDateTime.of(2022, 1, 1, 0, 0)
+        );
+        Assertions.assertNotNull(listing);
+        Assertions.assertEquals(moreInfo, listing.getMoreInfo());
+    }
+
+    /**
+     * Test to see whether a listing is successfully created when more info is empty.
+     */
+    @Test
+    void isListingSuccessfullyCreatedWhenMoreInfoIsEmpty() throws IllegalListingArgumentException {
+        String moreInfo = "";
+
+        Listing listing = new Listing(
+                inventoryItem,
+                3,
+                30.00,
+                moreInfo,
+                LocalDateTime.now(),
+                LocalDateTime.of(2022, 1, 1, 0, 0)
+        );
+        Assertions.assertNotNull(listing);
+        Assertions.assertEquals(moreInfo, listing.getMoreInfo());
+    }
+
+    // ********************************** QUANTITY **************************************
+
+    /**
+     * Test to see whether an IllegalListingArgumentException is thrown when trying to create a listing with
+     * quantity equal zero.
+     */
+    @Test
+    void isIllegalListingArgumentExceptionThrownWhenQuantityEqualsZero() {
+        try {
+            Listing listing = new Listing(
+                    inventoryItem,
+                    0,
+                    30.00,
+                    "more info",
+                    LocalDateTime.now(),
+                    LocalDateTime.of(2022, 1, 1, 0, 0)
+            );
+        } catch (IllegalListingArgumentException e) {
+            Assertions.assertEquals("Invalid quantity", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalListingArgumentException is thrown when trying to create a listing with
+     * quantity greater than inventory item quantity.
+     */
+    @Test
+    void isIllegalListingArgumentExceptionThrownWhenQuantityGreaterThanInventoryItemQuantity() {
+        try {
+            Listing listing = new Listing(
+                    inventoryItem,
+                    inventoryItem.getQuantity() + 1,
+                    30.00,
+                    "more info",
+                    LocalDateTime.now(),
+                    LocalDateTime.of(2022, 1, 1, 0, 0)
+            );
+        } catch (IllegalListingArgumentException e) {
+            Assertions.assertEquals("Invalid quantity", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalListingArgumentException is thrown when trying to create a listing with
+     * a quantity greater than remaining inventory item quantity due to other listings existing.
+     */
+    @Test
+    void isIllegalListingArgumentExceptionThrownWhenQuantityGreaterThanRemainingInventoryItemQuantity() throws IllegalListingArgumentException {
+        Listing anotherListing = new Listing(
+                inventoryItem,
+                3,
+                99.99,
+                "More info",
+                LocalDateTime.now(),
+                LocalDateTime.of(2022, 1,1, 0, 0)
+        );
+        inventoryItem.addListing(anotherListing);
+
+        try {
+            Listing listing = new Listing(
+                    inventoryItem,
+                    2,
+                    30.00,
+                    "more info",
+                    LocalDateTime.now(),
+                    LocalDateTime.of(2022, 1, 1, 0, 0)
+            );
+        } catch (IllegalListingArgumentException e) {
+            Assertions.assertEquals("Invalid quantity", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether a listing is successfully created when other listings exist, but inventory item quantity
+     * is not exceeded.
+     */
+    @Test
+    void isListingSuccessfullyCreatedWhenOtherListingsExist() throws IllegalListingArgumentException {
+        Listing anotherListing = new Listing(
+                inventoryItem,
+                2,
+                99.99,
+                "More info",
+                LocalDateTime.now(),
+                LocalDateTime.of(2022, 1,1, 0, 0)
+        );
+        inventoryItem.addListing(anotherListing);
+
+        Listing listing = new Listing(
+                inventoryItem,
+                2,
+                30.00,
+                "more info",
+                LocalDateTime.now(),
+                LocalDateTime.of(2022, 1, 1, 0, 0)
+        );
+        Assertions.assertNotNull(listing);
+        Assertions.assertEquals(2, listing.getQuantity());
     }
 }

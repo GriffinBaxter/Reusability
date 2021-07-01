@@ -1,8 +1,11 @@
 package org.seng302.keyword;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.seng302.exceptions.IllegalKeywordArgumentException;
 import org.seng302.model.Address;
 import org.seng302.model.*;
 import org.seng302.model.enums.Role;
@@ -17,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Keyword test class.
+ * Contains tests to check if exceptions are thrown when invalid data is supplied.
  */
 class KeywordTests {
 
@@ -30,6 +34,15 @@ class KeywordTests {
      */
     @BeforeAll
     static void before() throws Exception {
+        address = new Address(
+    private Keyword keyword;
+    private Address address;
+    private User user;
+    private MarketplaceCard card;
+    private String name;
+
+    @BeforeEach
+    void setup() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -63,6 +76,27 @@ class KeywordTests {
     }
 
     /**
+     * Test to see whether an IllegalKeywordArgumentException is thrown when trying to create a keyword with
+     * the length of name less than the min length.
+     */
+    @Test
+    void isIllegalKeywordArgumentExceptionThrownWhenNameLengthLessThanMinLengthTest() {
+        try {
+            keyword = new Keyword ("", LocalDateTime.now(), card);
+        } catch (IllegalKeywordArgumentException e) {
+            Assertions.assertEquals("Invalid name", e.getMessage());
+        }
+    }
+
+    /**
+     * Test to see whether an IllegalKeywordArgumentException is thrown when trying to create a keyword with
+     * the length of name greater than the max length.
+     */
+    @Test
+    void isIllegalKeywordArgumentExceptionThrownWhenNameLengthGreaterThanMaxLengthTest() {
+    }
+
+    /**
      * Tests that an invalid name for a keyword (greater than max length) throws an error.
      */
     @Test
@@ -72,8 +106,47 @@ class KeywordTests {
             Keyword keyword = new Keyword (name.repeat(50), LocalDateTime.now(), card);
         } catch (Exception e) {
             Assertions.assertEquals("Invalid name", e.getMessage());
+            name = "A";
+            keyword = new Keyword (name.repeat(30), LocalDateTime.now(), card);
+        } catch (IllegalKeywordArgumentException e) {
+            Assertions.assertEquals("Invalid name", e.getMessage());
         }
     }
+
+    /**
+     * Test to see whether a keyword is successfully created when keyword name is of the correct length,
+     * contains symbols.
+     */
+    @Test
+    void isKeywordSuccessfullyCreatedWhenNameOfCorrectLengthAndContainsSymbolsTest() throws IllegalKeywordArgumentException {
+        name = "Money Maker $$$'*!";
+        keyword = new Keyword(name, LocalDateTime.now(), card);
+        Assertions.assertNotNull(keyword);
+        Assertions.assertEquals(name, keyword.getName());
+    }
+
+    /**
+     * Test to see whether a keyword is successfully created when keyword name has same length of the min length of 2.
+     */
+    @Test
+    void isKeywordSuccessfullyCreatedWhenNameLengthEqualsMinLengthTest() throws IllegalKeywordArgumentException {
+        name = "Mo"; // min length = 2
+        keyword = new Keyword(name, LocalDateTime.now(), card);
+        Assertions.assertNotNull(keyword);
+        Assertions.assertEquals(name, keyword.getName());
+    }
+
+    /**
+     * Test to see whether a keyword is successfully created when keyword name has same length of the max length of 20.
+     */
+    @Test
+    void isKeywordSuccessfullyCreatedWhenNameLengthEqualsMaxLengthTest() throws IllegalKeywordArgumentException {
+        name = "Money Maker $$$'*!20"; // min length = 20
+        keyword = new Keyword(name, LocalDateTime.now(), card);
+        Assertions.assertNotNull(keyword);
+        Assertions.assertEquals(name, keyword.getName());
+    }
+
 
     /**
      * Tests that an invalid name for a keyword (less than min length) throws an error.

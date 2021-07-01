@@ -13,6 +13,7 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.exceptions.IllegalInventoryItemArgumentException;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -93,27 +94,27 @@ public class InventoryItem {
             LocalDate sellBy,
             LocalDate bestBefore,
             LocalDate expires
-    ) throws Exception {
+    ) throws IllegalInventoryItemArgumentException {
         if (product == null) {
-            throw new Exception("Invalid product");
+            throw new IllegalInventoryItemArgumentException("Invalid product");
         }
         if (productId == null || !productId.equals(product.getProductId())) {
-            throw new Exception("Invalid product or product ID");
+            throw new IllegalInventoryItemArgumentException("Invalid product or product ID");
         }
         if (quantity == null || quantity <= 0) {
-            throw new Exception("Invalid quantity, must have at least one item");
+            throw new IllegalInventoryItemArgumentException("Invalid quantity, must have at least one item");
         }
         if (pricePerItem != null && pricePerItem < 0) {
-            throw new Exception("Invalid price per item, must not be negative");
+            throw new IllegalInventoryItemArgumentException("Invalid price per item, must not be negative");
         }
         if (totalPrice != null && totalPrice < 0) {
-            throw new Exception("Invalid total price, must not be negative");
+            throw new IllegalInventoryItemArgumentException("Invalid total price, must not be negative");
         }
         if (manufactured != null && manufactured.isAfter(LocalDate.now())) {
-            throw new Exception("Invalid manufacture date");
+            throw new IllegalInventoryItemArgumentException("Invalid manufacture date");
         }
         if (expires == null || expires.isBefore(LocalDate.now())) {
-            throw new Exception("Invalid expiration date, must have expiration date and cannot add expired item");
+            throw new IllegalInventoryItemArgumentException("Invalid expiration date, must have expiration date and cannot add expired item");
         }
         this.product = product;
         this.productId = product.getProductId();
@@ -238,9 +239,9 @@ public class InventoryItem {
      * @param listing A listing which is to be removed.
      */
     public void removeListing(Listing listing) {
-        int id = listing.getId();
+        int listingId = listing.getId();
         for (int i = 0; i < listings.size(); i++){
-            if (listings.get(i).getId() == id){
+            if (listings.get(i).getId() == listingId){
                 this.listings.remove(i);
             }
         }

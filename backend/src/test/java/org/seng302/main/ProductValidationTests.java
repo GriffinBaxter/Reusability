@@ -1,8 +1,9 @@
-package org.seng302.validation;
+package org.seng302.main;
 
 
 
 import org.junit.jupiter.api.Test;
+import org.seng302.ProductValidation;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
