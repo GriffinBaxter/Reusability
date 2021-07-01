@@ -480,27 +480,18 @@ export default {
       }
 
       Api.addNewCard(newCard).then(
-
           (res) => {
             if (res.status === 201) {
-              const newCardUpdateValues = {
-                id: res.data.cardId,
-                section: this.sectionSelected,
-                title: this.title,
-                description: this.description,
-                keywords: newCard.keywords,
-                creator: this.creator,
-                created: new Date()
-              }
-              this.$emit("new-card-created", newCardUpdateValues);
+              this.$emit("new-card-created");
               this.modal.hide();
+              this.$router.go();
             }
           }
       ).catch(
           (error) => {
             if (error.response) {
               if (error.response.status === 400) {
-                this.modalError = `400: Some input was invalid `;
+                this.modalError = `Error: ` + error.response.data.message;
               } else if (error.response.status === 401) {
                 this.modalError = `401: Access token missing`;
               } else if (error.response.status === 403) {
