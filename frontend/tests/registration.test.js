@@ -1,6 +1,17 @@
 import {test, expect} from "@jest/globals"
 import reg from '../src/views/Registration'
-import { User } from '../src/Api'
+import User from '../src/configs/User'
+import Api from '../src/Api';
+import {createLocalVue, shallowMount} from "@vue/test-utils";
+import VueLogger from "vuejs-logger";
+import VueRouter from "vue-router";
+import router from '../src/router/index'
+
+jest.mock("../src/Api.js");
+
+const localVue = createLocalVue();
+localVue.use(VueLogger, {isEnabled : false});
+localVue.use(VueRouter);
 
 /**
  * Jest tests for registration.vue.
@@ -33,11 +44,11 @@ test('First name with no input', () => {
 /**
  * Test for ensuring an error message is raised when input entered into the first name field is less than 2
  * characters in length.
- * @result message raised is "Input must be between 2 and 20 characters long.".
+ * @result message raised is "Input must be between 2 and 255 characters long.".
  */
 test('First name with less than min length', () => {
     const testInputVal = 'a';
-    const expectedMessage = `Input must be between 2 and 20 characters long.`;
+    const expectedMessage = `Input must be between 2 and 255 characters long.`;
 
     expect(
         reg.methods.getErrorMessage(
@@ -53,13 +64,13 @@ test('First name with less than min length', () => {
 
 
 /**
- * Test for ensuring an error message is raised when input entered into the first name field is more than 20
+ * Test for ensuring an error message is raised when input entered into the first name field is more than 255
  * characters in length.
- * @result message raised is "Input must be between 2 and 20 characters long.".
+ * @result message raised is "Input must be between 2 and 255 characters long.".
  */
 test('First name with more than max length', () => {
-    const testInputVal = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-    const expectedMessage = `Input must be between 2 and 20 characters long.`;
+    const testInputVal = "a" * 260;
+    const expectedMessage = `Input must be between 2 and 255 characters long.`;
 
     expect(
         reg.methods.getErrorMessage(
@@ -220,6 +231,27 @@ test('First name with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the first name field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('First name with correct name syntax with diacritics', () => {
+    const testInputVal = "Fábíáñ";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.firstName.name,
+            testInputVal,
+            User.config.firstName.minLength,
+            User.config.firstName.maxLength,
+            User.config.firstName.regexMessage,
+            User.config.firstName.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
 
 // ------------------------------------------------ Middle Name Tests --------------------------------------------------
 
@@ -266,13 +298,13 @@ test('Middle name with less than min length', () => {
 })
 
 /**
- * Test for ensuring an error message is raised when input entered into the middle name field is more than 20
+ * Test for ensuring an error message is raised when input entered into the middle name field is more than 255
  * characters in length.
- * @result message raised is "Input must be between 0 and 20 characters long.".
+ * @result message raised is "Input must be between 0 and 255 characters long.".
  */
 test('Middle name with more than max length', () => {
-    const testInputVal = "kkkkkkkkkkkkkkkkkkkkkkkkkk";
-    const expectedMessage = `Input must be between 0 and 20 characters long.`;
+    const testInputVal = "k" * 260;
+    const expectedMessage = `Input must be between 0 and 255 characters long.`;
 
     expect(
         reg.methods.getErrorMessage(
@@ -437,6 +469,28 @@ test('Middle name with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the middle name field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Middle name with correct name syntax with diacritics', () => {
+    const testInputVal = "Fábíáñ";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.middleName.name,
+            testInputVal,
+            User.config.middleName.minLength,
+            User.config.middleName.maxLength,
+            User.config.middleName.regexMessage,
+            User.config.middleName.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+
 // ------------------------------------------------- Last Name Tests ---------------------------------------------------
 
 /**
@@ -462,11 +516,11 @@ test('Last name with no input', () => {
 /**
  * Test for ensuring an error message is raised when input entered into the last name field is less than 2
  * characters in length.
- * @result message raised is "Input must be between 0 and 20 characters long.".
+ * @result message raised is "Input must be between 0 and 255 characters long.".
  */
 test('Last name with less than min length', () => {
     const testInputVal = "J";
-    const expectedMessage = `Input must be between 2 and 20 characters long.`;
+    const expectedMessage = `Input must be between 2 and 255 characters long.`;
 
     expect(
         reg.methods.getErrorMessage(
@@ -481,13 +535,13 @@ test('Last name with less than min length', () => {
 })
 
 /**
- * Test for ensuring an error message is raised when input entered into the last name field is more than 20
+ * Test for ensuring an error message is raised when input entered into the last name field is more than 255
  * characters in length.
- * @result message raised is "Input must be between 0 and 20 characters long.".
+ * @result message raised is "Input must be between 0 and 255 characters long.".
  */
 test('Last name with more than max length', () => {
-    const testInputVal = "Alessandro-Richardson";
-    const expectedMessage = `Input must be between 2 and 20 characters long.`;
+    const testInputVal = "Alessandro-Richardson" * 20;
+    const expectedMessage = `Input must be between 2 and 255 characters long.`;
 
     expect(
         reg.methods.getErrorMessage(
@@ -648,6 +702,28 @@ test('Last name with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the last name field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Last name with correct name syntax with diacritics', () => {
+    const testInputVal = "Fábíáñ";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.lastName.name,
+            testInputVal,
+            User.config.lastName.minLength,
+            User.config.lastName.maxLength,
+            User.config.lastName.regexMessage,
+            User.config.lastName.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+
 // ------------------------------------------------- Nickname Tests ----------------------------------------------------
 
 /**
@@ -692,14 +768,14 @@ test('Nickname with less than min length', () => {
 })
 
 /**
- * Test for ensuring an error message is raised when input entered into the nickname field is more than 20
+ * Test for ensuring an error message is raised when input entered into the nickname field is more than 255
  * characters in length.
- * @result message raised is "Input must be between 0 and 20 characters long.".
+ * @result message raised is "Input must be between 0 and 255 characters long.".
  */
 
 test('Nickname with more than max length', () => {
-    const testInputVal = "TheSupercalafragalisticexpialadoshusJohnny";
-    const expectedMessage = `Input must be between 0 and 20 characters long.`;
+    const testInputVal = "TheSupercalafragalisticexpialadoshusJohnny" * 10;
+    const expectedMessage = `Input must be between 0 and 255 characters long.`;
 
     expect(
         reg.methods.getErrorMessage(
@@ -862,6 +938,27 @@ test('Nickname with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the nickname field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Nickname with correct name syntax with diacritics', () => {
+    const testInputVal = "Fábíáñ";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.nickname.name,
+            testInputVal,
+            User.config.nickname.minLength,
+            User.config.nickname.maxLength,
+            User.config.nickname.regexMessage,
+            User.config.nickname.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
 
 // --------------------------------------------------- Bio Tests -------------------------------------------------------
 
@@ -982,11 +1079,11 @@ test('Email with input that is too short', () => {
 /**
  * Test for ensuring an error message is raised when input is entered into the home address field and it is more than
  * the expected length of 30 characters.
- * @result message raised is "Input must be between 3 and 30 characters long.".
+ * @result message raised is "Input must be between 5 and 30 characters long.".
  */
 test('Email with input that is too long', () => {
     const testInputVal = "thisisasuperlongemail@example.com";
-    const expectedMessage = `Input must be between 3 and 30 characters long.`;
+    const expectedMessage = `Input must be between 5 and 30 characters long.`;
 
     expect(
         reg.methods.getErrorMessage(
@@ -1166,7 +1263,7 @@ test('Home address with input that contains invalid symbols', () => {
 })
 
 /**
- * Test for ensuring an error message is raised when input is entered into the home address field and contains the
+ * Test for ensuring no error message is raised when input is entered into the home address field and contains the
  * sample data's home address.
  * @result message raised is the empty string.
  */
@@ -1185,6 +1282,27 @@ test('Home address with input that contains the sample data\'s home address', ()
         )
     ).toBe(expectedMessage);
 })
+
+/**
+ * Test for ensuring no error message is raised when input is entered into the home address field and contains diacritics.
+ * @result message raised is the empty string.
+ */
+test('Home address with input that contains diacritics', () => {
+    const testInputVal = "4 Fábíáñ Way";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            User.config.homeAddress.name,
+            testInputVal,
+            User.config.homeAddress.minLength,
+            User.config.homeAddress.maxLength,
+            User.config.homeAddress.regexMessage,
+            User.config.homeAddress.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
 
 // ------------------------------------------------- Password Tests ----------------------------------------------------
 
@@ -1526,7 +1644,7 @@ test('Test for boundary date', () => {
  * @result true.
  */
 test('Test for random early allowable date', () => {
-    const testInput = reg.methods.getMaxDateOfBirth().slice(1, -1)
+    const testInput = reg.methods.getMaxDateOfBirth().substring(1)
     const expectedValue = true
 
     expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue)
@@ -1559,88 +1677,139 @@ test('Future birthday is disallowed', () => {
     expect(reg.methods.isValidDateOfBirth(futureDate)).toBe(expectedValue)
 })
 
-// ************************************************ Street Address Tests ***********************************************
+// ************************************************ Street Number Tests ************************************************
 
 /**
- * Testing that an error message is returned when the inputted street address is greater than the maximum length length
+ * Testing that an error message is returned when the inputted street number is greater than the maximum length length
  * of 255 characters in length.
- *  @result message raised is "Input must be between 1 and 255 characters long.".
+ *  @result message raised is "Input must be between 0 and 255 characters long.".
  */
-test( 'Test for the street address for the max length', () => {
+test( 'Test for the street number for the max length', () => {
     const inputValue = "2555"*255
-    const expectedValue = `Input must be between 1 and 255 characters long.`;
+    const expectedValue = `Input must be between 0 and 255 characters long.`;
 
     expect(reg.methods.getErrorMessage(
-        User.config.streetAddress.name,
+        User.config.streetNumber.name,
         inputValue,
-        User.config.streetAddress.minLength,
-        User.config.streetAddress.maxLength
+        User.config.streetNumber.minLength,
+        User.config.streetNumber.maxLength
     )).toBe(expectedValue)
 })
 
 /**
- * Testing that an error message is returned when we submit the empty string into the street address. This is also
- * a test for the minimum length
- * @result messaged raised is "Please enter input".
+ * Testing that no error message is returned when we submit the empty string into the street number. This is also
+ * a test for the minimum length.
+ * @result no error message is raised
  */
-test( 'Test for the street address for the minimum length and empty string', () => {
+test( 'Test for the street number for the minimum length and empty string', () => {
     const inputValue = ""
-    const expectedValue = `Please enter input`;
+    const expectedValue = "";
 
     expect(reg.methods.getErrorMessage(
-        User.config.streetAddress.name,
+        User.config.streetNumber.name,
         inputValue,
-        User.config.streetAddress.minLength,
-        User.config.streetAddress.maxLength
+        User.config.streetNumber.minLength,
+        User.config.streetNumber.maxLength
     )).toBe(expectedValue)
 })
 
 /**
- * Testing for valid input of a street address.
+ * Testing for valid input of a street number.
  * @result No messages should be raised.
  */
-test( 'Testing for a valid street address', () => {
-    const inputValue = "Some Street address"
+test( 'Testing for a valid street number', () => {
+    const inputValue = "23"
     const expectedValue = ""
 
     expect(reg.methods.getErrorMessage(
-        User.config.streetAddress.name,
+        User.config.streetNumber.name,
         inputValue,
-        User.config.streetAddress.minLength,
-        User.config.streetAddress.maxLength
+        User.config.streetNumber.minLength,
+        User.config.streetNumber.maxLength
     )).toBe(expectedValue)
 })
 
 /**
- * Testing for street address with numbers
- * @result No messages should be raised
- */
-test( 'Testing for street address with numbers', () => {
-    const inputValue = "6 Seven Kings"
-    const expectedValue = ""
-
-    expect(reg.methods.getErrorMessage(
-        User.config.streetAddress.name,
-        inputValue,
-        User.config.streetAddress.minLength,
-        User.config.streetAddress.maxLength
-    )).toBe(expectedValue)
-})
-
-
-/**
- * Testing for street address with symbols.
+ * Testing for street number with symbols.
  * @result No messages should be raised.
  */
-test( 'Testing for the street address with symbols', () => {
-    const inputValue = "!@#!@ 2 Street"
+test( 'Testing for the street number with symbols', () => {
+    const inputValue = "!@#!@ 2"
     const expectedValue = ""
 
     expect(reg.methods.getErrorMessage(
-        User.config.streetAddress.name,
+        User.config.streetNumber.name,
         inputValue,
-        User.config.streetAddress.minLength,
-        User.config.streetAddress.maxLength
+        User.config.streetNumber.minLength,
+        User.config.streetNumber.maxLength
+    )).toBe(expectedValue)
+})
+
+// ************************************************** Street Name Tests ************************************************
+
+/**
+ * Testing that an error message is returned when the inputted street name is greater than the maximum length
+ * of 255 characters in length.
+ *  @result message raised is "Input must be between 0 and 255 characters long.".
+ */
+test( 'Test for the street name for the max length', () => {
+    const inputValue = "2555"*255
+    const expectedValue = `Input must be between 0 and 255 characters long.`;
+
+    expect(reg.methods.getErrorMessage(
+        User.config.streetName.name,
+        inputValue,
+        User.config.streetName.minLength,
+        User.config.streetName.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing that no error message is returned when we submit the empty string into the street name. This is also
+ * a test for the minimum length.
+ * @result no error message is raised
+ */
+test( 'Test for the street name for the minimum length and empty string', () => {
+    const inputValue = ""
+    const expectedValue = "";
+
+    expect(reg.methods.getErrorMessage(
+        User.config.streetName.name,
+        inputValue,
+        User.config.streetName.minLength,
+        User.config.streetName.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for valid input of a street name.
+ * @result No messages should be raised.
+ */
+test( 'Testing for a valid street name', () => {
+    const inputValue = "West Street"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        User.config.streetName.name,
+        inputValue,
+        User.config.streetName.minLength,
+        User.config.streetName.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for street name with symbols.
+ * @result No messages should be raised.
+ */
+test( 'Testing for the street name with symbols', () => {
+    const inputValue = "!@#!@ Street"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        User.config.streetName.name,
+        inputValue,
+        User.config.streetName.minLength,
+        User.config.streetName.maxLength
     )).toBe(expectedValue)
 })
 
@@ -1648,11 +1817,11 @@ test( 'Testing for the street address with symbols', () => {
 
 /**
  * Testing that an error message is returned when the city is greater than the allowed maximum length of 255 characters.
- *  @result message raised is 'Input must be between 1 and 255 characters long'.
+ *  @result message raised is 'Input must be between 0 and 255 characters long'.
  */
 test( 'Test for the city for the max length', () => {
     const inputValue = "2555"*255
-    const expectedValue = `Input must be between 1 and 255 characters long.`;
+    const expectedValue = `Input must be between 0 and 255 characters long.`;
 
     expect(reg.methods.getErrorMessage(
         User.config.city.name,
@@ -1663,13 +1832,13 @@ test( 'Test for the city for the max length', () => {
 })
 
 /**
- * Testing that an error message is returned when we submit the empty string. This is also a test for the minimum length
+ * Testing that no error message is returned when we submit the empty string. This is also a test for the minimum length
  * of the city, where no input is allowed i.e. length of 0.
- * @result messaged raised is "Please enter input".
+ * @result no message is raised.
  */
 test( 'Test for the city for the minimum length and empty string', () => {
     const inputValue = ""
-    const expectedValue = `Please enter input`;
+    const expectedValue = "";
 
     expect(reg.methods.getErrorMessage(
         User.config.city.name,
@@ -1732,11 +1901,11 @@ test( 'Testing for the city with symbols', () => {
 
 /**
  * Testing that an error message is returned when the region is greater than the max length of 255 characters.
- *  @result message raised is "Input must be between 1 and 255 characters long".
+ *  @result message raised is "Input must be between 0 and 255 characters long".
  */
 test( 'Test for the region for the max length', () => {
     const inputValue = "2555"*255
-    const expectedValue = `Input must be between 1 and 255 characters long.`;
+    const expectedValue = `Input must be between 0 and 255 characters long.`;
 
     expect(reg.methods.getErrorMessage(
         User.config.region.name,
@@ -1747,13 +1916,13 @@ test( 'Test for the region for the max length', () => {
 })
 
 /**
- * Testing that an error message is returned when we submit the empty string. This is also a test for the minimum length
+ * Testing that no error message is returned when we submit the empty string. This is also a test for the minimum length
  * where an empty string is allowed, i.e. length of 0.
- * @result messaged raised is "Please enter input".
+ * @result no message is raised
  */
 test( 'Test for the region for the minimum length and empty string', () => {
     const inputValue = ""
-    const expectedValue = `Please enter input`;
+    const expectedValue = "";
 
     expect(reg.methods.getErrorMessage(
         User.config.region.name,
@@ -1832,7 +2001,7 @@ test( 'Test for the country for the max length', () => {
 
 /**
  * Testing that an error message is returned when we submit the empty string for the country. This is also a test for
- * the minimum length of the country, where an empty string is allowed i.e. 0 length.
+ * the minimum length of the country, where an empty string is not allowed i.e. 0 length.
  * @result messaged raised is Please enter input.
  */
 test( 'Test for the country for the minimum length and empty string', () => {
@@ -1895,7 +2064,76 @@ test( 'Testing for the country with symbols', () => {
     )).toBe(expectedValue)
 })
 
+// ********************************************** Postcode Tests *******************************************************
+
+/**
+ * Testing that an error message is returned when the postcode has a length greater than the maximum length of 255
+ * characters.
+ *  @result message raised is Input must be between 0 and 255.
+ */
+test( 'Test for the postcode for the max length', () => {
+    const inputValue = "2555"*255
+    const expectedValue = `Input must be between 0 and 255 characters long.`;
+
+    expect(reg.methods.getErrorMessage(
+        User.config.postcode.name,
+        inputValue,
+        User.config.postcode.minLength,
+        User.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing that no error message is returned when we submit the empty string. This is also a test for the minimum length
+ * which allows for the empty string i.e. length of 0.
+ * @result messaged raised is "Please enter input".
+ */
+test( 'Test for the postcode for the minimum length and empty string', () => {
+    const inputValue = ""
+    const expectedValue = '';
+
+    expect(reg.methods.getErrorMessage(
+        User.config.postcode.name,
+        inputValue,
+        User.config.postcode.minLength,
+        User.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for valid input of postcode.
+ * @result No messages should be raised.
+ */
+test( 'Testing for a valid suburb', () => {
+    const inputValue = "19042"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        User.config.postcode.name,
+        inputValue,
+        User.config.postcode.minLength,
+        User.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
+/**
+ * Testing for postcode with symbols.
+ * @result No messages should be raised.
+ */
+test( 'Testing for the postcode with symbols', () => {
+    const inputValue = "!@#!@ postcode"
+    const expectedValue = ""
+
+    expect(reg.methods.getErrorMessage(
+        User.config.postcode.name,
+        inputValue,
+        User.config.postcode.minLength,
+        User.config.postcode.maxLength
+    )).toBe(expectedValue)
+})
+
 // ************************************************ Suburb Tests *******************************************************
+// Waiting for confirmation from PO
 
 /**
  * Testing that an error message is returned when the suburb has a length greater than the maximum length of 255
@@ -1980,6 +2218,7 @@ test( 'Testing for the suburb with symbols', () => {
 })
 
 // ************************************************ between() Tests ****************************************************
+
 /**
  * Test for checking the functionality of between() when value 1 < value 2 < value 3.
  * @result true.
@@ -2035,4 +2274,53 @@ test('Test if value 1 > value 2 = value 3 gives false', () => {
 
     expect(reg.methods.between(testVal, testMin, testMax)
     ).toBe(expectedMessage);
+})
+
+// ************************************************ Testing API call ***************************************************
+
+describe('Testing the registration',  () => {
+
+    test('Test the registration API', async () => {
+        const validRegistrationPayload = {
+            "firstName": "John",
+            "lastName": "Smith",
+            "middleName": "Hector",
+            "nickname": "Jonny",
+            "bio": "Likes long walks on the beach",
+            "email": "johnsmith99@gmail.com",
+            "dateOfBirth": "1999-04-27",
+            "phoneNumber": "+64 3 555 0129",
+            "homeAddress": {
+                "streetNumber": "3/24",
+                "streetName": "Ilam Road",
+                "city": "Christchurch",
+                "region": "Canterbury",
+                "country": "New Zealand",
+                "postcode": "90210"
+            },
+            "password": "1337-H%nt3r2"
+        };
+
+        const data = {
+            status: 201,
+            data: {
+                userId: 1
+            }
+        }
+
+        Api.addNewUser.mockImplementation(() => Promise.resolve(data));
+
+        const returnData = await Api.addNewUser(validRegistrationPayload)
+
+        expect(returnData).toBe(data)
+    })
+
+    test("Successful login and registration after clicking registration button", async () => {
+        const wrapper = await shallowMount(reg, {localVue, router});
+        const registerButton = wrapper.find("#register-button");
+
+        await registerButton.trigger("click");
+
+        expect(wrapper.vm.$route.name).toStrictEqual("Login");
+    })
 })

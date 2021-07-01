@@ -33,175 +33,234 @@ import axios from 'axios'
 const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
 
 const instance = axios.create({
-  baseURL: SERVER_URL,
-  timeout: 3000
+    baseURL: SERVER_URL,
+    timeout: 3000
 });
 
-export class User{
 
-  // This is a config for the user requirement details
-  static config = {
-    firstName: {
-      name: "First name",
-      minLength: 2,
-      maxLength: 20,
-      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-      regex: /^[a-zA-Z '-]+$/
-    },
-    middleName: {
-      name: "Middle name",
-      minLength: 0,
-      maxLength: 20,
-      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-      regex: /^[a-zA-Z '-]*$/
-    },
-    lastName: {
-      name: "Last name",
-      minLength: 2,
-      maxLength: 20,
-      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-      regex: /^[a-zA-Z '-]+$/
-    },
-    nickname: {
-      name: "Nickname",
-      minLength: 0,
-      maxLength: 20,
-      regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-      regex: /^[a-zA-Z '-]*$/
-    },
-    bio: {
-      name: "Bio",
-      minLength: 0,
-      maxLength: 600
-    },
-    email: {
-      name: "Email",
-      minLength: 3,
-      maxLength: 30,
-      regex: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-      regexMessage: "Invalid email. Expected format is example123@gmail.com."
+export class InventoryItem {
 
-    },
-    dateOfBirth: {
-      name: "Date of birth",
-      minAgeMs: 13 * 365 * 24 * 60 * 60 * 1000
-    },
+    // This is a config for the Inventory Item requirement details
+    static config = {
+        productId: {
+            name: "Product ID",
+            minLength: 3,
+            maxLength: 15,
+            regex: /^[A-Z0-9-]+$/,
+            regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
+        },
+        quantity: {
+            name: "Quantity",
+            minLength: 1,
+            maxLength: 12,
+            regex: /^[0-9]+$/,
+            regexMessage: "Must only contain numbers",
+        },
+        pricePerItem: {
+            name: "Price Per Item",
+            minLength: 0,
+            maxLength: 16,
+            regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
+            regexMessage: "Must be a positive double precision floating point number e.g 1.00"
+        },
+        totalPrice: {
+            name: "Total Price",
+            minLength: 0,
+            maxLength: 16,
+            regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
+            regexMessage: "Must be a positive double precision floating point number e.g 1.00"
+        },
+        manufactured: {
+            name: "manufactured"
+        },
+        sellBy: {
+            name: "Sell By"
+        },
+        bestBefore: {
+            name: "Best Before"
+        },
+        expires: {
+            name: "Expires",
+        },
+    };
 
-    phoneNumber: {
-      name: "Phone number",
-      minLength: 0,
-      maxLength: 15,
-      regex: /^[+0-9 ]*$/,
-      regexMessage: "Invalid phone number. Must only contain numbers, +, and spaces."
-    },
-    homeAddress: {
-      name: "Home address",
-      minLength: 0,
-      maxLength: 255,
-      regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
-      regexMessage: "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$",
+    constructor({productId, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires}) {
+        this.data = {
+            productId,
+            quantity,
+            pricePerItem,
+            totalPrice,
+            manufactured,
+            sellBy,
+            bestBefore,
+            expires
+        }
 
-    },
-
-    streetAddress: {
-      name: "Street address",
-      minLength: 1,
-      maxLength: 255
-    },
-
-    city: {
-      name: "City",
-      minLength: 1,
-      maxLength: 255
-    },
-
-    suburb: {
-      name: "Suburb",
-      minLength: 0,
-      maxLength: 255
-    },
-
-    region: {
-      name: "Region",
-      minLength: 1,
-      maxLength: 255
-    },
-
-    country: {
-      name: "Country",
-      minLength: 1,
-      maxLength: 255
-    },
-
-    password: {
-      name: "Password",
-      minLength: 8,
-      maxLength: 30,
-      regexStrong: new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,30})"),
-      regexStrongMessage: "Invalid password format",
-      regexContainLowerCase: /^[\s\S]*[a-z][\s\S]*$/,
-      regexContainUpperCase: /^[\s\S]*[A-Z][\s\S]*$/,
-      regexContainNumber: /^[\s\S]*[0-9][\s\S]*$/,
-      regexContainLength: /^[\s\S]{8,}$/,
-      regexContainSymbol: /^[\s\S]*[!@#$%^&*][\s\S]*$/
-
-      // Regex resource: https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
     }
-  };
-
-  constructor({firstName, lastName, middleName, nickname, bio, email, dateOfBirth, phoneNumber, homeAddress, password}) {
-    this.data = {
-      firstName,
-      lastName,
-      middleName,
-      nickname,
-      bio,
-      email,
-      dateOfBirth,
-      phoneNumber,
-      homeAddress,
-      password
-    }
-
-  }
 
 }
 
 export default {
 
-  // Sends a post request to the backend with a new user object to store
-  addNewUser: (user) => instance.post('/users', {...user.data}, {'headers': {"Access-Control-Allow-Origin": "*"}}),
+    // Sends a post request to the backend with a new user object to store
+    addNewUser: (user) => instance.post('/users', {
+        ...user.data
+    }, {
+        withCredentials: true
+    }),
 
-  // Sends a post request to the backend with the user's login details
-  signIn: (email, password) => instance.post('login', {email, password}),
+    // Sends a post request to the backend with the user's login details
+    signIn: (email, password) => instance.post('login', {email, password}, {
+        withCredentials: true
+    }),
 
-  // Sends a get request to the backend asking for a the given user's details
-  getUser: (userID) => {
-    // Now sends cookies for backend to check
-    return instance.get(`users/${userID}`, {
-      withCredentials: true
-    })
-  },
+    // Sends a post request to the backend to logout the user
+    signOut: () => instance.post('/logout', {}, {
+        withCredentials: true
+    }),
 
-  searchUsers: (query) => {
-    return instance.get(`/users/search?searchQuery=${query}`, {
-      withCredentials: true
-    })
-  }
+    // Sends a get request to the backend asking for a the given user's details
+    getUser: (userID) => {
+        // Now sends cookies for backend to check
+        return instance.get(`users/${userID}`, {
+            withCredentials: true
+        })
+    },
 
-  // Usage examples from original file:
-  //
-  // // (C)reate
-  // createNew: (firstName, lastName) => instance.post('students', {firstName, lastName}),
-  // // (R)ead
-  // getAll: () => instance.get('students', {
-  //   transformResponse: [function (data) {
-  //     return data? JSON.parse(data)._embedded.students : data;
-  //   }]
-  // }),
-  // // (U)pdate
-  // updateForId: (id, firstName, lastName) => instance.put('students/'+id, {firstName, lastName}),
-  // // (D)elete
-  // removeForId: (id) => instance.delete('students/'+id)
+    searchUsers: (query, orderBy, page) => {
+        return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}`, {
+            withCredentials: true
+        })
+    },
+
+    // Sends a post request to the backend with a new business object to store
+    addNewBusiness: (business) => instance.post('/businesses', {
+        ...business.data
+    }, {
+        withCredentials: true
+    }),
+
+    sortProducts: (businessID, sortBy, page) => {
+        return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`, {
+            withCredentials: true
+        })
+    },
+
+    sortInventoryItems: (id, sortBy, page) => {
+        return instance.get(`/businesses/${id}/inventory?orderBy=${sortBy}&page=${page}`, {
+            withCredentials: true
+        })
+    },
+
+    // The API spec states this should be /users/{id}/makeadmin. But we decided to implement it as
+    // /users/{id}/makeAdmin for readability purposes.
+    makeAdmin: (userId) => {
+        return instance.put(`/users/${userId}/makeAdmin`, {}, {
+            withCredentials: true
+        })
+    },
+
+    // The API spec states this should be /users/{id}/revokeadmin. But we decided to implement it as
+    // /users/{id}/revokeAdmin for readability purposes.
+    revokeAdmin: (userId) => {
+        return instance.put(`/users/${userId}/revokeAdmin`, {}, {
+            withCredentials: true
+        })
+    },
+
+    getBusiness: (businessID) => {
+        return instance.get(`/businesses/${businessID}`, {
+            withCredentials: true
+        })
+    },
+
+    makeAdministrator: (businessesId, userId) => {
+        return instance.put(`/businesses/${businessesId}/makeAdministrator`, {
+            userId
+        }, {
+            withCredentials: true
+        })
+    },
+
+    removeAdministrator: (businessesId, userId) => {
+        return instance.put(`/businesses/${businessesId}/removeAdministrator`, {
+            userId
+        }, {
+            withCredentials: true
+        })
+    },
+    // Sends a PUT request to modify a product from some given business ID
+    modifyProduct: (productId, businessId, newProduct) => {
+        return instance.put(`/businesses/${businessId}/products/${productId}`, {
+            ...newProduct.data
+        }, {
+            withCredentials: true
+        })
+    },
+    // Sends a post request to the backend with a new product object to store
+    addNewProduct: (businessID, product) => {
+        return instance.post('/businesses/' + businessID + '/products', {
+            ...product.data
+        }, {
+            withCredentials: true})
+    },
+
+    sortListings: (businessId, sortBy, page) => {
+        return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
+            withCredentials: true,
+        })
+    },
+
+    addNewInventoryItem: (id, inventoryItem) => {
+        return instance.post(`/businesses/${id}/inventory/`, {
+            ...inventoryItem.data
+        }, {
+            withCredentials: true
+        })
+    },
+
+    addNewBusinessListing: (businessId, listing) => {
+        return instance.post(`/businesses/${businessId}/listings`, {
+            ...listing.data
+        }, {
+            withCredentials: true
+        })
+    },
+
+    getEveryInventoryItem: (businessID) => {
+        return instance.get(`/businesses/${businessID}/inventoryAll`, {
+            withCredentials: true
+        })
+    },
+
+    getEveryProduct: (businessID) => {
+        return instance.get(`/businesses/${businessID}/productAll`, {
+            withCredentials: true
+        })
+    },
+      modifyInventoryItem: (inventoryItemId, businessId, newInventoryItem) => {
+          return instance.put(`/businesses/${businessId}/inventory/${inventoryItemId}`, {...newInventoryItem.data}, {
+              withCredentials: true
+          })
+      },
+
+    getDetailForACard: (id) => {
+        return instance.get(`/cards/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    getAllCards: (section, sortBy, page) => {
+        return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}`, {
+            withCredentials: true
+        })
+    },
+
+    /** Creates a new card given the newCard object. */
+    addNewCard: (newCard) => {
+        return instance.post(`/cards`, newCard,{
+            withCredentials: true
+        })
+    }
 
 }

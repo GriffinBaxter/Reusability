@@ -1,4 +1,4 @@
-# SENG 302 Team 400 Project
+# SENG 302 Team 400 Project - Reusability: Share & Save
 
 Project uses `gradle`, `npm`, `Spring Boot`, `Vue.js` and `Gitlab CI`.
 
@@ -18,6 +18,7 @@ A backend sub-project (business logic and persistence server):
 ## How to run
 
 The following is assuming you already cloned the repository.
+
 ### Frontend / GUI
 
     $ cd frontend
@@ -26,27 +27,64 @@ The following is assuming you already cloned the repository.
 
 Running on: http://localhost:9500/ by default
 
-Note that due to CORS policy and sameSite cookie policy, you will need to disable some security measures.
-For example this can be achieved by doing the following for Chrome: 
-- Create a shortcut to Chrome 
-- In the properties add '--disable-web-security --user-data-dir="C:/ChromeDevSession"' after everything in the target property field.
+### Backend / server (using an in-memory H2 database)
 
-### Backend / server
+For running locally using an in-memory H2 database, the following commands should be run:
 
     cd backend
     ./gradlew bootRun
 
 Running on: http://localhost:9499/ by default
 
+To access the in-memory H2 database, route to http://localhost:9499/h2 in the browser.
+
+Use the Setting Name of `Generic H2 (Embedded)`.
+
+The driver class should be set to `org.h2.Driver`, JDBC URL should be `jdbc:h2:mem:testdb`, the username should be set to `sa` and there is no password.
+
+### Backend / server (using a MariaDB database)
+
+For running using a MariaDB database, the following environment variables are **required** to be set:
+* DB_URL
+* DB_USERNAME
+* DB_PASSWORD
+* DGAA_EMAIL
+* DGAA_PASSWORD
+
+To run it on port 9499, the following commands should be run:
+
+    cd backend
+    ./gradlew bootRun -Dspring.profiles.active=mariadb
+
+Running on: http://localhost:9499/ by default
+
+To run it on port 8999 (as it is in production), the following commands should be run:
+
+    cd backend
+    ./gradlew bootRun -Dspring.profiles.active=production
+
+Running on: http://localhost:8999/ by default
+
 The backend can be tested by using the examples from the [API specification](https://eng-git.canterbury.ac.nz/seng302-2021/seng302-api-spec-2021) in the [Swagger Editor](https://editor.swagger.io/).
 
-## Todo (S2)
+## Demo User Accounts
 
-- Update team name into `build.gradle` and `package.json`
-- Update this README title
-- Update this README contributors
-- Set up Gitlab CI server (refer to the student guide on learn)
-- Decide on a LICENSE
+#### Standard User with business
+- Email: everblanxart@gmail.com
+- Password: Password123!
+
+#### Another Standard User with business
+- Email: emailUSER@email.com
+- Password: Password123!
+
+#### Standard User without business
+- Email: seth.murphy@example.com
+- Password: Password123!
+
+#### Admin
+- Email: DGAA_EMAIL (environment variable)
+- Password: DGAA_PASSWORD (environment variable)
+
 
 ## Contributors
 

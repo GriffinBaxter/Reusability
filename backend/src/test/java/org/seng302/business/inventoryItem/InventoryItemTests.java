@@ -2,13 +2,19 @@ package org.seng302.business.inventoryItem;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.seng302.business.Business;
-import org.seng302.business.BusinessType;
-import org.seng302.business.product.Product;
+import org.seng302.exceptions.*;
+import org.seng302.model.Address;
+import org.seng302.model.Business;
+import org.seng302.model.enums.BusinessType;
+import org.seng302.model.Product;
+import org.seng302.model.InventoryItem;
+import org.seng302.model.enums.Role;
+import org.seng302.model.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -16,20 +22,51 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * InventoryItem test class
  */
-public class InventoryItemTests {
+class InventoryItemTests {
+
+    private Address address;
+
+    private User user;
 
     private Business business;
 
     private Product product;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws IllegalAddressArgumentException, IllegalUserArgumentException,
+            IllegalBusinessArgumentException, IllegalProductArgumentException {
+        address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+        user = new User(
+                "first",
+                "last",
+                "middle",
+                "nick",
+                "bio",
+                "test@example.com",
+                LocalDate.of(2021, Month.JANUARY, 1).minusYears(13),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+
         business = new Business(
+                user.getId(),
                 "name",
                 "description",
-                "92 River Lum Road, Lumbridge, Misthalin",
+                address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                user
         );
         business.setId(1);
 
@@ -38,6 +75,7 @@ public class InventoryItemTests {
                 business,
                 "Beans",
                 "Description",
+                "Manufacturer",
                 20.00,
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
@@ -47,10 +85,10 @@ public class InventoryItemTests {
     /**
      * Tests that an inventory item can be created given valid parameters.
      *
-     * @throws Exception Exception error
+     * @throws IllegalInventoryItemArgumentException Exception error
      */
     @Test
-    public void TestValidInventoryItem() throws Exception {
+    void TestValidInventoryItem() throws IllegalInventoryItemArgumentException {
         InventoryItem inventoryItem = new InventoryItem(
                 product,
                 "PROD",
@@ -105,24 +143,24 @@ public class InventoryItemTests {
      * Tests that the optional fields (pricePerItem, totalPrice, manufatured, sellBy, and bestBefore) are set to null
      * when empty, and that this doesn't prevent a inventory item from being created.
      *
-     * @throws Exception Exception error
+     * @throws IllegalInventoryItemArgumentException Exception error
      */
     @Test
-    public void TestInventoryItemOptionalFields() throws Exception {
+    void TestInventoryItemOptionalFields() throws IllegalInventoryItemArgumentException {
         InventoryItem inventoryItem = new InventoryItem(
                 product,
                 "PROD",
                 2,
-                0.00,
-                0.00,
+                null,
+                null,
                 null,
                 null,
                 null,
                 LocalDate.now().plusDays(1)
         );
 
-        assertEquals(0, inventoryItem.getPricePerItem());
-        assertEquals(0, inventoryItem.getTotalPrice());
+        assertNull(inventoryItem.getPricePerItem());
+        assertNull(inventoryItem.getTotalPrice());
         assertNull(inventoryItem.getManufactured());
         assertNull(inventoryItem.getSellBy());
         assertNull(inventoryItem.getBestBefore());
@@ -132,7 +170,7 @@ public class InventoryItemTests {
      * Tests that an invalid (null) product object throws an error.
      */
     @Test
-    public void TestInvalidProduct() {
+    void TestInvalidProduct() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     null,
@@ -145,7 +183,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusDays(1)
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid product", e.getMessage());
         }
     }
@@ -154,7 +192,7 @@ public class InventoryItemTests {
      * Tests that an invalid product ID (doesn't match the one on the product) throws an error.
      */
     @Test
-    public void TestInvalidProductId() {
+    void TestInvalidProductId() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -167,7 +205,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusDays(1)
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid product or product ID", e.getMessage());
         }
     }
@@ -176,7 +214,7 @@ public class InventoryItemTests {
      * Tests that an invalid quantity (less than or equal to 0) throws an error.
      */
     @Test
-    public void TestInvalidQuantity() {
+    void TestInvalidQuantity() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -189,7 +227,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusDays(1)
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid quantity, must have at least one item", e.getMessage());
         }
 
@@ -205,7 +243,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusDays(1)
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid quantity, must have at least one item", e.getMessage());
         }
     }
@@ -214,7 +252,7 @@ public class InventoryItemTests {
      * Tests that an invalid price per item (less than 0) throws an error.
      */
     @Test
-    public void TestInvalidPricePerItem() {
+    void TestInvalidPricePerItem() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -227,7 +265,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusDays(1)
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid price per item, must not be negative", e.getMessage());
         }
     }
@@ -236,7 +274,7 @@ public class InventoryItemTests {
      * Tests that an invalid total price (less than 0) throws an error.
      */
     @Test
-    public void TestInvalidTotalPrice() {
+    void TestInvalidTotalPrice() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -249,7 +287,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusDays(1)
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid total price, must not be negative", e.getMessage());
         }
     }
@@ -258,7 +296,7 @@ public class InventoryItemTests {
      * Tests that an invalid manufacture date (after current date) throws an error.
      */
     @Test
-    public void TestInvalidManufactured() {
+    void TestInvalidManufactured() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -271,7 +309,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     LocalDate.now().plusDays(1)
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid manufacture date", e.getMessage());
         }
     }
@@ -280,7 +318,7 @@ public class InventoryItemTests {
      * Tests that an invalid expiration date (null or before current date) throws an error.
      */
     @Test
-    public void TestInvalidExpires() {
+    void TestInvalidExpires() {
         try {
             InventoryItem inventoryItem = new InventoryItem(
                     product,
@@ -293,7 +331,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     null
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid expiration date, must have expiration date and cannot add expired item", e.getMessage());
         }
 
@@ -309,7 +347,7 @@ public class InventoryItemTests {
                     LocalDate.now().plusDays(1),
                     LocalDate.now().minusDays(1)
             );
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             assertEquals("Invalid expiration date, must have expiration date and cannot add expired item", e.getMessage());
         }
     }

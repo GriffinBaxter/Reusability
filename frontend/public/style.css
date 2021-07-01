@@ -1,5 +1,5 @@
-@import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
-
+@import url('https://use.fontawesome.com/releases/v5.15.3/css/all.css');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans&family=Oswald:wght@500&family=Roboto&family=Rochester&display=swap');
 /*
  * Created on Wed Feb 10 2021
  *
@@ -36,30 +36,98 @@ body {
   background: #fafbfc;
 }
 
-/****************************************
-               Login Page
- ****************************************/
-
-#formContainer {
-  background-color: #fff;
-  border-radius: 1rem;
+html {
+  scroll-behavior: smooth;
 }
 
-#loginButton {
+.green-button {
   background-color: #1EBA8C;
+  border-color: #1EBA8C;
   color: white;
+}
+
+.green-button:hover {
+  background-color: transparent;
+  color: #1EBA8C;
   border-color: #1EBA8C;
 }
 
-#loginButton:hover {
+.green-button:focus {
+  outline: none;
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
+.green-search-button {
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+  color: white;
+}
+
+.green-search-button:hover {
   background-color: transparent;
   color: #1EBA8C;
 }
 
-#loginButton:focus{
+.green-search-button:focus {
+  outline: none;
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
+.green-button-transparent {
+  border-color: #1EBA8C;
+  color: #1EBA8C;
+}
+
+.green-button-transparent:hover {
+  color: white;
+  background-color: #1EBA8C;
+  border-color: #1EBA8C;
+}
+
+.green-button-transparent:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
+input:focus, textarea:focus, button:focus, #create-product-button:focus, textarea.form-control:focus, input.form-control:focus{
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
+}
+
+/* Fix Footer */
+#main{
+  min-height: calc(100vh - 72px); /* 100px is the height of Footer */
+}
+
+Footer{
+  height: 72px;
+}
+
+/*------------------ Hide arrows from input numbers ---------------------*/
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+/*------------------------------------------------------------------------*/
+
+/****************************************
+               Login Page
+ ****************************************/
+
+#form-container {
+  background-color: #fff;
+  border-radius: 1rem;
 }
 
 /****************************************
@@ -70,33 +138,34 @@ body {
 /*  width: 60%;*/
 /*}*/
 
-#editProfileButton {
+#edit-profile-button {
   background-color: #fff;
-  border-color: #23d9a3;
+  border-color: #1EBA8C;
 }
 
-#editProfileButton:hover {
-  background-color: #23d9a3
+#edit-profile-button:hover {
+  background-color: #1EBA8C
 }
-
-#logoutButton {
-  border-color: #23d9a3;
-  color: black;
-}
-
-#logoutButton:hover {
-  background-color: #23d9a3;
-}
-
 
 /****************************
-   Profile Header Component
+            Logo
  ****************************/
 
-#searchContainer {
-  width: 45%;
+.company-name-main-font {
+  font-family: 'Merriweather Sans', sans-serif;
+  font-size: 30px;
 }
 
+.company-name-sub-heading {
+  line-height: 50%;
+  font-family: 'Rochester', cursive;
+  font-size: 35px;
+  margin-top: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-left: auto;
+  margin-right: auto;
+}
 /****************************************
               Search Page
  ****************************************/
@@ -129,6 +198,24 @@ body {
   background-color: lightgrey;
 }
 
+/****************************************
+         Business Registration Page
+ ****************************************/
+
+.form-select:focus {
+  outline: none;     /* oranges! yey */
+  box-shadow: 0 0 2px 2px #1EBA8C; /* Full freedom. (works also with border-radius) */
+  border: 1px solid #1EBABC;
+}
+
+/****************************************
+              Search Bar
+ ****************************************/
+
+#profile-header-div {
+  margin-left: 15%;
+  margin-right: 15%;
+}
 
 /*****************************************************************
                   Autocomplete Dropdown Styling
@@ -169,3 +256,7 @@ body {
 }
 
 /*****************************************************************/
+
+.text-font, p, h, label, textarea, select, button {
+  font-family: 'Roboto', sans-serif;
+}
