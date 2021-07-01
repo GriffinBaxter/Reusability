@@ -10,7 +10,6 @@
  */
 package org.seng302.model;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,12 +21,14 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.enums.Role;
-import org.seng302.validation.UserValidation;
 import org.seng302.view.outgoing.UserPayloadSecure;
 
 /**
  * Class for user accounts
+ * Users can be administrators of business accounts.
+ * Users can own marketplace cards.
  */
 @Embeddable
 @NoArgsConstructor // generate a no-args constructor needed by JPA (lombok pre-processor)
@@ -91,6 +92,33 @@ public class User {
             cascade = CascadeType.ALL)
     private List<MarketplaceCard> cards = new ArrayList<>();
 
+    // Values need for validation.
+    private static final Integer FIRST_NAME_MIN_LENGTH = 2;
+    private static final Integer FIRST_NAME_MAX_LENGTH = 255;
+
+    private static final Integer MIDDLE_NAME_MIN_LENGTH = 0;
+    private static final Integer MIDDLE_NAME_MAX_LENGTH = 255;
+
+    private static final Integer LAST_NAME_MIN_LENGTH = 2;
+    private static final Integer LAST_NAME_MAX_LENGTH = 255;
+
+    private static final Integer NICKNAME_MIN_LENGTH = 0;
+    private static final Integer NICKNAME_MAX_LENGTH = 255;
+
+    private static final Integer BIO_MIN_LENGTH = 0;
+    private static final Integer BIO_MAX_LENGTH = 600;
+
+    private static final Integer EMAIL_MIN_LENGTH = 5;
+    private static final Integer EMAIL_MAX_LENGTH = 30;
+
+    private static final Integer MIN_AGE = 13;
+
+    private static final Integer PHONE_NUMBER_MIN_LENGTH = 0;
+    private static final Integer PHONE_NUMBER_MAX_LENGTH = 15;
+
+    private static final Integer PASSWORD_MIN_LENGTH = 8;
+    private static final Integer PASSWORD_MAX_LENGTH = 30;
+
     /**
      * User account constructor.
      * @param firstName First Name
@@ -105,7 +133,7 @@ public class User {
      * @param password User's password (not stored in plaintext
      * @param created Date individual signed up
      * @param role Role determines admin privileges.
-     * @throws Exception Validation exception
+     * @throws IllegalUserArgumentException  Validation exception
      */
     public User(
             String firstName,
@@ -120,33 +148,33 @@ public class User {
             String password,
             LocalDateTime created,
             Role role
-    ) throws Exception {
-        if (!UserValidation.isValidFirstName(firstName)) {
-            throw new Exception("Invalid first name");
+    ) throws IllegalUserArgumentException {
+        if (!isValidFirstName(firstName)) {
+            throw new IllegalUserArgumentException ("Invalid first name");
         }
-        if (!UserValidation.isValidMiddleName(middleName)) {
-            throw new Exception("Invalid middle name");
+        if (!isValidMiddleName(middleName)) {
+            throw new IllegalUserArgumentException ("Invalid middle name");
         }
-        if (!UserValidation.isValidLastName(lastName)){
-            throw new Exception("Invalid last name");
+        if (!isValidLastName(lastName)){
+            throw new IllegalUserArgumentException ("Invalid last name");
         }
-        if (!UserValidation.isValidNickname(nickname)) {
-            throw new Exception("Invalid nickname");
+        if (!isValidNickname(nickname)) {
+            throw new IllegalUserArgumentException ("Invalid nickname");
         }
-        if (!UserValidation.isValidBio(bio)) {
-            throw new Exception("Invalid bio");
+        if (!isValidBio(bio)) {
+            throw new IllegalUserArgumentException ("Invalid bio");
         }
-        if (!UserValidation.isValidEmail(email)) {
-            throw new Exception("Invalid email address");
+        if (!isValidEmail(email)) {
+            throw new IllegalUserArgumentException ("Invalid email address");
         }
-        if (!UserValidation.isValidDOB(dateOfBirth)) {
-            throw new Exception("Invalid date of birth");
+        if (!isValidDOB(dateOfBirth)) {
+            throw new IllegalUserArgumentException ("Invalid date of birth");
         }
-        if (!UserValidation.isValidPhoneNumber(phoneNumber)) {
-            throw new Exception("Invalid phone number");
+        if (!isValidPhoneNumber(phoneNumber)) {
+            throw new IllegalUserArgumentException ("Invalid phone number");
         }
-        if (!UserValidation.isValidPassword(password)){
-            throw new Exception("Invalid password");
+        if (!isValidPassword(password)){
+            throw new IllegalUserArgumentException ("Invalid password");
         }
 
         this.firstName = firstName;
@@ -199,7 +227,7 @@ public class User {
         return phoneNumber;
     }
 
-    public Address getHomeAddress() throws Exception {
+    public Address getHomeAddress() {
         return homeAddress;
     }
 
@@ -300,7 +328,7 @@ public class User {
      * @param password password
      * @return hashed password
      */
-    public String encode(String password) throws UnsupportedEncodingException {
+    public String encode(String password) {
         return Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -310,13 +338,7 @@ public class User {
      * @return true when two password same
      */
     public boolean verifyPassword(String password) {
-        try {
-            return (this.password.equals(encode(password)));
-        }
-        catch (UnsupportedEncodingException e) {
-            return false;
-        }
-
+        return (this.password.equals(encode(password)));
     }
 
     /**
@@ -340,9 +362,9 @@ public class User {
      * @param business
      */
     public void removeABusinessesAdministeredObjects(Business business){
-        int id = business.getId();
+        int businessId = business.getId();
         for (int i = 0; i < businessesAdministeredObjects.size(); i++){
-            if (businessesAdministeredObjects.get(i).getId() == id){
+            if (businessesAdministeredObjects.get(i).getId() == businessId){
                 this.businessesAdministeredObjects.remove(i);
             }
         }
@@ -353,9 +375,9 @@ public class User {
      * @param card the card to be removed
      */
     public void removeACardFromMarketplaceCards(MarketplaceCard card){
-        int id = card.getId();
+        int cardId = card.getId();
         for (int i = 0; i < this.cards.size(); i++){
-            if (this.cards.get(i).getId() == id){
+            if (this.cards.get(i).getId() == cardId){
                 this.cards.remove(i);
             }
         }
@@ -396,7 +418,6 @@ public class User {
                 ",\"homeAddress\":" + homeAddress +
                 ",\"created\":\"" + created + "\"" +
                 ",\"role\":\"" + role + "\"" +
-//      TODO This might get changed in the future due to the recursive nature of the API seems wrong.
                 ",\"businessesAdministered\":[null]" +
                 "}";
     }
@@ -424,4 +445,115 @@ public class User {
                 administrators
         );
     }
+
+    /*---------------------------------------------------Validation---------------------------------------------------*/
+
+    /**
+     * Checks to see whether first name is valid based on its constraints
+     * This method can be updated in the future if there is additional constraints.
+     * @param firstName The first name to be checked.
+     * @return true when the first name is valid
+     */
+    private boolean isValidFirstName(String firstName) {
+        return (firstName.length() >= FIRST_NAME_MIN_LENGTH) &&
+                (firstName.length() <= FIRST_NAME_MAX_LENGTH) &&
+                (firstName.matches("^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]+$"));
+    }
+
+    /**
+     * Checks to see whether middle name is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param middleName The middle name to be checked.
+     * @return true when the middle name is valid
+     */
+    private boolean isValidMiddleName(String middleName) {
+        return (middleName.length() >= MIDDLE_NAME_MIN_LENGTH) &&
+                (middleName.length() <= MIDDLE_NAME_MAX_LENGTH) &&
+                (middleName.matches("^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]*$"));
+    }
+
+    /**
+     * Checks to see whether last name is valid based on its constraints
+     * This method can be updated in the future if there is additional constraints.
+     * @param lastName The last name to be checked.
+     * @return true when the last name is valid.
+     */
+    private boolean isValidLastName(String lastName) {
+        return (lastName.length() >= LAST_NAME_MIN_LENGTH) &&
+                (lastName.length() <= LAST_NAME_MAX_LENGTH) &&
+                (lastName.matches("^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]+$"));
+    }
+
+    /**
+     * Checks to see whether nickname is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param nickname The nickname to be checked.
+     * @return true when the nickname is valid.
+     */
+    private boolean isValidNickname(String nickname) {
+        return (nickname.length() >= NICKNAME_MIN_LENGTH) &&
+                (nickname.length() <= NICKNAME_MAX_LENGTH) &&
+                (nickname.matches("^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]*$"));
+    }
+
+    /**
+     * Checks to see whether bio is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param bio The bio to be checked.
+     * @return true when the bio is valid
+     */
+    private boolean isValidBio(String bio) {
+        return (bio.length() >= BIO_MIN_LENGTH) &&
+                (bio.length() <= BIO_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether email is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param email The email to be checked.
+     * @return true when the email is valid.
+     */
+    private boolean isValidEmail(String email) {
+        return (email.length() >= EMAIL_MIN_LENGTH) &&
+                (email.length() <= EMAIL_MAX_LENGTH) &&
+                (email.matches("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"));
+    }
+
+    /**
+     * Checks to see whether date of birth is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param dateOfBirth The date of birth to be checked.
+     * @return true when the date of birth is valid.
+     */
+    private boolean isValidDOB(LocalDate dateOfBirth) {
+        LocalDate currentDate = LocalDate.now();
+        Integer minAge = Period.between(dateOfBirth, currentDate).getYears();
+        return minAge >= MIN_AGE;
+    }
+
+    /**
+     * Checks to see whether phone number is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param phoneNumber The phone number to be checked.
+     * @return true when the phone number is valid.
+     */
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        return (phoneNumber.length() >= PHONE_NUMBER_MIN_LENGTH) &&
+                (phoneNumber.length() <= PHONE_NUMBER_MAX_LENGTH) &&
+                (phoneNumber.matches("^[+0-9 ]*$"));
+    }
+
+    /**
+     * Checks to see whether password is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param password The password to be checked.
+     * @return true when the phone number is valid.
+     */
+    private boolean isValidPassword(String password) {
+        return (password.length() >= PASSWORD_MIN_LENGTH) &&
+                (password.length() <= PASSWORD_MAX_LENGTH) &&
+                (password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,30}$"));
+    }
+
+
 }

@@ -3,6 +3,7 @@ package org.seng302.business.inventoryItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.seng302.exceptions.*;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
 import org.seng302.model.repository.BusinessRepository;
@@ -114,7 +115,8 @@ class InventoryItemResourceIntegrationTests {
     private InventoryItem inventoryItem;
 
     @BeforeEach
-    void setup() throws Exception {
+    void setup() throws IllegalAddressArgumentException, IllegalUserArgumentException, IllegalBusinessArgumentException,
+            IllegalProductArgumentException, IllegalInventoryItemArgumentException {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",

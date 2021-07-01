@@ -31,7 +31,7 @@ export default class InventoryItem {
             regexMessage: "Must be a positive double precision floating point number e.g 1.00"
         },
         manufactured: {
-            name: "manufactured"
+            name: "Manufactured"
         },
         sellBy: {
             name: "Sell By"

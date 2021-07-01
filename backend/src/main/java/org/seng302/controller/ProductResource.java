@@ -12,11 +12,12 @@ package org.seng302.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.exceptions.IllegalProductArgumentException;
 import org.seng302.model.*;
 import org.seng302.Authorization;
 import org.seng302.model.User;
 import org.seng302.model.repository.*;
-import org.seng302.validation.ProductValidation;
+import org.seng302.ProductValidation;
 import org.seng302.view.incoming.ProductCreationPayload;
 import org.seng302.view.outgoing.ProductPayload;
 import org.seng302.view.incoming.ProductUpdatePayload;
@@ -37,7 +38,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * ProductResource class
+ * ProductResource class. This class includes:
+ * POST "/businesses{id}/products" endpoint used to create new products for a business.
+ * GET "/businesses{id}/products" endpoint used to retrieve the products for a business, including pagination.
+ * PUT "/businesses/{businessId}/products/{productId}" endpoint used to update the details of product for a business.
+ * GET "businesses/{id}/productAll" endpoint used to retrieve the products for a business, excluding pagination.
  */
 @RestController
 public class ProductResource {
@@ -99,7 +104,7 @@ public class ProductResource {
         try {
             if (productRepository.findProductByIdAndBusinessId(productPayload.getId(), id).isPresent()) {
                 logger.error("Product Creation Failure - 400 [BAD REQUEST] - Product with ID {} already exists for business with ID {}", productPayload.getId(), id);
-                throw new Exception("Invalid product ID, already in use");
+                throw new IllegalProductArgumentException("Invalid product ID, already in use");
             } else {
                 Product product = new Product(
                         productPayload.getId(),
@@ -116,7 +121,7 @@ public class ProductResource {
                 logger.info("Product Creation Success - 201 [CREATED] - Product created for business {} with ID {}", id, productPayload.getId());
                 logger.debug("Product created for business {} with ID {}: {}", id, productPayload.getId(), product);
             }
-        } catch (Exception e) {
+        } catch (IllegalProductArgumentException e) {
             logger.error("Product Creation Failure - 400 [BAD REQUEST] - Bad data");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -163,7 +168,7 @@ public class ProductResource {
         // Front-end displays 5 users per page
         int pageSize = 5;
 
-        Sort sortBy = null;
+        Sort sortBy;
 
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
@@ -221,7 +226,7 @@ public class ProductResource {
 
         List<ProductPayload> productPayloads = convertToPayload(pagedResult.getContent());
 
-        logger.debug("Products retrieved for business with ID {}: {}", id, productPayloads.toString());
+        logger.debug("Products retrieved for business with ID {}: {}", id, productPayloads);
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
@@ -244,7 +249,7 @@ public class ProductResource {
                     product.getRecommendedRetailPrice(),
                     product.getCreated()
             );
-            logger.debug("Product payload created: {}", newPayload.toString());
+            logger.debug("Product payload created: {}", newPayload);
             payloads.add(newPayload);
         }
         return payloads;

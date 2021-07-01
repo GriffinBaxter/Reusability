@@ -107,6 +107,20 @@ Footer{
   height: 72px;
 }
 
+/*------------------ Hide arrows from input numbers ---------------------*/
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+/*------------------------------------------------------------------------*/
+
 /****************************************
                Login Page
  ****************************************/

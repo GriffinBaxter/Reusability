@@ -2,7 +2,7 @@ package org.seng302.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.NoArgsConstructor;
-import org.seng302.validation.KeywordValidation;
+import org.seng302.exceptions.IllegalKeywordArgumentException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,16 +31,21 @@ public class Keyword {
 
     @JsonBackReference
     @ManyToMany(mappedBy = "keywords", fetch = FetchType.LAZY)
-    private List<MarketplaceCard> cards = new ArrayList<MarketplaceCard>();
+    private List<MarketplaceCard> cards = new ArrayList<>();
+
+    // Values need for validation.
+    private static final Integer NAME_MIN_LENGTH = 2;
+    private static final Integer NAME_MAX_LENGTH = 20;
+
 
     /**
      * Marketplace Keyword constructor.
      * It validates the name of when constructed.
-     * @throws Exception Validation exception thrown when a new keyword does not contain valid info.
+     * @throws IllegalKeywordArgumentException Validation exception thrown when a new keyword does not contain valid info.
      */
-    public Keyword(String name, LocalDateTime created, MarketplaceCard card) throws Exception {
-        if (!KeywordValidation.isValidName(name)) {
-            throw new Exception("Invalid name");
+    public Keyword(String name, LocalDateTime created, MarketplaceCard card) throws IllegalKeywordArgumentException {
+        if (!isValidName(name)) {
+            throw new IllegalKeywordArgumentException("Invalid name");
         }
         this.name = name;
         this.created = created;
@@ -110,9 +115,9 @@ public class Keyword {
      * @param card A card that used to contain this keyword (keyword to be removed).
      */
     public void removeCard(MarketplaceCard card) {
-        int id = card.getId();
+        int cardId = card.getId();
         for (int i = 0; i < cards.size(); i++){
-            if (cards.get(i).getId() == id){
+            if (cards.get(i).getId() == cardId){
                 this.cards.remove(i);
             }
         }
@@ -125,6 +130,16 @@ public class Keyword {
      */
     public List<MarketplaceCard> getCards() {
         return cards;
+    }
+
+    /**
+     * Checks to see whether keyword name is valid based on its constraints
+     * This method can be updated in the future if there is additional constraints.
+     * @param name The keyword name to be checked.
+     * @return true when the keyword name is valid
+     */
+    private boolean isValidName(String name) {
+        return (name.length() >= NAME_MIN_LENGTH) && (name.length() <= NAME_MAX_LENGTH);
     }
 
 }

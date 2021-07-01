@@ -12,6 +12,7 @@ package org.seng302.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.exceptions.IllegalInventoryItemArgumentException;
 import org.seng302.model.repository.BusinessRepository;
 import org.seng302.model.InventoryItem;
 import org.seng302.view.outgoing.InventoryItemPayload;
@@ -41,7 +42,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * InventoryItemResource class
+ * InventoryItemResource class. This class includes:
+ * GET "/businesses/{id}/inventory" endpoint used to retrieve the inventory of a business, including pagination.
+ * GET "/businesses/{id}/inventoryAll" endpoint used to retrieve all the inventory of a business, excluding pagination.
+ * POST "/businesses/{id}/inventory" endpoint used to create a new inventory item for a business.
+ * PUT "/businesses/{id}/inventory/{inventoryItemId}" endpoint used to update an existing inventory item.
  */
 @RestController
 public class InventoryItemResource {
@@ -401,7 +406,7 @@ public class InventoryItemResource {
             ));
             logger.info("Inventory Item Create Success - 200 [OK] - " +
                     "An inventory item has been create for business with ID {}", id);
-        } catch (Exception e) {
+        } catch (IllegalInventoryItemArgumentException e) {
             logger.error("Inventory Item Creation Failure - {}", e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,

@@ -13,15 +13,15 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.view.outgoing.AddressPayloadSecure;
-import org.seng302.validation.AddressValidation;
 
 import javax.persistence.*;
 import java.util.List;
 
 /**
- * Class for Addresses.
+ * Class for the Address entity. Addresses are used by both Users and Businesses.
  */
 @Embeddable
 @Data // generate setters and getters for all fields (lombok pre-processor)
@@ -63,6 +63,28 @@ public class Address {
             cascade = CascadeType.ALL)
     private List<Business> businesses;
 
+    // Values need for validation.
+    private static final Integer STREET_NUMBER_MIN_LENGTH = 0;
+    private static final Integer STREET_NUMBER_MAX_LENGTH = 255;
+
+    private static final Integer STREET_NAME_MIN_LENGTH = 0;
+    private static final Integer STREET_NAME_MAX_LENGTH = 255;
+
+    private static final Integer CITY_MIN_LENGTH = 0;
+    private static final Integer CITY_MAX_LENGTH = 255;
+
+    private static final Integer REGION_MIN_LENGTH = 0;
+    private static final Integer REGION_MAX_LENGTH = 255;
+
+    private static final Integer COUNTRY_MIN_LENGTH = 1;
+    private static final Integer COUNTRY_MAX_LENGTH = 255;
+
+    private static final Integer POSTCODE_MIN_LENGTH = 0;
+    private static final Integer POSTCODE_MAX_LENGTH = 255;
+
+    private static final Integer SUBURB_MIN_LENGTH = 0;
+    private static final Integer SUBURB_MAX_LENGTH = 255;
+
     /**
      * Address constructor.
      * @param streetNumber Street Number (optional)
@@ -72,7 +94,7 @@ public class Address {
      * @param country Country (mandatory)
      * @param postcode Postcode (optional)
      * @param suburb Suburb (optional)
-     * @throws Exception Validation exception
+     * @throws IllegalAddressArgumentException when a parameter is not valid.
      */
     public Address(String streetNumber,
                    String streetName,
@@ -80,27 +102,27 @@ public class Address {
                    String region,
                    String country,
                    String postcode,
-                   String suburb) throws Exception {
-        if (!AddressValidation.isValidStreetNumber(streetNumber)) {
-            throw new Exception("Invalid street number");
+                   String suburb) throws IllegalAddressArgumentException {
+        if (!isValidStreetNumber(streetNumber)) {
+            throw new IllegalAddressArgumentException("Invalid street number");
         }
-        if (!AddressValidation.isValidStreetName(streetName)) {
-            throw new Exception("Invalid street name");
+        if (!isValidStreetName(streetName)) {
+            throw new IllegalAddressArgumentException("Invalid street name");
         }
-        if (!AddressValidation.isValidCity(city)) {
-            throw new Exception("Invalid city");
+        if (!isValidCity(city)) {
+            throw new IllegalAddressArgumentException("Invalid city");
         }
-        if (!AddressValidation.isValidRegion(region)) {
-            throw new Exception("Invalid region");
+        if (!isValidRegion(region)) {
+            throw new IllegalAddressArgumentException("Invalid region");
         }
-        if (!AddressValidation.isValidCountry(country)) {
-            throw new Exception("Invalid country");
+        if (!isValidCountry(country)) {
+            throw new IllegalAddressArgumentException("Invalid country");
         }
-        if (!AddressValidation.isValidPostcode(postcode)) {
-            throw new Exception("Invalid postcode");
+        if (!isValidPostcode(postcode)) {
+            throw new IllegalAddressArgumentException("Invalid postcode");
         }
-        if (!AddressValidation.isValidSuburb(suburb)) {
-            throw new Exception("Invalid suburb");
+        if (!isValidSuburb(suburb)) {
+            throw new IllegalAddressArgumentException("Invalid suburb");
         }
 
         this.streetNumber = (streetNumber.equals("")) ? null : streetNumber;
@@ -174,45 +196,90 @@ public class Address {
         this.suburb = suburb;
     }
 
+    /**
+     * Change the users living at this address.
+     * @param users the users living at this address.
+     */
     public void setUsers(List<User> users) {
         this.users = users;
     }
 
+    /**
+     * Get a list of users located at this address.
+     * @return a list of users located at this address.
+     */
     public List<User> getUsers() {
         return this.users;
     }
 
+    /**
+     * The address entity stores a list of users living at the address.
+     * This method can be used to add a user to this address.
+     * @param user a user that is located at this address.
+     */
     public void addUser(User user) {
         this.users.add(user);
         user.setHomeAddress(this);
     }
 
+    /**
+     * The address entity stores a list of users living at the address.
+     * This method can be used to remove a user from this address.
+     * @param user a user that use to be located at this address.
+     */
     public void removeUser(User user) {
         this.users.remove(user);
         user.setHomeAddress(null);
     }
 
+    /**
+     * Get the id of this address.
+     * This method can be useful if a search in the database by id is required.
+     * @return the id of this address.
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Change the id of this address.
+     * @param id the new id of the address.
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * Get a list of businesses located at this address.
+     * @return A list of businesses located at this address.
+     */
     public List<Business> getBusinesses() {
         return businesses;
     }
 
+    /**
+     * Set the list of businesses located at this address to a new list of businesses.
+     * @param businesses the new list of businesses located at this address.
+     */
     public void setBusinesses(List<Business> businesses) {
         this.businesses = businesses;
     }
 
+    /**
+     * The address entity stores a list of businesses located at the address.
+     * This method can be used to add a business to this address.
+     * @param business a business that is located at this address.
+     */
     public void addBusiness(Business business) {
         this.businesses.add(business);
         business.setAddress(this);
     }
 
+    /**
+     * The address entity stores a list of businesses located at the address.
+     * This method can be used to remove a business from this address.
+     * @param business a business that use to be located at this address.
+     */
     public void removeBusiness(Business business) {
         this.businesses.remove(business);
         business.setAddress(null);
@@ -223,7 +290,7 @@ public class Address {
      * @param string address in json form
      * @return an address object
      */
-    public static Address toAddress(String string) throws Exception {
+    public static Address toAddress(String string) throws IllegalAddressArgumentException {
         String[] infos = string.replace("{", "").replace("}", "").
                 replace("\"", "").replace("\n","").split(",");
 
@@ -322,5 +389,78 @@ public class Address {
                 + postcode + ", "
                 + suburb;
     }
+
+    /* --------------------------------Validation-------------------------------- */
+
+    /**
+     * Checks to see whether street number is valid based on its length.
+     * This method can be updated in the future if there is additional constraints.
+     * @param streetNumber The street number to be checked.
+     * @return true when the street number is within its range of length constraints.
+     */
+    private boolean isValidStreetNumber(String streetNumber) {
+        return (streetNumber.length() >= STREET_NUMBER_MIN_LENGTH) && (streetNumber.length() <= STREET_NUMBER_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether street name is valid based on its length.
+     * This method can be updated in the future if there is additional constraints.
+     * @param streetName The street name to be checked.
+     * @return true when the street name is within its range of length constraints.
+     */
+    private boolean isValidStreetName(String streetName) {
+        return (streetName.length() >= STREET_NAME_MIN_LENGTH) && (streetName.length() <= STREET_NAME_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether city is valid based on its length.
+     * This method can be updated in the future if there is additional constraints.
+     * @param city The city to be checked.
+     * @return true when the city is within its range of length constraints.
+     */
+    private boolean isValidCity(String city) {
+        return (city.length() >= CITY_MIN_LENGTH) && (city.length() <= CITY_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether region is valid based on its length.
+     * This method can be updated in the future if there is additional constraints.
+     * @param region The region to be checked.
+     * @return true when the region is within its range of length constraints.
+     */
+    private boolean isValidRegion(String region) {
+        return (region.length() >= REGION_MIN_LENGTH) && (region.length() <= REGION_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether country is valid based on its length.
+     * This method can be updated in the future if there is additional constraints.
+     * @param country The country to be checked.
+     * @return true when the country is within its range of length constraints.
+     */
+    private boolean isValidCountry(String country) {
+        return (country.length() >= COUNTRY_MIN_LENGTH) && (country.length() <= COUNTRY_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether postcode is valid based on its length.
+     * This method can be updated in the future if there is additional constraints.
+     * @param postcode The postcode to be checked.
+     * @return true when the postcode is within its range of length constraints.
+     */
+    private boolean isValidPostcode(String postcode) {
+        return (postcode.length() >= POSTCODE_MIN_LENGTH) && (postcode.length() <= POSTCODE_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether suburb is valid based on its length.
+     * This method can be updated in the future if there is additional constraints.
+     * @param suburb The suburb to be checked.
+     * @return true when the suburb is within its range of length constraints.
+     */
+    private boolean isValidSuburb(String suburb) {
+        return (suburb.length() >= SUBURB_MIN_LENGTH) && (suburb.length() <= SUBURB_MAX_LENGTH);
+    }
+
 
 }

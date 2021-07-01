@@ -14,13 +14,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.seng302.validation.ProductValidation;
+import org.seng302.exceptions.IllegalProductArgumentException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
  * Class for products
+ * A business can have many products.
+ * Inventory items contain a set amount of products.
  */
 @Data
 @NoArgsConstructor
@@ -57,6 +59,22 @@ public class Product {
 
     private static final Logger logger = LogManager.getLogger(Product.class.getName());
 
+    // Values need for validation.
+    private static final Integer PRODUCT_ID_MIN_LENGTH = 3;
+    private static final Integer PRODUCT_ID_MAX_LENGTH = 15;
+
+    private static final Integer NAME_MIN_LENGTH = 1;
+    private static final Integer NAME_MAX_LENGTH = 100;
+
+    private static final Integer DESCRIPTION_MIN_LENGTH = 0;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 600;
+
+    private static final Integer MANUFACTURER_MIN_LENGTH = 0;
+    private static final Integer MANUFACTURER_MAX_LENGTH = 100;
+
+    private static final Double RECOMMENDED_RETAIL_PRICE_MINIMUM = 0.0;
+    private static final Double RECOMMENDED_RETAIL_PRICE_MAXIMUM = Double.POSITIVE_INFINITY;
+
     /**
      * Constructor for products.
      *
@@ -67,7 +85,7 @@ public class Product {
      * @param manufacturer The manufacturer of the product (optional).
      * @param recommendedRetailPrice The recommended retail price (RRP) of the product (optional).
      * @param created The date and time the product was created.
-     * @throws Exception Validation exception.
+     * @throws IllegalProductArgumentException Validation exception.
      */
     public Product(String id,
                    Business business,
@@ -76,30 +94,30 @@ public class Product {
                    String manufacturer,
                    Double recommendedRetailPrice,
                    LocalDateTime created
-    ) throws Exception {
-        if (!ProductValidation.isValidProductId(id)) {
+    ) throws IllegalProductArgumentException {
+        if (!isValidProductId(id)) {
             logger.error("Product Creation Error - Product ID {} is not valid", id);
-            throw new Exception("Invalid product ID");
+            throw new IllegalProductArgumentException("Invalid product ID");
         }
         if (business == null) {
             logger.error("Product Creation Error - Business is null");
-            throw new Exception("Invalid business");
+            throw new IllegalProductArgumentException("Invalid business");
         }
-        if (!ProductValidation.isValidName(name)) {
+        if (!isValidName(name)) {
             logger.error("Product Creation Error - Name {} is not valid", name);
-            throw new Exception("Invalid product name");
+            throw new IllegalProductArgumentException("Invalid product name");
         }
-        if (!ProductValidation.isValidDescription(description)) {
+        if (!isValidDescription(description)) {
             logger.error("Product Creation Error - Description {} is not valid", description);
-            throw new Exception("Invalid product description");
+            throw new IllegalProductArgumentException("Invalid product description");
         }
-        if (!ProductValidation.isValidManufacturer(manufacturer)) {
+        if (!isValidManufacturer(manufacturer)) {
             logger.error("Product Creation Error - Manufacturer {} is not valid", manufacturer);
-            throw new Exception("Invalid manufacturer");
+            throw new IllegalProductArgumentException("Invalid manufacturer");
         }
         if (created == null) {
             logger.error("Product Creation Error - Created (Date-Time) is null");
-            throw new Exception("Invalid date");
+            throw new IllegalProductArgumentException("Invalid date");
         }
         this.id = id;
         this.business = business;
@@ -169,6 +187,54 @@ public class Product {
 
     public void setCreated(LocalDateTime created) {
         this.created = created;
+    }
+
+    /* --------------------------------------------------Validation-------------------------------------------------- */
+
+    /**
+     * Checks to see whether a product ID is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param productId The product ID to be checked.
+     * @return true when the product ID is valid
+     */
+    private boolean isValidProductId(String productId) {
+        return (productId.length() >= PRODUCT_ID_MIN_LENGTH) &&
+                (productId.length() <= PRODUCT_ID_MAX_LENGTH) &&
+                (productId.matches("^[A-Z0-9-]+$"));
+    }
+
+    /**
+     * Checks to see whether a product name is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param productName The product name to be checked.
+     * @return true when the product name is valid
+     */
+    private boolean isValidName(String productName) {
+        return (productName.length() >= NAME_MIN_LENGTH) &&
+                (productName.length() <= NAME_MAX_LENGTH) &&
+                (productName.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]+$"));
+    }
+
+    /**
+     * Checks to see whether a description is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param description The description to be checked.
+     * @return true when the description is valid
+     */
+    private boolean isValidDescription(String description) {
+        return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
+    }
+
+    /**
+     * Checks to see whether a manufacturer name is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param manufacturer The manufacturer name to be checked.
+     * @return true when the manufacturer name is valid
+     */
+    private boolean isValidManufacturer(String manufacturer) {
+        return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
+                (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
+                (manufacturer.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]*$"));
     }
 
 }

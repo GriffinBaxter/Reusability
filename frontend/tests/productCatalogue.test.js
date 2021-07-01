@@ -405,6 +405,27 @@ test('Product name with correct name syntax with apostrophes', () => {
     ).toBe(expectedMessage);
 })
 
+/**
+ * Test for ensuring no error message is raised when the input entered into the product name field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Product name with correct name syntax with diacritics', () => {
+    const testInputVal = "Côke";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            Product.config.productName.name,
+            testInputVal,
+            Product.config.productName.minLength,
+            Product.config.productName.maxLength,
+            Product.config.productName.regexMessage,
+            Product.config.productName.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
 // --------------------------------------------------- Description Tests -----------------------------------------------
 
 /**
@@ -672,6 +693,27 @@ test('Manufacturer with incorrect syntax with symbols not supported', () => {
  */
 test('Manufacturer with correct syntax with apostrophes', () => {
     const testInputVal = "Wattie's";
+    const expectedMessage = "";
+
+    expect(
+        reg.methods.getErrorMessage(
+            Product.config.manufacturer.name,
+            testInputVal,
+            Product.config.manufacturer.minLength,
+            Product.config.manufacturer.maxLength,
+            Product.config.manufacturer.regexMessage,
+            Product.config.manufacturer.regex,
+        )
+    ).toBe(expectedMessage);
+})
+
+/**
+ * Test for ensuring no error message is raised when the input entered into the manufacturer field has the
+ * correct syntax and includes diacritics.
+ * @result message raised is the empty string.
+ */
+test('Manufacturer with correct syntax with diacritics.', () => {
+    const testInputVal = "L'Oréal";
     const expectedMessage = "";
 
     expect(

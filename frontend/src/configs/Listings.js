@@ -28,7 +28,7 @@ export default class Listing{
             minLength: 0,
             maxLength: 255,
             regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-            regex: /^[a-zA-Z0-9 '-.]*$/
+            regex: /^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-.]*$/
         },
         closes: {
             name: "manufactured"
