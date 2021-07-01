@@ -51,6 +51,12 @@ public class KeywordResource {
         this.keywordRepository = keywordRepository;
     }
 
+    /**
+     * POST /keywords endpoint for creating new keywords
+     * @param sessionToken JSESSIONID for verifying the user is logged in
+     * @param keywordPayload Payload containing keyword name
+     * @return Response Entity containing keyword id
+     */
     @PostMapping("/keywords")
     public ResponseEntity<KeywordIdPayload> createKeyword(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                           @RequestBody KeywordCreationPayload keywordPayload) {
