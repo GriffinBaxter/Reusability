@@ -32,7 +32,7 @@ page is changed.
       </button>
 
       <!-- This is shown when there are more then 2 pages and you are at page 1-->
-      <button :id="`pageButton${currentPage + 3}`" type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage(currentPage-2)">
+      <button :id="`pageButton${currentPage + 3}`" type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage(currentPage+2)">
         {{currentPage+3}}
       </button>
 

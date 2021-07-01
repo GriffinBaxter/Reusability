@@ -54,44 +54,11 @@
       </div>
 
       <div class="row">
-        <div class="col">
-
-          <!--page number buttons' navigation-->
-          <nav aria-label="user-table-navigation" id="pagination-nav" class="float-end" v-if="maxPage > 1">
-            <ul class="pagination" id="pagination-ul">
-
-              <li :class="toggleDisableClass('page-item', currentPage-1 <= 0)">
-                <a class="page-link " href="#" @click.prevent="previousPage()">Previous</a>
-              </li>
-
-              <li class="page-item" v-if="maxPage > 2 && currentPage >= maxPage">
-                <a class="page-link" href="#" @click="updatePage($event, currentPage-2)">{{currentPage-2}}</a>
-              </li>
-
-              <li class="page-item" v-if="currentPage-1 > 0">
-                <a class="page-link" href="#" @click="updatePage($event, currentPage-1)">{{currentPage-1}}</a>
-              </li>
-
-              <li class="page-item active" aria-current="page">
-                <a class="page-link" href="#" @click="(e) => e.preventDefault()">{{currentPage}}</a>
-              </li>
-
-              <li class="page-item" v-if="currentPage+1 <= maxPage">
-                <a class="page-link" href="#" @click="updatePage($event, currentPage+1)">{{currentPage+1}}</a>
-              </li>
-
-              <li class="page-item" v-if="maxPage > 2 && currentPage <= 1">
-                <a class="page-link" href="#" @click="updatePage($event, currentPage+2)">{{currentPage+2}}</a>
-              </li>
-
-              <li :class="toggleDisableClass('page-item', currentPage+1 > maxPage)" id="next-button">
-                <a class="page-link" href="#" @click.prevent="nextPage()">Next</a>
-              </li>
-            </ul>
-
-          </nav>
-
-
+        <div class="col" id="page-button-container">
+          <PageButtons
+              v-bind:totalPages="totalPages"
+              v-bind:currentPage="page"
+              @updatePage="updatePage"/>
         </div>
       </div>
 
@@ -106,12 +73,14 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Navbar from "@/components/main/Navbar";
 import Footer from "@/components/main/Footer";
+import PageButtons from "../components/PageButtons";
 
 export default {
   name: "Search",
   components: {
     Footer,
-    Navbar
+    Navbar,
+    PageButtons
   },
   data() {
     return {
@@ -120,8 +89,8 @@ export default {
       emailAscending: false,
       addressAscending: false,
       rowsPerPage: 5,
-      currentPage: 1,
-      maxPage: 1,
+      page: 0,
+      totalPages: 1,
       userList: [],
       small: false,
       totalRows: 0,
@@ -147,15 +116,13 @@ export default {
 
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
-     * @param event The click event
-     * @param newPageNum The page to move to
+     * @param newPageNumber The page to move to
      */
-    updatePage(event, newPageNum) {
-      event.preventDefault();
-      this.currentPage = newPageNum;
+    updatePage(newPageNumber) {
+      this.page = newPageNumber;
       this.$router.push({
         path: "/search",
-        query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()}
+        query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": (this.page + 1).toString()}
       }).catch(()=>{});
       this.requestUsers().then(() => this.buildRows())
     },
@@ -183,27 +150,25 @@ export default {
         const query = urlParams.get('searchQuery').trim();
 
         const ordering = urlParams.get('orderBy');
-        let pageNum = parseInt(urlParams.get('page'))-1;
-        this.currentPage = pageNum+1;
+        this.page = parseInt(urlParams.get('page'))-1;
 
         if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
-          this.currentPage = 1;
-          pageNum = 0;
+          this.page = 0;
           this.$router.push(
               {path: "/search", query: {"searchQuery": query, "orderBy": this.orderBy, "page": "1"}}
           ).catch(()=>{});
         }
         this.lastQuery = query;
 
-        await Api.searchUsers(query, ordering, pageNum).then(response => {
+        await Api.searchUsers(query, ordering, this.page).then(response => {
 
           this.userList = [...response.data];
           if (this.userList.length <= 0) {
-            this.currentPage = 1;
-            this.maxPage = 1;
+            this.page = 0;
+            this.totalPages = 1;
             this.totalRows = 0;
           } else {
-            this.maxPage = parseInt(response.headers['total-pages']);
+            this.totalPages = parseInt(response.headers['total-pages']);
             this.totalRows = parseInt(response.headers['total-rows']);
           }
 
@@ -229,7 +194,7 @@ export default {
         const inputQuery = this.$refs.searchBar.value;
         this.$router.push({
           path: "/search",
-          query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": this.currentPage.toString()}
+          query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": (this.page + 1).toString()}
         }).catch(()=>{});
         this.requestUsers().then(() => this.buildRows()).catch(
             (e) => console.log(e)
@@ -244,43 +209,11 @@ export default {
       const inputQuery = this.$refs.searchBar.value;
       this.$router.push({
         path: "/search",
-        query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": this.currentPage.toString()}
+        query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": (this.page + 1).toString()}
       }).catch(()=>{});
       this.requestUsers().then(() => this.buildRows()).catch(
           (e) => console.log(e)
       );
-    },
-
-    /**
-     * Goes to the previous page and updates the rows.
-     */
-    previousPage() {
-      if (this.currentPage > 1) {
-        this.currentPage -= 1;
-        this.$router.push({
-          path: "/search",
-          query: {
-            "searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()
-          }
-        })
-        this.requestUsers().then(() => this.buildRows())
-      }
-    },
-
-    /**
-     * Goes to the next page and updates the rows.
-     */
-    nextPage() {
-      if (this.currentPage < this.maxPage) {
-        this.currentPage += 1;
-        this.$router.push({
-          path: "/search",
-          query: {
-            "searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": this.currentPage.toString()
-          }
-        })
-        this.requestUsers().then(() => this.buildRows())
-      }
     },
 
     /**
@@ -292,7 +225,6 @@ export default {
      */
     orderUsers(nickname, fullName, email, address) {
 
-
       if (nickname) {
         this.disableIcons();
         if (this.nickAscending) {
@@ -301,7 +233,7 @@ export default {
           this.$router.push({
             path: "/search",
             query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameASC", "page": this.currentPage.toString()
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameASC", "page": (this.page + 1).toString()
             }
           })
         } else {
@@ -310,7 +242,7 @@ export default {
           this.$router.push({
             path: "/search",
             query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameDESC", "page": this.currentPage.toString()
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameDESC", "page": (this.page + 1).toString()
             }
           })
 
@@ -329,7 +261,7 @@ export default {
           this.$router.push({
             path: "/search",
             query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "fullNameASC", "page": this.currentPage.toString()
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "fullNameASC", "page": (this.page + 1).toString()
             }
           })
 
@@ -339,7 +271,7 @@ export default {
           this.$router.push({
             path: "/search",
             query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "fullNameDESC", "page": this.currentPage.toString()
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "fullNameDESC", "page": (this.page + 1).toString()
             }
           })
 
@@ -358,7 +290,7 @@ export default {
           this.$router.push({
             path: "/search",
             query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "emailASC", "page": this.currentPage.toString()
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "emailASC", "page": (this.page + 1).toString()
             }
           })
         } else {
@@ -367,7 +299,7 @@ export default {
           this.$router.push({
             path: "/search",
             query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "emailDESC", "page": this.currentPage.toString()
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "emailDESC", "page": (this.page + 1).toString()
             }
           })
 
@@ -386,7 +318,7 @@ export default {
           this.$router.push({
             path: "/search",
             query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "addressASC", "page": this.currentPage.toString()
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "addressASC", "page": (this.page + 1).toString()
             }
           })
 
@@ -396,7 +328,7 @@ export default {
           this.$router.push({
             path: "/search",
             query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "addressDESC", "page": this.currentPage.toString()
+              "searchQuery": this.$refs.searchBar.value, "orderBy": "addressDESC", "page": (this.page + 1).toString()
             }
           })
         }
@@ -413,14 +345,9 @@ export default {
      * Disables all ascending or descending icons in the top column headers.
      */
     disableIcons() {
-
-      // if (document.getElementById('order-by-nickname-div').childElementCount > 1) {
-      //   document.getElementById('order-by-nickname-div').removeChild(document.getElementById('order-by-nickname-div').lastChild);
-      // }
       document.getElementById('name-icon').setAttribute('class', '');
       document.getElementById('email-icon').setAttribute('class', '');
       document.getElementById('address-icon').setAttribute('class', '');
-
     },
 
     /**
@@ -429,7 +356,7 @@ export default {
     buildRows() {
       const self = this;
       this.clearRows();
-      let limit = this.rowsPerPage + (this.currentPage - 1) * this.rowsPerPage;
+      let limit = this.rowsPerPage + this.page * this.rowsPerPage;
       let startIndex = 0;
       const outerContainer = document.getElementById('outer-container');
       const lastChild = outerContainer.lastChild;
@@ -444,9 +371,6 @@ export default {
         let tabIndex = 0;
 
         for (let i = startIndex; i < limit; i++) {
-          // Check breakpoint
-          // let width = window.innerWidth;
-
           let classInput = 'row mb-2 justify-content-center';
           let t = true;
           if (t) {
@@ -523,9 +447,9 @@ export default {
           }
       }
 
-      let showingStart = this.userList.length ? (this.currentPage*this.rowsPerPage)-this.rowsPerPage+1 : 0;
+      let showingStart = this.userList.length ? ((this.page + 1) * this.rowsPerPage) - this.rowsPerPage + 1 : 0;
 
-      let lastEntryOfPage = limit+(this.currentPage-1)*this.rowsPerPage;
+      let lastEntryOfPage = limit + (this.page) * this.rowsPerPage;
 
       const showingString = `Showing ${showingStart}-${lastEntryOfPage} of ${this.totalRows} results`;
       const showingRow = document.createElement('div');
@@ -537,7 +461,6 @@ export default {
       showingRow.appendChild(showingCol);
 
       outerContainer.insertBefore(showingRow, lastChild);
-
     },
 
     /**
