@@ -101,7 +101,7 @@
 
       </div>
     </div>
-    <div class="card p-1" v-if="listings.length < 1">
+    <div class="card p-1" v-if="listings.length < 1 && notInitialLoad">
       <p class="h2 py-5" align="center">No Listings Found</p>
     </div>
     </div>
@@ -129,6 +129,7 @@ name: "Listings",
     return {
       allListings: [],
       listings: [],
+      notInitialLoad: false,
       businessName: "",
       businessAdmin: false,
       businessId: -1,
@@ -291,6 +292,7 @@ name: "Listings",
         }
 
         this.populatePage(response);
+        this.notInitialLoad = true;
 
       }).catch((error) => {
         if (error.request && !error.response) {
@@ -426,11 +428,11 @@ name: "Listings",
       this.businessId = await parseInt(this.$route.params.id);
       await this.getBusiness(this.businessId);
 
-      await this.currencyRequest();
-
       this.getListings().catch(
           (e) => console.log(e)
-      )
+      );
+
+      await this.currencyRequest();
     }
   }
 }
