@@ -11,16 +11,16 @@ const factory = (values = {}) => {
     })
 }
 
-describe('Test No Listings Found message is displayed correctly.', () => {
-    test('No Listings Found message is rendered when no listings are retrieved.', () => {
+describe('Test No Listings Found message is displayed correctly.',  () => {
+    test('No Listings Found message component is rendered when no listings are retrieved.', async () => {
         const wrapper = factory({
             listings: [],
             notInitialLoad: true,
-        })
+        });
         expect(wrapper.find('.noListings').exists()).toBeTruthy()
     })
 
-    test('No Listings Found message is not rendered when listings are retrieved.', () => {
+    test('No Listings Found message component is not rendered when listings are retrieved.', async () => {
         const wrapper = factory({
             listings: [
                 {
@@ -37,7 +37,6 @@ describe('Test No Listings Found message is displayed correctly.', () => {
                 ],
             notInitialLoad: true,
             })
-
         expect(wrapper.find('.noListings').exists()).toBeFalsy()
     })
 })

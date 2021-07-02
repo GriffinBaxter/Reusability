@@ -101,9 +101,11 @@
 
       </div>
     </div>
-    <div class="card p-1" v-if="noListings">
-      <p class="h2 py-5" align="center">No Listings Found</p>
-    </div>
+      <div class="noListings" v-if="noListings">
+        <div class="card p-1">
+          <p class="h2 py-5" align="center">No Listings Found</p>
+        </div>
+      </div>
     </div>
     <!-- Footer -->
     <Footer class="footer"/>
