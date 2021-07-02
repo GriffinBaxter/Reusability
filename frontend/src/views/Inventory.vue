@@ -44,7 +44,6 @@
                   Create New
                 </button>
               </div>
-              search bar
 
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">

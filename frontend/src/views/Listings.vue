@@ -101,7 +101,7 @@
 
       </div>
     </div>
-    <div class="card p-1" v-if="listings.length < 1 && notInitialLoad">
+    <div class="card p-1" v-if="noListings">
       <p class="h2 py-5" align="center">No Listings Found</p>
     </div>
     </div>
@@ -111,13 +111,13 @@
 </template>
 
 <script>
-import Navbar from "@/components/main/Navbar";
-import ListingItem from "@/components/listing/ListingItem";
-import Api from "@/Api";
+import Navbar from "../components/main/Navbar";
+import ListingItem from "../components/listing/ListingItem";
+import Api from "../Api";
 import Cookies from "js-cookie";
-import CreateListing from "@/components/listing/CreateListingModal";
-import Footer from "@/components/main/Footer";
-import CurrencyAPI from "@/currencyInstance";
+import CreateListing from "../components/listing/CreateListingModal";
+import Footer from "../components/main/Footer";
+import CurrencyAPI from "../currencyInstance";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 
@@ -129,6 +129,8 @@ name: "Listings",
     return {
       allListings: [],
       listings: [],
+      // When page is initially loaded, we don't want 'No Listings Found' message to display since, listings have not
+      // been retrieved yet.
       notInitialLoad: false,
       businessName: "",
       businessAdmin: false,
@@ -152,6 +154,11 @@ name: "Listings",
 
       creationSuccess: false
     }
+  },
+  computed: {
+  noListings() {
+    return (this.listings.length < 1) && this.notInitialLoad;
+  }
   },
   methods: {
     /**
