@@ -217,4 +217,23 @@ public class KeywordResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
+
+    /**
+     * Checks a 401 status is returned when JSESSIONID is invalid
+     */
+    @Test
+    void checkReturnsUnauthorizedWhenJSESSIONIDIsInvalid() throws Exception {
+        String searchQuery = "qwerty";
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(null));
+        response = mvc.perform(get("/keywords/search")
+                .param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
 }
