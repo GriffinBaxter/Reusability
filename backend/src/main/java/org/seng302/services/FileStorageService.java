@@ -63,6 +63,7 @@ public class FileStorageService {
 
     /**
      * Retrieives the file using a filename to search
+     *
      * @param fileName - The filename you want to find.
      * @return Returns the resource of the file inside an Optional container. Otherwise the Optional will be empty.
      */
