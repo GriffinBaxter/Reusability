@@ -1,5 +1,6 @@
 package org.seng302.services;
 
+import jdk.jshell.spi.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.controller.ListingResource;
@@ -19,25 +20,23 @@ public class FileStorageService {
     private final Path rootPath;
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
-    FileStorageService(String rootPath) {
+    public FileStorageService(String rootPath) {
         this.rootPath = Paths.get(rootPath);
+        this.initialize();
     }
 
     /**
      * Initializes the directory which stores files (by creating it if it does not exist)
      *
-     * @return true if the initilization was successful. Otherwise false.
      */
-    public boolean initialize() {
+    public void initialize() {
         try {
             Files.createDirectory(rootPath);
             String log = "Successfully created " + rootPath + "directoy";
-            logger.debug(log);
-            return true;
+            logger.info(log);
         } catch (IOException e) {
             String log = "Failed to create " + rootPath + "directoy";
-            logger.debug(log);
-            return  false;
+            logger.error(log);
         }
     }
 
@@ -84,4 +83,7 @@ public class FileStorageService {
 
     }
 
+    public void deleteFile(int fileName) throws ExecutionControl.NotImplementedException {
+        throw new ExecutionControl.NotImplementedException("Not created yet...");
+    }
 }
