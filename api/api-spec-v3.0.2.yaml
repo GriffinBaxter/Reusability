@@ -6,10 +6,10 @@ servers:
     
 info:
   description: API specification for the SENG302 2021 project
-  version: 3.0.1
+  version: 3.0.2
   title: Wasteless
   contact:
-    email: seng302@canterbury.ac.nz
+    email: s302team400@cosc.canterbury.ac.nz
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
@@ -952,7 +952,7 @@ paths:
           - defaultGlobalApplicationAdmin
       responses:
         '200':
-          description: End of display period successfully extended. Extension amount should be a further two weeks.
+          description: End of display period successfully extended. Extension amount should be a further week.
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
