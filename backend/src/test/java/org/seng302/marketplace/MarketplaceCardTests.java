@@ -305,4 +305,30 @@ class MarketplaceCardTests {
         Assertions.assertNotNull(marketplaceCard);
         Assertions.assertEquals(description, marketplaceCard.getDescription());
     }
+
+    // ***************** extendDisplayPeriod ********************
+
+    /**
+     * Tests that when extendDisplayPeriod is called on a marketplace card, the displayPeriodEnd date is extended by one week.
+     */
+    @Test
+    void extendDisplayPeriodTest() throws IllegalMarketplaceCardArgumentException {
+        LocalDateTime creationDate = LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0));
+        LocalDateTime originalDisplayPeriodEnd = creationDate.plusWeeks(1);
+        LocalDateTime expectedNewDisplayPeriodEnd = originalDisplayPeriodEnd.plusWeeks(1);
+
+        MarketplaceCard marketplaceCard = new MarketplaceCard(
+                user.getId(),
+                user,
+                Section.FORSALE,
+                creationDate,
+                "Hayley's Birthday",
+                "Description"
+        );
+
+        marketplaceCard.extendDisplayPeriod();
+
+        Assertions.assertNotEquals(originalDisplayPeriodEnd, marketplaceCard.getDisplayPeriodEnd());
+        Assertions.assertEquals(expectedNewDisplayPeriodEnd, marketplaceCard.getDisplayPeriodEnd());
+    }
 }
