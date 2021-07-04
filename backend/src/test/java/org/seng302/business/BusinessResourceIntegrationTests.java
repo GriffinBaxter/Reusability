@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -75,6 +76,18 @@ class BusinessResourceIntegrationTests {
 
     private Address address;
 
+    private final String expectedBusinessJson = "{\"id\":%d," +
+            "\"administrators\":%s," +
+            "\"primaryAdministratorId\":\"%d\"," +
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"address\":\"%s\"," +
+            "\"businessType\":\"%s\"," +
+            "\"created\":\"%s"+
+            "}";
+
+    private User dGAA;
+
     @BeforeAll
     void setup() throws Exception {
         address = new Address(
@@ -127,6 +140,22 @@ class BusinessResourceIntegrationTests {
                 Role.USER);
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
+        dGAA = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        dGAA.setId(2);
+        dGAA.setSessionUUID(User.generateSessionUUID());
         this.mvc = MockMvcBuilders.standaloneSetup(
                 new BusinessResource(businessRepository, userRepository, addressRepository)
         ).build();
@@ -1939,5 +1968,212 @@ class BusinessResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /* ----------------------------------------------/buisnesses/search---------------------------------------------- */
+
+    /**
+     * Tests that an OK status is received when searching for a business using the /businesses/search API endpoint
+     * and that the JSON response is equal to the business searched for. The business is searched for using the
+     * business name.
+     * Test specifically for when the user searching for a business is a DGAA.
+     */
+    @Test
+    void canSearchBusinessesWhenBusinessExistsWithDgaaCookieTest() throws Exception {
+        // given
+        String searchQuery = "NAME";
+
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+        // when
+        List<Business> list = List.of(business);
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(businessRepository.findAllBusinessesByName(searchQuery, paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a business using the /businesses/search API endpoint
+     * and that the JSON response is equal to the business searched for. The business is searched for using the
+     * business name.
+     * Test specifically for when the order by and page params provided are valid.
+     */
+    @Test
+    void canSearchBusinessesWhenBusinessExistsWithValidOrderByAndPageParamsTEst() throws Exception {
+        // given
+        String searchQuery = "NAME";
+
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+        // when
+        List<Business> list = List.of(business);
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(businessRepository.findAllBusinessesByName(searchQuery, paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "nameASC")
+                            .param("page", "0")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a business using the /businesses/search API endpoint
+     * and that the JSON response is equal to the business searched for. The business is searched for using the
+     * business name.
+     * Test specifically for when the user searching for a business is a USER.
+     */
+    @Test
+    void canSearchBusinessesWhenBusinessExistsWithUserCookieTest() throws Exception {
+        // given
+        String searchQuery = "NAME";
+
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+        // when
+        List<Business> list = List.of(business);
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(businessRepository.findAllBusinessesByName(searchQuery, paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests for an OK status but an empty response is received when searching for a business that does not exist using
+     * the /businesses/search API endpoint. The business (that does not exist by the name searched for) is searched for
+     * using the business name.
+     */
+    @Test
+    void emptySearchBusinessesWhenBusinessDoesntExistTest() throws Exception {
+        // given
+        String searchQuery = "BUSINESS";
+        expectedJson = "[]";
+
+        // when
+        List<Business> list = List.of();
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(businessRepository.findAllBusinessesByName(searchQuery, paging)).thenReturn(pagedResponse);
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a business using the /businesses/search API endpoint
+     * when the order by param is invalid.
+     * Test specifically for when the order by param provided is invalid.
+     */
+    @Test
+    void cantSearchBusinessesWithInvalidOrderByParam() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/users/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "a")
+                            .param("page", "0")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a business using the /businesses/search API endpoint
+     * when the page param is invalid.
+     * Test specifically for when the page param provided is invalid.
+     */
+    @Test
+    void cantSearchBusinessesWithInvalidPageParam() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "nameASC")
+                            .param("page", "a")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when searching for a business using the /businesses/search API endpoint
+     * when the cookie contains a non-existing ID.
+     */
+    @Test
+    void cantSearchBusinessesWithNonExistingIdCookie() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID("0")).thenReturn(Optional.empty());
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery).cookie(
+                            new Cookie("JSESSIONID", "0"))).andReturn().getResponse();
+
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when searching for a business using the /businesses/search API endpoint
+     * when there is no cookie.
+     */
+    @Test
+    void cantSearchBusinessesWithNoCookie() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 }
