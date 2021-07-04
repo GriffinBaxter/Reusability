@@ -39,6 +39,15 @@ describe('Test No Listings Found message is displayed correctly.',  () => {
             })
         expect(wrapper.find('.noListings').exists()).toBeFalsy()
     })
+
+    test('No Listings Found message component is not rendered when listings have not yet been retrieved.', async () => {
+        const wrapper = factory({
+            listings: [],
+            notInitialLoad: false,
+        });
+        expect(wrapper.find('.noListings').exists()).toBeFalsy()
+    })
+
 })
 
 
