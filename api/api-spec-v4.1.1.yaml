@@ -7,13 +7,13 @@ servers:
     
 info:
   description: API specification for the SENG302 2021 project
-  version: 4.1.1
-  title: Wasteless
+  version: 4.1.2
+  title: Reusability
   contact:
     email: s302team400@cosc.canterbury.ac.nz
   license:
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    name: MIT License
+    url: 'https://opensource.org/licenses/MIT'
     
 tags:
   # User stories
@@ -990,9 +990,9 @@ paths:
 
             * nameDESC: alphabetically by business name, Z - A
 
-            * locationASC: alphabetically by business name, A - Z
+            * addressASC: alphabetically by business name, A - Z
 
-            * locationDESC: alphabetically by business name, Z - A
+            * addressDESC: alphabetically by business name, Z - A
         - in: query
           name: page
           schema:
