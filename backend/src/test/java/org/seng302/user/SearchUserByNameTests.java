@@ -473,7 +473,7 @@ class SearchUserByNameTests {
      * Tests that the search functionality will order users by address in ascending order i.e. in alphabetical order.
      */
     @Test
-    void whenFindAllUsersByNames_thenReturnAddressOrderedUsersAscending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnAddressOrderedUsersAscending() {
         // given
         int pageNo = 0;
         int pageSize = 11;
@@ -509,7 +509,7 @@ class SearchUserByNameTests {
      * Tests that the search functionality will order users by address in descending order i.e. in reverse alphabetical order.
      */
     @Test
-    void whenFindAllUsersByNames_thenReturnAddressOrderedUsersDescending() throws Exception {
+    void whenFindAllUsersByNames_thenReturnAddressOrderedUsersDescending() {
         // given
         int pageNo = 0;
         int pageSize = 11;
@@ -705,7 +705,6 @@ class SearchUserByNameTests {
         for (int i = 0; i < userPage.getSize(); i++) {
             assertThat(userPage.getContent().get(i)).isEqualTo(searchUsers.get(i));
         }
-
 
     }
 
