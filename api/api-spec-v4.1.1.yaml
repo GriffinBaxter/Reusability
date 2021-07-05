@@ -969,7 +969,6 @@ paths:
           required: false
           description: >-
             Criteria to search businesses for, e.g: business type
-            rules:
 
             * ACCOMMODATION_AND_FOOD_SERVICES
 
@@ -978,6 +977,22 @@ paths:
             * CHARITABLE_ORGANISATION
 
             * NON_PROFIT_ORGANISATION
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            Order the businesses by the given property, according to the following
+            rules:
+
+            * nameASC: alphabetically by business name, A - Z
+
+            * nameDESC: alphabetically by business name, Z - A
+
+            * locationASC: alphabetically by business name, A - Z
+
+            * locationDESC: alphabetically by business name, Z - A
         - in: query
           name: page
           schema:
