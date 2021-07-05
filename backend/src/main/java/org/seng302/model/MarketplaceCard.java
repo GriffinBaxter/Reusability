@@ -267,4 +267,11 @@ public class MarketplaceCard {
                 (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
+    /**
+     * Extends the display period of the marketplace card by one week.
+     */
+    public void extendDisplayPeriod() {
+        this.displayPeriodEnd = displayPeriodEnd.plusWeeks(1);
+    }
+
 }

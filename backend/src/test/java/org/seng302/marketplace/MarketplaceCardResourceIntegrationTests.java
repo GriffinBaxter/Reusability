@@ -36,9 +36,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * MarketplaceCardResource test class
@@ -62,7 +61,6 @@ class MarketplaceCardResourceIntegrationTests {
     @MockBean
     private KeywordRepository keywordRepository;
 
-
     private MockHttpServletResponse response;
 
     private final String cardPayloadJson = "{\"creatorId\":\"%d\"," +
@@ -78,6 +76,7 @@ class MarketplaceCardResourceIntegrationTests {
     private MarketplaceCard marketplaceCard;
     private MarketplaceCard anotherMarketplaceCard;
     private User gaa;
+    private User dgaa;
 
     private final String expectedCardJson = "{" +
             "\"id\":%d," +
@@ -168,6 +167,22 @@ class MarketplaceCardResourceIntegrationTests {
                 Role.GLOBALAPPLICATIONADMIN);
         gaa.setId(3);
         gaa.setSessionUUID(User.generateSessionUUID());
+
+        dgaa = new User("Default",
+                "Admin",
+                "Application",
+                "DGAA",
+                "bio",
+                "dgaa@example.com",
+                LocalDate.of(2000, 1, 1),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        dgaa.setId(4);
+        dgaa.setSessionUUID(User.generateSessionUUID());
 
         marketplaceCard = new MarketplaceCard(
                 user.getId(),
@@ -643,4 +658,117 @@ class MarketplaceCardResourceIntegrationTests {
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Tests that the user can extend the display period of a card with a valid cookie when
+     * they are the creator of the card and the card exists, and that an OK response is received.
+     */
+    @Test
+    void canExtendDisplayPeriodAsCreatorWhenCardExists() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that the user can extend the display period of a card with a valid cookie when
+     * they are not the creator of the card but are a DGAA and the card exists, and that an OK response is received.
+     */
+    @Test
+    void canExtendDisplayPeriodAsDGAAWhenCardExists() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that the user can extend the display period of a card with a valid cookie when
+     * they are not the creator of the card but are a DGAA and the card exists, and that an OK response is received.
+     */
+    @Test
+    void canExtendDisplayPeriodAsGAAWhenCardExists() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(gaa.getSessionUUID())).willReturn(Optional.ofNullable(gaa));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", gaa.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that the user cannot extend the display period of a card with an invalid cookie
+     * and that an UNAUTHORIZED response is received.
+     */
+    @Test
+    void cantExtendDisplayPeriodWithInvalidCookie() throws Exception {
+        // when
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", 1))
+                .cookie(new Cookie("JSESSIONID", "0"))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that the user cannot extend the display period of a card with no cookie
+     * and that an UNAUTHORIZED response is received.
+     */
+    @Test
+    void cantExtendDisplayPeriodWithNoCookie() throws Exception {
+        // when
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", 1))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that the user cannot extend the display period of a card when they are neither
+     * a global application admin or the creator of the card and that a FORBIDDEN response is received.
+     */
+    @Test
+    void cantExtendDisplayPeriodWhenNotCreatorAndNotAdmin() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that the user cannot extend the display period of a card when the card with the
+     * provided ID does not exist and that a NOT_ACCEPTABLE response is received.
+     */
+    @Test
+    void cantExtendDisplayPeriodWhenCardDoesNotExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
 }

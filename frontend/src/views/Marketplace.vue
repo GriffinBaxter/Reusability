@@ -44,8 +44,7 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'For Sale'"
                                  v-bind:sectionCards="allCards.ForSale"
-                                 @new-card-created="e => allCards.ForSale.unshift(e)"
-
+                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
           />
@@ -57,7 +56,7 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'Wanted'"
                                  v-bind:sectionCards="allCards.Wanted"
-                                 @new-card-created="e => allCards.Wanted.unshift(e)"
+                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
           />
@@ -69,7 +68,7 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'Exchange'"
                                  v-bind:sectionCards="allCards.Exchange"
-                                 @new-card-created="e => allCards.Exchange.unshift(e)"
+                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
           />
@@ -188,7 +187,7 @@ export default {
         this.allCards[section] = response.data;
         this.totalPages = parseInt(response.headers["total-pages"]);
 
-        if (this.totalPages > 0 && this.page > this.totalPages - 1) {
+        if (this.totalPages > 0 && this.page > this.totalPages) {
           this.$router.push({path: '/pageDoesNotExist'});
         }
       }).catch((error) => {

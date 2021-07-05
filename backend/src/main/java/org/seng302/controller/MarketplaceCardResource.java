@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
  * The POST /cards endpoint is used to create cards.
  * The GET /cards endpoint is used to retrieve all cards that are stored.
  * The GET /cards/id endpoint is used to retrieve the details for a single card.
+ * The PUT /cards/{id}/extenddisplayperiod endpoint is used to extend the display period of a card nearing expiry.
  */
 @RestController
 public class MarketplaceCardResource {
@@ -53,13 +54,14 @@ public class MarketplaceCardResource {
 
     /**
      * A constructor for MarketplaceCardResource which is used for mocking purposes.
+     *
      * @param marketplaceCardRepository - Stores cards.
-     * @param userRepository - Stores user.
-     * @param keywordRepository - Stores keywords.
+     * @param userRepository            - Stores user.
+     * @param keywordRepository         - Stores keywords.
      */
     public MarketplaceCardResource(
-             MarketplaceCardRepository marketplaceCardRepository, UserRepository userRepository,
-             KeywordRepository keywordRepository
+            MarketplaceCardRepository marketplaceCardRepository, UserRepository userRepository,
+            KeywordRepository keywordRepository
     ) {
         this.marketplaceCardRepository = marketplaceCardRepository;
         this.userRepository = userRepository;
@@ -69,6 +71,7 @@ public class MarketplaceCardResource {
     /**
      * Create a new card.
      * The response status and reason is returned for the corresponding scenario.
+     *
      * @param sessionToken Session token
      * @return ResponseEntity<MarketplaceCardIdPayload> this payload contains the id of a successfully created card.
      */
@@ -107,7 +110,7 @@ public class MarketplaceCardResource {
 
                         // Loop through keywords and update card and keywords accordingly.
                         List<String> keywords = cardPayload.getKeywords();
-                        for (String keyword: keywords) {
+                        for (String keyword : keywords) {
                             Optional<Keyword> existingKeyword = keywordRepository.findByName(keyword);
                             if (existingKeyword.isPresent()) { // If keyword exists then update existing keyword.
                                 Keyword existingKeywordPresent = existingKeyword.get();
@@ -158,10 +161,11 @@ public class MarketplaceCardResource {
 
     /**
      * Get response for retrieving a list of Marketplace Cards from a Section
+     *
      * @param sessionToken JSESSIONID
-     * @param section Section of card
-     * @param orderBy Ordering
-     * @param page Page number
+     * @param section      Section of card
+     * @param orderBy      Ordering
+     * @param page         Page number
      * @return List of MarketplaceCardPayloads
      * @throws Exception when card can't be converted to payload (DTO).
      */
@@ -181,7 +185,7 @@ public class MarketplaceCardResource {
         Section sectionType;
         try {
             sectionType = Section.valueOf(section.toUpperCase());
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error("400 [BAD REQUEST] - {} is not a valid section", section);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -248,7 +252,7 @@ public class MarketplaceCardResource {
         logger.info("Get Marketplace Cards Success - 200 [OK] -  Cards retrieved for Section {}, order by {}, page {}", section, orderBy, pageNo);
         List<MarketplaceCard> cards = pagedResult.getContent();
         List<MarketplaceCardPayload> payload = new ArrayList<>();
-        for (MarketplaceCard card: cards) {
+        for (MarketplaceCard card : cards) {
             payload.add(card.toMarketplaceCardPayload());
         }
 
@@ -259,6 +263,7 @@ public class MarketplaceCardResource {
 
     /**
      * GET method for retrieving a specific marketplace card.
+     *
      * @param id Integer Id (primary key)
      * @return Marketplace card object if it exists
      */
@@ -270,20 +275,60 @@ public class MarketplaceCardResource {
 
         Optional<MarketplaceCard> optionalMarketplaceCard = marketplaceCardRepository.findById(id);
 
-        if (optionalMarketplaceCard.isEmpty()) {
-            logger.error("Marketplace Card Retrieval Failure - 406 [NOT ACCEPTABLE] - Marketplace card with ID {} does not exist", id);
+        MarketplaceCard marketplaceCard = checkCardExists(optionalMarketplaceCard);
+
+        logger.info("Marketplace Card Retrieval Success - 200 [OK] -  Marketplace card retrieved with ID {}", id);
+        logger.debug("Marketplace card retrieved with ID {}: {}", id, marketplaceCard);
+
+        return marketplaceCard.toMarketplaceCardPayload();
+    }
+
+    /**
+     * PUT method for extending the display period of a marketplace card with a given ID.
+     *
+     * @param sessionToken Session token of the currently logged in user.
+     * @param id The ID of the card the user wishes to extend the display period of.
+     */
+    @PutMapping("/cards/{id}/extenddisplayperiod")
+    public void extendDisplayPeriod(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id) {
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        Optional<MarketplaceCard> optionalMarketplaceCard = marketplaceCardRepository.findById(id);
+
+        MarketplaceCard marketplaceCard = checkCardExists(optionalMarketplaceCard);
+
+        if (!Authorization.isGAAorDGAA(currentUser) && marketplaceCard.getCreatorId() != currentUser.getId()) {
+            logger.error("Marketplace Card Modification Error - 403 [FORBIDDEN] - User with ID {} neither a GAA nor the creator of card with ID {}", currentUser.getId(), marketplaceCard.getId());
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "The account performing the request is neither a global application admin nor the creator of this card."
+            );
+        }
+
+        marketplaceCard.extendDisplayPeriod();
+        marketplaceCardRepository.save(marketplaceCard);
+        logger.info("Marketplace Card Modification Success - 200 [OK] - Marketplace card with ID {} has had its display period extended to {}.", id, marketplaceCard.getDisplayPeriodEnd());
+    }
+
+    /**
+     * Checks that an optional that may or may not contain a marketplace card is not empty.
+     * If it is, then throws a response.
+     * However, if a card exists, then the card is returned.
+     *
+     * @param marketplaceCardOptional Optional<MarketplaceCard> The optional that may or may not contain a marketplace card.
+     * @return MarketplaceCard The card that was in the Optional if one exists.
+     */
+    private MarketplaceCard checkCardExists(Optional<MarketplaceCard> marketplaceCardOptional) {
+        if (marketplaceCardOptional.isEmpty()) {
+            logger.error("Marketplace Card Retrieval Failure - 406 [NOT ACCEPTABLE] - Marketplace card does not exist");
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
                             "for example trying to access a resource by an ID that does not exist."
             );
         }
-
-        logger.info("Marketplace Card Retrieval Success - 200 [OK] -  Marketplace card retrieved with ID {}", id);
-        logger.debug("Marketplace card retrieved with ID {}: {}", id, optionalMarketplaceCard.get());
-
-        MarketplaceCard marketplaceCard = optionalMarketplaceCard.get();
-
-        return marketplaceCard.toMarketplaceCardPayload();
+        return marketplaceCardOptional.get();
     }
+
 }
