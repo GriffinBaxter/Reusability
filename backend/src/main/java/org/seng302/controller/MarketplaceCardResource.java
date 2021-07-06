@@ -312,6 +312,45 @@ public class MarketplaceCardResource {
     }
 
     /**
+     * GET method for retrieving all active cards that a given user has created.
+     *
+     * @param sessionToken Session token of the currently logged in user.
+     * @param id The ID of the user.
+     * @return A list of all cards created by the user (possibly empty).
+     */
+    @GetMapping("/users/{id}/cards")
+    public ResponseEntity<List<MarketplaceCardPayload>> retrieveUsersActiveCards(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer id
+    ) throws Exception {
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+        
+        Optional<User> cardsUser = userRepository.findById(id);
+        
+        if (cardsUser.isEmpty()) {
+            logger.error("406 [NOT ACCEPTABLE] - User with ID {} does not exist", id);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The given user does not exist.");
+        } else {
+            List<MarketplaceCard> cards = marketplaceCardRepository
+                    .findMarketplaceCardByCreatorId(
+                            id
+                    );
+            logger.info(
+                    "Marketplace Retrieve Cards Success - 200 [OK] - User with ID {} has had its cards retrieved.",
+                    id
+            );
+
+            List<MarketplaceCardPayload> payload = new ArrayList<>();
+            for (MarketplaceCard card : cards) {
+                payload.add(card.toMarketplaceCardPayload());
+            }
+            
+            return ResponseEntity.ok()
+                    .body(payload);
+        }
+    }
+
+    /**
      * Checks that an optional that may or may not contain a marketplace card is not empty.
      * If it is, then throws a response.
      * However, if a card exists, then the card is returned.
