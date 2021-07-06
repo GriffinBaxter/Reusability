@@ -2,30 +2,28 @@
 <!--It contains the search bar for searching for users by first name.-->
 
 <template>
-    <div class="pt-3 text-font container-fluid" id="search-bar-container">
-      <div class="col search-bar-positioning">
-        <div class="row">
-          <div class="col">
-            <div class="btn-group">
-              <button id="userRadioButton" type="button" :class="`btn green-button-transparent ${this.searchType === 'User' ? 'active': ''}`" @click="changeSearchType('User')">User</button>
-              <button id="businessRadioButton" type="button" :class="`btn green-button-transparent ${this.searchType === 'Business' ? 'active': ''}`" @click="changeSearchType('Business')">Business</button>
-            </div>
-          </div>
-          <div v-if="searchType === 'Business'" class="col" style="margin-bottom: 10px;">
-            <label style="padding-right: 10px; padding-left: 70px;" for="businessTypeComboBox">Business Type:</label>
-            <select id="businessTypeComboBox" name="business-type" tabindex="2" v-model="selectedBusinessType">
-              <option value="">Any</option>
-              <option v-for="option in businessTypes" :key="option.businessType" :value="option.value">
-                {{ option.value }}
-              </option>
-            </select>
+    <div class="pt-3 text-font container-fluid search-bar-positioning" id="search-container">
+      <div class="row" id="search-bar-inputs">
+        <div class="col" id="radio-button-container">
+          <div class="btn-group" id="radio-buttons">
+            <button id="user-radio-button" type="button" :class="`btn green-button-transparent ${this.searchType === 'User' ? 'active': ''}`" @click="changeSearchType('User')">User</button>
+            <button id="business-radio-button" type="button" :class="`btn green-button-transparent ${this.searchType === 'Business' ? 'active': ''}`" @click="changeSearchType('Business')">Business</button>
           </div>
         </div>
-        <div class="row">
-          <div class="input-group">
-            <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
-            <button class="btn green-search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
-          </div>
+        <div v-if="searchType == 'Business'" id="business-type-combo-box-container" class="col" style="margin-bottom: 10px;">
+          <label style="padding-right: 10px; padding-left: 70px;" for="business-type-combo-box">Business Type:</label>
+          <select id="business-type-combo-box" name="business-type" tabindex="2" v-model="selectedBusinessType">
+            <option value="" id="default-option">Any</option>
+            <option v-for="option in businessTypes" :id="option.businessType" :key="option.businessType" :value="option.value">
+              {{ option.value }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="row" id="search-bar-container">
+        <div class="input-group" id="search-inputs">
+          <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
+          <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
         </div>
       </div>
     </div>
@@ -42,10 +40,10 @@ export default {
       // Business type related variables
       selectedBusinessType: "",
       businessTypes: [
-        { businessType: 'ACCOMMODATION AND FOOD SERVICES', value: 'Accommodation and Food Services' },
-        { businessType: 'RETAIL TRADE', value: 'Retail Trade' },
-        { businessType: 'CHARITABLE ORGANISATION', value: 'Charitable Organisation' },
-        { businessType: 'NON PROFIT ORGANISATION', value: 'Non Profit Organisation' }
+        { businessType: 'accommodation-and-food-services', value: 'Accommodation and Food Services' },
+        { businessType: 'retail-trade', value: 'Retail Trade' },
+        { businessType: 'charitable-organisation', value: 'Charitable Organisation' },
+        { businessType: 'non-profit-organisation', value: 'Non Profit Organisation' }
       ],
     }
   },
