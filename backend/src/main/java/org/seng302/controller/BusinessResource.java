@@ -27,7 +27,13 @@ import org.seng302.model.repository.UserRepository;
 import org.seng302.view.outgoing.BusinessIdPayload;
 import org.seng302.view.outgoing.BusinessPayload;
 import org.seng302.view.incoming.BusinessRegistrationPayload;
+import org.seng302.view.outgoing.UserPayloadSecure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +53,7 @@ import java.util.Optional;
  * GET "/businesses/{id}" endpoint used for retrieving a single business.
  * PUT "/businesses/{id}/makeAdministrator" endpoint for making a user an administrator of a business.
  * PUT "/businesses/{id}/revokeAdministrator" endpoint for removing a user as administrator of a business.
+ * GET "/businesses/search" endpoint used to retrieve business accounts based on search criteria.
  */
 @RestController
 public class BusinessResource {
@@ -346,5 +353,109 @@ public class BusinessResource {
         optionalBusiness.get().removeAdministrators(optionalUser.get());
         userRepository.flush();
         businessRepository.flush();
+    }
+
+    /**
+     * Search for businesses by business name and/or business type.
+     * Returns paginated and ordered results based on input query params.
+     *
+     * @param sessionToken Session token used to authenticate user (is user logged in?).
+     * @param searchQuery Search query (the business name to search by).
+     * @parama businessType Business type to search by.
+     * @param orderBy Column to order the results by.
+     * @param page Page number to return results from.
+     * @return A list of BusinessPayload objects matching the search query
+     *
+     * Preconditions:  sessionToken is of a valid user.
+     *                 page can be parsed as a positive integer (i.e. it is a string representation of a positive integer)
+     *                 orderBy is of one of the supported types ("nameASC", "nameDESC", "addressASC" or "addressDESC").
+     * Postconditions: A response entity containing a list of businesses matching the search criteria and response code
+     *                 are returned.
+     */
+    @GetMapping("/businesses/search")
+    public ResponseEntity<List<BusinessPayload>> searchBusinesses(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestParam(defaultValue = "") String searchQuery,
+            @RequestParam(defaultValue = "") String businessType,
+            @RequestParam(defaultValue = "nameASC") String orderBy,
+            @RequestParam(defaultValue = "0") String page
+    ) throws Exception {
+        logger.debug("Business search request received with search query {}, business type {}, order by {}, page {}",
+                searchQuery, businessType, orderBy, page);
+
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        int pageNo;
+        try {
+            pageNo = Integer.parseInt(page);
+        } catch (final NumberFormatException e) {
+            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Page parameter invalid"
+            );
+        }
+
+        // Front-end displays 5 businesses per page
+        int pageSize = 5;
+
+        Sort sortBy = null;
+        // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
+        // Normally all upper case letters come before any lower case ones.
+        switch (orderBy) {
+            case "nameASC":
+                sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
+                break;
+            case "nameDESC":
+                sortBy = Sort.by(Sort.Order.desc("name").ignoreCase());
+                break;
+            case "addressASC":
+                sortBy = Sort.by(Sort.Order.asc("address.street_name").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("address.suburb").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("address.city").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("address.region").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("address.country").ignoreCase()));
+                break;
+            case "addressDESC":
+                sortBy = Sort.by(Sort.Order.desc("address.street_name").ignoreCase())
+                        .and(Sort.by(Sort.Order.desc("address.suburb").ignoreCase()))
+                        .and(Sort.by(Sort.Order.desc("address.city").ignoreCase()))
+                        .and(Sort.by(Sort.Order.desc("address.region").ignoreCase()))
+                        .and(Sort.by(Sort.Order.desc("address.country").ignoreCase()));
+                break;
+            default:
+                logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "OrderBy Field invalid"
+                );
+        }
+
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+
+        Page<Business> pagedResult = parseAndExecuteQuery(searchQuery, businessType, paging);
+
+        int totalPages = pagedResult.getTotalPages();
+        int totalRows = (int) pagedResult.getTotalElements();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
+
+        logger.info("Search Success - 200 [OK] -  Businesses retrieved for search query {}, business type {}, order by {}, page {}",
+                searchQuery, businessType, orderBy, pageNo);
+
+        logger.debug("Businesses Found: {}", pagedResult.toList());
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(convertToBusinessPayloads(pagedResult.getContent()));
+    }
+
+    private Page<Business> parseAndExecuteQuery(String searchQuery, String businessType, Pageable paging) {
+        return userRepository.findAllUsersByNames(searchQuery, paging);
+    }
+
+    private List<BusinessPayload> convertToBusinessPayloads(List<Business>) {
+        return;
     }
 }

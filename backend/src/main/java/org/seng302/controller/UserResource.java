@@ -321,7 +321,6 @@ public class UserResource {
     ) throws Exception {
         logger.debug("User search request received with search query {}, order by {}, page {}", searchQuery, orderBy, page);
 
-        //TODO check this
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         int pageNo;
         try {
@@ -409,7 +408,17 @@ public class UserResource {
     }
 
     //TODO write unit tests
-    //TODO write comment
+
+    /**
+     * This method converts a list of users to "secure" payloads which omit user details due to privacy concerns.
+     *
+     * @param userList the list of users the current user is trying to view.
+     * @param user the user who is trying to access the details of other users. If they are not an admin then they
+     *             can not view extra details of other users.
+     * @return List<UserPayloadSecure> A list of users who have had some fields of their address removed due to privacy
+     * concerns.
+     * @throws Exception thrown if error occurs when converting to secure payload.
+     */
     public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
         List<UserPayloadSecure> userPayloadList = new ArrayList<>();
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
@@ -461,7 +470,7 @@ public class UserResource {
 
 
     /**
-     * Get method for change the Role of a user account from USE to GLOBALAPPLICATIONADMIN by Email address
+     * Put method to change the Role of a user account from USER to GLOBALAPPLICATIONADMIN by Email address
      * @param id mail address (primary key)
      */
     @PutMapping("/users/{id}/revokeAdmin")
