@@ -408,7 +408,6 @@ public class UserResource {
     }
 
     //TODO write unit tests
-
     /**
      * This method converts a list of users to "secure" payloads which omit user details due to privacy concerns.
      *

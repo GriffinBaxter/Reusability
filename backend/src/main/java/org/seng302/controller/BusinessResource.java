@@ -448,14 +448,28 @@ public class BusinessResource {
         logger.debug("Businesses Found: {}", pagedResult.toList());
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(convertToBusinessPayloads(pagedResult.getContent()));
+                .body(BusinessPayload.toBusinessPayload(pagedResult.getContent()));
     }
 
+    /**
+     * This method parses the search criteria and then calls the needed methods to execute the "query".
+     *
+     * @param searchQuery criteria to search for businesses (business name).
+     * @param businessType criteria to search for businesses using business type.
+     * @param paging information used to paginate the retrieved businesses.
+     * @return Page<Business> A page of businesses matching the search criteria.
+     *
+     * Preconditions:  A non-null string representing a name to be searched for (can be empty string)
+     *                 A non-null string representing a business type to be searched for (can be empty string)
+     * Postconditions: A page containing the results of the business search is returned.
+     */
     private Page<Business> parseAndExecuteQuery(String searchQuery, String businessType, Pageable paging) {
-        return userRepository.findAllUsersByNames(searchQuery, paging);
+        // TODO ""
+        // TODO AND
+        // TODO OR
+        if (businessType == "") return businessRepository.findAllBusinessesByName(searchQuery, paging);
+        if (searchQuery == "") return businessRepository.findAllBusinessesByType(businessType, paging);
+        return businessRepository.findAllBusinessesByNameAndType(searchQuery, businessType, paging);
     }
 
-    private List<BusinessPayload> convertToBusinessPayloads(List<Business>) {
-        return;
-    }
 }
