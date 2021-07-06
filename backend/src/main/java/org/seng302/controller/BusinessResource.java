@@ -464,9 +464,10 @@ public class BusinessResource {
      */
     private Page<Business> parseAndExecuteQuery(String searchQuery, String businessType, Pageable paging) {
         List<String> names = convertSearchQueryToNames(searchQuery);
+        BusinessType convertedBusinessType = toBusinessType(businessType);
         if (businessType.equals("")) return businessRepository.findAllBusinessesByNames(names, paging);
-        if (searchQuery.equals("")) return businessRepository.findBusinessesByType(toBusinessType(businessType), paging);
-        return businessRepository.findAllBusinessesByNamesAndType(names, businessType, paging);
+        if (searchQuery.equals("")) return businessRepository.findBusinessesByType(convertedBusinessType, paging);
+        return businessRepository.findAllBusinessesByNamesAndType(names, convertedBusinessType, paging);
     }
 
     /**
@@ -480,20 +481,30 @@ public class BusinessResource {
      * Postconditions: A list of names from the deconstructed searchQuery.
      */
     private List<String> convertSearchQueryToNames(String searchQuery) {
-        List<String> searchQueryList = Arrays.asList(searchQuery.split(" "));
         List<String> names = new ArrayList<>();
+        if (searchQuery.equals("")) {
+            return names;
+        }
+        List<String> searchQueryList = Arrays.asList(searchQuery.split(" "));
         String currentName = searchQueryList.get(0);
         String previousOperator = "";
-        for (String item: searchQueryList) {
+        for (int i = 0; i < searchQueryList.size(); i++) {
+            String name = searchQueryList.get(i);
             if (previousOperator.equals("AND")) {
-                currentName += " " + item;
+                currentName += " " + name;
             }
             if (previousOperator.equals("OR")) {
                 names.add(currentName);
-                names.add(item);
+                names.add(name);
                 currentName = "";
             }
-            previousOperator = item;
+            if (previousOperator != "AND" && previousOperator != "OR") {
+                currentName += " " + name;
+            }
+            if (i == (searchQueryList.size() - 1)) {
+                names.add(currentName);
+            }
+            previousOperator = name;
         }
         return names;
     }

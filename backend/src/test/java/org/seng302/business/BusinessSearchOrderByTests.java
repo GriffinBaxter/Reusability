@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +58,7 @@ class BusinessSearchOrderByTests {
     private Business searchBusiness9;
     private Business searchBusiness10;
     private List<Business> searchBusinesses;
+    private List<String> names = new ArrayList<>();
 
     /**
      * Creates and inserts all businesses for testing.
@@ -231,7 +233,7 @@ class BusinessSearchOrderByTests {
         orderedNames.add("Wellington General Store");
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames("", pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         for (int i = 0; i < businessPage.getContent().size(); i++) {
@@ -263,7 +265,7 @@ class BusinessSearchOrderByTests {
         orderedNames.add("Ashburton General Store");
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames("", pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         for (int i = 0; i < businessPage.getContent().size(); i++) {
@@ -299,7 +301,7 @@ class BusinessSearchOrderByTests {
         orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames("", pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         for (int i = 0; i < businessPage.getContent().size(); i++) {
@@ -335,7 +337,7 @@ class BusinessSearchOrderByTests {
         orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames("", pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         for (int i = 0; i < businessPage.getContent().size(); i++) {
@@ -356,7 +358,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames("", pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         assertThat(businessPage.getTotalElements()).isEqualTo(10);
@@ -376,8 +378,10 @@ class BusinessSearchOrderByTests {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = Arrays.asList("ThisValueDoesNotExist");
+
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames("ThisValueDoesNotExist", pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         assertThat(businessPage.getTotalElements()).isZero();
@@ -393,10 +397,10 @@ class BusinessSearchOrderByTests {
         int pageSize = 2;
 
         // when
-        Page<Business> businessPage2 = businessRepository.findAllBusinessesByNames("", PageRequest.of(1, pageSize));
-        Page<Business> businessPage3 = businessRepository.findAllBusinessesByNames("", PageRequest.of(2, pageSize));
-        Page<Business> businessPage4 = businessRepository.findAllBusinessesByNames("", PageRequest.of(3, pageSize));
-        Page<Business> businessPage5 = businessRepository.findAllBusinessesByNames("", PageRequest.of(4, pageSize));
+        Page<Business> businessPage2 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(1, pageSize));
+        Page<Business> businessPage3 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(2, pageSize));
+        Page<Business> businessPage4 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(3, pageSize));
+        Page<Business> businessPage5 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(4, pageSize));
 
         // then
         assertThat(businessPage2.getTotalPages()).isEqualTo(5);
@@ -422,7 +426,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames("", pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         assertThat(businessPage.getTotalPages()).isEqualTo(2);
@@ -446,7 +450,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusienssesByNames("", pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         assertThat(businessPage.getTotalPages()).isEqualTo(4);

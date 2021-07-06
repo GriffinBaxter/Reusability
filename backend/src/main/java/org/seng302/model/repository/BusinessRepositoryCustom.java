@@ -1,6 +1,7 @@
 package org.seng302.model.repository;
 
 import org.seng302.model.Business;
+import org.seng302.model.enums.BusinessType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,11 +29,11 @@ public interface BusinessRepositoryCustom {
      * @return A Page object containing all matching business results.
      *
      * Preconditions:  A non-null list of names to search for businesses.
-     *                 A non-null string representing business type.
+     *                 A non-null business type that has been converted from type String to type BusinessType.
      *                 A non-null pageable object.
      * Postconditions: A page object containing all matching business results.
      */
-    Page<Business> findAllBusinessesByNamesAndType(List<String> names, String businessType, Pageable pageable);
+    Page<Business> findAllBusinessesByNamesAndType(List<String> names, BusinessType businessType, Pageable pageable);
 }
 
 

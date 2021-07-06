@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -1982,6 +1983,7 @@ class BusinessResourceIntegrationTests {
     void canSearchBusinessesByNameWhenBusinessExistsWithDgaaCookieTest() throws Exception {
         // given
         String searchQuery = "NAME";
+        List<String> names = Arrays.asList(searchQuery);
 
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
@@ -1992,7 +1994,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByNames(searchQuery, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
@@ -2012,6 +2014,7 @@ class BusinessResourceIntegrationTests {
     void canSearchBusinessesWhenBusinessExistsWithValidOrderByAndPageParamsTest() throws Exception {
         // given
         String searchQuery = "NAME";
+        List<String> names = Arrays.asList(searchQuery);
 
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
@@ -2022,7 +2025,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByNames(searchQuery, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
@@ -2044,6 +2047,7 @@ class BusinessResourceIntegrationTests {
     void canSearchBusinessesByNameWhenBusinessExistsWithUserCookieTest() throws Exception {
         // given
         String searchQuery = "NAME";
+        List<String> names = Arrays.asList(searchQuery);
 
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
@@ -2054,7 +2058,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByNames(searchQuery, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
@@ -2073,6 +2077,7 @@ class BusinessResourceIntegrationTests {
     void emptySearchBusinessesByNameWhenBusinessDoesntExistTest() throws Exception {
         // given
         String searchQuery = "BUSINESS";
+        List<String> names = Arrays.asList(searchQuery);
         expectedJson = "[]";
 
         // when
@@ -2082,7 +2087,7 @@ class BusinessResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 5, sort);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        when(businessRepository.findAllBusinessesByNames(searchQuery, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
                             .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
@@ -2187,6 +2192,7 @@ class BusinessResourceIntegrationTests {
     void canSearchBusinessesByTypeWhenBusinessExistsTest() throws Exception {
         // given
         String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
+        BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
 
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
@@ -2197,7 +2203,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByType(businessType, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findBusinessesByType(convertedBusinessType, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("businessType", businessType)
@@ -2217,7 +2223,9 @@ class BusinessResourceIntegrationTests {
     void canSearchBusinessesByNameAndTypeWhenBusinessExistsTest() throws Exception {
         // given
         String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
+        BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
         String searchQuery = "NAME";
+        List<String> names = Arrays.asList(searchQuery);
 
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
@@ -2228,7 +2236,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByNamesAndType(searchQuery, businessType, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNamesAndType(names, convertedBusinessType, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
