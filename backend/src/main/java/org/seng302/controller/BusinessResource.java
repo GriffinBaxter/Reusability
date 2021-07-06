@@ -432,7 +432,6 @@ public class BusinessResource {
         }
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
-
         Page<Business> pagedResult = parseAndExecuteQuery(searchQuery, businessType, paging);
 
         int totalPages = pagedResult.getTotalPages();
@@ -466,7 +465,7 @@ public class BusinessResource {
     private Page<Business> parseAndExecuteQuery(String searchQuery, String businessType, Pageable paging) {
         List<String> names = convertSearchQueryToNames(searchQuery);
         if (businessType.equals("")) return businessRepository.findAllBusinessesByNames(names, paging);
-        if (searchQuery.equals("")) return businessRepository.findAllBusinessesByType(businessType, paging);
+        if (searchQuery.equals("")) return businessRepository.findBusinessesByType(toBusinessType(businessType), paging);
         return businessRepository.findAllBusinessesByNamesAndType(names, businessType, paging);
     }
 
@@ -477,7 +476,7 @@ public class BusinessResource {
      * @return a list of business names that were represented by the searchQuery (the searchQuery can contain complex queries).
      *
      * Preconditons:  searchQuery is a string which can represent a complex query containing business names e.g.
-     *                "New" AND World OR Count
+     *                "New" AND World OR Count.
      * Postconditions: A list of names from the deconstructed searchQuery.
      */
     private List<String> convertSearchQueryToNames(String searchQuery) {
@@ -497,6 +496,29 @@ public class BusinessResource {
             previousOperator = item;
         }
         return names;
+    }
+
+    /**
+     * Converts a string representation of business type to a enum representation (BusinessType). If the string does
+     * not represent a valid business type then null is returned.
+     * @param type A string representing business type.
+     * @return An enum representation of business type (null if string representation is not valid).
+     *
+     * Preconditions: A string representation of a valid business type.
+     * Postconditions: An enum representation of business type.
+     */
+    private BusinessType toBusinessType(String type){
+        BusinessType businessType = null;
+        if (type.equalsIgnoreCase("ACCOMMODATION AND FOOD SERVICES")){
+            businessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+        } else if (type.equalsIgnoreCase("RETAIL TRADE")){
+            businessType = BusinessType.RETAIL_TRADE;
+        } else if (type.equalsIgnoreCase("CHARITABLE ORGANISATION")){
+            businessType = BusinessType.CHARITABLE_ORGANISATION;
+        } else if (type.equalsIgnoreCase("NON PROFIT ORGANISATION")){
+            businessType = BusinessType.NON_PROFIT_ORGANISATION;
+        }
+        return businessType;
     }
 
 }
