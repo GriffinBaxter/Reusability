@@ -1992,7 +1992,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByName(searchQuery, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNames(searchQuery, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
@@ -2022,7 +2022,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByName(searchQuery, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNames(searchQuery, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
@@ -2054,7 +2054,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByName(searchQuery, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNames(searchQuery, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
@@ -2082,7 +2082,7 @@ class BusinessResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 5, sort);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        when(businessRepository.findAllBusinessesByName(searchQuery, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNames(searchQuery, paging)).thenReturn(pagedResponse);
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
                             .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
@@ -2228,7 +2228,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findAllBusinessesByNameAndType(searchQuery, businessType, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findAllBusinessesByNamesAndType(searchQuery, businessType, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)

@@ -27,7 +27,6 @@ import org.seng302.model.repository.UserRepository;
 import org.seng302.view.outgoing.BusinessIdPayload;
 import org.seng302.view.outgoing.BusinessPayload;
 import org.seng302.view.incoming.BusinessRegistrationPayload;
-import org.seng302.view.outgoing.UserPayloadSecure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -464,12 +464,39 @@ public class BusinessResource {
      * Postconditions: A page containing the results of the business search is returned.
      */
     private Page<Business> parseAndExecuteQuery(String searchQuery, String businessType, Pageable paging) {
-        // TODO ""
-        // TODO AND
-        // TODO OR
-        if (businessType == "") return businessRepository.findAllBusinessesByName(searchQuery, paging);
-        if (searchQuery == "") return businessRepository.findAllBusinessesByType(businessType, paging);
-        return businessRepository.findAllBusinessesByNameAndType(searchQuery, businessType, paging);
+        List<String> names = convertSearchQueryToNames(searchQuery);
+        if (businessType.equals("")) return businessRepository.findAllBusinessesByNames(names, paging);
+        if (searchQuery.equals("")) return businessRepository.findAllBusinessesByType(businessType, paging);
+        return businessRepository.findAllBusinessesByNamesAndType(names, businessType, paging);
+    }
+
+    /**
+     * Deconstructs the search query to get a list of names which will be used to search for businesses.
+     *
+     * @param searchQuery criteria to search for businesses (business name).
+     * @return a list of business names that were represented by the searchQuery (the searchQuery can contain complex queries).
+     *
+     * Preconditons:  searchQuery is a string which can represent a complex query containing business names e.g.
+     *                "New" AND World OR Count
+     * Postconditions: A list of names from the deconstructed searchQuery.
+     */
+    private List<String> convertSearchQueryToNames(String searchQuery) {
+        List<String> searchQueryList = Arrays.asList(searchQuery.split(" "));
+        List<String> names = new ArrayList<>();
+        String currentName = searchQueryList.get(0);
+        String previousOperator = "";
+        for (String item: searchQueryList) {
+            if (previousOperator.equals("AND")) {
+                currentName += " " + item;
+            }
+            if (previousOperator.equals("OR")) {
+                names.add(currentName);
+                names.add(item);
+                currentName = "";
+            }
+            previousOperator = item;
+        }
+        return names;
     }
 
 }
