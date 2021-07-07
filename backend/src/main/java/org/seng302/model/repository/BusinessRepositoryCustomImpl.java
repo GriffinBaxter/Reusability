@@ -84,7 +84,7 @@ public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
         }
 
         Predicate predicateForBusinessType
-                = criteriaBuilder.equal(business.get("business_type"), businessType);
+                = criteriaBuilder.equal(business.get("businessType"), businessType);
 
         query.select(business)
                 .where(criteriaBuilder.and(predicateForBusinessType, criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()]))));

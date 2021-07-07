@@ -2203,7 +2203,7 @@ class BusinessResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(businessRepository.findBusinessesByType(convertedBusinessType, paging)).thenReturn(pagedResponse);
+        when(businessRepository.findBusinessesByBusinessType(convertedBusinessType, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("businessType", businessType)

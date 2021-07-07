@@ -55,7 +55,7 @@ public interface BusinessRepository extends JpaRepository<Business, String>, Bus
      *                 A non-null pageable object.
      * Postconditions: A page object containing all matching business results.
      */
-    Page<Business> findBusinessesByType(BusinessType type, Pageable pageable);
+    Page<Business> findBusinessesByBusinessType(BusinessType type, Pageable pageable);
 
 
 }

@@ -465,8 +465,9 @@ public class BusinessResource {
     private Page<Business> parseAndExecuteQuery(String searchQuery, String businessType, Pageable paging) {
         List<String> names = convertSearchQueryToNames(searchQuery);
         BusinessType convertedBusinessType = toBusinessType(businessType);
+        if (searchQuery.equals("") && businessType.equals("")) return businessRepository.findAll(paging);
         if (businessType.equals("")) return businessRepository.findAllBusinessesByNames(names, paging);
-        if (searchQuery.equals("")) return businessRepository.findBusinessesByType(convertedBusinessType, paging);
+        if (searchQuery.equals("")) return businessRepository.findBusinessesByBusinessType(convertedBusinessType, paging);
         return businessRepository.findAllBusinessesByNamesAndType(names, convertedBusinessType, paging);
     }
 
@@ -483,9 +484,11 @@ public class BusinessResource {
     private List<String> convertSearchQueryToNames(String searchQuery) {
         List<String> names = new ArrayList<>();
         if (searchQuery.equals("")) {
+            names.add("");
             return names;
         }
         List<String> searchQueryList = Arrays.asList(searchQuery.split(" "));
+        System.out.println(searchQueryList);
         String currentName = searchQueryList.get(0);
         String previousOperator = "";
         for (int i = 0; i < searchQueryList.size(); i++) {
@@ -520,13 +523,13 @@ public class BusinessResource {
      */
     private BusinessType toBusinessType(String type){
         BusinessType businessType = null;
-        if (type.equalsIgnoreCase("ACCOMMODATION AND FOOD SERVICES")){
+        if (type.equalsIgnoreCase("ACCOMMODATION_AND_FOOD_SERVICES")){
             businessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
-        } else if (type.equalsIgnoreCase("RETAIL TRADE")){
+        } else if (type.equalsIgnoreCase("RETAIL_TRADE")){
             businessType = BusinessType.RETAIL_TRADE;
-        } else if (type.equalsIgnoreCase("CHARITABLE ORGANISATION")){
+        } else if (type.equalsIgnoreCase("CHARITABLE_ORGANISATION")){
             businessType = BusinessType.CHARITABLE_ORGANISATION;
-        } else if (type.equalsIgnoreCase("NON PROFIT ORGANISATION")){
+        } else if (type.equalsIgnoreCase("NON PROFIT_ORGANISATION")){
             businessType = BusinessType.NON_PROFIT_ORGANISATION;
         }
         return businessType;

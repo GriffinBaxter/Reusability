@@ -205,7 +205,6 @@ class BusinessSearchOrderByTests {
 
         for (Business searchBusiness: searchBusinesses) {
             entityManager.persist(searchBusiness);
-
         }
         entityManager.flush();
     }
@@ -214,7 +213,7 @@ class BusinessSearchOrderByTests {
      * Tests that the search functionality will order businesses by name in ascending order i.e. in alphabetical order.
      */
     @Test
-    void whenFindAllBusinessesByNames_thenReturnNameOrderedBusinessesAscendingTest() {
+    void whenFindAllBusinesses_thenReturnNameOrderedBusinessesAscendingTest() {
         // given
         int pageNo = 0;
         int pageSize = 10;
@@ -233,7 +232,7 @@ class BusinessSearchOrderByTests {
         orderedNames.add("Wellington General Store");
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
+        Page<Business> businessPage = businessRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < businessPage.getContent().size(); i++) {
@@ -350,7 +349,7 @@ class BusinessSearchOrderByTests {
      * businesses.
      */
     @Test
-    void whenFindAllBusinessesByName_thenReturnPageHalfFullTest() {
+    void whenFindAllBusinesses_thenReturnPageHalfFullTest() {
         // given
         int pageNo = 0;
         // Page size 20 means page will be half full with the default 10 businesses inserted.
@@ -358,7 +357,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
+        Page<Business> businessPage = businessRepository.findAll(pageable);
 
         // then
         assertThat(businessPage.getTotalElements()).isEqualTo(10);
@@ -392,15 +391,15 @@ class BusinessSearchOrderByTests {
      * Tests that the search functionality will return pages other than the first one with correct businesses.
      */
     @Test
-    void whenFindAllBusinessesByName_thenReturnPagesFromTwoOnwardTest() {
+    void whenFindAllBusinesses_thenReturnPagesFromTwoOnwardTest() {
         // given
         int pageSize = 2;
 
         // when
-        Page<Business> businessPage2 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(1, pageSize));
-        Page<Business> businessPage3 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(2, pageSize));
-        Page<Business> businessPage4 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(3, pageSize));
-        Page<Business> businessPage5 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(4, pageSize));
+        Page<Business> businessPage2 = businessRepository.findAll(PageRequest.of(1, pageSize));
+        Page<Business> businessPage3 = businessRepository.findAll(PageRequest.of(2, pageSize));
+        Page<Business> businessPage4 = businessRepository.findAll(PageRequest.of(3, pageSize));
+        Page<Business> businessPage5 = businessRepository.findAll(PageRequest.of(4, pageSize));
 
         // then
         assertThat(businessPage2.getTotalPages()).isEqualTo(5);
@@ -426,7 +425,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
+        Page<Business> businessPage = businessRepository.findAll(pageable);
 
         // then
         assertThat(businessPage.getTotalPages()).isEqualTo(2);
@@ -450,7 +449,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
+        Page<Business> businessPage = businessRepository.findAll(pageable);
 
         // then
         assertThat(businessPage.getTotalPages()).isEqualTo(4);
