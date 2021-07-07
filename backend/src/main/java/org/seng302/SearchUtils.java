@@ -26,26 +26,19 @@ public class SearchUtils {
             return names;
         }
         List<String> searchQueryList = Arrays.asList(searchQuery.split(" "));
-        System.out.println(searchQueryList);
-        String currentName = searchQueryList.get(0);
-        String previousOperator = "";
+        String concatName = "";
+        String previousValue = "";
         for (int i = 0; i < searchQueryList.size(); i++) {
-            String name = searchQueryList.get(i);
-            if (previousOperator.equals("AND")) {
-                currentName += " " + name;
+            String currentName = searchQueryList.get(i);
+            if (i == 0) {
+                concatName = currentName;
+            } else if (previousValue.equals("AND")) {
+                concatName += " " + currentName;
             }
-            if (previousOperator.equals("OR")) {
-                names.add(currentName);
-                names.add(name);
-                currentName = "";
+            if (i == searchQueryList.size() - 1) {
+                names.add(concatName);
             }
-            if (previousOperator != "AND" && previousOperator != "OR") {
-                currentName += " " + name;
-            }
-            if (i == (searchQueryList.size() - 1)) {
-                names.add(currentName);
-            }
-            previousOperator = name;
+            previousValue = currentName;
         }
         return names;
     }

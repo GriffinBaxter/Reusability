@@ -463,9 +463,9 @@ public class BusinessResource {
      * Postconditions: A page containing the results of the business search is returned.
      */
     private Page<Business> parseAndExecuteQuery(String searchQuery, String businessType, Pageable paging) {
-        List<String> names = convertSearchQueryToNames(searchQuery);
         BusinessType convertedBusinessType = toBusinessType(businessType);
         if (searchQuery.equals("") && businessType.equals("")) return businessRepository.findAll(paging);
+        List<String> names = convertSearchQueryToNames(searchQuery);
         if (businessType.equals("")) return businessRepository.findAllBusinessesByNames(names, paging);
         if (searchQuery.equals("")) return businessRepository.findBusinessesByBusinessType(convertedBusinessType, paging);
         return businessRepository.findAllBusinessesByNamesAndType(names, convertedBusinessType, paging);
@@ -488,7 +488,6 @@ public class BusinessResource {
             return names;
         }
         List<String> searchQueryList = Arrays.asList(searchQuery.split(" "));
-        System.out.println(searchQueryList);
         String currentName = searchQueryList.get(0);
         String previousOperator = "";
         for (int i = 0; i < searchQueryList.size(); i++) {

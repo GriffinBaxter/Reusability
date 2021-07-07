@@ -17,7 +17,7 @@ public class SearchUtilsTests {
      * statement.
      */
     @Test
-    void convertSearchToNamesWithOneAnd_ExpectListContainingConcatenatedWordTest() {
+    void convertSearchToNamesWithOneAndTest() {
         String searchQuery = "Brink AND Food";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
         List<String> expectedNames = Arrays.asList("Brink Food");
