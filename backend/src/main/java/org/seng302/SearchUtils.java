@@ -28,15 +28,62 @@ public class SearchUtils {
         List<String> searchQueryList = Arrays.asList(searchQuery.split(" "));
         String concatName = "";
         String previousValue = "";
+        String nextValue = "";
+        boolean quoteStart = false;
+        boolean quoteEnd = false;
         for (int i = 0; i < searchQueryList.size(); i++) {
             String currentName = searchQueryList.get(i);
-            if (i == 0) {
+            boolean endOfList = (i == (searchQueryList.size() - 1));
+            if (i < (searchQueryList.size() - 1)) {
+                nextValue = searchQueryList.get(i + 1);
+            }
+
+            if (currentName.startsWith("\"")) {
+                quoteStart = true;
+            }
+            if (currentName.endsWith("\"")) {
+                quoteEnd = true;
+            }
+
+            if (i == 0 && !quoteStart) {
                 concatName = currentName;
-            } else if (previousValue.equals("AND")) {
+            } else if (i == 0 && quoteStart) {
+                concatName = currentName;
+            } else if (quoteStart && !quoteEnd) {
                 concatName += " " + currentName;
             }
-            if (i == searchQueryList.size() - 1) {
+            if (quoteEnd && i != 0) {
+                concatName += " " + currentName;
                 names.add(concatName);
+                concatName = "";
+                quoteStart = false;
+                quoteEnd = false;
+            }
+
+            if (previousValue.equals("AND")) {
+                concatName += " " + currentName;
+            } else if (previousValue.equals("OR") && !(endOfList)) {
+                if (!(nextValue.equals("AND"))) {
+                    names.add(concatName);
+                    names.add(currentName);
+                    concatName = "";
+                } else {
+                    names.add(concatName);
+                    concatName = "";
+                    concatName += currentName;
+                }
+            }
+            if (previousValue.equals("OR") && (endOfList)) {
+                if (concatName.length() > 0) {
+                    names.add(concatName);
+                }
+                names.add(currentName);
+                concatName = "";
+            } else if (endOfList) {
+                if (concatName.length() > 0) {
+                    names.add(concatName);
+                }
+                concatName = "";
             }
             previousValue = currentName;
         }
