@@ -342,7 +342,11 @@ public class MarketplaceCardResource {
 
             List<MarketplaceCardPayload> payload = new ArrayList<>();
             for (MarketplaceCard card : cards) {
-                payload.add(card.toMarketplaceCardPayload());
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                
+                if (card.getDisplayPeriodEnd().isAfter(currentDateTime)) {
+                    payload.add(card.toMarketplaceCardPayload());
+                }
             }
             
             return ResponseEntity.ok()
