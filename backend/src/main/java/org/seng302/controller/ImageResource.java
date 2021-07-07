@@ -36,8 +36,6 @@ public class ImageResource {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private ImageScalingService imageScalingService;
 
     private FileStorageService fileStorageService = new FileStorageService("product-images");
 
@@ -90,7 +88,7 @@ public class ImageResource {
         ArrayList<String> processedImagesNames = new ArrayList<String>();
         try {
             for (int i = 0; i < images.length; i++) {
-                String fileName = String.format("%s-", product.get().getId());
+                String fileName = String.format("%s%s", product.get().getId(), ".png");
                 if (!fileStorageService.storeFile(images[i], fileName)) {
                     throw new IOException("Failed to store images");
                 }
