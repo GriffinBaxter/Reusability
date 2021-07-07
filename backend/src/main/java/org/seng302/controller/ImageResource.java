@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -88,7 +89,7 @@ public class ImageResource {
         ArrayList<String> processedImagesNames = new ArrayList<String>();
         try {
             for (int i = 0; i < images.length; i++) {
-                String fileName = String.format("%s%s", product.get().getId(), ".png");
+                String fileName = String.format(images[i].getOriginalFilename());
                 if (!fileStorageService.storeFile(images[i], fileName)) {
                     throw new IOException("Failed to store images");
                 }
