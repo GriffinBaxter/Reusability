@@ -35,10 +35,10 @@ public class FileStorageService {
         try {
             FileUtils.deleteDirectory(rootPath.toFile());
             Files.createDirectory(rootPath);
-            String log = "Successfully created " + rootPath + " directoy";
+            String log = "Successfully created " + rootPath + " directory";
             logger.info(log);
         } catch (IOException e) {
-            String log = "Failed to create " + rootPath + " directoy";
+            String log = "Failed to create " + rootPath + " directory";
             logger.error(log);
         }
     }
@@ -51,9 +51,11 @@ public class FileStorageService {
      * @return true if the file was stored correctly. Otherwise false.
      */
     public boolean storeFile(MultipartFile file, String fileName) {
+        System.out.println(fileName);
+        System.out.println(file);
         try {
             Files.copy(file.getInputStream(), this.rootPath.resolve(fileName));
-            String log = "Succesfully stored file into " + fileName;
+            String log = "Successfully stored file into " + fileName;
             logger.debug(log);
             return true;
         } catch (IOException e) {
@@ -64,7 +66,7 @@ public class FileStorageService {
     }
 
     /**
-     * Retrieives the file using a filename to search
+     * Retrieves the file using a filename to search
      *
      * @param fileName - The filename you want to find.
      * @return Returns the resource of the file inside an Optional container. Otherwise the Optional will be empty.
@@ -94,7 +96,7 @@ public class FileStorageService {
             logger.error(errorMessage);
             return false;
         } catch (IOException e) {
-            var errorMessage = String.format("An I/O error occured deleting %s", fileName);
+            var errorMessage = String.format("An I/O error occurred deleting %s", fileName);
             logger.error(errorMessage);
             return false;
         }

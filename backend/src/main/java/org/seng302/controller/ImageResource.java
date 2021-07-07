@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -36,7 +37,6 @@ public class ImageResource {
 
     @Autowired
     private ProductRepository productRepository;
-
 
     private FileStorageService fileStorageService = new FileStorageService("product-images");
 
@@ -79,28 +79,44 @@ public class ImageResource {
                     "for example trying to access a resource by an ID that does not exist.");
         }
 
-        // Verify the file type TODO FIGURE OUT HOW TO VERIFY THE CONTENT TYPE NOT JUST THE EXTENTION...
+        // Verify the file type
         for (MultipartFile image : images) {
-            var debugMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", image.getName());
-            logger.debug(debugMessage);
+            String imageFileName = Objects.requireNonNull(image.getOriginalFilename());
+            String imageType = getFileExtension(imageFileName);
+            System.out.println(imageType);
+            if (!imageType.equalsIgnoreCase("jpg") && !imageType.equalsIgnoreCase("jpeg") &&
+                    !imageType.equalsIgnoreCase("png") && !imageType.equalsIgnoreCase("gif")) {
+
+                String debugMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", image.getName());
+                logger.debug(debugMessage);
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The file type of the image uploaded is not " +
+                        "supported. Only JPG, JPEG, PNG and GIF are supported.");
+            }
         }
 
         // Store the images
         ArrayList<String> processedImagesNames = new ArrayList<String>();
-        try {
-            for (int i = 0; i < images.length; i++) {
-                String fileName = String.format(images[i].getOriginalFilename());
+
+        for (int i = 0; i < images.length; i++) {
+            try {
+                String fileName = String.format(Objects.requireNonNull(images[i].getOriginalFilename()));
                 if (!fileStorageService.storeFile(images[i], fileName)) {
                     throw new IOException("Failed to store images");
                 }
                 processedImagesNames.add(fileName);
             }
-        } catch (IOException e) {
-            for (String fileName : processedImagesNames) {
-//                fileStorageService.deleteFile(fileName);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more of the images failed to be stored.");
-            }
+            catch (IOException e) {
+                for (String fileName : processedImagesNames) {
+                    fileStorageService.deleteFile(fileName);
+                }
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more of the images failed to be stored.");            }
         }
+    }
+
+    private static String getFileExtension(String fileName) {
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
     }
 
 }
