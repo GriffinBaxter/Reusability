@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.awt.image.BufferedImage;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;

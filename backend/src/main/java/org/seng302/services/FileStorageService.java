@@ -3,6 +3,7 @@ package org.seng302.services;
 import jdk.jshell.spi.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.seng302.controller.ListingResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +20,7 @@ import java.util.Optional;
 public class FileStorageService {
 
     private final Path rootPath;
-    private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
+    private static final Logger logger = LogManager.getLogger(FileStorageService.class.getName());
 
     public FileStorageService(String rootPath) {
         this.rootPath = Paths.get(rootPath);
@@ -31,11 +33,12 @@ public class FileStorageService {
      */
     public void initialize() {
         try {
+            FileUtils.deleteDirectory(rootPath.toFile());
             Files.createDirectory(rootPath);
-            String log = "Successfully created " + rootPath + "directoy";
+            String log = "Successfully created " + rootPath + " directoy";
             logger.info(log);
         } catch (IOException e) {
-            String log = "Failed to create " + rootPath + "directoy";
+            String log = "Failed to create " + rootPath + " directoy";
             logger.error(log);
         }
     }
@@ -83,7 +86,17 @@ public class FileStorageService {
 
     }
 
-    public void deleteFile(int fileName) throws ExecutionControl.NotImplementedException {
-        throw new ExecutionControl.NotImplementedException("Not created yet...");
+    public boolean deleteFile(String fileName) {
+        try {
+            return Files.deleteIfExists(this.rootPath.resolve(fileName));
+        } catch (DirectoryNotEmptyException e) {
+            var errorMessage = String.format("Directory %s does not exist.", fileName);
+            logger.error(errorMessage);
+            return false;
+        } catch (IOException e) {
+            var errorMessage = String.format("An I/O error occured deleting %s", fileName);
+            logger.error(errorMessage);
+            return false;
+        }
     }
 }
