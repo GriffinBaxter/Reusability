@@ -58,6 +58,7 @@
                   <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
                   <a v-bind:title="creator" style="font-size: 17px"> {{ displayCreator }} </a>
                   <button v-if="deletePermissionCheck()"
+                          id="remove-card-button"
                           type="button"
                           class="btn btn-outline-danger"
                           style="float:right"
@@ -95,7 +96,7 @@ export default {
       displayCreator: "",
       address: "",
       currentUserRole: "",
-      creatorId: ""
+      creatorId: null
     }
   },
   props: {
