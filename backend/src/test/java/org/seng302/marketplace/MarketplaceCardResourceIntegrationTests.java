@@ -38,6 +38,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * MarketplaceCardResource test class
@@ -61,7 +63,6 @@ class MarketplaceCardResourceIntegrationTests {
     @MockBean
     private KeywordRepository keywordRepository;
 
-
     private MockHttpServletResponse response;
 
     private final String cardPayloadJson = "{\"creatorId\":\"%d\"," +
@@ -77,6 +78,7 @@ class MarketplaceCardResourceIntegrationTests {
     private MarketplaceCard marketplaceCard;
     private MarketplaceCard anotherMarketplaceCard;
     private User gaa;
+    private User dgaa;
 
     private final String expectedCardJson = "{" +
             "\"id\":%d," +
@@ -105,6 +107,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Before each create a user that will be used in all tests when creating cards.
+     *
      * @throws Exception thrown if there is an error when creating an address or user.
      */
     @BeforeEach
@@ -168,6 +171,22 @@ class MarketplaceCardResourceIntegrationTests {
         gaa.setId(3);
         gaa.setSessionUUID(User.generateSessionUUID());
 
+        dgaa = new User("Default",
+                "Admin",
+                "Application",
+                "DGAA",
+                "bio",
+                "dgaa@example.com",
+                LocalDate.of(2000, 1, 1),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        dgaa.setId(4);
+        dgaa.setSessionUUID(User.generateSessionUUID());
+
         marketplaceCard = new MarketplaceCard(
                 user.getId(),
                 user,
@@ -198,6 +217,7 @@ class MarketplaceCardResourceIntegrationTests {
     /**
      * Tests that a CREATED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains a card with valid data.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -227,6 +247,7 @@ class MarketplaceCardResourceIntegrationTests {
     /**
      * Tests that a BAD_REQUEST status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains a card that already exists for an existing creator ID.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -311,6 +332,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that an UNAUTHORIZED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID but with
      * an invalid UUID.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -340,6 +362,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that a FORBIDDEN status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID for another user but the current user
      * is not a GAA or DGAA.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -367,6 +390,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that a CREATED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID for another user and the current user
      * is a GAA.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -647,10 +671,124 @@ class MarketplaceCardResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Tests that the user can extend the display period of a card with a valid cookie when
+     * they are the creator of the card and the card exists, and that an OK response is received.
+     */
+    @Test
+    void canExtendDisplayPeriodAsCreatorWhenCardExists() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that the user can extend the display period of a card with a valid cookie when
+     * they are not the creator of the card but are a DGAA and the card exists, and that an OK response is received.
+     */
+    @Test
+    void canExtendDisplayPeriodAsDGAAWhenCardExists() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that the user can extend the display period of a card with a valid cookie when
+     * they are not the creator of the card but are a DGAA and the card exists, and that an OK response is received.
+     */
+    @Test
+    void canExtendDisplayPeriodAsGAAWhenCardExists() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(gaa.getSessionUUID())).willReturn(Optional.ofNullable(gaa));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", gaa.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that the user cannot extend the display period of a card with an invalid cookie
+     * and that an UNAUTHORIZED response is received.
+     */
+    @Test
+    void cantExtendDisplayPeriodWithInvalidCookie() throws Exception {
+        // when
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", 1))
+                .cookie(new Cookie("JSESSIONID", "0"))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that the user cannot extend the display period of a card with no cookie
+     * and that an UNAUTHORIZED response is received.
+     */
+    @Test
+    void cantExtendDisplayPeriodWithNoCookie() throws Exception {
+        // when
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", 1))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that the user cannot extend the display period of a card when they are neither
+     * a global application admin or the creator of the card and that a FORBIDDEN response is received.
+     */
+    @Test
+    void cantExtendDisplayPeriodWhenNotCreatorAndNotAdmin() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that the user cannot extend the display period of a card when the card with the
+     * provided ID does not exist and that a NOT_ACCEPTABLE response is received.
+     */
+    @Test
+    void cantExtendDisplayPeriodWhenCardDoesNotExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+
+        // when
+        when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/cards/%d/extenddisplayperiod", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+
     // ---------------------------------------- DELETE ONE CARD (by CARD ID) -------------------------------------------
 
     /**
      * Test that the creator can delete his card. Return OK (200).
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -669,6 +807,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Test that a GAA can delete his card. Return OK (200).
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -688,6 +827,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Test that the DGAA can delete his card. Return OK (200).
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -707,6 +847,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Test that card will not been delete when no user login (no session token). Return UNAUTHORIZED (401).
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -725,6 +866,7 @@ class MarketplaceCardResourceIntegrationTests {
     /**
      * Test that card will not been delete when current user (session token) is a USER and not the creator of this card.
      * Return FORBIDDEN (403).
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -743,6 +885,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Test that the creator can delete his card. Return OK (200).
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -761,6 +904,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Test that the creator can delete his card. Return OK (200).
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test

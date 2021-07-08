@@ -1,7 +1,9 @@
-package org.seng302.marketplace;
+package org.seng302.keyword;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.seng302.exceptions.IllegalKeywordArgumentException;
 import org.seng302.model.Address;
@@ -14,20 +16,27 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Keyword test class.
  * Contains tests to check if exceptions are thrown when invalid data is supplied.
  */
 class KeywordTests {
 
+    private static Address address;
+    private static User user;
+    private static MarketplaceCard card;
+
     private Keyword keyword;
-    private Address address;
-    private User user;
-    private MarketplaceCard card;
     private String name;
 
-    @BeforeEach
-    void setup() throws Exception {
+    /**
+     * Set up for all tests in KeywordTests
+     * @throws Exception thrown if there is an error creating a new entity.
+     */
+    @BeforeAll
+    static void before() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -80,9 +89,9 @@ class KeywordTests {
     @Test
     void isIllegalKeywordArgumentExceptionThrownWhenNameLengthGreaterThanMaxLengthTest() {
         try {
-            name = "A";
-            keyword = new Keyword (name.repeat(30), LocalDateTime.now(), card);
-        } catch (IllegalKeywordArgumentException e) {
+            String name = "A";
+            Keyword keyword = new Keyword (name.repeat(50), LocalDateTime.now(), card);
+        } catch (Exception e) {
             Assertions.assertEquals("Invalid name", e.getMessage());
         }
     }
@@ -120,6 +129,4 @@ class KeywordTests {
         Assertions.assertNotNull(keyword);
         Assertions.assertEquals(name, keyword.getName());
     }
-
-
 }
