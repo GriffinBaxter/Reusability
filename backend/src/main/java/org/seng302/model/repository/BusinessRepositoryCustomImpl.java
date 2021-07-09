@@ -78,6 +78,7 @@ public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
         List<Predicate> predicates = new ArrayList<>();
         for (String name : names) {
             if (name.startsWith("\"") && name.endsWith("\"")) {
+                name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
                 predicates.add(criteriaBuilder.equal(namePath, name));
             } else {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(namePath), "%" + name.toUpperCase() + "%"));
