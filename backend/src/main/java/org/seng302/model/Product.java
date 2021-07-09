@@ -39,8 +39,7 @@ public class Product {
     @JoinColumn(name = "business_id", insertable = false, updatable = false)
     private Business business;
 
-    @OneToMany(targetEntity = Image.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id", insertable = false, updatable = false)
+    @OneToMany(mappedBy = "product")
     private List<Image> images;
 
     @Id
