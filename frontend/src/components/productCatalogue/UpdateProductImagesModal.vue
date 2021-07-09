@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import Product from "@/configs/Product";
+import Product from "../../configs/Product";
 import {Modal} from "bootstrap";
 
 export default {
