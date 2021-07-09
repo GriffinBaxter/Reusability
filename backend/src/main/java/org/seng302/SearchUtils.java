@@ -46,8 +46,8 @@ public class SearchUtils {
             // Conditions
             boolean endOfTokens = (i == (tokens.size() - 1));
             boolean startOfTokens = (i == 0);
-            boolean andOperator = (previousToken.equals("AND"));
-            boolean orOperator = (previousToken.equals("OR"));
+            boolean andOperator = (previousToken.equalsIgnoreCase("AND"));
+            boolean orOperator = (previousToken.equalsIgnoreCase("OR"));
 
             // 1. First token is added to concatenated name.
             // 2. If words are separated by AND operator then words should be concatenated.
@@ -60,7 +60,7 @@ public class SearchUtils {
             } else if (orOperator) {
                 names.add(concatName);
                 concatName = currentToken;
-            } else if (!(currentToken.equals("AND")) && !(currentToken.equals("OR"))) {
+            } else if (!(currentToken.equalsIgnoreCase("AND")) && !(currentToken.equalsIgnoreCase("OR"))) {
                 concatName += " " + currentToken;
             }
 

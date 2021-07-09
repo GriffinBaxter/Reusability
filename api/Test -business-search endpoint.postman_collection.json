@@ -1,0 +1,104 @@
+{
+	"info": {
+		"_postman_id": "0820d296-0871-4876-9f74-54ab69ec5a51",
+		"name": "Test /business/search endpoint",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login as User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"email@email.com\",\r\n    \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve All Businesses Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/businesses/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Simple Search Query Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/businesses/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Complex Search Query Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "Business Type Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "Search Query and Business Type Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		}
+	]
+}
