@@ -10,82 +10,75 @@ import java.util.List;
 public class SearchUtils {
 
     /**
-     * Deconstructs the search query to get a list of names which will be used to search for businesses.
+     * Parses the search query to get a list of names which will be used to search for businesses.
      *
      * @param searchQuery criteria to search for businesses (business name).
-     * @return a list of business names that were represented by the searchQuery (the searchQuery can contain complex queries).
+     * @return a list of business names that were represented by the searchQuery (the searchQuery can contain AND, OR
+     * and "" operators).
      *
-     * Preconditons:  searchQuery is a string which can represent a complex query containing business names e.g.
-     *                "New" AND World OR Count.
-     * Postconditions: A list of names from the deconstructed searchQuery.
+     * Preconditions:  searchQuery is a string which can represent a query containing business names e.g.
+     *                 New World OR Countdown
+     * Postconditions: A list of names from the parsed searchQuery.
      */
     public static List<String> convertSearchQueryToNames(String searchQuery) {
         List<String> names = new ArrayList<>();
+
+        // If search query is empty then all businesses should be be returned.
+        // This done by using LIKE(%"empty string"%) in the where clause of the query which retrieves the businesses.
         if (searchQuery.equals("")) {
             names.add("");
             return names;
         }
-        List<String> searchQueryList = Arrays.asList(searchQuery.split(" "));
+
+        // A list of words/ operators present in the search query.
+        List<String> tokens = Arrays.asList(searchQuery.split(" "));
+
+        // If there is a space or AND operator between two words in the search query then
+        // the words should be concatenated.
         String concatName = "";
-        String previousValue = "";
-        String nextValue = "";
+
+        String previousToken = "";
+        String nextToken = "";
+
+        // So that the parser can keep track of exact matches.
         boolean quoteStart = false;
         boolean quoteEnd = false;
-        for (int i = 0; i < searchQueryList.size(); i++) {
-            String currentName = searchQueryList.get(i);
-            boolean endOfList = (i == (searchQueryList.size() - 1));
-            if (i < (searchQueryList.size() - 1)) {
-                nextValue = searchQueryList.get(i + 1);
+
+        for (int i = 0; i < tokens.size(); i++) {
+
+            String currentToken = tokens.get(i);
+
+            // Conditions
+            boolean endOfTokens = (i == (tokens.size() - 1));
+            boolean startOfTokens = (i == 0);
+            boolean andOperator = (previousToken.equals("AND"));
+            boolean orOperator = (previousToken.equals("OR"));
+
+            if (!endOfTokens) {
+                nextToken = tokens.get(i + 1);
             }
 
-            if (currentName.startsWith("\"")) {
-                quoteStart = true;
-            }
-            if (currentName.endsWith("\"")) {
-                quoteEnd = true;
-            }
-
-            if (i == 0 && !quoteStart) {
-                concatName = currentName;
-            } else if (i == 0 && quoteStart) {
-                concatName = currentName;
-            } else if (quoteStart && !quoteEnd) {
-                concatName += " " + currentName;
-            }
-            if (quoteEnd && i != 0) {
-                concatName += " " + currentName;
+            // 1. First token is added to concatenated name.
+            // 2. If words are separated by AND operator then words should be concatenated.
+            // 3. If previous token is an OR then the currently concatenated name is added to names and set to current token.
+            // 4. If previous token is another word then the words should be concatenated since there is no logical operator.
+            if (startOfTokens) {
+                concatName = currentToken;
+            } else if (andOperator) {
+                concatName += " " + currentToken;
+            } else if (orOperator) {
                 names.add(concatName);
-                concatName = "";
-                quoteStart = false;
-                quoteEnd = false;
+                concatName = currentToken;
+            } else if (!(currentToken.equals("AND")) && !(currentToken.equals("OR"))) {
+                concatName += " " + currentToken;
             }
 
-            if (previousValue.equals("AND")) {
-                concatName += " " + currentName;
-            } else if (previousValue.equals("OR") && !(endOfList)) {
-                if (!(nextValue.equals("AND"))) {
-                    names.add(concatName);
-                    names.add(currentName);
-                    concatName = "";
-                } else {
-                    names.add(concatName);
-                    concatName = "";
-                    concatName += currentName;
-                }
+
+            // If all tokens have be viewed then add the current contacted name to names.
+            if (endOfTokens && (concatName.length() > 0)) {
+                names.add(concatName);
             }
-            if (previousValue.equals("OR") && (endOfList)) {
-                if (concatName.length() > 0) {
-                    names.add(concatName);
-                }
-                names.add(currentName);
-                concatName = "";
-            } else if (endOfList) {
-                if (concatName.length() > 0) {
-                    names.add(concatName);
-                }
-                concatName = "";
-            }
-            previousValue = currentName;
+            previousToken = currentToken;
         }
         return names;
     }
