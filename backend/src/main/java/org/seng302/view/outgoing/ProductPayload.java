@@ -28,7 +28,7 @@ public class ProductPayload {
     private String manufacturer;
     private Double recommendedRetailPrice;
     private String created;
-    private List<Image> images;
+    private List<ImagePayload> images;
 
     /**
      * Constructor for product payloads.
@@ -55,7 +55,7 @@ public class ProductPayload {
         this.manufacturer = manufacturer;
         this.recommendedRetailPrice = recommendedRetailPrice;
         this.created = created.toString();
-        this.images = images;
+        this.images = ImagePayload.convertToImagePayload(images);
     }
 
     /**
@@ -98,7 +98,7 @@ public class ProductPayload {
         return created;
     }
 
-    public List<Image> getImages() {return images;}
+    public List<ImagePayload> getImages() {return images;}
 
     @Override
     public String toString() {

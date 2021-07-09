@@ -86,7 +86,7 @@ public class Image {
         return "{" +
                 "\"path\":\""        + path         + "\"," +
                 "\"fileName\":\""        + fileName         + "\"," +
-                "\"extension\":\""       + extension       + "\"," +
+                "\"extension\":\""       + extension       + "\"" +
                 "}";
     }
 
