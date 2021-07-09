@@ -41,14 +41,17 @@
                   </div>
                   <div class="row">
                     <div class="col-3" v-for="image in images" v-bind:key="image.id">
-                      <img class="img-fluid rounded" :src="image.src">
+                      <img v-if="image.id === primaryImage" class="img-fluid rounded border border-warning border-2" :src="image.src">
+                      <img v-else-if="selectedImage === image.id" class="img-fluid rounded border border-primary border-2" :src="image.src" @click="setSelected(image.id)">
+                      <img v-else class="img-fluid rounded" :src="image.src" @click="setSelected(image.id)">
                     </div>
                   </div>
                 </div>
                 <!-- Buttons -->
-                <div>
-                  <button v-if="selectedImage != null && selectedImage !== primaryImage" class="btn btn-danger">Delete Image</button>
-                  <button v-if="selectedImage != null" class="btn btn-outline-success float-end">Set Primary Image</button>
+                <div v-if="selectedImage != null">
+                  <hr>
+                  <button class="btn btn-danger">Delete Image</button>
+                  <button class="btn btn-outline-success float-end">Set Primary Image</button>
                 </div>
               </div>
             </div>
