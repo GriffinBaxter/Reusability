@@ -247,7 +247,8 @@ public class ProductResource {
                     product.getDescription(),
                     product.getManufacturer(),
                     product.getRecommendedRetailPrice(),
-                    product.getCreated()
+                    product.getCreated(),
+                    product.getImages()
             );
             logger.debug("Product payload created: {}", newPayload);
             payloads.add(newPayload);

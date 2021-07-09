@@ -1,12 +1,18 @@
 package org.seng302.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+@Data
+@NoArgsConstructor
+@Entity
 public class Image {
     // Id field for an Image entity
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false)
+    @Column(name = "image_id", nullable = false)
     private int id;
 
     // Association many images can have the same one product id.

@@ -10,9 +10,11 @@
  */
 package org.seng302.view.outgoing;
 
+import org.seng302.model.Image;
 import org.seng302.model.Product;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * ProductPayload class
@@ -25,6 +27,7 @@ public class ProductPayload {
     private String manufacturer;
     private Double recommendedRetailPrice;
     private String created;
+    private List<Image> images;
 
     /**
      * Constructor for product payloads.
@@ -42,7 +45,8 @@ public class ProductPayload {
             String description,
             String manufacturer,
             Double recommendedRetailPrice,
-            LocalDateTime created
+            LocalDateTime created,
+            List<Image> images
     ) {
         this.id = id;
         this.name = name;
@@ -50,6 +54,7 @@ public class ProductPayload {
         this.manufacturer = manufacturer;
         this.recommendedRetailPrice = recommendedRetailPrice;
         this.created = created.toString();
+        this.images = images;
     }
 
     /**
@@ -64,7 +69,8 @@ public class ProductPayload {
                                     product.getDescription(),
                                     product.getManufacturer(),
                                     product.getRecommendedRetailPrice(),
-                                    product.getCreated());
+                                    product.getCreated(),
+                                    product.getImages());
     }
 
     public String getId() {
@@ -91,6 +97,8 @@ public class ProductPayload {
         return created;
     }
 
+    public List<Image> getImages() {return images;}
+
     @Override
     public String toString() {
         return "{" +
@@ -99,7 +107,8 @@ public class ProductPayload {
                 "\"description\":\"" + description + "\"," +
                 "\"manufacturer\":\"" + manufacturer + "\"," +
                 "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
-                "\"created\":\"" + created + "\"}";
+                "\"created\":\"" + created + "," +
+                "\"images\":" + images + "," + "\"}";
     }
 
 }
