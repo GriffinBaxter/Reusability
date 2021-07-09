@@ -30,7 +30,7 @@ public class SearchUtils {
             return names;
         }
 
-        // A list of words/ operators present in the search query.
+        // A list of words/operators present in the search query.
         List<String> tokens = Arrays.asList(searchQuery.split(" "));
 
         // If there is a space or AND operator between two words in the search query then
@@ -38,11 +38,6 @@ public class SearchUtils {
         String concatName = "";
 
         String previousToken = "";
-        String nextToken = "";
-
-        // So that the parser can keep track of exact matches.
-        boolean quoteStart = false;
-        boolean quoteEnd = false;
 
         for (int i = 0; i < tokens.size(); i++) {
 
@@ -53,10 +48,6 @@ public class SearchUtils {
             boolean startOfTokens = (i == 0);
             boolean andOperator = (previousToken.equals("AND"));
             boolean orOperator = (previousToken.equals("OR"));
-
-            if (!endOfTokens) {
-                nextToken = tokens.get(i + 1);
-            }
 
             // 1. First token is added to concatenated name.
             // 2. If words are separated by AND operator then words should be concatenated.
@@ -72,7 +63,6 @@ public class SearchUtils {
             } else if (!(currentToken.equals("AND")) && !(currentToken.equals("OR"))) {
                 concatName += " " + currentToken;
             }
-
 
             // If all tokens have be viewed then add the current contacted name to names.
             if (endOfTokens && (concatName.length() > 0)) {
