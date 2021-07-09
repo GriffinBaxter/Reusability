@@ -1,18 +1,16 @@
 <template>
 
   <!-- Modal -->
-  <div class="modal fade" ref="_updateProductImages" tabindex="-1" aria-labelledby="updateProductImages" aria-hidden="true" id="update-product-images">
-    <div class="modal-dialog">
+  <div class="modal fade" ref="_updateProductImagesModal" tabindex="-1" aria-labelledby="updateProductImagesModal" aria-hidden="true" id="update-product-images-modal">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="btn btn-outline-primary order-0 green-button-transparent" data-bs-dismiss="modal">Back</button>
-          <h5 class="modal-title" id="updateProductImagesTitle">Update Product {{value.data.id}} Images</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="updateProductImagesModalTitle">Update Product {{value.data.id}} Images</h5>
         </div>
         <div class="modal-body">
 
           <!-- Modal form content wrapper-->
-          <form class="needs-validation mb-3 px-5" novalidate @submit.prevent>
+          <form class="needs-validation mb-3 px-2" novalidate @submit.prevent>
 
             <!-- Error message card-->
             <div class="row my-lg-2">
@@ -23,30 +21,41 @@
               </div>
             </div>
 
-            <!-- Primary Image -->
-            <div class="col">
-              <img>
-            </div>
+            <div class="row">
+              <!-- Primary Image -->
+              <div class="col-3">
+                <img class="card-img mt-4" :src="require('../../../public/apples.jpg')" id="primary-image">
+              </div>
 
-            <div class="col">
-              <!-- Upload -->
-              <div class="row">
-                <button>Upload Image</button>
-              </div>
-              <!-- Images -->
-              <div class="row">
-                <ol>
-                  <li v-for="image in images" v-bind:key="image.index"></li>
-                </ol>
-              </div>
-              <!-- Buttons -->
-              <div class="row">
-                <button class="btn btn-danger">Delete Image</button>
-                <button class="btn btn-success">Set Primary Image</button>
+              <div class="col-9">
+                <!-- Upload -->
+                <div class="row">
+                  <label for="imageUpload">Upload Image:</label>
+                  <input type="file" id="imageUpload">
+                </div>
+                <hr>
+                <!-- Images -->
+                <div class="row">
+                  <div v-if="images.length === 0">
+                    No images Uploaded
+                  </div>
+                  <div class="row">
+                    <div class="col-3" v-for="image in images" v-bind:key="image.id">
+                      <img class="img-fluid rounded" :src="image.src">
+                    </div>
+                  </div>
+                </div>
+                <!-- Buttons -->
+                <div>
+                  <button v-if="selectedImage != null && selectedImage !== primaryImage" class="btn btn-danger">Delete Image</button>
+                  <button v-if="selectedImage != null" class="btn btn-outline-success float-end">Set Primary Image</button>
+                </div>
               </div>
             </div>
-
           </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary order-0 green-button-transparent" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -55,6 +64,7 @@
 
 <script>
 import Product from "@/configs/Product";
+import {Modal} from "bootstrap";
 
 export default {
   name: "UpdateProductImagesModal",
@@ -66,7 +76,7 @@ export default {
       required: true
     },
 
-    // Business id used to not what business to update
+    // Business id used to know what business to update
     businessId: {
       type: Number,
       required: true
@@ -74,11 +84,52 @@ export default {
   },
   data() {
     return {
-      formErrorModalMessage: "",
-      images: []
+      modal: null,
+
+      selectedImage: null,
+      primaryImage: null,
+
+      // temp image values
+      images: [
+        {
+          src:require("../../../public/apples.jpg"),
+          id:0
+        },
+        {
+          src:require("../../../public/clothes.jpg"),
+          id:1
+        }
+      ]
     }
   },
+  methods: {
+    /**
+     * Prevents the default call onClick and updates the placeholder values before show the modal.
+     * @param event The event (i.e. click event) that triggered the call.
+     */
+    showModel(event) {
+      // Prevent any default actions
+      event.preventDefault();
 
+      // Show the modal
+      this.modal.show();
+    },
+
+    setSelected(id) {
+      if (this.selectedImage === id) {
+        this.selectedImage = null;
+      } else {
+        this.selectedImage = id;
+      }
+    }
+  },
+  mounted() {
+    // Create a modal and attach it to the updateProductModel reference.
+    this.modal = new Modal(this.$refs._updateProductImagesModal);
+
+    // temp
+    this.primaryImage = 0;
+  }
 }
 </script>
 

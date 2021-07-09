@@ -36,7 +36,7 @@
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
 
-        <UpdateProductImagesModal ref="updateProductImages" :business-id="businessId" v-model="currentProduct"/>
+        <UpdateProductImagesModal ref="updateProductImagesModal" :business-id="businessId" v-model="currentProduct"/>
 
         <div v-if="showModal">
           <transition name="fade">
@@ -60,7 +60,7 @@
                     <div class="modal-footer">
                       <button class="btn btn-primary" @click="(event) => {
                       this.showModal = false;
-                      this.$refs.updateProductImages.showModel(event);
+                      this.$refs.updateProductImagesModal.showModel(event);
                     }">Update Photos</button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
@@ -190,6 +190,7 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
+import UpdateProductImagesModal from "@/components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 
@@ -197,6 +198,7 @@ export default {
   name: "ProductCatalogue",
   components: {
     UpdateProductModal,
+    UpdateProductImagesModal,
     Table,
     ProductModal,
     Navbar,
