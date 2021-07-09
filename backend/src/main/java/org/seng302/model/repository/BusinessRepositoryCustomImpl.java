@@ -42,7 +42,7 @@ public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
             if (name.startsWith("\"") && name.endsWith("\"")) {
                 predicates.add(criteriaBuilder.equal(namePath, name));
             } else {
-                predicates.add(criteriaBuilder.like(namePath, name));
+                predicates.add(criteriaBuilder.like(namePath, "%" + name + "%"));
             }
         }
         query.select(business)
@@ -79,7 +79,7 @@ public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
             if (name.startsWith("\"") && name.endsWith("\"")) {
                 predicates.add(criteriaBuilder.equal(namePath, name));
             } else {
-                predicates.add(criteriaBuilder.like(namePath, name));
+                predicates.add(criteriaBuilder.like(namePath, "%" + name + "%"));
             }
         }
 

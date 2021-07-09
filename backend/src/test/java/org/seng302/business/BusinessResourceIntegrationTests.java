@@ -69,6 +69,8 @@ class BusinessResourceIntegrationTests {
 
     private String expectedJson;
 
+    private String expectedUserJson;
+
     private User user;
 
     private User anotherUser;
@@ -79,14 +81,27 @@ class BusinessResourceIntegrationTests {
 
     private final String expectedBusinessJson = "{\"id\":%d," +
             "\"administrators\":%s," +
-            "\"primaryAdministratorId\":\"%d\"," +
+            "\"primaryAdministratorId\":%d," +
             "\"name\":\"%s\"," +
             "\"description\":\"%s\"," +
-            "\"address\":\"%s\"," +
+            "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s"+
+            "\"created\":\"%s\""+
             "}";
 
+    private final String expectedAdministratorJson = "[{\"id\":%d," +
+            "\"firstName\":\"%s\"," +
+            "\"lastName\":\"%s\"," +
+            "\"middleName\":\"%s\"," +
+            "\"nickname\":\"%s\"," +
+            "\"bio\":\"%s\"," +
+            "\"email\":\"%s\"," +
+            "\"created\":\"%s\"," +
+            "\"role\":\"%s\"," +
+            "\"businessesAdministered\":[null]," +
+            "\"dateOfBirth\":\"%s\"," +
+            "\"phoneNumber\":\"%s\"," +
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]";
     private User dGAA;
 
     @BeforeAll
@@ -1985,7 +2000,11 @@ class BusinessResourceIntegrationTests {
         String searchQuery = "NAME";
         List<String> names = Arrays.asList(searchQuery);
 
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
         // when
@@ -2016,8 +2035,13 @@ class BusinessResourceIntegrationTests {
         String searchQuery = "NAME";
         List<String> names = Arrays.asList(searchQuery);
 
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
 
         // when
         List<Business> list = List.of(business);
@@ -2049,7 +2073,11 @@ class BusinessResourceIntegrationTests {
         String searchQuery = "NAME";
         List<String> names = Arrays.asList(searchQuery);
 
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
         // when
@@ -2194,7 +2222,11 @@ class BusinessResourceIntegrationTests {
         String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
         BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
 
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
         // when
@@ -2227,7 +2259,11 @@ class BusinessResourceIntegrationTests {
         String searchQuery = "NAME";
         List<String> names = Arrays.asList(searchQuery);
 
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), "[null]", business.getPrimaryAdministratorId(),
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
         // when
