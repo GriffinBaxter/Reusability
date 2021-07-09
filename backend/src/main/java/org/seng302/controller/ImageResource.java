@@ -51,7 +51,7 @@ public class ImageResource {
     @PostMapping("/businesses/{businessId}/products/{productId}/images")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Image created successfully")
     public void createImage(
-            @RequestParam("images") MultipartFile[] images,
+            @RequestParam("images") MultipartFile image,
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer businessId,
             @PathVariable String productId
@@ -86,47 +86,38 @@ public class ImageResource {
         }
 
         // Verify the file type
-        for (MultipartFile image : images) {
-            String imageFileName = Objects.requireNonNull(image.getOriginalFilename());
-            String imageType = getFileExtension(imageFileName);
-            System.out.println(imageType);
-            if (!imageType.equalsIgnoreCase("jpg") && !imageType.equalsIgnoreCase("jpeg") &&
-                    !imageType.equalsIgnoreCase("png") && !imageType.equalsIgnoreCase("gif")) {
+        String imageFileName = Objects.requireNonNull(image.getOriginalFilename());
+        String imageType = getFileExtension(imageFileName);
+        if (!imageType.equalsIgnoreCase("jpg") && !imageType.equalsIgnoreCase("jpeg") &&
+                !imageType.equalsIgnoreCase("png") && !imageType.equalsIgnoreCase("gif")) {
 
-                String debugMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", image.getName());
-                logger.debug(debugMessage);
-                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The file type of the image uploaded is not " +
-                        "supported. Only JPG, JPEG, PNG and GIF are supported.");
-            }
+            String debugMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", image.getName());
+            logger.debug(debugMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The file type of the image uploaded is not " +
+                    "supported. Only JPG, JPEG, PNG and GIF are supported.");
         }
 
         // Store the images
-        ArrayList<String> processedImagesNames = new ArrayList<String>();
-
-        for (int i = 0; i < images.length; i++) {
-            try {
-//                String fileName = String.format(Objects.requireNonNull(images[i].getOriginalFilename()));
-                UUID uuid = UUID.randomUUID();
-                String fileName = uuid.toString() + "." + getFileExtension(images[i].getOriginalFilename());
-                if (!fileStorageService.storeFile(images[i], fileName)) {
-                    throw new IOException("Failed to store images");
-                }
-                processedImagesNames.add(fileName);
-            }
-            catch (IOException e) {
-                for (String fileName : processedImagesNames) {
-                    fileStorageService.deleteFile(fileName);
-                }
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more of the images failed to be stored.");            }
-        }
-
-        for (String fileName : processedImagesNames) {
-            String path = fileStorageService.getPathString(fileName);
-            if (path != null) {
-                Image image = new Image(productId, businessId, path, fileName, getFileExtension(fileName));
-                imageRepository.save(image);
+        String fileName = null;
+        try {
+            UUID uuid = UUID.randomUUID();
+            fileName = uuid.toString() + "." + getFileExtension(image.getOriginalFilename());
+            if (!fileStorageService.storeFile(image, fileName)) {
+                throw new IOException("Failed to store images");
             }
         }
+        catch (IOException e) {
+            fileStorageService.deleteFile(fileName);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more of the images failed to be stored.");
+        }
+
+
+        String path = fileStorageService.getPathString(fileName);
+        if (path != null) {
+            Image imageObj = new Image(productId, businessId, path, fileName, getFileExtension(fileName));
+            imageRepository.save(imageObj);
+        }
+
 
     }
 
