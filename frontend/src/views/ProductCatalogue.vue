@@ -36,6 +36,8 @@
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
 
+        <UpdateProductImagesModal ref="updateProductImages" :business-id="businessId" v-model="currentProduct"/>
+
         <div v-if="showModal">
           <transition name="fade">
             <div class="modal-mask">
@@ -56,6 +58,10 @@
                           v-bind:currencySymbol="currencySymbol"/>
                     </div>
                     <div class="modal-footer">
+                      <button class="btn btn-primary" @click="(event) => {
+                      this.showModal = false;
+                      this.$refs.updateProductImages.showModel(event);
+                    }">Update Photos</button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateProductModel.showModel(event);
