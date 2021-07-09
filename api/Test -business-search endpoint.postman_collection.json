@@ -99,6 +99,32 @@
 				"url": null
 			},
 			"response": []
+		},
+		{
+			"name": "Exact Match Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/businesses/search?searchQuery=\"Sunburst Waste\"",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "\"Sunburst Waste\""
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
