@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class ImageResource {
@@ -104,7 +105,9 @@ public class ImageResource {
 
         for (int i = 0; i < images.length; i++) {
             try {
-                String fileName = String.format(Objects.requireNonNull(images[i].getOriginalFilename()));
+//                String fileName = String.format(Objects.requireNonNull(images[i].getOriginalFilename()));
+                UUID uuid = UUID.randomUUID();
+                String fileName = uuid.toString() + "." + getFileExtension(images[i].getOriginalFilename());
                 if (!fileStorageService.storeFile(images[i], fileName)) {
                     throw new IOException("Failed to store images");
                 }
