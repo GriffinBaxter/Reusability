@@ -5,10 +5,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
 import org.seng302.model.Business;
+import org.seng302.model.Image;
 import org.seng302.model.Product;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
 import org.seng302.model.repository.BusinessRepository;
+import org.seng302.model.repository.ImageRepository;
 import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.services.FileStorageService;
@@ -37,6 +39,9 @@ public class ImageResource {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     private FileStorageService fileStorageService = new FileStorageService("product-images");
 
@@ -111,6 +116,15 @@ public class ImageResource {
                 }
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more of the images failed to be stored.");            }
         }
+
+        for (String fileName : processedImagesNames) {
+            String path = fileStorageService.getPathString(fileName);
+            if (path != null) {
+                Image image = new Image(productId, businessId, path, fileName, getFileExtension(fileName));
+                imageRepository.save(image);
+            }
+        }
+
     }
 
     private static String getFileExtension(String fileName) {

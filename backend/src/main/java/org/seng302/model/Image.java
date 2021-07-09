@@ -2,6 +2,7 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -79,6 +80,14 @@ public class Image {
         this.path = path;
         this.fileName = fileName;
         this.extension = extension;
+    }
+
+    public String toString() {
+        return "{" +
+                "\"path\":\""        + path         + "\"," +
+                "\"fileName\":\""        + fileName         + "\"," +
+                "\"extension\":\""       + extension       + "\"," +
+                "}";
     }
 
 }

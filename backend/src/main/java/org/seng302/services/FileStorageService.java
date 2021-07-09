@@ -11,10 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Optional;
 
 public class FileStorageService {
@@ -99,6 +96,14 @@ public class FileStorageService {
             var errorMessage = String.format("An I/O error occurred deleting %s", fileName);
             logger.error(errorMessage);
             return false;
+        }
+    }
+
+    public String getPathString(String fileName) {
+        try {
+            return this.rootPath.resolve(fileName).toString();
+        } catch (InvalidPathException e) {
+            return null;
         }
     }
 }

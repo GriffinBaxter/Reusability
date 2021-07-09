@@ -14,6 +14,7 @@ import org.seng302.model.Image;
 import org.seng302.model.Product;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
