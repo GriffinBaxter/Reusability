@@ -44,7 +44,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -362,7 +361,7 @@ public class BusinessResource {
      *
      * @param sessionToken Session token used to authenticate user (is user logged in?).
      * @param searchQuery Search query (the business name to search by).
-     * @parama businessType Business type to search by.
+     * @param businessType Business type to search by.
      * @param orderBy Column to order the results by.
      * @param page Page number to return results from.
      * @return A list of BusinessPayload objects matching the search query
@@ -400,7 +399,7 @@ public class BusinessResource {
         // Front-end displays 5 businesses per page
         int pageSize = 5;
 
-        Sort sortBy = null;
+        Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
@@ -478,7 +477,7 @@ public class BusinessResource {
      * @param type A string representing business type.
      * @return An enum representation of business type (null if string representation is not valid).
      *
-     * Preconditions: A string representation of a valid business type.
+     * Preconditions:  A string representation of a valid business type.
      * Postconditions: An enum representation of business type.
      */
     private BusinessType toBusinessType(String type){
