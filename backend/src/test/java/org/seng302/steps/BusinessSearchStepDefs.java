@@ -2,7 +2,9 @@ package org.seng302.steps;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.seng302.SearchUtils;
 import org.seng302.controller.BusinessResource;
 import org.seng302.controller.UserResource;
 import org.seng302.exceptions.IllegalAddressArgumentException;
@@ -17,11 +19,13 @@ import org.seng302.model.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -65,6 +69,42 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
 
     private Business business;
 
+    private Integer pageNo;
+    private Integer pageSize;
+    private Sort sortBy;
+    private Pageable paging;
+
+    private List<Business> businesses;
+    private Business business1;
+    private Business business2;
+
+    private final String expectedBusinessJson = "{\"id\":%d," +
+            "\"administrators\":%s," +
+            "\"primaryAdministratorId\":%d," +
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"address\":%s," +
+            "\"businessType\":\"%s\"," +
+            "\"created\":\"%s\""+
+            "}";
+
+    private final String expectedAdministratorJson = "[{\"id\":%d," +
+            "\"firstName\":\"%s\"," +
+            "\"lastName\":\"%s\"," +
+            "\"middleName\":\"%s\"," +
+            "\"nickname\":\"%s\"," +
+            "\"bio\":\"%s\"," +
+            "\"email\":\"%s\"," +
+            "\"created\":\"%s\"," +
+            "\"role\":\"%s\"," +
+            "\"businessesAdministered\":[null]," +
+            "\"dateOfBirth\":\"%s\"," +
+            "\"phoneNumber\":\"%s\"," +
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]";
+
+    private String expectedUserJson;
+    private String expectedJson;
+
     @Before
     public void setup() throws IllegalAddressArgumentException, IllegalUserArgumentException {
         address1 = new Address(
@@ -90,6 +130,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                         LocalTime.of(0, 0)),
                 Role.USER);
         user1.setId(1);
+        user1.setSessionUUID(User.generateSessionUUID());
 
         address2 = new Address(
                 "10",
@@ -114,6 +155,13 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                         LocalTime.of(0, 0)),
                 Role.USER);
         user2.setId(2);
+        user2.setSessionUUID(User.generateSessionUUID());
+
+        // Paging Stuff
+        pageNo = 0;
+        pageSize = 5;
+        sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
+        paging = PageRequest.of(pageNo, pageSize, sortBy);
 
         userRepository = mock(UserRepository.class);
         businessRepository = mock(BusinessRepository.class);
@@ -140,12 +188,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
         List<String> names = new ArrayList<>();
         names.add(name);
 
-        int pageNo = 0;
-        int pageSize = 5;
-        Sort sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
-
-        List<Business> businesses = new ArrayList<>();
+        businesses = new ArrayList<>();
         businesses.add(business);
 
         given(userRepository.findBySessionUUID(user1.getSessionUUID())).willReturn(Optional.ofNullable(user1));
@@ -154,29 +197,9 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
         assertThat(businessRepository.findAllBusinessesByNames(names, paging)).isNotEmpty();
     }
 
-    @When("I enter the full name {string} and search for businesses")
-    public void i_enter_the_full_name_and_search_for_businesses(String name) throws Exception {
-        List<String> names = new ArrayList<>();
-        names.add(name);
-
-        int pageNo = 0;
-        int pageSize = 5;
-        Sort sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
-
-        List<Business> businesses = new ArrayList<>();
-        businesses.add(business);
-
-        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(new PageImpl<>(businesses, paging, businesses.size()));
-
-        response = businessMVC.perform(get("/businesses/search")
-                .param("searchQuery", name)
-                .cookie(new Cookie("JSESSIONID", user1.getSessionUUID()))).andReturn().getResponse();
-    }
-
     @Given("there exists businesses with names {string} and {string}")
     public void there_exists_businesses_with_names_and(String name1, String name2) throws IllegalBusinessArgumentException {
-        Business business1 = new Business(
+        business1 = new Business(
                 user1.getId(),
                 name1,
                 "description",
@@ -186,7 +209,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1
         );
 
-        Business business2 = new Business(
+        business2 = new Business(
                 user2.getId(),
                 name2,
                 "description",
@@ -200,12 +223,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
         names.add(name1);
         names.add(name2);
 
-        int pageNo = 0;
-        int pageSize = 5;
-        Sort sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
-
-        List<Business> businesses = new ArrayList<>();
+        businesses = new ArrayList<>();
         businesses.add(business1);
         businesses.add(business2);
 
@@ -213,6 +231,79 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
         given(businessRepository.findAllBusinessesByNames(names, paging)).willReturn(new PageImpl<>(businesses, paging, businesses.size()));
 
         assertThat(businessRepository.findAllBusinessesByNames(names, paging)).isNotEmpty();
+    }
+
+    @When("I enter the full name {string} and search for businesses")
+    public void i_enter_the_full_name_and_search_for_businesses(String name) throws Exception {
+        List<String> names = new ArrayList<>();
+        names.add(name);
+
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(new PageImpl<>(businesses, paging, businesses.size()));
+
+        response = businessMVC.perform(get("/businesses/search")
+                .param("searchQuery", name)
+                .cookie(new Cookie("JSESSIONID", user1.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @When("I enter the partial name {string} and search for businesses")
+    public void i_enter_the_partial_name_and_search_for_businesses(String name) throws Exception {
+        List<String> names = new ArrayList<>();
+        names.add(name);
+
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(new PageImpl<>(businesses, paging, businesses.size()));
+
+        response = businessMVC.perform(get("/businesses/search")
+                .param("searchQuery", name)
+                .cookie(new Cookie("JSESSIONID", user1.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @When("I search for businesses using a search query containing {string}")
+    public void i_search_for_businesses_using_a_search_query_containing(String searchQuery) throws Exception {
+        List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
+
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(new PageImpl<>(businesses, paging, businesses.size()));
+
+        response = businessMVC.perform(get("/businesses/search")
+                .param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user1.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @Then("I receive the business with name {string}")
+    public void i_receive_the_business_with_name(String name) throws UnsupportedEncodingException {
+        expectedUserJson = String.format(expectedAdministratorJson, user1.getId(), user1.getFirstName(), user1.getLastName(),
+                user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
+                user1.getDateOfBirth(), user1.getPhoneNumber(), address1.getStreetNumber(), address1.getStreetName(), address1.getCity(),
+                address1.getRegion(), address1.getCountry(), address1.getPostcode(), address1.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                name, business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    @Then("I receive the businesses with names {string} and {string}")
+    public void i_receive_the_businesses_with_names_and(String name1, String name2) throws UnsupportedEncodingException {
+        String expectedUserJson1 = String.format(expectedAdministratorJson, user1.getId(), user1.getFirstName(), user1.getLastName(),
+                user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
+                user1.getDateOfBirth(), user1.getPhoneNumber(), address1.getStreetNumber(), address1.getStreetName(), address1.getCity(),
+                address1.getRegion(), address1.getCountry(), address1.getPostcode(), address1.getSuburb());
+        String expectedUserJson2 = String.format(expectedAdministratorJson, user2.getId(), user2.getFirstName(), user2.getLastName(),
+                user2.getMiddleName(), user2.getNickname(), user2.getBio(), user2.getEmail(), user2.getCreated(), user2.getRole(),
+                user2.getDateOfBirth(), user2.getPhoneNumber(), address2.getStreetNumber(), address2.getStreetName(), address2.getCity(),
+                address2.getRegion(), address2.getCountry(), address2.getPostcode(), address2.getSuburb());
+
+        String expectedBusinessJson1 = String.format(expectedBusinessJson, business1.getId(), expectedUserJson1, business1.getPrimaryAdministratorId(),
+                name1, business1.getDescription(), business1.getAddress(), business1.getBusinessType(), business1.getCreated());
+        String expectedBusinessJson2 = String.format(expectedBusinessJson, business2.getId(), expectedUserJson2, business2.getPrimaryAdministratorId(),
+                name2, business2.getDescription(), business2.getAddress(), business2.getBusinessType(), business2.getCreated());
+
+        expectedJson = "[" + expectedBusinessJson1 + "," + expectedBusinessJson2 + "]";
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     /* ------------------------------------------AC4------------------------------------------ */
@@ -231,12 +322,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1
         );
 
-        int pageNo = 0;
-        int pageSize = 5;
-        Sort sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
-
-        List<Business> businesses = new ArrayList<>();
+        businesses = new ArrayList<>();
         businesses.add(business);
 
         given(userRepository.findBySessionUUID(user1.getSessionUUID())).willReturn(Optional.ofNullable(user1));
@@ -259,12 +345,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1
         );
 
-        int pageNo = 0;
-        int pageSize = 5;
-        Sort sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
-
-        List<Business> businesses = new ArrayList<>();
+        businesses = new ArrayList<>();
         businesses.add(business);
 
         List<String> names = new ArrayList<>();
@@ -275,4 +356,59 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
 
         assertThat(businessRepository.findAllBusinessesByNamesAndType(names, businessType, paging)).isNotEmpty();
     }
+
+    @When("I search for businesses with business type {string}")
+    public void i_search_for_businesses_with_business_type(String type) throws Exception {
+        BusinessType businessType = BusinessType.valueOf(type);
+
+        when(businessRepository.findBusinessesByBusinessType(businessType, paging)).thenReturn(new PageImpl<>(businesses, paging, businesses.size()));
+
+        response = businessMVC.perform(get("/businesses/search")
+                .param("businessType", type)
+                .cookie(new Cookie("JSESSIONID", user1.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @When("I search for businesses with name {string} and business type {string}")
+    public void i_search_for_businesses_with_name_and_business_type(String name, String type) throws Exception {
+        List<String> names = new ArrayList<>();
+        names.add(name);
+
+        BusinessType businessType = BusinessType.valueOf(type);
+
+        when(businessRepository.findAllBusinessesByNamesAndType(names, businessType, paging)).thenReturn(new PageImpl<>(businesses, paging, businesses.size()));
+
+        response = businessMVC.perform(get("/businesses/search")
+                .param("searchQuery", name)
+                .param("businessType", type)
+                .cookie(new Cookie("JSESSIONID", user1.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @Then("I receive the business with business type {string}")
+    public void i_receive_the_business_with_business_type(String type) throws UnsupportedEncodingException {
+        expectedUserJson = String.format(expectedAdministratorJson, user1.getId(), user1.getFirstName(), user1.getLastName(),
+                user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
+                user1.getDateOfBirth(), user1.getPhoneNumber(), address1.getStreetNumber(), address1.getStreetName(), address1.getCity(),
+                address1.getRegion(), address1.getCountry(), address1.getPostcode(), address1.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated()) + "]";
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    @Then("I receive the business with name {string} and business type {string}")
+    public void i_receive_the_business_with_name_and_business_type(String name, String type) throws UnsupportedEncodingException {
+        expectedUserJson = String.format(expectedAdministratorJson, user1.getId(), user1.getFirstName(), user1.getLastName(),
+                user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
+                user1.getDateOfBirth(), user1.getPhoneNumber(), address1.getStreetNumber(), address1.getStreetName(), address1.getCity(),
+                address1.getRegion(), address1.getCountry(), address1.getPostcode(), address1.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                name, business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated()) + "]";
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
 }

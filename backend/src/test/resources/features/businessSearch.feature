@@ -11,7 +11,7 @@ Feature: U23 Business for business
   Scenario: AC2 - Business partial name search.
     Given there exists a business with name "Countdown"
     When I enter the partial name "Count" and search for businesses
-    Then I receive the business with the name "Countdown"
+    Then I receive the business with name "Countdown"
 
   Scenario: AC2 - Business search using OR separating terms.
     Given there exists businesses with names "Countdown" and "New World"
@@ -25,7 +25,7 @@ Feature: U23 Business for business
 
   Scenario: AC2- Business name exact search.
     Given there exists a business with name "Pak'nSave"
-    When I search for businesses using a search query containing ""Pak'nSave""
+    When I search for businesses using a search query containing "\"Pak'nSave\""
     Then I receive the business with name "Pak'nSave"
 
   Scenario: AC4 - Business search by business type.
