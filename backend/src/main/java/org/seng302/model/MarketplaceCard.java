@@ -58,11 +58,11 @@ public class MarketplaceCard {
     private List<Keyword> keywords = new ArrayList<>();
 
     // Values needed for validation.
-    private static final Integer TITLE_MIN_LENGTH = 2;
-    private static final Integer TITLE_MAX_LENGTH = 70;
+    private static final Integer TITLE_MIN_LENGTH = 1;
+    private static final Integer TITLE_MAX_LENGTH = 50;
 
     private static final Integer DESCRIPTION_MIN_LENGTH = 0;
-    private static final Integer DESCRIPTION_MAX_LENGTH = 500;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 300;
 
     /**
      * Marketplace card constructor
