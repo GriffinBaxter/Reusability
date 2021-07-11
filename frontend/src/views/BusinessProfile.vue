@@ -28,13 +28,6 @@
                 <div class="text-secondary">{{ description }}</div>
               </div>
             </div>
-
-            <!--       for later use     -->
-            <!--            <div class="card text-center shadow-sm-3">-->
-            <!--              <div class="card-body">-->
-            <!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-            <!--              </div>-->
-            <!--            </div>-->
           </div>
 
         </div>
