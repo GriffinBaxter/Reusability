@@ -1,6 +1,5 @@
 package org.seng302.controller;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
@@ -14,18 +13,19 @@ import org.seng302.model.repository.ImageRepository;
 import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.services.FileStorageService;
-import org.seng302.services.ImageScalingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
-
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 
+/**
+ * Controller class for images. This class includes:
+ * POST "/businesses/{businessId}/products/{productId}/images" endpoint used for adding image to a product of a businesses.
+ * DELTETE "/businesses/{businessId}/products/{productId}/images/{imageId}" endpoint for deleting an image for a product of a business.
+ */
 @RestController
 public class ImageResource {
 
@@ -58,29 +58,13 @@ public class ImageResource {
         User user = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Verify business parameter
-        Optional<Business> business = businessRepository.findBusinessById(businessId);
-        if (business.isEmpty()) {
-            logger.error("The requested route does exist, but some part of the request is not acceptable.");
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
-        }
+        Optional<Business> business = getVerifiedBusiness(businessId);
 
         // Verify access rights of the user to the business
-        if (user.getRole().equals(Role.USER) && !user.getBusinessesAdministered().contains(business.get().getId())) {
-            String errorMessage = String.format("User (id: %d) lacks permissions to modify business (id: %d) product images.", user.getId(), business.get().getId());
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to add an image for a product that it is in a catalogue for a " +
-                    "business they do not administer AND the user is not a global application admin");
-        }
+        verifyAdministrationRights(user, business);
 
         // Verify Product id
-        Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, business.get().getId());
-        if (product.isEmpty()) {
-            String errorMessage = String.format("User (id: %d) attempted to access a non-existant product with product id %s.", user.getId(), productId);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
-        }
+        verifyProductId(productId, business, user);
 
         // Verify the file type
         String imageFileName = Objects.requireNonNull(image.getOriginalFilename());
@@ -108,7 +92,6 @@ public class ImageResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more of the images failed to be stored.");
         }
 
-
         String path = fileStorageService.getPathString(fileName);
         if (path != null) {
             List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
@@ -135,42 +118,20 @@ public class ImageResource {
         User user = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Verify business parameter
-        Optional<Business> business = businessRepository.findBusinessById(businessId);
-        if (business.isEmpty()) {
-            logger.error("The requested route does exist, but some part of the request is not acceptable.");
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
-        }
+        Optional<Business> business = getVerifiedBusiness(businessId);
 
         // Verify access rights of the user to the business
-        if (user.getRole().equals(Role.USER) && !user.getBusinessesAdministered().contains(business.get().getId())) {
-            String errorMessage = String.format("User (id: %d) lacks permissions to modify business (id: %d) product images.", user.getId(), business.get().getId());
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to add an image for a product that it is in a catalogue for a " +
-                    "business they do not administer AND the user is not a global application admin");
-        }
+        verifyAdministrationRights(user, business);
 
         // Verify Product id
-        Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, business.get().getId());
-        if (product.isEmpty()) {
-            String errorMessage = String.format("User (id: %d) attempted to access a non-existant product with product id %s.", user.getId(), productId);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
-        }
+        verifyProductId(productId, business, user);
 
         // Verify image id
-        Optional<Image> image = imageRepository.findImageByIdAndAndBussinesIdAndProductId(imageId, businessId, productId);
-        if (image.isEmpty()) {
-            String errorMessage = String.format("User (id: %d) attempted to delete a non-existant image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
-        }
+        Optional<Image> image = verifyImageId(imageId, businessId, productId, user);
 
-        // verify file exists & Delete image
+        // verify file exists & delete image
         if (!fileStorageService.deleteFile(image.get().getPath()) ) {
-            String errorMessage = String.format("User (id: %d) attempted to delete a non-existant image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
+            String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
             logger.error(errorMessage);
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
                     "for example trying to access a resource by an ID that does not exist.");
@@ -180,7 +141,111 @@ public class ImageResource {
         imageRepository.deleteByIdAndBussinesIdAndProductId(imageId, businessId, productId);
         imageRepository.flush();
 
-        // Check if primary image
+        // Check if primary image and update primary image if it is
+        updatePrimaryImage(businessId, productId, true);
+    }
+
+    /**
+     * Gets the file extension of the given file name. This is based on the content after the last punctuation mark.
+     * @param fileName, the file name
+     * @return extension of file name if present, otherwise the empty string
+     */
+    private static String getFileExtension(String fileName) {
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
+    }
+
+    /**
+     * Verifies that the given business id exists and returns the associated business if it exists.
+     * Throws a NOT_ACCEPTABLE error is the business id does not exist.
+     *
+     * PRECONDITIONS:
+     * POST CONDITIONS:
+     * @param businessId
+     * @return business
+     */
+    private Optional<Business> getVerifiedBusiness(Integer businessId) throws ResponseStatusException {
+        Optional<Business> business = businessRepository.findBusinessById(businessId);
+        if (business.isEmpty()) {
+            logger.error("The requested route does exist, but some part of the request is not acceptable.");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                    "for example trying to access a resource by an ID that does not exist.");
+        }
+        return business;
+    }
+
+    /**
+     * Verifies that the given user has the administration rights to access and potentially modify the associated business content.
+     * Throws FORBIDDEN error message is the user has incorrect administration rights.
+     *
+     * PRECONDITIONS:
+     * POST CONDITIONS:
+     * @param user, the user who wants to access the information of the given business
+     * @param business, the business that is desired to be accessed
+     */
+    private void verifyAdministrationRights(User user, Optional<Business> business) throws ResponseStatusException {
+        if (user.getRole().equals(Role.USER) && !user.getBusinessesAdministered().contains(business.get().getId())) {
+            String errorMessage = String.format("User (id: %d) lacks permissions to modify business (id: %d) product images.", user.getId(), business.get().getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to add an image for a product that it is in a catalogue for a " +
+                    "business they do not administer AND the user is not a global application admin");
+        }
+    }
+
+    /**
+     * Verifies that the given product id exists.
+     * Throws NOT_ACCEPTABLE error if product id does not exists.
+     *
+     * PRECONDITIONS:
+     * POST CONDITIONS:
+     * @param productId
+     * @param business
+     * @param user
+     */
+    private void verifyProductId(String productId, Optional<Business> business, User user) throws ResponseStatusException {
+        Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, business.get().getId());
+        if (product.isEmpty()) {
+            String errorMessage = String.format("User (id: %d) attempted to access a non-existent product with product id %s.", user.getId(), productId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                    "for example trying to access a resource by an ID that does not exist.");
+        }
+    }
+
+    /**
+     * Verifies that the given image id exists.
+     * Throws NOT_ACCEPTABLE error if image id does not exists.
+     *
+     * PRECONDITIONS:
+     * POST CONDITIONS:
+     * @param imageId
+     * @param businessId
+     * @param productId
+     */
+    private Optional<Image> verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
+        Optional<Image> image = imageRepository.findImageByIdAndAndBussinesIdAndProductId(imageId, businessId, productId);
+        if (image.isEmpty()) {
+            String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                    "for example trying to access a resource by an ID that does not exist.");
+        }
+        return image;
+    }
+
+    /**
+     * Updates the primary image and enforces the primary image constraint.
+     * If there are other images for the given product id that are not the primary image, then next one of these becomes
+     * the primary image. If there are no other images, then there is no primary image (i.e. default used in front end).
+     *
+     * PRECONDITIONS:
+     * POST CONDITIONS:
+     * @param businessId
+     * @param productId
+     * @param isPrimary
+     */
+    private void updatePrimaryImage(Integer businessId, String productId, boolean isPrimary) {
         List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
         if (primaryImages.isEmpty()) {
             List<Image> images = imageRepository.findImageByBussinesIdAndProductId(businessId, productId);
@@ -189,12 +254,6 @@ public class ImageResource {
                 imageRepository.save(images.get(0));
             }
         }
-    }
-
-    private static String getFileExtension(String fileName) {
-        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-            return fileName.substring(fileName.lastIndexOf(".")+1);
-        else return "";
     }
 
 }
