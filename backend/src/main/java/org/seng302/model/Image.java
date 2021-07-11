@@ -2,7 +2,6 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -39,8 +38,9 @@ public class Image {
     private String fileName;
 
     // Extension type of the file
-    @Column(name = "extension", nullable = false)
-    private String extension;
+    @Column(name = "is_primary", nullable = false)
+    private Boolean isPrimary;
+
 
     /**
      * A constructor for when you have an ID
@@ -48,15 +48,15 @@ public class Image {
      * @param id
      * @param path
      * @param fileName
-     * @param extension
+     * @param isPrimary
      */
-    public Image(int id, String product_id, Integer bussinesId, String path, String fileName, String extension) {
+    public Image(int id, String product_id, Integer bussinesId, String path, String fileName, boolean isPrimary) {
         this.id = id;
         this.productId = product_id;
         this.bussinesId = bussinesId;
         this.path = path;
         this.fileName = fileName;
-        this.extension = extension;
+        this.isPrimary = isPrimary;
     }
 
     /**
@@ -64,29 +64,29 @@ public class Image {
      *
      * @param path
      * @param fileName
-     * @param extension
+     * @param isPrimary
      */
-    public Image(String product_id, Integer bussinesId, String path, String fileName, String extension) {
+    public Image(String product_id, Integer bussinesId, String path, String fileName, boolean isPrimary) {
         this.productId = product_id;
         this.bussinesId = bussinesId;
         this.path = path;
         this.fileName = fileName;
-        this.extension = extension;
+        this.isPrimary = isPrimary;
     }
 
 
 
-    public Image(String path, String fileName, String extension) {
+    public Image(String path, String fileName, boolean isPrimary) {
         this.path = path;
         this.fileName = fileName;
-        this.extension = extension;
+        this.isPrimary = isPrimary;
     }
 
     public String toString() {
         return "{" +
                 "\"path\":\""        + path         + "\"," +
                 "\"fileName\":\""        + fileName         + "\"," +
-                "\"extension\":\""       + extension       + "\"" +
+                "\"extension\":\""       + isPrimary       + "\"" +
                 "}";
     }
 
