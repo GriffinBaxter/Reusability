@@ -1,6 +1,5 @@
 package org.seng302.keyword;
 
-import org.assertj.core.api.OptionalAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -41,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class KeywordResourceIntegrationTests {
+class KeywordResourceIntegrationTests {
     @Autowired
     private MockMvc mvc;
 
@@ -102,7 +101,7 @@ public class KeywordResourceIntegrationTests {
         String newKeyword = "Creation";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findByName(newKeyword)).willReturn(Optional.ofNullable(null));
+        given(keywordRepository.findByName(newKeyword)).willReturn(Optional.empty());
 
         String payloadJson = String.format(jsonPOST, newKeyword);
         // When
@@ -146,7 +145,7 @@ public class KeywordResourceIntegrationTests {
         String newKeyword = "X";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findByName(newKeyword)).willReturn(Optional.ofNullable(null));
+        given(keywordRepository.findByName(newKeyword)).willReturn(Optional.empty());
 
         String payloadJson = String.format(jsonPOST, newKeyword.repeat(25));
 
