@@ -11,13 +11,13 @@
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
           <!--order by title-->
           <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setOrderByOption(true, false)">
+                  @click="setOrderByOption(true, false, false)">
             Title
           </button>
 
           <!--order by location-->
           <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setOrderByOption(false, true)">
+                  @click="setOrderByOption(false, true, false)">
             Location
           </button>
 
