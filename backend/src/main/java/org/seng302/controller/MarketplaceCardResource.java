@@ -109,21 +109,14 @@ public class MarketplaceCardResource {
                         );
 
                         // Loop through keywords and update card and keywords accordingly.
-                        List<String> keywords = cardPayload.getKeywords();
-                        for (String keyword : keywords) {
-                            Optional<Keyword> existingKeyword = keywordRepository.findByName(keyword);
+                        List<Integer> keywordIds = cardPayload.getKeywordIds();
+                        for (Integer keywordId : keywordIds) {
+                            Optional<Keyword> existingKeyword = keywordRepository.findById(keywordId);
                             if (existingKeyword.isPresent()) { // If keyword exists then update existing keyword.
                                 Keyword existingKeywordPresent = existingKeyword.get();
-                                keywordRepository.save(existingKeywordPresent);
                                 card.addKeyword(existingKeywordPresent);
-                            } else { // If no keyword existing create a new one and save.
-                                Keyword newKeyword = new Keyword(
-                                        keyword,
-                                        LocalDateTime.now(),
-                                        card
-                                );
-                                keywordRepository.save(newKeyword);
-                                card.addKeyword(newKeyword);
+                            } else {
+                                throw new IllegalKeywordArgumentException(String.format("Keyword with ID {} not found", keywordId));
                             }
                         }
                         MarketplaceCard createdCard = marketplaceCardRepository.save(card);
@@ -137,7 +130,7 @@ public class MarketplaceCardResource {
                         );
                     }
                 } catch (IllegalMarketplaceCardArgumentException | IllegalKeywordArgumentException e) {
-                    logger.error("Card Creation Failure - {}", e.getMessage());
+                    logger.error("Card Creation Failure [400]: {}", e.getMessage());
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
                             e.getMessage()
@@ -179,7 +172,7 @@ public class MarketplaceCardResource {
         logger.debug("Get card request received with section {}, order by {}, page {}", section, orderBy, page);
 
         // Checks user logged in 401
-        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Checks section is valid
         Section sectionType;

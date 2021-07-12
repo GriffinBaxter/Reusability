@@ -47,8 +47,9 @@ public class KeywordResource {
 
     private static final Logger logger = LogManager.getLogger(KeywordResource.class.getName());
 
-    public KeywordResource(KeywordRepository keywordRepository) {
+    public KeywordResource(KeywordRepository keywordRepository, UserRepository userRepository) {
         this.keywordRepository = keywordRepository;
+        this.userRepository = userRepository;
     }
 
     /**
