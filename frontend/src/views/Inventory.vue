@@ -27,6 +27,11 @@
               </div>
 
             </div>
+            <!--            <div class="card text-center shadow-sm-3">-->
+            <!--              <div class="card-body">-->
+            <!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
+            <!--              </div>-->
+            <!--            </div>-->
           </div>
         </div>
 
@@ -44,6 +49,12 @@
                   Create New
                 </button>
               </div>
+              <!--search bar-->
+<!--              <div class="input-group col-md py-1">-->
+<!--                <input type="text" class="form-control" placeholder="This is for later use."-->
+<!--                       aria-label="Input group example" aria-describedby="btnGroupAddon">-->
+<!--                <button type="button" class="btn btn-outline-primary">Search</button>-->
+<!--              </div>-->
 
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">
@@ -671,12 +682,12 @@ export default {
 
         this.businessId = this.$route.params.id;
 
+        await this.currencyRequest();
+
         this.retrieveBusinessInfo();
         this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
-
-        await this.currencyRequest();
       }
     }
   }

@@ -110,8 +110,8 @@
 </template>
 
 <script>
-import Api from "../../Api";
-import Listing from "../../configs/Listings";
+import Api from "@/Api";
+import Listing from "@/configs/Listings";
 import Autofill from '../autofill';
 
 import {Modal} from "bootstrap";

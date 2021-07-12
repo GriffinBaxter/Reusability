@@ -101,11 +101,9 @@
 
       </div>
     </div>
-      <div class="noListings" v-if="noListings">
-        <div class="card p-1">
-          <p class="h2 py-5" align="center">No Listings Found</p>
-        </div>
-      </div>
+    <div class="card p-1" v-if="listings.length < 1">
+      <p class="h2 py-5" align="center">No Listings Found</p>
+    </div>
     </div>
     <!-- Footer -->
     <Footer class="footer"/>
@@ -113,13 +111,13 @@
 </template>
 
 <script>
-import Navbar from "../components/main/Navbar";
-import ListingItem from "../components/listing/ListingItem";
-import Api from "../Api";
+import Navbar from "@/components/main/Navbar";
+import ListingItem from "@/components/listing/ListingItem";
+import Api from "@/Api";
 import Cookies from "js-cookie";
-import CreateListing from "../components/listing/CreateListingModal";
-import Footer from "../components/main/Footer";
-import CurrencyAPI from "../currencyInstance";
+import CreateListing from "@/components/listing/CreateListingModal";
+import Footer from "@/components/main/Footer";
+import CurrencyAPI from "@/currencyInstance";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 
@@ -131,9 +129,6 @@ name: "Listings",
     return {
       allListings: [],
       listings: [],
-      // When page is initially loaded, we don't want 'No Listings Found' message to display since, listings have not
-      // been retrieved yet.
-      notInitialLoad: false,
       businessName: "",
       businessAdmin: false,
       businessId: -1,
@@ -156,11 +151,6 @@ name: "Listings",
 
       creationSuccess: false
     }
-  },
-  computed: {
-  noListings() {
-    return (this.listings.length < 1) && this.notInitialLoad;
-  }
   },
   methods: {
     /**
@@ -301,7 +291,6 @@ name: "Listings",
         }
 
         this.populatePage(response);
-        this.notInitialLoad = true;
 
       }).catch((error) => {
         if (error.request && !error.response) {
@@ -437,11 +426,11 @@ name: "Listings",
       this.businessId = await parseInt(this.$route.params.id);
       await this.getBusiness(this.businessId);
 
+      await this.currencyRequest();
+
       this.getListings().catch(
           (e) => console.log(e)
-      );
-
-      await this.currencyRequest();
+      )
     }
   }
 }
