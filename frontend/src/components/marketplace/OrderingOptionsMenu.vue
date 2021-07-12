@@ -20,12 +20,6 @@
                   @click="setOrderByOption(false, true)">
             Location
           </button>
-
-          <!--order by created-->
-          <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setOrderByOption(false, false, true)">
-            Created
-          </button>
         </ul>
       </div>
 
@@ -80,13 +74,11 @@ export default {
     /**
      * Sets the order by option
      */
-    setOrderByOption(title, location, created) {
+    setOrderByOption(title, location) {
       if (title) {
         this.orderByOption = "Title"
       } else if (location) {
         this.orderByOption = "Location"
-      } else if (created) {
-        this.orderByOption = "Created"
       }
       this.orderCards();
     },
