@@ -49,14 +49,6 @@
           </button>
         </ul>
       </div>
-
-      <!--------------------------------------------- order button ---------------------------------------------------->
-      <div id="order-by-btn" class="col">
-        <button type="button" class="btn green-button-transparent col-12 go-btn"
-                @click="orderCards()">
-          Order Cards
-        </button>
-      </div>
     </div>
 
     <!--------------------------------------- create card button ------------------------------------------------------>
@@ -96,6 +88,7 @@ export default {
       } else if (created) {
         this.orderByOption = "Created"
       }
+      this.orderCards();
     },
     /**
      * Sets the order by direction
@@ -106,6 +99,7 @@ export default {
       } else {
         this.orderDirectionOption = "Descending"
       }
+      this.orderCards();
     },
 
     /**
@@ -141,11 +135,6 @@ export default {
 
 .order-by-options-btn, .order-direction-options-btn {
   width: 150px;
-  margin-top: 6px;
-}
-
-.go-btn {
-  width: 115px;
   margin-top: 6px;
 }
 
