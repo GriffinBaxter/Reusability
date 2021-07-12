@@ -272,6 +272,27 @@ describe("Testing the marketplace methods", () => {
             expect(marketplaceWrapper.vm.exchangeSortBy).toEqual(inputVal);
         })
 
+        test("Testing that exchangeSortBy and sortBy are set to the orderBy createdASC when the section is Exchange", () => {
+            marketplaceWrapper.vm.selectSection = "Exchange";
+            marketplaceWrapper.vm.sortBy = "createdDESC";
+            marketplaceWrapper.vm.forSaleSortBy = "createdDESC";
+            marketplaceWrapper.vm.wantedSortBy = "createdDESC";
+            marketplaceWrapper.vm.exchangeSortBy = "createdDESC";
+
+            const inputVal = "createdASC";
+
+            $route.query.orderBy = inputVal;
+
+            marketplaceWrapper.vm.orderedCards(inputVal);
+
+            Promise.resolve();
+
+            expect(marketplaceWrapper.vm.sortBy).toEqual(marketplaceWrapper.vm.exchangeSortBy);
+            expect(marketplaceWrapper.vm.forSaleSortBy).toEqual("createdDESC");
+            expect(marketplaceWrapper.vm.wantedSortBy).toEqual("createdDESC");
+            expect(marketplaceWrapper.vm.exchangeSortBy).toEqual(inputVal);
+        })
+
     })
 
     describe("Testing the updatePage method", () => {
