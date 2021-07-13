@@ -13,7 +13,7 @@
         <div v-if="searchType == 'Business'" id="business-type-combo-box-container" class="col" style="margin-bottom: 10px;">
           <label style="padding-right: 10px; padding-left: 70px;" for="business-type-combo-box">Business Type:</label>
           <select id="business-type-combo-box" name="business-type" tabindex="2" v-model="selectedBusinessType">
-            <option value="" id="default-option">Any</option>
+            <option value="Any" id="default-option">Any</option>
             <option v-for="option in businessTypes" :id="option.businessType" :key="option.businessType" :value="option.value">
               {{ option.value }}
             </option>
@@ -38,7 +38,7 @@ export default {
     return {
       searchType: "User",
       // Business type related variables
-      selectedBusinessType: "",
+      selectedBusinessType: "Any",
       businessTypes: [
         { businessType: 'accommodation-and-food-services', value: 'Accommodation and Food Services' },
         { businessType: 'retail-trade', value: 'Retail Trade' },
@@ -64,7 +64,11 @@ export default {
       if (event.keyCode === 13) {
         // Enter pressed
         const inputQuery = this.$refs.searchInput.value;
-        this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1" }})
+        if (this.searchType === 'User') {
+          this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+        } else if (this.searchType === 'Business') {
+          this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1"}});
+        }
       }
     },
 
@@ -73,7 +77,11 @@ export default {
      */
     searchClicked() {
       const inputQuery = this.$refs.searchInput.value;
-      this.$router.push({ path: '/search', query: { searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}})
+      if (this.searchType === 'User') {
+        this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+      } else if (this.searchType === 'Business') {
+        this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1"}});
+      }
     },
 
     /**
