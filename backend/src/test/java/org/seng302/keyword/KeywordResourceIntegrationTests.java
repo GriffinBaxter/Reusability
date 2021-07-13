@@ -228,7 +228,7 @@ public class KeywordResourceIntegrationTests {
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
 
-        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.empty());
         response = mvc.perform(get("/keywords/search")
                 .param("searchQuery", searchQuery)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
