@@ -60,9 +60,13 @@
               Catalogue
             </router-link>
           </li>
+
         </ul>
       </div>
 
+      <!-- Log out link-->
+    <li class="nav-item">
+      <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
     </li>
 
   </div>
@@ -80,35 +84,35 @@ export default {
   },
   data() {
     return {
-      // // business dropdown variables
-      // showBusinessDropdown: false,
-      //
-      // // Interact as Menu
-      // showInteractMenu: false,
-      //
-      // businesses: [],
-      // interactAs: [],
-      // actAsId: null,
+      // business dropdown variables
+      showBusinessDropdown: false,
+
+      // Interact as Menu
+      showInteractMenu: false,
+
+      businesses: [],
+      interactAs: [],
+      actAsId: null,
       actAs: "",
-      // currentUser: null,
-      // // navbar required variables
-      // showNavbar: false,
-      // navbarMaxHeight: null,                                     // max height of the navbar pixels
-      // navbarMinHeight: 0,                                     // min height of the navbar pixels
-      // STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`,
-      // // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
+      currentUser: null,
+      // navbar required variables
+      showNavbar: false,
+      navbarMaxHeight: null,                                     // max height of the navbar pixels
+      navbarMinHeight: 0,                                     // min height of the navbar pixels
+      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`,
+      // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
       isActAsBusiness: false,
       businessAccountId: null,
-      //
-      // // omit part of name
-      // showOmitName: null,
-      // interactAsOmit: [],
-      // actAsOmit: "",
-      //
-      // // Watch window width
-      // screenWidth: document.body.clientWidth,
-      // maxNameLength: 30,
-      // omitPoint: 10
+
+      // omit part of name
+      showOmitName: null,
+      interactAsOmit: [],
+      actAsOmit: "",
+
+      // Watch window width
+      screenWidth: document.body.clientWidth,
+      maxNameLength: 30,
+      omitPoint: 10
     }
   },
   methods: {
@@ -119,7 +123,6 @@ export default {
       document.getElementById("mySidenav").style.width = "0";
       document.getElementById("main").style.marginLeft = "0";
     },
-
     /**
      * Toggle the interactAs menu dropdown
      */
@@ -503,7 +506,7 @@ export default {
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 25px;
-  color: #818181;
+  color: #ffffff;
   display: block;
   transition: 0.3s;
 }
@@ -524,5 +527,183 @@ export default {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
+
+.no-space {
+  padding: 0px;
+  margin: 0px;
+}
+
+/* Styling for smaller screen sizes begins */
+
+.logo-container {
+  position: center;
+}
+
+#logo-image-nav {
+  max-width: 90px;
+  margin-left: 28px;
+  margin-right: 10px;
+  width: 100%;
+}
+
+#interact-dropdown-links-wrapper {
+  width: unset;
+}
+
+#interactDrop {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  max-width: 100%;
+  height: auto;
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+#interactDrop a {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 40px;
+}
+
+.act-as-image {
+  height: 55px;
+  width: auto;
+  border: 1px lightgrey solid;
+}
+
+#actAsImg {
+  float: none;
+}
+
+#logoImage {
+  max-width: 200px;
+}
+
+.navbar-brand {
+  outline: none;
+}
+
+.company-name-main-position-nav {
+
+  /* centre text */
+  margin: 0;
+  position: absolute;
+
+  /* align to bottom of logo */
+  /*vertical-align: bottom;*/
+  /*line-height: 90%;*/
+
+}
+
+.nav-link {
+  color: white;
+  background: #19b092;
+
+  /* fallback for old browsers */
+  /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
+  /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+
+  margin: 10px 0;
+  border-radius: 15px;
+  text-align: center;
+  font-size: large;
+  width: auto;
+}
+
+.nav-link:hover, .nav-link:focus {
+  background: #ef5e33;
+  outline: none;
+  cursor: pointer;
+}
+
+.navbar-toggler {
+  color: rgba(25, 176, 146, 0.55);
+  border-color: rgba(0, 0, 0, 0.2);
+  border-width: 2px;
+  border-radius: 0.6rem;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+#navbar-id {
+  overflow: hidden;
+}
+
+#business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.active {
+  background-color: #2eda77;
+}
+
+.dropdown-menu {
+  border-right-width: 0;
+  border-left-width: 0;
+  padding: 0 5rem;
+  /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
+}
+
+.company-name-main-font {
+  font-family: 'Merriweather Sans', sans-serif;
+
+  /* centre text with navbar toggle */
+  margin: 0;
+  position: absolute;
+  top: 35px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+@media (min-width: 250px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+  .company-name-main-font {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 350px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+  .company-name-main-font {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 400px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+  .company-name-main-font {
+    font-size: 22px;
+  }
+}
+
+@media (min-width: 450px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+  .company-name-main-font {
+    font-size: 28px;
+  }
+}
+
 
 </style>

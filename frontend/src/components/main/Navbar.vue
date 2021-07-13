@@ -34,73 +34,77 @@
         <div id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
           <ul class="navbar-nav flex-column flex-xl-row">
 
-            <!-- default page links -->
-            <li class="nav-item">
-              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
-            </li>
-            <li class="nav-item" v-if="actAsId === null">
-              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-                Profile
-              </router-link>
-            </li>
-            <li class="nav-item" v-if=actAsId>
-              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
-                           :to="'/businessProfile/' + actAsId" tabindex="2">
-                Profile
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
-                Marketplace
-              </router-link>
-            </li>
+<!--            <div v-if="canShowTopNavLinks">-->
 
-            <!--- Business specific account links -->
-            <li class="nav-item dropdown" v-if="isActAsBusiness">
 
-              <!-- Navbar toggle drop down -->
-              <a class="nav-link dropdown-toggle" role="button" tabindex="4"
-              @click="() => {toggleBusinessDropdown()}"
-              @keyup.enter="() => {toggleBusinessDropdown()}">
-                Business Pages
-              </a>
+              <!-- default page links -->
+              <li class="nav-item">
+                <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
+              </li>
+              <li class="nav-item" v-if="actAsId === null">
+                <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                  Profile
+                </router-link>
+              </li>
+              <li class="nav-item" v-if=actAsId>
+                <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
+                             :to="'/businessProfile/' + actAsId" tabindex="2">
+                  Profile
+                </router-link>
+              </li>
+              <li class="nav-item">
+                <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
+                  Marketplace
+                </router-link>
+              </li>
 
-              <!-- Dropdown links-->
-              <div id="business-dropdown-links-wrapper">
-                <ul class="dropdown-menu show" id="business-dropdown-links">
-                  <li class="nav-item">
-                    <router-link
-                        :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
-                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
-                      Listings
-                    </router-link>
-                  </li>
-                  <li class="nav-item">
-                    <router-link
-                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
-                      Inventory
-                    </router-link>
-                  </li>
-                  <li class="nav-item">
-                    <router-link
-                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
-                      Catalogue
-                    </router-link>
-                  </li>
-                </ul>
-              </div>
+              <!--- Business specific account links -->
+              <li class="nav-item dropdown" v-if="isActAsBusiness">
 
-            </li>
+                <!-- Navbar toggle drop down -->
+                <a class="nav-link dropdown-toggle" role="button" tabindex="4"
+                @click="() => {toggleBusinessDropdown()}"
+                @keyup.enter="() => {toggleBusinessDropdown()}">
+                  Business Pages
+                </a>
 
-            <!-- Log out link-->
-            <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
-            </li>
+                <!-- Dropdown links-->
+                <div id="business-dropdown-links-wrapper">
+                  <ul class="dropdown-menu show" id="business-dropdown-links">
+                    <li class="nav-item">
+                      <router-link
+                          :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
+                          :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
+                        Listings
+                      </router-link>
+                    </li>
+                    <li class="nav-item">
+                      <router-link
+                          :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
+                          :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
+                        Inventory
+                      </router-link>
+                    </li>
+                    <li class="nav-item">
+                      <router-link
+                          :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
+                          :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
+                        Catalogue
+                      </router-link>
+                    </li>
+                  </ul>
+                </div>
+
+              </li>
+
+              <!-- Log out link-->
+              <li class="nav-item">
+                <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
+              </li>
+
+
 
           </ul>
-
 
           <ul class="navbar-nav flex-column flex-xl-row">
             <!-- Interact As -->
@@ -208,11 +212,36 @@ export default {
       // Watch window width
       screenWidth: document.body.clientWidth,
       maxNameLength: 30,
-      omitPoint: 10
+      omitPoint: 10,
+
+      canShowTopNavLinks: null,
     }
   },
 
   methods: {
+
+    /**
+     * Determines the browser's width. Depending on the browser, the width is calculated differently.
+     * If none of the browser's native properties are defined, it will return undefined.
+     */
+    getBrowserWidth() {
+      if (self.innerWidth) {
+        return self.innerWidth;
+      }
+      if (document.documentElement && document.documentElement.clientWidth) {
+        return document.documentElement.clientWidth;
+      }
+      if (document.body) {
+        return document.body.clientWidth;
+      }
+    },
+    /**
+     * If the width of the browser is more than 780px, then the top navigation links are not displayed.
+     * Only the mobile navigation menu will have these links present.
+     */
+    showTopNavLinks() {
+      this.canShowTopNavLinks = (this.getBrowserWidth() < 780);
+    },
     /**
      * Toggle the interactAs menu dropdown
      */
@@ -517,6 +546,8 @@ export default {
   mounted() {
     this.getUserData();
 
+    this.showTopNavLinks();
+
     // Sample the navbar max height at mounting
     this.navbarMaxHeight = this.getNavbarMaxHeight();
 
@@ -757,7 +788,7 @@ export default {
 
 /* Styling for larger screen sizes begins */
 /*xl Break point*/
-@media (min-width: 1200px) {
+@media (min-width: 780px) {
 
   .center {
     padding-top: 20px;
