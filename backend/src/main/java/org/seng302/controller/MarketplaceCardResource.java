@@ -266,10 +266,10 @@ public class MarketplaceCardResource {
             logger.info("Card Update Success - 200 [OK] - Successfully updated Card: {}", id);
 
         } else {
-            logger.error("User with ID: {} does no have permission to create this card.", currentUser.getId());
+            logger.error("User with ID: {} does no have permission to update this card.", currentUser.getId());
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "User does not have the permission to create this card."
+                    "User does not have the permission to update this card."
             );
         }
     }
