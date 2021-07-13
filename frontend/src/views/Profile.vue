@@ -45,27 +45,24 @@
             <div class="card-body">{{ actionErrorMessage }}</div>
           </div>
 
-          <!-- These messages will appear for GAA accounts -->
-          <div class="card text-center shadow-sm mt-3" v-if="hasAdminRights(role) && isGAA(role)">
-            <div class="card-body">
+
+          <div class="card text-center shadow-sm mt-3">
+            <!-- These messages will appear for GAA accounts -->
+            <div class="card-body" v-if="hasAdminRights(role) && isGAA(role)">
               <div class="alert alert-info" role="alert">
                 Global Application Admin
               </div>
             </div>
-          </div>
 
-          <!-- These messages will appear for DGAA accounts -->
-          <div class="card text-center shadow-sm mt-3" v-if="hasAdminRights(role) && isDGAA(role)">
-            <div class="card-body">
+            <!-- These messages will appear for DGAA accounts -->
+            <div class="card-body" v-if="hasAdminRights(role) && isDGAA(role)">
               <div class="alert alert-info" role="alert">
                 Default Global Application Admin
               </div>
             </div>
-          </div>
 
-          <!--make/remove business administrator button-->
-          <div class="card text-center  shadow-sm mt-3" v-if="actingBusinessId && otherUser">
-            <div class="card-body">
+            <!--make/remove business administrator button-->
+            <div class="card-body" v-if="actingBusinessId && otherUser">
               <div v-if="!isBusinessAdministrator">
                 <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
                 <button type="button" class="btn btn-md btn-outline-primary" v-else @click="activeAsAdministrator()">
@@ -80,17 +77,15 @@
                 </button>
               </div>
             </div>
-          </div>
-          <!--
-          This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
-          because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
-          but the backend will prevent this from occuring.
 
-          The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
-          another user's id.
-          -->
-          <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
-            <div class="card-body">
+            <!-- This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
+            because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
+            but the backend will prevent this from occurring.
+
+            The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
+            another user's id.
+            -->
+            <div class="card-body" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
               <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
               <div v-if="isGAA(role)">
                 <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
@@ -106,11 +101,9 @@
                 </button>
               </div>
             </div>
-          </div>
 
-          <!--register business button-->
-          <div class="card text-center shadow-sm mt-3" v-if="!otherUser">
-            <div class="card-body">
+            <!--register business button-->
+            <div class="card-body" v-if="!otherUser">
               <div id="registerBusinessRow" v-if="!otherUser">
                 <button type="button" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
                   Register Business
@@ -214,6 +207,7 @@
                   </div>
                 </div>
               </div>
+              <!--user's businesses administered-->
               <hr v-if="businessesAdministeredExist()">
               <div class="container" v-if="businessesAdministeredExist()">
                 <div class="row justify-content-between">
@@ -228,14 +222,18 @@
                         {{ business.name }}
                       </div>
                     </div>
-
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
 
+          <!--user's cards-->
+          <div class="col" v-if="userHasCards()">
+            <div class="row" id="user-cards">
+              <h4>User's Cards</h4>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -252,7 +250,7 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "../components/main/Footer";
 import Navbar from "../components/main/Navbar";
-import {UserRole} from '/configs/User'
+import {UserRole} from '../configs/User'
 
 export default {
   name: "Profile",
@@ -293,7 +291,11 @@ export default {
       loginRole: null,
       isBusinessAdministrator: false,
       actingBusinessId: null,
-      showUpload: false
+      showUpload: false,
+
+      // User card variables
+      // TODO Remove hello when not testing.
+      usersCards: ['Hello'],
     }
   },
   methods: {
@@ -335,8 +337,17 @@ export default {
     isGAA(role) {
       return role === UserRole.GLOBALAPPLICATIONADMIN;
     },
+    /**
+     * If a user is an administrator of one or more businesses they will need to be displayed.
+     */
     businessesAdministeredExist() {
       return this.businessesAdministered.length !== 0;
+    },
+    /**
+     * If a user has cards then they will need to be displayed.
+     */
+    userHasCards() {
+      return this.usersCards.length !== 0;
     },
 
     // --------------------------------------------------------------------------------------------------------------------
@@ -600,9 +611,9 @@ export default {
     },
 
     /**
-     * push user to an business profile page
+     * Redirect the user to a business profile page.
      */
-    pushToBusiness(id) {//TODO:change name
+    redirectToBusiness(id) {
       this.$router.push({name: 'BusinessProfile', params: {id}});
     },
 
@@ -804,4 +815,15 @@ export default {
   color: #1EBA8C !important;
   cursor: pointer;
 }
+
+/* Needed because bootstrap alert had "padding" causing the message
+   to not be centered. */
+.alert {
+  margin-bottom: 0;
+}
+
+#user-cards {
+  padding-top: 2%;
+}
+
 </style>
