@@ -360,8 +360,8 @@ export default {
        */
       event.preventDefault();
 
-      Cookies.remove('userID');
-      Cookies.remove('actAs');
+      Cookies.remove('userID', { sameSite: 'strict' });
+      Cookies.remove('actAs', { sameSite: 'strict' });
 
       Api.signOut().then(() => {
         this.$router.push({name: 'Login'})
@@ -437,7 +437,7 @@ export default {
           'interact-dropdown-links-wrapper', this.showInteractMenu)
       if (index === 0) {
         // Delete Cookie
-        Cookies.remove('actAs');
+        Cookies.remove('actAs', { sameSite: 'strict' });
         this.$router.go();
       } else {
         // Set Cookie
@@ -468,7 +468,7 @@ export default {
         }
         // If user not admin of business removes cookie
         if (check === false) {
-          Cookies.remove('actAs');
+          Cookies.remove('actAs', { sameSite: 'strict' });
           this.actAsId = null;
           if (response.nickname == null) {
             this.actAs = response.firstName;
