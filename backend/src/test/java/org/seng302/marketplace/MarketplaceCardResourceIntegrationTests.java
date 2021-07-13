@@ -38,6 +38,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * MarketplaceCardResource test class
@@ -105,6 +107,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Before each create a user that will be used in all tests when creating cards.
+     *
      * @throws Exception thrown if there is an error when creating an address or user.
      */
     @BeforeEach
@@ -209,9 +212,12 @@ class MarketplaceCardResourceIntegrationTests {
                 .build();
     }
 
+    // -------------------------------------------- CREATE ONE NEW CARD ------------------------------------------------
+
     /**
      * Tests that a CREATED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains a card with valid data.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -241,6 +247,7 @@ class MarketplaceCardResourceIntegrationTests {
     /**
      * Tests that a BAD_REQUEST status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains a card that already exists for an existing creator ID.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -325,6 +332,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that an UNAUTHORIZED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID but with
      * an invalid UUID.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -354,6 +362,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that a FORBIDDEN status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID for another user but the current user
      * is not a GAA or DGAA.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -381,6 +390,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that a CREATED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID for another user and the current user
      * is a GAA.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -404,6 +414,8 @@ class MarketplaceCardResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
+
+    // ------------------------------------------- GET ONE (by CARD ID) ------------------------------------------------
 
     /**
      * Tests that an OK status and a marketplace card is received when the card ID in the /cards/{id} API endpoint exists.
@@ -512,7 +524,7 @@ class MarketplaceCardResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
-    // ------------------- GET ALL (by SECTION) -------------------
+    // ------------------------------------------- GET ALL (by SECTION) ------------------------------------------------
 
     /**
      * Tests that an OK status and marketplace cards are received when the Section is valid.
@@ -771,4 +783,141 @@ class MarketplaceCardResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
+
+    // ---------------------------------------- DELETE ONE CARD (by CARD ID) -------------------------------------------
+
+    /**
+     * Test that the creator can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void canDeleteAExistCardWithCreatorCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that a GAA can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void canDeleteAExistCardWithGAACookie() throws Exception {
+        // given
+        anotherUser.setRole(Role.GLOBALAPPLICATIONADMIN);
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that the DGAA can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void canDeleteAExistCardWithDGAACookie() throws Exception {
+        // given
+        anotherUser.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that card will not been delete when no user login (no session token). Return UNAUTHORIZED (401).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void cantDeleteAExistCardWithNoCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Test that card will not been delete when current user (session token) is a USER and not the creator of this card.
+     * Return FORBIDDEN (403).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void cantDeleteAExistCardWithOtherUserCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that the creator can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void cantDeleteAExistCardWithCreatorCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that the creator can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void cantDeleteANotExistCardWithCreatorCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
 }

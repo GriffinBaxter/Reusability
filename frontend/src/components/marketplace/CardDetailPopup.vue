@@ -44,7 +44,7 @@
                       Created: {{ created }}
                     </h6>
                   </div>
-                  <div class="col" align="right">
+                  <div class="col" style="float:right; text-align: right">
                     <h6 class="text-muted">
                       {{ address }}
                     </h6>
@@ -57,6 +57,14 @@
                 <div style="vertical-align:middle; font-size:15px;">
                   <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
                   <a v-bind:title="creator" style="font-size: 17px"> {{ displayCreator }} </a>
+                  <button v-if="deletePermissionCheck()"
+                          id="remove-card-button"
+                          type="button"
+                          class="btn btn-outline-danger"
+                          style="float:right"
+                          @click="removeCurrentCard()"
+                          data-bs-dismiss="modal"
+                          aria-label="Close" >Remove</button>
                 </div>
 
               </div>
@@ -72,6 +80,7 @@
 <script>
 import Api from "../../Api";
 import {formatDate} from "../../dateUtils";
+import Cookies from 'js-cookie';
 
 export default {
   name: "CardDetail",
@@ -86,6 +95,8 @@ export default {
       creator: "",
       displayCreator: "",
       address: "",
+      currentUserRole: "",
+      creatorId: null
     }
   },
   props: {
@@ -119,6 +130,7 @@ export default {
       this.created = formatDate(data.created);
       this.address = [data.creator.homeAddress.suburb, data.creator.homeAddress.city].join(" ");
       this.creator = [data.creator.firstName, data.creator.middleName, data.creator.lastName].join(" ");
+      this.creatorId = data.creator.id;
       if (this.creator.length >= 40) {
         this.displayCreator = this.creator.slice(0, 40) + '...';
       } else {
@@ -129,6 +141,9 @@ export default {
         this.keywords.push({id: keyword.id, name: keyword.name});
       })
     },
+    /**
+     * retrieve card detail by given id
+     */
     retrieveCardDetail(id) {
       Api.getDetailForACard(id).then(response => (this.populateData(response.data))).catch((error) => {
         if (error.require && !error.response) {
@@ -144,8 +159,53 @@ export default {
           console.log(error.message);
         }
       })
+    },
+    /**
+     * remove current card
+     */
+    removeCurrentCard() {
+      Api.deleteACard(this.id).then(
+          response => {
+            if (response.status === 200) {
+              this.$router.go(this);
+            }
+          }
+      ).catch((error) => {
+        console.log(error)
+      })
+    },
+    /**
+     * check current user's permission of deletion
+     * @returns {boolean} permission of deletion
+     */
+    deletePermissionCheck() {
+      let flag;
+      let currentUserId = Cookies.get('userID');
+      if (currentUserId == this.creatorId){
+        flag =  true;
+      } else {
+        Api.getUser(currentUserId).then(response => {
+          this.currentUserRole = response.data.role;
+        }).catch((error) => {
+          if (error.request && !error.response) {
+            this.$router.push({path: '/timeout'});
+          } else if (error.response.status === 406) {
+            this.$router.push({path: '/noUser'});
+          } else if (error.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
+          } else {
+            this.$router.push({path: '/noUser'});
+            console.log(error.message);
+          }
+        })
+        flag = (this.currentUserRole !== "USER")
+      }
+      return flag;
     }
   },
+  /**
+   * watch the id change of selected card
+   */
   watch: {
     id: {
       deep: true,
