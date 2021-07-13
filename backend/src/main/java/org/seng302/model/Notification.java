@@ -63,6 +63,7 @@ public class Notification {
         this.extraMessage = extraMessage;
     }
 
+    //TODO: Test
     public String expiryFormTOString() {
         return notificationMessage + " in " + extraMessage + ".";
     }

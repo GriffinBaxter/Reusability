@@ -340,6 +340,7 @@ public class MarketplaceCardResource {
      * @param sessionToken JSESSIONID
      * @throws Exception when card can't be converted to payload (DTO).
      */
+    //TODO: Test
     @PutMapping("/cards/updateNotification")
     public void updateCardExpireNotification(@CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
 

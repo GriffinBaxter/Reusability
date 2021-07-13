@@ -37,6 +37,7 @@ public interface MarketplaceCardRepository extends JpaRepository<MarketplaceCard
      * @param id creator id
      * @return A list of marketplace card
      */
+    //TODO: Test
     List<MarketplaceCard> findAllByCreatorId(Integer id);
 
     /**
