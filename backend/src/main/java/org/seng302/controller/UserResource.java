@@ -33,6 +33,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -108,10 +109,8 @@ public class UserResource {
                 user.get().setSessionUUID(sessionUUID);
                 userRepository.save(user.get());
 
-                Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
-                cookie.setMaxAge(3600); // 1 hour in seconds
-                cookie.setHttpOnly(true);
-                response.addCookie(cookie);
+                ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionUUID).maxAge(3600).sameSite("strict").httpOnly(true).build();
+                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
                 logger.info("Successful Login - User Id: {}", user.get().getId());
                 return new UserIdPayload(user.get().getId());
@@ -132,10 +131,11 @@ public class UserResource {
     public void logoutUser(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                            HttpServletResponse response) {
         if (sessionToken != null) {
-            Cookie cookie = new Cookie("JSESSIONID", sessionToken);
-            cookie.setMaxAge(0); // 0 deletes the cookie
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+
+            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionToken).maxAge(0).sameSite("strict").httpOnly(true).build(); // maxAge 0 deletes the cookie
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+
         }
     }
 
@@ -208,9 +208,8 @@ public class UserResource {
             newUser.setSessionUUID(getUniqueSessionUUID());
             User createdUser = userRepository.save(newUser);
 
-            Cookie cookie = new Cookie("JSESSIONID", createdUser.getSessionUUID());
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", createdUser.getSessionUUID()).maxAge(3600).sameSite("strict").httpOnly(true).build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             logger.info("Successful Registration - User Id {}", createdUser.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
