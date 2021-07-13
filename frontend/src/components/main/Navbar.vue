@@ -49,7 +49,7 @@
                 Profile
               </router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="!isActAsBusiness">
               <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
                 Marketplace
               </router-link>
@@ -438,25 +438,17 @@ export default {
       if (index === 0) {
         // Delete Cookie
         Cookies.remove('actAs');
-        this.isActAsBusiness = false;
-        //
-        this.actAsId = null;
-        if (this.currentUser.nickname) {
-          this.actAs = this.currentUser.nickname;
-        } else {
-          this.actAs = this.currentUser.firstName;
-        }
+        this.$router.go();
       } else {
-        this.thumbnail = null;
+        // Set Cookie
         Cookies.set('actAs', this.interactAs[index].id);
-        this.businessAccountId = this.interactAs[index].id;
-        this.isActAsBusiness = true;
-        this.actAsId = this.interactAs[index].id;
-        this.actAs = this.interactAs[index].name;
+        // Checks if business is allowed on page
+        if (this.canGoToPage()) {
+          this.$router.go();
+        } else {
+          this.$router.push({name: "BusinessProfile", params: {id: this.interactAs[index].id}})
+        }
       }
-      this.actAs = this.omitName(this.actAs, this.maxNameLength)
-      this.actAsOmit = this.omitName(this.actAs, this.omitPoint)
-      this.$router.go();
     },
     setCurUser(response) {
       this.currentUser = response;
@@ -503,6 +495,17 @@ export default {
     },
     onResize() {
       this.toggleNavbar(true);
+    },
+    /**
+     * T/F When user is acting as a business checks user is allowed on page
+     * NOTE: Currently just Marketplace
+     */
+    canGoToPage() {
+      if (this.$route.name === "Marketplace") {
+        return false;
+      } else {
+        return true;
+      }
     }
   },
   beforeMount() {
@@ -513,6 +516,13 @@ export default {
     this.businessAccountId = Cookies.get("actAs");
     this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
     this.showOmitName = (this.screenWidth > 1200);
+
+    // This is for using URL when acting as
+    if (this.isActAsBusiness) {
+      if(!this.canGoToPage()) {
+        this.$router.push({name: "BusinessProfile", params: {id: this.businessAccountId}})
+      }
+    }
   },
   mounted() {
     this.getUserData();
