@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
  * The GET /cards endpoint is used to retrieve all cards that are stored.
  * The GET /cards/id endpoint is used to retrieve the details for a single card.
  * The PUT /cards/{id}/extenddisplayperiod endpoint is used to extend the display period of a card nearing expiry.
+ * The PUT /cards/{id} endpoint is used to edit existing cards
  */
 @RestController
 public class MarketplaceCardResource {
