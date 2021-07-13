@@ -441,7 +441,7 @@ export default {
         this.$router.go();
       } else {
         // Set Cookie
-        Cookies.set('actAs', this.interactAs[index].id);
+        Cookies.set('actAs', this.interactAs[index].id, { sameSite: 'strict' });
         // Checks if business is allowed on page
         if (this.canGoToPage()) {
           this.$router.go();

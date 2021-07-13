@@ -890,7 +890,7 @@ export default {
             if (res.status === 201) {
               const {userId} = res.data;
               if (userId) {
-                Cookies.set('userID', userId);
+                Cookies.set('userID', userId, { sameSite:'strict'});
                 this.$router.push('/profile');
               }
             }
