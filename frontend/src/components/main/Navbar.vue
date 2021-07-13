@@ -273,7 +273,7 @@ export default {
      * Animates a slide up and down on the height of an element and it's wrapper. This is used to make the dropdown
      * appear more nicely.
      * @param dropdownId - The id of the dropdown element.
-     * @param dropdownWrapperId - The ide of the dropdown wrapper element.
+     * @param dropdownWrapperId - The id of the dropdown wrapper element.
      * @param toggleVariable - The variable that the dropdown depends on.
      * @param preventToggle - Gives the option to prevent the variable from being toggled. This defaults to false.
      * @param minHeight - Gives the option to give a custom minimum height. But zero if a good default.
