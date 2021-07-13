@@ -11,6 +11,7 @@ import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.incoming.MarketplaceCardCreationPayload;
+import org.seng302.view.incoming.MarketplaceCardUpdatePayload;
 import org.seng302.view.outgoing.MarketplaceCardIdPayload;
 import org.seng302.view.outgoing.MarketplaceCardPayload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,6 +157,103 @@ public class MarketplaceCardResource {
                     HttpStatus.FORBIDDEN,
                     "User does not have the permission to create this card."
             );
+        }
+    }
+
+    /**
+     * Create a new card.
+     * The response status and reason is returned for the corresponding scenario.
+     *
+     * @param sessionToken Session token
+     * @return ResponseEntity<MarketplaceCardIdPayload> this payload contains the id of a successfully created card.
+     */
+    @PutMapping("/cards/{id}")
+    public ResponseEntity<MarketplaceCardIdPayload> editCard(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestBody MarketplaceCardUpdatePayload updatedCardPayload,
+            @PathVariable Integer id
+    ) {
+        logger.debug("Edit card payload received: {}", updatedCardPayload);
+
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // Check to see if card exists.
+        Optional<MarketplaceCard> storedCard = marketplaceCardRepository.findById(id);
+
+        if (storedCard == null || storedCard.isEmpty()) {
+            logger.error("Card at ID: {} does not exist", id);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Card doesn't exist"
+            );
+
+            // If user is GAA, DGAA or the user is also the creator then a card can be updated.
+            // Otherwise the user is forbidden from creating the card.
+            if (Authorization.isGAAorDGAA(currentUser) || currentUser.getId() == storedCard.get().getCreatorId()) {
+
+                // Verify there is a payload. Otherwise we are wasting processing time.
+                if (updatedCardPayload == null) {
+                    logger.error("Card Modify Failure - 400 [BAD REQUEST] - Payload is empty.");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload is missing and must be provided.");
+                }
+
+                // Checks keyword IDs exist
+                for (Integer keyword : updatedCardPayload.getKeywords()) {
+                    if (keywordRepository.findById(keyword).isEmpty()) {
+                        logger.error("Keyword ID: {} not found", keyword);
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keyword ID not found");
+                    }
+                }
+
+                // Checks ID was sent
+                if (updatedCardPayload.getCreatorId() != null) {
+                    // Checks if the ID's match
+                    if (updatedCardPayload.getCreatorId() != storedCard.get().getCreatorId()) {
+                        if (!Authorization.isGAAorDGAA(currentUser)) {
+                            logger.error("User doesn't have permission to set creator to a different user");
+                            throw new ResponseStatusException(
+                                    HttpStatus.FORBIDDEN,
+                                    "User doesn't have permission to set creator to a different user"
+                            );
+                        }
+                    }
+                } else {
+                    // sets Id to stored Id
+                    updatedCardPayload.setCreatorId(storedCard.get().getCreatorId());
+                }
+
+                // Checks if title was sent
+                if (updatedCardPayload.getTitle() == null) {
+                    logger.error("Card Update Failure - 400 [BAD_REQUEST] - Title was not included");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title was not included");
+                }
+
+                // Checks if description was sent
+                if (updatedCardPayload.getDescription() == null) {
+                    logger.error("Card Update Failure - 400 [BAD_REQUEST] - Description was not included");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description was not included");
+                }
+
+                // Checks if section was sent and is valid
+                if (updatedCardPayload.getSection() == null) {
+                    logger.error("Card Update Failure - 400 [BAD_REQUEST] - Section was not included or invalid");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Section was not included or invalid");
+                }
+
+                // Set changes
+                storedCard.get().setCreatorId(updatedCardPayload.getCreatorId());
+                storedCard.get().setTitle(updatedCardPayload.getTitle());
+                storedCard.get().setDescription(updatedCardPayload.getDescription());
+                storedCard.get().setSection(updatedCardPayload.getSection());
+                storedCard.get().setKeywords(updatedCardPayload.getKeywords());
+
+            } else {
+                logger.error("User with ID: {} does no have permission to create this card.", currentUser.getId());
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "User does not have the permission to create this card."
+                );
+            }
         }
     }
 
