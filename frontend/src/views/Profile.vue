@@ -621,9 +621,9 @@ export default {
     },
 
     /**
-     * push user to an business profile page
+     * Push user to a business profile page.
      */
-    pushToBusiness(id) {//TODO:change name
+    pushToBusiness(id) {
       this.$router.push({name: 'BusinessProfile', params: {id}});
     },
 

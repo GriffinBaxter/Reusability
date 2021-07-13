@@ -468,7 +468,6 @@ export default {
      */
     clearRows() {
       let allRows = document.getElementsByClassName("userRows");
-      //TODO Not sure why i-->0 works when i >0; i-- doesn't
       for (let i = allRows.length; i-->0;) {
         allRows[i].parentNode.removeChild(allRows[i]);
       }
@@ -542,18 +541,6 @@ export default {
 
     document.addEventListener('page-routing', this.requestUsersListener);
 
-    //TODO what is the purpose of this? Is it needed still?
-
-    // let self = this;
-    // this.$nextTick(function() {
-    //   window.addEventListener('resize', function() {
-    //     if (self.small !== document.documentElement.clientWidth <= 992) {
-    //       console.log(self.small);
-    //       self.buildRows();
-    //       self.small = !self.small;
-    //     }
-    //   });
-    // })
   },
   beforeDestroy() {
     document.removeEventListener('page-routing', this.requestUsersListener);
@@ -576,7 +563,6 @@ export default {
 }
 
 /**
- * TODO remove once footer is sticky
  * Calculates where footer should be.
  */
 .all-but-footer {

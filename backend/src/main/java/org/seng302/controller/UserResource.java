@@ -409,7 +409,15 @@ public class UserResource {
     }
 
     //TODO write unit tests
-    //TODO write comment
+
+    /**
+     * Converts a list of users to a list of user payloads and removes the users' roles if the current user is not
+     * authorized to view roles.
+     * @param userList A list of users to convert
+     * @param user The current user
+     * @return A list of user payloads
+     * @throws Exception An exception
+     */
     public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
         List<UserPayloadSecure> userPayloadList = new ArrayList<>();
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
