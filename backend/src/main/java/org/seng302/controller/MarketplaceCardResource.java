@@ -9,6 +9,7 @@ import org.seng302.model.enums.Section;
 import org.seng302.model.*;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
+import org.seng302.model.repository.NotificationRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.incoming.MarketplaceCardCreationPayload;
 import org.seng302.view.outgoing.MarketplaceCardIdPayload;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +51,9 @@ public class MarketplaceCardResource {
 
     @Autowired
     private KeywordRepository keywordRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     private static final Logger logger = LogManager.getLogger(MarketplaceCardResource.class.getName());
 
@@ -287,7 +292,7 @@ public class MarketplaceCardResource {
      * PUT method for extending the display period of a marketplace card with a given ID.
      *
      * @param sessionToken Session token of the currently logged in user.
-     * @param id The ID of the card the user wishes to extend the display period of.
+     * @param id           The ID of the card the user wishes to extend the display period of.
      */
     @PutMapping("/cards/{id}/extenddisplayperiod")
     public void extendDisplayPeriod(
@@ -329,6 +334,58 @@ public class MarketplaceCardResource {
             );
         }
         return marketplaceCardOptional.get();
+    }
+
+    /**
+     * @param sessionToken JSESSIONID
+     * @throws Exception when card can't be converted to payload (DTO).
+     */
+    @PutMapping("/cards/updateNotification")
+    public void updateCardExpireNotification(@CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+
+        // Checks user logged in 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        Integer currentUserId = currentUser.getId();
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime noticeTime = currentTime.plusDays(1);
+
+        // Find all market card created by current user.
+        List<MarketplaceCard> marketplaceCards = marketplaceCardRepository.findAllByCreatorId(currentUserId);
+
+        Notification newNotification;
+        Duration duration;
+        String fullNotificationMessage;
+        String notificationMessageFormat = "Your card ({}) will be expired";
+
+        // Update notification database
+        for (MarketplaceCard marketplaceCard : marketplaceCards) {
+            logger.debug("Marketplace card retrieved with ID {}: {}", marketplaceCard.getId(), marketplaceCard);
+
+            // Update (or creat) the time of current card expire
+            if (marketplaceCard.getDisplayPeriodEnd().isBefore(noticeTime)
+                    && marketplaceCard.getDisplayPeriodEnd().isAfter(currentTime)) {
+                logger.debug("Marketplace card with ID {} will be expired in next 24h. ({})", marketplaceCard.getId(), marketplaceCard);
+
+                fullNotificationMessage = String.format(notificationMessageFormat, marketplaceCard.getTitle());
+                Optional<Notification> optionalNotification = notificationRepository.findByReceiverIdAndNotificationMessage(currentUserId, fullNotificationMessage);
+                duration = Duration.between(currentTime, marketplaceCard.getDisplayPeriodEnd());
+
+                if (optionalNotification.isEmpty()) {
+                    // Create
+                    logger.debug("Notification message {} is not exist.", optionalNotification);
+                    newNotification = new Notification(currentUserId, fullNotificationMessage, duration.toString());
+                } else {
+                    // Update
+                    logger.debug("Notification message {} has been retrieved.", optionalNotification);
+                    newNotification = optionalNotification.get();
+                    newNotification.setExtraMessage(duration.toString());
+                }
+                notificationRepository.save(newNotification);
+                logger.debug("Notification message ({}) has been saved.", newNotification.expiryFormTOString());
+            }
+        }
+        logger.info("Notification Update Success - 200 [OK] - All notification for user ({}) has been updated.", currentUserId);
     }
 
 }
