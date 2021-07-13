@@ -1021,6 +1021,30 @@ class MarketplaceCardResourceIntegrationTests {
     }
 
     /**
+     * Test user can't enter bad data ~ Section is invalid
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_InvalidSection() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), "invalidsection", marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
      * Test user includes all required fields ~ Title
      * Return BAD_REQUEST (400)
      *
@@ -1036,8 +1060,7 @@ class MarketplaceCardResourceIntegrationTests {
                 "\"section\":\"%s\"," +
                 "\"description\":\"%s\"," +
                 "\"keywords\":%s}";
-        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(71), marketplaceCard.getDescription(),
-                "[]");
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getDescription(), "[]");
 
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
@@ -1065,8 +1088,7 @@ class MarketplaceCardResourceIntegrationTests {
                 "\"title\":\"%s\"," +
                 "\"keywords\":%s}";
 
-        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(71), marketplaceCard.getDescription(),
-                "[]");
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "[]");
 
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
@@ -1093,8 +1115,7 @@ class MarketplaceCardResourceIntegrationTests {
                 "\"title\":\"%s\"," +
                 "\"description\":\"%s\"," +
                 "\"keywords\":%s}";
-        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(71), marketplaceCard.getDescription(),
-                "[]");
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "[]");
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
