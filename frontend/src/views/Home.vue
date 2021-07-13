@@ -107,7 +107,7 @@
 <script>
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
-import Notification from "@/components/main/Notification";
+import Notification from "../components/main/Notification";
 
 export default {
   name: "Home",
