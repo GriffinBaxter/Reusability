@@ -51,18 +51,13 @@ public class MarketplaceCardUpdatePayload {
         return toSectionENUM(section);
     }
 
-    public void setSection(Section section) {
-        if (section == Section.FORSALE) { this.section = "FORSALE"; }
-        else if (section == Section.EXCHANGE) { this.section = "EXCHANGE"; }
-        else if (section == Section.WANTED) { this.section = "WANTED"; }
-    }
-
     /**
      * Check to see if a string is a valid section, if so convert the string to a Section ENUM, if not, return null
      * @param string a string representing a section.
      * @return when string is valid section return Section ENUM, otherwise return null
      */
     private Section toSectionENUM(String string){
+        if (string == null) { return null; }
         Section section = null;
         if (string.equalsIgnoreCase("FORSALE")){
             section = Section.FORSALE;

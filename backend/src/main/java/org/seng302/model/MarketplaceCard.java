@@ -124,9 +124,7 @@ public class MarketplaceCard {
         return displayPeriodEnd;
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() { return title; }
 
     public String getDescription() {
         return description;
@@ -158,9 +156,7 @@ public class MarketplaceCard {
         this.displayPeriodEnd = displayPeriodEnd;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public void setTitle(String title) { this.title = title; }
 
     public void setDescription(String description) {
         this.description = description;
@@ -193,6 +189,15 @@ public class MarketplaceCard {
             if (keywords.get(i).getId() == keywordId){
                 this.keywords.remove(i);
             }
+        }
+    }
+
+    /**
+     * Removes all Keywords from the Marketplace Card
+     */
+    public void removeAllKeywords() {
+        while (0 > keywords.size()) {
+            this.keywords.remove(0);
         }
     }
 
@@ -251,7 +256,7 @@ public class MarketplaceCard {
      * @param title The title to be checked.
      * @return true when the title is valid
      */
-    private boolean isValidTitle(String title) {
+    public static boolean isValidTitle(String title) {
         return (title.length() >= TITLE_MIN_LENGTH) &&
                 (title.length() <= TITLE_MAX_LENGTH);
     }
@@ -262,7 +267,7 @@ public class MarketplaceCard {
      * @param description The description to be checked.
      * @return true when the description is valid
      */
-    private boolean isValidDescription(String description) {
+    public static boolean isValidDescription(String description) {
         return (description.length() >= DESCRIPTION_MIN_LENGTH) &&
                 (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
