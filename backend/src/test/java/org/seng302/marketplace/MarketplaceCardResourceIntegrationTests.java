@@ -1032,10 +1032,12 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
 
-        payloadJson = "{\"creatorId\":\"%d\"," +
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
                 "\"section\":\"%s\"," +
                 "\"description\":\"%s\"," +
                 "\"keywords\":%s}";
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(71), marketplaceCard.getDescription(),
+                "[]");
 
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
@@ -1058,10 +1060,13 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
 
-        payloadJson = "{\"creatorId\":\"%d\"," +
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
                 "\"section\":\"%s\"," +
                 "\"title\":\"%s\"," +
                 "\"keywords\":%s}";
+
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(71), marketplaceCard.getDescription(),
+                "[]");
 
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
@@ -1084,11 +1089,12 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
 
-        payloadJson = "{\"creatorId\":\"%d\"," +
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
                 "\"title\":\"%s\"," +
                 "\"description\":\"%s\"," +
                 "\"keywords\":%s}";
-
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(71), marketplaceCard.getDescription(),
+                "[]");
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
