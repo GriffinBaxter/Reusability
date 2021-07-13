@@ -19,22 +19,6 @@
     <!--profile container-->
     <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
-      <!-- These messages will appear for GAA accounts -->
-      <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
-        <div class="col-xl-12 mb-5 text-center mx-auto">
-          <div class="display-5" v-if="otherUser">This user has application admin rights!</div>
-          <div class="display-5" v-else>You have application admin rights!</div>
-        </div>
-      </div>
-
-      <!-- These messages will appear for DGAA accounts -->
-      <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
-        <div class="col-xl-12 mb-5 text-center mx-auto">
-          <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
-          <div class="display-5" v-else>You have default application admin rights!</div>
-        </div>
-      </div>
-
       <div class="row">
 
         <div class="col-xl-3 mb-3">
@@ -46,12 +30,6 @@
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
               </div>
 
-              <!--      Note that this is commented out as the image storage story has not been implemented        -->
-              <!-- Button trigger modal -->
-<!--              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">-->
-<!--                Upload Image-->
-<!--              </button>-->
-
               <!--user's nickname and bio-->
               <div class="mt-3">
                 <h4>{{ nickname }}</h4>
@@ -61,16 +39,28 @@
             </div>
           </div>
 
-          <!--   For later use:   -->
-<!--          <div class="card text-center shadow-sm mt-3">-->
-<!--            <div class="card-body">-->
-<!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
-<!--            </div>-->
-<!--          </div>-->
 
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>
             <div class="card-body">{{ actionErrorMessage }}</div>
+          </div>
+
+          <!-- These messages will appear for GAA accounts -->
+          <div class="card text-center shadow-sm mt-3" v-if="hasAdminRights(role) && isGAA(role)">
+            <div class="card-body">
+              <div class="alert alert-info" role="alert">
+                Global Application Admin
+              </div>
+            </div>
+          </div>
+
+          <!-- These messages will appear for DGAA accounts -->
+          <div class="card text-center shadow-sm mt-3" v-if="hasAdminRights(role) && isDGAA(role)">
+            <div class="card-body">
+              <div class="alert alert-info" role="alert">
+                Default Global Application Admin
+              </div>
+            </div>
           </div>
 
           <!--make/remove business administrator button-->
@@ -113,6 +103,17 @@
                 <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
                 <button type="button" class="btn btn-md btn-outline-success" v-else @click="grantUserGAA">
                   Grant Global Application Admin
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!--register business button-->
+          <div class="card text-center shadow-sm mt-3" v-if="!otherUser">
+            <div class="card-body">
+              <div id="registerBusinessRow" v-if="!otherUser">
+                <button type="button" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
+                  Register Business
                 </button>
               </div>
             </div>
@@ -235,34 +236,12 @@
             </div>
           </div>
 
-          <!--register business button-->
-          <div align="right" id="registerBusinessRow" v-if="!otherUser">
-          <button class="btn btn-outline-primary float-end mt-4 green-button" @click="$router.push('/businessRegistration')">Register Business</button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-    <!-- File Upload -->
-    <div v-if="showUpload" id="FileUpload" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Upload Image</h5>
-          <button type="button" class="btn-close" @click="showFileUpload(false)"></button>
-        </div>
-        <div class="modal-body">
-          <input type="file">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="showFileUpload(false)">Close</button>
-          <button type="button" class="btn green-button" @click="showFileUpload(false)">Save changes</button>
         </div>
       </div>
     </div>
     </div>
     <!--footer-->
     <Footer></Footer>
-
   </div>
 </template>
 
@@ -273,7 +252,7 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "../components/main/Footer";
 import Navbar from "../components/main/Navbar";
-import {UserRole} from '../configs/User'
+import {UserRole} from '/configs/User'
 
 export default {
   name: "Profile",
@@ -811,28 +790,6 @@ export default {
 <!----------------------------------------------- Profile Page Styling ------------------------------------------------>
 
 <style scoped>
-
-#upload-button {
-  margin: 5px 0;
-}
-
-.modal {
-  display: block; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  width: 100%;
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-/* Modal Content/Box */
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 60%; /* Could be more or less, depending on screen size */
-}
 
 #profile-container {
   margin-bottom: 5%;
