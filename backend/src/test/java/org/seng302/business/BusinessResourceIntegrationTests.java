@@ -179,7 +179,7 @@ class BusinessResourceIntegrationTests {
 
     /**
      * test when business has been create, current user has been add to business's administrators
-     * @throws Exception thrown when by MockMvc
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void setAdministratorComplete() throws Exception {

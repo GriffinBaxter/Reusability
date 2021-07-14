@@ -990,9 +990,9 @@ paths:
 
             * nameDESC: alphabetically by business name, Z - A
 
-            * addressASC: alphabetically by business name, A - Z
+            * addressASC: alphabetically by address, A - Z
 
-            * addressDESC: alphabetically by business name, Z - A
+            * addressDESC: alphabetically by address, Z - A
         - in: query
           name: page
           schema:

@@ -2,8 +2,9 @@ package org.seng302.main;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.seng302.SearchUtils;
+import org.seng302.utils.SearchUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +24,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNamesWithOneAndTest_ExpectListContainingConcatenatedWordTest() {
         String searchQuery = "Brink AND Food";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("Brink Food");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("Brink Food");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -35,7 +37,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNamesWithTwoAnds_ExpectListContainingConcatenatedWordTest() {
         String searchQuery = "Big AND Red AND Apple";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("Big Red Apple");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("Big Red Apple");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -47,7 +50,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNamesWithThreeAnds_ExpectListContainingConcatenatedWordTest() {
         String searchQuery = "Big AND Crunchy AND Red AND Apple";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("Big Crunchy Red Apple");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("Big Crunchy Red Apple");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -60,7 +64,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNamesWithOneWordTest_ExpectListContainingOneWordTest() {
         String searchQuery = "Brink";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("Brink");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("Brink");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -72,7 +77,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNamesWithTwoWords_ExpectListContainingConcatenatedWordTest() {
         String searchQuery = "Brink Food";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("Brink Food");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("Brink Food");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -84,7 +90,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNamesWithWords_ExpectListContainingConcatenatedWordTest() {
         String searchQuery = "Big Red Apple";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("Big Red Apple");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("Big Red Apple");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -98,7 +105,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNamesWithOneAndAndNoLogicalOperator_ExpectListContainingConcatenatedWordTest() {
         String searchQuery = "Big AND Red Apple";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("Big Red Apple");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("Big Red Apple");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -110,7 +118,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNamesWithTwoAndsAndNoLogicalOperator_ExpectListContainingConcatenatedWordTest() {
         String searchQuery = "Big Crunchy AND Red AND Apple";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("Big Crunchy Red Apple");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("Big Crunchy Red Apple");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -227,7 +236,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNameWithExactMatchOneWord_ExpectListContainingExactWordTest() {
         String searchQuery = "\"Big\"";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("\"Big\"");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("\"Big\"");
         Assertions.assertEquals(expectedNames, names);
     }
 
@@ -239,7 +249,8 @@ class SearchUtilsTests {
     void convertSearchQueryToNameWithExactMatchThreeWords_ExpectListContainingExactWordsTest() {
         String searchQuery = "\"Big Red Apple\"";
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        List<String> expectedNames = Arrays.asList("\"Big Red Apple\"");
+        List<String> expectedNames = new ArrayList<>();
+        expectedNames.add("\"Big Red Apple\"");
         Assertions.assertEquals(expectedNames, names);
     }
 

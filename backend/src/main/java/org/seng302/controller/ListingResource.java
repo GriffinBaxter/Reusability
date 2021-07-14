@@ -18,6 +18,7 @@ import org.seng302.model.repository.BusinessRepository;
 import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.model.InventoryItem;
 import org.seng302.model.Listing;
+import org.seng302.utils.PaginationUtils;
 import org.seng302.view.incoming.ListingCreationPayload;
 import org.seng302.view.outgoing.ListingPayload;
 import org.seng302.model.repository.ListingRepository;
@@ -110,16 +111,7 @@ public class ListingResource {
         Authorization.verifyBusinessExists(id, businessRepository);
 
         // Checks Page Num valid - 400
-        int pageNo;
-        try {
-            pageNo = Integer.parseInt(page);
-        } catch (final NumberFormatException e) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Page parameter invalid"
-            );
-        }
+        int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Front-end displays 10 listings per page
         int pageSize = 5;

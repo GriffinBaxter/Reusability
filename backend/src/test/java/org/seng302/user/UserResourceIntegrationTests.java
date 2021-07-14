@@ -674,8 +674,7 @@ class UserResourceIntegrationTests {
 
 
     /* ------------------------------------- (New) Tests for Searching for User by Name ----------------------------- */
-    // TODO Add more tests to handle error cases (e.g. bad data input)
-    // The sorting done in this is entirely unneeded, this has been moved to SearchUserByNameTests.
+
     /**
      * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
      * the JSON response is equal to the user searched for. The user is searched for using the following orders of the

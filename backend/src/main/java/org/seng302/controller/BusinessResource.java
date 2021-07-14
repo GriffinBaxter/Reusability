@@ -11,7 +11,8 @@
 package org.seng302.controller;
 
 import org.seng302.Authorization;
-import org.seng302.SearchUtils;
+import org.seng302.utils.PaginationUtils;
+import org.seng302.utils.SearchUtils;
 import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.Address;
@@ -385,16 +386,7 @@ public class BusinessResource {
 
         Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        int pageNo;
-        try {
-            pageNo = Integer.parseInt(page);
-        } catch (final NumberFormatException e) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Page parameter invalid"
-            );
-        }
+        int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Front-end displays 5 businesses per page
         int pageSize = 5;

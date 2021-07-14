@@ -4,7 +4,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.seng302.SearchUtils;
+import org.seng302.utils.SearchUtils;
 import org.seng302.controller.BusinessResource;
 import org.seng302.controller.UserResource;
 import org.seng302.exceptions.IllegalAddressArgumentException;
