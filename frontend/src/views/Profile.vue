@@ -232,6 +232,25 @@
           <div class="col" v-if="userHasCards()">
             <div class="row" id="user-cards">
               <h4>User's Cards</h4>
+
+              <!-- Card-->
+              <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
+                   style="padding: 12px"
+                   v-for="card in usersCards"
+                   v-bind:key="card.index">
+                <div type="button"
+                     @click="selectACard(card.id)"
+                     data-bs-toggle="modal"
+                     data-bs-target="#cardDetailPopUp">
+                  <Card v-bind:index="card.index"
+                        v-bind:title="card.title"
+                        v-bind:description="card.description"
+                        v-bind:created="styleDate(card.created)"
+                        v-bind:creator="card.creator"
+                        v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -251,13 +270,16 @@ import Cookies from 'js-cookie';
 import Footer from "../components/main/Footer";
 import Navbar from "../components/main/Navbar";
 import {UserRole} from '../configs/User'
+import {formatDate} from "@/dateUtils";
+import Card from "@/components/marketplace/Card";
 
 export default {
   name: "Profile",
   components: {
     Footer,
     ProfileHeader,
-    Navbar
+    Navbar,
+    Card,
   },
 
   data() {
@@ -291,11 +313,69 @@ export default {
       loginRole: null,
       isBusinessAdministrator: false,
       actingBusinessId: null,
-      showUpload: false,
 
       // User card variables
       // TODO Remove hello when not testing.
-      usersCards: ['Hello'],
+      usersCards: [{
+        "id": 500,
+        "creator": {
+          "id": 100,
+          "firstName": "John",
+          "lastName": "Smith",
+          "middleName": "Hector",
+          "nickname": "Jonny",
+          "bio": "Likes long walks on the beach",
+          "email": "johnsmith99@gmail.com",
+          "dateOfBirth": "1999-04-27",
+          "phoneNumber": "+64 3 555 0129",
+          "homeAddress": {
+            "streetNumber": "3/24",
+            "streetName": "Ilam Road",
+            "suburb": "Upper Riccarton",
+            "city": "Christchurch",
+            "region": "Canterbury",
+            "country": "New Zealand",
+            "postcode": "90210"
+          },
+          "created": "2020-07-14T14:32:00Z",
+          "role": "user",
+          "businessesAdministered": [
+            {
+              "id": 100,
+              "administrators": [
+                "string"
+              ],
+              "primaryAdministratorId": 20,
+              "name": "Lumbridge General Store",
+              "description": "A one-stop shop for all your adventuring needs",
+              "address": {
+                "streetNumber": "3/24",
+                "streetName": "Ilam Road",
+                "suburb": "Upper Riccarton",
+                "city": "Christchurch",
+                "region": "Canterbury",
+                "country": "New Zealand",
+                "postcode": "90210"
+              },
+              "businessType": "Accommodation and Food Services",
+              "created": "2020-07-14T14:52:00Z"
+            }
+          ]
+        },
+        "section": "FORSALE",
+        "created": "2021-07-15T05:10:00Z",
+        "displayPeriodEnd": "2021-07-29T05:10:00Z",
+        "title": "1982 Lada Samara",
+        "description": "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.",
+        "keywords": [
+          {
+            "id": 600,
+            "name": "Vehicle",
+            "created": "2021-07-15T05:10:00Z"
+          }
+        ]
+      }],
+      selectedCard: 0
     }
   },
   methods: {
@@ -758,11 +838,17 @@ export default {
         this.loadingAction = false;
       }
     },
-    showFileUpload(x) {
-      this.showUpload = x;
+    selectACard(index) {
+      this.$emit('openCardDetail', index);
+      this.selectedCard = index;
+    },
+    styleDate(date){
+      return formatDate(date, false);
+    },
+    combineSuburbAndCity(suburb, city) {
+      return (suburb === null) ? city : suburb + ", " + city;
     },
   },
-
   beforeCreate() {
     const currentID = Cookies.get('userID');
     if (!currentID) {
