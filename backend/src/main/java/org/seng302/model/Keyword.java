@@ -51,6 +51,14 @@ public class Keyword {
         this.created = created;
     }
 
+    public Keyword(String name, LocalDateTime created) throws Exception {
+        if (!isValidName(name)) {
+            throw new Exception("Invalid name");
+        }
+        this.name = name;
+        this.created = created;
+    }
+
     /**
      * Retrieve the autoincrement id for keyword.
      * @return the id for keyword.

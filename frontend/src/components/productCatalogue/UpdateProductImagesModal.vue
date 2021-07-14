@@ -1,0 +1,144 @@
+<template>
+
+  <!-- Modal -->
+  <div class="modal fade" ref="_updateProductImagesModal" tabindex="-1" aria-labelledby="updateProductImagesModal" aria-hidden="true" id="update-product-images-modal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateProductImagesModalTitle">Update Product {{value.data.id}}'s Images</h5>
+        </div>
+        <div class="modal-body">
+
+          <!-- Modal form content wrapper-->
+          <form class="needs-validation mb-3 px-2" novalidate @submit.prevent>
+
+            <!-- Error message card-->
+            <div class="row my-lg-2">
+              <div class="col-12 mx-auto">
+                <div v-if="formErrorModalMessage" class="alert alert-danger">
+                  <label>{{formErrorModalMessage}}</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Primary Image -->
+              <div class="col-lg-4">
+                <h5>Primary Image:</h5>
+                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../../public/apples.jpg')" id="primary-image">
+              </div>
+
+              <div class="col-lg-8">
+                <!-- Upload -->
+                <div class="row">
+                  <label for="imageUpload">Upload Image:</label>
+                  <input type="file" id="imageUpload">
+                </div>
+                <hr>
+                <!-- Images -->
+                <div class="row">
+                  <div v-if="images.length === 0">
+                    No images Uploaded
+                  </div>
+                  <div class="row">
+                    <div class="col-3" v-for="image in images" v-bind:key="image.id">
+                      <img v-if="selectedImage === image.id" class="img-fluid rounded border border-primary border-2" :src="image.src" @click="setSelected(image.id)">
+                      <img v-else-if="image.id === primaryImage" class="img-fluid rounded border border-warning border-2" :src="image.src" @click="setSelected(image.id)">
+                      <img v-else class="img-fluid rounded" :src="image.src" @click="setSelected(image.id)">
+                    </div>
+                  </div>
+                </div>
+                <!-- Buttons -->
+                <div v-if="selectedImage != null">
+                  <hr>
+                  <button class="btn btn-danger">Delete Image</button>
+                  <button v-if="selectedImage != primaryImage" class="btn btn-outline-success float-end">Set Primary Image</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary order-0 green-button-transparent" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Product from "../../configs/Product";
+import {Modal} from "bootstrap";
+
+export default {
+  name: "UpdateProductImagesModal",
+  props: {
+
+    // Product details -- MUST BE V-MODEL therefore MUST BE NAMED VALUE!
+    value: {
+      type: Product,
+      required: true
+    },
+
+    // Business id used to know what business to update
+    businessId: {
+      type: Number,
+      required: true
+    }
+  },
+  data() {
+    return {
+      modal: null,
+
+      selectedImage: null,
+      primaryImage: null,
+
+      formErrorModalMessage: "",
+
+      // temp image values
+      images: [
+        {
+          src:require("../../../public/apples.jpg"),
+          id:0
+        },
+        {
+          src:require("../../../public/clothes.jpg"),
+          id:1
+        }
+      ]
+    }
+  },
+  methods: {
+    /**
+     * Prevents the default call onClick and updates the placeholder values before show the modal.
+     * @param event The event (i.e. click event) that triggered the call.
+     */
+    showModel(event) {
+      // Prevent any default actions
+      event.preventDefault();
+
+      // Show the modal
+      this.modal.show();
+    },
+
+    setSelected(id) {
+      if (this.selectedImage === id) {
+        this.selectedImage = null;
+      } else {
+        this.selectedImage = id;
+      }
+    }
+  },
+  mounted() {
+    // Create a modal and attach it to the updateProductModel reference.
+    this.modal = new Modal(this.$refs._updateProductImagesModal);
+
+    // temp
+    this.primaryImage = 0;
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

@@ -69,7 +69,7 @@ class MarketplaceCardTests {
         Assertions.assertEquals(marketplaceCard.getCreator(), user);
         Assertions.assertEquals(Section.FORSALE, marketplaceCard.getSection());
         Assertions.assertEquals(marketplaceCard.getCreated(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)));
-        Assertions.assertEquals(marketplaceCard.getDisplayPeriodEnd(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 8), LocalTime.of(0, 0)));
+        Assertions.assertEquals(marketplaceCard.getDisplayPeriodEnd(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 15), LocalTime.of(0, 0)));
         Assertions.assertEquals("Hayley's Birthday", marketplaceCard.getTitle());
         Assertions.assertEquals("Come join Hayley and help her celebrate her birthday!", marketplaceCard.getDescription());
     }
@@ -314,8 +314,8 @@ class MarketplaceCardTests {
     @Test
     void extendDisplayPeriodTest() throws IllegalMarketplaceCardArgumentException {
         LocalDateTime creationDate = LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0));
-        LocalDateTime originalDisplayPeriodEnd = creationDate.plusWeeks(1);
-        LocalDateTime expectedNewDisplayPeriodEnd = originalDisplayPeriodEnd.plusWeeks(1);
+        LocalDateTime originalDisplayPeriodEnd = creationDate.plusWeeks(2);
+        LocalDateTime expectedNewDisplayPeriodEnd = originalDisplayPeriodEnd.plusWeeks(2);
 
         MarketplaceCard marketplaceCard = new MarketplaceCard(
                 user.getId(),

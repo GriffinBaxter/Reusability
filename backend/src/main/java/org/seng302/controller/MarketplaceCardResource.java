@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
 import org.seng302.exceptions.IllegalKeywordArgumentException;
 import org.seng302.exceptions.IllegalMarketplaceCardArgumentException;
+import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.*;
 import org.seng302.model.repository.KeywordRepository;
@@ -287,7 +288,7 @@ public class MarketplaceCardResource {
      * PUT method for extending the display period of a marketplace card with a given ID.
      *
      * @param sessionToken Session token of the currently logged in user.
-     * @param id The ID of the card the user wishes to extend the display period of.
+     * @param id           The ID of the card the user wishes to extend the display period of.
      */
     @PutMapping("/cards/{id}/extenddisplayperiod")
     public void extendDisplayPeriod(
@@ -374,4 +375,48 @@ public class MarketplaceCardResource {
         return marketplaceCardOptional.get();
     }
 
+    /**
+     * DELETE method for delete a specific marketplace card by given id.
+     *
+     * @param sessionToken session token for current user
+     * @param id           id of the specific marketplace card
+     */
+    @DeleteMapping("/cards/{id}")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Card deleted successfully")
+    public void deleteACard(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
+    ) {
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        Optional<MarketplaceCard> optionalMarketplaceCard = marketplaceCardRepository.findById(id);
+
+        if (optionalMarketplaceCard.isEmpty()) {
+            logger.error("Marketplace Card Delete Failure - 406 [NOT ACCEPTABLE] - Marketplace card with ID {} does not exist", id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                            "for example trying to access a resource by an ID that does not exist."
+            );
+        }
+
+        logger.debug("Retrieved marketplace card with ID {}: {}", id, optionalMarketplaceCard.get());
+
+        MarketplaceCard marketplaceCard = optionalMarketplaceCard.get();
+
+        if (currentUser.getRole() != Role.GLOBALAPPLICATIONADMIN
+                && currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN
+                && currentUser != marketplaceCard.getCreator()) {
+            logger.error("Marketplace Card Delete Failure - 403 [FORBIDDEN] - Current user have no permission" +
+                    " to delete marketplace card with ID {}", id);
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Current user tries to delete a card that they are not the creator of AND the user is not a GAA."
+            );
+        }
+
+        marketplaceCardRepository.delete(marketplaceCard);
+
+        logger.info("Marketplace Card Delete Success - 200 [OK] -  Marketplace card with ID {} deleted", id);
+        logger.debug("Delete marketplace card with ID {}: {}", id, marketplaceCard);
+    }
 }

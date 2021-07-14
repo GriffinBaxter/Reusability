@@ -261,6 +261,12 @@ export default {
         return instance.post(`/cards`, newCard,{
             withCredentials: true
         })
+    },
+
+    deleteACard: (id) => {
+        return instance.delete(`/cards/${id}`, {
+            withCredentials: true
+        })
     }
 
 }
