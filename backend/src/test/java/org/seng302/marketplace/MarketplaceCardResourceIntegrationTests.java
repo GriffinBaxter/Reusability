@@ -921,6 +921,8 @@ class MarketplaceCardResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
+    // --------------------------------------- GET ACTIVE CARDS (by USER ID) ------------------------------------------
+
     /**
      * Tests that the active cards from a given user can be retrieved with an OK response.
      */
