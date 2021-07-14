@@ -93,7 +93,7 @@ public class MarketplaceCard {
         this.creator = creator;
         this.section = section;
         this.created = created;
-        this.displayPeriodEnd = created.plusWeeks(1);
+        this.displayPeriodEnd = created.plusWeeks(2);
         this.title = title;
         this.description = (description.equals("")) ? null : description;
     }
@@ -268,10 +268,10 @@ public class MarketplaceCard {
     }
 
     /**
-     * Extends the display period of the marketplace card by one week.
+     * Extends the display period of the marketplace card by two weeks.
      */
     public void extendDisplayPeriod() {
-        this.displayPeriodEnd = displayPeriodEnd.plusWeeks(1);
+        this.displayPeriodEnd = displayPeriodEnd.plusWeeks(2);
     }
 
 }
