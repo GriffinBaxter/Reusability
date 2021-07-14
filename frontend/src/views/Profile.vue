@@ -271,7 +271,7 @@ import Footer from "../components/main/Footer";
 import Navbar from "../components/main/Navbar";
 import {UserRole} from '../configs/User'
 import {formatDate} from "../dateUtils";
-import Card from "@/components/marketplace/Card";
+import Card from "../components/marketplace/Card";
 
 export default {
   name: "Profile",
