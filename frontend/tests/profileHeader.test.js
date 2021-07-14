@@ -3,13 +3,13 @@
  * @jest-environment jsdom
  */
 
-import {describe, expect, test} from "@jest/globals";
+import {jest, describe, expect, test} from "@jest/globals";
 import {shallowMount} from "@vue/test-utils";
 import ProfileHeader from "../src/components/ProfileHeader";
 
-describe("Testing the search type radio button functionality", () => {
+describe("Testing the search type functionality", () => {
 
-    describe("Testing the changeSearchType", () => {
+    describe("Testing the changeSearchType method", () => {
 
         test('Testing changeSearchType sets the search type to the input', () => {
             const profileHeaderWrapper = shallowMount(ProfileHeader);
@@ -46,7 +46,7 @@ describe("Testing the search type radio button functionality", () => {
 
     });
 
-    describe("Testing the placeholder value", () => {
+    describe("Testing the placeholder value setting", () => {
 
         test('Testing placeholder returns the correct value when the search type is User', () => {
             const profileHeaderWrapper = shallowMount(ProfileHeader);
@@ -90,7 +90,7 @@ describe("Testing the search type radio button functionality", () => {
                 const dropdownOption = profileHeaderWrapper.find("#default-option");
                 dropdownOption.setSelected();
 
-                expect(profileHeaderWrapper.vm.selectedBusinessType).toEqual('');
+                expect(profileHeaderWrapper.vm.selectedBusinessType).toEqual('Any');
             });
         });
 
@@ -142,6 +142,348 @@ describe("Testing the search type radio button functionality", () => {
             });
         });
 
+    });
+
+    describe("Testing the URL populates correctly when searching for users", () => {
+
+        test('Testing that pressing enter when the search type is User populates the URL correctly', () => {
+            const $router = {
+                push: jest.fn()
+            };
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router
+                }
+            });
+
+            profileHeaderWrapper.vm.searchType = 'User';
+
+            let inputQuery = 'User Search Enter Test';
+            profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchBar = profileHeaderWrapper.find('#search-bar');
+                searchBar.trigger('keydown.enter');
+
+                expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+            });
+        });
+
+        test('Testing that clicking the search button when the search type is User populates the URL correctly', () => {
+            const $router = {
+                push: jest.fn()
+            };
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router
+                }
+            });
+
+            profileHeaderWrapper.vm.searchType = 'User';
+
+            let inputQuery = 'User Search Click Test';
+            profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchButton = profileHeaderWrapper.find('#search-button');
+                searchButton.trigger('click');
+
+                expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+            });
+        });
+
+    });
+
+    describe("Testing the URL populates correctly when searching for businesses", () => {
+
+        describe("Testing URL population when business type is default", () => {
+
+            test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Enter Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let searchBar = profileHeaderWrapper.find('#search-bar');
+                    searchBar.trigger('keydown.enter');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+
+            test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Click Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let searchButton = profileHeaderWrapper.find('#search-button');
+                    searchButton.trigger('click');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+        });
+
+        describe("Testing URL population when business type is Accommodation and Food Services", () => {
+
+            test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Enter Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let dropdownOption = profileHeaderWrapper.find("#accommodation-and-food-services");
+                    dropdownOption.setSelected();
+
+                    let searchBar = profileHeaderWrapper.find('#search-bar');
+                    searchBar.trigger('keydown.enter');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+
+            test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Click Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let dropdownOption = profileHeaderWrapper.find("#accommodation-and-food-services");
+                    dropdownOption.setSelected();
+
+                    let searchButton = profileHeaderWrapper.find('#search-button');
+                    searchButton.trigger('click');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+        });
+
+        describe("Testing URL population when business type is Retail Trade", () => {
+
+            test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Enter Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let dropdownOption = profileHeaderWrapper.find("#retail-trade");
+                    dropdownOption.setSelected();
+
+                    let searchBar = profileHeaderWrapper.find('#search-bar');
+                    searchBar.trigger('keydown.enter');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+
+            test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Click Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let dropdownOption = profileHeaderWrapper.find("#retail-trade");
+                    dropdownOption.setSelected();
+
+                    let searchButton = profileHeaderWrapper.find('#search-button');
+                    searchButton.trigger('click');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+        });
+
+        describe("Testing URL population when business type is Charitable Organisation", () => {
+
+            test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Enter Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let dropdownOption = profileHeaderWrapper.find("#charitable-organisation");
+                    dropdownOption.setSelected();
+
+                    let searchBar = profileHeaderWrapper.find('#search-bar');
+                    searchBar.trigger('keydown.enter');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+
+            test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Click Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let dropdownOption = profileHeaderWrapper.find("#charitable-organisation");
+                    dropdownOption.setSelected();
+
+                    let searchButton = profileHeaderWrapper.find('#search-button');
+                    searchButton.trigger('click');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+        });
+
+        describe("Testing URL population when business type is Non Profit Organisation", () => {
+
+            test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Enter Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let dropdownOption = profileHeaderWrapper.find("#non-profit-organisation");
+                    dropdownOption.setSelected();
+
+                    let searchBar = profileHeaderWrapper.find('#search-bar');
+                    searchBar.trigger('keydown.enter');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+
+            test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
+                const $router = {
+                    push: jest.fn()
+                };
+                const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                    mocks: {
+                        $router
+                    }
+                });
+
+                profileHeaderWrapper.vm.searchType = 'Business';
+
+                let inputQuery = 'Business Search Click Test';
+                profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
+
+                profileHeaderWrapper.vm.$nextTick().then(() => {
+                    let dropdownOption = profileHeaderWrapper.find("#non-profit-organisation");
+                    dropdownOption.setSelected();
+
+                    let searchButton = profileHeaderWrapper.find('#search-button');
+                    searchButton.trigger('click');
+
+                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+
+                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                });
+            });
+        });
     });
 
 });
