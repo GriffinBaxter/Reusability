@@ -11,6 +11,10 @@
     <!--nav bar-->
     <Navbar></Navbar>
 
+      <!-- a placeholder so that when you click on a user's card on their profile it will open the more detailed display -->
+      <CardDetail v-bind:id="selectedCard"
+                  v-bind:section="cardSection"/>
+
     <!--profile header, contains user search bar-->
     <div id="profile-header-div">
       <ProfileHeader/>
@@ -46,7 +50,7 @@
           </div>
 
 
-          <div class="card text-center shadow-sm mt-3">
+          <div class="card text-center shadow-sm mt-3" v-if="populatedBox()">
             <!-- These messages will appear for GAA accounts -->
             <div class="card-body" v-if="hasAdminRights(role) && isGAA(role)">
               <div class="alert alert-info" role="alert">
@@ -239,7 +243,7 @@
                    v-for="card in usersCards"
                    v-bind:key="card.index">
                 <div type="button"
-                     @click="selectACard(card.id)"
+                     @click="selectACard(card.id, card.section)"
                      data-bs-toggle="modal"
                      data-bs-target="#cardDetailPopUp">
                   <Card v-bind:index="card.index"
@@ -272,6 +276,7 @@ import Navbar from "../components/main/Navbar";
 import {UserRole} from '../configs/User'
 import {formatDate} from "../dateUtils";
 import Card from "../components/marketplace/Card";
+import CardDetail from "../components/marketplace/CardDetailPopup";
 
 export default {
   name: "Profile",
@@ -280,6 +285,7 @@ export default {
     ProfileHeader,
     Navbar,
     Card,
+    CardDetail
   },
 
   data() {
@@ -316,7 +322,8 @@ export default {
 
       // User card variables
       usersCards: [],
-      selectedCard: 0
+      selectedCard: 0,
+      cardSection: "For Sale"
     }
   },
   methods: {
@@ -742,9 +749,10 @@ export default {
      * If a card is selected then a custom event is emitted so the CardDetailPopup knows to open and display the
      * information for the selected card.
      */
-    selectACard(index) {
+    selectACard(index, section) {
       this.$emit('openCardDetail', index);
       this.selectedCard = index;
+      this.cardSection = section;
     },
     /**
      * Format the date of a card using the date-fns library.
@@ -781,6 +789,17 @@ export default {
         this.$router.push({path: '/noUser'});
         console.log(error.message);
       }
+    },
+    /**
+     * This method checks to see if there is anything within the inner html class (box). If there is then the class will
+     * be displayed, otherwise it is hidden.
+     */
+    populatedBox() {
+      return (this.hasAdminRights(this.role) && this.isGAA(this.role)) ||
+          (this.hasAdminRights(this.role) && this.isDGAA(this.role)) ||
+          (this.actingBusinessId && this.otherUser) ||
+          (this.isValidRole(this.role) && this.otherUser && !this.isDGAA(this.role)) ||
+          (!this.otherUser);
     }
   },
 
@@ -800,12 +819,13 @@ export default {
 
       if (currentID === this.urlID || this.urlID === 'profile') {
         this.retrieveUser(currentID);
+        this.retrieveUsersCards(currentID);
       } else {
         // Another user
         this.retrieveUser(this.urlID);
+        this.retrieveUsersCards(this.urlID);
         this.otherUser = true;
       }
-      this.retrieveUsersCards(currentID);
     }
   }
 }
