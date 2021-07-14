@@ -315,76 +315,12 @@ export default {
       actingBusinessId: null,
 
       // User card variables
-      // TODO Remove hello when not testing.
-      usersCards: [{
-        "id": 500,
-        "creator": {
-          "id": 100,
-          "firstName": "John",
-          "lastName": "Smith",
-          "middleName": "Hector",
-          "nickname": "Jonny",
-          "bio": "Likes long walks on the beach",
-          "email": "johnsmith99@gmail.com",
-          "dateOfBirth": "1999-04-27",
-          "phoneNumber": "+64 3 555 0129",
-          "homeAddress": {
-            "streetNumber": "3/24",
-            "streetName": "Ilam Road",
-            "suburb": "Upper Riccarton",
-            "city": "Christchurch",
-            "region": "Canterbury",
-            "country": "New Zealand",
-            "postcode": "90210"
-          },
-          "created": "2020-07-14T14:32:00Z",
-          "role": "user",
-          "businessesAdministered": [
-            {
-              "id": 100,
-              "administrators": [
-                "string"
-              ],
-              "primaryAdministratorId": 20,
-              "name": "Lumbridge General Store",
-              "description": "A one-stop shop for all your adventuring needs",
-              "address": {
-                "streetNumber": "3/24",
-                "streetName": "Ilam Road",
-                "suburb": "Upper Riccarton",
-                "city": "Christchurch",
-                "region": "Canterbury",
-                "country": "New Zealand",
-                "postcode": "90210"
-              },
-              "businessType": "Accommodation and Food Services",
-              "created": "2020-07-14T14:52:00Z"
-            }
-          ]
-        },
-        "section": "FORSALE",
-        "created": "2021-07-15T05:10:00Z",
-        "displayPeriodEnd": "2021-07-29T05:10:00Z",
-        "title": "1982 Lada Samara",
-        "description": "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.",
-        "keywords": [
-          {
-            "id": 600,
-            "name": "Vehicle",
-            "created": "2021-07-15T05:10:00Z"
-          }
-        ]
-      }],
+      usersCards: [],
       selectedCard: 0
     }
   },
   methods: {
 
-    /**
-     * Calculates the months between the given date and the current date, then formats the given date and months.
-     * Finally it sets the join date on the page to the formatted string.
-     * @param createdDate
-     */
     // ---------------------------------------- These functions probably belong in User.js But then they can't easily be used with the profile --------------------------
     /**
      * Determines if the role is of a valid type (e.g. not null, some other invalid string, etc).
@@ -576,19 +512,7 @@ export default {
      * @param userID
      */
     retrieveUser(userID) {
-      Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
-
-        if (error.request && !error.response) {
-          this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 406) {
-          this.$router.push({path: '/noUser'});
-        } else if (error.response.status === 401) {
-          this.$router.push({path: '/invalidtoken'});
-        } else {
-          this.$router.push({path: '/noUser'});
-          console.log(error.message);
-        }
-      })
+      Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => this.processUserInfoError(error));
     },
 
     /**
@@ -608,9 +532,7 @@ export default {
      The address is a special case as its components are stored semi-colon separated,
      so it must be 'unpacked' and formatted.
      */
-
     populatePage(data) {
-
       /*
       Populates all display fields on the profile page with the given data.
       The address is a special case as its components are stored semi-colon separated,
@@ -673,8 +595,6 @@ export default {
         }
       })
 
-
-
       //basic unpack
       this.firstName = data.firstName;
       this.middleName = data.middleName;
@@ -735,33 +655,7 @@ export default {
                 this.actionErrorMessage = "Sorry, but something went wrong..."
               }
             }
-        ).catch(error => {
-          success = false
-          if (error.response) {
-            // Code is not 2xx
-            if (error.response.status === 401) {
-              // Missing or invalid token
-              this.$router.push({path: '/invalidtoken'});
-            }
-
-            if (error.response.status === 403) {
-              // Lacks permissions
-              this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
-            }
-
-            if (error.response.status === 406) {
-              // Something is wrong with the requested route (not a 404).
-              this.actionErrorMessage = "Sorry, but something went wrong..."
-            }
-
-          } else if (error.request) {
-            // No response received. Timeout occurs
-            this.$router.push({path: '/timeout'});
-          } else {
-            // Something went wrong with the request setup...
-            this.actionErrorMessage = "Sorry, but something went wrong..."
-          }
-        });
+        ).catch(error => success = this.processUpdateAdministratorError(error));
         //add the business if makeAdministrator successful
         if (success) {
           Api.getBusiness(this.actingBusinessId).then(response => {
@@ -796,33 +690,7 @@ export default {
                 success = false
               }
             }
-        ).catch(error => {
-          success = false
-          if (error.response) {
-            // Code is not 2xx
-            if (error.response.status === 401) {
-              // Missing or invalid token
-              this.$router.push({path: '/invalidtoken'});
-            }
-
-            if (error.response.status === 403) {
-              // Lacks permissions
-              this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
-            }
-
-            if (error.response.status === 406) {
-              // Something is wrong with the requested route (not a 404).
-              this.actionErrorMessage = "Sorry, but something went wrong..."
-            }
-
-          } else if (error.request) {
-            // No response received. Timeout occurs
-            this.$router.push({path: '/timeout'});
-          } else {
-            // Something went wrong with the request setup...
-            this.actionErrorMessage = "Sorry, but something went wrong..."
-          }
-        });
+        ).catch(error => success = this.processUpdateAdministratorError(error));
         //pop the business which has been removed if successful
         if (success) {
           this.actionErrorMessage = "" // resets error message
@@ -838,22 +706,81 @@ export default {
         this.loadingAction = false;
       }
     },
+    /**
+     * If a user goes to update whether another user is an administrator of their business or not and the "request" fails
+     * then the appropriate error message will need to be displayed.
+     */
+    processUpdateAdministratorError(error) {
+      let success = false;
+      if (error.response) {
+        // Code is not 2xx
+        if (error.response.status === 401) {
+          // Missing or invalid token
+          this.$router.push({path: '/invalidtoken'});
+        }
+
+        if (error.response.status === 403) {
+          // Lacks permissions
+          this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+        }
+
+        if (error.response.status === 406) {
+          // Something is wrong with the requested route (not a 404).
+          this.actionErrorMessage = "Sorry, but something went wrong..."
+        }
+
+      } else if (error.request) {
+        // No response received. Timeout occurs
+        this.$router.push({path: '/timeout'});
+      } else {
+        // Something went wrong with the request setup...
+        this.actionErrorMessage = "Sorry, but something went wrong..."
+      }
+      return success;
+    },
+    /**
+     * If a card is selected then a custom event is emitted so the CardDetailPopup knows to open and display the
+     * information for the selected card.
+     */
     selectACard(index) {
       this.$emit('openCardDetail', index);
       this.selectedCard = index;
     },
+    /**
+     * Format the date of a card using the date-fns library.
+     */
     styleDate(date){
       return formatDate(date, false);
     },
+    /**
+     * Concat the suburb and city together to then be displayed on a user's card.
+     */
     combineSuburbAndCity(suburb, city) {
       return (suburb === null) ? city : suburb + ", " + city;
     },
-  },
-  beforeCreate() {
-    const currentID = Cookies.get('userID');
-    if (!currentID) {
-      console.log('hhhhhhhhhhhhhhhhhhhhhhh')
-      this.$router.push({ name: 'Login'});
+    /**
+     * Sends a get request to the backend to retrieve the cards belonging to the current user's profile you are viewing.
+     * If the request was unsuccessful, the cards are not populated on the page and appropriate error messages logged.
+     * @param userId the id of the user's profile you are viewing.
+     */
+    retrieveUsersCards(userId) {
+      Api.getUsersCards(userId).then(response => (this.usersCards = response.data)).catch((error) => this.processUserInfoError(error));
+    },
+    /**
+     * If a request is made to the backend for user info (profile information or cards) and an error occurs
+     * then the appropriate error message will need to be displayed.
+     */
+    processUserInfoError(error) {
+      if (error.request && !error.response) {
+        this.$router.push({path: '/timeout'});
+      } else if (error.response.status === 406) {
+        this.$router.push({path: '/noUser'});
+      } else if (error.response.status === 401) {
+        this.$router.push({path: '/invalidtoken'});
+      } else {
+        this.$router.push({path: '/noUser'});
+        console.log(error.message);
+      }
     }
   },
 
@@ -878,6 +805,7 @@ export default {
         this.retrieveUser(this.urlID);
         this.otherUser = true;
       }
+      this.retrieveUsersCards();
 
     }
   }
