@@ -1,10 +1,8 @@
 package org.seng302.services;
 
-import jdk.jshell.spi.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.seng302.controller.ListingResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,8 +17,8 @@ public class FileStorageService {
     private final Path rootPath;
     private static final Logger logger = LogManager.getLogger(FileStorageService.class.getName());
 
-    public FileStorageService(String rootPath) {
-        this.rootPath = Paths.get(rootPath);
+    public FileStorageService(String folderName) {
+        this.rootPath = Paths.get(String.format("media/%s", folderName));
         this.initialize();
     }
 
