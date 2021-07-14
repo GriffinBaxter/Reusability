@@ -13,7 +13,7 @@ public class Image {
     @Id
     @GeneratedValue
     @Column(name = "image_id", nullable = false)
-    private int id;
+    private Integer id;
 
     // Association many images can have the same one product id.
     @ManyToOne(targetEntity = Product.class, fetch = FetchType.LAZY)
@@ -29,64 +29,41 @@ public class Image {
     @Column(name = "business_id", nullable = false)
     private int bussinesId;
 
-    // The file path stores for recovery.
-    @Column(name = "path", nullable = false)
-    private String path;
-
     // The file name in case we need to resolve it.
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
+    @Column(name = "filename", nullable = false)
+    private String filename;
+
+    @Column(name = "thumbnailFilename")
+    private String thumbnailFilename;
 
     // Extension type of the file
     @Column(name = "is_primary", nullable = false)
     private Boolean isPrimary;
 
 
-    /**
-     * A constructor for when you have an ID
-     *
-     * @param id
-     * @param path
-     * @param fileName
-     * @param isPrimary
-     */
-    public Image(int id, String product_id, Integer bussinesId, String path, String fileName, boolean isPrimary) {
+
+    public Image(int id, String productId, Integer bussinesId, String filename, String thumbnailFilename, boolean isPrimary) {
         this.id = id;
-        this.productId = product_id;
+        this.productId = productId;
         this.bussinesId = bussinesId;
-        this.path = path;
-        this.fileName = fileName;
+        this.filename = filename;
+        this.thumbnailFilename = thumbnailFilename;
         this.isPrimary = isPrimary;
     }
 
-    /**
-     * A constructor for when you don't have an ID
-     *
-     * @param path
-     * @param fileName
-     * @param isPrimary
-     */
-    public Image(String product_id, Integer bussinesId, String path, String fileName, boolean isPrimary) {
-        this.productId = product_id;
+    public Image(String productId, Integer bussinesId, String filename, String thumbnailFilename, boolean isPrimary) {
+        this.productId = productId;
         this.bussinesId = bussinesId;
-        this.path = path;
-        this.fileName = fileName;
-        this.isPrimary = isPrimary;
-    }
-
-
-
-    public Image(String path, String fileName, boolean isPrimary) {
-        this.path = path;
-        this.fileName = fileName;
+        this.filename = filename;
+        this.thumbnailFilename = thumbnailFilename;
         this.isPrimary = isPrimary;
     }
 
     public String toString() {
         return "{" +
-                "\"path\":\""        + path         + "\"," +
-                "\"fileName\":\""        + fileName         + "\"," +
-                "\"extension\":\""       + isPrimary       + "\"" +
+                "\"id\":\"" + id + "\"," +
+                "\"filename\":\"" + filename + "\"," +
+                "\"thumbnailFilename\":\"" + thumbnailFilename + "\"" +
                 "}";
     }
 

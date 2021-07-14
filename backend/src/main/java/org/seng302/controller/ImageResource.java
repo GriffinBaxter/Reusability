@@ -13,8 +13,10 @@ import org.seng302.model.repository.ImageRepository;
 import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.services.FileStorageService;
+import org.seng302.view.outgoing.ImageCreatePayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,8 +48,7 @@ public class ImageResource {
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
 
     @PostMapping("/businesses/{businessId}/products/{productId}/images")
-    @ResponseStatus(value = HttpStatus.CREATED, reason = "Image created successfully")
-    public void createImage(
+    public ResponseEntity<ImageCreatePayload> createImage(
             @RequestParam("images") MultipartFile image,
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer businessId,
@@ -82,14 +83,16 @@ public class ImageResource {
         String fileName = null;
         try {
             UUID uuid = UUID.randomUUID();
-            fileName = uuid.toString() + "." + getFileExtension(image.getOriginalFilename());
+            fileName = uuid + "." + getFileExtension(image.getOriginalFilename());
             if (!fileStorageService.storeFile(image, fileName)) {
                 throw new IOException("Failed to store images");
             }
         }
-        catch (IOException e) {
+        catch (Exception e) {
+            String errorMessage = String.format("Failed to store image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
+            logger.error(errorMessage);
             fileStorageService.deleteFile(fileName);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more of the images failed to be stored.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
         }
 
         String path = fileStorageService.getPathString(fileName);
@@ -99,9 +102,12 @@ public class ImageResource {
             if (primaryImages.isEmpty()) {
                 isFirstImage = true;
             }
-            Image imageObj = new Image(productId, businessId, path, fileName, isFirstImage);
-            imageRepository.saveAndFlush(imageObj);
+            Image imageObj = new Image(productId, businessId, path, path, isFirstImage);
+            imageObj = imageRepository.saveAndFlush(imageObj);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(imageObj.getId()));
         }
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
 
     }
 
@@ -127,10 +133,10 @@ public class ImageResource {
         verifyProductId(productId, business, user);
 
         // Verify image id
-        Optional<Image> image = verifyImageId(imageId, businessId, productId, user);
+        Image image = verifyImageId(imageId, businessId, productId, user);
 
         // verify file exists & delete image
-        if (!fileStorageService.deleteFile(image.get().getPath()) ) {
+        if (!fileStorageService.deleteFile(image.getFilename()) ) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
             logger.error(errorMessage);
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
@@ -150,10 +156,15 @@ public class ImageResource {
      * @param fileName, the file name
      * @return extension of file name if present, otherwise the empty string
      */
-    private static String getFileExtension(String fileName) {
-        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-            return fileName.substring(fileName.lastIndexOf(".")+1);
-        else return "";
+    private String getFileExtension(String fileName) {
+        try {
+            if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
+                return fileName.substring(fileName.lastIndexOf(".") + 1);
+            }
+        } catch ( IndexOutOfBoundsException e) {
+            return "";
+        }
+        return "";
     }
 
     /**
@@ -223,7 +234,7 @@ public class ImageResource {
      * @param businessId
      * @param productId
      */
-    private Optional<Image> verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
+    private Image verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
         Optional<Image> image = imageRepository.findImageByIdAndAndBussinesIdAndProductId(imageId, businessId, productId);
         if (image.isEmpty()) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
@@ -231,7 +242,7 @@ public class ImageResource {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
                     "for example trying to access a resource by an ID that does not exist.");
         }
-        return image;
+        return image.get();
     }
 
     /**

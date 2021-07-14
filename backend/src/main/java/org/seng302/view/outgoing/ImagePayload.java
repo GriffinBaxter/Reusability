@@ -7,38 +7,33 @@ import java.util.List;
 
 public class ImagePayload {
 
-    private String path;
+    private Integer id;
     private String filename;
-    private String extension;
+    private String thumbnailFilename;
 
-    /**
-     * Constructor for image payloads.
-     * @param path
-     * @param filename
-     * @param extension
-     */
-    public ImagePayload(String path, String filename, String extension) {
-        this.path = path;
+
+    public ImagePayload(Integer id, String filename, String thumbnailFilename) {
+        this.id = id;
         this.filename = filename;
-        this.extension = extension;
+        this.thumbnailFilename = thumbnailFilename;
 
     }
 
     public static List<ImagePayload> convertToImagePayload(List<Image> images) {
         List<ImagePayload> payloads = new ArrayList<>();
         for (Image image : images) {
-            ImagePayload newPayload = new ImagePayload(image.getPath(), image.getFileName(), image.getExtension());
+            ImagePayload newPayload = new ImagePayload(image.getId(), image.getFilename(), image.getThumbnailFilename());
             payloads.add(newPayload);
         }
         return payloads;
     }
 
-    public String getPath() {
-        return path;
+    public Integer getId() {
+        return id;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getFilename() {
@@ -49,11 +44,11 @@ public class ImagePayload {
         this.filename = filename;
     }
 
-    public String getExtension() {
-        return extension;
+    public String getThumbnailFilename() {
+        return thumbnailFilename;
     }
 
-    public void setExtension(String extension) {
-        this.extension = extension;
+    public void setThumbnailFilename(String thumbnailFilename) {
+        this.thumbnailFilename = thumbnailFilename;
     }
 }
