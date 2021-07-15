@@ -156,10 +156,30 @@ public class MarketplaceCard {
         this.displayPeriodEnd = displayPeriodEnd;
     }
 
-    public void setTitle(String title) { this.title = title; }
+    /**
+     * Checks the title is valid and then sets it
+     * @param title title to be set
+     * @throws IllegalMarketplaceCardArgumentException if title is invalid
+     */
+    public void setTitle(String title) throws IllegalMarketplaceCardArgumentException {
+        if (isValidTitle(title)) {
+            this.title = title;
+        } else {
+            throw new IllegalMarketplaceCardArgumentException("Invalid Title");
+        }
+    }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * Checks the description is valid and then sets it
+     * @param description description to be set
+     * @throws IllegalMarketplaceCardArgumentException if description is invalid
+     */
+    public void setDescription(String description) throws IllegalMarketplaceCardArgumentException {
+        if (isValidDescription(description)) {
+            this.description = description;
+        } else {
+            throw new IllegalMarketplaceCardArgumentException("Invalid Description");
+        }
     }
 
     /**
@@ -256,7 +276,7 @@ public class MarketplaceCard {
      * @param title The title to be checked.
      * @return true when the title is valid
      */
-    public static boolean isValidTitle(String title) {
+    private boolean isValidTitle(String title) {
         return (title.length() >= TITLE_MIN_LENGTH) &&
                 (title.length() <= TITLE_MAX_LENGTH);
     }
@@ -267,7 +287,7 @@ public class MarketplaceCard {
      * @param description The description to be checked.
      * @return true when the description is valid
      */
-    public static boolean isValidDescription(String description) {
+    private boolean isValidDescription(String description) {
         return (description.length() >= DESCRIPTION_MIN_LENGTH) &&
                 (description.length() <= DESCRIPTION_MAX_LENGTH);
     }

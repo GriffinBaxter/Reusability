@@ -233,22 +233,16 @@ public class MarketplaceCardResource {
                 updatedCardPayload.setCreatorId(storedCard.get().getCreatorId());
             }
 
-            // Checks if title was sent and is valid
+            // Checks if title was sent
             if (updatedCardPayload.getTitle() == null){
                 logger.error("Card Update Failure - 400 [BAD_REQUEST] - Title was not included");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title was not included");
-            } else if (!MarketplaceCard.isValidTitle(updatedCardPayload.getTitle())) {
-                logger.error("Card Update Failure - 400 [BAD_REQUEST] - Title invalid");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid title");
             }
 
-            // Checks if description was sent and is valid
+            // Checks if description was sent
             if (updatedCardPayload.getDescription() == null) {
                 logger.error("Card Update Failure - 400 [BAD_REQUEST] - Description was not included");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description was not included");
-            } else if (!MarketplaceCard.isValidDescription(updatedCardPayload.getDescription())) {
-                logger.error("Card Update Failure - 400 [BAD_REQUEST] - Description invalid");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid description");
             }
 
             // Checks if section was sent and is valid
@@ -257,16 +251,22 @@ public class MarketplaceCardResource {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Section was not included or invalid");
             }
 
-            // Set changes
-            storedCard.get().setCreatorId(updatedCardPayload.getCreatorId());
-            storedCard.get().setTitle(updatedCardPayload.getTitle());
-            storedCard.get().setDescription(updatedCardPayload.getDescription());
-            storedCard.get().setSection(updatedCardPayload.getSection());
-            storedCard.get().removeAllKeywords();
-            for (Integer keyword : updatedCardPayload.getKeywords()) {
-                storedCard.get().addKeyword(keywordRepository.findById(keyword).get());
+            try {
+                // Set changes
+                storedCard.get().setCreatorId(updatedCardPayload.getCreatorId());
+                storedCard.get().setTitle(updatedCardPayload.getTitle());
+                storedCard.get().setDescription(updatedCardPayload.getDescription());
+                storedCard.get().setSection(updatedCardPayload.getSection());
+                storedCard.get().removeAllKeywords();
+                for (Integer keyword : updatedCardPayload.getKeywords()) {
+                    storedCard.get().addKeyword(keywordRepository.findById(keyword).get());
+                }
+                marketplaceCardRepository.saveAndFlush(storedCard.get());
+
+            } catch (IllegalMarketplaceCardArgumentException e) {
+                logger.error("Card Update Failure - 400 [BAD_REQUEST] - {}", e.getMessage());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             }
-            marketplaceCardRepository.saveAndFlush(storedCard.get());
 
             logger.info("Card Update Success - 200 [OK] - Successfully updated Card: {}", id);
 
