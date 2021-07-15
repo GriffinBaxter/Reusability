@@ -235,7 +235,8 @@
           <!--user's cards-->
           <div class="col" v-if="userHasCards()">
             <div class="row" id="user-cards">
-              <h4>User's Cards</h4>
+              <h4 v-if="otherUser">User's Cards</h4>
+              <h4 v-else>My Cards</h4>
 
               <!-- Card-->
               <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
@@ -775,6 +776,7 @@ export default {
       Api.getUsersCards(userId).then(response => {
         this.usersCards = response.data;
         this.usersCards.sort(this.compareCards);
+        console.log(this.usersCards);
       }).catch((error) => this.processUserInfoError(error));
     },
     /**

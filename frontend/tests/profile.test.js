@@ -1,10 +1,12 @@
-import {test, expect} from "@jest/globals";
+import {test, expect, describe, jest} from "@jest/globals";
 import profile from '../src/views/Profile'
 import {UserRole} from "../src/configs/User";
+import Api from "../src/Api";
 
+jest.mock("../src/Api");
 
 /**
-  * Jest tests for profile.vue .
+  * Jest tests for Profile.vue.
   */
 
 // ***************************************** isValidRole() Tests ***************************************************
@@ -277,4 +279,88 @@ test('isGAA: Testing for if GAA is a GAA role', () => {
     const expectedOutput = true;
 
     expect(profile.methods.isGAA(testInput)).toBe(expectedOutput);
+})
+
+// ***************************************** User's Cards Section Tests ************************************************
+
+describe("Testing the retrieval of a user's cards", () => {
+
+    test("Test that a 200 status code is returned with a user's cards when a user exists and has cards", async () => {
+        const userId = 1;
+
+        const data = {
+            status: 200,
+            data: {
+                cards: [
+                    {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS5"},
+                    {created: "2021-07-15T15:37:39.753837",
+                        creator: {
+                            bio: "Biography",
+                            businessesAdministered: [null],
+                            created: "2021-03-14T00:00",
+                            email: "chad.taylor@example.com",
+                            firstName: "Chad",
+                            homeAddress: {
+                                city: "Shire of Cocos Islands",
+                                country: "Cocos (Keeling) Islands",
+                                region: "West Island",
+                                suburb: null
+                            },
+                            id: 1,
+                            lastName: "Taylor",
+                            middleName: "S",
+                            nickname: "Chaddy",
+                            role: "USER"
+                        },
+                        keywords: [],
+                        section: "FORSALE",
+                        title: "PS4"}
+                ]
+            }
+        }
+
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(data));
+
+        const returnData = await Api.getUsersCards(userId);
+
+        expect(returnData).toBe(data);
+    })
+
+    test("Test that a 200 status code is returned with an empty list when a user exists but has no cards", async () => {
+        const userId = 1;
+
+        const data = {
+            status: 200,
+            data: {
+                cards:[]
+            }
+        }
+
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(data));
+
+        const returnData = await Api.getUsersCards(userId);
+
+        expect(returnData).toBe(data);
+    })
 })
