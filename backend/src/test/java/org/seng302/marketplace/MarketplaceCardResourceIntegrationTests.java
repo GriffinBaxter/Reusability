@@ -1059,7 +1059,7 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
 
-        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a", marketplaceCard.getDescription(),
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "", marketplaceCard.getDescription(),
                 "[]");
 
         // when
@@ -1083,7 +1083,7 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
 
-        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(71), marketplaceCard.getDescription(),
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(51), marketplaceCard.getDescription(),
                 "[]");
 
         // when
@@ -1107,7 +1107,7 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
 
-        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "d".repeat(501),
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "d".repeat(301),
                 "[]");
 
         // when
