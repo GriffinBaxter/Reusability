@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
  * The POST /cards endpoint is used to create cards.
  * The GET /cards endpoint is used to retrieve all cards that are stored.
  * The GET /cards/id endpoint is used to retrieve the details for a single card.
+ * The GET /users/{id}/cards endpoint is used to retrieve all active cards from a given user by ID.
  * The PUT /cards/{id}/extenddisplayperiod endpoint is used to extend the display period of a card nearing expiry.
  */
 @RestController
@@ -314,6 +315,10 @@ public class MarketplaceCardResource {
 
     /**
      * GET method for retrieving all active cards that a given user has created.
+     *
+     * Contract:
+     * Pre-conditions: Valid JSESSIONID cookie and user ID
+     * Post-conditions: Returns active cards from given user
      *
      * @param sessionToken Session token of the currently logged in user.
      * @param id The ID of the user.
