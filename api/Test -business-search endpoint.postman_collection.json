@@ -59,7 +59,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:9499/businesses/search",
+					"raw": "http://localhost:9499/businesses/search?searchQuery=Brink",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -68,6 +68,12 @@
 					"path": [
 						"businesses",
 						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "Brink"
+						}
 					]
 				}
 			},
@@ -78,7 +84,24 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": "http://localhost:9499/businesses/search?searchQuery=Brink OR Sunburst AND WASTE",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "Brink OR Sunburst AND WASTE"
+						}
+					]
+				}
 			},
 			"response": []
 		},
@@ -87,7 +110,24 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": "http://localhost:9499/businesses/search?businessType=RETAIL_TRADE",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses",
+						"search"
+					],
+					"query": [
+						{
+							"key": "businessType",
+							"value": "RETAIL_TRADE"
+						}
+					]
+				}
 			},
 			"response": []
 		},
@@ -96,7 +136,28 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": "http://localhost:9499/businesses/search?searchQuery=FrinGE&businessType=RETAIL_TRADE",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "FrinGE"
+						},
+						{
+							"key": "businessType",
+							"value": "RETAIL_TRADE"
+						}
+					]
+				}
 			},
 			"response": []
 		},
