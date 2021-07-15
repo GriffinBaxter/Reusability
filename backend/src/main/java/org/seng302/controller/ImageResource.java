@@ -76,7 +76,7 @@ public class ImageResource {
         verifyProductId(productId, business, user);
 
         // Verify the file type
-        String imageFileName = Objects.requireNonNull(image.getOriginalFilename());
+        String imageFileName = image.getOriginalFilename();
         String imageType = getFileExtension(imageFileName);
         if (!imageType.equalsIgnoreCase("jpg") && !imageType.equalsIgnoreCase("jpeg") &&
                 !imageType.equalsIgnoreCase("png") && !imageType.equalsIgnoreCase("gif")) {
