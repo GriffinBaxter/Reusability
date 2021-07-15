@@ -54,6 +54,11 @@ public class KeywordResource {
 
     /**
      * POST /keywords endpoint for creating new keywords
+     *
+     * Preconditions: Valid JSESSIONID and keywordPayload are sent
+     * Postconditions: A keyword is created
+     *                 The keyword ID is sent back
+     *
      * @param sessionToken JSESSIONID for verifying the user is logged in
      * @param keywordPayload Payload containing keyword name
      * @return Response Entity containing keyword id
@@ -92,6 +97,10 @@ public class KeywordResource {
 
     /**
      * GET /keywords/search endpoint for searching keywords
+     *
+     * Preconditions: Valid JSESSIONID
+     * Postconditions: Returns a list of Keywords matching searchQuery
+     *
      * @param sessionToken JSESSIONID for verifying the user is logged in
      * @param searchQuery Query for searching keyword names
      * @return Payload containing a list of (possibly 0) keywords
@@ -115,6 +124,11 @@ public class KeywordResource {
                 .body(keywordPayload);
     }
 
+    /**
+     * Function for converting a list of keywords into a payload
+     * @param keywords List of keywords to convert
+     * @return A list of Keyword Payloads
+     */
     public List<KeywordPayload> convertToPayload(List<Keyword> keywords) {
         List<KeywordPayload> payload = new ArrayList<>();
         for (Keyword keyword : keywords) {
