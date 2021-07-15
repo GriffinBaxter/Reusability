@@ -1,9 +1,9 @@
 package org.seng302.keyword;
 
-import org.assertj.core.api.OptionalAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.seng302.Authorization;
 import org.seng302.Main;
 import org.seng302.model.Address;
 import org.seng302.model.Keyword;
@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,10 +55,14 @@ public class KeywordResourceIntegrationTests {
     private MockHttpServletResponse response;
 
     private static User user;
+    private static User dgaa;
+    private static User gaa;
 
     private String jsonPOST = "{\"name\": \"%s\"}";
 
     private static Keyword keyword;
+    private static Keyword keyword2;
+    private static Keyword keyword3;
 
     @BeforeAll
     static void before() throws Exception {
@@ -87,7 +92,43 @@ public class KeywordResourceIntegrationTests {
         user.setId(1);
         user.setSessionUUID(User.generateSessionUUID());
 
+        dgaa = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        dgaa.setId(2);
+        dgaa.setSessionUUID(User.generateSessionUUID());
+
+        gaa = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.GLOBALAPPLICATIONADMIN);
+        gaa.setId(3);
+        gaa.setSessionUUID(User.generateSessionUUID());
+
         keyword = new Keyword("Resource", LocalDateTime.now());
+        keyword2 = new Keyword("ResourceDos", LocalDateTime.now());
+        keyword3 = new Keyword("ResourceTres", LocalDateTime.now());
     }
 
     // -------- POST ENDPOINT TESTS ----------------------------
@@ -146,7 +187,7 @@ public class KeywordResourceIntegrationTests {
         String newKeyword = "X";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findByName(newKeyword)).willReturn(Optional.ofNullable(null));
+        given(keywordRepository.findByName(newKeyword)).willReturn(Optional.empty());
 
         String payloadJson = String.format(jsonPOST, newKeyword.repeat(25));
 
@@ -159,5 +200,118 @@ public class KeywordResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    // -------- DELETE ENDPOINT TESTS ----------------------------
+
+    /**
+     * Test that the DGAA can successfully delete keywords
+     * Returns 200 (OK)
+     *
+     * @throws Exception In case something goes wrong with the mvc call
+     */
+    @Test
+    void canDeleteKeywordAsDGAA() throws Exception {
+        // Given
+        Integer id = keyword2.getId();
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+        given(keywordRepository.findById(id)).willReturn(Optional.ofNullable(keyword2));
+        // When
+        response = mvc.perform(delete(String.format("/keywords/%d", id))
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID())))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(keywordRepository.findByName(keyword2.getName())).isEmpty();
+    }
+
+    /**
+     * Test that the GAA can successfully delete keywords
+     * Returns 200 (OK)
+     *
+     * @throws Exception In case something goes wrong with the mvc call
+     */
+    @Test
+    void canDeleteKeywordAsGAA() throws Exception {
+        // Given
+        Integer id = keyword3.getId();
+
+        given(userRepository.findBySessionUUID(gaa.getSessionUUID())).willReturn(Optional.ofNullable(gaa));
+        given(keywordRepository.findById(id)).willReturn(Optional.ofNullable(keyword3));
+
+        // When
+        response = mvc.perform(delete(String.format("/keywords/%d", id))
+                .cookie(new Cookie("JSESSIONID", gaa.getSessionUUID())))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(keywordRepository.findByName(keyword3.getName())).isEmpty();
+    }
+
+    /**
+     * Test for when the keyword at ID doesn't exist
+     * Returns 400 (BAD_REQUEST)
+     *
+     * @throws Exception In case something goes wrong with the mvc call
+     */
+    @Test
+    void cantDeleteKeywordThatDoesntExist() throws Exception {
+        // Given
+        Integer fakeId = 10;
+
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+        given(keywordRepository.findById(fakeId)).willReturn(Optional.empty());
+
+        // When
+
+        response = mvc.perform(delete(String.format("/keywords/%d", fakeId))
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID())))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test that a normal user can't delete keywords
+     * Returns 403 (FORBIDDEN)
+     *
+     * @throws Exception In case something goes wrong with the mvc call
+     */
+    @Test
+    void cantDeleteKeywordAsUser() throws Exception {
+        // Given
+        Integer id = keyword3.getId();
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        given(keywordRepository.findById(id)).willReturn(Optional.ofNullable(keyword3));
+
+        // When
+        response = mvc.perform(delete(String.format("/keywords/%d", id))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that a user not logged in can't delete keywords
+     * Returns 401 (UNAUTHORIZED)
+     *
+     * @throws Exception In case something goes wrong with the mvc call
+     */
+    @Test
+    void cantDeleteKeywordWhenNotLoggedIn() throws Exception {
+        // Given
+        Integer id = keyword.getId();
+
+        given(userRepository.findBySessionUUID(null)).willReturn(Optional.empty());
+        given(keywordRepository.findById(id)).willReturn(Optional.ofNullable(keyword));
+
+        // When
+        response = mvc.perform(delete(String.format("/keywords/%d", id)))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 }

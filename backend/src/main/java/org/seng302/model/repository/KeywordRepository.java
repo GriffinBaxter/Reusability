@@ -19,4 +19,11 @@ public interface KeywordRepository extends JpaRepository<Keyword, Integer> {
      * @return a keyword that should be unique.
      */
     Optional<Keyword> findByName(String name);
+
+    /**
+     * Get Keyword from repository by ID
+     * @param id id of the keyword to be searched for
+     * @return a unique keyword
+     */
+    Optional<Keyword> findById(Integer id);
 }

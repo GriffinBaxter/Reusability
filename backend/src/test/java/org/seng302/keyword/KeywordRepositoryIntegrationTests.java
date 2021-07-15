@@ -33,10 +33,12 @@ public class KeywordRepositoryIntegrationTests {
     private Optional<Keyword> foundKeyword;
 
     private static Keyword keyword1;
+    private static Keyword keyword2;
 
     @BeforeAll
     static void before() throws Exception {
         keyword1 = new Keyword("car", LocalDateTime.now());
+        keyword2 = new Keyword("cat", LocalDateTime.now());
     }
 
     /**
@@ -56,6 +58,9 @@ public class KeywordRepositoryIntegrationTests {
         assertThat(keyword1.getName()).isEqualTo(foundKeyword.get().getName());
     }
 
+    /**
+     * Tests findByName method when the keyword doesn't exist returns an empty Optional
+     */
     @Test
     void whenFindByUnknownName_ThenDontReturnKeyword() {
         // given
@@ -63,6 +68,34 @@ public class KeywordRepositoryIntegrationTests {
         // when
         foundKeyword = keywordRepository.findByName(name);
         // then
+        assertThat(foundKeyword).isNotPresent();
+    }
+
+    /**
+     * Tests findById method successfully returns a keyword
+     */
+    @Test
+    void whenFindByExistingId_ThenReturnKeyword() {
+        // Given
+        entityManager.persistAndFlush(keyword2);
+        // When
+        foundKeyword = keywordRepository.findById(keyword2.getId());
+        // Then
+        assertThat(foundKeyword).isPresent();
+        assertThat(keyword2.getId()).isEqualTo(foundKeyword.get().getId());
+        assertThat(keyword2.getName()).isEqualTo(foundKeyword.get().getName());
+    }
+
+    /**
+     * Tests findById method when the keyword doesn't exist returns an empty Optional
+     */
+    @Test
+    void whenFindByUnknownId_ThenReturnKeyword() {
+        // Given
+        Integer fakeId = 100;
+        // When
+        foundKeyword = keywordRepository.findById(fakeId);
+        // Then
         assertThat(foundKeyword).isNotPresent();
     }
 }
