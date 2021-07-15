@@ -92,6 +92,11 @@ public class KeywordResource {
 
     /**
      * DELETE endpoint for deleting keywords (DGAA/GAA's only)
+     *
+     * Preconditions: Valid JSESSIONID and user is DGAA/GAA
+     *                Id is an existing keyword id
+     * Postconditions: Keyword is deleted
+     *
      * @param id Keyword ID
      * @param sessionToken JSESSIONID for verifying the user is logged in
      */
