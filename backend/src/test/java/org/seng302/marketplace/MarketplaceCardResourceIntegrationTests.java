@@ -141,7 +141,7 @@ class MarketplaceCardResourceIntegrationTests {
 
         anotherUser = new User("Another",
                 "User",
-                "Middle",
+                "",
                 "AU",
                 "bio",
                 "anotheruser@example.com",
@@ -201,7 +201,7 @@ class MarketplaceCardResourceIntegrationTests {
                 anotherUser.getId(),
                 anotherUser,
                 Section.WANTED,
-                LocalDateTime.of(LocalDate.of(2022, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
@@ -919,104 +919,5 @@ class MarketplaceCardResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-    }
-
-    // --------------------------------------- GET ACTIVE CARDS (by USER ID) ------------------------------------------
-
-    /**
-     * Tests that the active cards from a given user can be retrieved with an OK response.
-     */
-    @Test
-    void canRetrieveUsersActiveCardsWhenUserExists() throws Exception {
-        // given
-        expectedJson = "[" + String.format(expectedCardJson, anotherMarketplaceCard.getId(), anotherUser.getId(),
-                anotherUser.getFirstName(), anotherUser.getLastName(), anotherUser.getMiddleName(),
-                anotherUser.getNickname(), anotherUser.getBio(), anotherUser.getEmail(), anotherUser.getCreated(),
-                anotherUser.getRole(), anotherUser.getHomeAddress().toSecureString(),
-                anotherMarketplaceCard.getSection().toString(), anotherMarketplaceCard.getCreated(),
-                anotherMarketplaceCard.getDisplayPeriodEnd(), anotherMarketplaceCard.getTitle(),
-                anotherMarketplaceCard.getDescription(), anotherMarketplaceCard.getKeywords()) + "]";
-
-        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
-        given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
-        given(marketplaceCardRepository.findMarketplaceCardByCreatorId(anotherUser.getId())).willReturn(
-                List.of(anotherMarketplaceCard)
-        );
-
-        // when
-        response = mvc.perform(get(String.format("/users/%d/cards", anotherUser.getId()))
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-    }
-
-    /**
-     * Tests that the active cards from a given user can be retrieved with an OK response and empty list returned due
-     * to cards no longer being active.
-     */
-    @Test
-    void canRetrieveUsersActiveCardsWhenUserExistsEmptyList() throws Exception {
-        // given
-        expectedJson = "[]";
-
-        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(
-                Optional.ofNullable(anotherUser)
-        );
-        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
-        given(marketplaceCardRepository.findMarketplaceCardByCreatorId(user.getId())).willReturn(
-                List.of(marketplaceCard)
-        );
-
-        // when
-        response = mvc.perform(get(String.format("/users/%d/cards", user.getId()))
-                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
-    }
-
-    /**
-     * Tests that the active cards from a given user can't be retrieved if the user doesn't exist with a NOT_ACCEPTABLE
-     * response.
-     */
-    @Test
-    void cantRetrieveUsersActiveCardsWhenUserDoesntExist() throws Exception {
-        // given
-        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
-        given(marketplaceCardRepository.findMarketplaceCardByCreatorId(anotherUser.getId())).willReturn(
-                List.of(anotherMarketplaceCard)
-        );
-
-        // when
-        when(userRepository.findById(0)).thenReturn(Optional.empty());
-        response = mvc.perform(get(String.format("/users/%d/cards", 0))
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-    }
-
-    /**
-     * Tests that the active cards from a given user can't be retrieved if the current user doesn't exist with an
-     * UNAUTHORIZED response.
-     */
-    @Test
-    void cantRetrieveUsersActiveCardsWhenCurrentUserDoesntExists() throws Exception {
-        // given
-        given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
-        given(marketplaceCardRepository.findMarketplaceCardByCreatorId(anotherUser.getId())).willReturn(
-                List.of(anotherMarketplaceCard)
-        );
-
-        // when
-        when(userRepository.findBySessionUUID("0")).thenReturn(Optional.empty());
-        response = mvc.perform(get(String.format("/users/%d/cards", 0))
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 }
