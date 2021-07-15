@@ -41,6 +41,9 @@ public class NotificationRepositoryIntegrationTests {
     private User anotherUser;
     private Notification notification;
 
+    /**
+     * Sets up data for testing
+     */
     @BeforeEach
     public void setup() throws Exception {
         Address address = new Address(
@@ -104,6 +107,9 @@ public class NotificationRepositoryIntegrationTests {
     }
 
 
+    /**
+     * Test FindByReceiverIdAndNotificationMessage()
+     */
     @Test
     public void testFindByReceiverIdAndNotificationMessage() {
         // given
@@ -117,6 +123,9 @@ public class NotificationRepositoryIntegrationTests {
         Assertions.assertEquals(notification.expiryFormTOString(), optionalNotification.get().expiryFormTOString());
     }
 
+    /**
+     * Test FindAllByReceiverId()
+     */
     @Test
     public void testFindAllByReceiverId() {
         // when
