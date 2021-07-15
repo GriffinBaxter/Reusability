@@ -47,6 +47,14 @@ public class ImageResource {
 
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
 
+    public ImageResource(BusinessRepository businessRepository, UserRepository userRepository,
+                         ProductRepository productRepository, ImageRepository imageRepository) {
+        this.businessRepository = businessRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
+        this.imageRepository = imageRepository;
+    }
+
     @PostMapping("/businesses/{businessId}/products/{productId}/images")
     public ResponseEntity<ImageCreatePayload> createImage(
             @RequestParam("images") MultipartFile image,
