@@ -170,6 +170,11 @@ public class MarketplaceCardResource {
      * @param updatedCardPayload Payload for the edited card
      * @param id id of the card to be edited
      * @return ResponseEntity with the corresponding status code and message
+     *
+     * Preconditions:  id is a positive integer that represents the id of an existing marketplace card.
+     *                 updatedCardPayload is a non-null JSON representation of a marketplace card.
+     * Postconditions: An updated marketplace card with the values of updatedCardPayload.
+     *                 A 200 status code is returned.
      */
     @PutMapping("/cards/{id}")
     @ResponseStatus(code = HttpStatus.OK, reason = "Card updated successfully")
