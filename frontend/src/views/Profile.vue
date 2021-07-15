@@ -638,7 +638,7 @@ export default {
       Cookies.remove('userID');
       Cookies.remove('actAs');
       Api.signOut().then(() => {
-        this.$router.push({ name: 'Login' })
+        this.$router.push({name: 'Login'})
       })
     },
 
@@ -757,7 +757,7 @@ export default {
     /**
      * Format the date of a card using the date-fns library.
      */
-    styleDate(date){
+    styleDate(date) {
       return formatDate(date, false);
     },
     /**
@@ -772,7 +772,31 @@ export default {
      * @param userId the id of the user's profile you are viewing.
      */
     retrieveUsersCards(userId) {
-      Api.getUsersCards(userId).then(response => (this.usersCards = response.data)).catch((error) => this.processUserInfoError(error));
+      Api.getUsersCards(userId).then(response => {
+        this.usersCards = response.data;
+        this.usersCards.sort(this.compareCards);
+      }).catch((error) => this.processUserInfoError(error));
+    },
+    /**
+     * This method is used to compare two cards' sections when sorting a user's cards by section.
+     * @param card1 the user's first card used for comparison.
+     * @param card2 the user's second card used for comparison.
+     *
+     * Preconditions:  card1 is a non-null JSON representing a MarketplaceCard.
+     *                 card2 is a non-null JSON representing a MarketplaceCard.
+     * Postconditions: an integer value representing the comparison outcome:
+     *                 1. -1 if the section of card1 is "less" than the section of card2.
+     *                 2. 1 if the section of card1 is "greater" than the section of card2.
+     *                 3. 0 if the card sections are equal.
+     */
+    compareCards(card1, card2) {
+      if (card1.section < card2.section) {
+        return -1;
+      }
+      if (card1.section > card2.section) {
+        return 1;
+      }
+      return 0;
     },
     /**
      * If a request is made to the backend for user info (profile information or cards) and an error occurs
