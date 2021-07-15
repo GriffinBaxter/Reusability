@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -45,5 +46,14 @@ public interface MarketplaceCardRepository extends JpaRepository<MarketplaceCard
             Section section,
             String title,
             String description
+    );
+
+    /**
+     * Search for all cards created by an existing user with a given user ID.
+     * @param creatorId The ID of the creator (user) of the card.
+     * @return A list of all cards created by the user (possibly empty).
+     */
+    List<MarketplaceCard> findMarketplaceCardByCreatorId(
+            Integer creatorId
     );
 }
