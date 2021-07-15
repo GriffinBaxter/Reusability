@@ -321,7 +321,6 @@ public class UserResource {
     ) throws Exception {
         logger.debug("User search request received with search query {}, order by {}, page {}", searchQuery, orderBy, page);
 
-        //TODO check this
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         int pageNo;
         try {
@@ -337,7 +336,7 @@ public class UserResource {
         // Front-end displays 5 users per page
         int pageSize = 5;
 
-        Sort sortBy = null;
+        Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
@@ -411,7 +410,7 @@ public class UserResource {
     //TODO write unit tests
     //TODO write comment
     public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
-        List<UserPayloadSecure> userPayloadList = new ArrayList<>();
+        List<UserPayloadSecure> userPayloadList;
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
 
         for (UserPayloadSecure userPayloadSecure: userPayloadList) {

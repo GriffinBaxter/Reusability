@@ -37,7 +37,6 @@ public class Keyword {
     private static final Integer NAME_MIN_LENGTH = 2;
     private static final Integer NAME_MAX_LENGTH = 20;
 
-
     /**
      * Marketplace Keyword constructor.
      * It validates the name of when constructed.

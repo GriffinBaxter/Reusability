@@ -4,12 +4,12 @@ export default class MarketplaceCard {
         title: {
             name: "Title",
             minLength: 1,
-            maxLength: 20
+            maxLength: 51
         },
         description: {
             name: "Description",
             minLength: 0,
-            maxLength: 108
+            maxLength: 301
         },
         keyword: {
             minLength: 2,
