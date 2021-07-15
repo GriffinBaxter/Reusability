@@ -58,11 +58,11 @@ public class MarketplaceCard {
     private List<Keyword> keywords = new ArrayList<>();
 
     // Values needed for validation.
-    private static final Integer TITLE_MIN_LENGTH = 2;
-    private static final Integer TITLE_MAX_LENGTH = 70;
+    private static final Integer TITLE_MIN_LENGTH = 1;
+    private static final Integer TITLE_MAX_LENGTH = 50;
 
     private static final Integer DESCRIPTION_MIN_LENGTH = 0;
-    private static final Integer DESCRIPTION_MAX_LENGTH = 500;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 300;
 
     /**
      * Marketplace card constructor
@@ -93,7 +93,7 @@ public class MarketplaceCard {
         this.creator = creator;
         this.section = section;
         this.created = created;
-        this.displayPeriodEnd = created.plusWeeks(1);
+        this.displayPeriodEnd = created.plusWeeks(2);
         this.title = title;
         this.description = (description.equals("")) ? null : description;
     }
@@ -293,10 +293,10 @@ public class MarketplaceCard {
     }
 
     /**
-     * Extends the display period of the marketplace card by one week.
+     * Extends the display period of the marketplace card by two weeks.
      */
     public void extendDisplayPeriod() {
-        this.displayPeriodEnd = displayPeriodEnd.plusWeeks(1);
+        this.displayPeriodEnd = displayPeriodEnd.plusWeeks(2);
     }
 
 }

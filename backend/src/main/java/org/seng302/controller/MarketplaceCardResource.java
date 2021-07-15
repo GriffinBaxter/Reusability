@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
  * The POST /cards endpoint is used to create cards.
  * The GET /cards endpoint is used to retrieve all cards that are stored.
  * The GET /cards/id endpoint is used to retrieve the details for a single card.
+ * The GET /users/{id}/cards endpoint is used to retrieve all active cards from a given user by ID.
  * The PUT /cards/{id}/extenddisplayperiod endpoint is used to extend the display period of a card nearing expiry.
  * The PUT /cards/{id} endpoint is used to edit existing cards
  */
@@ -429,6 +430,53 @@ public class MarketplaceCardResource {
         marketplaceCard.extendDisplayPeriod();
         marketplaceCardRepository.save(marketplaceCard);
         logger.info("Marketplace Card Modification Success - 200 [OK] - Marketplace card with ID {} has had its display period extended to {}.", id, marketplaceCard.getDisplayPeriodEnd());
+    }
+
+    /**
+     * GET method for retrieving all active cards that a given user has created.
+     *
+     * Contract:
+     * Pre-conditions: Valid JSESSIONID cookie and user ID
+     * Post-conditions: Returns active cards from given user
+     *
+     * @param sessionToken Session token of the currently logged in user.
+     * @param id The ID of the user.
+     * @return A list of all cards created by the user (possibly empty).
+     */
+    @GetMapping("/users/{id}/cards")
+    public ResponseEntity<List<MarketplaceCardPayload>> retrieveUsersActiveCards(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer id
+    ) throws Exception {
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+        
+        Optional<User> cardsUser = userRepository.findById(id);
+        
+        if (cardsUser.isEmpty()) {
+            logger.error("406 [NOT ACCEPTABLE] - User with ID {} does not exist", id);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The given user does not exist.");
+        } else {
+            List<MarketplaceCard> cards = marketplaceCardRepository
+                    .findMarketplaceCardByCreatorId(
+                            id
+                    );
+            logger.info(
+                    "Marketplace Retrieve Cards Success - 200 [OK] - User with ID {} has had its cards retrieved.",
+                    id
+            );
+
+            List<MarketplaceCardPayload> payload = new ArrayList<>();
+            for (MarketplaceCard card : cards) {
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                
+                if (card.getDisplayPeriodEnd().isAfter(currentDateTime)) {
+                    payload.add(card.toMarketplaceCardPayload());
+                }
+            }
+            
+            return ResponseEntity.ok()
+                    .body(payload);
+        }
     }
 
     /**
