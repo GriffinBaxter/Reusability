@@ -31,6 +31,9 @@ public class Notification {
         this.extraMessage = extraMessage;
     }
 
+    public Notification() {
+    }
+
     public int getId() {
         return id;
     }

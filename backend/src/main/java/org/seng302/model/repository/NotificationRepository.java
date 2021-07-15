@@ -16,7 +16,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
      * @param notificationMessage notification message
      * @return a notification matching given info
      */
-    //TODO: Test
     Optional<Notification> findByReceiverIdAndNotificationMessage(Integer id, String notificationMessage);
 
     /**
@@ -24,6 +23,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
      * @param id receiver id
      * @return a list of notification matching given user id
      */
-    //TODO: Test
     List<Notification> findAllByReceiverId(Integer id);
 }
