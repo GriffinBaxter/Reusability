@@ -408,7 +408,7 @@ export default {
      */
     async requestProducts() {
 
-      // Getting all the information necssary from the route update (params and query).
+      // Getting all the information necessary from the route update (params and query).
       this.businessId = parseInt(this.$route.params.id);
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
@@ -502,7 +502,7 @@ export default {
      * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
      */
     getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = ""; //TODO: remove after testing and just have ""
+      let errorMessage = "";
       if (inputVal === "" && minLength >= 1) {
         errorMessage = "Please enter input";
       } else if (!regex.test(inputVal)) {

@@ -11,55 +11,20 @@
     <!--search container-->
     <div id="outer-container" class="container text-font">
 
-      <!--search bar-->
-      <div class="row">
-        <div class="col search-bar-positioning">
-          <div class="input-group my-4">
-            <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" placeholder="Search all users">
-            <button class="btn green-search-button" @click="searchClicked()" id="search-btn"><i class="fas fa-search"></i></button>
-          </div>
-        </div>
-      </div>
+      <!--search bar - reusing the search bar in the profile header-->
+      <ProfileHeader></ProfileHeader>
 
       <div class="row mb-3">
 
-        <!--order by nickname-->
-        <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
-             @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
-          <b>Nickname</b>
-          <i id="nickname-icon"></i>
-        </div>
+        <!-- table component which lists users or businesses -->
+        <Table table-id="search-id" null-string-value="N/A" :table-tab-index="0"
+               :table-headers="tableUserHeaders" :table-data="tableData"
+               :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
+               :order-by-override="tableOrderBy" :table-data-is-page="true"
+               @update-current-page="event => updatePage(event)"
+               @order-by-header-index="event => orderUsers(event)"
+               @row-selected="event => routeToProfile(event.index)"/>
 
-        <!--order by full name-->
-        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
-             @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
-          <b>Full name</b>
-          <i id="name-icon"></i>
-        </div>
-
-        <!--order by email-->
-        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
-             @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
-          <b>Email</b>
-          <i id="email-icon"></i>
-        </div>
-
-        <!--order by address-->
-        <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="0"
-             @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
-          <b>Address</b>
-          <i id="address-icon"></i>
-        </div>
-
-      </div>
-
-      <div class="row">
-        <div class="col" id="page-button-container">
-          <PageButtons
-              v-bind:totalPages="totalPages"
-              v-bind:currentPage="page"
-              @updatePage="updatePage"/>
-        </div>
       </div>
 
     </div>
@@ -73,29 +38,34 @@ import Api from '../Api';
 import Cookies from 'js-cookie';
 import Navbar from "@/components/main/Navbar";
 import Footer from "@/components/main/Footer";
-import PageButtons from "../components/PageButtons";
+import ProfileHeader from "../components/ProfileHeader";
+import User from "@/configs/User";
 
 export default {
   name: "Search",
   components: {
     Footer,
     Navbar,
-    PageButtons
+    ProfileHeader
   },
   data() {
     return {
-      nickAscending: false,
-      nameAscending: false,
-      emailAscending: false,
-      addressAscending: false,
-      rowsPerPage: 5,
-      page: 0,
-      totalPages: 1,
       userList: [],
       small: false,
-      totalRows: 0,
       orderBy: "fullNameASC",
-      lastQuery: "PAGEHASBEENREFRESHED" //To allow for a comparison with the previous query when there is no previous query
+      lastQuery: "PAGEHASBEENREFRESHED", //To allow for a comparison with the previous query when there is no previous query
+      // A list of the user table headers
+      tableUserHeaders: ["Nickname", "Full Name", "Email", "Address"],
+      // A list of the ordering by headers, which is used with talking to the backend
+      tableOrderByUserHeaders: ["nickname", "fullName", "email", "address"],
+      // A list of all the data points (user or business) belonging to the table
+      tableData: [],
+      // These variables are used to control and update the table.
+      rowsPerPage: 5,
+      currentPage: 0,
+      totalRows: 0,
+      // Used to tell the table what is the current ordering (for visual purposes).
+      tableOrderBy: {orderBy: null, isAscending: true},
     }
   },
 
@@ -116,25 +86,51 @@ export default {
 
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
-     * @param newPageNumber The page to move to
+     * @param event The click event
      */
-    updatePage(newPageNumber) {
-      this.page = newPageNumber;
+    updatePage(event) {
+      this.currentPage = event.newPageNumber;
       this.$router.push({
         path: "/search",
-        query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderBy, "page": (this.page + 1).toString()}
-      }).catch(()=>{});
-      this.requestUsers().then(() => this.buildRows())
+        query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+      });
+      this.requestUsers();
     },
-
     /**
-     * Emulates a click when the user presses enter on a column header.
+     * Parses the orderByString and returns the resulted Objects.
+     * @return {{orderBy: null | String, isAscending: boolean}} This contains the {orderBy, isAscending} properties of the this.orderByString .
+     * Emulates a click when the product presses enter on a column header.
+     *
      * @param event The keydown event
      */
-    orderEnter(event) {
-      if (event.keyCode === 13) {
-        event.target.click();
+    parseOrderBy() {
+      let orderBy = null;
+      let isAscending = true;
+
+      // If the last 3 letters are ASC then we can assume the orderBy is the other component of that orderByString.
+      // This also means isAscending is true.
+      if (this.orderByString.slice(this.orderByString.length - 3) === 'ASC') {
+        orderBy = this.orderByString.slice(0, this.orderByString.length - 3);
+
+        // If the last 4 letters are DESC then we can assume the orderBy is the other component of the orderByString
+        // This also means that isAscending is false.
+      } else if (this.orderByString.slice(this.orderByString.length - 4) === 'DESC') {
+        orderBy = this.orderByString.slice(0, this.orderByString.length - 4)
+        isAscending = false;
       }
+
+      // If we found a valid orderBy compare it against the allowed orderBy headers in tableOrderByHeaders
+      if (orderBy !== null) {
+        orderBy = this.tableOrderByUserHeaders.indexOf(orderBy);
+
+        // If the orderBy is returned as -1. This means that no header was found!
+        // So we say it is unordered.
+        if (orderBy === -1) {
+          orderBy = null;
+        }
+      }
+
+      return {orderBy, isAscending};
     },
 
     /**
@@ -149,336 +145,65 @@ export default {
       if (urlParams.get('searchQuery') !== null) {
         const query = urlParams.get('searchQuery').trim();
 
-        const ordering = urlParams.get('orderBy');
-        this.page = parseInt(urlParams.get('page'))-1;
+        this.orderByString = this.$route.query["orderBy"] || "fullNameASC";
+        this.currentPage = parseInt(this.$route.query["page"]) || 0;
 
         if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
-          this.page = 0;
-          this.$router.push(
-              {path: "/search", query: {"searchQuery": query, "orderBy": this.orderBy, "page": "1"}}
-          ).catch(()=>{});
+          this.currentPage = 0;
+          await this.$router.push(
+              {path: "/search", query: {"searchQuery": query, "orderBy": this.orderByString, "page": "1"}}
+          );
         }
         this.lastQuery = query;
 
-        await Api.searchUsers(query, ordering, this.page).then(response => {
+        await Api.searchUsers(query, this.orderByString, this.currentPage).then(response => {
 
-          this.userList = [...response.data];
+          // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
+          const {orderBy, isAscending} = this.parseOrderBy();
+          this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
+
+          this.userList = response.data.map((user) => {
+            return new User(user);
+          });
+          let newtableData = [];
+
+          // No results
           if (this.userList.length <= 0) {
-            this.page = 0;
-            this.totalPages = 1;
+            this.currentPage = 1;
+            this.maxPage = 1;
             this.totalRows = 0;
+            // Generate the tableData to be placed in the table & get the total number of rows.
           } else {
-            this.totalPages = parseInt(response.headers['total-pages']);
-            this.totalRows = parseInt(response.headers['total-rows']);
-          }
+            this.totalRows = parseInt(response.headers["total-rows"]);
 
+            for (let i = 0; i < this.userList.length; i++) {
+              const userData = this.userList[i].data;
+              newtableData.push(userData.id);
+              newtableData.push(userData.nickname);
+              newtableData.push(this.getFullName(userData));
+              newtableData.push(userData.email);
+              newtableData.push(this.getAddress(userData));
+            }
+
+            this.tableData = newtableData;
+          }
         }).catch((error) => {
           if (error.request && !error.response) {
             this.$router.push({path: '/timeout'});
-          } else if (error.response.status === 401) {
-            this.$router.push({path: '/invalidtoken'});
+          } else if (error.response.status === 400) {
+            this.$router.push({path: '/pageDoesNotExist'});
           } else {
-            //TODO Change these to actually handle 400 responses from backend
             this.$router.push({path: '/timeout'});
+            console.log(error.message);
           }
         })
       }
     },
 
     /**
-     * Handles the user pressing enter with the search bar focused. Updates the search if they do.
-     * @param event The keydown event
-     */
-    search(event) {
-      if (event.keyCode === 13) {
-        const inputQuery = this.$refs.searchBar.value;
-        this.$router.push({
-          path: "/search",
-          query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": (this.page + 1).toString()}
-        }).catch(()=>{});
-        this.requestUsers().then(() => this.buildRows()).catch(
-            (e) => console.log(e)
-        );
-      }
-    },
-
-    /**
-     * Handles the user pressing clicking on the search button. Completes a search when they do.
-     */
-    searchClicked() {
-      const inputQuery = this.$refs.searchBar.value;
-      this.$router.push({
-        path: "/search",
-        query: {"searchQuery": inputQuery, "orderBy": this.orderBy, "page": (this.page + 1).toString()}
-      }).catch(()=>{});
-      this.requestUsers().then(() => this.buildRows()).catch(
-          (e) => console.log(e)
-      );
-    },
-
-    /**
-     * Orders the users based on the given booleans for each column, and updates the display
-     * @param nickname Boolean, whether to order by nickname
-     * @param fullName Boolean, whether to order by full name
-     * @param email Boolean, whether to order by email
-     * @param address Boolean, whether to order by address
-     */
-    orderUsers(nickname, fullName, email, address) {
-
-      if (nickname) {
-        this.disableIcons();
-        if (this.nickAscending) {
-          this.orderBy = "nicknameASC";
-          document.getElementById('nickname-icon').setAttribute('class','fas fa-chevron-up float-end');
-          this.$router.push({
-            path: "/search",
-            query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameASC", "page": (this.page + 1).toString()
-            }
-          })
-        } else {
-          this.orderBy = "nicknameDESC";
-          document.getElementById('nickname-icon').setAttribute('class','fas fa-chevron-down float-end');
-          this.$router.push({
-            path: "/search",
-            query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "nicknameDESC", "page": (this.page + 1).toString()
-            }
-          })
-
-        }
-        this.nickAscending = !this.nickAscending;
-        this.nameAscending = false;
-        this.emailAscending = false;
-        this.addressAscending = false;
-        this.requestUsers().then(() => this.buildRows());
-
-      } else if (fullName) {
-        this.disableIcons();
-        if (this.nameAscending) {
-          this.orderBy = "fullNameASC";
-          document.getElementById('name-icon').setAttribute('class','fas fa-chevron-up float-end');
-          this.$router.push({
-            path: "/search",
-            query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "fullNameASC", "page": (this.page + 1).toString()
-            }
-          })
-
-        } else {
-          this.orderBy = "fullNameDESC";
-          document.getElementById('name-icon').setAttribute('class','fas fa-chevron-down float-end');
-          this.$router.push({
-            path: "/search",
-            query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "fullNameDESC", "page": (this.page + 1).toString()
-            }
-          })
-
-        }
-        this.nickAscending = false;
-        this.nameAscending = !this.nameAscending;
-        this.emailAscending = false;
-        this.addressAscending = false;
-        this.requestUsers().then(() => this.buildRows());
-
-      } else if (email) {
-        this.disableIcons();
-        if (this.emailAscending) {
-          this.orderBy = "emailASC";
-          document.getElementById('email-icon').setAttribute('class','fas fa-chevron-up float-end');
-          this.$router.push({
-            path: "/search",
-            query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "emailASC", "page": (this.page + 1).toString()
-            }
-          })
-        } else {
-          this.orderBy = "emailDESC";
-          document.getElementById('email-icon').setAttribute('class','fas fa-chevron-down float-end');
-          this.$router.push({
-            path: "/search",
-            query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "emailDESC", "page": (this.page + 1).toString()
-            }
-          })
-
-        }
-        this.nickAscending = false;
-        this.nameAscending = false;
-        this.emailAscending = !this.emailAscending;
-        this.addressAscending = false;
-        this.requestUsers().then(() => this.buildRows());
-
-      } else if (address) {
-        this.disableIcons();
-        if (this.addressAscending) {
-          this.orderBy = "addressASC";
-          document.getElementById('address-icon').setAttribute('class','fas fa-chevron-up float-end');
-          this.$router.push({
-            path: "/search",
-            query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "addressASC", "page": (this.page + 1).toString()
-            }
-          })
-
-        } else {
-          this.orderBy = "addressDESC";
-          document.getElementById('address-icon').setAttribute('class','fas fa-chevron-down float-end');
-          this.$router.push({
-            path: "/search",
-            query: {
-              "searchQuery": this.$refs.searchBar.value, "orderBy": "addressDESC", "page": (this.page + 1).toString()
-            }
-          })
-        }
-        this.nickAscending = false;
-        this.nameAscending = false;
-        this.emailAscending = false;
-        this.addressAscending =  !this.addressAscending;
-        this.requestUsers().then(() => this.buildRows());
-      }
-
-    },
-
-    /**
-     * Disables all ascending or descending icons in the top column headers.
-     */
-    disableIcons() {
-      document.getElementById('name-icon').setAttribute('class', '');
-      document.getElementById('email-icon').setAttribute('class', '');
-      document.getElementById('address-icon').setAttribute('class', '');
-    },
-
-    /**
-     * Dynamically builds the rows of users from the stored userList.
-     */
-    buildRows() {
-      const self = this;
-      this.clearRows();
-      let limit = this.rowsPerPage + this.page * this.rowsPerPage;
-      let startIndex = 0;
-      const outerContainer = document.getElementById('outer-container');
-      const lastChild = outerContainer.lastChild;
-
-      if (limit > this.userList.length) {
-        limit = this.userList.length
-      }
-
-      if (this.userList.length > 0) {
-
-        // 6 is the last index of the permanent items
-        let tabIndex = 0;
-
-        for (let i = startIndex; i < limit; i++) {
-          let classInput = 'row mb-2 justify-content-center';
-          let t = true;
-          if (t) {
-            classInput = 'col text-center';
-          }
-
-          const userRow = document.createElement("div");
-          if (i % 2 === 0) {
-            userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour userRows");
-          } else {
-            userRow.setAttribute("class", "row mb-3 py-4 shadow-sm row-colour-dark userRows");
-          }
-          userRow.setAttribute("tabIndex", `${tabIndex}`);
-          userRow.setAttribute("id", `${this.userList[i].id}`);
-
-          const nickCol = document.createElement("div");
-          nickCol.setAttribute("class", `${classInput}`);
-          nickCol.setAttribute("id", `${i}-nick`);
-          nickCol.innerHTML = this.userList[i].nickname;
-          userRow.appendChild(nickCol);
-
-          const nameCol = document.createElement("div");
-          nameCol.setAttribute("class", `${classInput}`);
-          nameCol.setAttribute("id", `${i}-name`);
-
-          //TODO test this as not sure if we want this still -> taken from dev branch
-          if (this.userList[i].middleName) {
-            nameCol.innerText = this.userList[i].firstName + " " + this.userList[i].middleName + " " + this.userList[i].lastName;
-          } else {
-            nameCol.innerText = this.userList[i].firstName + " " + this.userList[i].lastName;
-          }
-
-          userRow.appendChild(nameCol);
-
-          const emailCol = document.createElement("div");
-          emailCol.setAttribute("class", `${classInput}`);
-          emailCol.setAttribute("id", `${i}-email`);
-          emailCol.innerText = this.userList[i].email;
-          userRow.appendChild(emailCol);
-
-          const addressCol = document.createElement("div");
-          addressCol.setAttribute("class", `${classInput}`);
-          addressCol.setAttribute("id", `${i}-address`);
-
-          const address = this.getAddress(this.userList[i]);
-
-          addressCol.innerText = address;
-          userRow.appendChild(addressCol);
-
-            userRow.addEventListener("click", function(event) {
-              let path;
-
-            if (event.target.id.includes('-')) {
-              const row = event.target.parentNode;
-              path = `/profile/${row.id}`
-            } else {
-              path = `/profile/${event.target.id}`
-            }
-
-            if (self.$route.path !== path) {
-              self.$router.push({path});
-            }
-
-          });
-
-          userRow.addEventListener('keydown', function (event) {
-            // TODO replace all deprecated keyCode uses
-            if (event.keyCode === 13) {
-              event.target.click();
-            }
-          })
-
-          outerContainer.insertBefore(userRow, lastChild);
-          }
-      }
-
-      let showingStart = this.userList.length ? ((this.page + 1) * this.rowsPerPage) - this.rowsPerPage + 1 : 0;
-
-      let lastEntryOfPage = limit + (this.page) * this.rowsPerPage;
-
-      const showingString = `Showing ${showingStart}-${lastEntryOfPage} of ${this.totalRows} results`;
-      const showingRow = document.createElement('div');
-      showingRow.setAttribute("class", "row");
-      showingRow.setAttribute("id", `showingRow`);
-      const showingCol = document.createElement('div');
-      showingCol.setAttribute("class", "col");
-      showingCol.innerText = showingString;
-      showingRow.appendChild(showingCol);
-
-      outerContainer.insertBefore(showingRow, lastChild);
-    },
-
-    /**
-     * Removes all rows of users from the page.
-     */
-    clearRows() {
-      let allRows = document.getElementsByClassName("userRows");
-      //TODO Not sure why i-->0 works when i >0; i-- doesn't
-      for (let i = allRows.length; i-->0;) {
-        allRows[i].parentNode.removeChild(allRows[i]);
-      }
-      if (document.contains(document.getElementById('showingRow'))) {
-        document.getElementById('showingRow').remove();
-      }
-    },
-
-    /*
      * Creates a string which represents a user's address.
+     * @param user a JSON representation of a user.
+     * @return a string representing a user's address.
      */
     getAddress(user) {
 
@@ -516,13 +241,70 @@ export default {
       return address;
     },
 
-    requestUsersListener() {
-      this.requestUsers().then(
-          () => this.buildRows()
-      ).catch(
-          (e) => console.log(e)
-      )
-    }
+    /**
+     * Creates a string which represents a user's full name.
+     * @param user a JSON representation of a user.
+     * @return a string representing a user's full name.
+     */
+    getFullName(user) {
+      if (user.middleName) {
+        return user.firstName + " " + user.middleName + " " + user.lastName;
+      } else {
+        return user.firstName + " " + user.lastName;
+      }
+    },
+
+    /**
+     * Updates the URL and calls the requestUsers() to update the table.
+     * @param event This contains the {orderBy, isAscending} components of the new desired ordering.
+     */
+    orderUsers(event) {
+      this.orderByString = `${this.tableOrderByUserHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
+      this.$router.push({
+        path: "/search",
+        query: {
+          "searchQuery": this.$refs.searchBar.value, "orderBy": this.orderByString, "page": (this.currentPage).toString()
+        }
+      });
+      this.requestUsers();
+    },
+
+    /**
+     * Handles the user pressing enter with the search bar focused. Updates the search if they do.
+     * @param event The keydown event
+     */
+    search(event) {
+      if (event.keyCode === 13) {
+        const inputQuery = this.$refs.searchBar.value;
+        this.$router.push({
+          path: "/search",
+          query: {"searchQuery": inputQuery, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        });
+        this.requestUsers();
+      }
+    },
+
+    /**
+     * Handles the user pressing clicking on the search button. Completes a search when they do.
+     */
+    searchClicked() {
+      const inputQuery = this.$refs.searchBar.value;
+      this.$router.push({
+        path: "/search",
+        query: {"searchQuery": inputQuery, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+      });
+      this.requestUsers();
+    },
+
+    /**
+     * Disables all ascending or descending icons in the top column headers.
+     */
+    disableIcons() {
+      document.getElementById('name-icon').setAttribute('class', '');
+      document.getElementById('email-icon').setAttribute('class', '');
+      document.getElementById('address-icon').setAttribute('class', '');
+    },
+
 
   },
 
@@ -533,47 +315,16 @@ export default {
   mounted() {
     const currentID = Cookies.get('userID');
     if (currentID) {
-      this.requestUsers().then(
-          () => this.buildRows()
-      ).catch(
-          (e) => console.log(e)
-      )
+      this.requestUsers();
     }
-
-    document.addEventListener('page-routing', this.requestUsersListener);
-
-    //TODO what is the purpose of this? Is it needed still?
-
-    // let self = this;
-    // this.$nextTick(function() {
-    //   window.addEventListener('resize', function() {
-    //     if (self.small !== document.documentElement.clientWidth <= 992) {
-    //       console.log(self.small);
-    //       self.buildRows();
-    //       self.small = !self.small;
-    //     }
-    //   });
-    // })
   },
-  beforeDestroy() {
-    document.removeEventListener('page-routing', this.requestUsersListener);
-  }
+
 }
 </script>
 
 <!--------------------------------------- Search User by Name Page Styling -------------------------------------------->
 
 <style scoped>
-
-#searchBar:focus {
-  outline: none;
-  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
-  border: 1px solid #1EBABC;
-}
-
-.search-bar-positioning {
-  padding-top: 40px;
-}
 
 /**
  * TODO remove once footer is sticky
@@ -583,18 +334,4 @@ export default {
   min-height: calc(100vh - 240px);
 }
 
-.page-link {
-  color: #1EBA8C;
-}
-
-.page-item.active .page-link {
-  background-color: #1EBA8C;
-  border: 1px solid #1EBA8C;
-}
-
-.page-link:focus {
-  outline: none;
-  box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
-  border: 1px solid #1EBABC;
-}
 </style>
