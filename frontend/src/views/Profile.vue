@@ -324,7 +324,8 @@ export default {
       // User card variables
       usersCards: [],
       selectedCard: 0,
-      cardSection: "For Sale"
+      cardSection: "For Sale",
+      userId: 0
     }
   },
   methods: {
@@ -786,7 +787,6 @@ export default {
       Api.getUsersCards(userId).then(response => {
         this.usersCards = response.data;
         this.usersCards.sort(this.compareCards);
-        console.log(this.usersCards);
       }).catch((error) => this.processUserInfoError(error));
     },
     /**
