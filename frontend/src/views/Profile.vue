@@ -325,7 +325,6 @@ export default {
       usersCards: [],
       selectedCard: 0,
       cardSection: "For Sale",
-      userId: 0
     }
   },
   methods: {
