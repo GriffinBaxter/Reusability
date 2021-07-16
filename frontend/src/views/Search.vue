@@ -40,19 +40,19 @@ import Navbar from "@/components/main/Navbar";
 import Footer from "@/components/main/Footer";
 import ProfileHeader from "../components/ProfileHeader";
 import User from "@/configs/User";
+import Table from "../components/Table";
 
 export default {
   name: "Search",
   components: {
     Footer,
     Navbar,
-    ProfileHeader
+    ProfileHeader,
+    Table
   },
   data() {
     return {
       userList: [],
-      small: false,
-      orderBy: "fullNameASC",
       lastQuery: "PAGEHASBEENREFRESHED", //To allow for a comparison with the previous query when there is no previous query
       // A list of the user table headers
       tableUserHeaders: ["Nickname", "Full Name", "Email", "Address"],
@@ -92,7 +92,7 @@ export default {
       this.currentPage = event.newPageNumber;
       this.$router.push({
         path: "/search",
-        query: {"searchQuery": this.$refs.searchBar.value, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"type": "User", "searchQuery": this.$route.query["searchQuery"], "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestUsers();
     },
@@ -119,7 +119,7 @@ export default {
         isAscending = false;
       }
 
-      // If we found a valid orderBy compare it against the allowed orderBy headers in tableOrderByHeaders
+      // If we found a valid orderBy compare it against the allowed orderBy headers in tableOrderByUserHeaders
       if (orderBy !== null) {
         orderBy = this.tableOrderByUserHeaders.indexOf(orderBy);
 
@@ -151,7 +151,7 @@ export default {
         if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
           this.currentPage = 0;
           await this.$router.push(
-              {path: "/search", query: {"searchQuery": query, "orderBy": this.orderByString, "page": "1"}}
+              {path: "/search", query: {"type": "User", "searchQuery": query, "orderBy": this.orderByString, "page": "1"}}
           );
         }
         this.lastQuery = query;
@@ -165,7 +165,7 @@ export default {
           this.userList = response.data.map((user) => {
             return new User(user);
           });
-          let newtableData = [];
+          let newTableData = [];
 
           // No results
           if (this.userList.length <= 0) {
@@ -178,14 +178,12 @@ export default {
 
             for (let i = 0; i < this.userList.length; i++) {
               const userData = this.userList[i].data;
-              newtableData.push(userData.id);
-              newtableData.push(userData.nickname);
-              newtableData.push(this.getFullName(userData));
-              newtableData.push(userData.email);
-              newtableData.push(this.getAddress(userData));
+              newTableData.push(userData.nickname);
+              newTableData.push(this.getFullName(userData));
+              newTableData.push(userData.email);
+              newTableData.push(this.getAddress(userData));
             }
-
-            this.tableData = newtableData;
+            this.tableData = newTableData;
           }
         }).catch((error) => {
           if (error.request && !error.response) {
@@ -263,35 +261,8 @@ export default {
       this.$router.push({
         path: "/search",
         query: {
-          "searchQuery": this.$refs.searchBar.value, "orderBy": this.orderByString, "page": (this.currentPage).toString()
+          "type": "User", "searchQuery": this.$route.query["searchQuery"], "orderBy": this.orderByString, "page": (this.currentPage).toString()
         }
-      });
-      this.requestUsers();
-    },
-
-    /**
-     * Handles the user pressing enter with the search bar focused. Updates the search if they do.
-     * @param event The keydown event
-     */
-    search(event) {
-      if (event.keyCode === 13) {
-        const inputQuery = this.$refs.searchBar.value;
-        this.$router.push({
-          path: "/search",
-          query: {"searchQuery": inputQuery, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
-        });
-        this.requestUsers();
-      }
-    },
-
-    /**
-     * Handles the user pressing clicking on the search button. Completes a search when they do.
-     */
-    searchClicked() {
-      const inputQuery = this.$refs.searchBar.value;
-      this.$router.push({
-        path: "/search",
-        query: {"searchQuery": inputQuery, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestUsers();
     },
@@ -305,6 +276,9 @@ export default {
       document.getElementById('address-icon').setAttribute('class', '');
     },
 
+    routeToProfile(index) {
+      return index;
+    }
 
   },
 
