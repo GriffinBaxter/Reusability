@@ -369,6 +369,7 @@ export default {
     },
     /**
      * If a user has cards then they will need to be displayed.
+     * @return boolean true if the user has cards (i.e the length of usersCards !== 0), otherwise false.
      */
     userHasCards() {
       return this.usersCards.length !== 0;
@@ -717,6 +718,8 @@ export default {
     /**
      * If a user goes to update whether another user is an administrator of their business or not and the "request" fails
      * then the appropriate error message will need to be displayed.
+     * @param error an error, which includes an error message, and error status code (such as 401).
+     * @return success a boolean value which is always false since an error occurred.
      */
     processUpdateAdministratorError(error) {
       let success = false;
@@ -749,6 +752,8 @@ export default {
     /**
      * If a card is selected then a custom event is emitted so the CardDetailPopup knows to open and display the
      * information for the selected card.
+     * @param index the index of the selected card.
+     * @param section the section the selected card appears in.
      */
     selectACard(index, section) {
       this.$emit('openCardDetail', index);
@@ -757,12 +762,17 @@ export default {
     },
     /**
      * Format the date of a card using the date-fns library.
+     * @param date the date the card was created
+     * @return date a date formatted using the date-fns library.
      */
     styleDate(date) {
       return formatDate(date, false);
     },
     /**
      * Concat the suburb and city together to then be displayed on a user's card.
+     * @param suburb the suburb the creator of the card lives in.
+     * @param city the city the creator of the card lives in.
+     * @return String a concatenation of the suburb and city.
      */
     combineSuburbAndCity(suburb, city) {
       return (suburb === null) ? city : suburb + ", " + city;
@@ -803,6 +813,7 @@ export default {
     /**
      * If a request is made to the backend for user info (profile information or cards) and an error occurs
      * then the appropriate error message will need to be displayed.
+     * @param error an error which includes an error message.
      */
     processUserInfoError(error) {
       if (error.request && !error.response) {
