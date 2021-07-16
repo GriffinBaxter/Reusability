@@ -12,20 +12,19 @@
     <div id="outer-container" class="container text-font">
 
       <!--search bar - reusing the search bar in the profile header-->
-      <ProfileHeader>
-        @requestUsers="requestUsers"
-        @requestBusinesses="requestBusinesses"
-      </ProfileHeader>
+      <ProfileHeader
+          @requestUsers="requestUsers"
+          @requestBusinesses="requestBusinesses"/>
 
-      <div class="row mb-3">
+      <div class="row mb-3 mt-3">
 
         <!-- table component which lists users or businesses -->
         <Table table-id="search-id" null-string-value="N/A" :table-tab-index="0"
-               :table-headers="tableUserHeaders" :table-data="tableData"
+               :table-headers="tableHeaders" :table-data="tableData"
                :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
                :order-by-override="tableOrderBy" :table-data-is-page="true"
                @update-current-page="event => updatePage(event)"
-               @order-by-header-index="event => orderUsers(event)"
+               @order-by-header-index="event => orderData(event)"
                @row-selected="event => routeToProfile(event.index)"/>
 
       </div>
@@ -38,12 +37,12 @@
 
 <script>
 import Api from '../Api';
-import Cookies from 'js-cookie';
 import Navbar from "@/components/main/Navbar";
 import Footer from "@/components/main/Footer";
 import ProfileHeader from "../components/ProfileHeader";
 import User from "@/configs/User";
 import Table from "../components/Table";
+import Business from "@/configs/Business";
 
 export default {
   name: "Search",
@@ -55,12 +54,18 @@ export default {
   },
   data() {
     return {
-      userList: [],
-      lastQuery: "PAGEHASBEENREFRESHED", //To allow for a comparison with the previous query when there is no previous query
+      dataList: [],
       // A list of the user table headers
-      tableUserHeaders: ["Nickname", "Full Name", "Email", "Address"],
-      // A list of the ordering by headers, which is used with talking to the backend
-      tableOrderByUserHeaders: ["nickname", "fullName", "email", "address"],
+      userHeaders: ["Nickname", "Full Name", "Email", "Address"],
+      // A list of the order by headers for users, which is used for talking to the backend
+      orderByUserHeaders: ["nickname", "fullName", "email", "address"],
+      // A list of the business table headers
+      businessHeaders: ["Name", "Address", "Business Type"],
+      // A list of the order by headers for businesses, which is used for talking to the backend
+      orderByBusinessHeaders: ["name", "address"],
+      // Generic headers which get switched between business and user depending on the selected search type
+      tableHeaders: [],
+      tableOrderByHeaders: [],
       // A list of all the data points (user or business) belonging to the table
       tableData: [],
       // These variables are used to control and update the table.
@@ -71,23 +76,14 @@ export default {
       maxPage: 1,
       // Used to tell the table what is the current ordering (for visual purposes).
       tableOrderBy: {orderBy: null, isAscending: true},
+      orderByString: "",
+      selectedBusinessType: "Any",
+      query: "",
+      searchType: "",
     }
   },
 
   methods: {
-    /**
-     * Toggles the disabling of pagination buttons.
-     * @param baseClasses Base classes to add
-     * @param condition Given condition for toggling
-     * @returns {array} A list classes to apply
-     */
-    toggleDisableClass(baseClasses, condition) {
-      const classList = [baseClasses]
-      if (condition) {
-        classList.push('disabled')
-      }
-      return classList
-    },
 
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
@@ -95,18 +91,26 @@ export default {
      */
     updatePage(event) {
       this.currentPage = event.newPageNumber;
-      this.$router.push({
-        path: "/search",
-        query: {"type": "User", "searchQuery": this.$route.query["searchQuery"], "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
-      });
-      this.requestUsers(this.$route.query["searchQuery"]);
+
+      if (this.searchType === 'User') {
+        this.$router.push({
+          path: "/search",
+          query: {"type": "User", "searchQuery": this.query, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        });
+        this.requestUsers(this.query);
+      } else if (this.searchType === 'Business') {
+        this.$router.push({
+          path: "/search",
+          query: {"type": "Business", "searchQuery": this.query, "businessType": this.selectedBusinessType, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        });
+        this.requestBusinesses(this.query, this.selectedBusinessType);
+      }
     },
+
     /**
      * Parses the orderByString and returns the resulted Objects.
      * @return {{orderBy: null | String, isAscending: boolean}} This contains the {orderBy, isAscending} properties of the this.orderByString .
      * Emulates a click when the product presses enter on a column header.
-     *
-     * @param event The keydown event
      */
     parseOrderBy() {
       let orderBy = null;
@@ -126,7 +130,7 @@ export default {
 
       // If we found a valid orderBy compare it against the allowed orderBy headers in tableOrderByUserHeaders
       if (orderBy !== null) {
-        orderBy = this.tableOrderByUserHeaders.indexOf(orderBy);
+        orderBy = this.tableOrderByHeaders.indexOf(orderBy);
 
         // If the orderBy is returned as -1. This means that no header was found!
         // So we say it is unordered.
@@ -139,54 +143,120 @@ export default {
     },
 
     /**
-     * Requests a list of users matching the given query from the back-end.
-     * If successful it sets the userList variable to the response data.
+     * Requests a list of businesses matching the given query from the back-end.
+     * If successful it sets the businessList variable to the response data.
      * @return {Promise}
+     *
+     * @param {inputQuery} The query received from the search bar
+     * @param {businessType} The type of business the user would like to search for
      */
-    async requestUsers(inputQuery) {
+    async requestBusinesses(inputQuery, businessType) {
+
+      this.searchType = 'Business';
+      this.tableHeaders = this.businessHeaders;
+      this.tableOrderByHeaders = this.orderByBusinessHeaders;
 
       if (inputQuery !== null) {
-        const query = inputQuery.trim();
+        this.query = inputQuery.trim();
+        this.selectedBusinessType = businessType;
 
-        this.orderByString = this.$route.query["orderBy"] || "fullNameASC";
+        this.orderByString = this.$route.query["orderBy"] || "nameASC";
         this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
 
         if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
-          this.$router.push({path: '/pageDoesNotExist'});
+          await this.$router.push({path: '/pageDoesNotExist'});
         }
 
-        if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
-          this.currentPage = 0;
-          await this.$router.push(
-              {path: "/search", query: {"type": "User", "searchQuery": query, "orderBy": this.orderByString, "page": "1"}}
-          );
-        }
-        this.lastQuery = query;
-
-        await Api.searchUsers(query, this.orderByString, this.currentPage).then(response => {
+        await Api.searchBusinesses(this.query, this.selectedBusinessType, this.orderByString, this.currentPage).then(response => {
 
           // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
           const {orderBy, isAscending} = this.parseOrderBy();
           this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
 
-          this.userList = response.data.map((user) => {
-            return new User(user);
+          this.businessList = response.data.map((business) => {
+            return new Business(business);
           });
           let newTableData = [];
 
           // No results
-          if (this.userList.length <= 0) {
+          if (this.dataList.length <= 0) {
             this.currentPage = 0;
             this.maxPage = 0;
             this.totalRows = 0;
-            this.totalPages = 0;
+            this.totalPages = 1;
             // Generate the tableData to be placed in the table & get the total number of rows.
           } else {
             this.totalRows = parseInt(response.headers["total-rows"]);
             this.totalPages = parseInt(response.headers["total-pages"]);
 
-            for (let i = 0; i < this.userList.length; i++) {
-              const userData = this.userList[i].data;
+            for (let i = 0; i < this.businessList.length; i++) {
+              const businessData = this.dataList[i].data;
+              newTableData.push(businessData.name);
+              newTableData.push(this.getAddress(businessData));
+              newTableData.push(businessData.businessType);
+            }
+            this.tableData = newTableData;
+          }
+        }).catch((error) => {
+          if (error.request && !error.response) {
+            this.$router.push({path: '/timeout'});
+          } else if (error.response.status === 400) {
+            this.$router.push({path: '/pageDoesNotExist'});
+          } else {
+            this.$router.push({path: '/timeout'});
+            console.log(error.message);
+          }
+        })
+      }
+    },
+
+    /**
+     * Requests a list of users matching the given query from the back-end.
+     * If successful it sets the dataList variable to the response data.
+     * @return {Promise}
+     *
+     * @param {inputQuery} The query received from the search bar
+     */
+    async requestUsers(inputQuery) {
+
+      this.searchType = 'User';
+      this.tableHeaders = this.userHeaders;
+      this.tableOrderByHeaders = this.orderByUserHeaders;
+
+      if (inputQuery !== null) {
+        this.query = inputQuery.trim();
+
+        this.orderByString = this.$route.query["orderBy"] || "fullNameASC";
+        this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+
+        if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
+          await this.$router.push({path: '/pageDoesNotExist'});
+        }
+
+        await Api.searchUsers(this.query, this.orderByString, this.currentPage).then(response => {
+
+          // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
+          const {orderBy, isAscending} = this.parseOrderBy();
+          this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
+
+          this.dataList = response.data.map((user) => {
+            return new User(user);
+          });
+          let newTableData = [];
+
+          // No results
+          if (this.dataList.length <= 0) {
+            this.currentPage = 0;
+            this.maxPage = 0;
+            this.totalRows = 0;
+            this.totalPages = 1;
+            // Generate the tableData to be placed in the table & get the total number of rows.
+          } else {
+            this.totalRows = parseInt(response.headers["total-rows"]);
+            this.totalPages = parseInt(response.headers["total-pages"]);
+
+            for (let i = 0; i < this.dataList.length; i++) {
+              const userData = this.dataList[i].data;
               newTableData.push(userData.nickname);
               newTableData.push(this.getFullName(userData));
               newTableData.push(userData.email);
@@ -262,18 +332,29 @@ export default {
     },
 
     /**
-     * Updates the URL and calls the requestUsers() to update the table.
+     * Updates the URL and calls the requestUsers() or requestBusinesses() methods to update the table depending on the current search type.
      * @param event This contains the {orderBy, isAscending} components of the new desired ordering.
      */
-    orderUsers(event) {
-      this.orderByString = `${this.tableOrderByUserHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
-      this.$router.push({
-        path: "/search",
-        query: {
-          "type": "User", "searchQuery": this.$route.query["searchQuery"], "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()
-        }
-      });
-      this.requestUsers(this.$route.query["searchQuery"]);
+    orderData(event) {
+      this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
+
+      if (this.searchType === 'User') {
+        this.$router.push({
+          path: "/search",
+          query: {
+            "type": "User", "searchQuery": this.query, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()
+          }
+        });
+        this.requestUsers(this.query);
+      } else if (this.searchType === 'Business') {
+        this.$router.push({
+          path: "/search",
+          query: {
+            "type": "Business", "searchQuery": this.query, "businessType": this.selectedBusinessType, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()
+          }
+        });
+        this.requestBusinesses(this.query, this.selectedBusinessType);
+      }
     },
 
     /**
@@ -296,10 +377,7 @@ export default {
    * If cookies are invalid or not present, redirect to login page.
    */
   mounted() {
-    const currentID = Cookies.get('userID');
-    if (currentID) {
-      this.requestUsers(this.$route.query["searchQuery"]);
-    }
+    this.requestUsers(this.$route.query["searchQuery"]);
   },
 
 }
@@ -308,13 +386,5 @@ export default {
 <!--------------------------------------- Search User by Name Page Styling -------------------------------------------->
 
 <style scoped>
-
-/**
- * TODO remove once footer is sticky
- * Calculates where footer should be.
- */
-.all-but-footer {
-  min-height: calc(100vh - 240px);
-}
 
 </style>
