@@ -480,7 +480,7 @@ public class BusinessResource {
             businessType = BusinessType.RETAIL_TRADE;
         } else if (type.equalsIgnoreCase("CHARITABLE_ORGANISATION")){
             businessType = BusinessType.CHARITABLE_ORGANISATION;
-        } else if (type.equalsIgnoreCase("NON PROFIT_ORGANISATION")){
+        } else if (type.equalsIgnoreCase("NON_PROFIT_ORGANISATION")){
             businessType = BusinessType.NON_PROFIT_ORGANISATION;
         }
         return businessType;

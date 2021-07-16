@@ -144,13 +144,22 @@ export default {
 
     /**
      * Requests a list of businesses matching the given query from the back-end.
-     * If successful it sets the businessList variable to the response data.
+     * If successful it sets the dataList variable to the response data.
      * @return {Promise}
      *
      * @param {inputQuery} The query received from the search bar
      * @param {businessType} The type of business the user would like to search for
      */
     async requestBusinesses(inputQuery, businessType) {
+      this.tableData = [];
+
+      if (inputQuery === undefined) {
+        inputQuery = this.$route.query["searchQuery"];
+      }
+
+      if (businessType === undefined) {
+        businessType = "Any";
+      }
 
       this.searchType = 'Business';
       this.tableHeaders = this.businessHeaders;
@@ -167,13 +176,13 @@ export default {
           await this.$router.push({path: '/pageDoesNotExist'});
         }
 
-        await Api.searchBusinesses(this.query, this.selectedBusinessType, this.orderByString, this.currentPage).then(response => {
+        await Api.searchBusinesses(this.query, this.convertBusinessType(this.selectedBusinessType), this.orderByString, this.currentPage).then(response => {
 
           // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
           const {orderBy, isAscending} = this.parseOrderBy();
           this.tableOrderBy = {orderBy: orderBy, isAscending: isAscending};
 
-          this.businessList = response.data.map((business) => {
+          this.dataList = response.data.map((business) => {
             return new Business(business);
           });
           let newTableData = [];
@@ -189,11 +198,11 @@ export default {
             this.totalRows = parseInt(response.headers["total-rows"]);
             this.totalPages = parseInt(response.headers["total-pages"]);
 
-            for (let i = 0; i < this.businessList.length; i++) {
+            for (let i = 0; i < this.dataList.length; i++) {
               const businessData = this.dataList[i].data;
               newTableData.push(businessData.name);
               newTableData.push(this.getAddress(businessData));
-              newTableData.push(businessData.businessType);
+              newTableData.push(this.convertBusinessType(businessData.businessType));
             }
             this.tableData = newTableData;
           }
@@ -211,6 +220,36 @@ export default {
     },
 
     /**
+     * Converts a provided string representing a business type to a backend-friendly
+     * string representation and vice versa.
+     *
+     * @param {businessType} The business type to be converted into a backend-friendly format and vice versa
+     * @return a backend-friendly or frontend-friendly string conversion of the provided business type
+     */
+    convertBusinessType(businessType) {
+      switch (businessType) {
+        case ("Any"):
+          return "";
+        case ("Accommodation and Food Services"):
+          return "ACCOMMODATION_AND_FOOD_SERVICES";
+        case ("Retail Trade"):
+          return "RETAIL_TRADE";
+        case ("Charitable Organisation"):
+          return "CHARITABLE_ORGANISATION";
+        case ("Non Profit Organisation"):
+          return "NON_PROFIT_ORGANISATION";
+        case ("ACCOMMODATION_AND_FOOD_SERVICES"):
+          return "Accommodation and Food Services";
+        case ("RETAIL_TRADE"):
+          return "Retail Trade";
+        case ("CHARITABLE_ORGANISATION"):
+          return "Charitable Organisation";
+        case ("NON_PROFIT_ORGANISATION"):
+          return "Non Profit Organisation";
+      }
+    },
+
+    /**
      * Requests a list of users matching the given query from the back-end.
      * If successful it sets the dataList variable to the response data.
      * @return {Promise}
@@ -218,6 +257,11 @@ export default {
      * @param {inputQuery} The query received from the search bar
      */
     async requestUsers(inputQuery) {
+      this.tableData = [];
+
+      if (inputQuery === undefined) {
+        inputQuery = this.$route.query["searchQuery"];
+      }
 
       this.searchType = 'User';
       this.tableHeaders = this.userHeaders;
@@ -278,23 +322,36 @@ export default {
     },
 
     /**
-     * Creates a string which represents a user's address.
-     * @param user a JSON representation of a user.
-     * @return a string representing a user's address.
+     * Creates a string which represents an entity's address.
+     * @param entity a JSON representation of a user or business.
+     * @return a string representing an entity's address.
      */
-    getAddress(user) {
+    getAddress(entity) {
 
       let city = "";
-      if (user.homeAddress.city) {
-        city = user.homeAddress.city;
-      }
       let region = "";
-      if (user.homeAddress.region) {
-        region = user.homeAddress.region;
-      }
       let country = "";
-      if (user.homeAddress.country) {
-        country = user.homeAddress.country;
+
+      if (entity.homeAddress !== undefined) {
+        if (entity.homeAddress.city) {
+          city = entity.homeAddress.city;
+        }
+        if (entity.homeAddress.region) {
+          region = entity.homeAddress.region;
+        }
+        if (entity.homeAddress.country) {
+          country = entity.homeAddress.country;
+        }
+      } else {
+        if (entity.address.city) {
+          city = entity.address.city;
+        }
+        if (entity.address.region) {
+          region = entity.address.region;
+        }
+        if (entity.address.country) {
+          country = entity.address.country;
+        }
       }
 
       let address = "";
@@ -377,7 +434,15 @@ export default {
    * If cookies are invalid or not present, redirect to login page.
    */
   mounted() {
-    this.requestUsers(this.$route.query["searchQuery"]);
+    this.searchType = this.$route.query["type"];
+    this.query = this.$route.query["searchQuery"];
+
+    if (this.searchType === 'User') {
+      this.requestUsers(this.query);
+    } else if (this.searchType === 'Business') {
+      this.selectedBusinessType = this.$route.query["businessType"];
+      this.requestBusinesses(this.query, this.selectedBusinessType);
+    }
   },
 
 }

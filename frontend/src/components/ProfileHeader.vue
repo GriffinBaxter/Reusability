@@ -69,7 +69,7 @@ export default {
           this.$emit('requestUsers', inputQuery);
         } else if (this.searchType === 'Business') {
           this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1"}});
-          this.$emit('requestBusinesses', inputQuery);
+          this.$emit('requestBusinesses', inputQuery, this.selectedBusinessType);
         }
       }
     },
@@ -84,7 +84,7 @@ export default {
         this.$emit('requestUsers', inputQuery);
       } else if (this.searchType === 'Business') {
         this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1"}});
-        this.$emit('requestBusinesses', inputQuery);
+        this.$emit('requestBusinesses', inputQuery, this.selectedBusinessType);
       }
     },
 
