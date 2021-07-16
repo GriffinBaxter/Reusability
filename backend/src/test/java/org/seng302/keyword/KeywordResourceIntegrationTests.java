@@ -1,5 +1,6 @@
 package org.seng302.keyword;
 
+import org.assertj.core.api.OptionalAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -26,12 +27,15 @@ import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -63,6 +67,8 @@ public class KeywordResourceIntegrationTests {
     private static Keyword keyword;
     private static Keyword keyword2;
     private static Keyword keyword3;
+
+    private static List<Keyword> keywords = new ArrayList<>();
 
     @BeforeAll
     static void before() throws Exception {
@@ -129,6 +135,12 @@ public class KeywordResourceIntegrationTests {
         keyword = new Keyword("Resource", LocalDateTime.now());
         keyword2 = new Keyword("ResourceDos", LocalDateTime.now());
         keyword3 = new Keyword("ResourceTres", LocalDateTime.now());
+        keyword = new Keyword("Resource", LocalDateTime.of(2021, 1, 1, 1, 1));
+        Keyword keyword2 = new Keyword("Our", LocalDateTime.of(2021, 1, 1, 1, 1));
+        Keyword keyword3 = new Keyword("Out", LocalDateTime.of(2021, 1, 1, 1, 1));
+        keywords.add(keyword);
+        keywords.add(keyword2);
+        keywords.add(keyword3);
     }
 
     // -------- POST ENDPOINT TESTS ----------------------------
@@ -269,6 +281,73 @@ public class KeywordResourceIntegrationTests {
                 .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    // -------- GET ENDPOINT TESTS ----------------------------
+
+    /**
+     * Checks Json of expected values is returned with a 200 status if substring exists
+     */
+    @Test
+    void returnsListOfKeywordsWhenQuerySubstringExists() throws Exception {
+        String searchQuery = "ou";
+
+        String expectedJson = "[{\"id\":0,\"name\":\"Resource\",\"created\":\"2021-01-01T01:01:00\"}," +
+                "{\"id\":0,\"name\":\"Our\",\"created\":\"2021-01-01T01:01:00\"}," +
+                "{\"id\":0,\"name\":\"Out\",\"created\":\"2021-01-01T01:01:00\"}]";
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(keywords);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get("/keywords/search")
+                .param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Checks empty Json list is returned with a 200 status if substring doesn't exist
+     */
+    @Test
+    void returnsEmptyJsonListWhenQuerySubstringDoesntExists() throws Exception {
+        String searchQuery = "qwerty";
+
+        String expectedJson = "[]";
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get("/keywords/search")
+                .param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Checks a 401 status is returned when JSESSIONID is invalid
+     */
+    @Test
+    void checkReturnsUnauthorizedWhenJSESSIONIDIsInvalid() throws Exception {
+        String searchQuery = "qwerty";
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.empty());
+        response = mvc.perform(get("/keywords/search")
+                .param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
     /**

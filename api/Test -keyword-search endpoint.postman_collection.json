@@ -1,0 +1,92 @@
+{
+	"info": {
+		"_postman_id": "f3061155-1769-4d30-a100-7cb36d1af27c",
+		"name": "Test /keyword/search endpoint",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1 3 /keywords/search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/keywords/search?searchQuery",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"keywords",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": null
+						}
+					]
+				},
+				"description": "Empty search"
+			},
+			"response": []
+		},
+		{
+			"name": "2 /login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"emailUSER@email.com\",\n  \"password\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4 /keywords/search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/keywords/search?searchQuery=ea",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"keywords",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "ea"
+						}
+					]
+				},
+				"description": "Specific search"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

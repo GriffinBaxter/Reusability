@@ -4,6 +4,7 @@ import org.seng302.model.Keyword;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,6 +20,13 @@ public interface KeywordRepository extends JpaRepository<Keyword, Integer> {
      * @return a keyword that should be unique.
      */
     Optional<Keyword> findByName(String name);
+
+    /**
+     * Search by partial keyword name ignoring case
+     * @param name Keyword name
+     * @return List of keywords that fit the criteria
+     */
+    List<Keyword> findAllByNameIgnoreCaseContaining(String name);
 
     /**
      * Get Keyword from repository by ID
