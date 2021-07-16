@@ -66,8 +66,10 @@ export default {
         const inputQuery = this.$refs.searchInput.value;
         if (this.searchType === 'User') {
           this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+          this.$emit('requestUsers', inputQuery);
         } else if (this.searchType === 'Business') {
           this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1"}});
+          this.$emit('requestBusinesses', inputQuery);
         }
       }
     },
@@ -79,8 +81,10 @@ export default {
       const inputQuery = this.$refs.searchInput.value;
       if (this.searchType === 'User') {
         this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+        this.$emit('requestUsers', inputQuery);
       } else if (this.searchType === 'Business') {
         this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1"}});
+        this.$emit('requestBusinesses', inputQuery);
       }
     },
 

@@ -12,7 +12,10 @@
     <div id="outer-container" class="container text-font">
 
       <!--search bar - reusing the search bar in the profile header-->
-      <ProfileHeader></ProfileHeader>
+      <ProfileHeader>
+        @requestUsers="requestUsers"
+        @requestBusinesses="requestBusinesses"
+      </ProfileHeader>
 
       <div class="row mb-3">
 
@@ -64,6 +67,8 @@ export default {
       rowsPerPage: 5,
       currentPage: 0,
       totalRows: 0,
+      totalPages: 0,
+      maxPage: 1,
       // Used to tell the table what is the current ordering (for visual purposes).
       tableOrderBy: {orderBy: null, isAscending: true},
     }
@@ -92,9 +97,9 @@ export default {
       this.currentPage = event.newPageNumber;
       this.$router.push({
         path: "/search",
-        query: {"type": "User", "searchQuery": this.$route.query["searchQuery"], "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"type": "User", "searchQuery": this.$route.query["searchQuery"], "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
       });
-      this.requestUsers();
+      this.requestUsers(this.$route.query["searchQuery"]);
     },
     /**
      * Parses the orderByString and returns the resulted Objects.
@@ -138,15 +143,17 @@ export default {
      * If successful it sets the userList variable to the response data.
      * @return {Promise}
      */
-    async requestUsers() {
+    async requestUsers(inputQuery) {
 
-      const urlParams = new URLSearchParams(window.location.search);
-
-      if (urlParams.get('searchQuery') !== null) {
-        const query = urlParams.get('searchQuery').trim();
+      if (inputQuery !== null) {
+        const query = inputQuery.trim();
 
         this.orderByString = this.$route.query["orderBy"] || "fullNameASC";
-        this.currentPage = parseInt(this.$route.query["page"]) || 0;
+        this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+
+        if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
 
         if (this.lastQuery !== query && this.lastQuery !== "PAGEHASBEENREFRESHED") {
           this.currentPage = 0;
@@ -169,12 +176,14 @@ export default {
 
           // No results
           if (this.userList.length <= 0) {
-            this.currentPage = 1;
-            this.maxPage = 1;
+            this.currentPage = 0;
+            this.maxPage = 0;
             this.totalRows = 0;
+            this.totalPages = 0;
             // Generate the tableData to be placed in the table & get the total number of rows.
           } else {
             this.totalRows = parseInt(response.headers["total-rows"]);
+            this.totalPages = parseInt(response.headers["total-pages"]);
 
             for (let i = 0; i < this.userList.length; i++) {
               const userData = this.userList[i].data;
@@ -261,10 +270,10 @@ export default {
       this.$router.push({
         path: "/search",
         query: {
-          "type": "User", "searchQuery": this.$route.query["searchQuery"], "orderBy": this.orderByString, "page": (this.currentPage).toString()
+          "type": "User", "searchQuery": this.$route.query["searchQuery"], "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()
         }
       });
-      this.requestUsers();
+      this.requestUsers(this.$route.query["searchQuery"]);
     },
 
     /**
@@ -289,7 +298,7 @@ export default {
   mounted() {
     const currentID = Cookies.get('userID');
     if (currentID) {
-      this.requestUsers();
+      this.requestUsers(this.$route.query["searchQuery"]);
     }
   },
 
