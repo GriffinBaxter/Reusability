@@ -19,22 +19,23 @@ import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.incoming.KeywordCreationPayload;
 import org.seng302.view.outgoing.KeywordIdPayload;
+import org.seng302.view.outgoing.KeywordPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Keyword Resource class.
  * This class contains the endpoints for keywords.
  * The POST /keywords endpoint is used to create keywords.
+ * The GET /keywords/search endpoint is used for searching for keywords by name
  */
 @RestController
 public class KeywordResource {
@@ -47,12 +48,18 @@ public class KeywordResource {
 
     private static final Logger logger = LogManager.getLogger(KeywordResource.class.getName());
 
-    public KeywordResource(KeywordRepository keywordRepository) {
+    public KeywordResource(KeywordRepository keywordRepository, UserRepository userRepository) {
         this.keywordRepository = keywordRepository;
+        this.userRepository = userRepository;
     }
 
     /**
      * POST /keywords endpoint for creating new keywords
+     *
+     * Preconditions: Valid JSESSIONID and keywordPayload are sent
+     * Postconditions: A keyword is created
+     *                 The keyword ID is sent back
+     *
      * @param sessionToken JSESSIONID for verifying the user is logged in
      * @param keywordPayload Payload containing keyword name
      * @return Response Entity containing keyword id
@@ -60,7 +67,7 @@ public class KeywordResource {
     @PostMapping("/keywords")
     public ResponseEntity<KeywordIdPayload> createKeyword(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                           @RequestBody KeywordCreationPayload keywordPayload) {
-        logger.debug("Card payload received: {}", keywordPayload);
+        logger.debug("Keyword payload received: {}", keywordPayload);
 
         Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -87,5 +94,48 @@ public class KeywordResource {
                     e.getMessage()
             );
         }
+    }
+
+    /**
+     * GET /keywords/search endpoint for searching keywords
+     *
+     * Preconditions: Valid JSESSIONID
+     * Postconditions: Returns a list of Keywords matching searchQuery
+     *
+     * @param sessionToken JSESSIONID for verifying the user is logged in
+     * @param searchQuery Query for searching keyword names
+     * @return Payload containing a list of (possibly 0) keywords
+     */
+    @GetMapping("/keywords/search")
+    public ResponseEntity<List<KeywordPayload>> searchKeywords(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestParam String searchQuery
+    ) {
+        // 401
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        List<Keyword> result = keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery);
+
+        logger.info("Search Success - 200 [OK] -  Keywords retrieved for search query {}", searchQuery);
+        logger.debug("Keywords Found: {}", result);
+
+        List<KeywordPayload> keywordPayload = convertToPayload(result);
+
+        return ResponseEntity.ok()
+                .body(keywordPayload);
+    }
+
+    /**
+     * Function for converting a list of keywords into a payload
+     * @param keywords List of keywords to convert
+     * @return A list of Keyword Payloads
+     */
+    public List<KeywordPayload> convertToPayload(List<Keyword> keywords) {
+        List<KeywordPayload> payload = new ArrayList<>();
+        for (Keyword keyword : keywords) {
+            KeywordPayload keywordPay = new KeywordPayload(keyword.getId(),keyword.getName(),keyword.getCreated());
+            payload.add(keywordPay);
+        }
+        return payload;
     }
 }

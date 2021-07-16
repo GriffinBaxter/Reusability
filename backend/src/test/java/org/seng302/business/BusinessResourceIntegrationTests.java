@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -30,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +69,8 @@ class BusinessResourceIntegrationTests {
 
     private String expectedJson;
 
+    private String expectedUserJson;
+
     private User user;
 
     private User anotherUser;
@@ -74,6 +78,31 @@ class BusinessResourceIntegrationTests {
     private Business business;
 
     private Address address;
+
+    private final String expectedBusinessJson = "{\"id\":%d," +
+            "\"administrators\":%s," +
+            "\"primaryAdministratorId\":%d," +
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"address\":%s," +
+            "\"businessType\":\"%s\"," +
+            "\"created\":\"%s\""+
+            "}";
+
+    private final String expectedAdministratorJson = "[{\"id\":%d," +
+            "\"firstName\":\"%s\"," +
+            "\"lastName\":\"%s\"," +
+            "\"middleName\":\"%s\"," +
+            "\"nickname\":\"%s\"," +
+            "\"bio\":\"%s\"," +
+            "\"email\":\"%s\"," +
+            "\"created\":\"%s\"," +
+            "\"role\":\"%s\"," +
+            "\"businessesAdministered\":[null]," +
+            "\"dateOfBirth\":\"%s\"," +
+            "\"phoneNumber\":\"%s\"," +
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]";
+    private User dGAA;
 
     @BeforeAll
     void setup() throws Exception {
@@ -127,6 +156,22 @@ class BusinessResourceIntegrationTests {
                 Role.USER);
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
+        dGAA = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        dGAA.setId(2);
+        dGAA.setSessionUUID(User.generateSessionUUID());
         this.mvc = MockMvcBuilders.standaloneSetup(
                 new BusinessResource(businessRepository, userRepository, addressRepository)
         ).build();
@@ -134,7 +179,7 @@ class BusinessResourceIntegrationTests {
 
     /**
      * test when business has been create, current user has been add to business's administrators
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void setAdministratorComplete() throws Exception {
@@ -190,7 +235,7 @@ class BusinessResourceIntegrationTests {
 
     /**
      * test when business has been create, current user has been add to business's administrators
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void setPrimaryAdministratorComplete() throws Exception {
@@ -851,7 +896,7 @@ class BusinessResourceIntegrationTests {
      * Tests that an OK(200) status is received when sending a non-administrator(for this business) userId payload to
      * the /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of this
      * business.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void anBusinessAdministratorCanMakeUserBecomeAdministrator() throws Exception {
@@ -926,7 +971,7 @@ class BusinessResourceIntegrationTests {
     /**
      * Tests that an OK(200) status is received when sending a non-administrator(for this business) userId payload to
      * the /businesses/{id}/makeAdministrator API endpoint. And current session token is for a DGAA.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void aDGAACanMakeUserBecomeAdministrator() throws Exception {
@@ -997,7 +1042,7 @@ class BusinessResourceIntegrationTests {
      * Tests that an BAD_REQUEST(400) status is received when sending a not exist userId payload to the
      * /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of this
      * business.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void anBusinessAdministratorCanNotMakeANotExistUserBecomeAdministrator() throws Exception {
@@ -1071,7 +1116,7 @@ class BusinessResourceIntegrationTests {
      * Tests that an BAD_REQUEST(400) status is received when sending a administrator(for this business) userId payload
      * to the /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of
      * this business.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void anBusinessAdministratorCanNotMakeOtherAdministratorBecomeAdministrator() throws Exception {
@@ -1148,7 +1193,7 @@ class BusinessResourceIntegrationTests {
     /**
      * Tests that an UNAUTHORIZED(401) status is received when sending a non-administrator(for this business) userId
      * payload to the /businesses/{id}/makeAdministrator API endpoint. But session token is missing.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void whenSessionTokenMissing_MakingUserBecomeAdministratorNotWork() throws Exception {
@@ -1220,7 +1265,7 @@ class BusinessResourceIntegrationTests {
     /**
      * Tests that an FORBIDDEN(403) status is received when sending a userId payload to the
      * /businesses/{id}/makeAdministrator API endpoint. But current session token is for an normal user.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void aNormalUserCanNotMakeUserBecomeAdministrator() throws Exception {
@@ -1293,7 +1338,7 @@ class BusinessResourceIntegrationTests {
      * Tests that an NOT_ACCEPTABLE(406) status is received when sending a non-administrator(for this business) userId payload to
      * the /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of this
      * business. But given business not exist.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void CanNotMakeUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
@@ -1369,7 +1414,7 @@ class BusinessResourceIntegrationTests {
      * Tests that an OK(200) status is received when sending a non-administrator(for this business) userId payload to
      * the /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of this
      * business.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void aBusinessAdministratorCanRemoveUserBecomeAdministrator() throws Exception {
@@ -1445,7 +1490,7 @@ class BusinessResourceIntegrationTests {
     /**
      * Tests that an OK(200) status is received when sending a non-administrator(for this business) userId payload to
      * the /businesses/{id}/removeAdministrator API endpoint. And current session token is for a DGAA.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void aDGAACanRemoveUserBecomeAdministrator() throws Exception {
@@ -1523,7 +1568,7 @@ class BusinessResourceIntegrationTests {
      * Tests that an BAD_REQUEST(400) status is received when sending a not exist userId payload to the
      * /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of this
      * business.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void anBusinessAdministratorCanNotRemoveANotExistUserBecomeAdministrator() throws Exception {
@@ -1597,7 +1642,7 @@ class BusinessResourceIntegrationTests {
      * Tests that an BAD_REQUEST(400) status is received when sending a administrator(for this business) userId payload
      * to the /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of
      * this business.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void anBusinessAdministratorCanNotRemoveOtherAdministratorBecomeAdministrator() throws Exception {
@@ -1671,7 +1716,7 @@ class BusinessResourceIntegrationTests {
     /**
      * Tests that an UNAUTHORIZED(401) status is received when sending a non-administrator(for this business) userId
      * payload to the /businesses/{id}/removeAdministrator API endpoint. But session token is missing.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void whenSessionTokenMissing_RemovingUserBecomeAdministratorNotWork() throws Exception {
@@ -1743,7 +1788,7 @@ class BusinessResourceIntegrationTests {
     /**
      * Tests that an FORBIDDEN(403) status is received when sending a userId payload to the
      * /businesses/{id}/removeAdministrator API endpoint. But current session token is for an normal user.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void aNormalUserCanNotRemoveUserBecomeAdministrator() throws Exception {
@@ -1815,7 +1860,7 @@ class BusinessResourceIntegrationTests {
     /**
      * Tests that an FORBIDDEN(403) status is received when sending a userId payload to the
      * /businesses/{id}/removeAdministrator API endpoint. But select user is it's self.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void aAdministratorCanNotRemoveItsSelf() throws Exception {
@@ -1871,7 +1916,7 @@ class BusinessResourceIntegrationTests {
      * Tests that an NOT_ACCEPTABLE(406) status is received when sending a non-administrator(for this business) userId payload to
      * the /businesses/{id}/removeAdministrator API endpoint. And current session token is for an administrator of this
      * business. But given business not exist.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void CanNotRemoveUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
@@ -1940,4 +1985,302 @@ class BusinessResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
+
+    /* ----------------------------------------------/buisnesses/search---------------------------------------------- */
+
+    /**
+     * Tests that an OK status is received when searching for a business using the /businesses/search API endpoint
+     * and that the JSON response is equal to the business searched for. The business is searched for using the
+     * business name.
+     * Test specifically for when the user searching for a business is a DGAA.
+     */
+    @Test
+    void canSearchBusinessesByNameWhenBusinessExistsWithDgaaCookieTest() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        List<String> names = Arrays.asList(searchQuery);
+
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+        // when
+        List<Business> list = List.of(business);
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a business using the /businesses/search API endpoint
+     * and that the JSON response is equal to the business searched for. The business is searched for using the
+     * business name.
+     * Test specifically for when the order by and page params provided are valid.
+     */
+    @Test
+    void canSearchBusinessesWhenBusinessExistsWithValidOrderByAndPageParamsTest() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        List<String> names = Arrays.asList(searchQuery);
+
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+
+        // when
+        List<Business> list = List.of(business);
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "nameASC")
+                            .param("page", "0")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a business using the /businesses/search API endpoint
+     * and that the JSON response is equal to the business searched for. The business is searched for using the
+     * business name.
+     * Test specifically for when the user searching for a business is a USER.
+     */
+    @Test
+    void canSearchBusinessesByNameWhenBusinessExistsWithUserCookieTest() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        List<String> names = Arrays.asList(searchQuery);
+
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+        // when
+        List<Business> list = List.of(business);
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests for an OK status but an empty response is received when searching for a business that does not exist using
+     * the /businesses/search API endpoint. The business (that does not exist by the name searched for) is searched for
+     * using the business name.
+     */
+    @Test
+    void emptySearchBusinessesByNameWhenBusinessDoesntExistTest() throws Exception {
+        // given
+        String searchQuery = "BUSINESS";
+        List<String> names = Arrays.asList(searchQuery);
+        expectedJson = "[]";
+
+        // when
+        List<Business> list = List.of();
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a business using the /businesses/search API endpoint
+     * when the order by param is invalid.
+     * Test specifically for when the order by param provided is invalid.
+     */
+    @Test
+    void cantSearchBusinessesWithInvalidOrderByParam() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/users/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "a")
+                            .param("page", "0")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a business using the /businesses/search API endpoint
+     * when the page param is invalid.
+     * Test specifically for when the page param provided is invalid.
+     */
+    @Test
+    void cantSearchBusinessesWithInvalidPageParam() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "nameASC")
+                            .param("page", "a")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when searching for a business using the /businesses/search API endpoint
+     * when the cookie contains a non-existing ID.
+     */
+    @Test
+    void cantSearchBusinessesWithNonExistingIdCookie() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID("0")).thenReturn(Optional.empty());
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery).cookie(
+                            new Cookie("JSESSIONID", "0"))).andReturn().getResponse();
+
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when searching for a business using the /businesses/search API endpoint
+     * when there is no cookie.
+     */
+    @Test
+    void cantSearchBusinessesWithNoCookie() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for businesses using the /businesses/search API endpoint
+     * and that the JSON response is equal to the businesses searched for. The businesses are searched for using business
+     * type.
+     * Test specifically for when searching only by business type.
+     */
+    @Test
+    void canSearchBusinessesByTypeWhenBusinessExistsTest() throws Exception {
+        // given
+        String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
+        BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+        // when
+        List<Business> list = List.of(business);
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(businessRepository.findBusinessesByBusinessType(convertedBusinessType, paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("businessType", businessType)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a business using the /businesses/search API endpoint
+     * and that the JSON response is equal to the business searched for. The business is searched for using business
+     * type and business name.
+     * Test specifically for when searching by business type and business name.
+     */
+    @Test
+    void canSearchBusinessesByNameAndTypeWhenBusinessExistsTest() throws Exception {
+        // given
+        String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
+        BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+        String searchQuery = "NAME";
+        List<String> names = Arrays.asList(searchQuery);
+
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
+                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+
+        // when
+        List<Business> list = List.of(business);
+        Page<Business> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(businessRepository.findAllBusinessesByNamesAndType(names, convertedBusinessType, paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                .param("businessType", businessType)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
 }

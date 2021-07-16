@@ -14,6 +14,7 @@ import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
+import org.seng302.utils.PaginationUtils;
 import org.seng302.view.incoming.UserIdPayload;
 import org.seng302.view.incoming.UserLoginPayload;
 import org.seng302.view.incoming.UserRegistrationPayload;
@@ -101,21 +102,19 @@ public class UserResource {
 
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
-        if (user.isPresent()) {
-            if (user.get().verifyPassword(login.getPassword())) {
-                String sessionUUID = getUniqueSessionUUID();
+        if (user.isPresent() && (user.get().verifyPassword(login.getPassword()))) {
+            String sessionUUID = getUniqueSessionUUID();
 
-                user.get().setSessionUUID(sessionUUID);
-                userRepository.save(user.get());
+            user.get().setSessionUUID(sessionUUID);
+            userRepository.save(user.get());
 
-                Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
-                cookie.setMaxAge(3600); // 1 hour in seconds
-                cookie.setHttpOnly(true);
-                response.addCookie(cookie);
+            Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
+            cookie.setMaxAge(3600); // 1 hour in seconds
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
 
-                logger.info("Successful Login - User Id: {}", user.get().getId());
-                return new UserIdPayload(user.get().getId());
-            }
+            logger.info("Successful Login - User Id: {}", user.get().getId());
+            return new UserIdPayload(user.get().getId());
         }
         throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
@@ -252,7 +251,7 @@ public class UserResource {
         Role role = null;
 
         //stop payload loop
-        List<Business> administrators = new ArrayList<>();
+        List<Business> administrators;
         administrators = selectUser.getBusinessesAdministeredObjects();
         for (Business administrator : administrators) {
             administrator.setAdministrators(new ArrayList<>());
@@ -321,23 +320,14 @@ public class UserResource {
     ) throws Exception {
         logger.debug("User search request received with search query {}, order by {}, page {}", searchQuery, orderBy, page);
 
-        //TODO check this
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
-        int pageNo;
-        try {
-            pageNo = Integer.parseInt(page);
-        } catch (final NumberFormatException e) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Page parameter invalid"
-            );
-        }
+
+        int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Front-end displays 5 users per page
         int pageSize = 5;
 
-        Sort sortBy = null;
+        Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
@@ -408,10 +398,18 @@ public class UserResource {
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
     }
 
-    //TODO write unit tests
-    //TODO write comment
+    /**
+     * This method converts a list of users to "secure" payloads which omit user details due to privacy concerns.
+     *
+     * @param userList the list of users the current user is trying to view.
+     * @param user the user who is trying to access the details of other users. If they are not an admin then they
+     *             can not view extra details of other users.
+     * @return List<UserPayloadSecure> A list of users who have had some fields of their address removed due to privacy
+     * concerns.
+     * @throws Exception thrown if error occurs when converting to secure payload.
+     */
     public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
-        List<UserPayloadSecure> userPayloadList = new ArrayList<>();
+        List<UserPayloadSecure> userPayloadList;
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
 
         for (UserPayloadSecure userPayloadSecure: userPayloadList) {
@@ -461,7 +459,7 @@ public class UserResource {
 
 
     /**
-     * Get method for change the Role of a user account from USE to GLOBALAPPLICATIONADMIN by Email address
+     * Put method to change the Role of a user account from USER to GLOBALAPPLICATIONADMIN by Email address
      * @param id mail address (primary key)
      */
     @PutMapping("/users/{id}/revokeAdmin")

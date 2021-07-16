@@ -46,12 +46,6 @@
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
               </div>
 
-              <!--      Note that this is commented out as the image storage story has not been implemented        -->
-              <!-- Button trigger modal -->
-<!--              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">-->
-<!--                Upload Image-->
-<!--              </button>-->
-
               <!--user's nickname and bio-->
               <div class="mt-3">
                 <h4>{{ nickname }}</h4>
@@ -60,13 +54,6 @@
 
             </div>
           </div>
-
-          <!--   For later use:   -->
-<!--          <div class="card text-center shadow-sm mt-3">-->
-<!--            <div class="card-body">-->
-<!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
-<!--            </div>-->
-<!--          </div>-->
 
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>

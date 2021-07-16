@@ -76,10 +76,13 @@ public class Business {
 
     /**
      * Create new BusinessAccount object.
+     * @param primaryAdministratorId the id of the primary administrator of the business
      * @param name the name of the business (mandatory)
      * @param description the description of the business (optional)
      * @param address the address of the business (mandatory)
      * @param businessType the type of the business (mandatory)
+     * @param created the date the business was created
+     * @param administrator the user who created this business
      * @throws IllegalBusinessArgumentException thrown when parameter is not valid.
      */
     public Business(Integer primaryAdministratorId,

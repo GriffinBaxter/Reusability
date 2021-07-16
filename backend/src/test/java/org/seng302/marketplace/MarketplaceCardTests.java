@@ -69,7 +69,7 @@ class MarketplaceCardTests {
         Assertions.assertEquals(marketplaceCard.getCreator(), user);
         Assertions.assertEquals(Section.FORSALE, marketplaceCard.getSection());
         Assertions.assertEquals(marketplaceCard.getCreated(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)));
-        Assertions.assertEquals(marketplaceCard.getDisplayPeriodEnd(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 8), LocalTime.of(0, 0)));
+        Assertions.assertEquals(marketplaceCard.getDisplayPeriodEnd(), LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 15), LocalTime.of(0, 0)));
         Assertions.assertEquals("Hayley's Birthday", marketplaceCard.getTitle());
         Assertions.assertEquals("Come join Hayley and help her celebrate her birthday!", marketplaceCard.getDescription());
     }
@@ -85,7 +85,7 @@ class MarketplaceCardTests {
                     user,
                     Section.FORSALE,
                     LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
-                    "a",
+                    "",
                     "Come join Hayley and help her celebrate her birthday!"
             );
         } catch (IllegalMarketplaceCardArgumentException e) {
@@ -100,7 +100,7 @@ class MarketplaceCardTests {
     @Test
     void TestMarketplaceCard_GivenInvalidDescription_ErrorThrown() {
         String string = "H";
-        String description = string.repeat(1000);
+        String description = string.repeat(301); // max length = 300
         try {
             MarketplaceCard marketplaceCard = new MarketplaceCard(
                     user.getId(),
@@ -139,7 +139,7 @@ class MarketplaceCardTests {
      */
     @Test
     void isIllegalMarketplaceCardArgumentExceptionThrownWhenTitleLengthLessThanMinLengthTest() {
-        String title = "a"; // min length = 2
+        String title = ""; // min length = 1
 
         try {
             MarketplaceCard marketplaceCard = new MarketplaceCard(
@@ -162,7 +162,7 @@ class MarketplaceCardTests {
     @Test
     void isIllegalMarketplaceCardArgumentExceptionThrownWhenTitleLengthGreaterThanMaxLengthTest() {
         String string = "a";
-        String title = string.repeat(71); // max length = 70
+        String title = string.repeat(51); // max length = 50
 
         try {
             MarketplaceCard marketplaceCard = new MarketplaceCard(
@@ -225,7 +225,7 @@ class MarketplaceCardTests {
     @Test
     void isMarketplaceCardSuccessfullyCreatedWhenTitleLengthEqualsMaxLengthTest() throws IllegalMarketplaceCardArgumentException {
         String string = "H";
-        String title = string.repeat(70); // max length = 70
+        String title = string.repeat(50); // max length = 50
 
         MarketplaceCard marketplaceCard = new MarketplaceCard(
                 user.getId(),
@@ -249,7 +249,7 @@ class MarketplaceCardTests {
     @Test
     void isIllegalMarketplaceCardArgumentExceptionThrownWhenDescriptionLengthGreaterThanMaxLengthTest() {
         String string = "a";
-        String description = string.repeat(501); // max length = 500
+        String description = string.repeat(301); // max length = 300
 
         try {
             MarketplaceCard marketplaceCard = new MarketplaceCard(
@@ -290,8 +290,8 @@ class MarketplaceCardTests {
     @Test
     void isMarketplaceCardSuccessfullyCreatedWhenDescriptionLengthEqualsMaxLengthAndContainsNumberSpacesAndSymbolsTest()
             throws IllegalMarketplaceCardArgumentException {
-        String string = "Hayley's 99th Birthday !@#$%^&*()_-+=[]{}|?<>,.   "; // 50 characters x 10 = 500
-        String description = string.repeat(10); // max length = 500
+        String string = "Hayley's 99th Birthday !@#$%^&*()_-+=[]{}|?<>,.   "; // 50 characters x 6 = 300
+        String description = string.repeat(6); // max length = 300
 
         MarketplaceCard marketplaceCard = new MarketplaceCard(
                 user.getId(),
@@ -314,8 +314,8 @@ class MarketplaceCardTests {
     @Test
     void extendDisplayPeriodTest() throws IllegalMarketplaceCardArgumentException {
         LocalDateTime creationDate = LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0));
-        LocalDateTime originalDisplayPeriodEnd = creationDate.plusWeeks(1);
-        LocalDateTime expectedNewDisplayPeriodEnd = originalDisplayPeriodEnd.plusWeeks(1);
+        LocalDateTime originalDisplayPeriodEnd = creationDate.plusWeeks(2);
+        LocalDateTime expectedNewDisplayPeriodEnd = originalDisplayPeriodEnd.plusWeeks(2);
 
         MarketplaceCard marketplaceCard = new MarketplaceCard(
                 user.getId(),

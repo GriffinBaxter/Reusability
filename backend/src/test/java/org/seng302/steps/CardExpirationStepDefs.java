@@ -122,7 +122,7 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
                 .andReturn().getResponse();
     }
 
-    @Then("I receive a 200 response and the display period end has been extended by one week.")
+    @Then("I receive a 200 response and the display period end has been extended by two weeks.")
     public void iReceiveA200ReponseAndTheDisplayPeriodEndHasBeenExtendedByOneWeek() {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 
@@ -130,7 +130,7 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
         Assertions.assertTrue(marketplaceCardOptional.isPresent());
 
         MarketplaceCard marketplaceCard = marketplaceCardOptional.get();
-        Assertions.assertEquals(initialDisplayPeriodEnd.plusWeeks(1), marketplaceCard.getDisplayPeriodEnd());
+        Assertions.assertEquals(initialDisplayPeriodEnd.plusWeeks(2), marketplaceCard.getDisplayPeriodEnd());
     }
 
 }

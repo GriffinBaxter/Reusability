@@ -318,8 +318,8 @@ describe( "Testing the title input field", () => {
         // Ensure invalid feedback is provided.
         expect(Api.addNewCard).toBeCalledTimes(0);
         expect(createCardModalWrapper.find("#card-title-invalid-feedback").exists()).toBe(true);
-        expect(createCardModalWrapper.find("#card-title-invalid-feedback").text()).toBe("The title must be between 1 and 20 in length.");
-        expect(createCardModalWrapper.vm.$data.formError.titleError).toBe("The title must be between 1 and 20 in length.")
+        expect(createCardModalWrapper.find("#card-title-invalid-feedback").text()).toBe("The title must be between 1 and 51 in length.");
+        expect(createCardModalWrapper.vm.$data.formError.titleError).toBe("The title must be between 1 and 51 in length.")
         expect(createCardModalWrapper.vm.$data.formErrorClasses.titleError).toBe("is-invalid")
     })
 
@@ -346,7 +346,7 @@ describe( "Testing the title input field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.titleError).toBe("")
     })
 
-    test("Testing with 19 characters string (1234567891234567891)", async () => {
+    test("Testing with 50 characters string (12345678912345678912345678912345678912345678912345)", async () => {
 
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-title").exists()).toBe(true);
@@ -354,10 +354,10 @@ describe( "Testing the title input field", () => {
         expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
 
         // Set the title input value.
-        createCardModalWrapper.find("#card-title").setValue("1234567891234567891");
+        createCardModalWrapper.find("#card-title").setValue("12345678912345678912345678912345678912345678912345");
 
         // Ensure that the data was updated.
-        expect(createCardModalWrapper.vm.$data.title).toBe("1234567891234567891");
+        expect(createCardModalWrapper.vm.$data.title).toBe("12345678912345678912345678912345678912345678912345");
 
         // Perform a submission
         await createCardModalWrapper.find("#create-card-button").trigger("click");
@@ -369,7 +369,7 @@ describe( "Testing the title input field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.titleError).toBe("")
     })
 
-    test("Testing with 20 characters string (12345678912345678912)", async () => {
+    test("Testing with 51 characters string (123456789123456789123456789123456789123456789123456)", async () => {
 
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-title").exists()).toBe(true);
@@ -377,10 +377,10 @@ describe( "Testing the title input field", () => {
         expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
 
         // Set the title input value.
-        createCardModalWrapper.find("#card-title").setValue("12345678912345678912");
+        createCardModalWrapper.find("#card-title").setValue("123456789123456789123456789123456789123456789123456");
 
         // Ensure that the data was updated.
-        expect(createCardModalWrapper.vm.$data.title).toBe("12345678912345678912");
+        expect(createCardModalWrapper.vm.$data.title).toBe("123456789123456789123456789123456789123456789123456");
 
         // Perform a submission
         await createCardModalWrapper.find("#create-card-button").trigger("click");
@@ -389,8 +389,8 @@ describe( "Testing the title input field", () => {
         // Ensure invalid feedback is provided.
         expect(Api.addNewCard).toBeCalledTimes(0);
         expect(createCardModalWrapper.find("#card-title-invalid-feedback").exists()).toBe(true);
-        expect(createCardModalWrapper.find("#card-title-invalid-feedback").text()).toBe("The title must be between 1 and 20 in length.");
-        expect(createCardModalWrapper.vm.$data.formError.titleError).toBe("The title must be between 1 and 20 in length.")
+        expect(createCardModalWrapper.find("#card-title-invalid-feedback").text()).toBe("The title must be between 1 and 51 in length.");
+        expect(createCardModalWrapper.vm.$data.formError.titleError).toBe("The title must be between 1 and 51 in length.")
         expect(createCardModalWrapper.vm.$data.formErrorClasses.titleError).toBe("is-invalid")
     })
 
@@ -485,17 +485,17 @@ describe("Testing the description field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.descriptionError).toBe("")
     })
 
-    test("Testing with 107 characters string", async () => {
+    test("Testing with 300 characters string", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-description").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(false);
         expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
 
         // Set the description input value.
-        createCardModalWrapper.find("#card-description").setValue("A".repeat(107));
+        createCardModalWrapper.find("#card-description").setValue("A".repeat(300));
 
         // Ensure that the data was updated.
-        expect(createCardModalWrapper.vm.$data.description).toBe("A".repeat(107));
+        expect(createCardModalWrapper.vm.$data.description).toBe("A".repeat(300));
 
         // Perform a submission
         await createCardModalWrapper.find("#create-card-button").trigger("click");
@@ -507,17 +507,17 @@ describe("Testing the description field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.descriptionError).toBe("")
     })
 
-    test("Testing with 108 characters string", async () => {
+    test("Testing with 301 characters string", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-description").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(false);
         expect(createCardModalWrapper.find("#create-card-button").exists()).toBe(true);
 
         // Set the description input value.
-        createCardModalWrapper.find("#card-description").setValue("A".repeat(108));
+        createCardModalWrapper.find("#card-description").setValue("A".repeat(301));
 
         // Ensure that the data was updated.
-        expect(createCardModalWrapper.vm.$data.description).toBe("A".repeat(108));
+        expect(createCardModalWrapper.vm.$data.description).toBe("A".repeat(301));
 
         // Perform a submission
         await createCardModalWrapper.find("#create-card-button").trigger("click");
@@ -526,8 +526,8 @@ describe("Testing the description field", () => {
         // Ensure invalid feedback is provided.
         expect(Api.addNewCard).toBeCalledTimes(0);
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(true);
-        expect(createCardModalWrapper.find("#card-description-invalid-feedback").text()).toBe("The description length must be between 0 and 108 in length.");
-        expect(createCardModalWrapper.vm.$data.formError.descriptionError).toBe("The description length must be between 0 and 108 in length.")
+        expect(createCardModalWrapper.find("#card-description-invalid-feedback").text()).toBe("The description length must be between 0 and 301 in length.");
+        expect(createCardModalWrapper.vm.$data.formError.descriptionError).toBe("The description length must be between 0 and 301 in length.")
         expect(createCardModalWrapper.vm.$data.formErrorClasses.descriptionError).toBe("is-invalid")
     })
 

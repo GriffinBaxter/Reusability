@@ -53,14 +53,14 @@ export function getErrorMessage(name, inputVal, minLength, maxLength, regexMessa
 }
 
 /**
- * This method parses the given date and separates it into a year, day and month, provided it meets
+ * This method parses the given date and separates it into a year, month and day, provided it meets
  * the expected format.
  *
  * Note that the date format is yyyy-MM-dd (e.g. '2029-12-30') to use the compareAsc() in the date validation methods.
  * So, this must be consistent!
  *
  * @param dateString, string, the date to validate and separate.
- * @returns {{year: string, day: string, month: string}|null}, {year, day, month}, if the date meets the expected
+ * @returns {{year: string, month: string, day: string}|null}, {year, month, day}, if the date meets the expected
  * format, else null.
  */
 export function parseSelectedDate(dateString) {
