@@ -402,16 +402,12 @@ public class BusinessResource {
                 sortBy = Sort.by(Sort.Order.desc("name").ignoreCase());
                 break;
             case "addressASC":
-                sortBy = Sort.by(Sort.Order.asc("address.street_name").ignoreCase())
-                        .and(Sort.by(Sort.Order.asc("address.suburb").ignoreCase()))
-                        .and(Sort.by(Sort.Order.asc("address.city").ignoreCase()))
+                sortBy = Sort.by(Sort.Order.asc("address.city").ignoreCase())
                         .and(Sort.by(Sort.Order.asc("address.region").ignoreCase()))
                         .and(Sort.by(Sort.Order.asc("address.country").ignoreCase()));
                 break;
             case "addressDESC":
-                sortBy = Sort.by(Sort.Order.desc("address.street_name").ignoreCase())
-                        .and(Sort.by(Sort.Order.desc("address.suburb").ignoreCase()))
-                        .and(Sort.by(Sort.Order.desc("address.city").ignoreCase()))
+                sortBy = Sort.by(Sort.Order.desc("address.city").ignoreCase())
                         .and(Sort.by(Sort.Order.desc("address.region").ignoreCase()))
                         .and(Sort.by(Sort.Order.desc("address.country").ignoreCase()));
                 break;
