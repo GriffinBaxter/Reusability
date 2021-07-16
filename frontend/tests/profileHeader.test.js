@@ -486,4 +486,67 @@ describe("Testing the search type functionality", () => {
         });
     });
 
+    describe("Search triggering edge cases", () => {
+
+        test('Testing that clicking the search button when the search type is not Business or User does not trigger a router push', () => {
+            const $router = {
+                push: jest.fn()
+            };
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router
+                }
+            });
+
+            profileHeaderWrapper.vm.searchType = 'Other';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchButton = profileHeaderWrapper.find('#search-button');
+                searchButton.trigger('click');
+
+                expect($router.push).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        test('Testing that pressing enter when the search type is not Business or User does not trigger a router push', () => {
+            const $router = {
+                push: jest.fn()
+            };
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router
+                }
+            });
+
+            profileHeaderWrapper.vm.searchType = 'Other';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchBar = profileHeaderWrapper.find('#search-bar');
+                searchBar.trigger('keydown.enter');
+
+                expect($router.push).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        test('Testing that pressing a key other than enter does not trigger a router push', () => {
+            const $router = {
+                push: jest.fn()
+            };
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router
+                }
+            });
+
+            profileHeaderWrapper.vm.searchType = 'User';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchBar = profileHeaderWrapper.find('#search-bar');
+                searchBar.trigger('keydown.escape');
+
+                expect($router.push).toHaveBeenCalledTimes(0);
+            });
+        });
+    });
+
 });
