@@ -4,8 +4,6 @@
 <!--400.-->
 <!--It is currently fully responsive, EXCEPT for the text of the logo.-->
 
-<!--TODO fix bug with logo's text's responsiveness.-->
-
 <template>
   <div>
     <div id="main">

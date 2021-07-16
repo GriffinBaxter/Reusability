@@ -421,8 +421,8 @@ export default {
      * So, this must be consistent!
      *
      * @param dateString, string, the date to validate and separate.
-     * @returns {{year: string, day: string, month: string, hour: string, minute: string, seconds: string}|null}, {year, day, month}, if the date meets the expected
-     * format, else null.
+     * @returns {{year: string, month: string, day: string, hour: string, minute: string, seconds: string}|null},
+     * {year, month, day, hour, minute, seconds}, if the date meets the expected format, else null.
      */
     parseSelectedDate(dateString) {
       const newDate = datefns.parseISO(dateString);

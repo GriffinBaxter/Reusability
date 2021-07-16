@@ -109,7 +109,7 @@ export default {
       required: true
     },
 
-    // Business id used to not what business to update
+    // Business id used to know what business to update
     businessId: {
       type: Number,
       required: true
@@ -303,7 +303,7 @@ export default {
       }
 
 
-      // Perfrom the update call
+      // Perform the update call
       Api.modifyProduct(this.value.data.id, this.businessId, this.newProduct)
           .then(
               res => {
