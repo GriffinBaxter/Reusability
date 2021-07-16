@@ -80,6 +80,8 @@ export default {
       selectedBusinessType: "Any",
       query: "",
       searchType: "",
+      userList: [],
+      businessList: []
     }
   },
 
@@ -185,6 +187,7 @@ export default {
           this.dataList = response.data.map((business) => {
             return new Business(business);
           });
+          this.businessList = response.data;
           let newTableData = [];
 
           // No results
@@ -246,6 +249,8 @@ export default {
           return "Charitable Organisation";
         case ("NON_PROFIT_ORGANISATION"):
           return "Non Profit Organisation";
+        default:
+          return "";
       }
     },
 
@@ -286,6 +291,7 @@ export default {
           this.dataList = response.data.map((user) => {
             return new User(user);
           });
+          this.userList = response.data;
           let newTableData = [];
 
           // No results
@@ -415,16 +421,23 @@ export default {
     },
 
     /**
-     * Disables all ascending or descending icons in the top column headers.
+     * When a user selects a table row (user or business) then they need to be redirected to the profile page of the
+     * selected user or business.
+     * @param id the id of the selected user or business.
      */
-    disableIcons() {
-      document.getElementById('name-icon').setAttribute('class', '');
-      document.getElementById('email-icon').setAttribute('class', '');
-      document.getElementById('address-icon').setAttribute('class', '');
-    },
-
     routeToProfile(index) {
-      return index;
+      if (this.searchType === 'User') {
+        const user = this.userList[index % this.rowsPerPage];
+        this.$router.push({
+          path: `/profile/${user.id}`
+        });
+      } else if (this.searchType === 'Business') {
+        const business = this.businessList[index % this.rowsPerPage];
+        this.$router.push({
+          path: `/businessProfile/${business.id}`
+        });
+      }
+
     }
 
   },
