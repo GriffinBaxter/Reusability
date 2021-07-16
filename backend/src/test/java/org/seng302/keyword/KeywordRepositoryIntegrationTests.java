@@ -34,8 +34,6 @@ public class KeywordRepositoryIntegrationTests {
     private Optional<Keyword> foundKeyword;
 
     private List<Keyword> foundKeywords;
-    private static Keyword keyword1;
-    private static Keyword keyword2;
 
     private Keyword keyword1;
     private Keyword keyword2;
@@ -55,10 +53,6 @@ public class KeywordRepositoryIntegrationTests {
         entityManager.persistAndFlush(keyword3);
         entityManager.persistAndFlush(keyword4);
         entityManager.persistAndFlush(keyword5);
-    @BeforeAll
-    static void before() throws Exception {
-        keyword1 = new Keyword("car", LocalDateTime.now());
-        keyword2 = new Keyword("cat", LocalDateTime.now());
     }
 
     /**

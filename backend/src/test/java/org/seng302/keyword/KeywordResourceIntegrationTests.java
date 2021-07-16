@@ -1,10 +1,8 @@
 package org.seng302.keyword;
 
-import org.assertj.core.api.OptionalAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.seng302.Authorization;
 import org.seng302.Main;
 import org.seng302.model.Address;
 import org.seng302.model.Keyword;
@@ -132,12 +130,9 @@ public class KeywordResourceIntegrationTests {
         gaa.setId(3);
         gaa.setSessionUUID(User.generateSessionUUID());
 
-        keyword = new Keyword("Resource", LocalDateTime.now());
-        keyword2 = new Keyword("ResourceDos", LocalDateTime.now());
-        keyword3 = new Keyword("ResourceTres", LocalDateTime.now());
         keyword = new Keyword("Resource", LocalDateTime.of(2021, 1, 1, 1, 1));
-        Keyword keyword2 = new Keyword("Our", LocalDateTime.of(2021, 1, 1, 1, 1));
-        Keyword keyword3 = new Keyword("Out", LocalDateTime.of(2021, 1, 1, 1, 1));
+        keyword2 = new Keyword("Our", LocalDateTime.of(2021, 1, 1, 1, 1));
+        keyword3 = new Keyword("Out", LocalDateTime.of(2021, 1, 1, 1, 1));
         keywords.add(keyword);
         keywords.add(keyword2);
         keywords.add(keyword3);
@@ -155,7 +150,7 @@ public class KeywordResourceIntegrationTests {
         String newKeyword = "Creation";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findByName(newKeyword)).willReturn(Optional.ofNullable(null));
+        given(keywordRepository.findByName(newKeyword)).willReturn(Optional.empty());
 
         String payloadJson = String.format(jsonPOST, newKeyword);
         // When
@@ -283,6 +278,50 @@ public class KeywordResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Test that a normal user can't delete keywords
+     * Returns 403 (FORBIDDEN)
+     *
+     * @throws Exception In case something goes wrong with the mvc call
+     */
+    @Test
+    void cantDeleteKeywordAsUser() throws Exception {
+        // Given
+        Integer id = keyword3.getId();
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        given(keywordRepository.findById(id)).willReturn(Optional.ofNullable(keyword3));
+
+        // When
+        response = mvc.perform(delete(String.format("/keywords/%d", id))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that a user not logged in can't delete keywords
+     * Returns 401 (UNAUTHORIZED)
+     *
+     * @throws Exception In case something goes wrong with the mvc call
+     */
+    @Test
+    void cantDeleteKeywordWhenNotLoggedIn() throws Exception {
+        // Given
+        Integer id = keyword.getId();
+
+        given(userRepository.findBySessionUUID(null)).willReturn(Optional.empty());
+        given(keywordRepository.findById(id)).willReturn(Optional.ofNullable(keyword));
+
+        // When
+        response = mvc.perform(delete(String.format("/keywords/%d", id)))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
     // -------- GET ENDPOINT TESTS ----------------------------
 
     /**
@@ -347,50 +386,6 @@ public class KeywordResourceIntegrationTests {
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
         // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    /**
-     * Test that a normal user can't delete keywords
-     * Returns 403 (FORBIDDEN)
-     *
-     * @throws Exception In case something goes wrong with the mvc call
-     */
-    @Test
-    void cantDeleteKeywordAsUser() throws Exception {
-        // Given
-        Integer id = keyword3.getId();
-
-        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
-
-        given(keywordRepository.findById(id)).willReturn(Optional.ofNullable(keyword3));
-
-        // When
-        response = mvc.perform(delete(String.format("/keywords/%d", id))
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn().getResponse();
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
-
-    /**
-     * Test that a user not logged in can't delete keywords
-     * Returns 401 (UNAUTHORIZED)
-     *
-     * @throws Exception In case something goes wrong with the mvc call
-     */
-    @Test
-    void cantDeleteKeywordWhenNotLoggedIn() throws Exception {
-        // Given
-        Integer id = keyword.getId();
-
-        given(userRepository.findBySessionUUID(null)).willReturn(Optional.empty());
-        given(keywordRepository.findById(id)).willReturn(Optional.ofNullable(keyword));
-
-        // When
-        response = mvc.perform(delete(String.format("/keywords/%d", id)))
-                .andReturn().getResponse();
-        // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 }
