@@ -15,6 +15,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
 import org.seng302.model.Keyword;
+import org.seng302.model.MarketplaceCard;
+import org.seng302.model.User;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.incoming.KeywordCreationPayload;
@@ -22,19 +24,18 @@ import org.seng302.view.outgoing.KeywordIdPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Keyword Resource class.
  * This class contains the endpoints for keywords.
  * The POST /keywords endpoint is used to create keywords.
+ * The DELETE /keywords endpoint is used to delete keywords.
  */
 @RestController
 public class KeywordResource {
