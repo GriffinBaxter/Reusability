@@ -991,24 +991,7 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/cards/updateNotification':
-    put:
-      tags:
-        - 'UCM4: Card expiry'
-        - 'Cards / community marketplace'
-      summary: 'Update all notification for cards which create by current user'
-      security:
-        - CookieAuth:
-            - user
-            - globalApplicationAdmin
-            - defaultGlobalApplicationAdmin
-      responses:
-        '200':
-          description: Notifications for all cards created by current user has been updated.
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-
-  '/notification':
+  '/users/notifications':
     get:
       tags:
         - 'UCM4: Card expiry'
@@ -1022,8 +1005,41 @@ paths:
       responses:
         '200':
           description: Notifications for all cards created by current user has been updated.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarketplaceCardNotification'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+
+  '/users/notification/{id}':
+    delete:
+      tags:
+        - 'UCM4: Card expiry'
+        - 'Notification'
+      summary: 'Delete a notifications by given id'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of notification to delete
+          example: 400
+      responses:
+        '200':
+          description: Keyword successfully deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
 
   '/users/{id}/cards':
     get:
@@ -1625,3 +1641,32 @@ components:
           description: '(Implemented in U6): A list of businesses for which the user is an administrator'
           items:
             $ref: '#/components/schemas/Business'
+
+    MarketplaceCardNotification:
+      type: object
+      description: Notification for market card
+      required:
+        - id
+        - description
+        - created
+        - marketPlaceCardId
+        - userId
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automatically generated and assigned by the server
+        description:
+          type: string
+          example: Your card (Beef) will be expird in 2h.
+        created:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the notification was created
+        marketPlaceCardId:
+          type: integer
+          example: 2
+          description: The id of market card related to current notification
