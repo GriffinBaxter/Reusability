@@ -62,7 +62,7 @@ export default {
       // A list of the business table headers
       businessHeaders: ["Name", "Address", "Business Type"],
       // A list of the order by headers for businesses, which is used for talking to the backend
-      orderByBusinessHeaders: ["name", "address"],
+      orderByBusinessHeaders: ["name", "address", "businessType"],
       // Generic headers which get switched between business and user depending on the selected search type
       tableHeaders: [],
       tableOrderByHeaders: [],

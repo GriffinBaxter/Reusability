@@ -411,6 +411,14 @@ public class BusinessResource {
                         .and(Sort.by(Sort.Order.desc("address.region").ignoreCase()))
                         .and(Sort.by(Sort.Order.desc("address.country").ignoreCase()));
                 break;
+            case "businessTypeASC":
+                sortBy = Sort.by(Sort.Order.asc("businessType").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                break;
+            case "businessTypeDESC":
+                sortBy = Sort.by(Sort.Order.desc("businessType").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                break;
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
                 throw new ResponseStatusException(

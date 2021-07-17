@@ -7,7 +7,7 @@ servers:
     
 info:
   description: API specification for the SENG302 2021 project
-  version: 4.1.2
+  version: 4.2.2
   title: Reusability
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -993,6 +993,10 @@ paths:
             * addressASC: alphabetically by address, A - Z
 
             * addressDESC: alphabetically by address, Z - A
+
+            * businessTypeASC: alphabetically by business type, A - Z
+
+            * businessTypeDESC: alphabetically by business type, Z - A
         - in: query
           name: page
           schema:
