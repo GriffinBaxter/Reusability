@@ -212,10 +212,10 @@ input[type=number] {
               Search Bar
  ****************************************/
 
-#profile-header-div {
-  margin-left: 15%;
-  margin-right: 15%;
-}
+/*#profile-header-div {*/
+/*  margin-left: 5%;*/
+/*  margin-right: 5%;*/
+/*}*/
 
 /*****************************************************************
                   Autocomplete Dropdown Styling

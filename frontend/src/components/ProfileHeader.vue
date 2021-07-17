@@ -2,7 +2,7 @@
 <!--It contains the search bar for searching for users by first name.-->
 
 <template>
-    <div class="pt-3 text-font container-fluid search-bar-positioning" id="search-container">
+    <div class="pt-3 text-font container-fluid search-bar-positioning" id="search-container" style="">
       <div class="row" id="search-bar-inputs">
         <div class="col" id="radio-button-container">
           <div class="btn-group" id="radio-buttons">
@@ -20,12 +20,13 @@
           </select>
         </div>
       </div>
-      <div class="row" id="search-bar-container">
+      <div class="row" id="search-bar-container" style="padding-top: 3px">
         <div class="input-group" id="search-inputs">
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
           <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
         </div>
       </div>
+      <br>
     </div>
 </template>
 
@@ -90,9 +91,9 @@ export default {
 
 <style scoped>
 
-.search-bar-positioning {
-  padding-top: 40px;
-}
+/*.search-bar-positioning {*/
+/*  padding-top: 40px;*/
+/*}*/
 
 /*TODO consider putting in style.css*/
 #search-bar:focus {
@@ -101,9 +102,9 @@ export default {
   border: 1px solid #1EBABC;
 }
 
-#search-bar-container {
- max-width: 1200px;
-}
+/*#search-bar-container {*/
+/* max-width: 1200px;*/
+/*}*/
 
 .active {
   color: #FFFFFF;
