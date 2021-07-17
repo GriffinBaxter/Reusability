@@ -246,6 +246,11 @@ class ImageResourceIntegrationTests {
 
     //------------------------------------ Product Image Creation Endpoint Tests ---------------------------------------
 
+    /**
+     * Testing that we receieve a image id and get a CREATED http status back when we create a image for a products
+     * that does not have already any other primary images.
+     * @throws Exception
+     */
     @Test
     void testingFileCreationWithValidDataNoPrimaryImages() throws Exception{
         // Given
@@ -271,6 +276,11 @@ class ImageResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
     }
 
+    /**
+     * Testing that we receieve a image id and get a CREATED http status back when we create a image for a products
+     * that has already a primary image.
+     * @throws Exception
+     */
     @Test
     void testingFileCreationWithValidDataWithPrimaryImages() throws Exception{
         // Given
@@ -295,6 +305,26 @@ class ImageResourceIntegrationTests {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+    /**
+     * Testing that we get a BAD_REQUEST https status when we do not include the 'images' file.
+     * @throws Exception
+     */
+    @Test
+    void testingImageFileIsRequired() throws Exception {
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     //------------------------------------ Product Image Deletion Endpoint Tests ---------------------------------------
