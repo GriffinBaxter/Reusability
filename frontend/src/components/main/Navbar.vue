@@ -28,133 +28,137 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- Navbar links -->
-      <div class="navbar-collapse" id="navbar-id">
-        <!-- navbar inner is required for the animation -->
-        <div id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
-          <ul class="navbar-nav flex-column flex-xl-row">
+        <!-- Navbar links -->
+        <div class="navbar-collapse" id="navbar-id">
+          <!-- navbar inner is required for the animation -->
 
-<!--            <div v-if="canShowTopNavLinks">-->
+          <!-- mobile version of nav bar -->
+          <div v-if="isMobileMode" id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+            <ul class="navbar-nav flex-column flex-xl-row">
 
-
-              <!-- default page links -->
-              <li class="nav-item">
-                <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
-              </li>
-              <li class="nav-item" v-if="actAsId === null">
-                <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-                  Profile
-                </router-link>
-              </li>
-              <li class="nav-item" v-if=actAsId>
-                <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
-                             :to="'/businessProfile/' + actAsId" tabindex="2">
-                  Profile
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
-                  Marketplace
-                </router-link>
-              </li>
-
-              <!--- Business specific account links -->
-              <li class="nav-item dropdown" v-if="isActAsBusiness">
-
-                <!-- Navbar toggle drop down -->
-                <a class="nav-link dropdown-toggle" role="button" tabindex="4"
-                @click="() => {toggleBusinessDropdown()}"
-                @keyup.enter="() => {toggleBusinessDropdown()}">
-                  Business Pages
-                </a>
-
-                <!-- Dropdown links-->
-                <div id="business-dropdown-links-wrapper">
-                  <ul class="dropdown-menu show" id="business-dropdown-links">
-                    <li class="nav-item">
-                      <router-link
-                          :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
-                          :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
-                        Listings
-                      </router-link>
-                    </li>
-                    <li class="nav-item">
-                      <router-link
-                          :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                          :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
-                        Inventory
-                      </router-link>
-                    </li>
-                    <li class="nav-item">
-                      <router-link
-                          :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                          :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
-                        Catalogue
-                      </router-link>
-                    </li>
-                  </ul>
-                </div>
-
-              </li>
-
-              <!-- Log out link-->
-              <li class="nav-item">
-                <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
-              </li>
-
-
-
-          </ul>
-
-          <ul class="navbar-nav flex-column flex-xl-row">
-            <!-- Interact As -->
-            <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
-              <a class="" role="button">
-                <img src="../../../public/profile_icon_default.png" width="27px"
-                     class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
-              </a>
-            </li>
-          </ul>
-
-          <ul class="no-space">
-            <div class="center" role="button" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
-              <div v-if="showOmitName">{{ actAsOmit }}</div>
-              <div v-else>{{ actAs }}</div>
-            </div>
-            <div id="interact-dropdown-links-wrapper">
-              <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
-
+                <!-- default page links -->
                 <li class="nav-item">
+                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
                 </li>
-                <div v-if="showOmitName">
-                  <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
-                      @click="itemClicked(index)">
-                    <h6 class="ms-3" v-if="index===0"><br>User</h6>
-                    <div v-else-if="index===1">
-                      <hr>
-                      <h6 class="ms-3">Businesses</h6>
-                    </div>
-                    <a class="nav-link">{{ act.name }}</a>
-                  </li>
-                </div>
-                <div v-else>
-                  <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
-                      @click="itemClicked(index)">
-                    <h6 class="ms-3" v-if="index===0"><br>User</h6>
-                    <div v-else-if="index===1">
-                      <hr>
-                      <h6 class="ms-3">Businesses</h6>
-                    </div>
-                    <a class="nav-link">{{ act.name }}</a>
-                  </li>
-                </div>
+                <li class="nav-item" v-if="actAsId === null">
+                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                    Profile
+                  </router-link>
+                </li>
+                <li class="nav-item" v-if=actAsId>
+                  <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
+                               :to="'/businessProfile/' + actAsId" tabindex="2">
+                    Profile
+                  </router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
+                    Marketplace
+                  </router-link>
+                </li>
 
-              </ul>
+                <!--- Business specific account links -->
+                <li class="nav-item dropdown" v-if="isActAsBusiness">
+
+                  <!-- Navbar toggle drop down -->
+                  <a class="nav-link dropdown-toggle" role="button" tabindex="4"
+                  @click="() => {toggleBusinessDropdown()}"
+                  @keyup.enter="() => {toggleBusinessDropdown()}">
+                    Business Pages
+                  </a>
+
+                  <!-- Dropdown links-->
+                  <div id="business-dropdown-links-wrapper">
+                    <ul class="dropdown-menu show" id="business-dropdown-links">
+                      <li class="nav-item">
+                        <router-link
+                            :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
+                            :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
+                          Listings
+                        </router-link>
+                      </li>
+                      <li class="nav-item">
+                        <router-link
+                            :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
+                            :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
+                          Inventory
+                        </router-link>
+                      </li>
+                      <li class="nav-item">
+                        <router-link
+                            :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
+                            :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
+                          Catalogue
+                        </router-link>
+                      </li>
+                    </ul>
+                  </div>
+
+                </li>
+
+                <!-- Log out link-->
+                <li class="nav-item">
+                  <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
+                </li>
+
+            </ul>
+
+            <ul class="navbar-nav flex-column flex-xl-row">
+              <!-- Interact As -->
+              <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
+                <a class="" role="button">
+                  <img src="../../../public/profile_icon_default.png" width="27px"
+                       class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
+                </a>
+              </li>
+            </ul>
+
+            <ul class="no-space">
+              <div class="center" role="button" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
+                <div v-if="showOmitName">{{ actAsOmit }}</div>
+                <div v-else>{{ actAs }}</div>
+              </div>
+              <div id="interact-dropdown-links-wrapper">
+                <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
+
+                  <li class="nav-item">
+                  </li>
+                  <div v-if="showOmitName">
+                    <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
+                        @click="itemClicked(index)">
+                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                      <div v-else-if="index===1">
+                        <hr>
+                        <h6 class="ms-3">Businesses</h6>
+                      </div>
+                      <a class="nav-link">{{ act.name }}</a>
+                    </li>
+                  </div>
+                  <div v-else>
+                    <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
+                        @click="itemClicked(index)">
+                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                      <div v-else-if="index===1">
+                        <hr>
+                        <h6 class="ms-3">Businesses</h6>
+                      </div>
+                      <a class="nav-link">{{ act.name }}</a>
+                    </li>
+                  </div>
+
+                </ul>
+              </div>
+            </ul>
+
             </div>
-          </ul>
 
-        </div>
+          <!-- desktop version of nav bar -->
+          <div v-else class=" navbar-inner-id navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+
+          </div>
+
       </div>
+
     </div>
 
   </nav>
@@ -214,7 +218,7 @@ export default {
       maxNameLength: 30,
       omitPoint: 10,
 
-      canShowTopNavLinks: null,
+      isMobileMode: null
     }
   },
 
@@ -542,6 +546,8 @@ export default {
     this.businessAccountId = Cookies.get("actAs");
     this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
     this.showOmitName = (this.screenWidth > 1200);
+
+    this.isMobileMode = (this.screenWidth > 780);
   },
   mounted() {
     this.getUserData();
@@ -593,6 +599,9 @@ export default {
           } else {
             that.showOmitName = false;
           }
+
+          that.isMobileMode = (that.screenWidth() >= 780);
+
           that.timer = false
         }, 400)
       }
@@ -788,106 +797,105 @@ export default {
 
 /* Styling for larger screen sizes begins */
 /*xl Break point*/
-@media (min-width: 780px) {
+/*@media (min-width: 780px) {*/
 
-  .center {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-inline: 15px;
-    text-align: center;
-  }
+/*  .center {*/
+/*    padding-top: 20px;*/
+/*    padding-bottom: 20px;*/
+/*    padding-inline: 15px;*/
+/*    text-align: center;*/
+/*  }*/
 
-  #logo-image-nav {
-    max-width: 120px;
-    margin-left: 28px;
-    margin-right: 10px;
-    width: 100%;
-  }
+/*  #logo-image-nav {*/
+/*    max-width: 120px;*/
+/*    margin-left: 28px;*/
+/*    margin-right: 10px;*/
+/*    width: 100%;*/
+/*  }*/
 
-  .company-name-main-font {
-    font-size: 32px;
+/*  .company-name-main-font {*/
+/*    font-size: 32px;*/
 
-    /* centre text */
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-  }
+/*    !* centre text *!*/
+/*    margin: 0;*/
+/*    position: absolute;*/
+/*    top: 50%;*/
+/*    -ms-transform: translateY(-50%);*/
+/*    transform: translateY(-50%);*/
+/*  }*/
 
-  #navbar-id {
-    overflow: visible;
-  }
+/*  #navbar-id {*/
+/*    overflow: visible;*/
+/*  }*/
 
-  #actAsImg {
-    float: left;
-  }
+/*  #actAsImg {*/
+/*    float: left;*/
+/*  }*/
 
-  #business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {
-    position: absolute;
-  }
+/*  #business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {*/
+/*    position: absolute;*/
+/*  }*/
 
-  .navbar-expand-xl .navbar-nav .dropdown-menu {
-    padding: 0;
-    margin: 0;
-    border-right-width: 1px;
-    border-left-width: 1px;
-    position: unset;
-  }
+/*  .navbar-expand-xl .navbar-nav .dropdown-menu {*/
+/*    padding: 0;*/
+/*    margin: 0;*/
+/*    border-right-width: 1px;*/
+/*    border-left-width: 1px;*/
+/*    position: unset;*/
+/*  }*/
 
-  .navbar-expand-xl .navbar-nav .nav-link {
-    margin: 10px;
-    padding-left: 1em;
-    padding-right: 1em;
-  }
+/*  .navbar-expand-xl .navbar-nav .nav-link {*/
+/*    margin: 10px;*/
+/*    padding-left: 1em;*/
+/*    padding-right: 1em;*/
+/*  }*/
 
-  #interact-dropdown-links-wrapper {
-    width: auto;
-  }
-
-
-  #interactDrop {
-    max-width: 180px;
-    /*margin-left: 50px;*/
-    padding-left: 1em;
-  }
-
-  #interactDrop a {
-    padding: unset;
-    padding: 0.4rem 0rem
-  }
+/*  #interact-dropdown-links-wrapper {*/
+/*    width: auto;*/
+/*  }*/
 
 
-}
+/*  #interactDrop {*/
+/*    max-width: 180px;*/
+/*    !*margin-left: 50px;*!*/
+/*    padding-left: 1em;*/
+/*  }*/
 
-/*------------------------------------------ Extra Large break point styling -----------------------------------------*/
+/*  #interactDrop a {*/
+/*    padding: unset;*/
+/*    padding: 0.4rem 0rem*/
+/*  }*/
 
-@media (min-width: 1400px) {
+/*}*/
 
-  .center {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-inline: 15px;
-    text-align: center;
-  }
+/*!*------------------------------------------ Extra Large break point styling -----------------------------------------*!*/
 
-  #logo-image-nav {
-    max-width: 140px;
-    margin-left: -58px;
-    margin-right: 10px;
-    width: 100%;
-  }
+/*@media (min-width: 1400px) {*/
 
-  .company-name-main-font {
-    font-size: 40px;
+/*  .center {*/
+/*    padding-top: 20px;*/
+/*    padding-bottom: 20px;*/
+/*    padding-inline: 15px;*/
+/*    text-align: center;*/
+/*  }*/
 
-    /* centre text */
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-  }
-}
+/*  #logo-image-nav {*/
+/*    max-width: 140px;*/
+/*    margin-left: -58px;*/
+/*    margin-right: 10px;*/
+/*    width: 100%;*/
+/*  }*/
+
+/*  .company-name-main-font {*/
+/*    font-size: 40px;*/
+
+/*    !* centre text *!*/
+/*    margin: 0;*/
+/*    position: absolute;*/
+/*    top: 50%;*/
+/*    -ms-transform: translateY(-50%);*/
+/*    transform: translateY(-50%);*/
+/*  }*/
+/*}*/
 
 </style>
