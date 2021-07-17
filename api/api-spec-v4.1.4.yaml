@@ -58,7 +58,7 @@ tags:
   - name: 'Keywords'
     description: 'Grouping of endpoints related to system-wide keywords that can be added by users and attached to marketplace cards'
   - name: 'MarketplaceCardNotification'
-    description: 'Grouping of endpoints related to the community marketplace cards, and the notification created for them'
+    description: 'Grouping of endpoints related to the community marketplace cards, and the notifications created for them'
 
 security:
   - CookieAuth:
@@ -1840,7 +1840,7 @@ components:
           description: Automatically generated and assigned by the server
         description:
           type: string
-          example: Your card (Beef) will be expird in 2h.
+          example: Your card (Beef) will be expired in 2h.
         created:
           type: string
           format: date-time
