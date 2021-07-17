@@ -12,6 +12,8 @@ import org.seng302.controller.ImageResource;
 import org.seng302.model.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import org.seng302.model.enums.BusinessType;
@@ -48,6 +50,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
@@ -243,7 +247,7 @@ class ImageResourceIntegrationTests {
     //------------------------------------ Product Image Creation Endpoint Tests ---------------------------------------
 
     @Test
-    void testingFileCreationWithValidData() throws Exception{
+    void testingFileCreationWithValidDataNoPrimaryImages() throws Exception{
         // Given
         businessId = business.getId();
         productId = product.getProductId();
@@ -255,9 +259,35 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        when(fileStorageService.storeFile(any(), any())).thenReturn(true);
-        when(fileStorageService.getPathString(any(String.class))).thenReturn(primaryImage.getFilename());
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(uploadedImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+    @Test
+    void testingFileCreationWithValidDataWithPrimaryImages() throws Exception{
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        images.add(primaryImage);
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(uploadedImage).cookie(cookie)).andReturn().getResponse();
