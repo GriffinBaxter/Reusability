@@ -5,10 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.Main;
 import org.seng302.model.Address;
-import org.seng302.model.Notification;
+import org.seng302.model.MarketCardNotification;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
-import org.seng302.model.repository.NotificationRepository;
+import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -29,17 +29,17 @@ import java.util.Optional;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class NotificationRepositoryIntegrationTests {
+public class MarketCardNotificationRepositoryIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
-    private NotificationRepository notificationRepository;
+    private MarketCardNotificationRepository marketCardNotificationRepository;
 
     private User user;
     private User anotherUser;
-    private Notification notification;
+    private MarketCardNotification marketCardNotification;
 
     /**
      * Sets up data for testing
@@ -91,18 +91,18 @@ public class NotificationRepositoryIntegrationTests {
         entityManager.persist(anotherUser);
         entityManager.flush();
 
-        notification = new Notification(user.getId(), "Your card (books) will be expired", "in 12h");
-        Notification notification1 = new Notification(user.getId(), "Your card (Beef) will be expired", "in 10h");
-        Notification notification2 = new Notification(user.getId(), "Your card (PS5) will be expired", "in 2h");
-        Notification notification3 = new Notification(user.getId(), "Your card (Chocolate) will be expired", "in 20h");
-        Notification notification4 = new Notification(anotherUser.getId(), "Your card (Vega) will be expired", "in 5m");
-        Notification notification5 = new Notification(anotherUser.getId(), "Your card (Chicken) will be expired", "in 1h");
-        entityManager.persist(notification);
-        entityManager.persist(notification1);
-        entityManager.persist(notification2);
-        entityManager.persist(notification3);
-        entityManager.persist(notification4);
-        entityManager.persist(notification5);
+        marketCardNotification = new MarketCardNotification(user.getId(), 1, "Your card (books) will be expired in 12h", LocalDateTime.now());
+        MarketCardNotification marketCardNotification1 = new MarketCardNotification(user.getId(), 2, "Your card (Beef) will be expired in 10h", LocalDateTime.now());
+        MarketCardNotification marketCardNotification2 = new MarketCardNotification(user.getId(), 3, "Your card (PS5) will be expired in 2h", LocalDateTime.now());
+        MarketCardNotification marketCardNotification3 = new MarketCardNotification(user.getId(), 4, "Your card (Chocolate) will be expired in 20h", LocalDateTime.now());
+        MarketCardNotification marketCardNotification4 = new MarketCardNotification(anotherUser.getId(), 5, "Your card (Vega) will be expired in 5m", LocalDateTime.now());
+        MarketCardNotification marketCardNotification5 = new MarketCardNotification(anotherUser.getId(), 6, "Your card (Chicken) will be expired in 1h", LocalDateTime.now());
+        entityManager.persist(marketCardNotification);
+        entityManager.persist(marketCardNotification1);
+        entityManager.persist(marketCardNotification2);
+        entityManager.persist(marketCardNotification3);
+        entityManager.persist(marketCardNotification4);
+        entityManager.persist(marketCardNotification5);
         entityManager.flush();
     }
 
@@ -111,27 +111,27 @@ public class NotificationRepositoryIntegrationTests {
      * Test FindByReceiverIdAndNotificationMessage()
      */
     @Test
-    public void testFindByReceiverIdAndNotificationMessage() {
+    public void testFindByUserIdAndDescription() {
         // given
-        String message = "Your card (books) will be expired";
+        String message = "Your card (books) will be expired in 12h";
 
         // when
-        Optional<Notification> optionalNotification = notificationRepository.findByReceiverIdAndNotificationMessage(user.getId(), message);
+        Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository.findByUserIdAndDescription(user.getId(), message);
 
         // then
         Assertions.assertTrue(optionalNotification.isPresent());
-        Assertions.assertEquals(notification.expiryFormTOString(), optionalNotification.get().expiryFormTOString());
+        Assertions.assertEquals(marketCardNotification.toString(), optionalNotification.get().toString());
     }
 
     /**
      * Test FindAllByReceiverId()
      */
     @Test
-    public void testFindAllByReceiverId() {
+    public void testFindAllByUserId() {
         // when
-        List<Notification> notifications = notificationRepository.findAllByReceiverId(user.getId());
+        List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAllByUserId(user.getId());
 
         // then
-        Assertions.assertEquals(4, notifications.size());
+        Assertions.assertEquals(4, marketCardNotifications.size());
     }
 }
