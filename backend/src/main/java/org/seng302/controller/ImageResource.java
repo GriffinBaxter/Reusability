@@ -15,6 +15,7 @@ import org.seng302.model.repository.UserRepository;
 import org.seng302.services.FileStorageService;
 import org.seng302.view.outgoing.ImageCreatePayload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,9 @@ public class ImageResource {
     @Autowired
     private ImageRepository imageRepository;
 
-    private FileStorageService fileStorageService = new FileStorageService("product-images");
+    @Autowired
+    @Value("product-images")
+    private final FileStorageService fileStorageService;
 
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
 
@@ -56,11 +59,12 @@ public class ImageResource {
 
 
     public ImageResource(BusinessRepository businessRepository, UserRepository userRepository,
-                         ProductRepository productRepository, ImageRepository imageRepository) {
+                         ProductRepository productRepository, ImageRepository imageRepository, FileStorageService fileStorageService) {
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
+        this.fileStorageService = fileStorageService;
 
     }
 

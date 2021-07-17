@@ -3,8 +3,10 @@ package org.seng302.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -12,13 +14,15 @@ import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.util.Optional;
 
+@Service
 public class FileStorageService {
 
     private final Path rootPath;
     private static final Logger logger = LogManager.getLogger(FileStorageService.class.getName());
 
-    public FileStorageService(String folderName) {
-        this.rootPath = Paths.get(String.format("media/%s", folderName));
+
+    public FileStorageService(@Value("general") String folderName) {
+        this.rootPath = Paths.get(folderName);
         this.initialize();
     }
 
@@ -46,8 +50,6 @@ public class FileStorageService {
      * @return true if the file was stored correctly. Otherwise false.
      */
     public boolean storeFile(MultipartFile file, String fileName) {
-        System.out.println(fileName);
-        System.out.println(file);
         try {
             Files.copy(file.getInputStream(), this.rootPath.resolve(fileName));
             String log = "Successfully stored file into " + fileName;

@@ -80,10 +80,9 @@ class ImageResourceIntegrationTests {
     @MockBean
     private ImageRepository imageRepository;
 
-    @Mock
+    @MockBean
     private FileStorageService fileStorageService;
 
-    @InjectMocks
     private ImageResource imageResource;
 
     private Address address;
@@ -241,7 +240,7 @@ class ImageResourceIntegrationTests {
         productId = product.getProductId();
         businessId = business.getId();
         primaryImage = new Image(1, productId, businessId, "test/test", "test/test", true);
-        this.mvc = MockMvcBuilders.standaloneSetup(imageResource).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
     }
 
     //------------------------------------ Product Image Creation Endpoint Tests ---------------------------------------
