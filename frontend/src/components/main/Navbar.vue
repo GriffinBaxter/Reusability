@@ -594,13 +594,12 @@ export default {
         let that = this
         setTimeout(function () {
           // change the display name
-          if (that.screenWidth >= 1200) {
+          if (that.screenWidth >= 780) {
             that.showOmitName = true;
           } else {
             that.showOmitName = false;
           }
-
-          that.isMobileMode = (that.screenWidth() >= 780);
+          // that.isMobileMode = (that.screenWidth >= 780);
 
           that.timer = false
         }, 400)
@@ -730,6 +729,7 @@ export default {
 }
 
 .dropdown-menu {
+  position: static;
   border-right-width: 0;
   border-left-width: 0;
   padding: 0 5rem;
@@ -791,111 +791,11 @@ export default {
   }
 }
 
-/*-------------------------------------------- Large break point styling ------------------------------------------*/
+@media (min-width: 780px) {
+  .nav-item {
+    display: none;
+  }
 
-/* Styling for smaller screen sizes ends */
-
-/* Styling for larger screen sizes begins */
-/*xl Break point*/
-/*@media (min-width: 780px) {*/
-
-/*  .center {*/
-/*    padding-top: 20px;*/
-/*    padding-bottom: 20px;*/
-/*    padding-inline: 15px;*/
-/*    text-align: center;*/
-/*  }*/
-
-/*  #logo-image-nav {*/
-/*    max-width: 120px;*/
-/*    margin-left: 28px;*/
-/*    margin-right: 10px;*/
-/*    width: 100%;*/
-/*  }*/
-
-/*  .company-name-main-font {*/
-/*    font-size: 32px;*/
-
-/*    !* centre text *!*/
-/*    margin: 0;*/
-/*    position: absolute;*/
-/*    top: 50%;*/
-/*    -ms-transform: translateY(-50%);*/
-/*    transform: translateY(-50%);*/
-/*  }*/
-
-/*  #navbar-id {*/
-/*    overflow: visible;*/
-/*  }*/
-
-/*  #actAsImg {*/
-/*    float: left;*/
-/*  }*/
-
-/*  #business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {*/
-/*    position: absolute;*/
-/*  }*/
-
-/*  .navbar-expand-xl .navbar-nav .dropdown-menu {*/
-/*    padding: 0;*/
-/*    margin: 0;*/
-/*    border-right-width: 1px;*/
-/*    border-left-width: 1px;*/
-/*    position: unset;*/
-/*  }*/
-
-/*  .navbar-expand-xl .navbar-nav .nav-link {*/
-/*    margin: 10px;*/
-/*    padding-left: 1em;*/
-/*    padding-right: 1em;*/
-/*  }*/
-
-/*  #interact-dropdown-links-wrapper {*/
-/*    width: auto;*/
-/*  }*/
-
-
-/*  #interactDrop {*/
-/*    max-width: 180px;*/
-/*    !*margin-left: 50px;*!*/
-/*    padding-left: 1em;*/
-/*  }*/
-
-/*  #interactDrop a {*/
-/*    padding: unset;*/
-/*    padding: 0.4rem 0rem*/
-/*  }*/
-
-/*}*/
-
-/*!*------------------------------------------ Extra Large break point styling -----------------------------------------*!*/
-
-/*@media (min-width: 1400px) {*/
-
-/*  .center {*/
-/*    padding-top: 20px;*/
-/*    padding-bottom: 20px;*/
-/*    padding-inline: 15px;*/
-/*    text-align: center;*/
-/*  }*/
-
-/*  #logo-image-nav {*/
-/*    max-width: 140px;*/
-/*    margin-left: -58px;*/
-/*    margin-right: 10px;*/
-/*    width: 100%;*/
-/*  }*/
-
-/*  .company-name-main-font {*/
-/*    font-size: 40px;*/
-
-/*    !* centre text *!*/
-/*    margin: 0;*/
-/*    position: absolute;*/
-/*    top: 50%;*/
-/*    -ms-transform: translateY(-50%);*/
-/*    transform: translateY(-50%);*/
-/*  }*/
-/*}*/
+}
 
 </style>

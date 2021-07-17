@@ -37,8 +37,8 @@
       </a>
 
       <!-- Dropdown links-->
-      <div id="business-dropdown-links-wrapper">
-        <ul class="dropdown-menu show" id="business-dropdown-links">
+      <div id="business-dropdown-links-wrapper-side">
+        <ul class="dropdown-menu show" id="business-dropdown-links-side">
           <li class="nav-item">
             <router-link
                 :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
@@ -80,7 +80,11 @@ import Api from "../../Api";
 export default {
   name: "SideNavBar",
   props: {
-
+    msTransitionDelay: {
+      type: Number,
+      default: 300,
+      required: false
+    },
   },
   data() {
     return {
@@ -134,8 +138,8 @@ export default {
      * Toggle the business menu dropdown
      */
     toggleBusinessDropdown() {
-      this.showBusinessDropdown = this.toggleDropdownAnimated('business-dropdown-links',
-          'business-dropdown-links-wrapper', this.showBusinessDropdown);
+      this.showBusinessDropdown = this.toggleDropdownAnimated('business-dropdown-links-side',
+          'business-dropdown-links-wrapper-side', this.showBusinessDropdown);
     },
     /**
      * omit name which length longer than max.
@@ -436,7 +440,7 @@ export default {
     }
 
     // Set the initial height for the navbar and the dropdown
-    this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper',
+    this.toggleDropdownAnimated('business-dropdown-links-side', 'business-dropdown-links-wrapper-side',
         this.showBusinessDropdown, true);
     this.toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper',
         this.showInteractMenu, true);
@@ -493,7 +497,7 @@ export default {
   height: 100%;
   width: 0;
   position: fixed;
-  z-index: 1;
+  z-index: 10000;
   top: 0;
   left: 0;
   background-color: #111;
@@ -634,7 +638,7 @@ export default {
   overflow: hidden;
 }
 
-#business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {
+#business-dropdown-links-wrapper-side, #interact-dropdown-links-wrapper {
   position: relative;
   overflow: hidden;
 }
@@ -644,6 +648,7 @@ export default {
 }
 
 .dropdown-menu {
+  position: static;
   border-right-width: 0;
   border-left-width: 0;
   padding: 0 5rem;

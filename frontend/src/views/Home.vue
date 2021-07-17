@@ -17,7 +17,7 @@
         <!--News feed-->
         <div class="container-news text-font">
 
-          <span style="font-size:30px;cursor:pointer" @click="() => openNav()">&#9776; open</span>
+          <span style="font-size:30px;cursor:pointer" @click="openNav">&#9776; open</span>
 
 
           <!--Post 1 for news feed-->
