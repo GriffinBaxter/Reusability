@@ -20,13 +20,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 /**
  * Controller class for images. This class includes:
  * POST "/businesses/{businessId}/products/{productId}/images" endpoint used for adding image to a product of a businesses.
- * DELTETE "/businesses/{businessId}/products/{productId}/images/{imageId}" endpoint for deleting an image for a product of a business.
+ * DELETE "/businesses/{businessId}/products/{productId}/images/{imageId}" endpoint for deleting an image for a product of a business.
  */
 @RestController
 public class ImageResource {
@@ -47,12 +49,19 @@ public class ImageResource {
 
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
 
+    // Constant fields defining the directories of regular photos and test photos
+    private static final String PHOTO_DIRECTORY = "/storage/photos/";
+    private static final String TEST_PHOTO_DIRECTORY = "/storage/photos/test/";
+
+
+
     public ImageResource(BusinessRepository businessRepository, UserRepository userRepository,
                          ProductRepository productRepository, ImageRepository imageRepository) {
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
+
     }
 
     @PostMapping("/businesses/{businessId}/products/{productId}/images")
@@ -115,7 +124,7 @@ public class ImageResource {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(imageObj.getId()));
         }
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored");
 
     }
 

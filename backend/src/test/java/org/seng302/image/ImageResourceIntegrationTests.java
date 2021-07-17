@@ -50,13 +50,16 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+/**
+ * ImageResource test class
+ */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-class ImageResourceIntergrationTests {
+class ImageResourceIntegrationTests {
 
     @Autowired
     private MockMvc mvc;
@@ -237,6 +240,8 @@ class ImageResourceIntergrationTests {
         this.mvc = MockMvcBuilders.standaloneSetup(imageResource).build();
     }
 
+    //------------------------------------ Product Image Creation Endpoint Tests ---------------------------------------
+
     @Test
     void testingFileCreationWithValidData() throws Exception{
         // Given
@@ -245,6 +250,7 @@ class ImageResourceIntergrationTests {
 
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
@@ -260,5 +266,149 @@ class ImageResourceIntergrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
     }
+
+    //------------------------------------ Product Image Deletion Endpoint Tests ---------------------------------------
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing business with an existing product at
+     * the file path BUSINESS_ID > PRODUCT_ID > SOME_HASH_VALUE and that the image no longer exists at the file path
+     * location.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        //TODO store file
+        // imageId = image.getImageId();
+        // define path
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        // TODO check user access
+        // check business exists
+        // check product exists
+        // check image exists
+        // delete image
+
+        // Then
+        //TODO assert get OK status
+        //TODO assert image id no longer exists
+
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when deleting an image of an existing business with an existing product
+     * at the file path BUSINESS_ID > PRODUCT_ID > SOME_HASH_VALUE but the user does not have administration rights i.e.
+     * not administrator of business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocationButIncorrectAccessRights_thenReceiveForbiddenStatus() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        //TODO store file
+        // imageId = image.getImageId();
+        // define path
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        // TODO check user access
+
+        // Then
+        //TODO assert get FORBIDDEN status
+        //TODO assert image still present at correct location
+
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an existing business with an existing
+     * product but the image id does not exist
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdExistsAndImageWithGivenImageIdDoesNotExistsAtExpectedFilePathLocation_thenReceiveNotAcceptedStatus() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        //TODO define path and non-existent image id
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        // TODO check user access
+        // check business exists
+        // check product exists
+        // check image exists and attempt to delete
+
+        // Then
+        //TODO assert get NOT_ACCEPTABLE status
+
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an existing business with a non-existing
+     * product.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdDoesNotExist_thenReceiveNotAcceptedStatus() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        //TODO define non-existent product id
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        // TODO check user access
+        // check business exists
+        // check product exists
+        // attempt to delete
+
+        // Then
+        //TODO assert get NOT_ACCEPTABLE status
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an non-existing business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsDoesNotExist_thenReceiveNotAcceptedStatus() throws Exception {
+
+        // Given
+        //TODO define non-existent business id
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        // TODO check user access
+        // check business exists
+        // attempt to delete
+
+        // Then
+        //TODO assert get NOT_ACCEPTABLE status
+    }
+
+    //--------------------------- Product Image Changing Primary Image Endpoint Tests ----------------------------------
+
 
 }
