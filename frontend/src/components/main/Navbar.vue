@@ -14,6 +14,16 @@
   <nav class="navbar sticky-top navbar-expand-xl shadow-sm text-font" style="background-color: white">
     <div class="container mt-2 my-xl-3 mx-auto">
 
+      <!-- Hamburger icon -->
+      <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Side nav hamburger open button -->
+      <div id="side-nav-bar-open-btn">
+          <span style="font-size:30px;cursor:pointer" @click="openNav">&#9776; open</span>
+      </div>
+
       <!-- Logo image -->
       <div class="logo-container text-center">
         <router-link class="navbar-brand " to="/home" tabindex="-1">
@@ -22,11 +32,6 @@
         <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
 
       </div>
-
-      <!-- Hamburger icon -->
-      <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
-        <span class="navbar-toggler-icon"></span>
-      </button>
 
         <!-- Navbar links -->
         <div class="navbar-collapse" id="navbar-id">
@@ -218,6 +223,7 @@ export default {
       maxNameLength: 30,
       omitPoint: 10,
 
+      // For determining which view of the navigation we want the user to use/see
       isMobileMode: null
     }
   },
@@ -225,27 +231,13 @@ export default {
   methods: {
 
     /**
-     * Determines the browser's width. Depending on the browser, the width is calculated differently.
-     * If none of the browser's native properties are defined, it will return undefined.
+     *  Set the width of the side navigation to 250px and the left margin of the page content to 250px
      */
-    getBrowserWidth() {
-      if (self.innerWidth) {
-        return self.innerWidth;
-      }
-      if (document.documentElement && document.documentElement.clientWidth) {
-        return document.documentElement.clientWidth;
-      }
-      if (document.body) {
-        return document.body.clientWidth;
-      }
+    openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+      document.getElementById("main").style.marginLeft = "250px";
     },
-    /**
-     * If the width of the browser is more than 780px, then the top navigation links are not displayed.
-     * Only the mobile navigation menu will have these links present.
-     */
-    showTopNavLinks() {
-      this.canShowTopNavLinks = (this.getBrowserWidth() < 780);
-    },
+
     /**
      * Toggle the interactAs menu dropdown
      */
@@ -599,7 +591,7 @@ export default {
           } else {
             that.showOmitName = false;
           }
-          // that.isMobileMode = (that.screenWidth >= 780);
+          this.isMobileMode = (that.screenWidth >= 780);
 
           that.timer = false
         }, 400)
@@ -795,7 +787,12 @@ export default {
   .nav-item {
     display: none;
   }
+}
 
+@media (max-width: 1200px) {
+  #side-nav-bar-open-btn {
+    display: none;
+  }
 }
 
 </style>

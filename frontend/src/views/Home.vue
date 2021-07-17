@@ -17,9 +17,6 @@
         <!--News feed-->
         <div class="container-news text-font">
 
-          <span style="font-size:30px;cursor:pointer" @click="openNav">&#9776; open</span>
-
-
           <!--Post 1 for news feed-->
           <div class="post shadow py-5 px-4">
             <!--Post header-->
@@ -109,11 +106,7 @@ export default {
     Navbar
   },
   methods: {
-    /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
-    openNav() {
-      document.getElementById("mySidenav").style.width = "250px";
-      document.getElementById("main").style.marginLeft = "250px";
-    },
+
   },
 }
 </script>
