@@ -2,19 +2,19 @@ package org.seng302.model.repository;
 
 import org.seng302.model.Business;
 import org.seng302.model.enums.BusinessType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
 
-    @PersistenceContext
+    @Autowired
     private EntityManager entityManager;
 
     /**
