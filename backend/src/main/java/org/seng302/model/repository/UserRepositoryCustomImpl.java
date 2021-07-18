@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.query.QueryUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
@@ -68,10 +69,21 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(fullName), "%" + name.toUpperCase() + "%"));
             }
         }
-        query.select(user)
-                .where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
+        query.where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
-        List<User> users = entityManager.createQuery(query).getResultList();
-        return new PageImpl<>(users, pageable, users.size());
+        query.orderBy(QueryUtils.toOrders(pageable.getSort(), user, criteriaBuilder));
+
+        // This query fetches the Users as per the Page Limit
+        List<User> users = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
+
+        // Create Count Query
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        Root<User> userRootCount = countQuery.from(User.class);
+        countQuery.select(criteriaBuilder.count(userRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
+
+        // Fetches the count of all Users as per given criteria
+        Long count = entityManager.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(users, pageable, count);
     }
 }
