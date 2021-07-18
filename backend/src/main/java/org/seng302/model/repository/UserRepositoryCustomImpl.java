@@ -1,12 +1,9 @@
 package org.seng302.model.repository;
 
-import org.seng302.model.Business;
 import org.seng302.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,15 +33,39 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         Root<User> user = query.from(User.class);
 
-        Path<String> namePath = user.get("name");
+        Path<String> nicknamePath = user.get("nickname");
+        Path<String> firstNamePath = user.get("firstName");
+        Path<String> lastNamePath = user.get("lastName");
+        Path<String> middleNamePath = user.get("middleName");
+
+        Expression<String> firstNameMiddleName = criteriaBuilder.concat(firstNamePath, " ");
+        firstNameMiddleName = criteriaBuilder.concat(firstNameMiddleName, middleNamePath);
+
+        Expression<String> firstNameLastName = criteriaBuilder.concat(firstNamePath, " ");
+        firstNameLastName = criteriaBuilder.concat(firstNameLastName, lastNamePath);
+
+        Expression<String> middleNameLastName = criteriaBuilder.concat(middleNamePath, " ");
+        middleNameLastName = criteriaBuilder.concat(middleNameLastName, lastNamePath);
+
+        Expression<String> fullName = criteriaBuilder.concat(firstNameMiddleName, " ");
+        fullName = criteriaBuilder.concat(fullName, lastNamePath);
+
 
         List<Predicate> predicates = new ArrayList<>();
         for (String name : names) {
             if (name.startsWith("\"") && name.endsWith("\"")) {
                 name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
-                predicates.add(criteriaBuilder.equal(namePath, name));
+                predicates.add(criteriaBuilder.equal(nicknamePath, name));
+                predicates.add(criteriaBuilder.equal(firstNameMiddleName, name));
+                predicates.add(criteriaBuilder.equal(firstNameLastName, name));
+                predicates.add(criteriaBuilder.equal(middleNameLastName, name));
+                predicates.add(criteriaBuilder.equal(fullName, name));
             } else {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(namePath), "%" + name.toUpperCase() + "%"));
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(nicknamePath), "%" + name.toUpperCase() + "%"));
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(firstNameMiddleName), "%" + name.toUpperCase() + "%"));
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(firstNameLastName), "%" + name.toUpperCase() + "%"));
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(middleNameLastName), "%" + name.toUpperCase() + "%"));
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(fullName), "%" + name.toUpperCase() + "%"));
             }
         }
         query.select(user)
@@ -53,14 +74,4 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         List<User> users = entityManager.createQuery(query).getResultList();
         return new PageImpl<>(users, pageable, users.size());
     }
-
-    /**
-     * Search for users by their first, middle, last name or nick name, ignoring case.
-     * Takes a pageable object for pagination and allows partial matches (not case sensitive).
-     * @param names A list of names that need to be searched for.
-     * @param pageable A pageable object containing the requested page number, the number of results in a page and a sort object.
-     * @return A Page object containing all matching user results
-     */
-    @Query(value="select u from User u where upper(CONCAT(u.firstName, ' ', u.middleName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%') or upper(u.nickname) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.firstName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.firstName, ' ', u.middleName)) LIKE CONCAT('%',upper(?1),'%') or upper(CONCAT(u.middleName, ' ', u.lastName)) LIKE CONCAT('%',upper(?1),'%')")
-    Page<User> findAllUsersByNames(@Param("names") List<String> names, Pageable pageable);
 }

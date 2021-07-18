@@ -346,8 +346,7 @@ class SearchUserByNameTests {
 
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(0);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -384,8 +383,7 @@ class SearchUserByNameTests {
 
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-//        assertThat(userPage.getContent()).isEqualTo(0);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -420,8 +418,7 @@ class SearchUserByNameTests {
         orderedEmail.add("testemail@email.com");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-       // assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -457,10 +454,7 @@ class SearchUserByNameTests {
         orderedEmail.add("chad.taylor@example.com");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-
-
-        //assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -494,9 +488,7 @@ class SearchUserByNameTests {
 
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-
-//        assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -531,8 +523,7 @@ class SearchUserByNameTests {
         orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839, Ilam");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -567,8 +558,7 @@ class SearchUserByNameTests {
         orderedFullName.add("testfirst testmiddle Dentri");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -605,8 +595,7 @@ class SearchUserByNameTests {
         orderedFullName.add("Alex Ben Hasdsadine");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
@@ -628,7 +617,7 @@ class SearchUserByNameTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(13);
@@ -647,10 +636,10 @@ class SearchUserByNameTests {
         int pageSize = 2;
 
         // when
-        Page<User> userPage2 = userRepository.findAllUsersByNames("", PageRequest.of(1, pageSize));
-        Page<User> userPage3 = userRepository.findAllUsersByNames("", PageRequest.of(2, pageSize));
-        Page<User> userPage4 = userRepository.findAllUsersByNames("", PageRequest.of(3, pageSize));
-        Page<User> userPage5 = userRepository.findAllUsersByNames("", PageRequest.of(4, pageSize));
+        Page<User> userPage2 = userRepository.findAll(PageRequest.of(1, pageSize));
+        Page<User> userPage3 = userRepository.findAll(PageRequest.of(2, pageSize));
+        Page<User> userPage4 = userRepository.findAll(PageRequest.of(3, pageSize));
+        Page<User> userPage5 = userRepository.findAll(PageRequest.of(4, pageSize));
 
         // then
         assertThat(userPage2.getTotalPages()).isEqualTo(7);
@@ -676,8 +665,11 @@ class SearchUserByNameTests {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("ThisValueDoesNotExist");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("ThisValueDoesNotExist", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isZero();
@@ -697,7 +689,7 @@ class SearchUserByNameTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         assertThat(userPage.getTotalPages()).isEqualTo(2);
@@ -722,8 +714,8 @@ class SearchUserByNameTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(0);
+        Page<User> userPage = userRepository.findAll(pageable);
+
         // then
         assertThat(userPage.getTotalPages()).isEqualTo(5);
         assertThat(userPage.getSize()).isEqualTo(3);
@@ -746,8 +738,11 @@ class SearchUserByNameTests {
         int pageSize = 11;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("nothing");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("nothing", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isZero();
@@ -765,7 +760,7 @@ class SearchUserByNameTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(13);
@@ -786,8 +781,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("h");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("h", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getSize()).isEqualTo(5);
@@ -813,8 +811,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("den");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("den", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(4);
@@ -839,8 +840,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("Johnny");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("Johnny", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(1);
@@ -860,8 +864,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("tea");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("tea", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(1);
@@ -882,8 +889,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("hine");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("hine", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(3);
@@ -905,8 +915,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("Min");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("Min", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(1);

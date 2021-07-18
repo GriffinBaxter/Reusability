@@ -703,12 +703,12 @@ class UserResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -752,12 +752,12 @@ class UserResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -803,12 +803,12 @@ class UserResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         for (String searchQuery: searchQueryList) {
@@ -852,12 +852,12 @@ class UserResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
 
         for (String searchQuery: searchQueryList) {
@@ -899,12 +899,12 @@ class UserResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 5, sort);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery)
