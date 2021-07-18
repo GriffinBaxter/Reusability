@@ -5,11 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
 import org.seng302.exceptions.IllegalKeywordArgumentException;
 import org.seng302.exceptions.IllegalMarketplaceCardArgumentException;
+import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.*;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
+import org.seng302.utils.PaginationUtils;
 import org.seng302.view.incoming.MarketplaceCardCreationPayload;
 import org.seng302.view.outgoing.MarketplaceCardIdPayload;
 import org.seng302.view.outgoing.MarketplaceCardPayload;
@@ -36,6 +38,7 @@ import java.time.LocalDateTime;
  * The POST /cards endpoint is used to create cards.
  * The GET /cards endpoint is used to retrieve all cards that are stored.
  * The GET /cards/id endpoint is used to retrieve the details for a single card.
+ * The GET /users/{id}/cards endpoint is used to retrieve all active cards from a given user by ID.
  * The PUT /cards/{id}/extenddisplayperiod endpoint is used to extend the display period of a card nearing expiry.
  */
 @RestController
@@ -179,7 +182,7 @@ public class MarketplaceCardResource {
         logger.debug("Get card request received with section {}, order by {}, page {}", section, orderBy, page);
 
         // Checks user logged in 401
-        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Checks section is valid
         Section sectionType;
@@ -194,16 +197,7 @@ public class MarketplaceCardResource {
         }
 
         // Checks page is number
-        int pageNo;
-        try {
-            pageNo = Integer.parseInt(page);
-        } catch (final NumberFormatException e) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Page parameter invalid"
-            );
-        }
+        int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Front-end displays 20 cards per page
         int pageSize = 6; // NOTE if changed must also be changed in MarketplaceCardResourceIntegrationTests
@@ -287,7 +281,7 @@ public class MarketplaceCardResource {
      * PUT method for extending the display period of a marketplace card with a given ID.
      *
      * @param sessionToken Session token of the currently logged in user.
-     * @param id The ID of the card the user wishes to extend the display period of.
+     * @param id           The ID of the card the user wishes to extend the display period of.
      */
     @PutMapping("/cards/{id}/extenddisplayperiod")
     public void extendDisplayPeriod(
@@ -312,6 +306,53 @@ public class MarketplaceCardResource {
     }
 
     /**
+     * GET method for retrieving all active cards that a given user has created.
+     *
+     * Contract:
+     * Pre-conditions: Valid JSESSIONID cookie and user ID
+     * Post-conditions: Returns active cards from given user
+     *
+     * @param sessionToken Session token of the currently logged in user.
+     * @param id The ID of the user.
+     * @return A list of all cards created by the user (possibly empty).
+     */
+    @GetMapping("/users/{id}/cards")
+    public ResponseEntity<List<MarketplaceCardPayload>> retrieveUsersActiveCards(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer id
+    ) throws Exception {
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+        
+        Optional<User> cardsUser = userRepository.findById(id);
+        
+        if (cardsUser.isEmpty()) {
+            logger.error("406 [NOT ACCEPTABLE] - User with ID {} does not exist", id);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The given user does not exist.");
+        } else {
+            List<MarketplaceCard> cards = marketplaceCardRepository
+                    .findMarketplaceCardByCreatorId(
+                            id
+                    );
+            logger.info(
+                    "Marketplace Retrieve Cards Success - 200 [OK] - User with ID {} has had its cards retrieved.",
+                    id
+            );
+
+            List<MarketplaceCardPayload> payload = new ArrayList<>();
+            for (MarketplaceCard card : cards) {
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                
+                if (card.getDisplayPeriodEnd().isAfter(currentDateTime)) {
+                    payload.add(card.toMarketplaceCardPayload());
+                }
+            }
+            
+            return ResponseEntity.ok()
+                    .body(payload);
+        }
+    }
+
+    /**
      * Checks that an optional that may or may not contain a marketplace card is not empty.
      * If it is, then throws a response.
      * However, if a card exists, then the card is returned.
@@ -331,4 +372,48 @@ public class MarketplaceCardResource {
         return marketplaceCardOptional.get();
     }
 
+    /**
+     * DELETE method for delete a specific marketplace card by given id.
+     *
+     * @param sessionToken session token for current user
+     * @param id           id of the specific marketplace card
+     */
+    @DeleteMapping("/cards/{id}")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Card deleted successfully")
+    public void deleteACard(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
+    ) {
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        Optional<MarketplaceCard> optionalMarketplaceCard = marketplaceCardRepository.findById(id);
+
+        if (optionalMarketplaceCard.isEmpty()) {
+            logger.error("Marketplace Card Delete Failure - 406 [NOT ACCEPTABLE] - Marketplace card with ID {} does not exist", id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                            "for example trying to access a resource by an ID that does not exist."
+            );
+        }
+
+        logger.debug("Retrieved marketplace card with ID {}: {}", id, optionalMarketplaceCard.get());
+
+        MarketplaceCard marketplaceCard = optionalMarketplaceCard.get();
+
+        if (currentUser.getRole() != Role.GLOBALAPPLICATIONADMIN
+                && currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN
+                && currentUser != marketplaceCard.getCreator()) {
+            logger.error("Marketplace Card Delete Failure - 403 [FORBIDDEN] - Current user have no permission" +
+                    " to delete marketplace card with ID {}", id);
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Current user tries to delete a card that they are not the creator of AND the user is not a GAA."
+            );
+        }
+
+        marketplaceCardRepository.delete(marketplaceCard);
+
+        logger.info("Marketplace Card Delete Success - 200 [OK] -  Marketplace card with ID {} deleted", id);
+        logger.debug("Delete marketplace card with ID {}: {}", id, marketplaceCard);
+    }
 }
