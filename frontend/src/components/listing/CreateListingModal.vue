@@ -665,8 +665,8 @@ input:focus, textarea:focus {
   position: absolute;
   width: 100%;
   background-color: #ffffff;
-  overflow: auto;
-  height: 22em;
+  overflow-y: auto;
+  max-height: 22em;
 }
 
 .autofill-options li {
