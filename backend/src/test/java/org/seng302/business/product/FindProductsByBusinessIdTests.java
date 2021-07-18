@@ -565,7 +565,7 @@ class FindProductsByBusinessIdTests {
     void whenFindAllProductsByBusinessId_thenReturnPageHalfFull() {
         // given
         int pageNo = 0;
-        // Page size 20 means page will be half full with the default 13 users inserted
+        // Page size 10 means page will be half full with the default 5 products inserted
         int pageSize = 10;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 

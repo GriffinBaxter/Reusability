@@ -55,4 +55,13 @@ public interface MarketplaceCardRepository extends JpaRepository<MarketplaceCard
             String title,
             String description
     );
+
+    /**
+     * Search for all cards created by an existing user with a given user ID.
+     * @param creatorId The ID of the creator (user) of the card.
+     * @return A list of all cards created by the user (possibly empty).
+     */
+    List<MarketplaceCard> findMarketplaceCardByCreatorId(
+            Integer creatorId
+    );
 }
