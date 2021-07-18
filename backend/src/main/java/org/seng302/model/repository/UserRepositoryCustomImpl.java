@@ -69,19 +69,21 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(fullName), "%" + name.toUpperCase() + "%"));
             }
         }
+        // the where clause of the query
         query.where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
+        // the order by clause of the query
         query.orderBy(QueryUtils.toOrders(pageable.getSort(), user, criteriaBuilder));
 
-        // This query fetches the Users as per the Page Limit
+        // the query which fetches the users as per the page limit
         List<User> users = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
 
-        // Create Count Query
+        // create a count query used to display "Showing 1-5 of x results"
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         Root<User> userRootCount = countQuery.from(User.class);
         countQuery.select(criteriaBuilder.count(userRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
-        // Fetches the count of all Users as per given criteria
+        // fetches the count of all users as per given criteria
         Long count = entityManager.createQuery(countQuery).getSingleResult();
 
         return new PageImpl<>(users, pageable, count);
