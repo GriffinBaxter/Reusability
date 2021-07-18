@@ -250,6 +250,11 @@ export default {
 
       // Show the modal itself.
       this.modal.show();
+
+
+      // Variables for keyword autocompletion calculations
+      this.textCursorPosition = 0
+      this.currentKeyword = ""
     },
     /**
      * Determines if a section choice made by the user is valid. And updates the error
@@ -548,6 +553,28 @@ export default {
       }
 
       return keyword
+    },
+    
+    updateCursorPosition(e) {
+      this.textCursorPosition = e.target.selectionStart;
+      this.currentKeyword = "";
+      
+      let currentKeywordStart = this.keywordsInput.substring(0, this.textCursorPosition + 1).lastIndexOf("#");
+      
+      if (currentKeywordStart !== -1) {
+        let currentKeywordEnd = this.keywordsInput.substring(this.textCursorPosition).indexOf(" ");
+        
+        if (currentKeywordEnd !== -1) {
+          this.currentKeyword = this.keywordsInput.substring(
+              currentKeywordStart + 1, currentKeywordEnd + this.textCursorPosition
+          );
+        } else {
+          this.currentKeyword = this.keywordsInput.substring(currentKeywordStart + 1);
+        }
+        
+        console.log(this.currentKeyword)
+        // TODO: Search here using the current keyword (at the current text cursor position)
+      }
     }
 
   },
@@ -558,6 +585,14 @@ export default {
     if (currentID) {
       this.populateUserInfo(currentID)
     }
+
+    document.getElementById('card-keywords').addEventListener('keyup', e => {
+      this.updateCursorPosition(e)
+    })
+
+    document.getElementById('card-keywords').addEventListener('click', e => {
+      this.updateCursorPosition(e)
+    })
   },
   watch: {
     /**
