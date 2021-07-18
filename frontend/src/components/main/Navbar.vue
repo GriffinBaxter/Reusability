@@ -20,9 +20,9 @@
       </button>
 
       <!-- Side nav hamburger open button -->
-      <div id="side-nav-bar-open-btn">
-          <span style="font-size:30px;cursor:pointer" @click="openNav">&#9776; open</span>
-      </div>
+      <button id="side-nav-bar-open-btn">
+          <span class="navbar-toggler-icon" style="font-size:30px;cursor:pointer" @click="openNav"></span>
+      </button>
 
       <!-- Logo image -->
       <div class="logo-container text-center">
@@ -696,11 +696,12 @@ export default {
   cursor: pointer;
 }
 
-.navbar-toggler {
+.navbar-toggler, #side-nav-bar-open-btn {
   color: rgba(25, 176, 146, 0.55);
   border-color: rgba(0, 0, 0, 0.2);
   border-width: 2px;
   border-radius: 0.6rem;
+  background-color: white;
 }
 
 .navbar-toggler-icon {
