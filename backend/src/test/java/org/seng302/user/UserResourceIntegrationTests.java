@@ -1057,6 +1057,60 @@ class UserResourceIntegrationTests {
         }
     }
 
+    /**
+     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
+     * the JSON response is equal to the users searched for. This test tests specifically for more complex search queries
+     * i.e those that contain AND and OR operators.
+     */
+    @Test
+    void canSearchUsersWithComplexQueriesWhenUsersExists() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST OR ALEX",
+                "testfirst or alex",
+                "TESTFIRST AND TESTLAST OR alex",
+                "TESTFIRST OR TESTLAST OR Alex",
+                "TESTFIRST and TESTLAST or ALEX"
+        );
+
+        expectedJson = "[" +
+                String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
+                        user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
+                        null, "[null]",  user.getHomeAddress().toSecureString()) + "," +
+                String.format(expectedSecureUserJson, searchUser1.getId(), searchUser1.getFirstName(),
+                        searchUser1.getLastName(), searchUser1.getMiddleName(), searchUser1.getNickname(),
+                        searchUser1.getBio(), searchUser1.getEmail(), searchUser1.getCreated(),
+                        null, "[null]",  searchUser1.getHomeAddress().toSecureString()) +
+                "]";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        List<User> list = List.of(user, searchUser1);
+        Page<User> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "ALEX"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("testfirst", "alex"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "alex"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "TESTLAST", "Alex"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "ALEX"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /* ------------------------------------- Make/Revoke Admin Tests ------------------------------------- */
 
     /**
      * Test that an OK(200) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
