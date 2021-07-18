@@ -18,7 +18,10 @@
             <div class="col-7 form-group py-1 px-3">
               <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
                 <label for="autofill-input">Product ID*: </label>
-                <input type="text" id="autofill-input" ref="autofill-input" class="form-control" v-model="autofillInput">
+                <input type="text" id="autofill-input" ref="autofill-input" :class="inventoryValidationHelper.toggleInvalidClass(productIdErrorMsg)" v-model="autofillInput">
+                <div class="invalid-feedback">
+                  {{ productIdErrorMsg }}
+                </div>
                 <span class="iconSpan">
                     <i class="fas fa-angle-down"></i>
                   </span>

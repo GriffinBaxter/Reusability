@@ -18,7 +18,10 @@
               <div class="col form-group py-1 px-3">
                 <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
                   <label for="autofill-input">Select an inventory item*: </label>
-                  <input type="text" id="autofill-input" ref="autofill-input" class="form-control" v-model="autofillInput">
+                  <input type="text" id="autofill-input" ref="autofill-input" :class="toggleInvalidClass(inventoryIdErrorMsg)" v-model="autofillInput">
+                  <div class="invalid-feedback">
+                    {{ inventoryIdErrorMsg }}
+                  </div>
                   <span class="iconSpan">
                     <i class="fas fa-angle-down"></i>
                   </span>
@@ -500,8 +503,11 @@ export default {
     async createNewInventoryItem() {
       let requestIsInvalid = false;
 
-      if (this.currentInventoryItem === null) {
+      if (this.autofillInput === '' && this.currentInventoryItem === null) {
         this.inventoryIdErrorMsg = "Please enter an ID";
+        requestIsInvalid = true;
+      } else if (this.currentInventoryItem === null) {
+        this.inventoryIdErrorMsg = "Please enter a valid ID";
         requestIsInvalid = true;
       } else {
         this.inventoryId = this.currentInventoryItem.id;
