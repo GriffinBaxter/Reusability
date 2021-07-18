@@ -65,7 +65,9 @@ To run it on port 8999 (as it is in production), the following commands should b
 
 Running on: http://localhost:8999/ by default
 
-The backend can be tested by using the examples from the [API specification](https://eng-git.canterbury.ac.nz/seng302-2021/seng302-api-spec-2021) in the [Swagger Editor](https://editor.swagger.io/).
+The backend can be tested by using the examples from the API specification (found within the /api directory) in the [Swagger Editor](https://editor.swagger.io/).
+
+Additionally, Postman tests are provided as collections, also found within the /api directory.
 
 ## Demo User Accounts
 
