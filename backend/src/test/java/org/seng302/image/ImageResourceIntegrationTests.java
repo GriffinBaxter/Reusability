@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.seng302.Main;
@@ -38,21 +37,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * ImageResource test class
@@ -80,10 +71,8 @@ class ImageResourceIntegrationTests {
     @MockBean
     private ImageRepository imageRepository;
 
-    @MockBean
+    @Mock
     private FileStorageService fileStorageService;
-
-    private ImageResource imageResource;
 
     private Address address;
 
@@ -103,7 +92,15 @@ class ImageResourceIntegrationTests {
 
     private Product anotherProduct;
 
-    private MockMultipartFile uploadedImage;
+    private MockMultipartFile jpgImage;
+
+    private MockMultipartFile jpegImage;
+
+    private MockMultipartFile pngImage;
+
+    private MockMultipartFile gifImage;
+
+    private MockMultipartFile otherFile;
 
     private Image primaryImage;
 
@@ -236,7 +233,11 @@ class ImageResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 1, 1),
                         LocalTime.of(0, 0))
         );
-        uploadedImage = new MockMultipartFile("images", "testImage.jpg", MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
+        otherFile = new MockMultipartFile("images", "testImage.other", "something", this.getClass().getResourceAsStream("testImage.jpg"));
+        jpgImage = new MockMultipartFile("images", "testImage.jpg", MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
+        jpegImage = new MockMultipartFile("images", "testImage.jpeg", MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
+        pngImage = new MockMultipartFile("images", "testImage.png", MediaType.IMAGE_PNG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
+        gifImage = new MockMultipartFile("images", "testImage.gif", MediaType.IMAGE_GIF_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
         productId = product.getProductId();
         businessId = business.getId();
         primaryImage = new Image(1, productId, businessId, "test/test", "test/test", true);
@@ -268,7 +269,7 @@ class ImageResourceIntegrationTests {
         List<Image> images = new ArrayList<Image>();
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(uploadedImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -299,7 +300,7 @@ class ImageResourceIntegrationTests {
         images.add(primaryImage);
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(uploadedImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -325,6 +326,358 @@ class ImageResourceIntegrationTests {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Test that the user must provide a cookie.
+     * @throws Exception
+     */
+    @Test
+    void TestingUserHasToHaveCookie() throws Exception{
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+
+        // When
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+
+    }
+
+    /**
+     * Testing that a cookie must have a valid active session token.
+     */
+    @Test
+    void TestingThatUserMustHaveActiveValidSession() throws Exception {
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.empty());
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+
+    }
+
+    /**
+     * Testing that the user must provide a valid business id in the parameters.
+     * @throws Exception
+     */
+    @Test
+    void testingUserHasToProvideValidBusinessId() throws Exception {
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+
+    /**
+     * Testing that the user must provide a valid product id in the parameters.
+     * @throws Exception
+     */
+    @Test
+    void testingUserHasToProvideValidProductId() throws Exception {
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.empty());
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Testing that a user needs to have GAA role to be able to upload an image for a product they are not on the administrator list of.
+     * @throws Exception
+     */
+    @Test
+    void testingUserNeedsToBeGaaForBusinessThatTheyAreNotAdminOf() throws Exception{
+        // Given
+        businessId = anotherBusiness.getId();
+        productId = product.getProductId();
+
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        images.add(primaryImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+
+    /**
+     * Testing that a user needs to have DGAA role to be able to upload an image for a product they are not on the administrator list of.
+     * @throws Exception
+     */
+    @Test
+    void testingUserNeedsToBeDgaaForBusinessThatTheyAreNotAdminOf() throws Exception{
+        // Given
+        businessId = anotherBusiness.getId();
+        productId = product.getProductId();
+
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        images.add(primaryImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+    /**
+     * Testing that a user of role USER can upload images if they are an admin of the business.
+     * @throws Exception
+     */
+    @Test
+    void testingThatUserMustBeAdminOfBusinessToUploadImages() throws Exception{
+        // Given
+        businessId = anotherBusiness.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        images.add(primaryImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+    /**
+     * Testing that a user of role USER cannot upload images if they are not an admin of the business.
+     * @throws Exception
+     */
+    @Test
+    void testingThatUserThatIsNotAnAdminOfBusinessCannotUploadImages() throws Exception{
+        // Given
+        businessId = anotherBusiness.getId();
+        productId = product.getProductId();
+
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        images.add(primaryImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Testing that a user cannot upload a file that is not of type .gif, .gif, .jpg or .jpeg.
+     * @throws Exception
+     */
+    @Test
+    void testingInavlidFileFormat() throws Exception {
+        // Given
+        businessId = anotherBusiness.getId();
+        productId = product.getProductId();
+
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(otherFile).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+
+    /**
+     * Testing that .gif is a valid file format to be uploaded.
+     * @throws Exception
+     */
+    @Test
+    void testingThatGifIsAnAcceptableFormat() throws Exception{
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(gifImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+
+    /**
+     * Testing that .png is a valid file format to be uploaded.
+     * @throws Exception
+     */
+    @Test
+    void testingThatPngIsAnAcceptableFormat() throws Exception{
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(pngImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+
+    /**
+     * Testing that .gif is a valid file format to be uploaded.
+     * @throws Exception
+     */
+    @Test
+    void testingThatJpegIsAnAcceptableFormat() throws Exception{
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+
+    /**
+     * Testing that .gif is a valid file format to be uploaded.
+     * @throws Exception
+     */
+    @Test
+    void testingThatJpgIsAnAcceptableFormat() throws Exception{
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+    }
+
+
 
     //------------------------------------ Product Image Deletion Endpoint Tests ---------------------------------------
 
