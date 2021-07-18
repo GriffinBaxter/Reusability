@@ -280,9 +280,7 @@ class BusinessSearchOrderByTests {
         // given
         int pageNo = 0;
         int pageSize = 10;
-        Sort sortBy = Sort.by(Sort.Order.desc("address.street_name").ignoreCase())
-                .and(Sort.by(Sort.Order.desc("address.suburb").ignoreCase()))
-                .and(Sort.by(Sort.Order.desc("address.city").ignoreCase()))
+        Sort sortBy = Sort.by(Sort.Order.desc("address.city").ignoreCase())
                 .and(Sort.by(Sort.Order.asc("address.region").ignoreCase()))
                 .and(Sort.by(Sort.Order.asc("address.country").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
@@ -316,9 +314,7 @@ class BusinessSearchOrderByTests {
         // given
         int pageNo = 0;
         int pageSize = 10;
-        Sort sortBy = Sort.by(Sort.Order.desc("address.street_name").ignoreCase())
-                .and(Sort.by(Sort.Order.desc("address.suburb").ignoreCase()))
-                .and(Sort.by(Sort.Order.desc("address.city").ignoreCase()))
+        Sort sortBy = Sort.by(Sort.Order.desc("address.city").ignoreCase())
                 .and(Sort.by(Sort.Order.asc("address.region").ignoreCase()))
                 .and(Sort.by(Sort.Order.asc("address.country").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
