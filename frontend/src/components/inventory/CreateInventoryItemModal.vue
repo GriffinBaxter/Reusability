@@ -26,7 +26,10 @@
                     <i class="fas fa-angle-down"></i>
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
-                  <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" tabindex="-1" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product)}}</li>
+                  <!-- Popover for additional info -->
+                  <span class="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" title="Popover title" data-bs-content="And here's some amazing content. It's very engaging. Right?">
+                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" tabindex="-1" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product)}}</li>
+                  </span>
                 </ul>
               </div>
             </div>
