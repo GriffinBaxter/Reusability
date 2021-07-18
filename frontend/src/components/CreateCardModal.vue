@@ -117,6 +117,11 @@
                     <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
                     @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
                   </div>
+                  <div id="autofill-container" ref="autofill-container">
+                    <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
+                      <li v-for="keyword in autocompleteKeywords" v-bind:key="keyword.id" v-bind:id="keyword.id">{{ keyword.name }}</li>
+                    </ul>
+                  </div>
                   <div id="card-keywords-invalid-feedback" class="invalid-feedback" v-if="formError.keywordsError">
                     {{formError.keywordsError}}
                   </div>
@@ -214,7 +219,9 @@ export default {
         descriptionError: "",
         keywordsError: "",
         creatorIdError: ""
-      }
+      },
+
+      autocompleteKeywords: []
     }
   },
   methods: {
@@ -255,6 +262,7 @@ export default {
       // Variables for keyword autocompletion calculations
       this.textCursorPosition = 0
       this.currentKeyword = ""
+      this.autocompleteKeywords = []
     },
     /**
      * Determines if a section choice made by the user is valid. And updates the error
@@ -558,6 +566,7 @@ export default {
     updateCursorPosition(e) {
       this.textCursorPosition = e.target.selectionStart;
       this.currentKeyword = "";
+      this.autocompleteKeywords = [];
       
       let currentKeywordStart = this.keywordsInput.substring(0, this.textCursorPosition + 1).lastIndexOf("#");
       
@@ -571,9 +580,15 @@ export default {
         } else {
           this.currentKeyword = this.keywordsInput.substring(currentKeywordStart + 1);
         }
-        
-        console.log(this.currentKeyword)
-        // TODO: Search here using the current keyword (at the current text cursor position)
+
+        Api.searchKeywords(this.currentKeyword).then(response => {
+          let autocompleteKeywords = [];
+          for (let i = 0; i < response.data.length && i < 5; i++) {
+            autocompleteKeywords.push(response.data[i])
+          }
+          
+          this.autocompleteKeywords = autocompleteKeywords;
+        })
       }
     }
 
@@ -695,6 +710,45 @@ export default {
     letter-spacing: 2px;
     word-spacing: 2px;
     line-height: 2em;
+  }
+
+/*********************************************************************
+                        Autofill styling
+
+     This CSS is a modified version of the examples found on
+  Julie Grundy's tutorial for creating a custom select element:
+
+  https://24ways.org/2019/making-a-better-custom-select-element/
+*********************************************************************/
+  
+  #autofill-container {
+    position: relative;
+  }
+
+  #card-keywords::-ms-expand {
+    display: none;
+  }
+  
+  .autofill-options {
+    border: 1px solid lightgray;
+    border-radius: 0 0 0.25em 0.25em;
+    line-height: 1.25;
+    padding: 0;
+    list-style-type: none;
+    cursor: pointer;
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+    background-color: #ffffff;
+  }
+
+  .autofill-options li {
+    padding: 1em;
+  }
+
+  .autofill-options li:hover, .autofill-options li:focus {
+    background: #1EBA8C;
+    color: #fff;
   }
 
 </style>
