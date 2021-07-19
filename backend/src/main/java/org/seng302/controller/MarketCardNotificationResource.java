@@ -1,5 +1,7 @@
 package org.seng302.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
 import org.seng302.model.MarketCardNotification;
 import org.seng302.model.User;
@@ -7,7 +9,6 @@ import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.outgoing.MarketCardNotificationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,13 @@ public class MarketCardNotificationResource {
     @Autowired
     private MarketCardNotificationRepository marketCardNotificationRepository;
 
-    //TODO: Test
+    public MarketCardNotificationResource(UserRepository userRepository, MarketCardNotificationRepository marketCardNotificationRepository) {
+        this.userRepository = userRepository;
+        this.marketCardNotificationRepository = marketCardNotificationRepository;
+    }
+
+    private static final Logger logger = LogManager.getLogger(MarketplaceCardResource.class.getName());
+
     /**
      * Retrieve all notifications for current login user
      *
@@ -41,11 +48,14 @@ public class MarketCardNotificationResource {
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken
     ) throws Exception {
         //401
+        System.out.println(sessionToken);
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User (Id: {}) received.", currentUser.getId());
 
         List<MarketCardNotificationPayload> marketCardNotificationPayloads = new ArrayList<>();
         List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAllByUserId(currentUser.getId());
         for (MarketCardNotification marketCardNotification : marketCardNotifications) {
+            logger.debug("Market Card Notification (Id: {}) received.", marketCardNotification.getId());
             marketCardNotificationPayloads.add(marketCardNotification.toMarketCardNotificationPayload());
         }
         return marketCardNotificationPayloads;

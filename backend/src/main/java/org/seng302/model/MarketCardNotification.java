@@ -35,7 +35,11 @@ public class MarketCardNotification {
      * @param description  description
      * @param created      time created
      */
-    public MarketCardNotification(Integer userId, Integer marketCardId, MarketplaceCard marketplaceCard, String description, LocalDateTime created) {
+    public MarketCardNotification(Integer userId,
+                                  Integer marketCardId,
+                                  MarketplaceCard marketplaceCard,
+                                  String description,
+                                  LocalDateTime created) {
         this.userId = userId;
         this.marketCardId = marketCardId;
         this.marketplaceCard = marketplaceCard;
