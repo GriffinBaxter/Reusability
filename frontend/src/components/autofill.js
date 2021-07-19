@@ -57,8 +57,8 @@ export default {
         if (to === 'input') {
             input.focus()
         }
-        console.log(to, 'test', from)
-        console.log(input)
+        // console.log(to, 'test', from)
+        // console.log(input)
 
         const whichOne = currentOptions.indexOf(currentItem);
         // Possible start points

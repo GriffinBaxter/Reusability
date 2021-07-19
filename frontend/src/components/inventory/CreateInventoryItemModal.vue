@@ -617,12 +617,22 @@ export default {
     })
 
     // Event listener on the autofill input to allow tabbing to autofill entries
-    document.getElementById('autofill-input').addEventListener('keydown', function (event) {
-      if (event.key === 'Tab') {
-        event.preventDefault();
-        console.log('test')
-        const input = self.$refs["autofill-input"];
-        Autofill.moveFocus(input, 'forward', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+    document.addEventListener('keydown', function (event) {
+      if (event.shiftKey && event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-product')) {
+          event.preventDefault();
+          console.log('test')
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'back', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
+      } else if (event.key === 'Tab') {
+        console.log(event.target.id)
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-product')) {
+          event.preventDefault();
+          console.log('test')
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'forward', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
       }
     })
   }
