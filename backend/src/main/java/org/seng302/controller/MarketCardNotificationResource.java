@@ -5,9 +5,13 @@ import org.seng302.model.MarketCardNotification;
 import org.seng302.model.User;
 import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.UserRepository;
+import org.seng302.view.outgoing.MarketCardNotificationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -24,18 +28,26 @@ public class MarketCardNotificationResource {
     private MarketCardNotificationRepository marketCardNotificationRepository;
 
     //TODO: Test
-    @GetMapping("/notification")
-    public List<String> retrieveAllNotifications(
+    /**
+     * Retrieve all notifications for current login user
+     *
+     * @param sessionToken The token used to identify the user.
+     * @return List of Notification for current login user.
+     * @throws Exception Exception
+     */
+    @GetMapping("/users/notifications")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Notifications retrieving success.")
+    public List<MarketCardNotificationPayload> retrieveAllNotifications(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken
-    ) {
+    ) throws Exception {
         //401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        List<String> notificationStrings = new ArrayList<>();
+        List<MarketCardNotificationPayload> marketCardNotificationPayloads = new ArrayList<>();
         List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAllByUserId(currentUser.getId());
         for (MarketCardNotification marketCardNotification : marketCardNotifications) {
-            notificationStrings.add(marketCardNotification.toString());
+            marketCardNotificationPayloads.add(marketCardNotification.toMarketCardNotificationPayload());
         }
-        return notificationStrings;
+        return marketCardNotificationPayloads;
     }
 }
