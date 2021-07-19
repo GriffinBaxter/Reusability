@@ -8,22 +8,59 @@
     <!-- default page links -->
     <li class="nav-item">
       <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">
-        <i class="fas fa-home"></i> Home</router-link>
+
+        <div class="row">
+          <div class="col-sm-4">
+            <i class="side-nav-link-icon fas fa-home"></i>
+          </div>
+          <div class="col-md-1 side-nav-link-text">
+            Home
+          </div>
+        </div>
+
+      </router-link>
     </li>
     <li class="nav-item" v-if="actAsId === null">
       <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-        <i class="fas fa-user-alt"></i> Profile
+
+        <div class="row">
+          <div class="col-sm-4">
+            <i class="side-nav-link-icon fas fa-user-alt"></i>
+          </div>
+          <div class="col-md-1 side-nav-link-text">
+            Profile
+          </div>
+        </div>
+
       </router-link>
     </li>
     <li class="nav-item" v-if=actAsId>
       <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
                    :to="'/businessProfile/' + actAsId" tabindex="2">
-        <i class="fas fa-user-alt"></i> Profile
+
+        <div class="row">
+          <div class="col-sm-4">
+            <i class="side-nav-link-icon fas fa-user-alt"></i>
+          </div>
+          <div class="col-md-1 side-nav-link-text">
+            Profile
+          </div>
+        </div>
+
       </router-link>
     </li>
     <li class="nav-item">
       <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
-        <i class="fas fa-store"></i> Marketplace
+
+        <div class="row">
+          <div class="col-sm-4">
+            <i class="side-nav-link-icon fas fa-store"></i>
+          </div>
+          <div class="col-md-1 side-nav-link-text">
+            Marketplace
+          </div>
+        </div>
+
       </router-link>
     </li>
 
@@ -34,7 +71,16 @@
       <a class="nav-link dropdown-toggle" role="button" tabindex="4"
          @click="() => {toggleBusinessDropdown()}"
          @keyup.enter="() => {toggleBusinessDropdown()}">
-        <i class="fas fa-briefcase"></i> Business
+
+        <div class="row">
+          <div class="col-sm-4">
+            <i class="side-nav-link-icon fas fa-briefcase"></i>
+          </div>
+          <div class="col-md-1 side-nav-link-text">
+            Business
+          </div>
+        </div>
+
       </a>
 
       <!-- Dropdown links-->
@@ -67,7 +113,18 @@
 
       <!-- Log out link-->
     <li class="nav-item">
-      <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
+      <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">
+
+        <div class="row">
+          <div class="col-sm-4">
+            <i class="side-nav-link-icon fas fa-sign-out-alt"></i>
+          </div>
+          <div class="col-md-1 side-nav-link-text">
+            Logout
+          </div>
+        </div>
+
+      </a>
     </li>
 
   </div>
@@ -497,7 +554,7 @@ export default {
   z-index: 10000;
   top: 0;
   left: 0;
-  background-color: #474747;
+  background-color: #e7e5e5;
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
@@ -507,14 +564,14 @@ export default {
   padding: 8px 8px 8px 8px;
   text-decoration: none;
   font-size: 18px;
-  color: #ffffff;
+  /*color: #ffffff;*/
   display: block;
   transition: 0.3s;
 }
 
-.sidenav a:hover {
-  color: #f1f1f1;
-}
+/*.sidenav a:hover {*/
+/*  color: #f1f1f1;*/
+/*}*/
 
 .sidenav .closebtn {
   position: absolute;
@@ -522,6 +579,10 @@ export default {
   right: 25px;
   font-size: 36px;
   margin-left: 50px;
+}
+
+.closebtn {
+  color: #545252;
 }
 
 @media screen and (max-height: 450px) {
@@ -585,7 +646,7 @@ export default {
   position: static;
   border-right-width: 0;
   border-left-width: 0;
-  padding: 0 5rem;
+  /*padding: 0 5rem;*/
   background-color: transparent;
   /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
@@ -602,9 +663,13 @@ export default {
 }
 
 .nav-item {
-  padding-top: 0px;
   min-width: 120px;
-  list-style-type: none
+  list-style-type: none;
+  padding: 0px 20px 4px;
+}
+
+.side-nav-link-icon {
+
 }
 
 
