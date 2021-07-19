@@ -119,7 +119,12 @@
                   </div>
                   <div id="autofill-container" ref="autofill-container">
                     <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
-                      <li v-for="keyword in autocompleteKeywords" v-bind:key="keyword.id" v-bind:id="keyword.id">{{ keyword.name }}</li>
+                      <li
+                          v-for="keyword in autocompleteKeywords"
+                          v-bind:key="keyword.id"
+                          v-bind:id="keyword.id"
+                          v-on:click="updateKeyword(keyword.name)"
+                      >{{ keyword.name }}</li>
                     </ul>
                   </div>
                   <div id="card-keywords-invalid-feedback" class="invalid-feedback" v-if="formError.keywordsError">
@@ -567,28 +572,57 @@ export default {
       this.textCursorPosition = e.target.selectionStart;
       this.currentKeyword = "";
       this.autocompleteKeywords = [];
-      
-      let currentKeywordStart = this.keywordsInput.substring(0, this.textCursorPosition + 1).lastIndexOf("#");
-      
-      if (currentKeywordStart !== -1) {
-        let currentKeywordEnd = this.keywordsInput.substring(this.textCursorPosition).indexOf(" ");
-        
-        if (currentKeywordEnd !== -1) {
-          this.currentKeyword = this.keywordsInput.substring(
-              currentKeywordStart + 1, currentKeywordEnd + this.textCursorPosition
-          );
-        } else {
-          this.currentKeyword = this.keywordsInput.substring(currentKeywordStart + 1);
-        }
 
+      let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
+
+      if (currentKeywordStartEnd !== false) {
         Api.searchKeywords(this.currentKeyword).then(response => {
           let autocompleteKeywords = [];
+
           for (let i = 0; i < response.data.length && i < 5; i++) {
-            autocompleteKeywords.push(response.data[i])
+            if (this.currentKeyword !== response.data[i].name) {
+              autocompleteKeywords.push(response.data[i]);
+            }
           }
           
           this.autocompleteKeywords = autocompleteKeywords;
         })
+      }
+    },
+
+    updateKeyword(keyword) {
+      let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
+
+      if (currentKeywordStartEnd !== false) {
+        let [currentKeywordStart, currentKeywordEnd] = currentKeywordStartEnd;
+
+        this.keywordsInput =
+            this.keywordsInput.substring(0, currentKeywordStart) +
+            this.keywordsInput.substring(currentKeywordStart, currentKeywordEnd).replace(
+                this.currentKeyword, keyword
+            ) +
+            this.keywordsInput.substring(currentKeywordEnd);
+      }
+    },
+
+    getCurrentKeywordStartEnd() {
+      let currentKeywordStart = this.keywordsInput.substring(0, this.textCursorPosition + 1).lastIndexOf("#");
+
+      if (currentKeywordStart !== -1) {
+        let currentKeywordEnd = this.keywordsInput.substring(this.textCursorPosition).indexOf(" ") + this.textCursorPosition;
+
+        if (currentKeywordEnd - this.textCursorPosition !== -1) {
+          this.currentKeyword = this.keywordsInput.substring(currentKeywordStart + 1, currentKeywordEnd);
+
+          return [currentKeywordStart, currentKeywordEnd];
+
+        } else {
+          this.currentKeyword = this.keywordsInput.substring(currentKeywordStart + 1);
+
+          return [currentKeywordStart, this.keywordsInput.length];
+        }
+      } else {
+        return false;
       }
     }
 
