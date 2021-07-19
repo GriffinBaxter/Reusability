@@ -2,7 +2,7 @@
 <!--It contains the search bar for searching for users by first name.-->
 
 <template>
-    <div class="pt-3 text-font container-fluid search-bar-positioning" id="search-container" style="">
+    <div class="pt-3 text-font container-fluid search-bar-positioning" id="search-container">
       <div class="row" id="search-bar-inputs">
         <div class="col" id="radio-button-container">
           <div class="btn-group" id="radio-buttons">
@@ -91,20 +91,12 @@ export default {
 
 <style scoped>
 
-/*.search-bar-positioning {*/
-/*  padding-top: 40px;*/
-/*}*/
-
 /*TODO consider putting in style.css*/
 #search-bar:focus {
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
-
-/*#search-bar-container {*/
-/* max-width: 1200px;*/
-/*}*/
 
 .active {
   color: #FFFFFF;
