@@ -27,9 +27,9 @@
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
                   <!-- Popover for additional info -->
-                  <span class="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" title="Popover title" data-bs-content="And here's some amazing content. It's very engaging. Right?">
-                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" tabindex="-1" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product)}}</li>
-                  </span>
+<!--                  <span class="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" title="Popover title" data-bs-content="And here's some amazing content. It's very engaging. Right?">-->
+                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product)}}</li>
+<!--                  </span>-->
                 </ul>
               </div>
             </div>
@@ -613,6 +613,16 @@ export default {
       if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed' && self.$refs["autofill-list"]) {
         Autofill.toggleList('closed', self.$refs["autofill-list"]);
         self.autofillState = 'initial';
+      }
+    })
+
+    // Event listener on the autofill input to allow tabbing to autofill entries
+    document.getElementById('autofill-input').addEventListener('keydown', function (event) {
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        console.log('test')
+        const input = self.$refs["autofill-input"];
+        Autofill.moveFocus(input, 'forward', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
       }
     })
   }
