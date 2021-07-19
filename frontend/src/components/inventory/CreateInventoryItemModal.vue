@@ -621,15 +621,12 @@ export default {
       if (event.shiftKey && event.key === 'Tab') {
         if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-product')) {
           event.preventDefault();
-          console.log('test')
           const input = document.activeElement;
           Autofill.moveFocus(input, 'back', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
         }
       } else if (event.key === 'Tab') {
-        console.log(event.target.id)
         if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-product')) {
           event.preventDefault();
-          console.log('test')
           const input = document.activeElement;
           Autofill.moveFocus(input, 'forward', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
         }

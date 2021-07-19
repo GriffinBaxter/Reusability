@@ -57,16 +57,12 @@ export default {
         if (to === 'input') {
             input.focus()
         }
-        // console.log(to, 'test', from)
-        // console.log(input)
 
         const whichOne = currentOptions.indexOf(currentItem);
         // Possible start points
         switch(from) {
             case input:
-                console.log('test')
                 if (to === 'forward') {
-                    console.log('go')
                     currentOptions[0].focus()
                 } else if (to === 'back') {
                     currentOptions[currentOptions.length - 1].focus()
