@@ -5,64 +5,66 @@
 <template>
   <div>
     <div id="main">
-    <!--nav bar-->
-    <Navbar></Navbar>
 
-    <!--search container-->
-    <div id="outer-container" class="container text-font">
+      <SideNavBar></SideNavBar>
+      <!--nav bar-->
+      <Navbar></Navbar>
 
-      <!--search bar-->
-      <div class="row">
-        <div class="col search-bar-positioning">
-          <div class="input-group my-4">
-            <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" placeholder="Search all users">
-            <button class="btn green-search-button" @click="searchClicked()" id="search-btn"><i class="fas fa-search"></i></button>
+      <!--search container-->
+      <div id="outer-container" class="container text-font">
+
+        <!--search bar-->
+        <div class="row">
+          <div class="col search-bar-positioning">
+            <div class="input-group my-4">
+              <input type="text" id="searchBar" class="form-control" ref="searchBar" @keydown="search($event)" placeholder="Search all users">
+              <button class="btn green-search-button" @click="searchClicked()" id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
           </div>
         </div>
+
+        <div class="row mb-3">
+
+          <!--order by nickname-->
+          <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
+               @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
+            <b>Nickname</b>
+            <i id="nickname-icon"></i>
+          </div>
+
+          <!--order by full name-->
+          <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
+               @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
+            <b>Full name</b>
+            <i id="name-icon"></i>
+          </div>
+
+          <!--order by email-->
+          <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
+               @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
+            <b>Email</b>
+            <i id="email-icon"></i>
+          </div>
+
+          <!--order by address-->
+          <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="0"
+               @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
+            <b>Address</b>
+            <i id="address-icon"></i>
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="col" id="page-button-container">
+            <PageButtons
+                v-bind:totalPages="totalPages"
+                v-bind:currentPage="page"
+                @updatePage="updatePage"/>
+          </div>
+        </div>
+
       </div>
-
-      <div class="row mb-3">
-
-        <!--order by nickname-->
-        <div id="order-by-nickname-div" class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
-             @keydown="orderEnter($event)" @click="orderUsers(true, false , false, false, false)">
-          <b>Nickname</b>
-          <i id="nickname-icon"></i>
-        </div>
-
-        <!--order by full name-->
-        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
-             @keydown="orderEnter($event)" @click="orderUsers(false, true , false, false, false)">
-          <b>Full name</b>
-          <i id="name-icon"></i>
-        </div>
-
-        <!--order by email-->
-        <div class="col py-2 header-col col-hover rounded-3 me-2 text-center" tabindex="0"
-             @keydown="orderEnter($event)" @click="orderUsers(false, false , true, false, false)">
-          <b>Email</b>
-          <i id="email-icon"></i>
-        </div>
-
-        <!--order by address-->
-        <div class="col py-2 header-col col-hover rounded-3 text-center" tabindex="0"
-             @keydown="orderEnter($event)" @click="orderUsers(false, false , false, true, false)">
-          <b>Address</b>
-          <i id="address-icon"></i>
-        </div>
-
-      </div>
-
-      <div class="row">
-        <div class="col" id="page-button-container">
-          <PageButtons
-              v-bind:totalPages="totalPages"
-              v-bind:currentPage="page"
-              @updatePage="updatePage"/>
-        </div>
-      </div>
-
-    </div>
     </div>
     <Footer/>
   </div>
@@ -74,13 +76,15 @@ import Cookies from 'js-cookie';
 import Navbar from "@/components/main/Navbar";
 import Footer from "@/components/main/Footer";
 import PageButtons from "../components/PageButtons";
+import SideNavBar from "../components/main/SideNavBar";
 
 export default {
   name: "Search",
   components: {
     Footer,
     Navbar,
-    PageButtons
+    PageButtons,
+    SideNavBar
   },
   data() {
     return {

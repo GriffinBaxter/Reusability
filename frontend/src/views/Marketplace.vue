@@ -3,79 +3,81 @@
   <div>
 
     <div id="main">
-    <!------------------------- Nav bar; displays either business account or individual account nav bar --------------->
-    <Navbar></Navbar>
+      <SideNavBar></SideNavBar>
 
-    <CardDetail v-bind:id="selectedCard"
-                v-bind:section="selectSection"/>
+      <!------------------------- Nav bar; displays either business account or individual account nav bar --------------->
+      <Navbar></Navbar>
 
-    <div id="marketplace-container">
+      <CardDetail v-bind:id="selectedCard"
+                  v-bind:section="selectSection"/>
 
-      <!------------------------------------------------ marketplace tabs---------------------------------------------->
+      <div id="marketplace-container">
 
-      <ul class="nav nav-tabs" id="marketplace-tabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="for-sale-tab" data-bs-toggle="tab" data-bs-target="#for-sale"
-                  type="button" role="tab" aria-controls="for-sale" aria-selected="true"
-                  @click="changeSection('For Sale')">
-            For Sale
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="wanted-tab" data-bs-toggle="tab" data-bs-target="#wanted" type="button"
-                  role="tab" aria-controls="wanted" aria-selected="false"
-                  @click="changeSection('Wanted')">
-            Wanted
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="exchange-tab" data-bs-toggle="tab" data-bs-target="#exchange" type="button"
-                  role="tab" aria-controls="exchange" aria-selected="false"
-                  @click="changeSection('Exchange')">
-            Exchange
-          </button>
-        </li>
-      </ul>
-      <div class="tab-content" id="marketplace-tabs-content">
-        <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail"
-                                 @orderedCards="orderedCards"
-                                 @updatePage="updatePage"
-                                 :sendData="selectedCard"
-                                 v-bind:section="'For Sale'"
-                                 v-bind:sectionCards="allCards.ForSale"
-                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
-                                 v-bind:totalPages="totalPages"
-                                 v-bind:page="page"
-          />
+        <!------------------------------------------------ marketplace tabs---------------------------------------------->
+
+        <ul class="nav nav-tabs" id="marketplace-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="for-sale-tab" data-bs-toggle="tab" data-bs-target="#for-sale"
+                    type="button" role="tab" aria-controls="for-sale" aria-selected="true"
+                    @click="changeSection('For Sale')">
+              For Sale
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="wanted-tab" data-bs-toggle="tab" data-bs-target="#wanted" type="button"
+                    role="tab" aria-controls="wanted" aria-selected="false"
+                    @click="changeSection('Wanted')">
+              Wanted
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="exchange-tab" data-bs-toggle="tab" data-bs-target="#exchange" type="button"
+                    role="tab" aria-controls="exchange" aria-selected="false"
+                    @click="changeSection('Exchange')">
+              Exchange
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content" id="marketplace-tabs-content">
+          <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
+            <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                   @orderedCards="orderedCards"
+                                   @updatePage="updatePage"
+                                   :sendData="selectedCard"
+                                   v-bind:section="'For Sale'"
+                                   v-bind:sectionCards="allCards.ForSale"
+                                   @new-card-created="retrieveAllCardsForSection(this.selectSection)"
+                                   v-bind:totalPages="totalPages"
+                                   v-bind:page="page"
+            />
+          </div>
+          <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
+            <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                   @orderedCards="orderedCards"
+                                   @updatePage="updatePage"
+                                   :sendData="selectedCard"
+                                   v-bind:section="'Wanted'"
+                                   v-bind:sectionCards="allCards.Wanted"
+                                   @new-card-created="retrieveAllCardsForSection(this.selectSection)"
+                                   v-bind:totalPages="totalPages"
+                                   v-bind:page="page"
+            />
+          </div>
+          <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
+            <MarketplaceTabSection @openCardDetail="openCardDetail"
+                                   @orderedCards="orderedCards"
+                                   @updatePage="updatePage"
+                                   :sendData="selectedCard"
+                                   v-bind:section="'Exchange'"
+                                   v-bind:sectionCards="allCards.Exchange"
+                                   @new-card-created="retrieveAllCardsForSection(this.selectSection)"
+                                   v-bind:totalPages="totalPages"
+                                   v-bind:page="page"
+            />
+          </div>
         </div>
-        <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail"
-                                 @orderedCards="orderedCards"
-                                 @updatePage="updatePage"
-                                 :sendData="selectedCard"
-                                 v-bind:section="'Wanted'"
-                                 v-bind:sectionCards="allCards.Wanted"
-                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
-                                 v-bind:totalPages="totalPages"
-                                 v-bind:page="page"
-          />
-        </div>
-        <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
-          <MarketplaceTabSection @openCardDetail="openCardDetail"
-                                 @orderedCards="orderedCards"
-                                 @updatePage="updatePage"
-                                 :sendData="selectedCard"
-                                 v-bind:section="'Exchange'"
-                                 v-bind:sectionCards="allCards.Exchange"
-                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
-                                 v-bind:totalPages="totalPages"
-                                 v-bind:page="page"
-          />
-        </div>
+
       </div>
-
-    </div>
     </div>
     <!--Footer contains links that are the same as those in the nav bar-->
     <Footer></Footer>
@@ -91,6 +93,7 @@ import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
 import Api from "../Api";
+import SideNavBar from "../components/main/SideNavBar";
 
 export default {
   name: "Marketplace",
@@ -119,6 +122,7 @@ export default {
     CardDetail,
     Footer,
     Navbar,
+    SideNavBar
   },
   methods: {
 

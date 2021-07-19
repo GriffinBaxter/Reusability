@@ -8,257 +8,260 @@
 <template>
   <div>
     <div id="main">
-    <!--nav bar-->
-    <Navbar></Navbar>
 
-    <!--profile header, contains user search bar-->
-    <div id="profile-header-div">
-      <ProfileHeader/>
-    </div>
+      <SideNavBar></SideNavBar>
 
-    <!--profile container-->
-    <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
+      <!--nav bar-->
+      <Navbar></Navbar>
 
-      <!-- These messages will appear for GAA accounts -->
-      <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
-        <div class="col-xl-12 mb-5 text-center mx-auto">
-          <div class="display-5" v-if="otherUser">This user has application admin rights!</div>
-          <div class="display-5" v-else>You have application admin rights!</div>
-        </div>
+      <!--profile header, contains user search bar-->
+      <div id="profile-header-div">
+        <ProfileHeader/>
       </div>
 
-      <!-- These messages will appear for DGAA accounts -->
-      <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
-        <div class="col-xl-12 mb-5 text-center mx-auto">
-          <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
-          <div class="display-5" v-else>You have default application admin rights!</div>
-        </div>
-      </div>
+      <!--profile container-->
+      <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
-      <div class="row">
-
-        <div class="col-xl-3 mb-3">
-          <div class="card text-center shadow-sm">
-            <div class="card-body">
-
-              <!--user's profile image-->
-              <div id="imageDiv">
-                <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
-              </div>
-
-              <!--      Note that this is commented out as the image storage story has not been implemented        -->
-              <!-- Button trigger modal -->
-<!--              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">-->
-<!--                Upload Image-->
-<!--              </button>-->
-
-              <!--user's nickname and bio-->
-              <div class="mt-3">
-                <h4>{{ nickname }}</h4>
-                <div class="text-secondary">{{ bio }}</div>
-              </div>
-
-            </div>
+        <!-- These messages will appear for GAA accounts -->
+        <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
+          <div class="col-xl-12 mb-5 text-center mx-auto">
+            <div class="display-5" v-if="otherUser">This user has application admin rights!</div>
+            <div class="display-5" v-else>You have application admin rights!</div>
           </div>
-
-          <!--   For later use:   -->
-<!--          <div class="card text-center shadow-sm mt-3">-->
-<!--            <div class="card-body">-->
-<!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
-<!--            </div>-->
-<!--          </div>-->
-
-          <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
-            <div class="card-header">Something went wrong with your action...</div>
-            <div class="card-body">{{ actionErrorMessage }}</div>
-          </div>
-
-          <!--make/remove business administrator button-->
-          <div class="card text-center  shadow-sm mt-3" v-if="actingBusinessId && otherUser">
-            <div class="card-body">
-              <div v-if="!isBusinessAdministrator">
-                <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-md btn-outline-primary" v-else @click="activeAsAdministrator()">
-                  Grant Business Administrator Status
-                </button>
-              </div>
-
-              <div v-else>
-                <div class="spinner-border spinner-border-sm text-warning" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-md btn-outline-warning" v-else @click="removeActiveAdministrator()">
-                  Revoke Business Administrator Status
-                </button>
-              </div>
-            </div>
-          </div>
-          <!--
-          This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
-          because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
-          but the backend will prevent this from occuring.
-
-          The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
-          another user's id.
-          -->
-          <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
-            <div class="card-body">
-              <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
-              <div v-if="isGAA(role)">
-                <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-md btn-outline-danger" v-else @click="revokeUserGAA">
-                  Revoke Global Application Admin
-                </button>
-              </div>
-
-              <div v-else>
-                <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-md btn-outline-success" v-else @click="grantUserGAA">
-                  Grant Global Application Admin
-                </button>
-              </div>
-            </div>
-          </div>
-
         </div>
 
-        <div class="col">
-          <div class="card shadow-sm">
-            <div class="card-body">
+        <!-- These messages will appear for DGAA accounts -->
+        <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
+          <div class="col-xl-12 mb-5 text-center mx-auto">
+            <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
+            <div class="display-5" v-else>You have default application admin rights!</div>
+          </div>
+        </div>
 
-              <!--user's name-->
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Name:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary" align="right">
-                      {{ firstName }} {{ middleName }} {{ lastName }}
-                    </div>
-                  </div>
+        <div class="row">
+
+          <div class="col-xl-3 mb-3">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+
+                <!--user's profile image-->
+                <div id="imageDiv">
+                  <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+                </div>
+
+                <!--      Note that this is commented out as the image storage story has not been implemented        -->
+                <!-- Button trigger modal -->
+  <!--              <button type="button" class="btn green-button" @click="showFileUpload(true)" id="upload-button" v-if="!otherUser">-->
+  <!--                Upload Image-->
+  <!--              </button>-->
+
+                <!--user's nickname and bio-->
+                <div class="mt-3">
+                  <h4>{{ nickname }}</h4>
+                  <div class="text-secondary">{{ bio }}</div>
+                </div>
+
+              </div>
+            </div>
+
+            <!--   For later use:   -->
+  <!--          <div class="card text-center shadow-sm mt-3">-->
+  <!--            <div class="card-body">-->
+  <!--              <button class="btn btn-lg text-secondary" id="edit-profile-button">Edit Profile</button>-->
+  <!--            </div>-->
+  <!--          </div>-->
+
+            <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
+              <div class="card-header">Something went wrong with your action...</div>
+              <div class="card-body">{{ actionErrorMessage }}</div>
+            </div>
+
+            <!--make/remove business administrator button-->
+            <div class="card text-center  shadow-sm mt-3" v-if="actingBusinessId && otherUser">
+              <div class="card-body">
+                <div v-if="!isBusinessAdministrator">
+                  <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
+                  <button type="button" class="btn btn-md btn-outline-primary" v-else @click="activeAsAdministrator()">
+                    Grant Business Administrator Status
+                  </button>
+                </div>
+
+                <div v-else>
+                  <div class="spinner-border spinner-border-sm text-warning" v-if="loadingAction"></div>
+                  <button type="button" class="btn btn-md btn-outline-warning" v-else @click="removeActiveAdministrator()">
+                    Revoke Business Administrator Status
+                  </button>
                 </div>
               </div>
+            </div>
+            <!--
+            This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
+            because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
+            but the backend will prevent this from occuring.
 
-              <!--user's email-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Email:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" align="right">
-                      {{ email }}
-                    </div>
-                  </div>
+            The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
+            another user's id.
+            -->
+            <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
+              <div class="card-body">
+                <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
+                <div v-if="isGAA(role)">
+                  <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
+                  <button type="button" class="btn btn-md btn-outline-danger" v-else @click="revokeUserGAA">
+                    Revoke Global Application Admin
+                  </button>
+                </div>
+
+                <div v-else>
+                  <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
+                  <button type="button" class="btn btn-md btn-outline-success" v-else @click="grantUserGAA">
+                    Grant Global Application Admin
+                  </button>
                 </div>
               </div>
+            </div>
 
-              <!--user's date of birth-->
-              <hr v-if="!otherUser || isDGAA(loginRole)">
-              <div class="container" v-if="!otherUser || isDGAA(loginRole)">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Date of Birth:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" align="right">
-                      {{ dateOfBirth }}
+          </div>
+
+          <div class="col">
+            <div class="card shadow-sm">
+              <div class="card-body">
+
+                <!--user's name-->
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Name:</h6>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              <!--user's phone number-->
-              <hr v-if="!otherUser || isDGAA(loginRole)">
-              <div class="container" v-if="!otherUser || isDGAA(loginRole)">
-
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Phone number:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" align="right">
-                      {{ phoneNumber }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!--user's home address-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Address:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
-                      {{ lines.line }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!--user's joined date-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Joined:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" align="right">
-                      {{ joined }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <hr v-if="businessesAdministeredExist()">
-              <div class="container" v-if="businessesAdministeredExist()">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Businesses Administered:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
-                    <div v-else>
-                      <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
-                           align="right" @click="pushToBusiness(business.id)">
-                        {{ business.name }}
+                    <div class="col-8">
+                      <div class="text-secondary" align="right">
+                        {{ firstName }} {{ middleName }} {{ lastName }}
                       </div>
                     </div>
-
                   </div>
                 </div>
+
+                <!--user's email-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Email:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" align="right">
+                        {{ email }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--user's date of birth-->
+                <hr v-if="!otherUser || isDGAA(loginRole)">
+                <div class="container" v-if="!otherUser || isDGAA(loginRole)">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Date of Birth:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" align="right">
+                        {{ dateOfBirth }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--user's phone number-->
+                <hr v-if="!otherUser || isDGAA(loginRole)">
+                <div class="container" v-if="!otherUser || isDGAA(loginRole)">
+
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Phone number:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" align="right">
+                        {{ phoneNumber }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--user's home address-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Address:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
+                        {{ lines.line }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--user's joined date-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Joined:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" align="right">
+                        {{ joined }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <hr v-if="businessesAdministeredExist()">
+                <div class="container" v-if="businessesAdministeredExist()">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Businesses Administered:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
+                      <div v-else>
+                        <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
+                             align="right" @click="pushToBusiness(business.id)">
+                          {{ business.name }}
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
               </div>
-
             </div>
-          </div>
 
-          <!--register business button-->
-          <div align="right" id="registerBusinessRow" v-if="!otherUser">
-          <button class="btn btn-outline-primary float-end mt-4 green-button" @click="$router.push('/businessRegistration')">Register Business</button>
-          </div>
+            <!--register business button-->
+            <div align="right" id="registerBusinessRow" v-if="!otherUser">
+            <button class="btn btn-outline-primary float-end mt-4 green-button" @click="$router.push('/businessRegistration')">Register Business</button>
+            </div>
 
+          </div>
         </div>
       </div>
-    </div>
-    <!-- File Upload -->
-    <div v-if="showUpload" id="FileUpload" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Upload Image</h5>
-          <button type="button" class="btn-close" @click="showFileUpload(false)"></button>
-        </div>
-        <div class="modal-body">
-          <input type="file">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="showFileUpload(false)">Close</button>
-          <button type="button" class="btn green-button" @click="showFileUpload(false)">Save changes</button>
+      <!-- File Upload -->
+      <div v-if="showUpload" id="FileUpload" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Upload Image</h5>
+            <button type="button" class="btn-close" @click="showFileUpload(false)"></button>
+          </div>
+          <div class="modal-body">
+            <input type="file">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="showFileUpload(false)">Close</button>
+            <button type="button" class="btn green-button" @click="showFileUpload(false)">Save changes</button>
+          </div>
         </div>
       </div>
-    </div>
     </div>
     <!--footer-->
     <Footer></Footer>
@@ -274,13 +277,15 @@ import Cookies from 'js-cookie';
 import Footer from "../components/main/Footer";
 import Navbar from "../components/main/Navbar";
 import {UserRole} from '../configs/User'
+import SideNavBar from "../components/main/SideNavBar";
 
 export default {
   name: "Profile",
   components: {
     Footer,
     ProfileHeader,
-    Navbar
+    Navbar,
+    SideNavBar
   },
 
   data() {

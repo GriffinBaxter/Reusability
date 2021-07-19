@@ -1,170 +1,173 @@
 <template>
   <div>
     <div id="main">
+
+      <SideNavBar></SideNavBar>
+
       <!--nav bar-->
       <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
-    <!--creation popup-->
-    <inventory-item-creation @updateInventoryItem="afterCreation"
-                             v-bind:currency-code="currencyCode"
-                             v-bind:currency-symbol="currencySymbol"/>
+      <!--creation popup-->
+      <inventory-item-creation @updateInventoryItem="afterCreation"
+                               v-bind:currency-code="currencyCode"
+                               v-bind:currency-symbol="currencySymbol"/>
 
-    <!--inventory container-->
-    <div class="container p-5 mt-3" id="profileContainer">
-      <div class="row">
+      <!--inventory container-->
+      <div class="container p-5 mt-3" id="profileContainer">
+        <div class="row">
 
-        <div class="col-xl-2 mb-2">
-          <div class="card text-center shadow-sm">
-            <div class="card-body">
+          <div class="col-xl-2 mb-2">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
 
-              <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_profile_image.jpg')"
-                   alt="Profile Image"/>
+                <!--business's profile image-->
+                <img class="rounded-circle img-fluid" :src="require('../../public/sample_profile_image.jpg')"
+                     alt="Profile Image"/>
 
-              <!--business's name-->
-              <div class="mt-3">
-                <h5>{{ businessName }}</h5>
-                <div class="text-secondary">{{ businessDescription }}</div>
+                <!--business's name-->
+                <div class="mt-3">
+                  <h5>{{ businessName }}</h5>
+                  <div class="text-secondary">{{ businessDescription }}</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card card-body">
+              <h1 align="center">Inventory</h1>
+
+              <hr/>
+
+              <div class="row" role="group" aria-label="Button group with nested dropdown">
+                <div class="col-md-3 py-1">
+                  <!--creation button-->
+                  <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
+                          data-bs-target="#creationPopup">
+                    Create New
+                  </button>
+                </div>
+
+                <!--filter-->
+                <div class="btn-group col-md-3 py-1" role="group">
+                  <button type="button" class="btn green-button dropdown-toggle"
+                          data-bs-toggle="dropdown" aria-expanded="false">Filter Option
+                  </button>
+
+                  <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                    <!--order by product id-->
+                    <button type="button" class="btn green-button-transparent col-12"
+                            @click="orderInventory(true, false, false, false, false, false, false, false)">
+                      Product ID
+                      <i id="productIdIcon"></i>
+                    </button>
+
+                    <!--order by quantity-->
+                    <button type="button" class="btn green-button-transparent col-12"
+                            @click="orderInventory(false, true, false, false, false, false, false, false)">
+                      Quantity
+                      <i id="quantityIcon"></i>
+                    </button>
+
+                    <!--order by price per item-->
+                    <button type="button" class="btn green-button-transparent col-12"
+                            @click="orderInventory(false, false, true, false, false, false, false, false)">
+                      Price Per Item ({{ currencySymbol }} {{ currencyCode }})
+                      <i id="pricePerItemIcon"></i>
+                    </button>
+
+                    <!--order by total price-->
+                    <button type="button" class="btn green-button-transparent col-12"
+                            @click="orderInventory(false, false, false, true, false, false, false, false)">
+                      Total Price ({{ currencySymbol }} {{ currencyCode }})
+                      <i id="totalPriceIcon"></i>
+                    </button>
+
+                    <!--order by manufactured-->
+                    <button type="button" class="btn green-button-transparent col-12"
+                            @click="orderInventory(false, false, false, false, true, false, false, false)">
+                      Manufactured
+                      <i id="manufacturedIcon"></i>
+                    </button>
+
+                    <!--order by sell by-->
+                    <button type="button" class="btn green-button-transparent col-12"
+                            @click="orderInventory(false, false, false, false, false, true, false, false)">
+                      Sell By
+                      <i id="sellByIcon"></i>
+                    </button>
+
+                    <!--order by best before-->
+                    <button type="button" class="btn green-button-transparent col-12"
+                            @click="orderInventory(false, false, false, false, false, false, true, false)">
+                      Best Before
+                      <i id="bestBeforeIcon"></i>
+                    </button>
+
+                    <!--order by expires-->
+                    <button type="button" class="btn green-button-transparent col-12"
+                            @click="orderInventory(false, false, false, false, false, false, false, true)">
+                      Expires
+                      <i id="expiresIcon"></i>
+                    </button>
+                  </ul>
+                </div>
+                <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+              </div>
+
+              <!--space-->
+              <br>
+
+              <!--creation success info-->
+              <div class="alert alert-success" role="alert" v-if="creationSuccess">
+                <div class="row">
+                  <div class="col" align="center"> {{userAlertMessage}} </div>
+                </div>
+              </div>
+
+              <UpdateInventoryItemModal ref="updateInventoryItemModal"
+                                        :business-id="businessId"
+                                        :currency-code="currencyCode"
+                                        :currency-symbol="currencySymbol"
+                                        v-model="currentInventoryItem"/>
+
+              <!--inventory items-->
+              <inventory-item
+                  v-for="inventory in inventories"
+                  :id="'InventoryItemCard' + inventory.index"
+                  v-bind:key="inventory.index"
+                  v-bind:image="inventory.image"
+                  v-bind:product-name="inventory.productName"
+                  v-bind:product-id="inventory.productId"
+                  v-bind:quantity="inventory.quantity"
+                  v-bind:price-per-item="inventory.pricePerItem"
+                  v-bind:total-price="inventory.totalPrice"
+                  v-bind:manufactured="inventory.manufactured"
+                  v-bind:sell-by="inventory.sellBy"
+                  v-bind:best-before="inventory.bestBefore"
+                  v-bind:expires="inventory.expires"
+                  v-bind:currency-code="currencyCode"
+                  v-bind:currency-symbol="currencySymbol"
+                  v-on:click="triggerUpdateInventoryItemModal(inventory)"
+              />
+
+              <!--space-->
+              <br>
+
+              <!---------------------------------------------- page buttons ------------------------------------------------>
+
+              <div id="page-button-container">
+                <PageButtons
+                    v-bind:totalPages="totalPages"
+                    v-bind:currentPage="currentPage"
+                    @updatePage="updatePage"/>
               </div>
 
             </div>
           </div>
+
         </div>
-
-        <div class="col">
-          <div class="card card-body">
-            <h1 align="center">Inventory</h1>
-
-            <hr/>
-
-            <div class="row" role="group" aria-label="Button group with nested dropdown">
-              <div class="col-md-3 py-1">
-                <!--creation button-->
-                <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
-                        data-bs-target="#creationPopup">
-                  Create New
-                </button>
-              </div>
-
-              <!--filter-->
-              <div class="btn-group col-md-3 py-1" role="group">
-                <button type="button" class="btn green-button dropdown-toggle"
-                        data-bs-toggle="dropdown" aria-expanded="false">Filter Option
-                </button>
-
-                <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                  <!--order by product id-->
-                  <button type="button" class="btn green-button-transparent col-12"
-                          @click="orderInventory(true, false, false, false, false, false, false, false)">
-                    Product ID
-                    <i id="productIdIcon"></i>
-                  </button>
-
-                  <!--order by quantity-->
-                  <button type="button" class="btn green-button-transparent col-12"
-                          @click="orderInventory(false, true, false, false, false, false, false, false)">
-                    Quantity
-                    <i id="quantityIcon"></i>
-                  </button>
-
-                  <!--order by price per item-->
-                  <button type="button" class="btn green-button-transparent col-12"
-                          @click="orderInventory(false, false, true, false, false, false, false, false)">
-                    Price Per Item ({{ currencySymbol }} {{ currencyCode }})
-                    <i id="pricePerItemIcon"></i>
-                  </button>
-
-                  <!--order by total price-->
-                  <button type="button" class="btn green-button-transparent col-12"
-                          @click="orderInventory(false, false, false, true, false, false, false, false)">
-                    Total Price ({{ currencySymbol }} {{ currencyCode }})
-                    <i id="totalPriceIcon"></i>
-                  </button>
-
-                  <!--order by manufactured-->
-                  <button type="button" class="btn green-button-transparent col-12"
-                          @click="orderInventory(false, false, false, false, true, false, false, false)">
-                    Manufactured
-                    <i id="manufacturedIcon"></i>
-                  </button>
-
-                  <!--order by sell by-->
-                  <button type="button" class="btn green-button-transparent col-12"
-                          @click="orderInventory(false, false, false, false, false, true, false, false)">
-                    Sell By
-                    <i id="sellByIcon"></i>
-                  </button>
-
-                  <!--order by best before-->
-                  <button type="button" class="btn green-button-transparent col-12"
-                          @click="orderInventory(false, false, false, false, false, false, true, false)">
-                    Best Before
-                    <i id="bestBeforeIcon"></i>
-                  </button>
-
-                  <!--order by expires-->
-                  <button type="button" class="btn green-button-transparent col-12"
-                          @click="orderInventory(false, false, false, false, false, false, false, true)">
-                    Expires
-                    <i id="expiresIcon"></i>
-                  </button>
-                </ul>
-              </div>
-              <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
-            </div>
-
-            <!--space-->
-            <br>
-
-            <!--creation success info-->
-            <div class="alert alert-success" role="alert" v-if="creationSuccess">
-              <div class="row">
-                <div class="col" align="center"> {{userAlertMessage}} </div>
-              </div>
-            </div>
-
-            <UpdateInventoryItemModal ref="updateInventoryItemModal"
-                                      :business-id="businessId"
-                                      :currency-code="currencyCode"
-                                      :currency-symbol="currencySymbol"
-                                      v-model="currentInventoryItem"/>
-
-            <!--inventory items-->
-            <inventory-item
-                v-for="inventory in inventories"
-                :id="'InventoryItemCard' + inventory.index"
-                v-bind:key="inventory.index"
-                v-bind:image="inventory.image"
-                v-bind:product-name="inventory.productName"
-                v-bind:product-id="inventory.productId"
-                v-bind:quantity="inventory.quantity"
-                v-bind:price-per-item="inventory.pricePerItem"
-                v-bind:total-price="inventory.totalPrice"
-                v-bind:manufactured="inventory.manufactured"
-                v-bind:sell-by="inventory.sellBy"
-                v-bind:best-before="inventory.bestBefore"
-                v-bind:expires="inventory.expires"
-                v-bind:currency-code="currencyCode"
-                v-bind:currency-symbol="currencySymbol"
-                v-on:click="triggerUpdateInventoryItemModal(inventory)"
-            />
-
-            <!--space-->
-            <br>
-
-            <!---------------------------------------------- page buttons ------------------------------------------------>
-
-            <div id="page-button-container">
-              <PageButtons
-                  v-bind:totalPages="totalPages"
-                  v-bind:currentPage="currentPage"
-                  @updatePage="updatePage"/>
-            </div>
-
-          </div>
-        </div>
-
       </div>
-    </div>
 
     </div>
     <!--footer-->
@@ -186,6 +189,7 @@ import PageButtons from "../components/PageButtons";
 import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
+import SideNavBar from "../components/main/SideNavBar";
 
 export default {
   components: {
@@ -194,7 +198,8 @@ export default {
     Navbar,
     InventoryItem,
     Footer,
-    PageButtons
+    PageButtons,
+    SideNavBar
   },
   data() {
     return {

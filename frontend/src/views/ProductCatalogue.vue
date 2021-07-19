@@ -1,6 +1,9 @@
 <template>
   <div>
     <div id="main">
+
+      <SideNavBar></SideNavBar>
+
       <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
 
       <div id="outerContainer" class="container">
@@ -186,6 +189,7 @@ import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
+import SideNavBar from "../components/main/SideNavBar";
 
 export default {
   name: "ProductCatalogue",
@@ -194,7 +198,8 @@ export default {
     Table,
     ProductModal,
     Navbar,
-    Footer
+    Footer,
+    SideNavBar
   },
 
   data() {

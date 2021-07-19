@@ -7,22 +7,23 @@
 
     <!-- default page links -->
     <li class="nav-item">
-      <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
+      <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">
+        <i class="fas fa-home"></i> Home</router-link>
     </li>
     <li class="nav-item" v-if="actAsId === null">
       <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-        Profile
+        <i class="fas fa-user-alt"></i> Profile
       </router-link>
     </li>
     <li class="nav-item" v-if=actAsId>
       <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
                    :to="'/businessProfile/' + actAsId" tabindex="2">
-        Profile
+        <i class="fas fa-user-alt"></i> Profile
       </router-link>
     </li>
     <li class="nav-item">
       <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
-        Marketplace
+        <i class="fas fa-store"></i> Marketplace
       </router-link>
     </li>
 
@@ -33,7 +34,7 @@
       <a class="nav-link dropdown-toggle" role="button" tabindex="4"
          @click="() => {toggleBusinessDropdown()}"
          @keyup.enter="() => {toggleBusinessDropdown()}">
-        Business Pages
+        <i class="fas fa-briefcase"></i> Business
       </a>
 
       <!-- Dropdown links-->
@@ -489,10 +490,6 @@ export default {
 
 /*Side nav styling*/
 
-.side-nav-bar-separator {
-  color: white;
-}
-
 .sidenav {
   height: 100%;
   width: 0;
@@ -500,16 +497,16 @@ export default {
   z-index: 10000;
   top: 0;
   left: 0;
-  background-color: #111;
+  background-color: #474747;
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
 }
 
 .sidenav a {
-  padding: 8px 8px 8px 32px;
+  padding: 8px 8px 8px 8px;
   text-decoration: none;
-  font-size: 25px;
+  font-size: 18px;
   color: #ffffff;
   display: block;
   transition: 0.3s;
@@ -532,89 +529,26 @@ export default {
   .sidenav a {font-size: 18px;}
 }
 
-.no-space {
-  padding: 0px;
-  margin: 0px;
-}
-
-/* Styling for smaller screen sizes begins */
-
-.logo-container {
-  position: center;
-}
-
-#logo-image-nav {
-  max-width: 90px;
-  margin-left: 28px;
-  margin-right: 10px;
-  width: 100%;
-}
-
-#interact-dropdown-links-wrapper {
-  width: unset;
-}
-
-#interactDrop {
-  display: flex;
-  flex-flow: column wrap;
-  align-items: center;
-  max-width: 100%;
-  height: auto;
-  margin-left: 0px;
-  padding-left: 0px;
-}
+/*!* Styling for smaller screen sizes begins *!*/
 
 #interactDrop a {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
-  padding: 10px 40px;
-}
-
-.act-as-image {
-  height: 55px;
-  width: auto;
-  border: 1px lightgrey solid;
-}
-
-#actAsImg {
-  float: none;
-}
-
-#logoImage {
-  max-width: 200px;
-}
-
-.navbar-brand {
-  outline: none;
-}
-
-.company-name-main-position-nav {
-
-  /* centre text */
-  margin: 0;
-  position: absolute;
-
-  /* align to bottom of logo */
-  /*vertical-align: bottom;*/
-  /*line-height: 90%;*/
-
+  padding: 10px 30px;
 }
 
 .nav-link {
   color: white;
   background: #19b092;
-
-  /* fallback for old browsers */
-  /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
-  /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
-
-  margin: 10px 0;
+  margin: 4px 0;
   border-radius: 15px;
   text-align: center;
   font-size: large;
   width: auto;
+  padding-right: 6px;
+  padding-left: 6px;
 }
 
 .nav-link:hover, .nav-link:focus {
@@ -652,6 +586,7 @@ export default {
   border-right-width: 0;
   border-left-width: 0;
   padding: 0 5rem;
+  background-color: transparent;
   /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
 
@@ -666,48 +601,10 @@ export default {
   transform: translateY(-50%);
 }
 
-@media (min-width: 250px) {
-  .center {
-    padding-inline: 15px;
-    text-align: center;
-  }
-
-  .company-name-main-font {
-    font-size: 12px;
-  }
-}
-
-@media (min-width: 350px) {
-  .center {
-    padding-inline: 15px;
-    text-align: center;
-  }
-
-  .company-name-main-font {
-    font-size: 16px;
-  }
-}
-
-@media (min-width: 400px) {
-  .center {
-    padding-inline: 15px;
-    text-align: center;
-  }
-
-  .company-name-main-font {
-    font-size: 22px;
-  }
-}
-
-@media (min-width: 450px) {
-  .center {
-    padding-inline: 15px;
-    text-align: center;
-  }
-
-  .company-name-main-font {
-    font-size: 28px;
-  }
+.nav-item {
+  padding-top: 0px;
+  min-width: 120px;
+  list-style-type: none
 }
 
 

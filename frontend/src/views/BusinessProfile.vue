@@ -2,162 +2,161 @@
   <div>
 
     <div id="main">
-    <!--nav bar-->
-    <Navbar></Navbar>
 
-    <!--profile header, contains user search bar-->
-    <div id="profile-header-div">
-      <ProfileHeader/>
-    </div>
+      <SideNavBar></SideNavBar>
 
-    <!--profile container-->
-    <div class="container p-5 mt-3" id="profileContainer">
-      <div class="row">
-        <div class="col-xl-3 mb-3">
+      <!--nav bar-->
+      <Navbar></Navbar>
 
-          <div class="card text-center shadow-sm">
-            <div class="card-body">
+      <!--profile header, contains user search bar-->
+      <div id="profile-header-div">
+        <ProfileHeader/>
+      </div>
 
-              <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
-                   alt="Profile Image"/>
+      <!--profile container-->
+      <div class="container p-5 mt-3" id="profileContainer">
+        <div class="row">
+          <div class="col-xl-3 mb-3">
 
-              <!--business's name-->
-              <div class="mt-3">
-                <h5>{{ name }}</h5>
-                <div class="text-secondary">{{ description }}</div>
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+
+                <!--business's profile image-->
+                <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
+                     alt="Profile Image"/>
+
+                <!--business's name-->
+                <div class="mt-3">
+                  <h5>{{ name }}</h5>
+                  <div class="text-secondary">{{ description }}</div>
+                </div>
               </div>
+
+              <!--       for later use     -->
+              <!--            <div class="card text-center shadow-sm-3">-->
+              <!--              <div class="card-body">-->
+              <!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
+              <!--              </div>-->
+              <!--            </div>-->
             </div>
 
-            <!--       for later use     -->
-            <!--            <div class="card text-center shadow-sm-3">-->
-            <!--              <div class="card-body">-->
-            <!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-            <!--              </div>-->
-            <!--            </div>-->
           </div>
 
-        </div>
+          <div class="col">
+            <div class="card shadow-sm">
+              <div class="card-body">
 
-        <div class="col">
-          <div class="card shadow-sm">
-            <div class="card-body">
-
-              <!--business's name-->
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Name:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary" align="right">{{ name }}</div>
+                <!--business's name-->
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Name:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary" align="right">{{ name }}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's type-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Business Type:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary" align="right">{{ businessType }}</div>
+                <!--business's type-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Business Type:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary" align="right">{{ businessType }}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's created time-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Created Time:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary" align="right">{{ created }}</div>
+                <!--business's created time-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Created Time:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary" align="right">{{ created }}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's address-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Address:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="row">
-                      <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
-                        {{ lines.line }}
+                <!--business's address-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Address:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="row">
+                        <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
+                          {{ lines.line }}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's primary administrator-->
-              <hr v-if="isAdministrator">
-              <div class="container" v-if="isAdministrator">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Primary Administrator:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary primary-administrator" align="right" @click="pushToUser(primaryAdministratorId)">
-                      {{ primaryAdministrator }}
+                <!--business's primary administrator-->
+                <hr v-if="isAdministrator">
+                <div class="container" v-if="isAdministrator">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Primary Administrator:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary primary-administrator" align="right" @click="pushToUser(primaryAdministratorId)">
+                        {{ primaryAdministrator }}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's administrators-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Administrators:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
-                         :key="nameOfAdministrator.name"
-                         align="right" @click="pushToUser(nameOfAdministrator.id)">
-                      {{ nameOfAdministrator.name }}
+                <!--business's administrators-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Administrators:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
+                           :key="nameOfAdministrator.name"
+                           align="right" @click="pushToUser(nameOfAdministrator.id)">
+                        {{ nameOfAdministrator.name }}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col">
-              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="11">Listings</button>
-            </div>
-            <div class="col">
-              <!--logout button-->
-              <div align="right" id="adminButtonRow" v-if="isAdministrator">
-                <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
-                        @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue
-
-                </button>
-                <button class="btn green-button float-end mt-4 mx-2" id="InventoryButton"
-                        @click="navigateTo('Inventory')" tabindex="12">Inventory
-                </button>
 
               </div>
             </div>
+
+            <div class="row">
+              <div class="col">
+                <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="11">Listings</button>
+              </div>
+              <div class="col">
+                <!--logout button-->
+                <div align="right" id="adminButtonRow" v-if="isAdministrator">
+                  <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
+                          @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue
+
+                  </button>
+                  <button class="btn green-button float-end mt-4 mx-2" id="InventoryButton"
+                          @click="navigateTo('Inventory')" tabindex="12">Inventory
+                  </button>
+
+                </div>
+              </div>
+            </div>
           </div>
-
-
-
-
         </div>
       </div>
-    </div>
 
     </div>
     <!--footer-->
@@ -173,13 +172,15 @@ import Navbar from "@/components/main/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
 import {UserRole} from "@/configs/User";
+import SideNavBar from "../components/main/SideNavBar";
 
 export default {
   name: "BusinessProfile",
   components: {
     Footer,
     ProfileHeader,
-    Navbar
+    Navbar,
+    SideNavBar
   },
   data() {
     return {
