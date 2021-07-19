@@ -17,6 +17,10 @@ public class MarketCardNotification {
     @Column(name = "market_card_id", nullable = false)
     private Integer marketCardId;
 
+    @ManyToOne(targetEntity = MarketplaceCard.class, fetch = FetchType.EAGER)  //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
+    @JoinColumn(name = "market_card", insertable = false, updatable = false)
+    private MarketplaceCard marketplaceCard;
+
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -29,9 +33,10 @@ public class MarketCardNotification {
      * @param description  description
      * @param created      time created
      */
-    public MarketCardNotification(Integer userId, Integer marketCardId, String description, LocalDateTime created) {
+    public MarketCardNotification(Integer userId, Integer marketCardId, MarketplaceCard marketplaceCard, String description, LocalDateTime created) {
         this.userId = userId;
         this.marketCardId = marketCardId;
+        this.marketplaceCard = marketplaceCard;
         this.description = description;
         this.created = created;
     }
@@ -49,6 +54,10 @@ public class MarketCardNotification {
 
     public Integer getMarketCardId() {
         return marketCardId;
+    }
+
+    public MarketplaceCard getMarketplaceCard() {
+        return marketplaceCard;
     }
 
     public String getDescription() {
@@ -69,6 +78,10 @@ public class MarketCardNotification {
 
     public void setMarketCardId(Integer marketCardId) {
         this.marketCardId = marketCardId;
+    }
+
+    public void setMarketplaceCard(MarketplaceCard marketplaceCard) {
+        this.marketplaceCard = marketplaceCard;
     }
 
     public void setDescription(String description) {
