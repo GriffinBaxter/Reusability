@@ -2,6 +2,9 @@ package org.seng302.view.outgoing;
 
 import java.time.LocalDateTime;
 
+/**
+ * Payload for the MarketCardNotification.
+ */
 public class MarketCardNotificationPayload {
 
     private Integer id;
@@ -9,6 +12,12 @@ public class MarketCardNotificationPayload {
     private String created;
     private MarketplaceCardPayload marketplaceCardPayload;
 
+    /**
+     * @param id                     notification id
+     * @param description            description
+     * @param created                time notification been created
+     * @param marketplaceCardPayload marketplace Card Payload
+     */
     public MarketCardNotificationPayload(Integer id,
                                          String description,
                                          LocalDateTime created,
@@ -55,7 +64,7 @@ public class MarketCardNotificationPayload {
     public String toString() {
         return "{\"id\":" + id +
                 ",\"description\":\"" + description + "\"" +
-                ",\"created\":\""+ created + "\"" +
+                ",\"created\":\"" + created + "\"" +
                 ",\"marketplaceCard\":" + marketplaceCardPayload +
                 "}";
     }
