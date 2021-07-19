@@ -3,12 +3,11 @@ package org.seng302;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.model.Address;
-import org.seng302.model.repository.AddressRepository;
-import org.seng302.model.repository.BusinessRepository;
-import org.seng302.model.repository.ProductRepository;
+import org.seng302.model.MarketCardNotification;
+import org.seng302.model.MarketplaceCard;
+import org.seng302.model.repository.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
-import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -18,9 +17,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This spring component runs at application startup to do some initialisation
@@ -35,6 +37,8 @@ public class MainApplicationRunner implements ApplicationRunner {
     private BusinessRepository businessRepository;
     private AddressRepository addressRepository;
     private ProductRepository productRepository;
+    private MarketplaceCardRepository marketplaceCardRepository;
+    private MarketCardNotificationRepository marketCardNotificationRepository;
 
     @Value("${dgaa.email}")
     private String dgaaEmail;
@@ -50,11 +54,18 @@ public class MainApplicationRunner implements ApplicationRunner {
      * classes (i.e. dependency injection)
      */
     @Autowired
-    public MainApplicationRunner(UserRepository userRepository, BusinessRepository businessRepository, AddressRepository addressRepository, ProductRepository productRepository) {
+    public MainApplicationRunner(UserRepository userRepository,
+                                 BusinessRepository businessRepository,
+                                 AddressRepository addressRepository,
+                                 ProductRepository productRepository,
+                                 MarketplaceCardRepository marketplaceCardRepository,
+                                 MarketCardNotificationRepository marketCardNotificationRepository) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
         this.addressRepository = addressRepository;
         this.productRepository = productRepository;
+        this.marketplaceCardRepository = marketplaceCardRepository;
+        this.marketCardNotificationRepository = marketCardNotificationRepository;
     }
 
     /**
@@ -118,6 +129,49 @@ public class MainApplicationRunner implements ApplicationRunner {
             logger.error("DGAA does not exist. New DGAA created {}", dGAA);
         } else {
             logger.info("DGGA exists.");
+        }
+    }
+
+    @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
+    public void checkNotifications() throws Exception {
+        // Time
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime noticeTime = currentTime.plusDays(1);
+
+        List<MarketplaceCard> marketplaceCards = marketplaceCardRepository.findAll();
+        String notificationMessageFormat = "Your card (%s) will be expired in %s";
+        Duration duration;
+        String fullNotificationMessage;
+        MarketCardNotification marketCardNotification;
+
+        for (MarketplaceCard marketplaceCard : marketplaceCards) {
+            logger.debug("Marketplace card retrieved with ID {}: {}", marketplaceCard.getId(), marketplaceCard);
+            if (marketplaceCard.getDisplayPeriodEnd().isBefore(noticeTime)
+                    && marketplaceCard.getDisplayPeriodEnd().isAfter(currentTime)) {
+                logger.debug("Marketplace card with ID {} will be expired in next 24h. ({})", marketplaceCard.getId(), marketplaceCard);
+
+                duration = Duration.between(currentTime, marketplaceCard.getDisplayPeriodEnd());
+                fullNotificationMessage = String.format(notificationMessageFormat, marketplaceCard.getTitle(), duration.toString());
+                Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository.findByUserIdAndDescription(marketplaceCard.getCreatorId(), fullNotificationMessage);
+
+                if (optionalNotification.isEmpty()) {
+                    // Create
+                    logger.debug("Notification message {} is not exist.", optionalNotification);
+                    marketCardNotification = new MarketCardNotification(marketplaceCard.getCreatorId(),
+                            marketplaceCard.getId(),
+                            marketplaceCard,
+                            fullNotificationMessage,
+                            currentTime);
+
+                } else {
+                    // Update
+                    logger.debug("Notification message {} has been retrieved.", optionalNotification);
+                    marketCardNotification = optionalNotification.get();
+                    marketCardNotification.setDescription(fullNotificationMessage);
+                }
+                marketCardNotificationRepository.save(marketCardNotification);
+                logger.debug("Notification message ({}) has been saved.", marketCardNotification.toString());
+            }
         }
     }
 

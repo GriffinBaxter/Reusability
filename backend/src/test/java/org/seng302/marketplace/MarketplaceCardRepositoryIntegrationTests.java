@@ -58,6 +58,8 @@ class MarketplaceCardRepositoryIntegrationTests {
     private MarketplaceCard marketplaceCard4;
     private MarketplaceCard marketplaceCard5;
 
+    private List<MarketplaceCard> marketplaceCards;
+
     /**
      * Sets up data for testing
      */
@@ -163,6 +165,8 @@ class MarketplaceCardRepositoryIntegrationTests {
         );
         entityManager.persist(marketplaceCard5);
         entityManager.flush();
+
+        marketplaceCards = List.of(marketplaceCard, marketplaceCard2, marketplaceCard3, marketplaceCard4, marketplaceCard5);
 
         creatorId1 = user.getId();
         creatorId2 = user2.getId();
@@ -410,6 +414,17 @@ class MarketplaceCardRepositoryIntegrationTests {
         assertThat(cardPage.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(0));
         assertThat(cardPage2.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(1));
         assertThat(cardPage3.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(2));
+    }
+
+    // -----------------------------Find All Market Card-----------------------------
+
+    /**
+     * Test finding all cards.
+     */
+    @Test
+    void whenFindAll_thenReturnAllCard(){
+        List<MarketplaceCard> marketplaceCards = marketplaceCardRepository.findAll();
+        assertThat(marketplaceCards.size()).isEqualTo(marketplaceCards.size());
     }
 
     // ----------------------------- Find By Creator Id -----------------------------

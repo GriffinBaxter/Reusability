@@ -33,12 +33,10 @@ public interface MarketplaceCardRepository extends JpaRepository<MarketplaceCard
     Page<MarketplaceCard> findAllBySection(Section section, Pageable page);
 
     /**
-     * search to get marketplace cards by creator Id
-     * @param id creator id
+     * search to get all marketplace cards
      * @return A list of marketplace card
      */
-    //TODO: Test
-    List<MarketplaceCard> findAllByCreatorId(Integer id);
+    List<MarketplaceCard> findAll();
 
     /**
      * Search to see if a card exists.
