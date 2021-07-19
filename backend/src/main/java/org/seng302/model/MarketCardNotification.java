@@ -1,5 +1,7 @@
 package org.seng302.model;
 
+import org.seng302.view.outgoing.MarketCardNotificationPayload;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -91,4 +93,12 @@ public class MarketCardNotification {
     public void setCreated(LocalDateTime created) {
         this.created = created;
     }
+
+    public MarketCardNotificationPayload toMarketCardNotificationPayload() throws Exception {
+        return new MarketCardNotificationPayload(id,
+                description,
+                created,
+                marketplaceCard.toMarketplaceCardPayload());
+    }
+
 }
