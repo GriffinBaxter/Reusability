@@ -37,12 +37,12 @@
 
 <script>
 import Api from '../Api';
-import Navbar from "@/components/main/Navbar";
-import Footer from "@/components/main/Footer";
+import Navbar from "../components/main/Navbar";
+import Footer from "../components/main/Footer";
 import ProfileHeader from "../components/ProfileHeader";
-import User from "@/configs/User";
+import User from "../configs/User";
 import Table from "../components/Table";
-import Business from "@/configs/Business";
+import Business from "../configs/Business";
 
 export default {
   name: "Search",
@@ -73,7 +73,7 @@ export default {
       currentPage: 0,
       totalRows: 0,
       totalPages: 0,
-      maxPage: 1,
+      maxPage: 0,
       // Used to tell the table what is the current ordering (for visual purposes).
       tableOrderBy: {orderBy: null, isAscending: true},
       orderByString: "",
@@ -106,6 +106,8 @@ export default {
           query: {"type": "Business", "searchQuery": this.query, "businessType": this.selectedBusinessType, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
         });
         this.requestBusinesses(this.query, this.selectedBusinessType);
+      } else {
+        this.$router.push('/pageDoesNotExist');
       }
     },
 
@@ -154,14 +156,6 @@ export default {
      */
     async requestBusinesses(inputQuery, businessType) {
       this.tableData = [];
-
-      if (inputQuery === undefined) {
-        inputQuery = this.$route.query["searchQuery"];
-      }
-
-      if (businessType === undefined) {
-        businessType = "Any";
-      }
 
       this.searchType = 'Business';
       this.tableHeaders = this.businessHeaders;
@@ -263,10 +257,6 @@ export default {
      */
     async requestUsers(inputQuery) {
       this.tableData = [];
-
-      if (inputQuery === undefined) {
-        inputQuery = this.$route.query["searchQuery"];
-      }
 
       this.searchType = 'User';
       this.tableHeaders = this.userHeaders;
@@ -417,6 +407,8 @@ export default {
           }
         });
         this.requestBusinesses(this.query, this.selectedBusinessType);
+      } else {
+        this.$router.push('/pageDoesNotExist');
       }
     },
 
@@ -455,6 +447,8 @@ export default {
     } else if (this.searchType === 'Business') {
       this.selectedBusinessType = this.$route.query["businessType"];
       this.requestBusinesses(this.query, this.selectedBusinessType);
+    } else {
+      this.$router.push('/pageDoesNotExist');
     }
   },
 
