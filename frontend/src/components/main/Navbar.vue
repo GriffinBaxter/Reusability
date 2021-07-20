@@ -392,7 +392,6 @@ export default {
 
       }
 
-
       // So the toggle variable can be updated
       return toggleVariable;
     },
@@ -604,8 +603,6 @@ export default {
   mounted() {
     this.getUserData();
 
-    this.showTopNavLinks();
-
     // Sample the navbar max height at mounting
     this.navbarMaxHeight = this.getNavbarMaxHeight();
 
@@ -791,54 +788,50 @@ export default {
 
 .company-name-main-font {
   font-family: 'Merriweather Sans', sans-serif;
-  font-size: 46px;
+  font-size: 26px;
   position: absolute;
-  line-height: 50px;
+  line-height: 40px;
 }
 
-@media (min-width: 250px) {
-  .center {
-    padding-inline: 15px;
-    text-align: center;
+@media (min-width: 780px) {
+
+  .company-name-main-font {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 46px;
+    position: absolute;
+    line-height: 50px;
   }
 
-  /*.company-name-main-font {*/
-  /*  font-size: 12px;*/
-  /*}*/
 }
 
-@media (min-width: 350px) {
-  .center {
-    padding-inline: 15px;
-    text-align: center;
-  }
 
-  /*.company-name-main-font {*/
-  /*  font-size: 16px;*/
-  /*}*/
-}
+/*@media (min-width: 250px) {*/
+/*  .center {*/
+/*    padding-inline: 15px;*/
+/*    text-align: center;*/
+/*  }*/
+/*}*/
 
-@media (min-width: 400px) {
-  .center {
-    padding-inline: 15px;
-    text-align: center;
-  }
+/*@media (min-width: 350px) {*/
+/*  .center {*/
+/*    padding-inline: 15px;*/
+/*    text-align: center;*/
+/*  }*/
+/*}*/
 
-  /*.company-name-main-font {*/
-  /*  font-size: 22px;*/
-  /*}*/
-}
+/*@media (min-width: 400px) {*/
+/*  .center {*/
+/*    padding-inline: 15px;*/
+/*    text-align: center;*/
+/*  }*/
+/*}*/
 
-@media (min-width: 450px) {
-  .center {
-    padding-inline: 15px;
-    text-align: center;
-  }
-
-  /*.company-name-main-font {*/
-  /*  font-size: 28px;*/
-  /*}*/
-}
+/*@media (min-width: 450px) {*/
+/*  .center {*/
+/*    padding-inline: 15px;*/
+/*    text-align: center;*/
+/*  }*/
+/*}*/
 
 @media (min-width: 780px) {
   .nav-item {
