@@ -575,12 +575,25 @@ export default {
 
       let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
 
-      if (currentKeywordStartEnd !== false) {
-        Api.searchKeywords(this.currentKeyword).then(response => {
+      let keywordSearch = this.currentKeyword;
+      if (this.keywordsInput === "" ||
+          (this.keywordsInput.length === this.textCursorPosition &&
+          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+      ) {
+        keywordSearch = "";
+      }
+
+      if (
+          currentKeywordStartEnd !== false ||
+          this.keywordsInput === "" ||
+          (this.keywordsInput.length === this.textCursorPosition &&
+          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+      ) {
+        Api.searchKeywords(keywordSearch).then(response => {
           let autocompleteKeywords = [];
 
           for (let i = 0; i < response.data.length && i < 5; i++) {
-            if (this.currentKeyword !== response.data[i].name) {
+            if (keywordSearch !== response.data[i].name) {
               autocompleteKeywords.push(response.data[i]);
             }
           }
@@ -591,17 +604,24 @@ export default {
     },
 
     updateKeyword(keyword) {
-      let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
+      if (this.keywordsInput === "" ||
+          (this.keywordsInput.length === this.textCursorPosition &&
+          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+      ) {
+        this.keywordsInput = this.keywordsInput + keyword;
+      } else {
+        let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
 
-      if (currentKeywordStartEnd !== false) {
-        let [currentKeywordStart, currentKeywordEnd] = currentKeywordStartEnd;
+        if (currentKeywordStartEnd !== false) {
+          let [currentKeywordStart, currentKeywordEnd] = currentKeywordStartEnd;
 
-        this.keywordsInput =
-            this.keywordsInput.substring(0, currentKeywordStart) +
-            this.keywordsInput.substring(currentKeywordStart, currentKeywordEnd).replace(
-                this.currentKeyword, keyword
-            ) +
-            this.keywordsInput.substring(currentKeywordEnd);
+          this.keywordsInput =
+              this.keywordsInput.substring(0, currentKeywordStart) +
+              this.keywordsInput.substring(currentKeywordStart, currentKeywordEnd).replace(
+                  this.currentKeyword, keyword
+              ) +
+              this.keywordsInput.substring(currentKeywordEnd);
+        }
       }
     },
 
