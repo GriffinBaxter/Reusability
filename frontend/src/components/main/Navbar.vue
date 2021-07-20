@@ -12,7 +12,7 @@
 
 <template>
   <nav class="navbar sticky-top navbar-expand-xl shadow-sm text-font" style="background-color: white">
-    <div class="container mt-2 my-xl-3 mx-auto">
+    <div id="top-nav-bar-id" class="container">
 
       <!-- Hamburger icon -->
       <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
@@ -207,7 +207,10 @@
           </div>
 
           <!-- desktop version of nav bar -->
-          <div v-else class=" navbar-inner-id navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+          <div v-else class="navbar-inner-id-desktop navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+              <ul class="navbar-nav flex-column flex-xl-row">
+
+              </ul>
 
           </div>
 
@@ -670,8 +673,13 @@ export default {
 
 /* Styling for smaller screen sizes begins */
 
+#top-nav-bar-id {
+  justify-content: end;
+}
+
 .logo-container {
   position: center;
+  margin-right: 0;
 }
 
 #logo-image-nav {
@@ -832,11 +840,11 @@ export default {
   /*  padding: 10px 40px;*/
   /*}*/
 
-  /*.act-as-image {*/
-  /*  height: 55px;*/
-  /*  width: auto;*/
-  /*  border: 1px lightgrey solid;*/
-  /*}*/
+  .act-as-image {
+    height: 55px;
+    width: auto;
+    border: 1px lightgrey solid;
+  }
 
   /*#actAsImg {*/
   /*  float: none;*/
@@ -871,5 +879,7 @@ export default {
     text-align: center;
   }
 }
+
+
 
 </style>
