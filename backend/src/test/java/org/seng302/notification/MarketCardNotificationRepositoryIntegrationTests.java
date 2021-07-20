@@ -31,7 +31,7 @@ import java.util.Optional;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class MarketCardNotificationRepositoryIntegrationTests {
+class MarketCardNotificationRepositoryIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -206,12 +206,9 @@ public class MarketCardNotificationRepositoryIntegrationTests {
      * Test FindByReceiverIdAndNotificationMessage()
      */
     @Test
-    public void testFindByUserIdAndDescription() {
-        // given
-        String message = marketCardNotification.getDescription();
-
+    void testFindByUserIdAndDescription() {
         // when
-        Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository.findByUserIdAndDescription(user.getId(), message);
+        Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository.findByUserIdAndMarketCardId(user.getId(), marketplaceCard.getId());
 
         // then
         Assertions.assertTrue(optionalNotification.isPresent());
@@ -222,7 +219,7 @@ public class MarketCardNotificationRepositoryIntegrationTests {
      * Test FindAllByReceiverId()
      */
     @Test
-    public void testFindAllByUserId() {
+    void testFindAllByUserId() {
         // when
         List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAllByUserId(user.getId());
 

@@ -132,27 +132,42 @@ public class MainApplicationRunner implements ApplicationRunner {
         }
     }
 
+    /**
+     * Check displayPeriodEnd for all Market cards, and compare with current time, if the card will expired in next 24h,
+     * create/update a notification for this card.
+     */
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
-    public void checkNotifications() throws Exception {
+    public void checkNotifications() {
         // Time
         LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime noticeTime = currentTime.plusDays(1);
+        LocalDateTime expiredTime = currentTime.plusDays(1);
 
         List<MarketplaceCard> marketplaceCards = marketplaceCardRepository.findAll();
-        String notificationMessageFormat = "Your card (%s) will be expired in %s";
-        Duration duration;
+        String notificationMessageFormat = "Your card (%s) will be expired in %s.";
+        String deletingNotificationMessage = "Your card (%s) has been deleted.";
+        Long second;
+        String timeLeft;
         String fullNotificationMessage;
         MarketCardNotification marketCardNotification;
 
         for (MarketplaceCard marketplaceCard : marketplaceCards) {
             logger.debug("Marketplace card retrieved with ID {}: {}", marketplaceCard.getId(), marketplaceCard);
-            if (marketplaceCard.getDisplayPeriodEnd().isBefore(noticeTime)
-                    && marketplaceCard.getDisplayPeriodEnd().isAfter(currentTime)) {
-                logger.debug("Marketplace card with ID {} will be expired in next 24h. ({})", marketplaceCard.getId(), marketplaceCard);
+            if (marketplaceCard.getDisplayPeriodEnd().isBefore(expiredTime)) {
+                if (marketplaceCard.getDisplayPeriodEnd().isAfter(currentTime)) {
+                    // expired in next 24h
+                    logger.debug("Marketplace card with ID {} will be expired in next 24h. ({})",
+                            marketplaceCard.getId(), marketplaceCard);
 
-                duration = Duration.between(currentTime, marketplaceCard.getDisplayPeriodEnd());
-                fullNotificationMessage = String.format(notificationMessageFormat, marketplaceCard.getTitle(), duration.toString());
-                Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository.findByUserIdAndDescription(marketplaceCard.getCreatorId(), fullNotificationMessage);
+                    second = Duration.between(currentTime, marketplaceCard.getDisplayPeriodEnd()).getSeconds();
+                    timeLeft = String.format("%dh %dm %ds", second / 3600, second % 3600 / 60, second % 60);
+                    fullNotificationMessage = String.format(notificationMessageFormat, marketplaceCard.getTitle(), timeLeft);
+                } else {
+                    // expired
+                    fullNotificationMessage = String.format(deletingNotificationMessage, marketplaceCard.getTitle());
+                }
+
+                Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository
+                        .findByUserIdAndMarketCardId(marketplaceCard.getCreatorId(), marketplaceCard.getId());
 
                 if (optionalNotification.isEmpty()) {
                     // Create
@@ -168,13 +183,13 @@ public class MainApplicationRunner implements ApplicationRunner {
                     logger.debug("Notification message {} has been retrieved.", optionalNotification);
                     marketCardNotification = optionalNotification.get();
                     marketCardNotification.setDescription(fullNotificationMessage);
+                    marketCardNotification.setCreated(currentTime);
                 }
                 marketCardNotificationRepository.save(marketCardNotification);
-                logger.debug("Notification message ({}) has been saved.", marketCardNotification.toString());
+                logger.debug("Notification message ({}) has been saved.", marketCardNotification.getDescription());
             }
         }
     }
-
 
     public boolean isPresent(String dgaaData) {
         return (dgaaData != null) && !(dgaaData.isEmpty());

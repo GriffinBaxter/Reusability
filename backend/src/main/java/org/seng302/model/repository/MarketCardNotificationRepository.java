@@ -11,13 +11,13 @@ import java.util.Optional;
 public interface MarketCardNotificationRepository extends JpaRepository<MarketCardNotification, String> {
 
     /**
-     * Search for an notification by given id and message
+     * Search for an notification by given id and relate market card id
      *
-     * @param id          receiver id
-     * @param description description
+     * @param userId       receiver id
+     * @param marketCardId market card id
      * @return a notification matching given info
      */
-    Optional<MarketCardNotification> findByUserIdAndDescription(Integer id, String description);
+    Optional<MarketCardNotification> findByUserIdAndMarketCardId(Integer userId, Integer marketCardId);
 
     /**
      * Search for a list of notification matching given user id
