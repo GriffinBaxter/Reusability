@@ -13,7 +13,6 @@
         <!--modal body-->
         <div class="modal-body">
           <form class="row" id="inventoryItemCreation" @submit.prevent>
-
             <!--product id-->
             <div class="col-7 form-group py-1 px-3">
               <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
@@ -27,9 +26,13 @@
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
                   <!-- Popover for additional info -->
-<!--                  <span class="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" title="Popover title" data-bs-content="And here's some amazing content. It's very engaging. Right?">-->
-                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" v-bind:value="product.id" tabindex="-1"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product)}}</li>
-<!--                  </span>-->
+                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" v-bind:value="product.id" tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus" title="popover title" data-bs-content="lalskdbfjaklsdbfkasdjbf">
+                        <strong>
+                          {{ product.id }}
+                        </strong>
+                        <br>
+                        {{ product.name + getAutofillCurrencyText(product)}}
+                    </li>
                 </ul>
               </div>
             </div>
@@ -138,11 +141,12 @@
 
 <script>
 
-import {Modal} from "bootstrap"; //uncommenting means the test do not run
+import {Modal, Popover} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
 import Autofill from '../autofill';
 import {parseISO} from 'date-fns'
+import Vue from "vue";
 const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');
 
 export default {
@@ -192,7 +196,8 @@ export default {
       inventoryValidationHelper: inventoryValidationHelper,
       autofillInput: '',
       autofillState: 'initial',
-      currentProduct: null
+      currentProduct: null,
+      tooltipList: []
     }
   },
   props: {
@@ -237,6 +242,14 @@ export default {
     async getAllProducts() {
       await Api.getEveryProduct(this.businessId).then((response) => {
         this.allProducts = [...response.data];
+        const self = this;
+        Vue.nextTick(function() {
+          const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
+          console.log(popoverTriggerList);
+          self.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
+            return new Popover(popoverTriggerElement);
+          })
+        })
       }).catch((error) => {
         if (error.response) {
           if (error.response.status === 400) {
@@ -249,6 +262,7 @@ export default {
         } else if (error.request) {
           this.toastErrorMessage = 'Timeout occurred';
         } else {
+          console.log(error)
           this.toastErrorMessage = 'Unexpected error occurred!';
         }
       })
