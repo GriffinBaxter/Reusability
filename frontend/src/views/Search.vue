@@ -189,7 +189,7 @@ export default {
             this.currentPage = 0;
             this.maxPage = 0;
             this.totalRows = 0;
-            this.totalPages = 1;
+            this.totalPages = 0;
             // Generate the tableData to be placed in the table & get the total number of rows.
           } else {
             this.totalRows = parseInt(response.headers["total-rows"]);
@@ -289,7 +289,7 @@ export default {
             this.currentPage = 0;
             this.maxPage = 0;
             this.totalRows = 0;
-            this.totalPages = 1;
+            this.totalPages = 0;
             // Generate the tableData to be placed in the table & get the total number of rows.
           } else {
             this.totalRows = parseInt(response.headers["total-rows"]);
