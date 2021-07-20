@@ -1,6 +1,6 @@
 <template>
 
-  <div id="mySidenav" class="sidenav">
+  <div id="side-nav-bar" class="sidenav">
 
     <!-- side nav bar close button with 'x' icons -->
     <a href="javascript:void(0)" class="closebtn" @click="() => closeSideNav()">&times;</a>
@@ -182,7 +182,7 @@ export default {
      *  Set the width of the side navigation to 0 and the left margin of the page content to 0
      */
     closeSideNav() {
-      document.getElementById("mySidenav").style.width = "0";
+      document.getElementById("side-nav-bar").style.width = "0";
       document.getElementById("main").style.marginLeft = "0";
     },
     /**
@@ -569,10 +569,6 @@ export default {
   transition: 0.3s;
 }
 
-/*.sidenav a:hover {*/
-/*  color: #f1f1f1;*/
-/*}*/
-
 .sidenav .closebtn {
   position: absolute;
   top: 0;
@@ -671,6 +667,5 @@ export default {
 .side-nav-link-icon {
 
 }
-
 
 </style>

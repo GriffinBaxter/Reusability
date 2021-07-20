@@ -331,8 +331,8 @@ export default {
      *  Close the side nav bar if it is open.
      */
     toggleSideNav() {
-      if (document.getElementById("mySidenav").style.width === "0px") {
-        document.getElementById("mySidenav").style.width = "250px";
+      if (document.getElementById("side-nav-bar").style.width === "0px") {
+        document.getElementById("side-nav-bar").style.width = "250px";
         document.getElementById("main").style.marginLeft = "250px";
       } else {
         this.closeSideNav();
@@ -342,7 +342,7 @@ export default {
      *  Set the width of the side navigation to 0 and the left margin of the page content to 0
      */
     closeSideNav() {
-      document.getElementById("mySidenav").style.width = "0";
+      document.getElementById("side-nav-bar").style.width = "0";
       document.getElementById("main").style.marginLeft = "0";
     },
     /**
