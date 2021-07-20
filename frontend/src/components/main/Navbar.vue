@@ -820,8 +820,6 @@ export default {
     display: none;
   }
 
-
-
   #interactDrop {
     display: none;
   }
@@ -846,40 +844,32 @@ export default {
 
 }
 
-@media (max-width: 780px) {
-  .nav-item {
-    display: none;
+@media (min-width: 250px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
   }
-
-
 }
 
-/*@media (min-width: 250px) {*/
-/*  .center {*/
-/*    padding-inline: 15px;*/
-/*    text-align: center;*/
-/*  }*/
-/*}*/
+@media (min-width: 350px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+}
 
-/*@media (min-width: 350px) {*/
-/*  .center {*/
-/*    padding-inline: 15px;*/
-/*    text-align: center;*/
-/*  }*/
-/*}*/
+@media (min-width: 400px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+}
 
-/*@media (min-width: 400px) {*/
-/*  .center {*/
-/*    padding-inline: 15px;*/
-/*    text-align: center;*/
-/*  }*/
-/*}*/
-
-/*@media (min-width: 450px) {*/
-/*  .center {*/
-/*    padding-inline: 15px;*/
-/*    text-align: center;*/
-/*  }*/
-/*}*/
+@media (min-width: 450px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+}
 
 </style>
