@@ -791,22 +791,10 @@ export default {
 
 .company-name-main-font {
   font-family: 'Merriweather Sans', sans-serif;
-
-  /* centre text with navbar toggle */
-  margin: 0;
+  font-size: 46px;
   position: absolute;
-  top: 35px;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+  line-height: 50px;
 }
-
-/*.side-nav-link-icon {*/
-/*  width: 140px;*/
-/*}*/
-
-/*.side-nav-link-text {*/
-/*  width: 140px;*/
-/*}*/
 
 @media (min-width: 250px) {
   .center {
@@ -814,9 +802,9 @@ export default {
     text-align: center;
   }
 
-  .company-name-main-font {
-    font-size: 12px;
-  }
+  /*.company-name-main-font {*/
+  /*  font-size: 12px;*/
+  /*}*/
 }
 
 @media (min-width: 350px) {
@@ -825,9 +813,9 @@ export default {
     text-align: center;
   }
 
-  .company-name-main-font {
-    font-size: 16px;
-  }
+  /*.company-name-main-font {*/
+  /*  font-size: 16px;*/
+  /*}*/
 }
 
 @media (min-width: 400px) {
@@ -836,9 +824,9 @@ export default {
     text-align: center;
   }
 
-  .company-name-main-font {
-    font-size: 22px;
-  }
+  /*.company-name-main-font {*/
+  /*  font-size: 22px;*/
+  /*}*/
 }
 
 @media (min-width: 450px) {
@@ -847,9 +835,9 @@ export default {
     text-align: center;
   }
 
-  .company-name-main-font {
-    font-size: 28px;
-  }
+  /*.company-name-main-font {*/
+  /*  font-size: 28px;*/
+  /*}*/
 }
 
 @media (min-width: 780px) {
