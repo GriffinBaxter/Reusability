@@ -52,7 +52,7 @@
                 </div>
                 <div class="col-md">
                   <input id="card-title" :class="`form-control ${formErrorClasses.titleError}`" v-model="title"
-                         :maxlength="config.config.title.maxLength">
+                         :maxlength="config.config.title.maxLength" @input="isTitleInvalid">
                   <div id="card-title-invalid-feedback" class="invalid-feedback" v-if="formError.titleError">
                     {{formError.titleError}}
                   </div>
@@ -66,14 +66,12 @@
                 </div>
                 <div class="col-md">
                   <textarea id="card-description" :class="`form-control ${formErrorClasses.descriptionError}`" v-model="description"
-                            :maxlength="config.config.description.maxLength"/>
+                            :maxlength="config.config.description.maxLength" @input="isDescriptionInvalid"/>
                   <div id="card-description-invalid-feedback" class="invalid-feedback" v-if="formError.descriptionError">
                     {{formError.descriptionError}}
                   </div>
                 </div>
               </div>
-
-
 
               <!-- Card Keywords -->
               <div class="row my-4">
@@ -83,14 +81,14 @@
                 <div class="col-md">
                   <div style="position: relative; height: 80px;" :class="`form-control ${formErrorClasses.keywordsError}`">
                     <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; overflow-y: scroll" disabled />
-                    <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"/>
+                    <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
+                              @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
                   </div>
                   <div id="card-keywords-invalid-feedback" class="invalid-feedback" v-if="formError.keywordsError">
                     {{formError.keywordsError}}
                   </div>
                 </div>
               </div>
-
 
             </form>
           </div>
@@ -111,6 +109,7 @@
 import {Modal} from 'bootstrap';
 import cardConfig from "../../configs/MarketplaceCard"
 import Cookies from "js-cookie";
+import Api from "@/Api";
 
 export default {
   name: "EditCardModal",
@@ -168,11 +167,175 @@ export default {
   },
   methods: {
     /**
+     * Determines if a title inputted by the user is valid. This also updated the title error
+     * message accordingly and returns the class state. This also updates the form error class.
+     *
+     * @return {boolean} Returns true if the input field is invalid.
+     * */
+    isTitleInvalid() {
+      if (this.submitAttempted) {
+        if (this.title.length >= cardConfig.config.title.maxLength || this.title.length < cardConfig.config.title.minLength) {
+          this.formError.titleError = `The title must be between ${cardConfig.config.title.minLength} and ${cardConfig.config.title.maxLength} in length.`
+          this.formErrorClasses.titleError = this.isInvalidClass;
+          return true;
+        }
+      }
+      this.formError.titleError = ""
+      this.formErrorClasses.titleError = ""
+      return false;
+    },
+    /**
+     * Determines if the description inputted is valid within the rules of the Card. This updates the description
+     * error message. This also updates the form error class.
+     *
+     * @return {boolean} Returns true if the input field is invalid.
+     * */
+    isDescriptionInvalid() {
+      if (this.submitAttempted) {
+        if (this.description.length >= cardConfig.config.description.maxLength || this.description.length < cardConfig.config.description.minLength) {
+          this.formError.descriptionError = `The description length must be between ${cardConfig.config.description.minLength} and ${cardConfig.config.description.maxLength} in length.`
+          this.formErrorClasses.descriptionError = this.isInvalidClass;
+          return true
+        }
+      }
+      this.formError.descriptionError = ""
+      this.formErrorClasses.descriptionError = ""
+      return false
+    },
+    /**
+     * Determines if the keywords inputted is valid within the rules of the Card. This updates the keywords
+     * error message. This also updates the form error class.
+     *
+     * @return {boolean} Returns true if the input field is invalid.
+     * */
+    isKeywordsInvalid() {
+      if (this.submitAttempted) {
+        let invalidKeywords = [];
+        for (const keyword of this.getKeywords()) {
+          if (keyword.length >= this.config.config.keyword.maxLength || keyword.length < this.config.config.keyword.minLength) {
+            invalidKeywords.push(keyword)
+          }
+        }
+        if (invalidKeywords.length > 0 ) {
+          this.formError.keywordsError = `All keywords need to be between ${this.config.config.keyword.minLength} and ${this.config.config.keyword.maxLength} in length.`
+          this.formErrorClasses.keywordsError = this.isInvalidClass
+          return true
+        }
+      }
+      this.formError.keywordsError = ""
+      this.formErrorClasses.keywordsError = ""
+      return false
+    },
+    /**
+     * Converts section from GET call
+     */
+    convertSection(section) {
+      switch (section) {
+        case 'FORSALE':
+          this.sectionSelected = this.sections.FOR_SALE
+          return;
+        case 'WANTED':
+          this.sectionSelected = this.sections.WANTED
+          return;
+        case 'EXCHANGE':
+          this.sectionSelected = this.sections.EXCHANGE
+          return;
+      }
+    },
+    /**
+     * Gets current state of the selected card from the API
+     */
+    async getCurrentData() {
+      await Api.getDetailForACard(this.id).then(response => (this.populateData(response.data))).catch((error) => {
+        console.log(error.message);
+        if (error.response) {
+          if (error.response.status === 400) {
+            this.$router.push({path: '/pageDoesNotExist'});
+          } else if (error.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
+          } else if (error.response.status === 406) {
+            this.$router.push({path: '/noCard'});
+          }
+        } else {
+          this.$router.push({path: '/noCard'});
+        }
+      })
+    },
+    /**
+     * Populates the input boxes with the current state of the card
+     * @param data Data received from the backend
+     */
+    populateData(data) {
+      this.convertSection(data.section)
+      this.section = data.section;
+      this.title = data.title;
+      this.description = data.description;
+      this.keywordsInput = this.convertKeywordsToString(data.keywords);
+
+    },
+    convertKeywordsToString(keywords) {
+      let keyString = ""
+      for (let key in keywords) {
+        keyString += keywords[key].name + " "
+      }
+      return keyString.slice(0, -1)
+    },
+    /**
+     * Takes a string and adds the keyword prefix symbol to the front of the string.
+     *  @param keyword {string} The keyword string
+     *
+     *  @return {String} The keyword modified to include the prefix if it is longer then 0.
+     * */
+    addKeywordPrefix(keyword) {
+
+      // If the keyword is not a string, do not process it.
+      if (typeof keyword !== "string") {
+        throw new Error("keyword must be string!")
+      }
+
+      // Add the prefix to all strings that are not "" or do not already have that prefix
+      if (keyword.length > 0) {
+        if (keyword[0] !== this.keywordPrefix) {
+          keyword = this.keywordPrefix + keyword;
+        }
+      }
+      return keyword;
+    },
+    /**
+     * Takes a keyword and ensures and returns the string such that it cannot have characters longer then the allocated
+     * amount.
+     * @param keyword {string} Takes the keyword string.
+     *
+     * @return {string} The modified keyword string that only includes the first {maxlength} characters.
+     * */
+    enforceKeywordMaxLength(keyword) {
+      // If the keyword is not a string, do not process it.
+      if (typeof keyword !== "string") {
+        throw new Error("keyword must be string!")
+      }
+
+      // 'Cut off' the extra characters.
+      if (keyword.length >= this.config.config.keyword.maxLength) {
+        keyword = keyword.substring(0, this.config.config.keyword.maxLength);
+      }
+
+      return keyword
+    },
+    /**
+     * Ensures when the table scrolls that they remain at the same height.
+     * */
+    handleKeywordsScroll() {
+      this.$refs.keywordsBackdrop.scrollTop = this.$refs.keywordsInput.scrollTop;
+      this.$refs.keywordsInput.scrollTop = this.$refs.keywordsBackdrop.scrollTop;
+    },
+    /**
      * Shows the card edit modal
      * */
     showModal(id) {
 
       this.id = id
+
+      this.getCurrentData()
 
       // Resetting all the form error classes
       this.formErrorClasses.sectionSelectionError = ""
@@ -195,6 +358,57 @@ export default {
 
     this.userId = Cookies.get('userID');
 
+  },
+  watch: {
+    /**
+     * Prevents the value from breaking the expected rules.
+     * @param val The new value.
+     */
+    keywordsInput: function (val) {
+      // Only allow spaces. new line --> space
+      val = val.replace(/\n/g, " ").replace(/\n\s*\n/g, ' ');
+      val = val.replace(/\s+/g, ' ').replace(/\s+#*/g, " ");
+
+      let strings = val.split(" ");
+      for (let i = 0; i < strings.length; i++ ) {
+        // Add a hashtag in front of all strings besides
+        strings[i] = this.addKeywordPrefix(strings[i])
+
+        // Prevent string from being over the maximum length
+        strings[i] = this.enforceKeywordMaxLength(strings[i])
+      }
+
+      val = strings.join(" ")
+
+      // Assign the process val to the keyword input
+      this.keywordsInput = val;
+
+      // Defines the highlight tag
+      const highlightHtml = (text) => `<strong class="keywordHighlight">${text}</strong>`
+
+      // Get a list of unique strings from the array
+      const uniqueStrings = [...new Set(val.split(" "))];
+      let result = val.split(" ");
+
+      // For each unique string we replace it with a highlight to surround it.
+      for (const uniqueString of uniqueStrings) {
+        if (uniqueString !== "") {
+          for (let i = 0; i < result.length; i++) {
+            if (result[i] === uniqueString) {
+              result[i] = highlightHtml(result[i]);
+            }
+          }
+        }
+      }
+      // Add the text back with the highlights
+      this.keywordsBackdrop = result.join(" ") + " "
+
+      // Ensures when new data is added the scroll bar is updated along with it.
+      this.handleKeywordsScroll();
+
+      // Update any error messages.
+      this.isKeywordsInvalid()
+    }
   }
 }
 </script>
