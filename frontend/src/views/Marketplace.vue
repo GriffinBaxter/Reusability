@@ -94,7 +94,7 @@ import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
 import Api from "../Api";
-import EditCardModal from "@/components/marketplace/EditCardModal";
+import EditCardModal from "../components/marketplace/EditCardModal";
 
 export default {
   name: "Marketplace",
