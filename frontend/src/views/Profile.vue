@@ -11,6 +11,10 @@
     <!--nav bar-->
     <Navbar></Navbar>
 
+      <!-- a placeholder so that when you click on a user's card on their profile it will open the more detailed display -->
+      <CardDetail v-bind:id="selectedCard"
+                  v-bind:section="cardSection"/>
+
     <!--profile header, contains user search bar-->
     <div id="profile-header-div">
       <ProfileHeader/>
@@ -18,22 +22,6 @@
 
     <!--profile container-->
     <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
-
-      <!-- These messages will appear for GAA accounts -->
-      <div class="row" v-if="hasAdminRights(role) && isGAA(role)">
-        <div class="col-xl-12 mb-5 text-center mx-auto">
-          <div class="display-5" v-if="otherUser">This user has application admin rights!</div>
-          <div class="display-5" v-else>You have application admin rights!</div>
-        </div>
-      </div>
-
-      <!-- These messages will appear for DGAA accounts -->
-      <div class="row" v-if="hasAdminRights(role) && isDGAA(role)">
-        <div class="col-xl-12 mb-5 text-center mx-auto">
-          <div class="display-5" v-if="otherUser">This user has default application admin rights!</div>
-          <div class="display-5" v-else>You have default application admin rights!</div>
-        </div>
-      </div>
 
       <div class="row">
 
@@ -55,14 +43,30 @@
             </div>
           </div>
 
+
           <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
             <div class="card-header">Something went wrong with your action...</div>
             <div class="card-body">{{ actionErrorMessage }}</div>
           </div>
 
-          <!--make/remove business administrator button-->
-          <div class="card text-center  shadow-sm mt-3" v-if="actingBusinessId && otherUser">
-            <div class="card-body">
+
+          <div class="card text-center shadow-sm mt-3" v-if="populatedBox()">
+            <!-- These messages will appear for GAA accounts -->
+            <div class="card-body" v-if="hasAdminRights(role) && isGAA(role)">
+              <div class="alert alert-info" role="alert">
+                Global Application Admin
+              </div>
+            </div>
+
+            <!-- These messages will appear for DGAA accounts -->
+            <div class="card-body" v-if="hasAdminRights(role) && isDGAA(role)">
+              <div class="alert alert-info" role="alert">
+                Default Global Application Admin
+              </div>
+            </div>
+
+            <!--make/remove business administrator button-->
+            <div class="card-body" v-if="actingBusinessId && otherUser">
               <div v-if="!isBusinessAdministrator">
                 <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
                 <button type="button" class="btn btn-md btn-outline-primary" v-else @click="activeAsAdministrator()">
@@ -77,17 +81,15 @@
                 </button>
               </div>
             </div>
-          </div>
-          <!--
-          This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
-          because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
-          but the backend will prevent this from occuring.
 
-          The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
-          another user's id.
-          -->
-          <div class="card text-center shadow-sm mt-3" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
-            <div class="card-body">
+            <!-- This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
+            because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
+            but the backend will prevent this from occurring.
+
+            The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
+            another user's id.
+            -->
+            <div class="card-body" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
               <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
               <div v-if="isGAA(role)">
                 <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
@@ -100,6 +102,15 @@
                 <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
                 <button type="button" class="btn btn-md btn-outline-success" v-else @click="grantUserGAA">
                   Grant Global Application Admin
+                </button>
+              </div>
+            </div>
+
+            <!--register business button-->
+            <div class="card-body" v-if="!otherUser">
+              <div id="registerBusinessRow" v-if="!otherUser">
+                <button type="button" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
+                  Register Business
                 </button>
               </div>
             </div>
@@ -200,6 +211,7 @@
                   </div>
                 </div>
               </div>
+              <!--user's businesses administered-->
               <hr v-if="businessesAdministeredExist()">
               <div class="container" v-if="businessesAdministeredExist()">
                 <div class="row justify-content-between">
@@ -214,42 +226,44 @@
                         {{ business.name }}
                       </div>
                     </div>
-
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
 
-          <!--register business button-->
-          <div align="right" id="registerBusinessRow" v-if="!otherUser">
-          <button class="btn btn-outline-primary float-end mt-4 green-button" @click="$router.push('/businessRegistration')">Register Business</button>
-          </div>
+          <!--user's cards-->
+          <div class="col" v-if="userHasCards()">
+            <div class="row" id="user-cards">
+              <h4 v-if="otherUser">User's Cards</h4>
+              <h4 v-else>My Cards</h4>
 
-        </div>
-      </div>
-    </div>
-    <!-- File Upload -->
-    <div v-if="showUpload" id="FileUpload" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Upload Image</h5>
-          <button type="button" class="btn-close" @click="showFileUpload(false)"></button>
-        </div>
-        <div class="modal-body">
-          <input type="file">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="showFileUpload(false)">Close</button>
-          <button type="button" class="btn green-button" @click="showFileUpload(false)">Save changes</button>
+              <!-- Card-->
+              <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
+                   style="padding: 12px"
+                   v-for="card in usersCards"
+                   v-bind:key="card.index">
+                <div type="button"
+                     @click="selectACard(card.id, card.section)"
+                     data-bs-toggle="modal"
+                     data-bs-target="#cardDetailPopUp">
+                  <Card v-bind:index="card.index"
+                        v-bind:title="card.title"
+                        v-bind:description="card.description"
+                        v-bind:created="styleDate(card.created)"
+                        v-bind:creator="card.creator"
+                        v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     </div>
     <!--footer-->
     <Footer></Footer>
-
   </div>
 </template>
 
@@ -261,13 +275,18 @@ import Cookies from 'js-cookie';
 import Footer from "../components/main/Footer";
 import Navbar from "../components/main/Navbar";
 import {UserRole} from '../configs/User'
+import {formatDate} from "../dateUtils";
+import Card from "../components/marketplace/Card";
+import CardDetail from "../components/marketplace/CardDetailPopup";
 
 export default {
   name: "Profile",
   components: {
     Footer,
     ProfileHeader,
-    Navbar
+    Navbar,
+    Card,
+    CardDetail
   },
 
   data() {
@@ -301,16 +320,15 @@ export default {
       loginRole: null,
       isBusinessAdministrator: false,
       actingBusinessId: null,
-      showUpload: false
+
+      // User card variables
+      usersCards: [],
+      selectedCard: 0,
+      cardSection: "For Sale",
     }
   },
   methods: {
 
-    /**
-     * Calculates the months between the given date and the current date, then formats the given date and months.
-     * Finally it sets the join date on the page to the formatted string.
-     * @param createdDate
-     */
     // ---------------------------------------- These functions probably belong in User.js But then they can't easily be used with the profile --------------------------
     /**
      * Determines if the role is of a valid type (e.g. not null, some other invalid string, etc).
@@ -343,8 +361,18 @@ export default {
     isGAA(role) {
       return role === UserRole.GLOBALAPPLICATIONADMIN;
     },
+    /**
+     * If a user is an administrator of one or more businesses they will need to be displayed.
+     */
     businessesAdministeredExist() {
       return this.businessesAdministered.length !== 0;
+    },
+    /**
+     * If a user has cards then they will need to be displayed.
+     * @return boolean true if the user has cards (i.e the length of usersCards !== 0), otherwise false.
+     */
+    userHasCards() {
+      return this.usersCards.length !== 0;
     },
 
     // --------------------------------------------------------------------------------------------------------------------
@@ -493,19 +521,7 @@ export default {
      * @param userID
      */
     retrieveUser(userID) {
-      Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => {
-
-        if (error.request && !error.response) {
-          this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 406) {
-          this.$router.push({path: '/noUser'});
-        } else if (error.response.status === 401) {
-          this.$router.push({path: '/invalidtoken'});
-        } else {
-          this.$router.push({path: '/noUser'});
-          console.log(error.message);
-        }
-      })
+      Api.getUser(userID).then(response => (this.populatePage(response.data))).catch((error) => this.processUserInfoError(error));
     },
 
     /**
@@ -525,9 +541,7 @@ export default {
      The address is a special case as its components are stored semi-colon separated,
      so it must be 'unpacked' and formatted.
      */
-
     populatePage(data) {
-
       /*
       Populates all display fields on the profile page with the given data.
       The address is a special case as its components are stored semi-colon separated,
@@ -590,8 +604,6 @@ export default {
         }
       })
 
-
-
       //basic unpack
       this.firstName = data.firstName;
       this.middleName = data.middleName;
@@ -608,9 +620,9 @@ export default {
     },
 
     /**
-     * push user to an business profile page
+     * Redirect the user to a business profile page.
      */
-    pushToBusiness(id) {//TODO:change name
+    redirectToBusiness(id) {
       this.$router.push({name: 'BusinessProfile', params: {id}});
     },
 
@@ -628,7 +640,7 @@ export default {
       Cookies.remove('userID');
       Cookies.remove('actAs');
       Api.signOut().then(() => {
-        this.$router.push({ name: 'Login' })
+        this.$router.push({name: 'Login'})
       })
     },
 
@@ -652,33 +664,7 @@ export default {
                 this.actionErrorMessage = "Sorry, but something went wrong..."
               }
             }
-        ).catch(error => {
-          success = false
-          if (error.response) {
-            // Code is not 2xx
-            if (error.response.status === 401) {
-              // Missing or invalid token
-              this.$router.push({path: '/invalidtoken'});
-            }
-
-            if (error.response.status === 403) {
-              // Lacks permissions
-              this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
-            }
-
-            if (error.response.status === 406) {
-              // Something is wrong with the requested route (not a 404).
-              this.actionErrorMessage = "Sorry, but something went wrong..."
-            }
-
-          } else if (error.request) {
-            // No response received. Timeout occurs
-            this.$router.push({path: '/timeout'});
-          } else {
-            // Something went wrong with the request setup...
-            this.actionErrorMessage = "Sorry, but something went wrong..."
-          }
-        });
+        ).catch(error => success = this.processUpdateAdministratorError(error));
         //add the business if makeAdministrator successful
         if (success) {
           Api.getBusiness(this.actingBusinessId).then(response => {
@@ -713,33 +699,7 @@ export default {
                 success = false
               }
             }
-        ).catch(error => {
-          success = false
-          if (error.response) {
-            // Code is not 2xx
-            if (error.response.status === 401) {
-              // Missing or invalid token
-              this.$router.push({path: '/invalidtoken'});
-            }
-
-            if (error.response.status === 403) {
-              // Lacks permissions
-              this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
-            }
-
-            if (error.response.status === 406) {
-              // Something is wrong with the requested route (not a 404).
-              this.actionErrorMessage = "Sorry, but something went wrong..."
-            }
-
-          } else if (error.request) {
-            // No response received. Timeout occurs
-            this.$router.push({path: '/timeout'});
-          } else {
-            // Something went wrong with the request setup...
-            this.actionErrorMessage = "Sorry, but something went wrong..."
-          }
-        });
+        ).catch(error => success = this.processUpdateAdministratorError(error));
         //pop the business which has been removed if successful
         if (success) {
           this.actionErrorMessage = "" // resets error message
@@ -755,16 +715,127 @@ export default {
         this.loadingAction = false;
       }
     },
-    showFileUpload(x) {
-      this.showUpload = x;
-    },
-  },
+    /**
+     * If a user goes to update whether another user is an administrator of their business or not and the "request" fails
+     * then the appropriate error message will need to be displayed.
+     * @param error an error, which includes an error message, and error status code (such as 401).
+     * @return success a boolean value which is always false since an error occurred.
+     */
+    processUpdateAdministratorError(error) {
+      let success = false;
+      if (error.response) {
+        // Code is not 2xx
+        if (error.response.status === 401) {
+          // Missing or invalid token
+          this.$router.push({path: '/invalidtoken'});
+        }
 
-  beforeCreate() {
-    const currentID = Cookies.get('userID');
-    if (!currentID) {
-      console.log('hhhhhhhhhhhhhhhhhhhhhhh')
-      this.$router.push({ name: 'Login'});
+        if (error.response.status === 403) {
+          // Lacks permissions
+          this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+        }
+
+        if (error.response.status === 406) {
+          // Something is wrong with the requested route (not a 404).
+          this.actionErrorMessage = "Sorry, but something went wrong..."
+        }
+
+      } else if (error.request) {
+        // No response received. Timeout occurs
+        this.$router.push({path: '/timeout'});
+      } else {
+        // Something went wrong with the request setup...
+        this.actionErrorMessage = "Sorry, but something went wrong..."
+      }
+      return success;
+    },
+    /**
+     * If a card is selected then a custom event is emitted so the CardDetailPopup knows to open and display the
+     * information for the selected card.
+     * @param index the index of the selected card.
+     * @param section the section the selected card appears in.
+     */
+    selectACard(index, section) {
+      this.$emit('openCardDetail', index);
+      this.selectedCard = index;
+      this.cardSection = section;
+    },
+    /**
+     * Format the date of a card using the date-fns library.
+     * @param date the date the card was created
+     * @return date a date formatted using the date-fns library.
+     */
+    styleDate(date) {
+      return formatDate(date, false);
+    },
+    /**
+     * Concat the suburb and city together to then be displayed on a user's card.
+     * @param suburb the suburb the creator of the card lives in.
+     * @param city the city the creator of the card lives in.
+     * @return String a concatenation of the suburb and city.
+     */
+    combineSuburbAndCity(suburb, city) {
+      return (suburb === null) ? city : suburb + ", " + city;
+    },
+    /**
+     * Sends a get request to the backend to retrieve the cards belonging to the current user's profile you are viewing.
+     * If the request was unsuccessful, the cards are not populated on the page and appropriate error messages logged.
+     * @param userId the id of the user's profile you are viewing.
+     */
+    retrieveUsersCards(userId) {
+      Api.getUsersCards(userId).then(response => {
+        this.usersCards = response.data;
+        this.usersCards.sort(this.compareCards);
+      }).catch((error) => this.processUserInfoError(error));
+    },
+    /**
+     * This method is used to compare two cards' sections when sorting a user's cards by section.
+     * @param card1 the user's first card used for comparison.
+     * @param card2 the user's second card used for comparison.
+     *
+     * Preconditions:  card1 is a non-null JSON representing a MarketplaceCard.
+     *                 card2 is a non-null JSON representing a MarketplaceCard.
+     * Postconditions: an integer value representing the comparison outcome:
+     *                 1. -1 if the section of card1 is "less" than the section of card2.
+     *                 2. 1 if the section of card1 is "greater" than the section of card2.
+     *                 3. 0 if the card sections are equal.
+     */
+    compareCards(card1, card2) {
+      if (card1.section < card2.section) {
+        return -1;
+      }
+      if (card1.section > card2.section) {
+        return 1;
+      }
+      return 0;
+    },
+    /**
+     * If a request is made to the backend for user info (profile information or cards) and an error occurs
+     * then the appropriate error message will need to be displayed.
+     * @param error an error which includes an error message.
+     */
+    processUserInfoError(error) {
+      if (error.request && !error.response) {
+        this.$router.push({path: '/timeout'});
+      } else if (error.response.status === 406) {
+        this.$router.push({path: '/noUser'});
+      } else if (error.response.status === 401) {
+        this.$router.push({path: '/invalidtoken'});
+      } else {
+        this.$router.push({path: '/noUser'});
+        console.log(error.message);
+      }
+    },
+    /**
+     * This method checks to see if there is anything within the inner html class (box). If there is then the class will
+     * be displayed, otherwise it is hidden.
+     */
+    populatedBox() {
+      return (this.hasAdminRights(this.role) && this.isGAA(this.role)) ||
+          (this.hasAdminRights(this.role) && this.isDGAA(this.role)) ||
+          (this.actingBusinessId && this.otherUser) ||
+          (this.isValidRole(this.role) && this.otherUser && !this.isDGAA(this.role)) ||
+          (!this.otherUser);
     }
   },
 
@@ -784,12 +855,13 @@ export default {
 
       if (currentID === this.urlID || this.urlID === 'profile') {
         this.retrieveUser(currentID);
+        this.retrieveUsersCards(currentID);
       } else {
         // Another user
         this.retrieveUser(this.urlID);
+        this.retrieveUsersCards(this.urlID);
         this.otherUser = true;
       }
-
     }
   }
 }
@@ -798,28 +870,6 @@ export default {
 <!----------------------------------------------- Profile Page Styling ------------------------------------------------>
 
 <style scoped>
-
-#upload-button {
-  margin: 5px 0;
-}
-
-.modal {
-  display: block; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  width: 100%;
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-/* Modal Content/Box */
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 60%; /* Could be more or less, depending on screen size */
-}
 
 #profile-container {
   margin-bottom: 5%;
@@ -834,4 +884,15 @@ export default {
   color: #1EBA8C !important;
   cursor: pointer;
 }
+
+/* Needed because bootstrap alert had "padding" causing the message
+   to not be centered. */
+.alert {
+  margin-bottom: 0;
+}
+
+#user-cards {
+  padding-top: 2%;
+}
+
 </style>
