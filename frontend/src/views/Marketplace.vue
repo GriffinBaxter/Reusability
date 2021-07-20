@@ -127,23 +127,25 @@ export default {
      * @param newSection the section that the user is switching to
      */
     changeSection(newSection) {
-      this.selectSection = newSection;
-      switch (this.selectSection) {
-        case "For Sale":
-          this.sortBy = this.forSaleSortBy;
-          this.page = this.forSalePage;
-          break;
-        case "Wanted":
-          this.sortBy = this.wantedSortBy;
-          this.page = this.wantedPage;
-          break;
-        case "Exchange":
-          this.sortBy = this.exchangeSortBy;
-          this.page = this.exchangePage;
-          break;
+      if (this.selectSection !== newSection) {
+        this.selectSection = newSection;
+        switch (this.selectSection) {
+          case "For Sale":
+            this.sortBy = this.forSaleSortBy;
+            this.page = this.forSalePage;
+            break;
+          case "Wanted":
+            this.sortBy = this.wantedSortBy;
+            this.page = this.wantedPage;
+            break;
+          case "Exchange":
+            this.sortBy = this.exchangeSortBy;
+            this.page = this.exchangePage;
+            break;
+        }
+        this.updateUrl();
+        this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
       }
-      this.updateUrl();
-      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
     },
 
     /**

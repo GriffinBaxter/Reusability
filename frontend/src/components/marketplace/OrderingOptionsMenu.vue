@@ -72,7 +72,7 @@ export default {
     return {
       orderByOption: "Select Order By",         // default
       orderDirectionOption: "Select Direction",  // default
-      orderBy: "dateDESC",
+      orderBy: this.$route.query["orderBy"] || "dateDESC" // gets orderBy from URL or (if not there) sets to default
     }
   },
   methods: {
@@ -113,16 +113,20 @@ export default {
         orderByOptionString = "created"
       }
 
-      this.orderBy = `${orderByOptionString}${direction}`
+      return `${orderByOptionString}${direction}`
     },
 
     /**
      * Order the cards
      */
     orderCards() {
-      this.createOrderByParams()
+      const order = this.createOrderByParams()
 
-      this.$parent.$emit("orderedCards", this.orderBy)
+      // Checks the orderBy has changed to prevent NavigationDuplicated Errors
+      if (order !== this.orderBy) {
+        this.orderBy = order;
+        this.$parent.$emit("orderedCards", this.orderBy)
+      }
 
       // now can use this.orderBy to request cards from backend
 
