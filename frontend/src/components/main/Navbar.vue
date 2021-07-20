@@ -204,7 +204,7 @@
               </div>
             </ul>
 
-            </div>
+          </div>
 
           <!-- desktop version of nav bar -->
           <div v-else class=" navbar-inner-id navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
@@ -596,7 +596,7 @@ export default {
     }
     this.businessAccountId = Cookies.get("actAs");
     this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
-    this.showOmitName = (this.screenWidth > 1200);
+    this.showOmitName = (this.screenWidth > 780);
 
     this.isMobileMode = (this.screenWidth > 780);
   },
@@ -645,10 +645,11 @@ export default {
           // change the display name
           if (that.screenWidth >= 780) {
             that.showOmitName = true;
+            this.isMobileMode = false;
           } else {
             that.showOmitName = false;
+            this.isMobileMode = true;
           }
-          this.isMobileMode = (that.screenWidth >= 780);
 
           that.timer = false
         }, 400)
@@ -793,6 +794,11 @@ export default {
   line-height: 40px;
 }
 
+#side-nav-bar-open-btn {
+  display: none;
+}
+
+/* Apply these styles once we increase window size to >= 780px */
 @media (min-width: 780px) {
 
   .company-name-main-font {
@@ -802,8 +808,51 @@ export default {
     line-height: 50px;
   }
 
+  .nav-item {
+    display: none;
+  }
+
+  #side-nav-bar-open-btn {
+    display: unset;
+  }
+
+  .navbar-toggler {
+    display: none;
+  }
+
+
+
+  #interactDrop {
+    display: none;
+  }
+
+  /*#interactDrop a {*/
+  /*  display: flex;*/
+  /*  flex-flow: row wrap;*/
+  /*  justify-content: center;*/
+  /*  align-items: center;*/
+  /*  padding: 10px 40px;*/
+  /*}*/
+
+  /*.act-as-image {*/
+  /*  height: 55px;*/
+  /*  width: auto;*/
+  /*  border: 1px lightgrey solid;*/
+  /*}*/
+
+  /*#actAsImg {*/
+  /*  float: none;*/
+  /*}*/
+
 }
 
+@media (max-width: 780px) {
+  .nav-item {
+    display: none;
+  }
+
+
+}
 
 /*@media (min-width: 250px) {*/
 /*  .center {*/
@@ -832,17 +881,5 @@ export default {
 /*    text-align: center;*/
 /*  }*/
 /*}*/
-
-@media (min-width: 780px) {
-  .nav-item {
-    display: none;
-  }
-}
-
-@media (max-width: 1200px) {
-  #side-nav-bar-open-btn {
-    display: none;
-  }
-}
 
 </style>
