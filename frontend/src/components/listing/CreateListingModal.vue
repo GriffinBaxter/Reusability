@@ -26,7 +26,13 @@
                     <i class="fas fa-angle-down"></i>
                   </span>
                   <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
-                    <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1" v-bind:value="item.id"><strong>{{ item.product.id }}</strong><br>{{ 'Quantity: ' + item.quantity + ' Price: ' + (currencySymbol) + item.totalPrice + ' Expires: ' + item.expires + '' }}</li>
+                    <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1" v-bind:value="item.id" data-bs-toggle="popover" data-bs-trigger="hover focus" v-bind:title="item.product.name ? 'Product Name: ' + item.product.name : ''" v-bind:data-bs-content="item.product.description">
+                      <strong>
+                        {{ item.product.id }}
+                      </strong>
+                      <br>
+                      {{ 'Quantity: ' + item.quantity + ' Price: ' + (currencySymbol) + item.totalPrice + ' Expires: ' + item.expires + '' }}
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -117,7 +123,8 @@ import Api from "../../Api";
 import Listing from "../../configs/Listings";
 import Autofill from '../autofill';
 
-import {Modal} from "bootstrap";
+import {Modal, Popover} from "bootstrap";
+import Vue from "vue";
 
 const datefns = require('date-fns');
 
@@ -480,6 +487,14 @@ export default {
     async getAllInventoryItems() {
       await Api.getEveryInventoryItem(this.businessId).then((response) => {
         this.allInventoryItems = [...response.data];
+
+        const self = this;
+        Vue.nextTick(function() {
+          const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
+          self.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
+            return new Popover(popoverTriggerElement);
+          })
+        })
       }).catch((error) => {
         if (error.response) {
           if (error.response.status === 400) {
@@ -627,6 +642,23 @@ export default {
       if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed' && self.$refs["autofill-list"]) {
         Autofill.toggleList('closed', self.$refs["autofill-list"]);
         self.autofillState = 'initial';
+      }
+    })
+
+    // Event listener on the autofill input to allow tabbing to autofill entries
+    document.addEventListener('keydown', function (event) {
+      if (event.shiftKey && event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-item')) {
+          event.preventDefault();
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'back', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
+      } else if (event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-item')) {
+          event.preventDefault();
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'forward', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
       }
     })
 

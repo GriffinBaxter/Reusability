@@ -245,7 +245,6 @@ export default {
         const self = this;
         Vue.nextTick(function() {
           const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
-          console.log(popoverTriggerList);
           self.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
             return new Popover(popoverTriggerElement);
           })
