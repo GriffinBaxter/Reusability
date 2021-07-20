@@ -12,7 +12,7 @@
 
 <template>
   <nav class="navbar sticky-top navbar-expand-xl shadow-sm text-font" style="background-color: white">
-    <div class="container mt-2 my-xl-3 mx-auto">
+    <div id="top-nav-bar-id" class="container">
 
       <!-- Hamburger icon -->
       <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
@@ -38,7 +38,7 @@
           <!-- navbar inner is required for the animation -->
 
           <!-- mobile version of nav bar -->
-          <div v-if="isMobileMode" id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+          <div id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
             <ul class="navbar-nav flex-column flex-xl-row">
 
                 <!-- default page links -->
@@ -162,7 +162,7 @@
               <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
                 <a class="" role="button">
                   <img src="../../../public/profile_icon_default.png" width="27px"
-                       class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
+                       class="rounded-circle img-fluid act-as-image actAsImg" alt="Acting as image"/>
                 </a>
               </li>
             </ul>
@@ -207,7 +207,56 @@
           </div>
 
           <!-- desktop version of nav bar -->
-          <div v-else class=" navbar-inner-id navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+          <div id="desktop-top-nav-id" class="navbar-inner-id-desktop navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+
+            <ul class="navbar-nav flex-column flex-xl-row">
+              <!-- Interact As -->
+              <li id="interactDrop-desktop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
+                <a class="" role="button">
+                  <img src="../../../public/profile_icon_default.png" width="27px"
+                       class="rounded-circle img-fluid act-as-image actAsImg" alt="Acting as image"/>
+                </a>
+              </li>
+            </ul>
+
+            <ul class="no-space">
+              <div class="center" role="button" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
+                <div v-if="showOmitName">{{ actAsOmit }}</div>
+                <div v-else>{{ actAs }}</div>
+              </div>
+              <div id="interact-dropdown-links-wrapper-desktop">
+                <ul class="dropdown-menu show mb-1" id="interact-dropdown-links-desktop">
+
+                  <li class="nav-item">
+                  </li>
+                  <div v-if="showOmitName">
+                    <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
+                        @click="itemClicked(index)">
+                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                      <div v-else-if="index===1">
+                        <hr>
+                        <h6 class="ms-3">Businesses</h6>
+                      </div>
+                      <a class="nav-link">{{ act.name }}</a>
+                    </li>
+                  </div>
+                  <div v-else>
+                    <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
+                        @click="itemClicked(index)">
+                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                      <div v-else-if="index===1">
+                        <hr>
+                        <h6 class="ms-3">Businesses</h6>
+                      </div>
+                      <a class="nav-link">{{ act.name }}</a>
+                    </li>
+                  </div>
+
+                </ul>
+              </div>
+            </ul>
+
+
 
           </div>
 
@@ -272,8 +321,6 @@ export default {
       maxNameLength: 30,
       omitPoint: 10,
 
-      // For determining which view of the navigation we want the user to use/see
-      isMobileMode: null
     }
   },
 
@@ -597,8 +644,6 @@ export default {
     this.businessAccountId = Cookies.get("actAs");
     this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
     this.showOmitName = (this.screenWidth > 780);
-
-    this.isMobileMode = (this.screenWidth > 780);
   },
   mounted() {
     this.getUserData();
@@ -645,12 +690,9 @@ export default {
           // change the display name
           if (that.screenWidth >= 780) {
             that.showOmitName = true;
-            this.isMobileMode = false;
           } else {
             that.showOmitName = false;
-            this.isMobileMode = true;
           }
-
           that.timer = false
         }, 400)
       }
@@ -670,8 +712,13 @@ export default {
 
 /* Styling for smaller screen sizes begins */
 
+#top-nav-bar-id {
+  justify-content: end;
+}
+
 .logo-container {
   position: center;
+  margin-right: 0;
 }
 
 #logo-image-nav {
@@ -726,21 +773,11 @@ export default {
   /* centre text */
   margin: 0;
   position: absolute;
-
-  /* align to bottom of logo */
-  /*vertical-align: bottom;*/
-  /*line-height: 90%;*/
-
 }
 
 .nav-link {
   color: white;
   background: #19b092;
-
-  /* fallback for old browsers */
-  /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
-  /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
-
   margin: 10px 0;
   border-radius: 15px;
   text-align: center;
@@ -798,18 +835,27 @@ export default {
   display: none;
 }
 
-/* Apply these styles once we increase window size to >= 780px */
+/*Hide desktop navigation since in mobile mode*/
+desktop-top-nav-id {
+  visibility: hidden;
+}
+
+/* Apply these styles once we increase window size to >= 780px i.e. change from mobile to desktop version*/
 @media (min-width: 780px) {
+
+  navbar-inner-id {
+    visibility: hidden;
+  }
+
+  desktop-top-nav-id {
+    visibility: unset;
+  }
 
   .company-name-main-font {
     font-family: 'Merriweather Sans', sans-serif;
-    font-size: 46px;
+    font-size: 40px;
     position: absolute;
     line-height: 50px;
-  }
-
-  .nav-item {
-    display: none;
   }
 
   #side-nav-bar-open-btn {
@@ -821,26 +867,29 @@ export default {
   }
 
   #interactDrop {
-    display: none;
+    background-color: red;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    max-width: 100%;
+    height: auto;
+    margin-left: 0px;
+    padding-left: 0px;
   }
 
-  /*#interactDrop a {*/
-  /*  display: flex;*/
-  /*  flex-flow: row wrap;*/
-  /*  justify-content: center;*/
-  /*  align-items: center;*/
-  /*  padding: 10px 40px;*/
-  /*}*/
+  #interactDrop a {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 40px;
+  }
 
-  /*.act-as-image {*/
-  /*  height: 55px;*/
-  /*  width: auto;*/
-  /*  border: 1px lightgrey solid;*/
-  /*}*/
-
-  /*#actAsImg {*/
-  /*  float: none;*/
-  /*}*/
+  .act-as-image {
+    height: 55px;
+    width: auto;
+    border: 1px lightgrey solid;
+  }
 
 }
 
