@@ -21,7 +21,7 @@
 
       <!-- Side nav hamburger open button -->
       <button id="side-nav-bar-open-btn">
-          <span class="navbar-toggler-icon" style="font-size:30px;cursor:pointer" @click="openNav"></span>
+          <span class="navbar-toggler-icon" style="font-size:30px;cursor:pointer" @click="toggleSideNav"></span>
       </button>
 
       <!-- Logo image -->
@@ -231,13 +231,24 @@ export default {
   methods: {
 
     /**
-     *  Set the width of the side navigation to 250px and the left margin of the page content to 250px
+     *  Open the side nav bar if it is closed by setting the width of the side navigation to 250px and the left margin of the page content to 250px.
+     *  Close the side nav bar if it is open.
      */
-    openNav() {
-      document.getElementById("mySidenav").style.width = "250px";
-      document.getElementById("main").style.marginLeft = "250px";
+    toggleSideNav() {
+      if (document.getElementById("mySidenav").style.width === "0px") {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+      } else {
+        this.closeSideNav();
+      }
     },
-
+    /**
+     *  Set the width of the side navigation to 0 and the left margin of the page content to 0
+     */
+    closeSideNav() {
+      document.getElementById("mySidenav").style.width = "0";
+      document.getElementById("main").style.marginLeft = "0";
+    },
     /**
      * Toggle the interactAs menu dropdown
      */
