@@ -22,6 +22,7 @@ describe("Testing the Search page functionality", () => {
     let userMockApiResponse;
     let businessMockApiResponse;
     let emptyMockApiResponse;
+    let generalMockApiResponse;
 
     beforeEach(() => {
         $router = {
@@ -39,6 +40,22 @@ describe("Testing the Search page functionality", () => {
 
         requestUsersSpy = jest.spyOn(Search.methods, 'requestUsers');
         requestBusinessesSpy = jest.spyOn(Search.methods, 'requestBusinesses');
+
+        generalMockApiResponse = {
+            status: 200,
+            response: {
+                status: 400
+            },
+            data: [],
+            message: "",
+            headers: {
+                "total-rows": 0,
+                "total-pages": 0
+            }
+        }
+
+        Api.searchBusinesses.mockImplementation( () => Promise.resolve(generalMockApiResponse) );
+        Api.searchUsers.mockImplementation( () => Promise.resolve(generalMockApiResponse) );
 
         searchWrapper = shallowMount(Search, {
             mocks: {
