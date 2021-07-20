@@ -568,8 +568,16 @@ export default {
       return keyword
     },
     
-    updateCursorPosition(e) {
-      this.textCursorPosition = e.target.selectionStart;
+    click() {
+      if (document.getElementById('card-keywords').parentNode.matches(":hover")) {
+        this.updateCursorPosition()
+      } else {
+        this.autocompleteKeywords = [];
+      }
+    },
+
+    updateCursorPosition() {
+      this.textCursorPosition = document.getElementById('card-keywords').selectionStart;
       this.currentKeyword = "";
       this.autocompleteKeywords = [];
 
@@ -655,13 +663,8 @@ export default {
       this.populateUserInfo(currentID)
     }
 
-    document.getElementById('card-keywords').addEventListener('keyup', e => {
-      this.updateCursorPosition(e)
-    })
-
-    document.getElementById('card-keywords').addEventListener('click', e => {
-      this.updateCursorPosition(e)
-    })
+    document.addEventListener('keyup', this.updateCursorPosition)
+    document.addEventListener('click', this.click)
   },
   watch: {
     /**
