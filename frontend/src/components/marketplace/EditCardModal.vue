@@ -109,7 +109,7 @@
 import {Modal} from 'bootstrap';
 import cardConfig from "../../configs/MarketplaceCard"
 import Cookies from "js-cookie";
-import Api from "@/Api";
+import Api from "../Api";
 
 export default {
   name: "EditCardModal",
