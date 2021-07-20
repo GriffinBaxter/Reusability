@@ -18,6 +18,7 @@ import org.seng302.Authorization;
 import org.seng302.model.User;
 import org.seng302.model.repository.*;
 import org.seng302.ProductValidation;
+import org.seng302.utils.PaginationUtils;
 import org.seng302.view.incoming.ProductCreationPayload;
 import org.seng302.view.outgoing.ProductPayload;
 import org.seng302.view.incoming.ProductUpdatePayload;
@@ -154,16 +155,7 @@ public class ProductResource {
 
         Authorization.verifyBusinessAdmin(currentUser, id);
 
-        int pageNo;
-        try {
-            pageNo = Integer.parseInt(page);
-        } catch (final NumberFormatException e) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Page parameter invalid"
-            );
-        }
+        int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Front-end displays 5 users per page
         int pageSize = 5;

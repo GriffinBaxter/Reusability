@@ -1,8 +1,9 @@
 openapi: 3.0.0
 servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/matthewminish/seng302-2021-api-spec/3.0.1
+  - description: API on Test Server
+    url: https://csse-s302g4.canterbury.ac.nz/test/api/
+  - description: API on Production Server
+    url: https://csse-s302g4.canterbury.ac.nz/prod/api/
 
 info:
   description: API specification for the SENG302 2021 project
@@ -11,8 +12,8 @@ info:
   contact:
     email: s302team400@cosc.canterbury.ac.nz
   license:
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    name: MIT License
+    url: 'https://opensource.org/licenses/MIT'
 
 tags:
   # User stories
@@ -57,6 +58,8 @@ tags:
     description: 'Grouping of endpoints related to the community marketplace, and the cards the are created for it'
   - name: 'Keywords'
     description: 'Grouping of endpoints related to system-wide keywords that can be added by users and attached to marketplace cards'
+  - name: 'MarketplaceCardNotification'
+    description: 'Grouping of endpoints related to the community marketplace cards, and the notifications created for them'
 
 security:
   - CookieAuth:
@@ -164,7 +167,37 @@ paths:
           schema:
             type: string
           required: true
-          description: 'Criteria to search users for, e.g: user’s full name or one or more of their names/nickname'
+          description: 'Criteria to search users for, e.g: users full name or one or more of their names/nickname'
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            Order the users by the given property, according to the following
+            rules:
+
+            * fullNameASC: alphabetically by full name, A - Z
+
+            * fullNameDESC: alphabetically by full name, Z - A
+
+            * nicknameASC: alphabetically by nickname, A - Z
+
+            * nicknameDESC: alphabetically by nickname, Z - A
+
+            * emailASC: alphabetically by email, A - Z
+
+            * emailDESC: alphabetically by email, Z - A
+
+            * addressASC: alphabetically by address, A - Z
+
+            * addressDESC: alphabetically by address, Z - A
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: 'The page of users to display.'
       responses:
         '200':
           description: Request successful, a (possibly empty) list of users is returned
@@ -392,6 +425,40 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            Order the products by the given property, according to the following
+            rules:
+
+            * productIdASC: alphabetically by product id, A - Z
+
+            * productIdDESC: alphabetically by product id, Z - A
+
+            * nameASC: alphabetically by name, A - Z
+
+            * nameDESC: alphabetically by name, Z - A
+
+            * recommendedRetailPriceASC: the RRP from least to most
+
+            * recommendedRetailPriceDESC: the RRP from most to least
+
+            * manufacturerASC: alphabetically by manufacturer, A - Z
+
+            * manufacturerDESC: alphabetically by manufacturer, Z - A
+
+            * createdASC: created date from earliest to latest
+
+            * createdDESC: created date from latest to earliest
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: 'The page of products to display.'
       responses:
         '200':
           description: 'Catalogue retrieved successfully. This could be an empty array.'
@@ -639,6 +706,52 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            Order the inventory items by the given property, according to the following
+            rules:
+
+            * productIdASC: alphabetically by product id, A - Z
+
+            * productIdDESC: alphabetically by product id, Z - A
+
+            * quantityASC: the quantity from least to most
+
+            * quantityDESC: the quantity from most to least
+
+            * pricePerItemASC: the price per inventory item from least to most
+
+            * pricePerItemDESC: the price per inventory item from most to least
+
+            * totalPriceASC: the total price from least to most
+
+            * totalPriceDESC: the total price from most to least
+
+            * manufacturedASC: manufactured date from earliest to latest
+
+            * manufacturedDESC: manufactured date from latest to earliest
+
+            * sellByASC: sell by date from earliest to latest
+
+            * sellByDESC: sell by date from latest to earliest
+
+            * bestBeforeASC: best before date from earliest to latest
+
+            * bestBeforeDESC: best before date from latest to earliest
+
+            * expiresASC: expiry date from earliest to latest
+
+            * expiresDESC: expiry date from latest to earliest
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: 'The page of inventory items to display.'
       responses:
         '200':
           description: 'Inventory retrieved successfully. This could be an empty array.'
@@ -751,6 +864,36 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            Order the listings by the given property, according to the following
+            rules:
+
+            * quantityASC: the quantity from least to most
+
+            * quantityDESC: the quantity from most to least
+
+            * priceASC: the price from least to most
+
+            * priceDESC: the price from most to least
+
+            * closesASC: closing date from earliest to latest
+
+            * closesDESC: closing date from latest to earliest
+
+            * createdASC: created date from earliest to latest
+
+            * createdDESC: created date from latest to earliest
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: 'The page of listings to display.'
       responses:
         '200':
           description: 'Listings retrieved successfully. This could be an empty array.'
@@ -809,7 +952,7 @@ paths:
       tags:
         - 'U23: Business search'
         - 'Business Accounts'
-      summary: 'Search for businesses by some criteria, for now: their name or business type'
+      summary: 'Search for businesses by some criteria, for now: their name and/or business type'
       security:
         - CookieAuth:
             - user
@@ -820,8 +963,45 @@ paths:
           name: searchQuery
           schema:
             type: string
-          required: true
-          description: 'Criteria to search businesses for, e.g: business’s full name or business type.'
+          required: false
+          description: 'Criteria to search businesses for, e.g: businesss full name'
+        - in: query
+          name: businessType
+          schema:
+            type: string
+          required: false
+          description: >-
+            Criteria to search businesses for, e.g: business type
+
+            * ACCOMMODATION_AND_FOOD_SERVICES
+
+            * RETAIL_TRADE
+
+            * CHARITABLE_ORGANISATION
+
+            * NON_PROFIT_ORGANISATION
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            Order the businesses by the given property, according to the following
+            rules:
+
+            * nameASC: alphabetically by business name, A - Z
+
+            * nameDESC: alphabetically by business name, Z - A
+
+            * addressASC: alphabetically by address, A - Z
+
+            * addressDESC: alphabetically by address, Z - A
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: 'The page of businesses to display.'
       responses:
         '200':
           description: Request successful, a (possibly empty) list of businesses is returned.
@@ -1024,6 +1204,58 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
+  '/users/notifications':
+    get:
+      tags:
+        - 'UCM4: Card expiry'
+        - 'MarketplaceCardNotification'
+      summary: 'Retrieve all notifications for current user'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      responses:
+        '200':
+          description: Notifications for all cards created by current user have been retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarketplaceCardNotification'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  '/users/notifications/{id}':
+    delete:
+      tags:
+        - 'UCM4: Card expiry'
+        - 'MarketplaceCardNotification'
+      summary: 'Delete a notification by given id'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: id of notification to delete
+          example: 400
+      responses:
+        '200':
+          description: Notification successfully deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
   '/users/{id}/cards':
     get:
       tags:
@@ -1217,7 +1449,7 @@ components:
     AuthenticatedResponse:
       description: >
         Response returned to client when they have performed an action to gain authentication (registering or logging in).
-        This response includes a session token that the client can use in future API requests to authenticate itself. 
+        This response includes a session token that the client can use in future API requests to authenticate itself.
         This session token is set as a cookie with name 'JSESSIONID', and will need to be included in subsequent requests to the server.
       content:
         application/json:
@@ -1447,10 +1679,10 @@ components:
           type: string
           example: 'WATT-420-BEANS'
           description: >
-            Developers can choose whether or not to make this a required field (i.e user 
-            specified vs. auto-generated). In the case that the team automatically 
-            generates the IDs, they should still allow this field to be present when 
-            creating (POST) or modifying (PUT) a product, and then simply ignore its 
+            Developers can choose whether or not to make this a required field (i.e user
+            specified vs. auto-generated). In the case that the team automatically
+            generates the IDs, they should still allow this field to be present when
+            creating (POST) or modifying (PUT) a product, and then simply ignore its
             value (i.e do not return a 400 code if it is present but not needed). An
             ID only needs to be unique within its catalogue, not system-wide.
         name:
@@ -1624,3 +1856,31 @@ components:
           description: '(Implemented in U6): A list of businesses for which the user is an administrator'
           items:
             $ref: '#/components/schemas/Business'
+
+    MarketplaceCardNotification:
+      type: object
+      description: Notification for marketplace card
+      required:
+        - id
+        - description
+        - created
+        - marketplaceCard
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automatically generated and assigned by the server
+        description:
+          type: string
+          example: Your card (Beef) will be expired in 2h.
+        created:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the notification was created
+        marketplaceCard:
+          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/Card' 

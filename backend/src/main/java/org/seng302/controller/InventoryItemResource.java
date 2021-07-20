@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalInventoryItemArgumentException;
 import org.seng302.model.repository.BusinessRepository;
 import org.seng302.model.InventoryItem;
+import org.seng302.utils.PaginationUtils;
 import org.seng302.view.outgoing.InventoryItemPayload;
 import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.view.incoming.InventoryRegistrationPayload;
@@ -144,21 +145,12 @@ public class InventoryItemResource {
 
         //200: Inventory retrieved successfully. This could be an empty array.
 
-        int pageNo;
-        try {
-            pageNo = Integer.parseInt(page);
-        } catch (final NumberFormatException e) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Page parameter invalid"
-            );
-        }
+        int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Front-end displays 5 product inventory items per page
         int pageSize = 5;
 
-        Sort sortBy = null;
+        Sort sortBy;
 
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.

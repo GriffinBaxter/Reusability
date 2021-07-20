@@ -674,9 +674,7 @@ class UserResourceIntegrationTests {
 
 
     /* ------------------------------------- (New) Tests for Searching for User by Name ----------------------------- */
-    // TODO Add more tests to handle error cases (e.g. bad data input)
-    // The sorting done in this is entirely unneeded, this has been moved to SearchUserByNameTests.
-    // TODO Test bad URL params
+
     /**
      * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
      * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
@@ -1063,7 +1061,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an OK(200) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with a DGAA cookie.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void canChangeUserToGaaWithDgaaCookie() throws Exception {
@@ -1087,7 +1085,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with a GAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithGaaCookie() throws Exception {
@@ -1108,7 +1106,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with a USER cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithUserCookie() throws Exception {
@@ -1129,7 +1127,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an UNAUTHORIZED(401) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with a non-existing ID in the cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithNonExistingIdCookie() throws Exception {
@@ -1151,7 +1149,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an UNAUTHORIZED(401) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with no cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithNoCookie() throws Exception {
@@ -1167,7 +1165,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an NOT_ACCEPTABLE(406) status is received when sending a non-existing id to /users/{id}/makeAdmin
      * API endpoint with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithNonExistingUserAndDgaaCookie() throws Exception {
@@ -1187,7 +1185,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a GAA id to /users/{id}/makeAdmin API endpoint
      * with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToGaaWithDgaaCookie() throws Exception {
@@ -1208,7 +1206,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a DGAA id to /users/{id}/makeAdmin API endpoint
      * with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeDgaaToGaaWithDgaaCookie() throws Exception {
@@ -1229,7 +1227,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an OK(200) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with a DGAA cookie.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void canChangeGaaToUserWithDgaaCookie() throws Exception {
@@ -1253,7 +1251,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with a GAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithGaaCookie() throws Exception {
@@ -1274,7 +1272,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with a USER cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithUserCookie() throws Exception {
@@ -1295,7 +1293,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an UNAUTHORIZED(401) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with a non-existing ID in the cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithNonExistingIdCookie() throws Exception {
@@ -1317,7 +1315,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an UNAUTHORIZED(401) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with no cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithNoCookie() throws Exception {
@@ -1333,7 +1331,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an NOT_ACCEPTABLE(406) status is received when sending a non-existing id to /users/{id}/revokeAdmin
      * API endpoint with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithNonExistingGaaAndDgaaCookie() throws Exception {
@@ -1353,7 +1351,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a USER id to /users/{id}/revokeAdmin API endpoint
      * with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToUserWithDgaaCookie() throws Exception {
@@ -1374,7 +1372,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a DGAA id to /users/{id}/revokeAdmin API endpoint
      * with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeDgaaToUserWithDgaaCookie() throws Exception {

@@ -11,6 +11,7 @@ import org.seng302.model.*;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
+import org.seng302.utils.PaginationUtils;
 import org.seng302.view.incoming.MarketplaceCardCreationPayload;
 import org.seng302.view.incoming.MarketplaceCardUpdatePayload;
 import org.seng302.view.outgoing.MarketplaceCardIdPayload;
@@ -300,7 +301,7 @@ public class MarketplaceCardResource {
         logger.debug("Get card request received with section {}, order by {}, page {}", section, orderBy, page);
 
         // Checks user logged in 401
-        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        Authorization.getUserVerifySession(sessionToken, userRepository);
 
         // Checks section is valid
         Section sectionType;
@@ -315,16 +316,7 @@ public class MarketplaceCardResource {
         }
 
         // Checks page is number
-        int pageNo;
-        try {
-            pageNo = Integer.parseInt(page);
-        } catch (final NumberFormatException e) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Page parameter invalid"
-            );
-        }
+        int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Front-end displays 20 cards per page
         int pageSize = 6; // NOTE if changed must also be changed in MarketplaceCardResourceIntegrationTests
