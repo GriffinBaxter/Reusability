@@ -43,22 +43,60 @@
 
                 <!-- default page links -->
                 <li class="nav-item">
-                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
+                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">
+
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <i class="side-nav-link-icon fas fa-home"></i>
+                      </div>
+                      <div class="col-sm-1 side-nav-link-text">
+                        Home
+                      </div>
+                    </div>
+
+                  </router-link>
                 </li>
                 <li class="nav-item" v-if="actAsId === null">
                   <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-                    Profile
+
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <i class="side-nav-link-icon fas fa-user-alt"></i>
+                      </div>
+                      <div class="col-sm-1 side-nav-link-text">
+                        Profile
+                      </div>
+                    </div>
+
                   </router-link>
                 </li>
                 <li class="nav-item" v-if=actAsId>
                   <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
                                :to="'/businessProfile/' + actAsId" tabindex="2">
-                    Profile
+
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <i class="side-nav-link-icon fas fa-user-alt"></i>
+                      </div>
+                      <div class="col-sm-1 side-nav-link-text">
+                        Profile
+                      </div>
+                    </div>
+
                   </router-link>
                 </li>
                 <li class="nav-item">
                   <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
-                    Marketplace
+
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <i class="side-nav-link-icon fas fa-store"></i>
+                      </div>
+                      <div class="col-sm-1 side-nav-link-text">
+                        Marketplace
+                      </div>
+                    </div>
+
                   </router-link>
                 </li>
 
@@ -103,7 +141,18 @@
 
                 <!-- Log out link-->
                 <li class="nav-item">
-                  <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
+                  <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">
+
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <i class="side-nav-link-icon fas fa-sign-out-alt"></i>
+                      </div>
+                      <div class="col-sm-1 side-nav-link-text">
+                        Logout
+                      </div>
+                    </div>
+
+                  </a>
                 </li>
 
             </ul>
@@ -750,6 +799,14 @@ export default {
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
+
+/*.side-nav-link-icon {*/
+/*  width: 140px;*/
+/*}*/
+
+/*.side-nav-link-text {*/
+/*  width: 140px;*/
+/*}*/
 
 @media (min-width: 250px) {
   .center {

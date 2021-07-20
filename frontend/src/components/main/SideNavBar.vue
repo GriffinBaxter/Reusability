@@ -3,7 +3,7 @@
   <div id="mySidenav" class="sidenav">
 
     <!-- side nav bar close button with 'x' icons -->
-    <a href="javascript:void(0)" class="closebtn" @click="() => closeNav()">&times;</a>
+    <a href="javascript:void(0)" class="closebtn" @click="() => closeSideNav()">&times;</a>
 
     <!-- default page links -->
     <li class="nav-item">
@@ -181,7 +181,7 @@ export default {
     /**
      *  Set the width of the side navigation to 0 and the left margin of the page content to 0
      */
-    closeNav() {
+    closeSideNav() {
       document.getElementById("mySidenav").style.width = "0";
       document.getElementById("main").style.marginLeft = "0";
     },
