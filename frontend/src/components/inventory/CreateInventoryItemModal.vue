@@ -26,7 +26,7 @@
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
                   <!-- Popover for additional info -->
-                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" v-bind:value="product.id" tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus" title="popover title" data-bs-content="lalskdbfjaklsdbfkasdjbf">
+                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" v-bind:value="product.id" tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus" v-bind:title="product.manufacturer ? 'Manufacturer: ' + product.manufacturer : ''" v-bind:data-bs-content="product.description">
                         <strong>
                           {{ product.id }}
                         </strong>
