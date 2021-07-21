@@ -689,7 +689,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Tests that an OK status is received when deleting an image of an existing business with an existing product at
-     * the file path BUSINESS_ID > PRODUCT_ID > SOME_HASH_VALUE and that the image no longer exists at the file path
+     * the file path product-images -> IMAGE_UUID and that the image no longer exists at the file path
      * location.
      *
      * @throws Exception Exception error
@@ -700,23 +700,22 @@ class ImageResourceIntegrationTests {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
-        //TODO store file
-        // imageId = image.getImageId();
-        // define path
-
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
-        // TODO check user access
-        // check business exists
-        // check product exists
-        // check image exists
-        // delete image
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = List.of(primaryImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
+        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
-        //TODO assert get OK status
-        //TODO assert image id no longer exists
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 
     }
 
