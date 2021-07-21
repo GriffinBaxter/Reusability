@@ -37,7 +37,6 @@ public class Keyword {
     private static final Integer NAME_MIN_LENGTH = 2;
     private static final Integer NAME_MAX_LENGTH = 20;
 
-
     /**
      * Marketplace Keyword constructor.
      * It validates the name of when constructed.
@@ -46,6 +45,14 @@ public class Keyword {
     public Keyword(String name, LocalDateTime created, MarketplaceCard card) throws IllegalKeywordArgumentException {
         if (!isValidName(name)) {
             throw new IllegalKeywordArgumentException("Invalid name");
+        }
+        this.name = name;
+        this.created = created;
+    }
+
+    public Keyword(String name, LocalDateTime created) throws Exception {
+        if (!isValidName(name)) {
+            throw new Exception("Invalid name");
         }
         this.name = name;
         this.created = created;

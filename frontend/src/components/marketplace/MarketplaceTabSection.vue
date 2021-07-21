@@ -91,7 +91,7 @@ export default {
   methods: {
     selectACard(index) {
       this.$emit('openCardDetail', index);
-      this.selectedCard = index
+      this.selectedCard = index;
     },
     styleDate(date){
       return formatDate(date, false);
