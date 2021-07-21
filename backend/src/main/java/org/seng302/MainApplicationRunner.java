@@ -33,12 +33,12 @@ import java.util.Optional;
 public class MainApplicationRunner implements ApplicationRunner {
 
     private static final Logger logger = LogManager.getLogger(MainApplicationRunner.class.getName());
-    private UserRepository userRepository;
-    private BusinessRepository businessRepository;
-    private AddressRepository addressRepository;
-    private ProductRepository productRepository;
-    private MarketplaceCardRepository marketplaceCardRepository;
-    private MarketCardNotificationRepository marketCardNotificationRepository;
+    private final UserRepository userRepository;
+    private final BusinessRepository businessRepository;
+    private final AddressRepository addressRepository;
+    private final ProductRepository productRepository;
+    private final MarketplaceCardRepository marketplaceCardRepository;
+    private final MarketCardNotificationRepository marketCardNotificationRepository;
 
     @Value("${dgaa.email}")
     private String dgaaEmail;
@@ -47,6 +47,10 @@ public class MainApplicationRunner implements ApplicationRunner {
 
     @Autowired
     private ConfigurableApplicationContext context;
+
+    private final String NOTIFICATION_MESSAGE_FORMAT = "Your card (%s) will be expired in %s.";
+    private final String EXPIRED_NOTIFICATION_MESSAGE = "Your card (%s) has been expired %s ago.";
+    private final String DELETED_NOTIFICATION_MESSAGE = "Your card (%s) has been deleted.";
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
@@ -141,43 +145,52 @@ public class MainApplicationRunner implements ApplicationRunner {
         // Time
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expiredTime = currentTime.plusDays(1);
+        LocalDateTime deleteTime = currentTime.minusDays(1);
 
         List<MarketplaceCard> marketplaceCards = marketplaceCardRepository.findAll();
-        String notificationMessageFormat = "Your card (%s) will be expired in %s.";
-        String deletingNotificationMessage = "Your card (%s) has been deleted.";
-        Long second;
+        long second;
         String timeLeft;
         String fullNotificationMessage;
         MarketCardNotification marketCardNotification;
+        Integer creatorId;
 
         for (MarketplaceCard marketplaceCard : marketplaceCards) {
             logger.debug("Marketplace card retrieved with ID {}: {}", marketplaceCard.getId(), marketplaceCard);
             if (marketplaceCard.getDisplayPeriodEnd().isBefore(expiredTime)) {
-                if (marketplaceCard.getDisplayPeriodEnd().isAfter(currentTime)) {
-                    // expired in next 24h
+                creatorId = marketplaceCard.getCreatorId();
+                if (marketplaceCard.getDisplayPeriodEnd().isAfter(deleteTime)) {
+                    // expire in next 24h or expired in 24h
                     logger.debug("Marketplace card with ID {} will be expired in next 24h. ({})",
                             marketplaceCard.getId(), marketplaceCard);
 
                     second = Duration.between(currentTime, marketplaceCard.getDisplayPeriodEnd()).getSeconds();
-                    timeLeft = String.format("%dh %dm %ds", second / 3600, second % 3600 / 60, second % 60);
-                    fullNotificationMessage = String.format(notificationMessageFormat, marketplaceCard.getTitle(), timeLeft);
+                    timeLeft = String.format("%dh %dm %ds", second / 3600, second % 3600 / 60, second % 60)
+                            .replace("-", "");
+
+                    fullNotificationMessage = marketplaceCard.getDisplayPeriodEnd().isAfter(currentTime)
+                            ? String.format(NOTIFICATION_MESSAGE_FORMAT, marketplaceCard.getTitle(), timeLeft)
+                            : String.format(EXPIRED_NOTIFICATION_MESSAGE, marketplaceCard.getTitle(), timeLeft);
                 } else {
-                    // expired
-                    fullNotificationMessage = String.format(deletingNotificationMessage, marketplaceCard.getTitle());
+                    // expired more than 24h
+                    fullNotificationMessage = String.format(DELETED_NOTIFICATION_MESSAGE, marketplaceCard.getTitle());
+                    logger.debug("Marketplace card ({}) has been deleted.", marketplaceCard.getTitle());
+                    marketCardNotificationRepository.deleteAllByMarketCardId(marketplaceCard.getId());
+                    marketplaceCardRepository.delete(marketplaceCard);
+                    marketplaceCard = null;
                 }
 
-                Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository
-                        .findByUserIdAndMarketCardId(marketplaceCard.getCreatorId(), marketplaceCard.getId());
+                Optional<MarketCardNotification> optionalNotification = marketplaceCard != null ?
+                        marketCardNotificationRepository
+                                .findByUserIdAndMarketCardId(creatorId, marketplaceCard.getId()) :
+                        Optional.empty();
 
                 if (optionalNotification.isEmpty()) {
                     // Create
                     logger.debug("Notification message {} is not exist.", optionalNotification);
-                    marketCardNotification = new MarketCardNotification(marketplaceCard.getCreatorId(),
-                            marketplaceCard.getId(),
+                    marketCardNotification = new MarketCardNotification(creatorId,
                             marketplaceCard,
                             fullNotificationMessage,
                             currentTime);
-
                 } else {
                     // Update
                     logger.debug("Notification message {} has been retrieved.", optionalNotification);
@@ -189,6 +202,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                 logger.debug("Notification message ({}) has been saved.", marketCardNotification.getDescription());
             }
         }
+        logger.info("All marketplace card notification has been update.");
     }
 
     public boolean isPresent(String dgaaData) {

@@ -106,7 +106,6 @@ public class NotificationResourceIntegrationTests {
         marketplaceCard.setId(1);
 
         marketCardNotification = new MarketCardNotification(
-                user.getId(),
                 marketplaceCard.getId(),
                 marketplaceCard,
                 "",

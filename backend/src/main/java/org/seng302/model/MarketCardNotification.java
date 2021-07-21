@@ -16,12 +16,12 @@ public class MarketCardNotification {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
-    @Column(name = "market_card_id", nullable = false)
-    private Integer marketCardId;
-
-    @ManyToOne(targetEntity = MarketplaceCard.class, fetch = FetchType.EAGER)  //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
-    @JoinColumn(name = "market_card", insertable = false, updatable = false)
+    @ManyToOne(targetEntity = MarketplaceCard.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "market_card_id", insertable = false, updatable = false)
     private MarketplaceCard marketplaceCard;
+
+    @Column(name = "market_card_id")
+    private Integer marketCardId;
 
     @Column(name = "description", nullable = false)
     private String description;
@@ -30,19 +30,17 @@ public class MarketCardNotification {
     private LocalDateTime created;
 
     /**
-     * @param userId       id of the receiver
-     * @param marketCardId id of the market card
-     * @param description  description
-     * @param created      time created
+     * @param userId      id of the receiver
+     * @param description description
+     * @param created     time created
      */
     public MarketCardNotification(Integer userId,
-                                  Integer marketCardId,
                                   MarketplaceCard marketplaceCard,
                                   String description,
                                   LocalDateTime created) {
         this.userId = userId;
-        this.marketCardId = marketCardId;
         this.marketplaceCard = marketplaceCard;
+        this.marketCardId = marketplaceCard != null ? marketplaceCard.getId() : null;
         this.description = description;
         this.created = created;
     }
@@ -98,6 +96,11 @@ public class MarketCardNotification {
         this.created = created;
     }
 
+    /**
+     * To convert MarketCardNotification to MarketCardNotificationPayload form.
+     *
+     * @return MarketCardNotification Payload
+     */
     public MarketCardNotificationPayload toMarketCardNotificationPayload() throws Exception {
         return new MarketCardNotificationPayload(id,
                 description,
@@ -105,4 +108,18 @@ public class MarketCardNotification {
                 marketplaceCard.toMarketplaceCardPayload());
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     *
+     * @return a string representing the market card notification.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"userId\":\"" + userId + "\"" +
+                ",\"marketCardId\":\"" + marketCardId + "\"" +
+                ",\"description\":\"" + description + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                "}";
+    }
 }

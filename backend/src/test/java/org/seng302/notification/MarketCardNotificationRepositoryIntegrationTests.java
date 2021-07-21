@@ -164,51 +164,50 @@ class MarketCardNotificationRepositoryIntegrationTests {
 
         // Notifications
         marketCardNotification = new MarketCardNotification(user.getId(),
-                marketplaceCard.getId(),
                 marketplaceCard,
                 String.format("Your card (%s) will be expired.", marketplaceCard.getTitle()),
                 LocalDateTime.now());
+        entityManager.persist(marketCardNotification);
+        entityManager.flush();
 
         marketCardNotification2 = new MarketCardNotification(user.getId(),
-                marketplaceCard2.getId(),
                 marketplaceCard2,
                 String.format("Your card (%s) will be expired.", marketplaceCard2.getTitle()),
                 LocalDateTime.now());
+        entityManager.persist(marketCardNotification2);
+        entityManager.flush();
 
         marketCardNotification3 = new MarketCardNotification(user.getId(),
-                marketplaceCard3.getId(),
                 marketplaceCard3,
                 String.format("Your card (%s) will be expired.", marketplaceCard3.getTitle()),
                 LocalDateTime.now());
+        entityManager.persist(marketCardNotification3);
+        entityManager.flush();
 
         marketCardNotification4 = new MarketCardNotification(user.getId(),
-                marketplaceCard4.getId(),
                 marketplaceCard4,
                 String.format("Your card (%s) will be expired.", marketplaceCard4.getTitle()),
                 LocalDateTime.now());
+        entityManager.persist(marketCardNotification4);
+        entityManager.flush();
 
         marketCardNotification5 = new MarketCardNotification(anotherUser.getId(),
-                marketplaceCard5.getId(),
                 marketplaceCard5,
                 String.format("Your card (%s) will be expired.", marketplaceCard5.getTitle()),
                 LocalDateTime.now());
-
-        entityManager.persist(marketCardNotification);
-        entityManager.persist(marketCardNotification2);
-        entityManager.persist(marketCardNotification3);
-        entityManager.persist(marketCardNotification4);
         entityManager.persist(marketCardNotification5);
         entityManager.flush();
     }
 
 
     /**
-     * Test FindByReceiverIdAndNotificationMessage()
+     * Test FindByUserIdAndMarketCardId()
      */
     @Test
-    void testFindByUserIdAndDescription() {
+    void testFindByUserIdAndMarketCardId() {
         // when
-        Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository.findByUserIdAndMarketCardId(user.getId(), marketplaceCard.getId());
+        Optional<MarketCardNotification> optionalNotification = marketCardNotificationRepository
+                .findByUserIdAndMarketCardId(user.getId(), marketplaceCard.getId());
 
         // then
         Assertions.assertTrue(optionalNotification.isPresent());
@@ -224,6 +223,22 @@ class MarketCardNotificationRepositoryIntegrationTests {
         List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAllByUserId(user.getId());
 
         // then
+        for (MarketCardNotification marketCardNotification : marketCardNotifications) {
+            System.out.println(marketCardNotification.getDescription());
+        }
         Assertions.assertEquals(4, marketCardNotifications.size());
+    }
+
+    /**
+     * Test FindAllByReceiverId()
+     */
+    @Test
+    void testDeleteAllByMarketCardId() {
+        // when
+        marketCardNotificationRepository.deleteAllByMarketCardId(marketplaceCard.getId());
+
+        // then
+        List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAll();
+        Assertions.assertFalse(marketCardNotifications.contains(marketplaceCard));
     }
 }
