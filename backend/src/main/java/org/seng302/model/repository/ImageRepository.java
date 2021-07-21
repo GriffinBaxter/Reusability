@@ -13,7 +13,7 @@ public interface ImageRepository extends JpaRepository<Image, String> {
 
     List<Image> findImageByBussinesIdAndProductId(Integer businessId, String productId);
 
-    Optional<Image> findImageByIdAndAndBussinesIdAndProductId(Integer imageId, Integer businessId, String productId);
+    Optional<Image> findImageByIdAndBussinesIdAndProductId(Integer imageId, Integer businessId, String productId);
 
     void deleteByIdAndBussinesIdAndProductId(int id, int bussinesId, String productId);
 

@@ -30,6 +30,7 @@ import java.util.*;
  * Controller class for images. This class includes:
  * POST "/businesses/{businessId}/products/{productId}/images" endpoint used for adding image to a product of a businesses.
  * DELETE "/businesses/{businessId}/products/{productId}/images/{imageId}" endpoint for deleting an image for a product of a business.
+ * PUT "/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary" endpoint for changing the primary image of a product.
  */
 @RestController
 public class ImageResource {
@@ -172,6 +173,40 @@ public class ImageResource {
         updatePrimaryImage(businessId, productId, true);
     }
 
+    @PutMapping("/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Primary image successfully updated")
+    public void makePrimaryImage(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @PathVariable String productId,
+            @PathVariable Integer imageId
+    ) {
+
+        // Verify token access
+        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // Verify business parameter
+        Optional<Business> business = getVerifiedBusiness(businessId);
+
+        // Verify access rights of the user to the business
+        verifyAdministrationRights(user, business);
+
+        // Verify Product id
+        verifyProductId(productId, business, user);
+
+        // Verify image id
+        Image image = verifyImageId(imageId, businessId, productId, user);
+
+        // Set existing primary image to non-primary
+        List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
+        for (Image primaryImage: primaryImages) {
+            primaryImage.setIsPrimary(false);
+        }
+        
+        // Set desired image to primary image
+        image.setIsPrimary(true);
+    }
+
     /**
      * Gets the file extension of the given file name. This is based on the content after the last punctuation mark.
      * @param fileName, the file name
@@ -256,7 +291,7 @@ public class ImageResource {
      * @param productId
      */
     private Image verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
-        Optional<Image> image = imageRepository.findImageByIdAndAndBussinesIdAndProductId(imageId, businessId, productId);
+        Optional<Image> image = imageRepository.findImageByIdAndBussinesIdAndProductId(imageId, businessId, productId);
         if (image.isEmpty()) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
             logger.error(errorMessage);
