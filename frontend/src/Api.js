@@ -145,7 +145,8 @@ export default {
         return instance.post('/businesses/' + businessID + '/products', {
             ...product.data
         }, {
-            withCredentials: true})
+            withCredentials: true
+        })
     },
 
     // Sends a get request to the backend asking for a sorted list of listings belonging to a business.
@@ -190,7 +191,7 @@ export default {
     // Sends a put request to the backend to update the details of an existing inventory item.
     modifyInventoryItem: (inventoryItemId, businessId, newInventoryItem) => {
         return instance.put(`/businesses/${businessId}/inventory/${inventoryItemId}`, {...newInventoryItem.data}, {
-              withCredentials: true
+            withCredentials: true
         })
     },
 
@@ -210,7 +211,7 @@ export default {
 
     // Sends a post request to the backend containing the details of a new marketplace card.
     addNewCard: (newCard) => {
-        return instance.post(`/cards`, newCard,{
+        return instance.post(`/cards`, newCard, {
             withCredentials: true
         })
     },
@@ -225,6 +226,12 @@ export default {
     // Sends a get request to the backend to retrieve the marketplace cards created by a specific user.
     getUsersCards: (userId) => {
         return instance.get(`/users/${userId}/cards`, {
+            withCredentials: true
+        })
+    },
+
+    getNotifications: () => {
+        return instance.get(`/users/notifications`, {
             withCredentials: true
         })
     }

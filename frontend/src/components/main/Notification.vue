@@ -1,5 +1,6 @@
 <template>
   <div class="accordion" id="accordionExample" style="width: 500px">
+    <div v-if="allNoticeCards.length === 0">No notification!</div>
     <div class="accordion-item"
          v-for="card in allNoticeCards"
          v-bind:key="card.id">
@@ -10,7 +11,7 @@
                 :data-bs-target="'#collapse_' + card.id"
                 aria-expanded="false"
                 :aria-controls="'collapse_' + card.id">
-          Your card ({{ card.title }}) will be expiry in {{ card.date }}.
+          <h6>{{ card.description }}</h6>
         </button>
       </h2>
       <div :id="'collapse_' + card.id" class="accordion-collapse collapse" :aria-labelledby="'heading_' + card.id"
@@ -25,6 +26,8 @@
 
 <script>
 
+import Api from "../../Api";
+
 export default {
   name: "Notification",
   data() {
@@ -33,13 +36,23 @@ export default {
     }
   },
   props: {},
-  function: {
+  methods: {
+    populateNotification(data) {
+      console.log(data)
+      data.forEach(notification => {
+        this.allNoticeCards.push({id: notification.id, description: notification.description});
+      })
+    }
   },
   beforeMount() {
-    this.allNoticeCards.push({id: 1, title: "Beef", date: "2021-05-20T00:00"});
-    this.allNoticeCards.push({id: 2, title: "PS5", date: "2021-05-20T00:00"});
-    this.allNoticeCards.push({id: 3, title: "Rice", date: "2021-05-20T00:00"});
-    this.allNoticeCards.push({id: 4, title: "Bean", date: "2021-05-20T00:00"});
+    Api.getNotifications()
+        .then(response => (this.populateNotification(response.data)))
+        .catch((error) => {
+          if (error.status === 401) {
+            // Missing or invalid token
+            this.$router.push({path: '/invalidtoken'});
+          }
+        })
   }
 }
 </script>
