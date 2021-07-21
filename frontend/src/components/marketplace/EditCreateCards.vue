@@ -649,5 +649,51 @@ export default {
 
 
 <style scoped>
+/** ensure that any changes made here happen on both the front and back layer!!!! */
+
+textarea.form-control {
+  resize: none;
+}
+
+div.keywords-backdrop, textarea.keywords-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  letter-spacing: 2px;
+  word-spacing: 2px;
+  line-height: 2em;
+  font-family: 'Roboto', sans-serif;
+}
+div.keywords-backdrop {
+  background-color: #fff;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  -ms-word-wrap: break-word;
+  margin: 0;
+  border: 1px solid transparent;
+  color: transparent;
+}
+
+textarea.keywords-input, textarea.keywords-input:focus {
+  background-color: transparent;
+  color: black;
+  caret-color: #000;
+  z-index: 10;
+}
+
+strong.keywordHighlight {
+  font-family: 'Roboto', sans-serif;
+  color: transparent;
+  outline: 1px solid #888888;
+  outline-offset: 1px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  word-spacing: 2px;
+  line-height: 2em;
+}
 
 </style>

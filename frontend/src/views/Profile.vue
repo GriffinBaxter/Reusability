@@ -15,6 +15,9 @@
       <CardDetail v-bind:id="selectedCard"
                   v-bind:section="cardSection"/>
 
+      <!-- Edit Modal for editing your own cards -->
+      <EditCardModal ref="editCardModal"></EditCardModal>
+
     <!--profile header, contains user search bar-->
     <div id="profile-header-div">
       <ProfileHeader/>
@@ -278,10 +281,12 @@ import {UserRole} from '../configs/User'
 import {formatDate} from "../dateUtils";
 import Card from "../components/marketplace/Card";
 import CardDetail from "../components/marketplace/CardDetailPopup";
+import EditCardModal from "../components/marketplace/EditCardModal";
 
 export default {
   name: "Profile",
   components: {
+    EditCardModal,
     Footer,
     ProfileHeader,
     Navbar,
