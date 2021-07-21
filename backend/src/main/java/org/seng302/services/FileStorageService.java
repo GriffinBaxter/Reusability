@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,13 @@ public class FileStorageService {
     private static final Logger logger = LogManager.getLogger(FileStorageService.class.getName());
 
 
-    public FileStorageService(@Value("general") String folderName) {
+    public FileStorageService(@Value("storage") String folderName) {
         this.rootPath = Paths.get(folderName);
         this.initialize();
+    }
+
+    public String toString() {
+        return rootPath.toString();
     }
 
     /**

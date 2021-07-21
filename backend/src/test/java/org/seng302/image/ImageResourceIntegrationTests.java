@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.seng302.Main;
 import org.seng302.controller.ImageResource;
@@ -12,8 +13,6 @@ import org.seng302.model.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
@@ -23,6 +22,7 @@ import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.services.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,7 +32,10 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,7 +74,6 @@ class ImageResourceIntegrationTests {
     @MockBean
     private ImageRepository imageRepository;
 
-    @Mock
     private FileStorageService fileStorageService;
 
     private Address address;
@@ -238,9 +240,13 @@ class ImageResourceIntegrationTests {
         jpegImage = new MockMultipartFile("images", "testImage.jpeg", MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
         pngImage = new MockMultipartFile("images", "testImage.png", MediaType.IMAGE_PNG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
         gifImage = new MockMultipartFile("images", "testImage.gif", MediaType.IMAGE_GIF_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
+
         productId = product.getProductId();
         businessId = business.getId();
+
         primaryImage = new Image(1, productId, businessId, "test/test", "test/test", true);
+        fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly().useConstructor("test-images"));
+
         this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
     }
 

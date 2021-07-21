@@ -49,7 +49,7 @@ public class ImageResource {
 
     @Autowired
     @Value("product-images")
-    private final FileStorageService fileStorageService;
+    private FileStorageService fileStorageService;
 
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
 
@@ -57,7 +57,7 @@ public class ImageResource {
     private static final String PHOTO_DIRECTORY = "/storage/photos/";
     private static final String TEST_PHOTO_DIRECTORY = "/storage/photos/test/";
 
-
+    public ImageResource() {}
 
     public ImageResource(BusinessRepository businessRepository, UserRepository userRepository,
                          ProductRepository productRepository, ImageRepository imageRepository, FileStorageService fileStorageService) {
@@ -66,7 +66,7 @@ public class ImageResource {
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
         this.fileStorageService = fileStorageService;
-
+        System.out.println(this.fileStorageService.toString());
     }
 
     @PostMapping("/businesses/{businessId}/products/{productId}/images")
@@ -76,6 +76,7 @@ public class ImageResource {
             @PathVariable Integer businessId,
             @PathVariable String productId
     ) {
+        System.out.println(this.fileStorageService.toString());
 
         // Verify token access
         User user = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -91,12 +92,18 @@ public class ImageResource {
 
         // Verify the file type
         String imageFileName = image.getOriginalFilename();
+
+        if (imageFileName == null) {
+            logger.error("Image uploaded was missing original file name.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image was missing a file name.");
+        }
+
         String imageType = getFileExtension(imageFileName);
         if (!imageType.equalsIgnoreCase("jpg") && !imageType.equalsIgnoreCase("jpeg") &&
                 !imageType.equalsIgnoreCase("png") && !imageType.equalsIgnoreCase("gif")) {
 
             String debugMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", image.getName());
-            logger.debug(debugMessage);
+            logger.error(debugMessage);
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The file type of the image uploaded is not " +
                     "supported. Only JPG, JPEG, PNG and GIF are supported.");
         }
@@ -217,7 +224,7 @@ public class ImageResource {
             if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
                 return fileName.substring(fileName.lastIndexOf(".") + 1);
             }
-        } catch ( IndexOutOfBoundsException e) {
+        } catch ( Exception e) {
             return "";
         }
         return "";
