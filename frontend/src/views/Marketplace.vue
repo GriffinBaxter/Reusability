@@ -202,7 +202,10 @@ export default {
         console.log(error.message)
       })
     },
-
+    /**
+     * Changes the orderBy for card search
+     * @param orderByValue new orderBy
+     */
     orderedCards(orderByValue) {
       switch (this.selectSection) {
         case "For Sale":

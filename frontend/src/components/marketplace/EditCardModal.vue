@@ -273,6 +273,11 @@ export default {
       this.keywordsInput = this.convertKeywordsToString(data.keywords);
 
     },
+    /**
+     * Converts a list of keywords to a string for populating current data
+     * @param keywords keywords from the API call
+     * @return String of keywords
+     */
     convertKeywordsToString(keywords) {
       let keyString = ""
       for (let key in keywords) {
