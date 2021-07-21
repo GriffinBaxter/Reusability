@@ -226,6 +226,7 @@ export default {
         creatorIdError: ""
       },
 
+      /** Contains the list of current autocompletion keywords (based on currently selected keyword) */
       autocompleteKeywords: []
     }
   },
@@ -567,7 +568,10 @@ export default {
 
       return keyword
     },
-    
+    /**
+     * Performs actions after a click has been detected on the page (depending on whether the click was inside
+     * or outside the keyword text-box).
+     */
     click() {
       if (document.getElementById('card-keywords').parentNode.matches(":hover")) {
         this.updateCursorPosition()
@@ -575,7 +579,11 @@ export default {
         this.autocompleteKeywords = [];
       }
     },
-
+    /**
+     * Performs actions after a key has been released, relating to arrow key navigation inside the keyword text-box.
+     * This sets up the list of keywords for autocompletion and also the dismissal of the list after using a keyword 
+     * suggestion, if there is no match, or if a click has been registered outside the text-box.
+     */ 
     updateCursorPosition() {
       this.textCursorPosition = document.getElementById('card-keywords').selectionStart;
       this.currentKeyword = "";
@@ -610,7 +618,9 @@ export default {
         })
       }
     },
-
+    /**
+     * Updates the currently selected keyword with the given keyword (for keyword autocompletion).
+     */
     updateKeyword(keyword) {
       if (this.keywordsInput === "" ||
           (this.keywordsInput.length === this.textCursorPosition &&
@@ -632,12 +642,16 @@ export default {
         }
       }
     },
-
+    /**
+     * Calculates and returns the start and end positions of the current keyword, returns false if invalid indexes are
+     * retrieved.
+     */
     getCurrentKeywordStartEnd() {
       let currentKeywordStart = this.keywordsInput.substring(0, this.textCursorPosition + 1).lastIndexOf("#");
 
       if (currentKeywordStart !== -1) {
-        let currentKeywordEnd = this.keywordsInput.substring(this.textCursorPosition).indexOf(" ") + this.textCursorPosition;
+        let currentKeywordEnd =
+            this.keywordsInput.substring(this.textCursorPosition).indexOf(" ") + this.textCursorPosition;
 
         if (currentKeywordEnd - this.textCursorPosition !== -1) {
           this.currentKeyword = this.keywordsInput.substring(currentKeywordStart + 1, currentKeywordEnd);
