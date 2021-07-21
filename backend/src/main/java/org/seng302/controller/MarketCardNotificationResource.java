@@ -43,7 +43,6 @@ public class MarketCardNotificationResource {
      * @throws Exception Exception
      */
     @GetMapping("/users/notifications")
-    @ResponseStatus(code = HttpStatus.OK, reason = "Notifications retrieving success.")
     public List<MarketCardNotificationPayload> retrieveAllNotifications(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken
     ) throws Exception {
