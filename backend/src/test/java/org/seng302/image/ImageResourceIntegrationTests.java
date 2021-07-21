@@ -1,6 +1,7 @@
 package org.seng302.image;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -117,7 +118,7 @@ class ImageResourceIntegrationTests {
     private MockHttpServletResponse response;
 
 
-    @BeforeAll
+    @BeforeEach
     public void setup() throws Exception{
         Address address = new Address(
                 "3/24",
@@ -721,7 +722,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Tests that a FORBIDDEN status is received when deleting an image of an existing business with an existing product
-     * at the file path BUSINESS_ID > PRODUCT_ID > SOME_HASH_VALUE but the user does not have administration rights i.e.
+     * at the file path product-images -> IMAGE_UUID but the user does not have administration rights i.e.
      * not administrator of business.
      *
      * @throws Exception Exception error
@@ -732,19 +733,16 @@ class ImageResourceIntegrationTests {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
-        //TODO store file
-        // imageId = image.getImageId();
-        // define path
-
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
-        // TODO check user access
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
-        //TODO assert get FORBIDDEN status
-        //TODO assert image still present at correct location
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 
     }
 
@@ -760,19 +758,22 @@ class ImageResourceIntegrationTests {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
-        //TODO define path and non-existent image id
-
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
-        // TODO check user access
-        // check business exists
-        // check product exists
-        // check image exists and attempt to delete
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = List.of(primaryImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.empty());
+        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
-        //TODO assert get NOT_ACCEPTABLE status
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
 
     }
 
@@ -787,19 +788,18 @@ class ImageResourceIntegrationTests {
 
         // Given
         businessId = business.getId();
-        //TODO define non-existent product id
-
+        productId = product.getProductId();
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
-        // TODO check user access
-        // check business exists
-        // check product exists
-        // attempt to delete
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.empty());
+        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, "A9000", primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
-        //TODO assert get NOT_ACCEPTABLE status
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
     /**
@@ -811,18 +811,18 @@ class ImageResourceIntegrationTests {
     void whenBusinessIdExistsDoesNotExist_thenReceiveNotAcceptedStatus() throws Exception {
 
         // Given
-        //TODO define non-existent business id
-
+        businessId = business.getId();
+        productId = product.getProductId();
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
-        // TODO check user access
-        // check business exists
-        // attempt to delete
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
+        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", 8000, "A9000", primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
-        //TODO assert get NOT_ACCEPTABLE status
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
     //--------------------------- Product Image Changing Primary Image Endpoint Tests ----------------------------------
