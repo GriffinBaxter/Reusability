@@ -21,9 +21,11 @@ public class ImagePayload {
 
     public static List<ImagePayload> convertToImagePayload(List<Image> images) {
         List<ImagePayload> payloads = new ArrayList<>();
-        for (Image image : images) {
-            ImagePayload newPayload = new ImagePayload(image.getId(), image.getFilename(), image.getThumbnailFilename());
-            payloads.add(newPayload);
+        if (images != null) {
+            for (Image image : images) {
+                ImagePayload newPayload = new ImagePayload(image.getId(), image.getFilename(), image.getThumbnailFilename());
+                payloads.add(newPayload);
+            }
         }
         return payloads;
     }

@@ -112,7 +112,8 @@ class ListingResourceIntegrationTests {
                                                     "\"description\":\"%s\"," +
                                                     "\"manufacturer\":\"%s\"," +
                                                     "\"recommendedRetailPrice\":%.1f," +
-                                                    "\"created\":\"%s\"}," +
+                                                    "\"created\":\"%s\"," +
+                                                    "\"images\":[]}," +
                                                 "\"quantity\":%d," +
                                                 "\"pricePerItem\":%.1f," +
                                                 "\"totalPrice\":%.1f," +
