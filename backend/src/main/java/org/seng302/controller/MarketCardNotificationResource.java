@@ -48,7 +48,6 @@ public class MarketCardNotificationResource {
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken
     ) throws Exception {
         //401
-        System.out.println(sessionToken);
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         logger.debug("User (Id: {}) received.", currentUser.getId());
 
