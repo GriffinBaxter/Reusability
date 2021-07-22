@@ -14,21 +14,21 @@ public class SearchUtils {
     }
 
     /**
-     * Parses the search query to get a list of names which will be used to search for businesses.
+     * Parses the search query to get a list of names which will be searched for.
      *
-     * @param searchQuery criteria to search for businesses (business name).
-     * @return a list of business names that were represented by the searchQuery (the searchQuery can contain AND, OR
+     * @param searchQuery criteria to search for.
+     * @return a list of names that were represented by the searchQuery (the searchQuery can contain AND, OR
      * and "" operators).
      *
-     * Preconditions:  searchQuery is a string which can represent a query containing business names e.g.
-     *                 New World OR Countdown
+     * Preconditions:  searchQuery is a non-null string which can represent a query containing several names e.g.
+     *                 New World OR Countdown.
      * Postconditions: A list of names from the parsed searchQuery.
      */
     public static List<String> convertSearchQueryToNames(String searchQuery) {
         List<String> names = new ArrayList<>();
 
-        // If search query is empty then all businesses should be be returned.
-        // This done by using LIKE(%"empty string"%) in the where clause of the query which retrieves the businesses.
+        // If search query is empty then all entities should be be returned.
+        // This done by using LIKE(%"empty string"%) in the where clause of the query which retrieves the entities.
         if (searchQuery.equals("")) {
             names.add("");
             return names;

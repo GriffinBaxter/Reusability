@@ -71,7 +71,7 @@ public class KeywordRepositoryIntegrationTests {
     }
 
     /**
-     * Tests findByName method doesn't return keyword when name doesn't exist
+     * Tests findByName method when the keyword doesn't exist returns an empty Optional
      */
     @Test
     void whenFindByUnknownName_ThenDontReturnKeyword() {
@@ -124,5 +124,33 @@ public class KeywordRepositoryIntegrationTests {
         assertThat(foundKeywords.size()).isEqualTo(2);
         assertThat(foundKeywords.get(0)).isEqualTo(keyword4);
         assertThat(foundKeywords.get(1)).isEqualTo(keyword5);
+    }
+
+    /**
+     * Tests findById method successfully returns a keyword
+     */
+    @Test
+    void whenFindByExistingId_ThenReturnKeyword() {
+        // Given
+        entityManager.persistAndFlush(keyword2);
+        // When
+        foundKeyword = keywordRepository.findById(keyword2.getId());
+        // Then
+        assertThat(foundKeyword).isPresent();
+        assertThat(keyword2.getId()).isEqualTo(foundKeyword.get().getId());
+        assertThat(keyword2.getName()).isEqualTo(foundKeyword.get().getName());
+    }
+
+    /**
+     * Tests findById method when the keyword doesn't exist returns an empty Optional
+     */
+    @Test
+    void whenFindByUnknownId_ThenReturnKeyword() {
+        // Given
+        Integer fakeId = 100;
+        // When
+        foundKeyword = keywordRepository.findById(fakeId);
+        // Then
+        assertThat(foundKeyword).isNotPresent();
     }
 }

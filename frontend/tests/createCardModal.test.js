@@ -447,7 +447,7 @@ describe("Testing the description field", () => {
         await createCardModalWrapper.vm.$nextTick();
     })
 
-    test("Testing an empty title input field", async () => {
+    test("Testing an empty description input field", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-description").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(false);
@@ -531,7 +531,7 @@ describe("Testing the description field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.descriptionError).toBe("is-invalid")
     })
 
-    test("Testing the title can handle emojis 😋", async () => {
+    test("Testing the description can handle emojis 😋", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-description").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-description-invalid-feedback").exists()).toBe(false);
@@ -716,7 +716,7 @@ describe("Testing the keywords field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
     })
 
-    test("Testing the title can handle emojis 😋😋😋", async () => {
+    test("Testing the keywords input can handle emojis 😋😋😋", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
@@ -739,7 +739,7 @@ describe("Testing the keywords field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
     })
 
-    test("Testing the title can handle emojis 😋", async () => {
+    test("Testing the keywords input can handle emojis 😋", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
@@ -762,7 +762,7 @@ describe("Testing the keywords field", () => {
         expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
     })
 
-    test("Testing the title can handle emojis 😋😋", async () => {
+    test("Testing the keywords input can handle emojis 😋😋", async () => {
         // Checking all necessary elements are exist and do not.
         expect(createCardModalWrapper.find("#card-keywords").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
@@ -783,6 +783,70 @@ describe("Testing the keywords field", () => {
         expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
         expect(createCardModalWrapper.vm.$data.formError.keywordsError).toBe("");
         expect(createCardModalWrapper.vm.$data.formErrorClasses.keywordsError).toBe("")
+    })
+
+    test("Testing the keyword autocompletion", async () => {
+        createCardModalWrapper.vm.$data.keywordsInput = "#Dri"
+
+        let currentKeywordStartEnd = createCardModalWrapper.vm.getCurrentKeywordStartEnd()
+        expect(currentKeywordStartEnd).toStrictEqual([0, 4])
+
+        createCardModalWrapper.vm.updateKeyword("Drink")
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#Drink")
+
+        await createCardModalWrapper.vm.$nextTick();
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#Drink")
+
+        currentKeywordStartEnd = createCardModalWrapper.vm.getCurrentKeywordStartEnd()
+        expect(currentKeywordStartEnd).toStrictEqual([0, 6])
+    })
+
+    test("Testing the keyword autocompletion overriding an existing key", async () => {
+        createCardModalWrapper.vm.$data.keywordsInput = "#Coffee"
+
+        let currentKeywordStartEnd = createCardModalWrapper.vm.getCurrentKeywordStartEnd()
+        expect(currentKeywordStartEnd).toStrictEqual([0, 7])
+
+        createCardModalWrapper.vm.updateKeyword("NotCoffee")
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#NotCoffee")
+
+        await createCardModalWrapper.vm.$nextTick();
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#NotCoffee")
+
+        currentKeywordStartEnd = createCardModalWrapper.vm.getCurrentKeywordStartEnd()
+        expect(currentKeywordStartEnd).toStrictEqual([0, 10])
+    })
+
+    test("Testing the keywords autocompletion with multiple existing keywords", async () => {
+        createCardModalWrapper.vm.$data.keywordsInput = "#Coffee #Drink #Tea"
+        
+        let currentKeywordStartEnd = createCardModalWrapper.vm.getCurrentKeywordStartEnd()
+        expect(currentKeywordStartEnd).toStrictEqual([0, 7])
+
+        createCardModalWrapper.vm.updateKeyword("NotCoffee")
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#NotCoffee #Drink #Tea")
+
+        await createCardModalWrapper.vm.$nextTick();
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#NotCoffee #Drink #Tea")
+
+        currentKeywordStartEnd = createCardModalWrapper.vm.getCurrentKeywordStartEnd()
+        expect(currentKeywordStartEnd).toStrictEqual([0, 10])
+    })
+
+    test("Testing the keywords autocompletion with no existing keywords", async () => {
+        createCardModalWrapper.vm.$data.keywordsInput = ""
+
+        let currentKeywordStartEnd = createCardModalWrapper.vm.getCurrentKeywordStartEnd()
+        expect(currentKeywordStartEnd).toBe(false)
+
+        createCardModalWrapper.vm.updateKeyword("Anything")
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("Anything")
+
+        await createCardModalWrapper.vm.$nextTick();
+        expect(createCardModalWrapper.vm.$data.keywordsInput).toBe("#Anything")
+
+        currentKeywordStartEnd = createCardModalWrapper.vm.getCurrentKeywordStartEnd()
+        expect(currentKeywordStartEnd).toStrictEqual([0, 9])
     })
 
 })

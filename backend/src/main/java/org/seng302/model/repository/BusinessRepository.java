@@ -21,6 +21,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * BusinessRepository interface.
+ * This class contains methods which can be used to retrieve Business entities based on various criteria.
+ */
 @RepositoryRestResource
 public interface BusinessRepository extends JpaRepository<Business, String>, BusinessRepositoryCustom {
 

@@ -12,7 +12,7 @@ export default class InventoryItem {
         quantity: {
             name: "Quantity",
             minLength: 1,
-            maxLength: 12,
+            maxLength: 9,
             regex: /^[0-9]+$/,
             regexMessage: "Must only contain numbers",
         },

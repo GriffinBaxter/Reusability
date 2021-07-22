@@ -215,7 +215,6 @@ div.container {
 
 /**
  * Styling for profile images for each post. Makes image into circle.
- * TODO make DRY
  */
 #profile-image-1, #profile-image-2, #profile-image-3 {
   height: 50px;

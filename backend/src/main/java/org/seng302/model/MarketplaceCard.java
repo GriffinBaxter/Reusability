@@ -132,9 +132,7 @@ public class MarketplaceCard {
         return displayPeriodEnd;
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() { return title; }
 
     public String getDescription() {
         return description;
@@ -173,12 +171,30 @@ public class MarketplaceCard {
         this.displayPeriodEnd = displayPeriodEnd;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    /**
+     * Checks the title is valid and then sets it
+     * @param title title to be set
+     * @throws IllegalMarketplaceCardArgumentException if title is invalid
+     */
+    public void setTitle(String title) throws IllegalMarketplaceCardArgumentException {
+        if (isValidTitle(title)) {
+            this.title = title;
+        } else {
+            throw new IllegalMarketplaceCardArgumentException("Invalid Title");
+        }
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * Checks the description is valid and then sets it
+     * @param description description to be set
+     * @throws IllegalMarketplaceCardArgumentException if description is invalid
+     */
+    public void setDescription(String description) throws IllegalMarketplaceCardArgumentException {
+        if (isValidDescription(description)) {
+            this.description = description;
+        } else {
+            throw new IllegalMarketplaceCardArgumentException("Invalid Description");
+        }
     }
 
     public void setCreator(User creator) {
@@ -227,6 +243,15 @@ public class MarketplaceCard {
             if (keywords.get(i).getId() == keywordId) {
                 this.keywords.remove(i);
             }
+        }
+    }
+
+    /**
+     * Removes all Keywords from the Marketplace Card
+     */
+    public void removeAllKeywords() {
+        while (0 > keywords.size()) {
+            this.keywords.remove(0);
         }
     }
 

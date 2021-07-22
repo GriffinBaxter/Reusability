@@ -71,6 +71,13 @@ export default {
         })
     },
 
+    // Sends a GET request to the backend asking for any businesses matching the given criteria
+    searchBusinesses: (query, businessType, orderBy, page) => {
+        return instance.get(`/businesses/search?searchQuery=${query}&businessType=${businessType}&orderBy=${orderBy}&page=${page}`, {
+            withCredentials: true
+        })
+    },
+
     // Sends a post request to the backend with a new business object to store
     addNewBusiness: (business) => instance.post('/businesses', {
         ...business.data
@@ -232,6 +239,13 @@ export default {
 
     getNotifications: () => {
         return instance.get(`/users/notifications`, {
+            withCredentials: true
+        })
+    },
+
+    // Sends a get request to the backend to search for keywords by partial (or complete) name.
+    searchKeywords: (searchQuery) => {
+        return instance.get(`/keywords/search?searchQuery=${searchQuery}`, {
             withCredentials: true
         })
     }
