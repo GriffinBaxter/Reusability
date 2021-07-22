@@ -320,10 +320,10 @@ class SearchUserByNameTests {
     }
 
     /**
-     * Tests that the search functionality will order users by nickname in ascending order i.e. in alphabetical order.
+     * Tests that the findAll method will order users by nickname in ascending order i.e. in alphabetical order.
      */
     @Test
-    void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersAscending() {
+    void whenFindAllUsers_thenReturnNicknameOrderedUsersAscending() {
         // given
         int pageNo = 0;
         int pageSize = 11;
@@ -344,30 +344,65 @@ class SearchUserByNameTests {
         orderedNicknames.add("nick");
         orderedNicknames.add("testnick");
 
-
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(0);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
             assertThat(userPage.getContent().get(i).getNickname()).isEqualTo(orderedNicknames.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will order users by nickname in descending order i.e. in reverse alphabetical order.
+     * Tests that the findAllUsersByNames method will order users by nickname in ascending order i.e. in alphabetical order.
      */
     @Test
-    void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersDescending() {
+    void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersAscending() {
+        // given
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
+        ArrayList<String> orderedNicknames = new ArrayList<>();
+        orderedNicknames.add("Aldeniz");
+        orderedNicknames.add("Cra");
+        orderedNicknames.add("Fran");
+        orderedNicknames.add("Fran");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Gm");
+        orderedNicknames.add("Min");
+        orderedNicknames.add("Murphy");
+        orderedNicknames.add("nick");
+        orderedNicknames.add("testnick");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getNickname()).isEqualTo(orderedNicknames.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findAll method will order users by nickname in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    void whenFindAllUsers_thenReturnNicknameOrderedUsersDescending() {
         // given
         int pageNo = 0;
         int pageSize = 11;
         Sort sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase());
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
-        ArrayList<String> orderedNicknames = new ArrayList<>();
 
+        ArrayList<String> orderedNicknames = new ArrayList<>();
         orderedNicknames.add("testnick");
         orderedNicknames.add("nick");
         orderedNicknames.add("Murphy");
@@ -382,20 +417,89 @@ class SearchUserByNameTests {
         orderedNicknames.add("Cra");
         orderedNicknames.add("Aldeniz");
 
-
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-//        assertThat(userPage.getContent()).isEqualTo(0);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
             assertThat(userPage.getContent().get(i).getNickname()).isEqualTo(orderedNicknames.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will order users by email in ascending order i.e. in alphabetical order.
+     * Tests that the findAllUsersByNames method will order users by nickname in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    void whenFindAllUsersByNames_thenReturnNicknameOrderedUsersDescending() {
+        // given
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
+        ArrayList<String> orderedNicknames = new ArrayList<>();
+        orderedNicknames.add("nick");
+        orderedNicknames.add("Murphy");
+        orderedNicknames.add("Min");
+        orderedNicknames.add("Gm");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Generic");
+        orderedNicknames.add("Fran");
+        orderedNicknames.add("Fran");
+        orderedNicknames.add("Cra");
+        orderedNicknames.add("Aldeniz");
+
+        // when
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getNickname()).isEqualTo(orderedNicknames.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findAll method will order users by email in ascending order i.e. in alphabetical order.
+     */
+    @Test
+    void whenFindAllUsers_thenReturnEmailOrderedUsersAscending() {
+        // given
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        ArrayList<String> orderedEmail = new ArrayList<>();
+        orderedEmail.add("chad.taylor@example.com");
+        orderedEmail.add("email@email.com");
+        orderedEmail.add("example@example.com");
+        orderedEmail.add("francisca.benitez@example.com");
+        orderedEmail.add("francisca.benitez@example.com");
+        orderedEmail.add("minttu.wainio@example.com");
+        orderedEmail.add("naomi.wilson@example.com");
+        orderedEmail.add("seth.murphy@example.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("testaa@email.com");
+        orderedEmail.add("testemail@email.com");
+
+        // when
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getEmail()).isEqualTo(orderedEmail.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findAllUsersByNames method will order users by email in ascending order i.e. in alphabetical order.
      */
     @Test
     void whenFindAllUsersByNames_thenReturnEmailOrderedUsersAscending() {
@@ -404,6 +508,10 @@ class SearchUserByNameTests {
         int pageSize = 11;
         Sort sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
         ArrayList<String> orderedEmail = new ArrayList<>();
         orderedEmail.add("chad.taylor@example.com");
         orderedEmail.add("email@email.com");
@@ -420,18 +528,51 @@ class SearchUserByNameTests {
         orderedEmail.add("testemail@email.com");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-       // assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
             assertThat(userPage.getContent().get(i).getEmail()).isEqualTo(orderedEmail.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will order users by email in descending order i.e. in reverse alphabetical order.
+     * Tests that the findAll method will order users by email in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    void whenFindAllUsers_thenReturnEmailOrderedUsersDescending() {
+        // given
+        int pageNo = 0;
+        int pageSize = 11;
+        Sort sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        ArrayList<String> orderedEmail = new ArrayList<>();
+        orderedEmail.add("testemail@email.com");
+        orderedEmail.add("testaa@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("test@email.com");
+        orderedEmail.add("seth.murphy@example.com");
+        orderedEmail.add("naomi.wilson@example.com");
+        orderedEmail.add("minttu.wainio@example.com");
+        orderedEmail.add("francisca.benitez@example.com");
+        orderedEmail.add("francisca.benitez@example.com");
+        orderedEmail.add("example@example.com");
+        orderedEmail.add("email@email.com");
+        orderedEmail.add("chad.taylor@example.com");
+
+        // when
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        // then
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            assertThat(userPage.getContent().get(i).getEmail()).isEqualTo(orderedEmail.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findAllUsersByNames method will order users by email in descending order i.e. in reverse alphabetical order.
      */
     @Test
     void whenFindAllUsersByNames_thenReturnEmailOrderedUsersDescending() {
@@ -440,9 +581,11 @@ class SearchUserByNameTests {
         int pageSize = 11;
         Sort sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
-        ArrayList<String> orderedEmail = new ArrayList<>();
 
-        orderedEmail.add("testemail@email.com");
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
+        ArrayList<String> orderedEmail = new ArrayList<>();
         orderedEmail.add("testaa@email.com");
         orderedEmail.add("test@email.com");
         orderedEmail.add("test@email.com");
@@ -457,20 +600,16 @@ class SearchUserByNameTests {
         orderedEmail.add("chad.taylor@example.com");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-
-
-        //assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
             assertThat(userPage.getContent().get(i).getEmail()).isEqualTo(orderedEmail.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will order users by address in ascending order i.e. in alphabetical order.
+     * Tests that the findAllUsersByNames method will order users by address in ascending order i.e. in alphabetical order.
      */
     @Test
     void whenFindAllUsersByNames_thenReturnAddressOrderedUsersAscending() {
@@ -479,6 +618,10 @@ class SearchUserByNameTests {
         int pageSize = 11;
         Sort sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
         ArrayList<String> orderedAddress = new ArrayList<>();
         orderedAddress.add("186, Simpsons Road, Ashburton, Canterbury, New Zealand, 2828, Ilam");
         orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839, Ilam");
@@ -492,21 +635,17 @@ class SearchUserByNameTests {
         orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428, Norwood");
         orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
 
-
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-
-//        assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
             assertThat(userPage.getContent().get(i).getHomeAddress().toOneLineString()).isEqualTo(orderedAddress.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will order users by address in descending order i.e. in reverse alphabetical order.
+     * Tests that the findAllUsersByNames will order users by address in descending order i.e. in reverse alphabetical order.
      */
     @Test
     void whenFindAllUsersByNames_thenReturnAddressOrderedUsersDescending() {
@@ -515,9 +654,11 @@ class SearchUserByNameTests {
         int pageSize = 11;
         Sort sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
-        ArrayList<String> orderedAddress = new ArrayList<>();
 
-        orderedAddress.add("57, Sydney Highway, Shire of Cocos Islands, West Island, Cocos (Keeling) Islands, 9732, Sydney");
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
+        ArrayList<String> orderedAddress = new ArrayList<>();
         orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
         orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
         orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428, Norwood");
@@ -531,18 +672,16 @@ class SearchUserByNameTests {
         orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839, Ilam");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
             assertThat(userPage.getContent().get(i).getHomeAddress().toOneLineString()).isEqualTo(orderedAddress.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will order users by their full name (first+middle+last) in ascending order i.e. in alphabetical order.
+     * Tests that the findAllUsersByNames method will order users by their full name (first+middle+last) in ascending order i.e. in alphabetical order.
      */
     @Test
     void whenFindAllUsersByNames_thenReturnFullNameOrderedUsersAscending() {
@@ -551,6 +690,10 @@ class SearchUserByNameTests {
         int pageSize = 14;
         Sort sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
         ArrayList<String> orderedFullName = new ArrayList<>();
         orderedFullName.add("Alex Ben Hasdsadine");
         orderedFullName.add("Alex Ben Hine");
@@ -567,19 +710,17 @@ class SearchUserByNameTests {
         orderedFullName.add("testfirst testmiddle Dentri");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
             String fullName = userPage.getContent().get(i).getFirstName() + " " + userPage.getContent().get(i).getMiddleName() + " " + userPage.getContent().get(i).getLastName();
             assertThat(fullName).isEqualTo(orderedFullName.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will order users by their full name (first+middle+last) in descending order i.e. in reverse alphabetical order.
+     * Tests that the findAllUsersByNames method will order users by their full name (first+middle+last) in descending order i.e. in reverse alphabetical order.
      */
     @Test
     void whenFindAllUsersByNames_thenReturnFullNameOrderedUsersDescending() {
@@ -588,9 +729,11 @@ class SearchUserByNameTests {
         int pageSize = 14;
         Sort sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.desc("email").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
-        ArrayList<String> orderedFullName = new ArrayList<>();
 
-        orderedFullName.add("testfirst testmiddle Dentri");
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
+        ArrayList<String> orderedFullName = new ArrayList<>();
         orderedFullName.add("Seti Tea Rodger");
         orderedFullName.add("Naomi I Wilson");
         orderedFullName.add("Minttu A Rine");
@@ -605,19 +748,38 @@ class SearchUserByNameTests {
         orderedFullName.add("Alex Ben Hasdsadine");
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(90);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         for (int i = 0; i < userPage.getContent().size(); i++) {
             String fullName = userPage.getContent().get(i).getFirstName() + " " + userPage.getContent().get(i).getMiddleName() + " " + userPage.getContent().get(i).getLastName();
             assertThat(fullName).isEqualTo(orderedFullName.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will return paginated results correctly when the page is not full with users.
+     * Tests that the findAllUsersByNames method will return paginated results correctly when the page is not full with users.
+     */
+    @Test
+    void whenFindAllUsers_thenReturnPageHalfFull() {
+        // given
+        int pageNo = 0;
+        // Page size 20 means page will be half full with the default 13 users inserted
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        // then
+        assertThat(userPage.getTotalElements()).isEqualTo(13);
+        for (int i = 0; i < searchUsers.size(); i++) {
+            assertThat(userPage.getContent().get(i)).isEqualTo(searchUsers.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findAllUsersByNames method will return paginated results correctly when the page is not full with users.
      */
     @Test
     void whenFindAllUsersByNames_thenReturnPageHalfFull() {
@@ -627,30 +789,34 @@ class SearchUserByNameTests {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
-        assertThat(userPage.getTotalElements()).isEqualTo(13);
-        for (int i = 0; i < searchUsers.size(); i++) {
-            assertThat(userPage.getContent().get(i)).isEqualTo(searchUsers.get(i));
+        assertThat(userPage.getTotalElements()).isEqualTo(12);
+        List<User> resultUsers = List.of(dGAA, anotherUser, searchUser1, searchUser2, searchUser3, searchUser4,
+                searchUser5, searchUser6, searchUser7, searchUser8, searchUser9, searchUser10);
+        for (int i = 0; i < resultUsers.size(); i++) {
+            assertThat(userPage.getContent().get(i)).isEqualTo(resultUsers.get(i));
         }
-
     }
 
     /**
-     * Tests that the search functionality will return pages other than the first one with correct users.
+     * Tests that the findAll method will return pages other than the first one with correct users.
      */
     @Test
-    void whenFindAllUsersByNames_thenReturnPagesFromTwoOnward() {
+    void whenFindAllUsers_thenReturnPagesFromTwoOnward() {
         // given
         int pageSize = 2;
 
         // when
-        Page<User> userPage2 = userRepository.findAllUsersByNames("", PageRequest.of(1, pageSize));
-        Page<User> userPage3 = userRepository.findAllUsersByNames("", PageRequest.of(2, pageSize));
-        Page<User> userPage4 = userRepository.findAllUsersByNames("", PageRequest.of(3, pageSize));
-        Page<User> userPage5 = userRepository.findAllUsersByNames("", PageRequest.of(4, pageSize));
+        Page<User> userPage2 = userRepository.findAll(PageRequest.of(1, pageSize));
+        Page<User> userPage3 = userRepository.findAll(PageRequest.of(2, pageSize));
+        Page<User> userPage4 = userRepository.findAll(PageRequest.of(3, pageSize));
+        Page<User> userPage5 = userRepository.findAll(PageRequest.of(4, pageSize));
 
         // then
         assertThat(userPage2.getTotalPages()).isEqualTo(7);
@@ -662,7 +828,35 @@ class SearchUserByNameTests {
         assertThat(userPage4.getContent().get(1)).isEqualTo(searchUsers.get(7));
         assertThat(userPage5.getContent().get(0)).isEqualTo(searchUsers.get(8));
         assertThat(userPage5.getContent().get(1)).isEqualTo(searchUsers.get(9));
+    }
 
+    /**
+     * Tests that the findAllUsersByNames method will return pages other than the first one with correct users.
+     */
+    @Test
+    void whenFindAllUsersByNames_thenReturnPagesFromTwoOnward() {
+        // given
+        int pageSize = 2;
+
+        List<String> names = new ArrayList<>();
+        names.add("a"); // searchQuery is "a"
+
+        // when
+        Page<User> userPage2 = userRepository.findAllUsersByNames(names, PageRequest.of(1, pageSize));
+        Page<User> userPage3 = userRepository.findAllUsersByNames(names, PageRequest.of(2, pageSize));
+        Page<User> userPage4 = userRepository.findAllUsersByNames(names, PageRequest.of(3, pageSize));
+        Page<User> userPage5 = userRepository.findAllUsersByNames(names, PageRequest.of(4, pageSize));
+
+        // then
+        assertThat(userPage2.getTotalPages()).isEqualTo(6);
+        assertThat(userPage2.getContent().get(0)).isEqualTo(searchUsers.get(3));
+        assertThat(userPage2.getContent().get(1)).isEqualTo(searchUsers.get(4));
+        assertThat(userPage3.getContent().get(0)).isEqualTo(searchUsers.get(5));
+        assertThat(userPage3.getContent().get(1)).isEqualTo(searchUsers.get(6));
+        assertThat(userPage4.getContent().get(0)).isEqualTo(searchUsers.get(7));
+        assertThat(userPage4.getContent().get(1)).isEqualTo(searchUsers.get(8));
+        assertThat(userPage5.getContent().get(0)).isEqualTo(searchUsers.get(9));
+        assertThat(userPage5.getContent().get(1)).isEqualTo(searchUsers.get(10));
     }
 
     /**
@@ -676,8 +870,11 @@ class SearchUserByNameTests {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("ThisValueDoesNotExist");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("ThisValueDoesNotExist", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isZero();
@@ -697,7 +894,7 @@ class SearchUserByNameTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         assertThat(userPage.getTotalPages()).isEqualTo(2);
@@ -722,8 +919,8 @@ class SearchUserByNameTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
-        //assertThat(userPage.getContent()).isEqualTo(0);
+        Page<User> userPage = userRepository.findAll(pageable);
+
         // then
         assertThat(userPage.getTotalPages()).isEqualTo(5);
         assertThat(userPage.getSize()).isEqualTo(3);
@@ -746,8 +943,11 @@ class SearchUserByNameTests {
         int pageSize = 11;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("nothing");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("nothing", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isZero();
@@ -765,7 +965,7 @@ class SearchUserByNameTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("", pageable);
+        Page<User> userPage = userRepository.findAll(pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(13);
@@ -786,8 +986,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("h");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("h", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getSize()).isEqualTo(5);
@@ -813,8 +1016,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("den");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("den", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(4);
@@ -839,8 +1045,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("Johnny");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("Johnny", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(1);
@@ -860,8 +1069,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("tea");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("tea", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(1);
@@ -882,8 +1094,11 @@ class SearchUserByNameTests {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("hine");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("hine", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(3);
@@ -899,14 +1114,16 @@ class SearchUserByNameTests {
      */
     @Test
     void whenFindAllUsersByNames_thenReturnFilteredNickname() {
-
         //given
         int pageNo = 0;
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        List<String> names = new ArrayList<>();
+        names.add("Min");
+
         // when
-        Page<User> userPage = userRepository.findAllUsersByNames("Min", pageable);
+        Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
 
         // then
         assertThat(userPage.getTotalElements()).isEqualTo(1);

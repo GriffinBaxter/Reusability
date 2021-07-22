@@ -22,7 +22,7 @@ page is changed.
       </button>
 
       <!-- This converts the current page into 1 origin.-->
-      <button :id="`pageButton${currentPage + 1}`" type="button" class="btn green-button-transparent active">
+      <button :id="`pageButton${currentPage + 1}`" type="button" class="btn green-button active">
         {{currentPage+1}}
       </button>
 

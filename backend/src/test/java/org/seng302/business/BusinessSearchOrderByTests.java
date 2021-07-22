@@ -59,6 +59,7 @@ class BusinessSearchOrderByTests {
     private Business searchBusiness10;
     private List<Business> searchBusinesses;
     private List<String> names = new ArrayList<>();
+    private final BusinessType businessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
 
     /**
      * Creates and inserts all businesses for testing.
@@ -203,6 +204,8 @@ class BusinessSearchOrderByTests {
         searchBusinesses = List.of(searchBusiness1, searchBusiness2, searchBusiness3, searchBusiness4, searchBusiness5,
                 searchBusiness6, searchBusiness7, searchBusiness8, searchBusiness9, searchBusiness10);
 
+        names.add("General Store"); // searchQuery contains "General Store"
+
         for (Business searchBusiness: searchBusinesses) {
             entityManager.persist(searchBusiness);
         }
@@ -210,10 +213,10 @@ class BusinessSearchOrderByTests {
     }
 
     /**
-     * Tests that the search functionality will order businesses by name in ascending order i.e. in alphabetical order.
+     * Tests that the findAllBusinessesByNames method will order businesses by name in ascending order i.e. in alphabetical order.
      */
     @Test
-    void whenFindAllBusinesses_thenReturnNameOrderedBusinessesAscendingTest() {
+    void whenFindAllBusinessesByNames_thenReturnNameOrderedBusinessesAscendingTest() {
         // given
         int pageNo = 0;
         int pageSize = 10;
@@ -232,7 +235,7 @@ class BusinessSearchOrderByTests {
         orderedNames.add("Wellington General Store");
 
         // when
-        Page<Business> businessPage = businessRepository.findAll(pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         for (int i = 0; i < businessPage.getContent().size(); i++) {
@@ -241,10 +244,35 @@ class BusinessSearchOrderByTests {
     }
 
     /**
-     * Tests that the search functionality will order businesses by name in descending order i.e. in reverse alphabetical order.
+     * Tests that the findAllBusinessesByNamesAndType method will order businesses by name in ascending order i.e. in alphabetical order.
      */
     @Test
-    void whenFindAllBusinessesByName_thenReturnNameOrderedBusinessesDescendingTest() {
+    void whenFindAllBusinessesByNamesAndType_thenReturnNameOrderedBusinessesAscendingTest() {
+        // given
+        int pageNo = 0;
+        int pageSize = 10;
+        Sort sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedNames = new ArrayList<>();
+
+        orderedNames.add("Auckland General Store");
+        orderedNames.add("Christchurch General Store");
+        orderedNames.add("Wanaka General Store");
+
+        // when
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);
+
+        // then
+        for (int i = 0; i < businessPage.getContent().size(); i++) {
+            assertThat(businessPage.getContent().get(i).getName()).isEqualTo(orderedNames.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findBusinessesByNames method will order businesses by name in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    void whenFindAllBusinessesByNames_thenReturnNameOrderedBusinessesDescendingTest() {
         // given
         int pageNo = 0;
         int pageSize = 10;
@@ -273,16 +301,39 @@ class BusinessSearchOrderByTests {
     }
 
     /**
-     * Tests that the search functionality will order businesses by address in ascending order i.e. in alphabetical order.
+     * Tests that the findBusinessesByNamesAndType method will order businesses by name in descending order i.e. in reverse alphabetical order.
      */
     @Test
-    void whenFindAllBusinessesByName_thenReturnAddressOrderedBusinessesAscendingTest() {
+    void whenFindAllBusinessesByNamesAndType_thenReturnNameOrderedBusinessesDescendingTest() {
         // given
         int pageNo = 0;
         int pageSize = 10;
-        Sort sortBy = Sort.by(Sort.Order.desc("address.street_name").ignoreCase())
-                .and(Sort.by(Sort.Order.desc("address.suburb").ignoreCase()))
-                .and(Sort.by(Sort.Order.desc("address.city").ignoreCase()))
+        Sort sortBy = Sort.by(Sort.Order.desc("name").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedNames = new ArrayList<>();
+
+        orderedNames.add("Wanaka General Store");
+        orderedNames.add("Christchurch General Store");
+        orderedNames.add("Auckland General Store");
+
+        // when
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);
+
+        // then
+        for (int i = 0; i < businessPage.getContent().size(); i++) {
+            assertThat(businessPage.getContent().get(i).getName()).isEqualTo(orderedNames.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findBusinessesByNames method will order businesses by address in ascending order i.e. in alphabetical order.
+     */
+    @Test
+    void whenFindAllBusinessesByNames_thenReturnAddressOrderedBusinessesAscendingTest() {
+        // given
+        int pageNo = 0;
+        int pageSize = 10;
+        Sort sortBy = Sort.by(Sort.Order.asc("address.city").ignoreCase())
                 .and(Sort.by(Sort.Order.asc("address.region").ignoreCase()))
                 .and(Sort.by(Sort.Order.asc("address.country").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
@@ -291,7 +342,7 @@ class BusinessSearchOrderByTests {
         orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
         orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
         orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
         orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
         orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
         orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
@@ -309,18 +360,43 @@ class BusinessSearchOrderByTests {
     }
 
     /**
-     * Tests that the search functionality will order businesses by address in descending order i.e. in reverse alphabetical order.
+     * Tests that the findBusinessesByNamesAndType method will order businesses by address in ascending order i.e. in alphabetical order.
      */
     @Test
-    void whenFindAllBusinessesByName_thenReturnAddressOrderedBusinessesDescendingTest() {
+    void whenFindAllBusinessesByNamesAndType_thenReturnAddressOrderedBusinessesAscendingTest() {
         // given
         int pageNo = 0;
         int pageSize = 10;
-        Sort sortBy = Sort.by(Sort.Order.desc("address.street_name").ignoreCase())
-                .and(Sort.by(Sort.Order.desc("address.suburb").ignoreCase()))
-                .and(Sort.by(Sort.Order.desc("address.city").ignoreCase()))
+        Sort sortBy = Sort.by(Sort.Order.asc("address.city").ignoreCase())
                 .and(Sort.by(Sort.Order.asc("address.region").ignoreCase()))
                 .and(Sort.by(Sort.Order.asc("address.country").ignoreCase()));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedAddress = new ArrayList<>();
+
+        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
+
+        // when
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);
+
+        // then
+        for (int i = 0; i < businessPage.getContent().size(); i++) {
+            assertThat(businessPage.getContent().get(i).getAddress().toOneLineString()).isEqualTo(orderedAddress.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findAllBusinessesByNames method will order businesses by address in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    void whenFindAllBusinessesByNames_thenReturnAddressOrderedBusinessesDescendingTest() {
+        // given
+        int pageNo = 0;
+        int pageSize = 10;
+        Sort sortBy = Sort.by(Sort.Order.desc("address.city").ignoreCase())
+                .and(Sort.by(Sort.Order.desc("address.region").ignoreCase()))
+                .and(Sort.by(Sort.Order.desc("address.country").ignoreCase()));
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
 
@@ -330,7 +406,7 @@ class BusinessSearchOrderByTests {
         orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
         orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
         orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
         orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
         orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
         orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
@@ -345,11 +421,39 @@ class BusinessSearchOrderByTests {
     }
 
     /**
-     * Tests that the search functionality will return paginated results correctly when the page is not full with
+     * Tests that the findAllBusinessesByNamesAndType method will order businesses by address in descending order i.e. in reverse alphabetical order.
+     */
+    @Test
+    void whenFindAllBusinessesByNamesAndType_thenReturnAddressOrderedBusinessesDescendingTest() {
+        // given
+        int pageNo = 0;
+        int pageSize = 10;
+        Sort sortBy = Sort.by(Sort.Order.desc("address.city").ignoreCase())
+                .and(Sort.by(Sort.Order.desc("address.region").ignoreCase()))
+                .and(Sort.by(Sort.Order.desc("address.country").ignoreCase()));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+        ArrayList<String> orderedAddress = new ArrayList<>();
+
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
+        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
+        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
+
+        // when
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);
+
+        // then
+        for (int i = 0; i < businessPage.getContent().size(); i++) {
+            assertThat(businessPage.getContent().get(i).getAddress().toOneLineString()).isEqualTo(orderedAddress.get(i));
+        }
+    }
+
+
+    /**
+     * Tests that the findAllBusinessesByNames method will return paginated results correctly when the page is not full with
      * businesses.
      */
     @Test
-    void whenFindAllBusinesses_thenReturnPageHalfFullTest() {
+    void whenFindAllBusinessesByNames_thenReturnPageHalfFullTest() {
         // given
         int pageNo = 0;
         // Page size 20 means page will be half full with the default 10 businesses inserted.
@@ -357,7 +461,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<Business> businessPage = businessRepository.findAll(pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         assertThat(businessPage.getTotalElements()).isEqualTo(10);
@@ -367,17 +471,40 @@ class BusinessSearchOrderByTests {
     }
 
     /**
-     * Tests that the search functionality will return an empty page when given a filter value
+     * Tests that the findAllBusinessesByNamesAndType method will return paginated results correctly when the page is not full with
+     * businesses.
+     */
+    @Test
+    void whenFindAllBusinessesByNamesAndType_thenReturnPageHalfFullTest() {
+        // given
+        int pageNo = 0;
+        // Page size 6 means page will be half full with 3 businesses inserted.
+        int pageSize = 6;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);
+
+        // then
+        assertThat(businessPage.getTotalElements()).isEqualTo(3);
+        for (int i = 0; i < 3; i++) {
+            assertThat(businessPage.getContent().get(i)).isEqualTo(searchBusinesses.get(i));
+        }
+    }
+
+    /**
+     * Tests that the findAllBusinessesByNames method will return an empty page when given a filter value
      * that does not match anything in the database.
      */
     @Test
-    void whenFindAllBusinessesByName_thenReturnEmptyPageTest() {
+    void whenFindAllBusinessesByNames_thenReturnEmptyPageTest() {
         // given
         int pageNo = 0;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-        List<String> names = Arrays.asList("ThisValueDoesNotExist");
+        List<String> names = new ArrayList<>();
+        names.add("ThisValueDoesNotExist");
 
         // when
         Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
@@ -388,18 +515,40 @@ class BusinessSearchOrderByTests {
     }
 
     /**
-     * Tests that the search functionality will return pages other than the first one with correct businesses.
+     * Tests that the findAllBusinessesByNamesAndType method will return an empty page when given a filter value
+     * that does not match anything in the database.
      */
     @Test
-    void whenFindAllBusinesses_thenReturnPagesFromTwoOnwardTest() {
+    void whenFindAllBusinessesByNamesAndType_thenReturnEmptyPageTest() {
+        // given
+        int pageNo = 0;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        List<String> names = new ArrayList<>();
+        names.add("ThisValueDoesNotExist");
+
+        // when
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);
+
+        // then
+        assertThat(businessPage.getTotalElements()).isZero();
+        assertThat(businessPage.getTotalPages()).isZero();
+    }
+
+    /**
+     * Tests that the findAllBusinessesByNames method will return pages other than the first one with correct businesses.
+     */
+    @Test
+    void whenFindAllBusinessesByNames_thenReturnPagesFromTwoOnwardTest() {
         // given
         int pageSize = 2;
 
         // when
-        Page<Business> businessPage2 = businessRepository.findAll(PageRequest.of(1, pageSize));
-        Page<Business> businessPage3 = businessRepository.findAll(PageRequest.of(2, pageSize));
-        Page<Business> businessPage4 = businessRepository.findAll(PageRequest.of(3, pageSize));
-        Page<Business> businessPage5 = businessRepository.findAll(PageRequest.of(4, pageSize));
+        Page<Business> businessPage2 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(1, pageSize));
+        Page<Business> businessPage3 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(2, pageSize));
+        Page<Business> businessPage4 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(3, pageSize));
+        Page<Business> businessPage5 = businessRepository.findAllBusinessesByNames(names, PageRequest.of(4, pageSize));
 
         // then
         assertThat(businessPage2.getTotalPages()).isEqualTo(5);
@@ -414,10 +563,10 @@ class BusinessSearchOrderByTests {
     }
 
     /**
-     * Tests that the search functionality will return the page correctly when the page is full.
+     * Tests that the findAllBusinessesByNames method will return the page correctly when the page is full.
      */
     @Test
-    void whenFindAllBusinessesByName_thenReturnFullPageTest() {
+    void whenFindAllBusinessesByNames_thenReturnFullPageTest() {
         // given
         int pageNo = 0;
         // Page size 8 means tested page will be full as there are 10 total values
@@ -425,7 +574,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<Business> businessPage = businessRepository.findAll(pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         assertThat(businessPage.getTotalPages()).isEqualTo(2);
@@ -436,12 +585,33 @@ class BusinessSearchOrderByTests {
     }
 
     /**
+     * Tests that the findAllBusinessesByNamesAndType method will return the page correctly when the page is full.
+     */
+    @Test
+    void whenFindAllBusinessesByNamesAndType_thenReturnFullPageTest() {
+        // given
+        int pageNo = 0;
+        // Page size 2 means tested page will be full as there are 3 total values
+        int pageSize = 2;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        // when
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);
+
+        // then
+        assertThat(businessPage.getTotalPages()).isEqualTo(2);
+        assertThat(businessPage.getSize()).isEqualTo(2);
+        assertThat(businessPage.getContent().get(0)).isEqualTo(searchBusinesses.get(0));
+        assertThat(businessPage.getContent().get(1)).isEqualTo(searchBusinesses.get(1));
+    }
+
+    /**
      * Tests that the search functionality ordering works across pages, not just within a single page.
      *  I.e. That data is ordered 'globally' from all results in the database,
      *      not just the few values that are returned are correctly ordered.
      */
     @Test
-    void whenFindAllBusinessesByName_thenReturnGloballyOrderedBusinessesTest() {
+    void whenFindAllBusinessesByNames_thenReturnGloballyOrderedBusinessesTest() {
         // given
         int pageNo = 1;
         int pageSize = 3;
@@ -449,7 +619,7 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Business> businessPage = businessRepository.findAll(pageable);
+        Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
 
         // then
         assertThat(businessPage.getTotalPages()).isEqualTo(4);
