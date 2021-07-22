@@ -214,7 +214,7 @@ export default {
      * */
     isTitleInvalid() {
       if (this.submitAttempted) {
-        if (this.title.length >= cardConfig.config.title.maxLength || this.title.length < cardConfig.config.title.minLength) {
+        if (this.title.length > cardConfig.config.title.maxLength || this.title.length < cardConfig.config.title.minLength) {
           this.formError.titleError = `The title must be between ${cardConfig.config.title.minLength} and ${cardConfig.config.title.maxLength} in length.`
           this.formErrorClasses.titleError = this.isInvalidClass;
           return true;
@@ -232,7 +232,7 @@ export default {
      * */
     isDescriptionInvalid() {
       if (this.submitAttempted) {
-        if (this.description.length >= cardConfig.config.description.maxLength || this.description.length < cardConfig.config.description.minLength) {
+        if (this.description.length > cardConfig.config.description.maxLength || this.description.length < cardConfig.config.description.minLength) {
           this.formError.descriptionError = `The description length must be between ${cardConfig.config.description.minLength} and ${cardConfig.config.description.maxLength} in length.`
           this.formErrorClasses.descriptionError = this.isInvalidClass;
           return true
