@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Modify inventory item step definitions class
  */
-public class ModifyInventoryItem {
+public class ModifyInventoryItemStepDefs {
 
     @Autowired
     private MockMvc mvc;
