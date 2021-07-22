@@ -498,7 +498,7 @@ export default {
             if (res.status === 201) {
               const businessId = res.data.businessId;
               if (businessId) {
-                Cookies.set('actAs', businessId);
+                Cookies.set('actAs', businessId, { sameSite:'strict'});
                 this.$router.push('/businessProfile/' + businessId);
               }
             }

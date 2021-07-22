@@ -635,8 +635,8 @@ export default {
      * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
      */
     logout() {
-      Cookies.remove('userID');
-      Cookies.remove('actAs');
+      Cookies.remove('userID', { sameSite: 'strict' });
+      Cookies.remove('actAs', { sameSite: 'strict' });
       Api.signOut().then(() => {
         this.$router.push({name: 'Login'})
       })

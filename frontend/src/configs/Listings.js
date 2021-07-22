@@ -12,7 +12,7 @@ export default class Listing{
         quantity: {
             name: "Quantity",
             minLength: 1,
-            maxLength: 3,
+            maxLength: 9,
             regex: /^[0-9]+$/,
             regexMessage: "Must only contain numbers",
         },
