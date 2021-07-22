@@ -1,7 +1,10 @@
 <template>
-  <div class="accordion" id="accordionExample" style="width: 500px">
-    <div v-if="allNoticeCards.length === 0">No notification!</div>
-    <div class="accordion-item"
+  <div class="accordion" id="notificationAccordion" style="width: 500px">
+    <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage">
+      <h2 class="card-body" style="margin: 3px;float: contour; text-align: center">No notification!</h2>
+    </div>
+    <div :id="'notification_box' + card.id"
+         class="accordion-item border-dark text-white bg-secondary"
          v-for="card in allNoticeCards"
          v-bind:key="card.id">
       <h2 class="accordion-header" :id="'heading_' + card.id">
@@ -15,7 +18,7 @@
         </button>
       </h2>
       <div :id="'collapse_' + card.id" class="accordion-collapse collapse" :aria-labelledby="'heading_' + card.id"
-           data-bs-parent="#accordionExample">
+           data-bs-parent="#notificationAccordion">
         <div class="accordion-body">
           <strong>More info and button here</strong>
         </div>
@@ -38,7 +41,6 @@ export default {
   props: {},
   methods: {
     populateNotification(data) {
-      console.log(data)
       data.forEach(notification => {
         this.allNoticeCards.push({id: notification.id, description: notification.description});
       })
