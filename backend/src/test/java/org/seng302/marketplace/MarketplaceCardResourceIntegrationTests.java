@@ -38,6 +38,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * MarketplaceCardResource test class
@@ -106,6 +108,7 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Before each create a user that will be used in all tests when creating cards.
+     *
      * @throws Exception thrown if there is an error when creating an address or user.
      */
     @BeforeEach
@@ -139,7 +142,7 @@ class MarketplaceCardResourceIntegrationTests {
 
         anotherUser = new User("Another",
                 "User",
-                "",
+                "Middle",
                 "AU",
                 "bio",
                 "anotheruser@example.com",
@@ -199,7 +202,7 @@ class MarketplaceCardResourceIntegrationTests {
                 anotherUser.getId(),
                 anotherUser,
                 Section.WANTED,
-                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                LocalDateTime.of(LocalDate.of(2022, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!"
         );
@@ -213,9 +216,12 @@ class MarketplaceCardResourceIntegrationTests {
                 .build();
     }
 
+    // -------------------------------------------- CREATE ONE NEW CARD ------------------------------------------------
+
     /**
      * Tests that a CREATED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains a card with valid data.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -246,6 +252,7 @@ class MarketplaceCardResourceIntegrationTests {
     /**
      * Tests that a BAD_REQUEST status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains a card that already exists for an existing creator ID.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -362,6 +369,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that an UNAUTHORIZED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID but with
      * an invalid UUID.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -392,6 +400,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that a FORBIDDEN status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID for another user but the current user
      * is not a GAA or DGAA.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -420,6 +429,7 @@ class MarketplaceCardResourceIntegrationTests {
      * Tests that a CREATED status is received when sending a marketplace card creation payload to the
      * /cards API endpoint that contains valid data and an existing creator ID for another user and the current user
      * is a GAA.
+     *
      * @throws Exception thrown if there is an error when creating a card.
      */
     @Test
@@ -444,6 +454,8 @@ class MarketplaceCardResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
+
+    // ------------------------------------------- GET ONE (by CARD ID) ------------------------------------------------
 
     /**
      * Tests that an OK status and a marketplace card is received when the card ID in the /cards/{id} API endpoint exists.
@@ -552,7 +564,7 @@ class MarketplaceCardResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
-    // ------------------- GET ALL (by SECTION) -------------------
+    // ------------------------------------------- GET ALL (by SECTION) ------------------------------------------------
 
     /**
      * Tests that an OK status and marketplace cards are received when the Section is valid.
@@ -811,4 +823,564 @@ class MarketplaceCardResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
+
+    // ---------------------------------------- DELETE ONE CARD (by CARD ID) -------------------------------------------
+
+    /**
+     * Test that the creator can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void canDeleteAExistCardWithCreatorCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that a GAA can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void canDeleteAExistCardWithGAACookie() throws Exception {
+        // given
+        anotherUser.setRole(Role.GLOBALAPPLICATIONADMIN);
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that the DGAA can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void canDeleteAExistCardWithDGAACookie() throws Exception {
+        // given
+        anotherUser.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that card will not been delete when no user login (no session token). Return UNAUTHORIZED (401).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void cantDeleteAExistCardWithNoCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Test that card will not been delete when current user (session token) is a USER and not the creator of this card.
+     * Return FORBIDDEN (403).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void cantDeleteAExistCardWithOtherUserCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that the creator can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void cantDeleteAExistCardWithCreatorCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that the creator can delete his card. Return OK (200).
+     *
+     * @throws Exception thrown if there is an error when creating a card.
+     */
+    @Test
+    void cantDeleteANotExistCardWithCreatorCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(delete(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    // --------------------------------------- GET ACTIVE CARDS (by USER ID) ------------------------------------------
+
+    /**
+     * Tests that the active cards from a given user can be retrieved with an OK response.
+     */
+    @Test
+    void canRetrieveUsersActiveCardsWhenUserExists() throws Exception {
+        // given
+        expectedJson = "[" + String.format(expectedCardJson, anotherMarketplaceCard.getId(), anotherUser.getId(),
+                anotherUser.getFirstName(), anotherUser.getLastName(), anotherUser.getMiddleName(),
+                anotherUser.getNickname(), anotherUser.getBio(), anotherUser.getEmail(), anotherUser.getCreated(),
+                anotherUser.getRole(), anotherUser.getHomeAddress().toSecureString(),
+                anotherMarketplaceCard.getSection().toString(), anotherMarketplaceCard.getCreated(),
+                anotherMarketplaceCard.getDisplayPeriodEnd(), anotherMarketplaceCard.getTitle(),
+                anotherMarketplaceCard.getDescription(), anotherMarketplaceCard.getKeywords()) + "]";
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorId(anotherUser.getId())).willReturn(
+                List.of(anotherMarketplaceCard)
+        );
+
+        // when
+        response = mvc.perform(get(String.format("/users/%d/cards", anotherUser.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that the active cards from a given user can be retrieved with an OK response and empty list returned due
+     * to cards no longer being active.
+     */
+    @Test
+    void canRetrieveUsersActiveCardsWhenUserExistsEmptyList() throws Exception {
+        // given
+        expectedJson = "[]";
+
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(
+                Optional.ofNullable(anotherUser)
+        );
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorId(user.getId())).willReturn(
+                List.of(marketplaceCard)
+        );
+
+        // when
+        response = mvc.perform(get(String.format("/users/%d/cards", user.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that the active cards from a given user can't be retrieved if the user doesn't exist with a NOT_ACCEPTABLE
+     * response.
+     */
+    @Test
+    void cantRetrieveUsersActiveCardsWhenUserDoesntExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorId(anotherUser.getId())).willReturn(
+                List.of(anotherMarketplaceCard)
+        );
+
+        // when
+        when(userRepository.findById(0)).thenReturn(Optional.empty());
+        response = mvc.perform(get(String.format("/users/%d/cards", 0))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that the active cards from a given user can't be retrieved if the current user doesn't exist with an
+     * UNAUTHORIZED response.
+     */
+    @Test
+    void cantRetrieveUsersActiveCardsWhenCurrentUserDoesntExists() throws Exception {
+        // given
+        given(userRepository.findById(anotherUser.getId())).willReturn(Optional.ofNullable(anotherUser));
+        given(marketplaceCardRepository.findMarketplaceCardByCreatorId(anotherUser.getId())).willReturn(
+                List.of(anotherMarketplaceCard)
+        );
+
+        // when
+        when(userRepository.findBySessionUUID("0")).thenReturn(Optional.empty());
+        response = mvc.perform(get(String.format("/users/%d/cards", 0))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    // ----------------- PUT ---------------------
+
+    /**
+     * Test user can edit their own card
+     * Return OK (200)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void canEditCardWithCreatorCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), "ForSale", marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(marketplaceCard.getSection()).isEqualTo(Section.FORSALE);
+    }
+
+    /**
+     * Test user can't enter bad data ~ Title too small
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_TitleTooSmall() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "", marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user can't enter bad data ~ Title too long
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_TitleTooLong() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(51), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user can't enter bad data ~ Description too long
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_DescriptionTooLong() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "d".repeat(301),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user can't enter bad data ~ Section is invalid
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_InvalidSection() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), "invalidsection", marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user includes all required fields ~ Title
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithMissingData_Title() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
+                "\"section\":\"%s\"," +
+                "\"description\":\"%s\"," +
+                "\"keywords\":%s}";
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getDescription(), "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user includes all required fields ~ Description
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithMissingData_Description() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
+                "\"section\":\"%s\"," +
+                "\"title\":\"%s\"," +
+                "\"keywords\":%s}";
+
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user includes all required fields ~ Section
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithMissingData_Section() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
+                "\"title\":\"%s\"," +
+                "\"description\":\"%s\"," +
+                "\"keywords\":%s}";
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "[]");
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test that the user cannot edit another users card
+     * Return FORBIDDEN (403)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditOtherUsersCard() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(anotherMarketplaceCard.getId())).willReturn(Optional.ofNullable(anotherMarketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, anotherMarketplaceCard.getCreatorId(), "ForSale", anotherMarketplaceCard.getTitle(), anotherMarketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", anotherMarketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that the user cannot change the owner of the card
+     * Return FORBIDDEN (403)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void CantChangeCardOwner() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, anotherUser.getId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that the DGAA can edit other users cards
+     * Return OK (200)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void DGAACanEditOtherUsersCard() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+        given(marketplaceCardRepository.findById(anotherMarketplaceCard.getId())).willReturn(Optional.ofNullable(anotherMarketplaceCard));
+
+        String updatedDescription = "New Description";
+
+        payloadJson = String.format(cardPayloadJson, anotherMarketplaceCard.getCreatorId(), anotherMarketplaceCard.getSection(), anotherMarketplaceCard.getTitle(), updatedDescription,
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", anotherMarketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(anotherMarketplaceCard.getDescription()).isEqualTo(updatedDescription);
+    }
+
+    /**
+     * Test the DGAA can change the card creator
+     * Return OK (200)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void DGAACanChangeCardCreator() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, anotherMarketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(marketplaceCard.getCreatorId()).isEqualTo(anotherMarketplaceCard.getCreatorId());
+    }
+
+    /**
+     * Test for when Payload is empty
+     * Returns BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void noPayloadIncludedInEdit() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

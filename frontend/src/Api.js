@@ -37,69 +37,6 @@ const instance = axios.create({
     timeout: 3000
 });
 
-
-export class InventoryItem {
-
-    // This is a config for the Inventory Item requirement details
-    static config = {
-        productId: {
-            name: "Product ID",
-            minLength: 3,
-            maxLength: 15,
-            regex: /^[A-Z0-9-]+$/,
-            regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
-        },
-        quantity: {
-            name: "Quantity",
-            minLength: 1,
-            maxLength: 12,
-            regex: /^[0-9]+$/,
-            regexMessage: "Must only contain numbers",
-        },
-        pricePerItem: {
-            name: "Price Per Item",
-            minLength: 0,
-            maxLength: 16,
-            regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
-            regexMessage: "Must be a positive double precision floating point number e.g 1.00"
-        },
-        totalPrice: {
-            name: "Total Price",
-            minLength: 0,
-            maxLength: 16,
-            regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
-            regexMessage: "Must be a positive double precision floating point number e.g 1.00"
-        },
-        manufactured: {
-            name: "manufactured"
-        },
-        sellBy: {
-            name: "Sell By"
-        },
-        bestBefore: {
-            name: "Best Before"
-        },
-        expires: {
-            name: "Expires",
-        },
-    };
-
-    constructor({productId, quantity, pricePerItem, totalPrice, manufactured, sellBy, bestBefore, expires}) {
-        this.data = {
-            productId,
-            quantity,
-            pricePerItem,
-            totalPrice,
-            manufactured,
-            sellBy,
-            bestBefore,
-            expires
-        }
-
-    }
-
-}
-
 export default {
 
     // Sends a post request to the backend with a new user object to store
@@ -127,8 +64,16 @@ export default {
         })
     },
 
+    // Sends a get request to the backend asking for a list of users which match the search criteria.
     searchUsers: (query, orderBy, page) => {
         return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}`, {
+            withCredentials: true
+        })
+    },
+
+    // Sends a GET request to the backend asking for any businesses matching the given criteria
+    searchBusinesses: (query, businessType, orderBy, page) => {
+        return instance.get(`/businesses/search?searchQuery=${query}&businessType=${businessType}&orderBy=${orderBy}&page=${page}`, {
             withCredentials: true
         })
     },
@@ -140,12 +85,14 @@ export default {
         withCredentials: true
     }),
 
+    // Sends a get request to the backend asking for a sorted list of products for a business
     sortProducts: (businessID, sortBy, page) => {
         return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },
 
+    // Sends a get request to the backend asking for a sorted list of inventory items for a business.
     sortInventoryItems: (id, sortBy, page) => {
         return instance.get(`/businesses/${id}/inventory?orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
@@ -168,12 +115,14 @@ export default {
         })
     },
 
+    // Sends a get request to the backend asking for the details of a business.
     getBusiness: (businessID) => {
         return instance.get(`/businesses/${businessID}`, {
             withCredentials: true
         })
     },
 
+    // Sends a put request to the backend to make a user an administrator of a business.
     makeAdministrator: (businessesId, userId) => {
         return instance.put(`/businesses/${businessesId}/makeAdministrator`, {
             userId
@@ -182,6 +131,7 @@ export default {
         })
     },
 
+    // Sends a put request to the backend to remove a user as an administrator of a business.
     removeAdministrator: (businessesId, userId) => {
         return instance.put(`/businesses/${businessesId}/removeAdministrator`, {
             userId
@@ -205,12 +155,14 @@ export default {
             withCredentials: true})
     },
 
+    // Sends a get request to the backend asking for a sorted list of listings belonging to a business.
     sortListings: (businessId, sortBy, page) => {
         return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
             withCredentials: true,
         })
     },
 
+    // Sends a post request to the backend with the details of a new inventory item.
     addNewInventoryItem: (id, inventoryItem) => {
         return instance.post(`/businesses/${id}/inventory/`, {
             ...inventoryItem.data
@@ -219,6 +171,7 @@ export default {
         })
     },
 
+    // Sends a post request to the backend with the details of a new listing.
     addNewBusinessListing: (businessId, listing) => {
         return instance.post(`/businesses/${businessId}/listings`, {
             ...listing.data
@@ -227,38 +180,58 @@ export default {
         })
     },
 
+    // Sends a get request to the backend to retrieve all inventory items for a businesses (no pagination or sorting).
     getEveryInventoryItem: (businessID) => {
         return instance.get(`/businesses/${businessID}/inventoryAll`, {
             withCredentials: true
         })
     },
 
+    // Sends a get request to the backend to retrieve all products for a businesses (no pagination or sorting).
     getEveryProduct: (businessID) => {
         return instance.get(`/businesses/${businessID}/productAll`, {
             withCredentials: true
         })
     },
-      modifyInventoryItem: (inventoryItemId, businessId, newInventoryItem) => {
-          return instance.put(`/businesses/${businessId}/inventory/${inventoryItemId}`, {...newInventoryItem.data}, {
-              withCredentials: true
-          })
-      },
 
+    // Sends a put request to the backend to update the details of an existing inventory item.
+    modifyInventoryItem: (inventoryItemId, businessId, newInventoryItem) => {
+        return instance.put(`/businesses/${businessId}/inventory/${inventoryItemId}`, {...newInventoryItem.data}, {
+              withCredentials: true
+        })
+    },
+
+    // Sends a get request to the backend to retrieve the specific details of a marketplace card.
     getDetailForACard: (id) => {
         return instance.get(`/cards/${id}`, {
             withCredentials: true
         })
     },
 
+    // Sends a get request to the backend to retrieve all marketplace cards (for a specific section, and paginated and sorted).
     getAllCards: (section, sortBy, page) => {
         return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },
 
-    /** Creates a new card given the newCard object. */
+    // Sends a post request to the backend containing the details of a new marketplace card.
     addNewCard: (newCard) => {
         return instance.post(`/cards`, newCard,{
+            withCredentials: true
+        })
+    },
+
+    // Sends a delete request to the backend to delete a marketplace card.
+    deleteACard: (id) => {
+        return instance.delete(`/cards/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    // Sends a get request to the backend to retrieve the marketplace cards created by a specific user.
+    getUsersCards: (userId) => {
+        return instance.get(`/users/${userId}/cards`, {
             withCredentials: true
         })
     }

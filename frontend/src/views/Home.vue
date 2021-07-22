@@ -92,8 +92,6 @@
 </template>
 
 <script>
-// import Api from '../Api';
-// import Cookies from 'js-cookie';
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar'
 

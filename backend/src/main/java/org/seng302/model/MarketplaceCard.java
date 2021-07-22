@@ -58,11 +58,11 @@ public class MarketplaceCard {
     private List<Keyword> keywords = new ArrayList<>();
 
     // Values needed for validation.
-    private static final Integer TITLE_MIN_LENGTH = 2;
-    private static final Integer TITLE_MAX_LENGTH = 70;
+    private static final Integer TITLE_MIN_LENGTH = 1;
+    private static final Integer TITLE_MAX_LENGTH = 50;
 
     private static final Integer DESCRIPTION_MIN_LENGTH = 0;
-    private static final Integer DESCRIPTION_MAX_LENGTH = 500;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 300;
 
     /**
      * Marketplace card constructor
@@ -93,7 +93,7 @@ public class MarketplaceCard {
         this.creator = creator;
         this.section = section;
         this.created = created;
-        this.displayPeriodEnd = created.plusWeeks(1);
+        this.displayPeriodEnd = created.plusWeeks(2);
         this.title = title;
         this.description = (description.equals("")) ? null : description;
     }
@@ -124,9 +124,7 @@ public class MarketplaceCard {
         return displayPeriodEnd;
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() { return title; }
 
     public String getDescription() {
         return description;
@@ -158,12 +156,30 @@ public class MarketplaceCard {
         this.displayPeriodEnd = displayPeriodEnd;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    /**
+     * Checks the title is valid and then sets it
+     * @param title title to be set
+     * @throws IllegalMarketplaceCardArgumentException if title is invalid
+     */
+    public void setTitle(String title) throws IllegalMarketplaceCardArgumentException {
+        if (isValidTitle(title)) {
+            this.title = title;
+        } else {
+            throw new IllegalMarketplaceCardArgumentException("Invalid Title");
+        }
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * Checks the description is valid and then sets it
+     * @param description description to be set
+     * @throws IllegalMarketplaceCardArgumentException if description is invalid
+     */
+    public void setDescription(String description) throws IllegalMarketplaceCardArgumentException {
+        if (isValidDescription(description)) {
+            this.description = description;
+        } else {
+            throw new IllegalMarketplaceCardArgumentException("Invalid Description");
+        }
     }
 
     /**
@@ -193,6 +209,15 @@ public class MarketplaceCard {
             if (keywords.get(i).getId() == keywordId){
                 this.keywords.remove(i);
             }
+        }
+    }
+
+    /**
+     * Removes all Keywords from the Marketplace Card
+     */
+    public void removeAllKeywords() {
+        while (0 > keywords.size()) {
+            this.keywords.remove(0);
         }
     }
 
@@ -268,10 +293,10 @@ public class MarketplaceCard {
     }
 
     /**
-     * Extends the display period of the marketplace card by one week.
+     * Extends the display period of the marketplace card by two weeks.
      */
     public void extendDisplayPeriod() {
-        this.displayPeriodEnd = displayPeriodEnd.plusWeeks(1);
+        this.displayPeriodEnd = displayPeriodEnd.plusWeeks(2);
     }
 
 }

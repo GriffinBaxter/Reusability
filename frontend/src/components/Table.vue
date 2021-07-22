@@ -332,7 +332,7 @@ export default {
         this.currentPage = this.currentPageOverride;
       }
 
-      if (this.totalPages > 0 && this.currentPage > this.totalPages){
+      if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
         this.$router.push({path: '/pageDoesNotExist'});
       }
 
@@ -363,7 +363,7 @@ export default {
       // Prases the raw stream of tabke data and converts it into lists of rows.
       for (let i = 0; i < numberOfDataPoints; i++) {
 
-        let dataPoint = this.nullStringValue ;
+        let dataPoint = this.nullStringValue;
 
         // If the value is accessable and not null we set the data point to the value. Otherwise to the nullTableValue.
         if (i < this.tableData.length) {

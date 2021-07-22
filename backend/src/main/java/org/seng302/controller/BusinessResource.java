@@ -11,6 +11,8 @@
 package org.seng302.controller;
 
 import org.seng302.Authorization;
+import org.seng302.utils.PaginationUtils;
+import org.seng302.utils.SearchUtils;
 import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.Address;
@@ -28,6 +30,11 @@ import org.seng302.view.outgoing.BusinessIdPayload;
 import org.seng302.view.outgoing.BusinessPayload;
 import org.seng302.view.incoming.BusinessRegistrationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +54,7 @@ import java.util.Optional;
  * GET "/businesses/{id}" endpoint used for retrieving a single business.
  * PUT "/businesses/{id}/makeAdministrator" endpoint for making a user an administrator of a business.
  * PUT "/businesses/{id}/revokeAdministrator" endpoint for removing a user as administrator of a business.
+ * GET "/businesses/search" endpoint used to retrieve business accounts based on search criteria.
  */
 @RestController
 public class BusinessResource {
@@ -347,4 +355,139 @@ public class BusinessResource {
         userRepository.flush();
         businessRepository.flush();
     }
+
+    /**
+     * Search for businesses by business name and/or business type.
+     * Returns paginated and ordered results based on input query params.
+     *
+     * @param sessionToken Session token used to authenticate user (is user logged in?).
+     * @param searchQuery Search query (the business name to search by).
+     * @param businessType Business type to search by.
+     * @param orderBy Column to order the results by.
+     * @param page Page number to return results from.
+     * @return A list of BusinessPayload objects matching the search query
+     *
+     * Preconditions:  sessionToken is of a valid user.
+     *                 page can be parsed as a positive integer (i.e. it is a string representation of a positive integer)
+     *                 orderBy is of one of the supported types ("nameASC", "nameDESC", "addressASC" or "addressDESC").
+     * Postconditions: A response entity containing a list of businesses matching the search criteria and response code
+     *                 are returned.
+     */
+    @GetMapping("/businesses/search")
+    public ResponseEntity<List<BusinessPayload>> searchBusinesses(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestParam(defaultValue = "") String searchQuery,
+            @RequestParam(defaultValue = "") String businessType,
+            @RequestParam(defaultValue = "nameASC") String orderBy,
+            @RequestParam(defaultValue = "0") String page
+    ) throws Exception {
+        logger.debug("Business search request received with search query {}, business type {}, order by {}, page {}",
+                searchQuery, businessType, orderBy, page);
+
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        int pageNo = PaginationUtils.parsePageNumber(page);
+
+        // Front-end displays 5 businesses per page
+        int pageSize = 5;
+
+        Sort sortBy;
+        // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
+        // Normally all upper case letters come before any lower case ones.
+        switch (orderBy) {
+            case "nameASC":
+                sortBy = Sort.by(Sort.Order.asc("name").ignoreCase());
+                break;
+            case "nameDESC":
+                sortBy = Sort.by(Sort.Order.desc("name").ignoreCase());
+                break;
+            case "addressASC":
+                sortBy = Sort.by(Sort.Order.asc("address.city").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("address.region").ignoreCase()))
+                        .and(Sort.by(Sort.Order.asc("address.country").ignoreCase()));
+                break;
+            case "addressDESC":
+                sortBy = Sort.by(Sort.Order.desc("address.city").ignoreCase())
+                        .and(Sort.by(Sort.Order.desc("address.region").ignoreCase()))
+                        .and(Sort.by(Sort.Order.desc("address.country").ignoreCase()));
+                break;
+            case "businessTypeASC":
+                sortBy = Sort.by(Sort.Order.asc("businessType").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                break;
+            case "businessTypeDESC":
+                sortBy = Sort.by(Sort.Order.desc("businessType").ignoreCase())
+                        .and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+                break;
+            default:
+                logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "OrderBy Field invalid"
+                );
+        }
+
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Page<Business> pagedResult = parseAndExecuteQuery(searchQuery, businessType, paging);
+
+        int totalPages = pagedResult.getTotalPages();
+        int totalRows = (int) pagedResult.getTotalElements();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
+
+        logger.info("Search Success - 200 [OK] -  Businesses retrieved for search query {}, business type {}, order by {}, page {}",
+                searchQuery, businessType, orderBy, pageNo);
+
+        logger.debug("Businesses Found: {}", pagedResult.toList());
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(BusinessPayload.toBusinessPayload(pagedResult.getContent()));
+    }
+
+    /**
+     * This method parses the search criteria and then calls the needed methods to execute the "query".
+     *
+     * @param searchQuery criteria to search for businesses (business name).
+     * @param businessType criteria to search for businesses using business type.
+     * @param paging information used to paginate the retrieved businesses.
+     * @return Page<Business> A page of businesses matching the search criteria.
+     *
+     * Preconditions:  A non-null string representing a name to be searched for (can be empty string)
+     *                 A non-null string representing a business type to be searched for (can be empty string)
+     * Postconditions: A page containing the results of the business search is returned.
+     */
+    private Page<Business> parseAndExecuteQuery(String searchQuery, String businessType, Pageable paging) {
+        BusinessType convertedBusinessType = toBusinessType(businessType);
+        if (searchQuery.equals("") && businessType.equals("")) return businessRepository.findAll(paging);
+        List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
+        if (businessType.equals("")) return businessRepository.findAllBusinessesByNames(names, paging);
+        if (searchQuery.equals("")) return businessRepository.findBusinessesByBusinessType(convertedBusinessType, paging);
+        return businessRepository.findAllBusinessesByNamesAndType(names, convertedBusinessType, paging);
+    }
+
+    /**
+     * Converts a string representation of business type to a enum representation (BusinessType). If the string does
+     * not represent a valid business type then null is returned.
+     * @param type A string representing business type.
+     * @return An enum representation of business type (null if string representation is not valid).
+     *
+     * Preconditions:  A string representation of a valid business type.
+     * Postconditions: An enum representation of business type.
+     */
+    private BusinessType toBusinessType(String type){
+        BusinessType businessType = null;
+        if (type.equalsIgnoreCase("ACCOMMODATION_AND_FOOD_SERVICES")){
+            businessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+        } else if (type.equalsIgnoreCase("RETAIL_TRADE")){
+            businessType = BusinessType.RETAIL_TRADE;
+        } else if (type.equalsIgnoreCase("CHARITABLE_ORGANISATION")){
+            businessType = BusinessType.CHARITABLE_ORGANISATION;
+        } else if (type.equalsIgnoreCase("NON_PROFIT_ORGANISATION")){
+            businessType = BusinessType.NON_PROFIT_ORGANISATION;
+        }
+        return businessType;
+    }
+
 }
