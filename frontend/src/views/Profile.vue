@@ -220,7 +220,7 @@
                     <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
                     <div v-else>
                       <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
-                           align="right" @click="pushToBusiness(business.id)">
+                           align="right" @click="redirectToBusiness(business.id)">
                         {{ business.name }}
                       </div>
                     </div>

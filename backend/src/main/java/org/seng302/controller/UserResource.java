@@ -15,6 +15,7 @@ import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
 import org.seng302.utils.PaginationUtils;
+import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.UserIdPayload;
 import org.seng302.view.incoming.UserLoginPayload;
 import org.seng302.view.incoming.UserRegistrationPayload;
@@ -328,48 +329,33 @@ public class UserResource {
         int pageSize = 5;
 
         Sort sortBy;
+        Sort sortByEmailASC = Sort.by(Sort.Order.asc("email").ignoreCase());
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
             case "fullNameASC":
-
-                sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-
+                sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(sortByEmailASC);
                 break;
             case "fullNameDESC":
-
-                sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-
+                sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(sortByEmailASC);
                 break;
             case "nicknameASC":
-
-                sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-
+                sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(sortByEmailASC);
                 break;
             case "nicknameDESC":
-
-                sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-
+                sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(sortByEmailASC);
                 break;
             case "emailASC":
-
-                sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
-
+                sortBy = sortByEmailASC;
                 break;
             case "emailDESC":
-
                 sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
-
                 break;
             case "addressASC":
-
-                sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
-
+                sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(sortByEmailASC));
                 break;
             case "addressDESC":
-
-                sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
-
+                sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(sortByEmailASC));
                 break;
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
@@ -381,7 +367,7 @@ public class UserResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<User> pagedResult = userRepository.findAllUsersByNames(searchQuery, paging);
+        Page<User> pagedResult = parseAndExecuteQuery(searchQuery, paging);
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
@@ -396,6 +382,22 @@ public class UserResource {
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
+    }
+
+    /**
+     * This method parses the search criteria and then calls the needed methods to execute the "query".
+     *
+     * @param searchQuery criteria to search for users (user's nickname, first name, middle name, last name or full name).
+     * @param paging information used to paginate the retrieved users.
+     * @return Page<User> A page of users matching the search criteria.
+     *
+     * Preconditions:  A non-null string representing a search query that can contain several names to be searched for (can be empty string)
+     * Postconditions: A page containing the results of the user search is returned.
+     */
+    private Page<User> parseAndExecuteQuery(String searchQuery, Pageable paging) {
+        if (searchQuery.equals("")) return userRepository.findAll(paging); // All users should be returned.
+        List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
+        return userRepository.findAllUsersByNames(names, paging);
     }
 
     /**

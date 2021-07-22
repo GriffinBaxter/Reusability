@@ -1,20 +1,22 @@
 package org.seng302.model.repository;
 
 import org.seng302.model.Business;
+import org.seng302.model.User;
 import org.seng302.model.enums.BusinessType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.query.QueryUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
 
-    @PersistenceContext
+    @Autowired
     private EntityManager entityManager;
 
     /**
@@ -46,11 +48,25 @@ public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(namePath), "%" + name.toUpperCase() + "%"));
             }
         }
-        query.select(business)
-                .where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
+        // the where clause of the query
+        query.where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
-        List<Business> businesses = entityManager.createQuery(query).getResultList();
-        return new PageImpl<>(businesses, pageable, businesses.size());
+        // the order by clause of the query
+        query.orderBy(QueryUtils.toOrders(pageable.getSort(), business, criteriaBuilder));
+
+        // this query fetches the businesses as per the page limit
+        List<Business> businesses = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
+
+        // create a count query used to display "Showing 1-5 of x results"
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Business> businessRootCount = countQuery.from(Business.class);
+        countQuery.select(criteriaBuilder.count(businessRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
+
+        // fetches the count of all businesses as per given criteria
+        Long count = entityManager.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(businesses, pageable, count);
+
     }
 
     /**
@@ -85,13 +101,26 @@ public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
             }
         }
 
-        Predicate predicateForBusinessType
-                = criteriaBuilder.equal(business.get("businessType"), businessType);
+        // where businessType = type
+        Predicate predicateForBusinessType = criteriaBuilder.equal(business.get("businessType"), businessType);
 
-        query.select(business)
-                .where(criteriaBuilder.and(predicateForBusinessType, criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()]))));
+        // the rest of the where clause (names)
+        query.where(criteriaBuilder.and(predicateForBusinessType, criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()]))));
 
-        List<Business> businesses = entityManager.createQuery(query).getResultList();
-        return new PageImpl<>(businesses, pageable, businesses.size());
+        // the order by clause of the query
+        query.orderBy(QueryUtils.toOrders(pageable.getSort(), business, criteriaBuilder));
+
+        // this query fetches the businesses as per the page limit
+        List<Business> businesses = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
+
+        // create a count query used to display "Showing 1-5 of x results"
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Business> businessRootCount = countQuery.from(Business.class);
+        countQuery.select(criteriaBuilder.count(businessRootCount)).where(criteriaBuilder.and(predicateForBusinessType, criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()]))));
+
+        // fetches the count of all businesses as per given criteria
+        Long count = entityManager.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(businesses, pageable, count);
     }
 }
