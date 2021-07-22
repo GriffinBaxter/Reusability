@@ -1,0 +1,175 @@
+{
+	"info": {
+		"_postman_id": "c94737ed-fabb-4494-ae20-389aa56b87a3",
+		"name": "Test /users/search endpoint",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login as User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"email@email.com\",\r\n    \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve All Users (Page 1) Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/users/search?searchQuery&orderBy=fullNameASC&page=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": null
+						},
+						{
+							"key": "orderBy",
+							"value": "fullNameASC"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Simple Search Query Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/users/search?searchQuery=Johnny",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "Johnny"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Complex Search Query Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/users/search?searchQuery=John or Alex and Joe",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "John or Alex and Joe"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Another Complex Search Query Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/users/search?searchQuery=alex OR john AND DOE",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "alex OR john AND DOE"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Exact Match Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/users/search?searchQuery=\"Alex Joe Doe\"",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"search"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "\"Alex Joe Doe\""
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

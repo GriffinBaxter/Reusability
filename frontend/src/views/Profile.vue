@@ -18,13 +18,11 @@
       <!-- Edit Modal for editing your own cards -->
       <EditCardModal ref="editCardModal"></EditCardModal>
 
-    <!--profile header, contains user search bar-->
-    <div id="profile-header-div">
-      <ProfileHeader/>
-    </div>
-
     <!--profile container-->
     <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
+
+      <!--profile header, contains user search bar-->
+      <ProfileHeader id="profile-header"/>
 
       <div class="row">
 
@@ -225,7 +223,7 @@
                     <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
                     <div v-else>
                       <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
-                           align="right" @click="pushToBusiness(business.id)">
+                           align="right" @click="redirectToBusiness(business.id)">
                         {{ business.name }}
                       </div>
                     </div>
