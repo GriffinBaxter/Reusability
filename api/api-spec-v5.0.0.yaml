@@ -996,6 +996,10 @@ paths:
             * addressASC: alphabetically by address, A - Z
 
             * addressDESC: alphabetically by address, Z - A
+
+            * businessTypeASC: alphabetically by business type, A - Z
+
+            * businessTypeDESC: alphabetically by business type, Z - A
         - in: query
           name: page
           schema:
