@@ -17,7 +17,7 @@ with open('product_data.csv') as input_file:
     i = 1;
     while i <= 1000:
         if i < 900:
-            num_of_products = random.randint(1, 2)
+            num_of_products = 1
         elif i < 995:
             num_of_products = random.randint(2, 3)
         elif i == 1000:
@@ -38,15 +38,20 @@ with open('product_data.csv') as input_file:
             manufacturer = manufacturers[random.randint(0, len(manufacturers) - 1)]
             recommended_price = random.uniform(10.00, 50.00)
             quantity = random.randint(1, 100)
+            listing_quantity = random.randint(1, quantity)
             total_price = recommended_price * quantity
+            listing_price = recommended_price * listing_quantity
+            more_info = ['Willing to accept lower offers.', 'No low ballers.', 'Fresh', 'Limited Stock.', 'Selling quick.', 'Limited Edition'][random.randint(0, 5)]
             
             sql.append("INSERT INTO product (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (" + str(i) + ", '" + 
                        prod_id + "', DATE'2021-05-12', '" + description + "', '" + manufacturer.replace("'", "''") + "', '" + name.replace("'", "''") + "', " + str("%.2f" % round(recommended_price ,2)) + ");")
             
             sql.append("INSERT INTO inventory_item (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (" + "DATE'2022-05-12', " + str(i) + ", DATE'2023-05-12', " + "DATE'2020-05-12', " + str("%.2f" % round(recommended_price ,2)) + ", '" +
                        prod_id + "', " + str(quantity) + ", DATE'2022-10-12', " + str("%.2f" % round(total_price ,2)) + ");")
+            
+            sql.append("INSERT INTO listing (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (" + "DATE'2022-05-12', " + "DATE'2022-05-12', '" + more_info + "', " + str("%.2f" % round(listing_price ,2)) + ", " + str(listing_quantity) + ", " + str(i) + ", " + str(i) + ");")            
             j += 1
         i += 1
-    with open('products_inventoryitems.sql', "w") as output_file:
+    with open('products_inventoryitems_listings.sql', "w") as output_file:
         output_file.write('\n'.join(sql))
 print("Done")
