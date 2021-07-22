@@ -13,6 +13,7 @@ import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.view.incoming.MarketplaceCardCreationPayload;
+import org.seng302.view.incoming.MarketplaceCardUpdatePayload;
 import org.seng302.view.outgoing.MarketplaceCardIdPayload;
 import org.seng302.view.outgoing.MarketplaceCardPayload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import java.time.LocalDateTime;
  * The GET /cards/id endpoint is used to retrieve the details for a single card.
  * The GET /users/{id}/cards endpoint is used to retrieve all active cards from a given user by ID.
  * The PUT /cards/{id}/extenddisplayperiod endpoint is used to extend the display period of a card nearing expiry.
+ * The PUT /cards/{id} endpoint is used to edit existing cards
  */
 @RestController
 public class MarketplaceCardResource {
@@ -158,6 +160,123 @@ public class MarketplaceCardResource {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "User does not have the permission to create this card."
+            );
+        }
+    }
+
+    /**
+     * PUT endpoint for editing Marketplace Cards
+     * The response status and reason is returned for the corresponding scenario.
+     *
+     * @param sessionToken Session token of user
+     * @param updatedCardPayload Payload for the edited card
+     * @param id id of the card to be edited
+     * @return ResponseEntity with the corresponding status code and message
+     *
+     * Preconditions:  id is a positive integer that represents the id of an existing marketplace card.
+     *                 updatedCardPayload is a non-null JSON representation of a marketplace card.
+     * Postconditions: An updated marketplace card with the values of updatedCardPayload.
+     *                 A 200 status code is returned.
+     */
+    @PutMapping("/cards/{id}")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Card updated successfully")
+    public void editCard(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestBody(required = false) MarketplaceCardUpdatePayload updatedCardPayload,
+            @PathVariable Integer id
+    ) {
+        logger.debug("Edit card payload received: {}", updatedCardPayload);
+
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // Check to see if card exists.
+        Optional<MarketplaceCard> storedCard = marketplaceCardRepository.findById(id);
+
+        if (storedCard.isEmpty()) {
+            logger.error("Card at ID: {} does not exist", id);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Card doesn't exist"
+            );
+        }
+
+        // If user is GAA, DGAA or the user is also the creator then a card can be updated.
+        // Otherwise the user is forbidden from updating the card.
+        if (Authorization.isGAAorDGAA(currentUser) || currentUser.getId() == storedCard.get().getCreatorId()) {
+
+            // Verify there is a payload. Otherwise we are wasting processing time.
+            if (updatedCardPayload == null) {
+                logger.error("Card Modify Failure - 400 [BAD REQUEST] - Payload is empty.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload is missing and must be provided.");
+            }
+
+            // Checks keyword IDs exist
+            for (Integer keyword : updatedCardPayload.getKeywords()) {
+                if (keywordRepository.findById(keyword).isEmpty()) {
+                    logger.error("Keyword ID: {} not found", keyword);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keyword ID not found");
+                }
+            }
+
+            // Checks ID was sent
+            if (updatedCardPayload.getCreatorId() != null) {
+                // Checks if the ID's match
+                if (updatedCardPayload.getCreatorId() != storedCard.get().getCreatorId()) {
+                    if (!Authorization.isGAAorDGAA(currentUser)) {
+                        logger.error("User doesn't have permission to set creator to a different user");
+                        throw new ResponseStatusException(
+                                HttpStatus.FORBIDDEN,
+                                "User doesn't have permission to set creator to a different user"
+                        );
+                    }
+                }
+            } else {
+                // sets Id to stored Id
+                updatedCardPayload.setCreatorId(storedCard.get().getCreatorId());
+            }
+
+            // Checks if title was sent
+            if (updatedCardPayload.getTitle() == null){
+                logger.error("Card Update Failure - 400 [BAD_REQUEST] - Title was not included");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title was not included");
+            }
+
+            // Checks if description was sent
+            if (updatedCardPayload.getDescription() == null) {
+                logger.error("Card Update Failure - 400 [BAD_REQUEST] - Description was not included");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description was not included");
+            }
+
+            // Checks if section was sent and is valid
+            if (updatedCardPayload.getSection() == null) {
+                logger.error("Card Update Failure - 400 [BAD_REQUEST] - Section was not included or invalid");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Section was not included or invalid");
+            }
+
+            try {
+                // Set changes
+                storedCard.get().setCreatorId(updatedCardPayload.getCreatorId());
+                storedCard.get().setTitle(updatedCardPayload.getTitle());
+                storedCard.get().setDescription(updatedCardPayload.getDescription());
+                storedCard.get().setSection(updatedCardPayload.getSection());
+                storedCard.get().removeAllKeywords();
+                for (Integer keyword : updatedCardPayload.getKeywords()) {
+                    storedCard.get().addKeyword(keywordRepository.findById(keyword).get());
+                }
+                marketplaceCardRepository.saveAndFlush(storedCard.get());
+
+            } catch (IllegalMarketplaceCardArgumentException e) {
+                logger.error("Card Update Failure - 400 [BAD_REQUEST] - {}", e.getMessage());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            }
+
+            logger.info("Card Update Success - 200 [OK] - Successfully updated Card: {}", id);
+
+        } else {
+            logger.error("User with ID: {} does no have permission to update this card.", currentUser.getId());
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User does not have the permission to update this card."
             );
         }
     }
