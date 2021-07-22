@@ -155,8 +155,6 @@ export default {
      * @param {businessType} The type of business the user would like to search for
      */
     async requestBusinesses(inputQuery, businessType) {
-      this.tableData = [];
-
       this.searchType = 'Business';
       this.tableHeaders = this.businessHeaders;
       this.tableOrderByHeaders = this.orderByBusinessHeaders;
@@ -256,8 +254,6 @@ export default {
      * @param {inputQuery} The query received from the search bar
      */
     async requestUsers(inputQuery) {
-      this.tableData = [];
-
       this.searchType = 'User';
       this.tableHeaders = this.userHeaders;
       this.tableOrderByHeaders = this.orderByUserHeaders;
