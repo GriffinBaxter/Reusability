@@ -782,7 +782,404 @@ describe("Testing required fields", () => {
 
         // Attempt to create the card.
         await createCardWrapper.vm.createNewCard();
+        expect(createCardWrapper.vm.creatorId).toBe(36);
         expect(Api.addNewCard).toBeCalledTimes(1);
     })
+
+    describe("Assorted method tests", () => {
+
+        test("Testing isCreatorIdInvalid method when there is no UserID cookie", async () => {
+            let $router = {
+                push: jest.fn()
+            };
+
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {
+                mocks: {
+                    $router
+                }
+            });
+
+            createCardModalWrapper.vm.submitAttempted = true;
+
+            Cookies.get.mockReturnValue("");
+
+            Api.signOut.mockImplementation( () => Promise.resolve() );
+
+            let returned = await createCardModalWrapper.vm.isCreatorIdInvalid();
+
+            expect(returned).toBeTruthy();
+            expect($router.push).toHaveBeenCalledWith({"name": "Login"});
+        });
+
+        test("Testing isCreatorIdInvalid method when the user is an admin and the creator ID is empty", async () => {
+            let $router = {
+                push: jest.fn()
+            };
+
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {
+                mocks: {
+                    $router
+                }
+            });
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.userRole = UserRole.GLOBALAPPLICATIONADMIN;
+            createCardModalWrapper.vm.creatorId = "";
+
+            let returned = await createCardModalWrapper.vm.isCreatorIdInvalid();
+
+            expect(returned).toBeTruthy();
+            expect(createCardModalWrapper.vm.formErrorClasses.creatorIdError).toBe("is-invalid");
+            expect(createCardModalWrapper.vm.formError.creatorIdError).toBe("This field is required.");
+            expect($router.push).toHaveBeenCalledTimes(0);
+        });
+
+        test("Testing isCardDataValid method when all data is valid except for user ID", async () => {
+            let $router = {
+                push: jest.fn()
+            };
+
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {
+                mocks: {
+                    $router
+                }
+            });
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.sectionSelected = 'ForSale';
+            createCardModalWrapper.vm.title = 'Card';
+            createCardModalWrapper.vm.description = 'Desc';
+
+            Cookies.get.mockReturnValue("");
+
+            Api.signOut.mockImplementation( () => Promise.resolve() );
+
+            let returned = await createCardModalWrapper.vm.isCardDataValid();
+
+            expect(returned).toBeFalsy();
+        });
+
+        test("Testing createNewCard when 201 response is received from Api", async () => {
+            let $router = {
+                go: jest.fn()
+            };
+
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {
+                mocks: {
+                    $router
+                }
+            });
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.sectionSelected = 'ForSale';
+            createCardModalWrapper.vm.title = 'Card';
+            createCardModalWrapper.vm.description = 'Desc';
+
+            Cookies.get.mockReturnValue(36);
+
+            let mockResponse = {
+                status: 201
+            }
+
+            Api.addNewCard.mockImplementation( () => Promise.resolve(mockResponse) );
+
+            await createCardModalWrapper.vm.createNewCard();
+
+            expect(createCardModalWrapper.emitted("new-card-created")).toBeTruthy();
+        });
+
+        test("Testing createNewCard when a 400 response is received from Api", async () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.sectionSelected = 'ForSale';
+            createCardModalWrapper.vm.title = 'Card';
+            createCardModalWrapper.vm.description = 'Desc';
+
+            Cookies.get.mockReturnValue(36);
+
+            let mockResponse = {
+                response: {
+                    status: 400,
+                    data: {
+                        message: "test"
+                    }
+                }
+            }
+
+            Api.addNewCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.createNewCard();
+            await createCardModalWrapper.vm.$nextTick();
+
+            expect(createCardModalWrapper.vm.modalError).toBe('Error: test');
+        });
+
+        test("Testing createNewCard when a 401 response is received from Api", async () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.sectionSelected = 'ForSale';
+            createCardModalWrapper.vm.title = 'Card';
+            createCardModalWrapper.vm.description = 'Desc';
+
+            Cookies.get.mockReturnValue(36);
+
+            let mockResponse = {
+                response: {
+                    status: 401,
+                    data: {
+                        message: "test"
+                    }
+                }
+            };
+
+            Api.addNewCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.createNewCard();
+            await createCardModalWrapper.vm.$nextTick();
+
+            expect(createCardModalWrapper.vm.modalError).toBe('401: Access token missing');
+        });
+
+        test("Testing createNewCard when a 403 response is received from Api", async () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.sectionSelected = 'ForSale';
+            createCardModalWrapper.vm.title = 'Card';
+            createCardModalWrapper.vm.description = 'Desc';
+
+            Cookies.get.mockReturnValue(36);
+
+            let mockResponse = {
+                response: {
+                    status: 403,
+                    data: {
+                        message: "test"
+                    }
+                }
+            };
+
+            Api.addNewCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.createNewCard();
+            await createCardModalWrapper.vm.$nextTick();
+
+            expect(createCardModalWrapper.vm.modalError).toBe('403: Cannot create card for another user if not GAA or DGAA.');
+        });
+
+        test("Testing createNewCard when a different error response is received from Api", async () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.sectionSelected = 'ForSale';
+            createCardModalWrapper.vm.title = 'Card';
+            createCardModalWrapper.vm.description = 'Desc';
+
+            Cookies.get.mockReturnValue(36);
+
+            let mockResponse = {
+                response: {
+                    status: 404,
+                    data: {
+                        message: "test"
+                    }
+                }
+            };
+
+            Api.addNewCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.createNewCard();
+            await createCardModalWrapper.vm.$nextTick();
+
+            expect(createCardModalWrapper.vm.modalError).toBe('404: SOMETHING WENT WRONG');
+        });
+
+        test("Testing createNewCard when an error request is received from Api", async () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.sectionSelected = 'ForSale';
+            createCardModalWrapper.vm.title = 'Card';
+            createCardModalWrapper.vm.description = 'Desc';
+
+            Cookies.get.mockReturnValue(36);
+
+            let mockResponse = {
+                request: {
+                }
+            };
+
+            Api.addNewCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.createNewCard();
+            await createCardModalWrapper.vm.$nextTick();
+
+            expect(createCardModalWrapper.vm.modalError).toBe('Server Timeout');
+        });
+
+        test("Testing createNewCard when a different error is received from Api", async () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            createCardModalWrapper.vm.submitAttempted = true;
+            createCardModalWrapper.vm.sectionSelected = 'ForSale';
+            createCardModalWrapper.vm.title = 'Card';
+            createCardModalWrapper.vm.description = 'Desc';
+
+            Cookies.get.mockReturnValue(36);
+
+            let mockResponse = {};
+
+            Api.addNewCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.createNewCard();
+            await createCardModalWrapper.vm.$nextTick();
+
+            expect(createCardModalWrapper.vm.modalError).toBe('Unexpected error occurred.');
+        });
+
+        test("Testing addKeywordPrefix when the keyword isn't a string", () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            try {
+                createCardModalWrapper.vm.addKeywordPrefix(2);
+            } catch (error) {
+                expect(error.message).toBe("keyword must be string!")
+            }
+        });
+
+        test("Testing enforceKeywordMaxLength when the keyword isn't a string", () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            try {
+                createCardModalWrapper.vm.enforceKeywordMaxLength(2);
+            } catch (error) {
+                expect(error.message).toBe("keyword must be string!")
+            }
+        });
+
+        test("Testing convertSection when the section is WANTED", () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            createCardModalWrapper.vm.convertSection('WANTED');
+
+            expect(createCardModalWrapper.vm.sectionSelected).toBe('Wanted');
+        });
+
+        test("Testing convertSection when the section is EXCHANGE", () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+            createCardModalWrapper.vm.convertSection('EXCHANGE');
+
+            expect(createCardModalWrapper.vm.sectionSelected).toBe('Exchange');
+        });
+
+        test("Testing getCurrentData when a 400 response is received from Api", async () => {
+            let $router = {
+                push: jest.fn()
+            };
+
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {
+                mocks: {
+                    $router
+                }
+            });
+
+            let mockResponse = {
+                response: {
+                    status: 400
+                }
+            };
+
+            Api.getDetailForACard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.getCurrentData();
+
+            expect($router.push).toHaveBeenCalledWith({"path": "/pageDoesNotExist"});
+        });
+
+        test("Testing getCurrentData when a 401 response is received from Api", async () => {
+            let $router = {
+                push: jest.fn()
+            };
+
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {
+                mocks: {
+                    $router
+                }
+            });
+
+            let mockResponse = {
+                response: {
+                    status: 401
+                }
+            };
+
+            Api.getDetailForACard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.getCurrentData();
+
+            expect($router.push).toHaveBeenCalledWith({"path": "/invalidtoken"});
+        });
+
+        test("Testing getCurrentData when a 406 response is received from Api", async () => {
+            let $router = {
+                push: jest.fn()
+            };
+
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {
+                mocks: {
+                    $router
+                }
+            });
+
+            let mockResponse = {
+                response: {
+                    status: 406
+                }
+            };
+
+            Api.getDetailForACard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.getCurrentData();
+
+            expect($router.push).toHaveBeenCalledWith({"path": "/noCard"});
+        });
+
+        test("Testing getCurrentData when another error is received from Api", async () => {
+            let $router = {
+                push: jest.fn()
+            };
+
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {
+                mocks: {
+                    $router
+                }
+            });
+
+            let mockResponse = {};
+
+            Api.getDetailForACard.mockImplementation( () => Promise.reject(mockResponse) );
+
+            await createCardModalWrapper.vm.getCurrentData();
+
+            expect($router.push).toHaveBeenCalledWith({"path": "/noCard"});
+        });
+
+        test("Testing resetData", () => {
+            let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+            let resetErrorsSpy = jest.spyOn(EditCreateCardModal.methods, 'resetErrors');
+
+            createCardModalWrapper.vm.resetData();
+
+            expect(createCardModalWrapper.vm.id).toBeNull();
+            expect(createCardModalWrapper.vm.submitAttempted).toBeFalsy();
+            expect(createCardModalWrapper.vm.description).toBe("");
+            expect(createCardModalWrapper.vm.title).toBe("");
+            expect(createCardModalWrapper.vm.sectionSelected).toBe("");
+            expect(createCardModalWrapper.vm.keywordsInput).toBe("");
+        });
+    });
 
 })

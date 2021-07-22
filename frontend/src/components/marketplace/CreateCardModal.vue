@@ -30,7 +30,7 @@
 
 <script>
 import {Modal} from 'bootstrap';
-import EditCreateCardModal from "./marketplace/EditCreateCards";
+import EditCreateCardModal from "./EditCreateCards";
 
 export default {
   name: "CreateCardModal",
