@@ -15,7 +15,6 @@ import Cookies from "js-cookie"
 let wrapper;
 
 jest.mock("../src/Api");
-// jest.mock("js-cookie", () => ({get: () => 1}));
 jest.mock("js-cookie");
 
 
