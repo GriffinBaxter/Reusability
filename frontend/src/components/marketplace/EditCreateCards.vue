@@ -497,6 +497,13 @@ export default {
 
     },
     /**
+     * Performs an API call to the backend to edit the current card.
+     * @param event {Event} The click event on the save button.
+     * */
+    editCurrentCard() {
+      console.log('test')
+    },
+    /**
      * Takes a string and adds the keyword prefix symbol to the front of the string.
      *  @param keyword {string} The keyword string
      *
@@ -566,9 +573,9 @@ export default {
     },
     /**
      * Performs actions after a key has been released, relating to arrow key navigation inside the keyword text-box.
-     * This sets up the list of keywords for autocompletion and also the dismissal of the list after using a keyword 
+     * This sets up the list of keywords for autocompletion and also the dismissal of the list after using a keyword
      * suggestion, if there is no match, or if a click has been registered outside the text-box.
-     */ 
+     */
     updateCursorPosition() {
       this.textCursorPosition = document.getElementById('card-keywords').selectionStart;
       this.currentKeyword = "";
@@ -598,7 +605,7 @@ export default {
               autocompleteKeywords.push(response.data[i]);
             }
           }
-          
+
           this.autocompleteKeywords = autocompleteKeywords;
         })
       }
@@ -858,7 +865,7 @@ strong.keywordHighlight {
 
   https://24ways.org/2019/making-a-better-custom-select-element/
 *********************************************************************/
-  
+
   #autofill-container {
     position: relative;
   }
@@ -866,7 +873,7 @@ strong.keywordHighlight {
   #card-keywords::-ms-expand {
     display: none;
   }
-  
+
   .autofill-options {
     border: 1px solid lightgray;
     border-radius: 0 0 0.25em 0.25em;

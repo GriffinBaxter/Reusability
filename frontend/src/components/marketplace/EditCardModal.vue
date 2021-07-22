@@ -15,7 +15,7 @@
 
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button id="edit-card-button" type="button" class="btn green-button order-1" >Save</button>
+            <button id="edit-card-button" type="button" class="btn green-button order-1" @click="editCurrentCard" >Save</button>
             <button type="button" class="btn btn-secondary order-0" data-bs-dismiss="modal">Cancel</button>
           </div>
         </div>
@@ -44,6 +44,10 @@ export default {
     },
     hideModal() {
       this.modal.hide();
+    },
+    editCurrentCard(event) {
+      event.preventDefault()
+      this.$refs.editCreateModal.editCurrentCard();
     }
   },
   mounted() {
