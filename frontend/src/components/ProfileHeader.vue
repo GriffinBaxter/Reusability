@@ -103,7 +103,6 @@ export default {
 
 <style scoped>
 
-/*TODO consider putting in style.css*/
 #search-bar:focus {
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */

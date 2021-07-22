@@ -1,0 +1,248 @@
+{
+	"info": {
+		"_postman_id": "fd303565-ff6a-4fd1-b3a2-c5658e84bd10",
+		"name": "Delete Keywords",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "13f62a0b-34ec-492b-a095-f8c4aee37c1c",
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"emailUSER@email.com\",\n  \"password\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create keyword",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "99565396-5e9d-40a8-a6af-ab41c5969baa",
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"keywordId\", jsonData[\"keywordId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"TestKey\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/keywords",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"keywords"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Create card with Keyword (POST /cards)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b87c1fac-5d12-46d8-bf4c-245b58ba4a5f",
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"cardId\", jsonData[\"cardId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"creatorId\": {{userId}},\r\n  \"section\": \"ForSale\",\r\n  \"title\": \"1982 Lada Sama\",\r\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.\",\r\n  \"keywords\": [\"TestKey\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/cards",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"cards"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4 & 7. Get Card (GET /cards/{id})",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9499/cards/{{cardId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"cards",
+						"{{cardId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Delete Keyword",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/keywords/{{keywordId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"keywords",
+						"{{keywordId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. DGAA login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "13f62a0b-34ec-492b-a095-f8c4aee37c1c",
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"email@email.com\",\n  \"password\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"id": "4ebd6000-0624-4373-86bd-c48c5e6cd385",
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "39970322-7fd9-412d-b5a4-df491e2f7b6e",
+			"key": "keywordId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "c4dd5b29-889b-4701-b8fe-3ce41331f792",
+			"key": "cardId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -234,6 +234,13 @@ export default {
         return instance.get(`/users/${userId}/cards`, {
             withCredentials: true
         })
+    },
+    
+    // Sends a get request to the backend to search for keywords by partial (or complete) name.
+    searchKeywords: (searchQuery) => {
+        return instance.get(`/keywords/search?searchQuery=${searchQuery}`, {
+            withCredentials: true
+        })
     }
 
 }
