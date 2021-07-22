@@ -15,13 +15,11 @@
       <CardDetail v-bind:id="selectedCard"
                   v-bind:section="cardSection"/>
 
-    <!--profile header, contains user search bar-->
-    <div id="profile-header-div">
-      <ProfileHeader/>
-    </div>
-
     <!--profile container-->
     <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
+
+      <!--profile header, contains user search bar-->
+      <ProfileHeader id="profile-header"/>
 
       <div class="row">
 

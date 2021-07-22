@@ -5,13 +5,12 @@
     <!--nav bar-->
     <Navbar></Navbar>
 
-    <!--profile header, contains user search bar-->
-    <div id="profile-header-div">
-      <ProfileHeader/>
-    </div>
-
     <!--profile container-->
     <div class="container p-5 mt-3" id="profileContainer">
+
+      <!--profile header, contains user search bar-->
+      <ProfileHeader id="profile-header"/>
+
       <div class="row">
         <div class="col-xl-3 mb-3">
 

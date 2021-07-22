@@ -141,6 +141,8 @@ export default {
           this.sortBy = this.exchangeSortBy;
           this.page = this.exchangePage;
           break;
+        default:
+          break;
       }
       this.updateUrl();
       this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));

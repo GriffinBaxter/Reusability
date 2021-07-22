@@ -20,12 +20,13 @@
           </select>
         </div>
       </div>
-      <div class="row" id="search-bar-container">
+      <div class="row" id="search-bar-container" style="padding-top: 3px">
         <div class="input-group" id="search-inputs">
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
           <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
         </div>
       </div>
+      <br>
     </div>
 </template>
 
@@ -102,19 +103,11 @@ export default {
 
 <style scoped>
 
-.search-bar-positioning {
-  padding-top: 40px;
-}
-
 /*TODO consider putting in style.css*/
 #search-bar:focus {
   outline: none;     /* oranges! yey */
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
-}
-
-#search-bar-container {
- max-width: 1200px;
 }
 
 .active {
