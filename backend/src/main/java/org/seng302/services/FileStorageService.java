@@ -37,7 +37,6 @@ public class FileStorageService {
      */
     public void initialize() {
         try {
-            FileUtils.deleteDirectory(rootPath.toFile());
             Files.createDirectory(rootPath);
             String log = "Successfully created " + rootPath + " directory";
             logger.info(log);
