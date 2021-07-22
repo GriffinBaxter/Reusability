@@ -117,6 +117,16 @@
                     <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
                     @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
                   </div>
+                  <div id="autofill-container" ref="autofill-container">
+                    <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
+                      <li
+                          v-for="keyword in autocompleteKeywords"
+                          v-bind:key="keyword.id"
+                          v-bind:id="keyword.id"
+                          v-on:click="updateKeyword(keyword.name)"
+                      >{{ keyword.name }}</li>
+                    </ul>
+                  </div>
                   <div id="card-keywords-invalid-feedback" class="invalid-feedback" v-if="formError.keywordsError">
                     {{formError.keywordsError}}
                   </div>
@@ -214,7 +224,10 @@ export default {
         descriptionError: "",
         keywordsError: "",
         creatorIdError: ""
-      }
+      },
+
+      /** Contains the list of current autocompletion keywords (based on currently selected keyword) */
+      autocompleteKeywords: []
     }
   },
   methods: {
@@ -250,6 +263,12 @@ export default {
 
       // Show the modal itself.
       this.modal.show();
+
+
+      // Variables for keyword autocompletion calculations
+      this.textCursorPosition = 0
+      this.currentKeyword = ""
+      this.autocompleteKeywords = []
     },
     /**
      * Determines if a section choice made by the user is valid. And updates the error
@@ -548,6 +567,105 @@ export default {
       }
 
       return keyword
+    },
+    /**
+     * Performs actions after a click has been detected on the page (depending on whether the click was inside
+     * or outside the keyword text-box).
+     */
+    click() {
+      if (document.getElementById('card-keywords').parentNode.matches(":hover")) {
+        this.updateCursorPosition()
+      } else {
+        this.autocompleteKeywords = [];
+      }
+    },
+    /**
+     * Performs actions after a key has been released, relating to arrow key navigation inside the keyword text-box.
+     * This sets up the list of keywords for autocompletion and also the dismissal of the list after using a keyword 
+     * suggestion, if there is no match, or if a click has been registered outside the text-box.
+     */ 
+    updateCursorPosition() {
+      this.textCursorPosition = document.getElementById('card-keywords').selectionStart;
+      this.currentKeyword = "";
+      this.autocompleteKeywords = [];
+
+      let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
+
+      let keywordSearch = this.currentKeyword;
+      if (this.keywordsInput === "" ||
+          (this.keywordsInput.length === this.textCursorPosition &&
+          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+      ) {
+        keywordSearch = "";
+      }
+
+      if (
+          currentKeywordStartEnd !== false ||
+          this.keywordsInput === "" ||
+          (this.keywordsInput.length === this.textCursorPosition &&
+          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+      ) {
+        Api.searchKeywords(keywordSearch).then(response => {
+          let autocompleteKeywords = [];
+
+          for (let i = 0; i < response.data.length && i < 5; i++) {
+            if (keywordSearch !== response.data[i].name) {
+              autocompleteKeywords.push(response.data[i]);
+            }
+          }
+          
+          this.autocompleteKeywords = autocompleteKeywords;
+        })
+      }
+    },
+    /**
+     * Updates the currently selected keyword with the given keyword (for keyword autocompletion).
+     */
+    updateKeyword(keyword) {
+      if (this.keywordsInput === "" ||
+          (this.keywordsInput.length === this.textCursorPosition &&
+          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+      ) {
+        this.keywordsInput = this.keywordsInput + keyword;
+      } else {
+        let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
+
+        if (currentKeywordStartEnd !== false) {
+          let [currentKeywordStart, currentKeywordEnd] = currentKeywordStartEnd;
+
+          this.keywordsInput =
+              this.keywordsInput.substring(0, currentKeywordStart) +
+              this.keywordsInput.substring(currentKeywordStart, currentKeywordEnd).replace(
+                  this.currentKeyword, keyword
+              ) +
+              this.keywordsInput.substring(currentKeywordEnd);
+        }
+      }
+    },
+    /**
+     * Calculates and returns the start and end positions of the current keyword, returns false if invalid indexes are
+     * retrieved.
+     */
+    getCurrentKeywordStartEnd() {
+      let currentKeywordStart = this.keywordsInput.substring(0, this.textCursorPosition + 1).lastIndexOf("#");
+
+      if (currentKeywordStart !== -1) {
+        let currentKeywordEnd =
+            this.keywordsInput.substring(this.textCursorPosition).indexOf(" ") + this.textCursorPosition;
+
+        if (currentKeywordEnd - this.textCursorPosition !== -1) {
+          this.currentKeyword = this.keywordsInput.substring(currentKeywordStart + 1, currentKeywordEnd);
+
+          return [currentKeywordStart, currentKeywordEnd];
+
+        } else {
+          this.currentKeyword = this.keywordsInput.substring(currentKeywordStart + 1);
+
+          return [currentKeywordStart, this.keywordsInput.length];
+        }
+      } else {
+        return false;
+      }
     }
 
   },
@@ -558,6 +676,9 @@ export default {
     if (currentID) {
       this.populateUserInfo(currentID)
     }
+
+    document.addEventListener('keyup', this.updateCursorPosition)
+    document.addEventListener('click', this.click)
   },
   watch: {
     /**
@@ -660,6 +781,45 @@ export default {
     letter-spacing: 2px;
     word-spacing: 2px;
     line-height: 2em;
+  }
+
+/*********************************************************************
+                        Autofill styling
+
+     This CSS is a modified version of the examples found on
+  Julie Grundy's tutorial for creating a custom select element:
+
+  https://24ways.org/2019/making-a-better-custom-select-element/
+*********************************************************************/
+  
+  #autofill-container {
+    position: relative;
+  }
+
+  #card-keywords::-ms-expand {
+    display: none;
+  }
+  
+  .autofill-options {
+    border: 1px solid lightgray;
+    border-radius: 0 0 0.25em 0.25em;
+    line-height: 1.25;
+    padding: 0;
+    list-style-type: none;
+    cursor: pointer;
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+    background-color: #ffffff;
+  }
+
+  .autofill-options li {
+    padding: 1em;
+  }
+
+  .autofill-options li:hover, .autofill-options li:focus {
+    background: #1EBA8C;
+    color: #fff;
   }
 
 </style>
