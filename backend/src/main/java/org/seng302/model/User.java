@@ -92,6 +92,9 @@ public class User {
             cascade = CascadeType.ALL)
     private List<MarketplaceCard> cards = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<HasReadKeywordNotification> readKeywordNotifications = new ArrayList<>();
+
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
     private static final Integer FIRST_NAME_MAX_LENGTH = 255;
@@ -303,6 +306,14 @@ public class User {
         this.sessionUUID = sessionUUID;
     }
 
+    public List<HasReadKeywordNotification> getReadKeywordNotifications() {
+        return readKeywordNotifications;
+    }
+
+    public void setReadKeywordNotifications(List<HasReadKeywordNotification> readKeywordNotifications) {
+        this.readKeywordNotifications = readKeywordNotifications;
+    }
+
     /**
      * Calculates the time period between the current date and registration date and creates
      * the appropriate message containing the years and months.
@@ -359,7 +370,7 @@ public class User {
 
     /**
      * Removes the given business from the businessesAdministeredObjects
-     * @param business
+     * @param business a business to be removed.
      */
     public void removeABusinessesAdministeredObjects(Business business){
         int businessId = business.getId();
