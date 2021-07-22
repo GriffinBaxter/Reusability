@@ -46,6 +46,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -721,6 +722,40 @@ class ImageResourceIntegrationTests {
     }
 
     /**
+     * Tests that another existing image is made the primary image when the current primary image is deleted and an OK response is
+     * returned.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdExistsAndMultipleImagesExist_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        Image newImage = new Image(2, productId, businessId, "test2/test2", "test2/test2", false);
+        List<Image> images = List.of(newImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(Collections.emptyList());
+        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
+        when(imageRepository.findImageByBussinesIdAndProductId(businessId, productId)).thenReturn(images);
+        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(images.get(0).getIsPrimary()).isTrue();
+
+    }
+
+    /**
      * Tests that a FORBIDDEN status is received when deleting an image of an existing business with an existing product
      * at the file path product-images -> IMAGE_UUID but the user does not have administration rights i.e.
      * not administrator of business.
@@ -827,5 +862,141 @@ class ImageResourceIntegrationTests {
 
     //--------------------------- Product Image Changing Primary Image Endpoint Tests ----------------------------------
 
+    /**
+     * Tests that an OK status is received when making an image the primary image of an existing business with an existing product at
+     * the file path product-images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenMakeNewPrimaryImageWithGivenImageIdAtFilePathLocation() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        List<Image> images = List.of(primaryImage);
+        Image newImage = new Image(2, productId, businessId, "test2/test2", "test2/test2", false);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(newImage));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newImage.getIsPrimary()).isTrue();
+
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when making an image the primary image of an existing business with an existing product
+     * at the file path product-images -> IMAGE_UUID but the user does not have administration rights i.e.
+     * not administrator of business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocationButIncorrectAccessRights_thenChangingPrimaryImageResultsInForbiddenStatus() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when  making an image the primary image of an existing business with an existing
+     * product but the image id does not exist
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdExistsAndImageWithGivenImageIdDoesNotExistsAtExpectedFilePathLocation_thenChangingPrimaryImageResultsInNotAcceptedStatus() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = List.of(primaryImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when  making an image the primary image of an existing business with a non-existing
+     * product.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndProductIdDoesNotExist_thenChangingPrimaryImageResultsInNotAcceptedStatus() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, "A9000", primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when  making an image the primary image of an non-existing business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsDoesNotExist_thenChangingPrimaryImageResultsInNotAcceptedStatus() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", 8000, "A9000", primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
 
 }
