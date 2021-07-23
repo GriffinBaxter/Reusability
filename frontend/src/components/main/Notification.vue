@@ -5,7 +5,7 @@
     </div>
     <div :id="'notification_box' + card.id"
          class="accordion-item"
-         v-for="card in allNoticeCards.reverse()"
+         v-for="card in allNoticeCards"
          v-bind:key="card.id"
          style="background-color: #ededed">
       <h2 class="accordion-header" :id="'heading_' + card.id">
@@ -71,7 +71,7 @@ export default {
           operable: (notification.marketplaceCardPayload !== null)
         });
       })
-      this.allNoticeCards = notifications;
+      this.allNoticeCards = notifications.reverse();
     },
     /**
      * this function will reload all notifications for current user.
