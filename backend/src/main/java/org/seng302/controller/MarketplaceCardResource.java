@@ -427,7 +427,11 @@ public class MarketplaceCardResource {
 
         marketplaceCard.extendDisplayPeriod();
 
-//        marketCardNotificationRepository.deleteAllByMarketCardId(marketplaceCard.getId());
+        // Delete all relate notifications
+        Optional<MarketCardNotification> optionalMarketCardNotification = marketCardNotificationRepository.findByUserIdAndMarketCardId(currentUser.getId(), id);
+        if (optionalMarketCardNotification.isPresent()){
+            marketCardNotificationRepository.delete(optionalMarketCardNotification.get());
+        }
 
         marketplaceCardRepository.save(marketplaceCard);
         logger.info("Marketplace Card Modification Success - 200 [OK] - Marketplace card with ID {} has had its display period extended to {}.", id, marketplaceCard.getDisplayPeriodEnd());
@@ -541,7 +545,6 @@ public class MarketplaceCardResource {
 
         // delete selected card
         logger.debug("Marketplace card ({}) has been deleted.", marketplaceCard.getTitle());
-        marketCardNotificationRepository.deleteAllByMarketCardId(marketplaceCard.getId());
         marketplaceCardRepository.delete(marketplaceCard);
 
         logger.info("Marketplace Card Delete Success - 200 [OK] -  Marketplace card with ID {} deleted", id);
