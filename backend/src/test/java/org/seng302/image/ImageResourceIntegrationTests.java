@@ -547,7 +547,7 @@ class ImageResourceIntegrationTests {
      * @throws Exception
      */
     @Test
-    void testingInavlidFileFormat() throws Exception {
+    void testingInvalidFileFormat() throws Exception {
         // Given
         businessId = anotherBusiness.getId();
         productId = product.getProductId();

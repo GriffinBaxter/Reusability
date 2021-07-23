@@ -4,45 +4,57 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.seng302.Main;
 import org.seng302.controller.ImageResource;
 import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalProductArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
-import org.seng302.model.Address;
-import org.seng302.model.Business;
+import org.seng302.model.*;
 import org.seng302.model.repository.*;
 import org.seng302.model.enums.BusinessType;
-import org.seng302.model.InventoryItem;
 import org.seng302.controller.InventoryItemResource;
-import org.seng302.model.Product;
 import org.seng302.model.enums.Role;
-import org.seng302.model.User;
 import org.seng302.services.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
+@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class ProductImagesStepDefs {
 
     @Autowired
@@ -69,37 +81,21 @@ public class ProductImagesStepDefs {
     private FileStorageService fileStorageService;
 
     private Address address;
-
     private User user;
-
     private Business business;
-
     private Product product;
-
     private MockHttpServletResponse response;
-
-    private final String loginPayloadJson = "{\"email\": \"%s\", " +
-            "\"password\": \"%s\"}";
-
-    private final String expectedUserIdJson = "{\"userId\":%s}";
-
-    private final String productPayloadJson = "{\"id\":\"%s\"," +
-            "\"name\":\"%s\"," +
-            "\"description\":\"%s\"," +
-            "\"manufacturer\":\"%s\"," +
-            "\"recommendedRetailPrice\":%.1f}";
-
-    private String payloadJson;
-
-    private final String expectedProductJson = "{\"id\":\"%s\"," +
-            "\"name\":\"%s\"," +
-            "\"description\":\"%s\"," +
-            "\"manufacturer\":\"%s\"," +
-            "\"recommendedRetailPrice\":%.1f," +
-            "\"created\":\"%s\"," +
-            "\"images\":[]}";
-
-    private String expectedJson;
+    private MockMultipartFile jpgImage;
+    private MockMultipartFile jpegImage;
+    private MockMultipartFile pngImage;
+    private MockMultipartFile gifImage;
+    private MockMultipartFile otherFile;
+    private Image primaryImage;
+    private Image nonPrimaryImage;
+    private Image newImage;
+    private String productId;
+    private Integer businessId;
+    private String sessionToken;
 
     @Before
     public void createMockMvc() {
@@ -137,9 +133,6 @@ public class ProductImagesStepDefs {
         user.setId(1);
         user.setSessionUUID(User.generateSessionUUID());
 
-        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.of(user));
-        Assertions.assertTrue(userRepository.findBySessionUUID(user.getSessionUUID()).isPresent());
-
         business = new Business(
                 user.getId(),
                 businessName,
@@ -151,7 +144,16 @@ public class ProductImagesStepDefs {
         );
         business.setId(2);
 
-        //TODO: assert user is admin of business and business exists
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        Assertions.assertTrue(userRepository.findById(user.getId()).isPresent());
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.of(user));
+        Assertions.assertTrue(userRepository.findBySessionUUID(user.getSessionUUID()).isPresent());
+
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        Assertions.assertTrue(userRepository.findBySessionUUID(user.getSessionUUID()).isPresent());
+
+        Assert.assertTrue(business.isAnAdministratorOfThisBusiness(user));
 
     }
 
@@ -169,74 +171,126 @@ public class ProductImagesStepDefs {
                         LocalTime.of(0, 0))
         );
 
-        payloadJson = String.format(productPayloadJson, product.getProductId(), product.getName(),
-                product.getDescription(), product.getManufacturer(),
-                product.getRecommendedRetailPrice());
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()))
-                .willReturn(Optional.empty());
-
-        when(productRepository.save(any(Product.class))).thenReturn(product);
-        response = mvc.perform(post(String.format("/businesses/%d/products", business.getId()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn().getResponse();
-
-        // TODO assert product exists for business
+                .willReturn(Optional.ofNullable(product));
+        Assert.assertTrue(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId()).isPresent());
 
     }
 
     @When("I upload an image for this product with the filename of {string}")
-    public void i_upload_an_image_for_this_product_with_the_filename_of(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void i_upload_an_image_for_this_product_with_the_filename_of(String filename) throws Exception {
+
+        int businessId = business.getId();
+        String productId = product.getProductId();
+
+        String sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        primaryImage = new Image(1, productId, businessId, filename, filename, true);
+        fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly().useConstructor("test-images"));
+
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
+
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = new ArrayList<Image>();
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
+
     }
 
     @Then("this image is stored and displayed")
-    public void this_image_is_stored_and_displayed() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void this_image_is_stored_and_displayed() throws UnsupportedEncodingException {
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+
+        //TODO: is it possible mock the storage of the mocked image file?
+
     }
 
     @Given("the primary image of this product is {string}")
-    public void the_primary_image_of_this_product_is(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void the_primary_image_of_this_product_is(String filename) {
+
+        primaryImage.setIsPrimary(true);
+        List <Image> primaryImages = new ArrayList<>();
+        primaryImages.add(primaryImage);
+        assertThat(primaryImage.getFilename()).isEqualTo(filename);
+        assertThat(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).isEqualTo(primaryImage);
+
     }
 
     @Given("it has a non-primary image of {string}")
-    public void it_has_a_non_primary_image_of(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void it_has_a_non_primary_image_of(String filename) {
+
+        nonPrimaryImage = new Image(2, productId, businessId, filename, filename, false);
+        fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly().useConstructor("test-images"));
+
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
+
+
+        nonPrimaryImage.setIsPrimary(false);
+        List <Image> nonPrimaryImages = new ArrayList<>();
+        nonPrimaryImages.add(nonPrimaryImage);
+        assertThat(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, false)).isEqualTo(nonPrimaryImages);
+
     }
 
     @When("I change the primary image to {string}")
-    public void i_change_the_primary_image_to(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void i_change_the_primary_image_to(String filename) throws Exception {
+
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        List<Image> images = List.of(primaryImage);
+        Image newImage = new Image(2, productId, businessId, filename, filename, false);
+
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(newImage));
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+
     }
 
-    @Then("{string} becomes the primary image for the product {string}")
-    public void becomes_the_primary_image_for_the_product(String string, String string2) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @Then("the primary image is updated")
+    public void the_primary_image_is_updated() {
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newImage.getIsPrimary()).isTrue();
+        assertThat(primaryImage.getIsPrimary()).isFalse();
+
     }
 
-    @Given("{string} only has the image of {string}")
-    public void only_has_the_image_of(String string, String string2) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @Given("this business only has the image of {string}")
+    public void this_business_only_has_the_image_of(String filename) {
+
+        given(imageRepository.findImageByBussinesIdAndProductId(businessId, productId).get(0).getFilename()).willReturn(filename);
+        given(imageRepository.findImageByBussinesIdAndProductId(businessId, productId).size()).willReturn(1);
+
     }
 
     @When("{string} is deleted")
-    public void is_deleted(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void this_file_is_deleted(String filename) throws Exception {
+
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
+        List<Image> images = List.of(primaryImage);
+        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
+        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+
     }
 
-    @Then("Apples has no images")
-    public void apples_has_no_images() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @Then("{string} has no images")
+    public void has_no_images(String businessName) {
+
+        assertThat(imageRepository.findImageByBussinesIdAndProductId(businessId, productId).size()).isEqualTo(0);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+
     }
 
 }
