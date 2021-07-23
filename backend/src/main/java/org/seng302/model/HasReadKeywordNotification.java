@@ -80,7 +80,7 @@ public class HasReadKeywordNotification {
      * Get a boolean value which represents whether a user has read a keyword notification.
      * @return boolean value representing whether a user has read a keyword notification.
      */
-    public boolean isHasRead() {
+    public boolean getHasRead() {
         return hasRead;
     }
 
