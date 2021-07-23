@@ -204,7 +204,8 @@ public class MarketplaceCardResource {
             }
 
             // Checks keyword IDs exist
-            for (Integer keyword : updatedCardPayload.getKeywords()) {
+            List<Integer> keywordIds = updatedCardPayload.getKeywordIds();
+            for (Integer keyword : keywordIds) {
                 if (keywordRepository.findById(keyword).isEmpty()) {
                     logger.error("Keyword ID: {} not found", keyword);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keyword ID not found");
@@ -253,7 +254,7 @@ public class MarketplaceCardResource {
                 storedCard.get().setDescription(updatedCardPayload.getDescription());
                 storedCard.get().setSection(updatedCardPayload.getSection());
                 storedCard.get().removeAllKeywords();
-                for (Integer keyword : updatedCardPayload.getKeywords()) {
+                for (Integer keyword : updatedCardPayload.getKeywordIds()) {
                     storedCard.get().addKeyword(keywordRepository.findById(keyword).get());
                 }
                 marketplaceCardRepository.saveAndFlush(storedCard.get());

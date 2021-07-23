@@ -7,6 +7,7 @@ import io.cucumber.java.en.When;
 import org.seng302.controller.MarketplaceCardResource;
 import org.seng302.controller.UserResource;
 import org.seng302.model.Address;
+import org.seng302.model.Keyword;
 import org.seng302.model.MarketplaceCard;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
@@ -69,6 +70,11 @@ public class MarketCardExpiryStep {
     private Address address;
     private MarketplaceCard card;
 
+    private Keyword keyword;
+    private Keyword keyword2;
+    private Keyword keyword3;
+
+
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
             "\"password\": \"%s\"}";
     private final String expectedUserIdJson = "{\"userId\":%s}";
@@ -77,7 +83,7 @@ public class MarketCardExpiryStep {
             "\"section\":\"%s\"," +
             "\"title\":\"%s\"," +
             "\"description\":\"%s\"," +
-            "\"keywords\":%s}";
+            "\"keywordIds\":%s}";
 
     private String cardPayloadJson;
 
@@ -145,8 +151,14 @@ public class MarketCardExpiryStep {
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
 
+        keyword = new Keyword("Party", LocalDateTime.now());
+        keyword2 = new Keyword("Celebrate", LocalDateTime.now());
+        keyword3 = new Keyword("Happy", LocalDateTime.now());
+        String keywordPayload = String.format("[%d, %d, %d]", keyword.getId(), keyword2.getId(), keyword3.getId());
+
+
         cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
-                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+                card.getDescription(), keywordPayload);
 
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
