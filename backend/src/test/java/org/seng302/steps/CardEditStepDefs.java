@@ -70,13 +70,13 @@ public class CardEditStepDefs extends CucumberSpringConfiguration {
             "\"section\":\"%s\"," +
             "\"title\":\"%s\"," +
             "\"description\":\"%s\"," +
-            "\"keywords\":%s}";
+            "\"keywordIds\":%s}";
 
     private final String cardEditPayloadJson = "{" +
             "\"section\":\"%s\"," +
             "\"title\":\"%s\"," +
             "\"description\":\"%s\"," +
-            "\"keywords\":%s}";
+            "\"keywordIds\":%s}";
 
     @Before
     public void createMockMvc() {
