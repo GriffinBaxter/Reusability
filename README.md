@@ -70,7 +70,8 @@ The backend can be tested by using the examples from the API specification (foun
 Additionally, Postman tests are provided as collections, also found within the /api directory.
 
 ## Demo User Accounts
-- Note: all demo user accounts (aside from the DGAA) have the same password: Qwerty123!
+- Note: all demo user accounts (aside from the DGAA) have the same password: Qwerty123!. Also, these demo user accounts
+are only available on our production server (not when run locally).
 
 ### Standard Users
 - Email: mcarnegieh@fc2.com
