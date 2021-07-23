@@ -197,7 +197,10 @@ export default {
       },
 
       /** Contains the list of current autocompletion keywords (based on currently selected keyword) */
-      autocompleteKeywords: []
+      autocompleteKeywords: [],
+
+      /** Contains the list of keyword IDs returned by 'createKeywordIfNotExisting' to use in the edit card PUT request */
+      newKeywordIDs: []
     }
   },
   methods: {
@@ -497,12 +500,44 @@ export default {
 
     },
     /**
+     * Function that performs a keyword POST to create the keyword if it does not exist.
+     * The POST keyword creation endpoint returns the keyword ID for the newly
+     * created keyword or the existing keyword if it already exists.
+     * The returned keyword ID is stored in the newKeywordIDs array for use in other functions.
+     * */
+    async createKeywordIfNotExisting(keyword) {
+
+      const newKeyword = {
+        name: keyword
+      }
+
+      await Api.addNewKeyword(newKeyword).then(
+          (res) => {
+            this.newKeywordIDs.push(res.data.keywordId);
+          }
+      ).catch(
+          (error) => {
+            if (error.response) {
+              if (error.response.status === 400) {
+                this.modalError = `Error: ` + error.response.data.message;
+              } else if (error.response.status === 401) {
+                this.modalError = `401: Access token missing`;
+              } else {
+                this.modalError = `${error.response.status}: SOMETHING WENT WRONG`;
+              }
+            } else if (error.request) {
+              this.modalError = "Server Timeout"
+            } else {
+              this.modalError = "Unexpected error occurred."
+            }
+          }
+      )
+    },
+    /**
      * Performs an API call to the backend to edit the current card.
      * @param event {Event} The click event on the save button.
      * */
-    editCurrentCard() {
-      console.log('test')
-      console.log(this.id);
+    async editCurrentCard() {
 
       // Prevent the default submission click
       this.submitAttempted = true;
@@ -517,7 +552,14 @@ export default {
       }
 
       // Check for existing keywords and create ones that don't already exist
+      const keywords = this.getKeywords();
+      for (const keyword of keywords) {
+        await this.createKeywordIfNotExisting(keyword);
+      }
+      const keywordIds = this.newKeywordIDs;
 
+      // Clear the list of keyword IDs
+      this.newKeywordIDs = []
 
       // Object to hold the updated fields
       const updatedCard = {
@@ -525,10 +567,8 @@ export default {
         section: this.sectionSelected,
         title: this.title,
         description: this.description,
-        keywords: this.getKeywords()
+        keywords: keywordIds
       }
-
-      console.log(updatedCard)
 
       Api.editCard(this.id, updatedCard).then(
           (res) => {
