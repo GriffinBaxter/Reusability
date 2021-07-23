@@ -5,7 +5,7 @@
     </div>
     <div :id="'notification_box' + card.id"
          class="accordion-item"
-         v-for="card in allNoticeCards"
+         v-for="card in allNoticeCards.reverse()"
          v-bind:key="card.id"
          style="background-color: #ededed">
       <h2 class="accordion-header" :id="'heading_' + card.id">
@@ -19,16 +19,23 @@
         </button>
       </h2>
       <div :id="'collapse_' + card.id"
+           v-if="card.operable"
            class="accordion-collapse collapse"
            :aria-labelledby="'heading_' + card.id"
            data-bs-parent="#notificationAccordion">
         <div class="accordion-body">
           <div class="row">
             <div class="col" style="float: contour; text-align: center">
-              <button class="btn btn-outline-danger">Delete Card</button>
+              <button class="btn btn-outline-danger"
+                      @click="deleteCard(card.marketCardId)">
+                Delete Card
+              </button>
             </div>
             <div class="col">
-              <button class="btn btn-outline-success" @click="extendCardForDisplayPeriod(card.id)">Extend Card for 2 Weeks</button>
+              <button class="btn btn-outline-success"
+                      @click="extendCardForDisplayPeriod(card.marketCardId)">
+                Extend Card for 2 Weeks
+              </button>
             </div>
           </div>
           <!--          <strong>More info and button here</strong>-->
@@ -51,14 +58,67 @@ export default {
   },
   props: {},
   methods: {
+    /**
+     * populate date from backend and update allNoticeCards.
+     */
     populateNotification(data) {
+      let notifications = [];
       data.forEach(notification => {
-        this.allNoticeCards.push({id: notification.id, description: notification.description});
+        notifications.push({
+          id: notification.id,
+          marketCardId : notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
+          description: notification.description,
+          operable: (notification.marketplaceCardPayload !== null)
+        });
       })
+      this.allNoticeCards = notifications;
     },
+    /**
+     * this function will reload all notifications for current user.
+     */
+    loadNotifications() {
+      Api.getNotifications()
+          .then(response => (this.populateNotification(response.data)))
+          .catch((error) => {
+            if (error.status === 401) {
+              // Missing or invalid token
+              this.$router.push({path: '/invalidtoken'});
+            }
+          })
+    },
+    /**
+     * delete a market card
+     * @param id marketplace card id
+     */
+    deleteCard(id) {
+      Api.deleteACard(id)
+          .then(() => {
+            this.loadNotifications();
+          })
+          .catch((error) => {
+            if (error.status === 401) {
+              // Missing or invalid token
+              this.$router.push({path: '/invalidtoken'});
+            } else if (error.status === 403) {
+              // No permission
+              this.$router.push({path: '/invalidtoken'});
+            } else if (error.status === 406) {
+              // Card not exist
+              this.$router.push({path: '/noCard'});
+            } else {
+              console.log(error)
+            }
+          })
+    },
+    /**
+     * extend the DisplayPeriod for given card
+     * @param id marketplace card id
+     */
     extendCardForDisplayPeriod(id) {
       Api.extendCardDisplayPeriod(id)
-          .then()
+          .then(() => {
+            this.loadNotifications();
+          })
           .catch((error) => {
             if (error.status === 401) {
               // Missing or invalid token
@@ -76,14 +136,7 @@ export default {
     }
   },
   beforeMount() {
-    Api.getNotifications()
-        .then(response => (this.populateNotification(response.data)))
-        .catch((error) => {
-          if (error.status === 401) {
-            // Missing or invalid token
-            this.$router.push({path: '/invalidtoken'});
-          }
-        })
+    this.loadNotifications();
   }
 }
 </script>
