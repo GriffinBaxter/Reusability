@@ -15,6 +15,7 @@ import org.seng302.model.User;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.KeywordRepository;
+import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,10 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    @MockBean
+    private MarketCardNotificationRepository marketCardNotificationRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -67,7 +72,11 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
         keywordRepository = mock(KeywordRepository.class);
 
         this.cardMVC = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, keywordRepository)).build();
+                marketplaceCardRepository,
+                userRepository,
+                keywordRepository,
+                marketCardNotificationRepository
+        )).build();
     }
 
     @Given("I am logged in and have already created a card.")

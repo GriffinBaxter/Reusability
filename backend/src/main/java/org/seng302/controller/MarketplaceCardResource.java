@@ -71,11 +71,12 @@ public class MarketplaceCardResource {
      */
     public MarketplaceCardResource(
             MarketplaceCardRepository marketplaceCardRepository, UserRepository userRepository,
-            KeywordRepository keywordRepository
+            KeywordRepository keywordRepository, MarketCardNotificationRepository marketCardNotificationRepository
     ) {
         this.marketplaceCardRepository = marketplaceCardRepository;
         this.userRepository = userRepository;
         this.keywordRepository = keywordRepository;
+        this.marketCardNotificationRepository = marketCardNotificationRepository;
     }
 
     /**
