@@ -660,11 +660,11 @@ export default {
       }
     },
     /**
-     * Performs actions after a click has been detected on the page (depending on whether the click was inside
+     * Performs actions after a click or keyup has been detected on the page (depending on whether the click was inside
      * or outside the keyword text-box).
      */
-    click() {
-      if (document.getElementById('card-keywords').parentNode.matches(":hover")) {
+    onClickOrKeyUp() {
+      if ("card-keywords" === document.activeElement.id) {
         this.updateCursorPosition()
       } else {
         this.autocompleteKeywords = [];
@@ -853,8 +853,8 @@ export default {
       this.populateUserInfo(currentID)
     }
 
-    document.addEventListener('keyup', this.updateCursorPosition)
-    document.addEventListener('click', this.click)
+    document.addEventListener('keyup', this.onClickOrKeyUp)
+    document.addEventListener('click', this.onClickOrKeyUp)
   },
   watch: {
     /**
@@ -912,7 +912,7 @@ export default {
 
 
 
-<style scoped>
+<style>
 /** ensure that any changes made here happen on both the front and back layer!!!! */
 
 textarea.form-control {
