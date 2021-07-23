@@ -1199,7 +1199,7 @@ class MarketplaceCardResourceIntegrationTests {
                 "\"section\":\"%s\"," +
                 "\"description\":\"%s\"," +
                 "\"keywords\":%s}";
-        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getDescription(), "[]");
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getDescription(), "");
 
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
@@ -1227,7 +1227,7 @@ class MarketplaceCardResourceIntegrationTests {
                 "\"title\":\"%s\"," +
                 "\"keywords\":%s}";
 
-        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "[]");
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "");
 
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
@@ -1254,7 +1254,7 @@ class MarketplaceCardResourceIntegrationTests {
                 "\"title\":\"%s\"," +
                 "\"description\":\"%s\"," +
                 "\"keywords\":%s}";
-        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "[]");
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "");
         // when
         response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
