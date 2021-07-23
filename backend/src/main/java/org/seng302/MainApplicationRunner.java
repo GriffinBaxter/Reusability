@@ -48,9 +48,9 @@ public class MainApplicationRunner implements ApplicationRunner {
     @Autowired
     private ConfigurableApplicationContext context;
 
-    private final String NOTIFICATION_MESSAGE_FORMAT = "Your card (%s) will be expired in %s.";
-    private final String EXPIRED_NOTIFICATION_MESSAGE = "Your card (%s) has been expired %s ago.";
-    private final String DELETED_NOTIFICATION_MESSAGE = "Your card (%s) has been deleted.";
+    private static final String NOTIFICATION_MESSAGE_FORMAT = "Your card (%s) will be expired in %s.";
+    private static final String EXPIRED_NOTIFICATION_MESSAGE = "Your card (%s) has been expired %s ago.";
+    public static final String DELETED_NOTIFICATION_MESSAGE = "Your card (%s) has been deleted.";
 
     /**
      * This constructor is implicitly called by Spring (purpose of the @Autowired
