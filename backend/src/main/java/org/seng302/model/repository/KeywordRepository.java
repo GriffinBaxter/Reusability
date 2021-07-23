@@ -27,4 +27,11 @@ public interface KeywordRepository extends JpaRepository<Keyword, Integer> {
      * @return List of keywords that fit the criteria
      */
     List<Keyword> findAllByNameIgnoreCaseContaining(String name);
+
+    /**
+     * Get Keyword from repository by ID
+     * @param id id of the keyword to be searched for
+     * @return a unique keyword
+     */
+    Optional<Keyword> findById(Integer id);
 }

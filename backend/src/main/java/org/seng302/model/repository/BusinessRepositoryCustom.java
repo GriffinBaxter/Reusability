@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+/**
+ * A custom interface that defines methods which can be used to retrieve businesses.
+ */
 public interface BusinessRepositoryCustom {
 
     /**
