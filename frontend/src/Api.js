@@ -247,6 +247,12 @@ export default {
         return instance.get(`/keywords/search?searchQuery=${searchQuery}`, {
             withCredentials: true
         })
+    },
+
+    addNewKeyword: (newKeyword) => {
+        return instance.post(`/keywords`, {...newKeyword},{
+            withCredentials: true
+        })
     }
 
 }
