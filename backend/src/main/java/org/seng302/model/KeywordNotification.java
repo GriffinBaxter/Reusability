@@ -33,7 +33,7 @@ public class KeywordNotification {
     private Keyword keyword;
 
     @OneToMany(mappedBy = "keywordNotification")
-    private List<HasReadKeywordNotification> readKeywordNotifications = new ArrayList<>();
+    private List<HasKeywordNotification> readKeywordNotifications = new ArrayList<>();
 
     // Values need for validation.
     private static final Integer DESCRIPTION_MIN_LENGTH = 2;
@@ -133,7 +133,7 @@ public class KeywordNotification {
      * @return list of HaHasReadKeywordNotifications, which can be used to determine if a user
      * has read a notification.
      */
-    public List<HasReadKeywordNotification> getReadKeywordNotifications() {
+    public List<HasKeywordNotification> getReadKeywordNotifications() {
         return readKeywordNotifications;
     }
 
@@ -142,7 +142,7 @@ public class KeywordNotification {
      * has read a notification.
      * @param readKeywordNotifications a new list of HasReadKeywordNotifications, to be set to.
      */
-    public void setReadKeywordNotifications(List<HasReadKeywordNotification> readKeywordNotifications) {
+    public void setReadKeywordNotifications(List<HasKeywordNotification> readKeywordNotifications) {
         this.readKeywordNotifications = readKeywordNotifications;
     }
 

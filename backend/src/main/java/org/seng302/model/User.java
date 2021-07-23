@@ -93,7 +93,7 @@ public class User {
     private List<MarketplaceCard> cards = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<HasReadKeywordNotification> readKeywordNotifications = new ArrayList<>();
+    private List<HasKeywordNotification> readKeywordNotifications = new ArrayList<>();
 
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
@@ -306,11 +306,11 @@ public class User {
         this.sessionUUID = sessionUUID;
     }
 
-    public List<HasReadKeywordNotification> getReadKeywordNotifications() {
+    public List<HasKeywordNotification> getReadKeywordNotifications() {
         return readKeywordNotifications;
     }
 
-    public void setReadKeywordNotifications(List<HasReadKeywordNotification> readKeywordNotifications) {
+    public void setReadKeywordNotifications(List<HasKeywordNotification> readKeywordNotifications) {
         this.readKeywordNotifications = readKeywordNotifications;
     }
 

@@ -6,10 +6,10 @@ import javax.persistence.*;
  * An entity class which models the join table between users and keyword notifications.
  */
 @Entity
-public class HasReadKeywordNotification {
+public class HasKeywordNotification {
 
     @EmbeddedId
-    private HasReadKeywordNotificationKey id;
+    private HasKeywordNotificationId id;
 
     @ManyToOne
     @MapsId("userId")
@@ -24,7 +24,7 @@ public class HasReadKeywordNotification {
     @Column(name = "hasRead", nullable = false)
     private boolean hasRead;
 
-    public HasReadKeywordNotification() {
+    public HasKeywordNotification() {
         // no args constructor needed by JPA
     }
 
@@ -32,7 +32,7 @@ public class HasReadKeywordNotification {
      * Get the id of the relationship between a user and keyword notification.
      * @return id of the relationship between a user and keyword notification.
      */
-    public HasReadKeywordNotificationKey getId() {
+    public HasKeywordNotificationId getId() {
         return id;
     }
 
@@ -40,7 +40,7 @@ public class HasReadKeywordNotification {
      * Set the id of the relationship between a user and keyword notification.
      * @param id the id of a relationship between a user and keyword notification.
      */
-    public void setId(HasReadKeywordNotificationKey id) {
+    public void setId(HasKeywordNotificationId id) {
         this.id = id;
     }
 

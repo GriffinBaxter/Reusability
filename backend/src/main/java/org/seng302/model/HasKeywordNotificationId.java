@@ -5,10 +5,10 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
- * A class which represents a composite key for the HasReadKeywordNotification relationship.
+ * A class which represents a composite key for the HasKeywordNotification relationship.
  */
 @Embeddable
-public class HasReadKeywordNotificationKey implements Serializable {
+public class HasKeywordNotificationId implements Serializable {
 
     @Column(name = "id", nullable = false)
     private int userId;
@@ -16,7 +16,7 @@ public class HasReadKeywordNotificationKey implements Serializable {
     @Column(name = "keyword_notification_id", nullable = false)
     private int keywordNotificationId;
 
-    public HasReadKeywordNotificationKey() {
+    public HasKeywordNotificationId() {
         // no args constructor
     }
 
