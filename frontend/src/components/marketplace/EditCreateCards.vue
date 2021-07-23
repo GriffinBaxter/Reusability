@@ -502,6 +502,61 @@ export default {
      * */
     editCurrentCard() {
       console.log('test')
+      console.log(this.id);
+
+      // Prevent the default submission click
+      this.submitAttempted = true;
+
+      if (!this.isCardDataValid()) {
+        return;
+      }
+
+      // If we are not an admin then we need to update the creatorId.
+      if (!this.user.isAdministrator(this.userRole)) {
+        this.creatorId = Cookies.get("userID")
+      }
+
+      // Check for existing keywords and create ones that don't already exist
+
+
+      // Object to hold the updated fields
+      const updatedCard = {
+        creatorId: this.creatorId,
+        section: this.sectionSelected,
+        title: this.title,
+        description: this.description,
+        keywords: this.getKeywords()
+      }
+
+      console.log(updatedCard)
+
+      Api.editCard(this.id, updatedCard).then(
+          (res) => {
+            if (res.status === 200) {
+              this.$emit("new-card-created");
+              this.$parent.hideModal()
+              this.$router.go();
+            }
+          }
+      ).catch(
+          (error) => {
+            if (error.response) {
+              if (error.response.status === 400) {
+                this.modalError = `Error: ` + error.response.data.message;
+              } else if (error.response.status === 401) {
+                this.modalError = `401: Access token missing`;
+              } else if (error.response.status === 403) {
+                this.modalError = `403: Cannot edit card for another user if not GAA or DGAA.`;
+              } else {
+                this.modalError = `${error.response.status}: SOMETHING WENT WRONG`;
+              }
+            } else if (error.request) {
+              this.modalError = "Server Timeout"
+            } else {
+              this.modalError = "Unexpected error occurred."
+            }
+          }
+      )
     },
     /**
      * Takes a string and adds the keyword prefix symbol to the front of the string.

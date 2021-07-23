@@ -235,7 +235,13 @@ export default {
             withCredentials: true
         })
     },
-    
+
+    editCard: (cardId, updatedCard) => {
+        return instance.put(`/cards/${cardId}`, {...updatedCard},{
+            withCredentials: true
+        })
+    },
+
     // Sends a get request to the backend to search for keywords by partial (or complete) name.
     searchKeywords: (searchQuery) => {
         return instance.get(`/keywords/search?searchQuery=${searchQuery}`, {
