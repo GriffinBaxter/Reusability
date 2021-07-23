@@ -91,7 +91,7 @@ describe("Testing the behaviour of prefilled input fields", () => {
 
 describe("Testing the creation of new keywords if they don't exist", () => {
 
-    test("Test that the keyword's ID is added to the component's newKeywordIDs list", async () => {
+    test("Test that the keyword's ID is added to the component's newKeywordIDs list with a successful 201 response", async () => {
 
         let mockResponse = {
             status: 201,
@@ -124,9 +124,319 @@ describe("Testing the creation of new keywords if they don't exist", () => {
         expect(editCreateCardModal.vm.$data.newKeywordIDs).toEqual([50, 50, 50]);
     })
 
+    test("Testing createKeywordIfNotExisting when a 400 response is received from Api", async () => {
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            response: {
+                status: 400,
+                data: {
+                    message: "this is a test"
+                }
+            }
+        }
+
+        Api.addNewKeyword.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await editCardModalWrapper.vm.createKeywordIfNotExisting();
+        await editCardModalWrapper.vm.$nextTick();
+
+        expect(editCardModalWrapper.vm.modalError).toBe('Error: this is a test');
+    });
+
+    test("Testing createKeywordIfNotExisting when a 401 response is received from Api", async () => {
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            response: {
+                status: 401,
+                data: {
+                    message: "test error 123"
+                }
+            }
+        };
+
+        Api.addNewKeyword.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await editCardModalWrapper.vm.createKeywordIfNotExisting();
+        await editCardModalWrapper.vm.$nextTick();
+
+        expect(editCardModalWrapper.vm.modalError).toBe('401: Access token missing');
+    });
+
+    test("Testing createKeywordIfNotExisting when a different error response is received from Api", async () => {
+        let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            response: {
+                status: 404,
+                data: {
+                    message: "test1234"
+                }
+            }
+        };
+
+        Api.addNewKeyword.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await createCardModalWrapper.vm.createKeywordIfNotExisting();
+        await createCardModalWrapper.vm.$nextTick();
+
+        expect(createCardModalWrapper.vm.modalError).toBe('404: SOMETHING WENT WRONG');
+    });
+
+    test("Testing createKeywordIfNotExisting when an error request is received from Api", async () => {
+        let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            request: {
+            }
+        };
+
+        Api.addNewKeyword.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await createCardModalWrapper.vm.createKeywordIfNotExisting();
+        await createCardModalWrapper.vm.$nextTick();
+
+        expect(createCardModalWrapper.vm.modalError).toBe('Server Timeout');
+    });
+
+    test("Testing createKeywordIfNotExisting when a different error is received from Api", async () => {
+        let createCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {};
+
+        Api.addNewKeyword.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await createCardModalWrapper.vm.createKeywordIfNotExisting();
+        await createCardModalWrapper.vm.$nextTick();
+
+        expect(createCardModalWrapper.vm.modalError).toBe('Unexpected error occurred.');
+    });
+
 })
 
 describe("Testing the behaviour of the save button", () => {
 
+    test("Testing editCurrentCard when 200 response is received from Api", async () => {
+
+        let $router = {
+            go: jest.fn()
+        };
+
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {
+            mocks: {
+                $router
+            }
+        });
+
+        editCardModalWrapper.vm.submitAttempted = true;
+        editCardModalWrapper.vm.sectionSelected = 'ForSale';
+        editCardModalWrapper.vm.title = 'Card';
+        editCardModalWrapper.vm.description = 'My test description';
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            status: 200
+        }
+
+        Api.editCard.mockImplementation( () => Promise.resolve(mockResponse) );
+
+        await editCardModalWrapper.vm.editCurrentCard();
+
+        expect(editCardModalWrapper.emitted("new-card-created")).toBeTruthy();
+    });
+
+    test("Testing editCurrentCard when a 400 response is received from Api", async () => {
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        editCardModalWrapper.vm.submitAttempted = true;
+        editCardModalWrapper.vm.sectionSelected = 'Wanted';
+        editCardModalWrapper.vm.title = 'Card';
+        editCardModalWrapper.vm.description = 'My test description';
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            response: {
+                status: 400,
+                data: {
+                    message: "Hello, this is a test"
+                }
+            }
+        }
+
+        Api.editCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await editCardModalWrapper.vm.editCurrentCard();
+        await editCardModalWrapper.vm.$nextTick();
+
+        expect(editCardModalWrapper.vm.modalError).toBe('Error: Hello, this is a test');
+    });
+
+    test("Testing editCurrentCard when a 401 response is received from Api", async () => {
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        editCardModalWrapper.vm.submitAttempted = true;
+        editCardModalWrapper.vm.sectionSelected = 'Exchange';
+        editCardModalWrapper.vm.title = 'Card';
+        editCardModalWrapper.vm.description = 'My test description';
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            response: {
+                status: 401,
+                data: {
+                    message: "test error"
+                }
+            }
+        };
+
+        Api.editCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await editCardModalWrapper.vm.editCurrentCard();
+        await editCardModalWrapper.vm.$nextTick();
+
+        expect(editCardModalWrapper.vm.modalError).toBe('401: Access token missing');
+    });
+
+    test("Testing editCurrentCard when a 403 response is received from Api", async () => {
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        editCardModalWrapper.vm.submitAttempted = true;
+        editCardModalWrapper.vm.sectionSelected = 'Exchange';
+        editCardModalWrapper.vm.title = 'Card';
+        editCardModalWrapper.vm.description = 'My new desc';
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            response: {
+                status: 403,
+                data: {
+                    message: "test"
+                }
+            }
+        };
+
+        Api.editCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await editCardModalWrapper.vm.editCurrentCard();
+        await editCardModalWrapper.vm.$nextTick();
+
+        expect(editCardModalWrapper.vm.modalError).toBe('403: Cannot edit card for another user if not GAA or DGAA.');
+    });
+
+    test("Testing editCurrentCard when a different error response is received from Api", async () => {
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        editCardModalWrapper.vm.submitAttempted = true;
+        editCardModalWrapper.vm.sectionSelected = 'Wanted';
+        editCardModalWrapper.vm.title = 'Card';
+        editCardModalWrapper.vm.description = 'TEST';
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            response: {
+                status: 404,
+                data: {
+                    message: "test123"
+                }
+            }
+        };
+
+        Api.editCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await editCardModalWrapper.vm.editCurrentCard();
+        await editCardModalWrapper.vm.$nextTick();
+
+        expect(editCardModalWrapper.vm.modalError).toBe('404: SOMETHING WENT WRONG');
+    });
+
+    test("Testing editCurrentCard when there is an API request error", async () => {
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        editCardModalWrapper.vm.submitAttempted = true;
+        editCardModalWrapper.vm.sectionSelected = 'ForSale';
+        editCardModalWrapper.vm.title = 'Card';
+        editCardModalWrapper.vm.description = 'Desc';
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            request: {
+            }
+        };
+
+        Api.editCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await editCardModalWrapper.vm.editCurrentCard();
+        await editCardModalWrapper.vm.$nextTick();
+
+        expect(editCardModalWrapper.vm.modalError).toBe('Server Timeout');
+    });
+
+    test("Testing editCurrentCard when a different error is received from Api", async () => {
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {});
+
+        editCardModalWrapper.vm.submitAttempted = true;
+        editCardModalWrapper.vm.sectionSelected = 'ForSale';
+        editCardModalWrapper.vm.title = 'Card';
+        editCardModalWrapper.vm.description = 'Desc';
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {};
+
+        Api.editCard.mockImplementation( () => Promise.reject(mockResponse) );
+
+        await editCardModalWrapper.vm.editCurrentCard();
+        await editCardModalWrapper.vm.$nextTick();
+
+        expect(editCardModalWrapper.vm.modalError).toBe('Unexpected error occurred.');
+    });
+
+    test("Testing that the newKeywordIDs list in the edit card component is cleared after successfully editing a card", async () => {
+
+        let $router = {
+            go: jest.fn()
+        };
+
+        let editCardModalWrapper = shallowMount(EditCreateCardModal, {
+            mocks: {
+                $router
+            }
+        });
+
+        editCardModalWrapper.vm.submitAttempted = true;
+        editCardModalWrapper.vm.sectionSelected = 'ForSale';
+        editCardModalWrapper.vm.title = 'Card';
+        editCardModalWrapper.vm.description = 'My test description';
+
+        Cookies.get.mockReturnValue(36);
+
+        let mockResponse = {
+            status: 200
+        }
+
+        Api.editCard.mockImplementation( () => Promise.resolve(mockResponse) );
+
+        await editCardModalWrapper.vm.editCurrentCard();
+
+        expect(editCardModalWrapper.vm.$data.newKeywordIDs.length).toBe(0);
+
+    });
 
 })
