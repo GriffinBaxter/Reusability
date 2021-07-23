@@ -14,54 +14,55 @@ const localVue = createLocalVue();
 localVue.use(VueLogger, {isEnabled : false});
 localVue.use(VueRouter);
 
+let editCreateCardModal;
+
+beforeEach(async () => {
+    const mockGetUserApiResponse = {
+        status: 200,
+        data: {
+            firstName: "FIRST_NAME",
+            lastName: "LAST_NAME",
+            role: UserRole.DEFAULTGLOBALAPPLICATIONADMIN,
+            homeAddress: {
+                city: "CITY",
+                suburb: "SUBURB"
+            },
+        }
+    }
+    // Mocking the API call response
+    const mockApiResponse = {
+        status: 200,
+        data: {
+            id: 1,
+            section: "FORSALE",
+            title: "TestTitle",
+            description: "Card for testing",
+            keywords: [
+                {
+                    id: 5,
+                    name: "Key"
+                }
+            ]
+        }
+    }
+
+    // Mock the Cookie get
+    Cookies.get.mockReturnValue(36)
+
+    // Mock the API Calls
+    await Api.getUser.mockImplementation(() => Promise.resolve(mockGetUserApiResponse))
+    await Api.getDetailForACard.mockImplementation(() => Promise.resolve(mockApiResponse));
+
+    editCreateCardModal = await shallowMount(EditCreateCardModal, {localVue})
+    await editCreateCardModal.vm.$nextTick();
+
+    // Mock opening the modal
+    editCreateCardModal.vm.setData(1);
+    await editCreateCardModal.vm.$nextTick();
+})
+
 describe("Testing the behaviour of prefilled input fields", () => {
 
-    let editCreateCardModal;
-
-    beforeEach(async () => {
-        const mockGetUserApiResponse = {
-            status: 200,
-            data: {
-                firstName: "FIRST_NAME",
-                lastName: "LAST_NAME",
-                role: UserRole.DEFAULTGLOBALAPPLICATIONADMIN,
-                homeAddress: {
-                    city: "CITY",
-                    suburb: "SUBURB"
-                },
-            }
-        }
-        // Mocking the API call response
-        const mockApiResponse = {
-            status: 200,
-            data: {
-                id: 1,
-                section: "FORSALE",
-                title: "TestTitle",
-                description: "Card for testing",
-                keywords: [
-                    {
-                        id: 5,
-                        name: "Key"
-                    }
-                ]
-            }
-        }
-
-        // Mock the Cookie get
-        Cookies.get.mockReturnValue(36)
-
-        // Mock the API Calls
-        await Api.getUser.mockImplementation(() => Promise.resolve(mockGetUserApiResponse))
-        await Api.getDetailForACard.mockImplementation(() => Promise.resolve(mockApiResponse));
-
-        editCreateCardModal = await shallowMount(EditCreateCardModal, {localVue})
-        await editCreateCardModal.vm.$nextTick();
-
-        // Mock opening the modal
-        editCreateCardModal.vm.setData(1);
-        await editCreateCardModal.vm.$nextTick();
-    })
 
     test("Test that the title returned from the Api is stored in the input by default.", async () => {
         // Checking the title has been set correctly
@@ -86,4 +87,46 @@ describe("Testing the behaviour of prefilled input fields", () => {
         expect(editCreateCardModal.find("#card-keywords").exists()).toBe(true);
         expect(editCreateCardModal.find("#card-keywords").element.value).toBe("#Key");
     })
+})
+
+describe("Testing the creation of new keywords if they don't exist", () => {
+
+    test("Test that the keyword's ID is added to the component's newKeywordIDs list", async () => {
+
+        let mockResponse = {
+            status: 201,
+            data: {
+                keywordId: 50
+            }
+        }
+
+        Api.addNewKeyword.mockImplementation (() => Promise.resolve(mockResponse) );
+        await editCreateCardModal.vm.createKeywordIfNotExisting("testKeyword");
+
+        expect(editCreateCardModal.vm.$data.newKeywordIDs).toEqual([50]);
+
+    })
+
+    test("Test that multiple calls to the createKeywordIfNotExisting correctly add all keyword IDs to the component's newKeywordIDs list", async () => {
+
+        let mockResponse = {
+            status: 201,
+            data: {
+                keywordId: 50
+            }
+        }
+
+        Api.addNewKeyword.mockImplementation (() => Promise.resolve(mockResponse) );
+        await editCreateCardModal.vm.createKeywordIfNotExisting("testKeyword");
+        await editCreateCardModal.vm.createKeywordIfNotExisting("testKeyword");
+        await editCreateCardModal.vm.createKeywordIfNotExisting("testKeyword");
+
+        expect(editCreateCardModal.vm.$data.newKeywordIDs).toEqual([50, 50, 50]);
+    })
+
+})
+
+describe("Testing the behaviour of the save button", () => {
+
+
 })
