@@ -734,6 +734,10 @@ export default {
      * retrieved.
      */
     getCurrentKeywordStartEnd() {
+      if (this.textCursorPosition === undefined) {
+        this.textCursorPosition = 0
+      }
+
       let currentKeywordStart = this.keywordsInput.substring(0, this.textCursorPosition + 1).lastIndexOf("#");
 
       if (currentKeywordStart !== -1) {
