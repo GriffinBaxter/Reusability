@@ -15,34 +15,36 @@ import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.util.Optional;
 
+/**
+ * Provides the user with the ability to load, store and delete files from the storage folder in the file system.
+ */
 @Service
 public class FileStorageService {
 
     private final Path rootPath;
     private static final Logger logger = LogManager.getLogger(FileStorageService.class.getName());
 
-
-    public FileStorageService(@Value("storage") String folderName) {
-        this.rootPath = Paths.get(folderName);
+    /**
+     * Ensures that the FileStorageService is ready
+     * @param folderName relative sub directory path of /storage/** leading to where you want to create you files.
+     */
+    public FileStorageService(@Value("") String folderName) {
+        this.rootPath = Paths.get("storage/" + folderName);
         this.initialize();
-    }
-
-    public String toString() {
-        return rootPath.toString();
     }
 
     /**
      * Initializes the directory which stores files (by creating it if it does not exist)
-     *
      */
     public void initialize() {
         try {
-            Files.createDirectory(rootPath);
+            Files.createDirectories(rootPath);
             String log = "Successfully created " + rootPath + " directory";
             logger.info(log);
         } catch (IOException e) {
             String log = "Failed to create " + rootPath + " directory";
-            logger.error(log);
+            logger.error(log, e);
+            System.exit(1);
         }
     }
 
@@ -52,8 +54,9 @@ public class FileStorageService {
      * @param file The file to be stored.
      * @param fileName The final place to store it.
      * @return true if the file was stored correctly. Otherwise false.
+     * @throws FileAlreadyExistsException When the file attempting to be creating already exists in the file system.
      */
-    public boolean storeFile(MultipartFile file, String fileName) {
+    public boolean storeFile(MultipartFile file, String fileName) throws FileAlreadyExistsException{
         try {
             Files.copy(file.getInputStream(), this.rootPath.resolve(fileName));
             String log = "Successfully stored file into " + fileName;

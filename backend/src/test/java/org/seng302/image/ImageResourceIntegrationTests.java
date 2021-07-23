@@ -247,7 +247,7 @@ class ImageResourceIntegrationTests {
         businessId = business.getId();
 
         primaryImage = new Image(1, productId, businessId, "test/test", "test/test", true);
-        fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly().useConstructor("test-images"));
+        fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly());
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
     }

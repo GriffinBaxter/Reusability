@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 
 /**
@@ -48,14 +48,10 @@ public class ImageResource {
     private ImageRepository imageRepository;
 
     @Autowired
-    @Value("product-images")
+    @Value("storage/product-images")
     private FileStorageService fileStorageService;
 
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
-
-    // Constant fields defining the directories of regular photos and test photos
-    private static final String PHOTO_DIRECTORY = "/storage/photos/";
-    private static final String TEST_PHOTO_DIRECTORY = "/storage/photos/test/";
 
     public ImageResource() {}
 
@@ -66,7 +62,6 @@ public class ImageResource {
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
         this.fileStorageService = fileStorageService;
-        System.out.println(this.fileStorageService.toString());
     }
 
     @PostMapping("/businesses/{businessId}/products/{productId}/images")
@@ -76,7 +71,6 @@ public class ImageResource {
             @PathVariable Integer businessId,
             @PathVariable String productId
     ) {
-        System.out.println(this.fileStorageService.toString());
 
         // Verify token access
         User user = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -93,50 +87,65 @@ public class ImageResource {
         // Verify the file type
         String imageFileName = image.getOriginalFilename();
 
+        // Check file has the original name attached
         if (imageFileName == null) {
             logger.error("Image uploaded was missing original file name.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image was missing a file name.");
         }
 
+        // Checking file extension
         String imageType = getFileExtension(imageFileName);
         if (!imageType.equalsIgnoreCase("jpg") && !imageType.equalsIgnoreCase("jpeg") &&
                 !imageType.equalsIgnoreCase("png") && !imageType.equalsIgnoreCase("gif")) {
 
-            String debugMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", image.getName());
-            logger.error(debugMessage);
+            String errorMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", image.getName());
+            logger.error(errorMessage);
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The file type of the image uploaded is not " +
                     "supported. Only JPG, JPEG, PNG and GIF are supported.");
         }
 
-        // Store the images
+        // Store the images in the file system
         String fileName = null;
         try {
             UUID uuid = UUID.randomUUID();
-            fileName = uuid + "." + getFileExtension(image.getOriginalFilename());
+            fileName = uuid + "." + getFileExtension(imageFileName);
             if (!fileStorageService.storeFile(image, fileName)) {
                 throw new IOException("Failed to store images");
             }
         }
-        catch (Exception e) {
+        // If the file already exists then we need to just something went wrong
+        catch (FileAlreadyExistsException e) {
+            String errorMessage = String.format("File already existed. Canceling storage of image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
+            logger.error(errorMessage);
+            fileStorageService.deleteFile(fileName);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
+        }
+        // If this fails we need to ensure it was removed.
+        catch (IOException e) {
             String errorMessage = String.format("Failed to store image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
             logger.error(errorMessage);
             fileStorageService.deleteFile(fileName);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
         }
 
-        String path = fileStorageService.getPathString(fileName);
-        if (path != null) {
-            List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
-            boolean isFirstImage = false;
-            if (primaryImages.isEmpty()) {
-                isFirstImage = true;
-            }
-            Image imageObj = new Image(productId, businessId, path, path, isFirstImage);
-            imageObj = imageRepository.saveAndFlush(imageObj);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(imageObj.getId()));
+        // If we cannot get the file path, then we have to assume that it failed.
+        String imageFilePath = fileStorageService.getPathString(fileName);
+        if (imageFilePath == null) {
+            fileStorageService.deleteFile(fileName);
+            String errorMessage = String.format("Failed to locate image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored");
         }
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored");
+
+        // Store the image data in an object
+        List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
+        boolean isFirstImage = primaryImages.isEmpty();
+        Image storedImage = imageRepository.saveAndFlush(new Image(productId, businessId, imageFilePath, imageFilePath, isFirstImage));
+
+        String successMessage = String.format("Successfully uploaded and stored image under filename \"%s\", for product id: \"%s\", for business id: \"%d\", by a user (id: %d)", storedImage.getFilename(), productId, businessId, user.getId());
+        logger.info(successMessage);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(storedImage.getId()));
 
     }
 
