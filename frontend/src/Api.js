@@ -248,6 +248,13 @@ export default {
         return instance.get(`/keywords/search?searchQuery=${searchQuery}`, {
             withCredentials: true
         })
-    }
+    },
+
+    // Extends a given card's display period by 2 weeks.
+    extendCardDisplayPeriod: (id) => {
+        return instance.put(`/cards/${id}/extenddisplayperiod`,{}, {
+            withCredentials: true
+        })
+    },
 
 }

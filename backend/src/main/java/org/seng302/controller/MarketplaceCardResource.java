@@ -425,6 +425,9 @@ public class MarketplaceCardResource {
         }
 
         marketplaceCard.extendDisplayPeriod();
+
+//        marketCardNotificationRepository.deleteAllByMarketCardId(marketplaceCard.getId());
+
         marketplaceCardRepository.save(marketplaceCard);
         logger.info("Marketplace Card Modification Success - 200 [OK] - Marketplace card with ID {} has had its display period extended to {}.", id, marketplaceCard.getDisplayPeriodEnd());
     }
