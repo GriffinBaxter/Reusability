@@ -65,6 +65,17 @@ export default {
       if (event.keyCode === 13) {
         // Enter pressed
         const inputQuery = this.$refs.searchInput.value;
+        // Checks current route isn't target route
+        if (this.$route.name === 'Search' && this.$route.query['type'] === this.searchType && this.$route.query['searchQuery'] === inputQuery) {
+          if (this.searchType === 'Business') {
+            if (this.$route.query['businessType'] === this.selectedBusinessType) {
+              return
+            }
+          } else {
+            return;
+          }
+        }
+
         if (this.searchType === 'User') {
           this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
           this.$emit('requestUsers', inputQuery);
@@ -80,6 +91,16 @@ export default {
      */
     searchClicked() {
       const inputQuery = this.$refs.searchInput.value;
+      // Checks current route isn't target route
+      if (this.$route.name === 'Search' && this.$route.query['type'] === this.searchType && this.$route.query['searchQuery'] === inputQuery) {
+        if (this.searchType === 'Business') {
+          if (this.$route.query['businessType'] === this.selectedBusinessType) {
+            return
+          }
+        } else {
+          return;
+        }
+      }
       if (this.searchType === 'User') {
         this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
         this.$emit('requestUsers', inputQuery);
