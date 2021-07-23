@@ -448,7 +448,7 @@ export default {
      * Performs an API call to the backend to create a new card.
      * @param event {Event} The click event on the submission button.
      * */
-    createNewCard() {
+    async createNewCard() {
       // Prevent the default submission click
       this.submitAttempted = true;
 
@@ -461,13 +461,19 @@ export default {
         this.creatorId = Cookies.get("userID")
       }
 
+      const keywords = this.getKeywords();
+      for (const keyword of keywords) {
+        await this.createKeywordIfNotExisting(keyword);
+      }
+      const keywordIds = this.newKeywordIDs;
+
       // Create the new card and assign it the content
       const newCard = {
         creatorId: this.creatorId,
         section: this.sectionSelected,
         title: this.title,
         description: this.description,
-        keywords: this.getKeywords()
+        keywordIds: keywordIds
       }
 
       Api.addNewCard(newCard).then(
