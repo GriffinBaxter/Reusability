@@ -38,7 +38,7 @@
                 <!-- Images -->
                 <div class="row">
                   <div v-if="images.length === 0">
-                    No images Uploaded
+                    No Images Uploaded
                   </div>
                   <div class="row">
                     <div class="col-3" v-for="image in images" v-bind:key="image.id">
@@ -51,7 +51,7 @@
                 <!-- Buttons -->
                 <div v-if="selectedImage != null">
                   <hr>
-                  <button class="btn btn-danger">Delete Image</button>
+                  <button class="btn btn-danger" @click="deleteSelectedImage()">Delete Image</button>
                   <button v-if="selectedImage != primaryImage" class="btn btn-outline-success float-end">Set Primary Image</button>
                 </div>
               </div>
@@ -69,7 +69,7 @@
 <script>
 import Product from "../../configs/Product";
 import {Modal} from "bootstrap";
-import Api from "@/Api";
+import Api from "../../Api"
 
 export default {
   name: "UpdateProductImagesModal",
@@ -95,19 +95,10 @@ export default {
       primaryImage: 0,
       primaryImageFilename: "",
 
+      // if an error occurs when a user performs an action then the appropriate error message needs to be displayed.
       formErrorModalMessage: "",
 
-      // temp image values
-      images: [
-        {
-          src:require("../../../public/apples.jpg"),
-          id:0
-        },
-        {
-          src:require("../../../public/clothes.jpg"),
-          id:1
-        }
-      ],
+      images: [],
 
       // Create the object that will store the data
       currentProduct: new Product(this.value.data)
@@ -135,7 +126,7 @@ export default {
 
       for (let image of this.currentProduct.data.images) {
         if (image.isPrimary) {
-          this.primaryImage = image.id
+          this.primaryImage = image.id;
           this.primaryImageFilename = image.filename;
         }
       }
@@ -163,6 +154,35 @@ export default {
 
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
+    },
+
+    /**
+     * When a user selects an image and clicks delete then a call is made to the backend for the selected image
+     * to delete it.
+     */
+    deleteSelectedImage() {
+      Api.deleteProductImage(this.businessId, this.currentProduct.data.id , this.selectedImage).then(
+          response => {
+            if (response.status === 200) {
+              this.formErrorModalMessage = "";
+              // remove the deleted image from the list of images to show.
+              this.images = this.images.filter(item => item.id !== this.selectedImage);
+            } else {
+              this.formErrorModalMessage = "Sorry, something went wrong...";
+            }
+          }
+      ).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 403) {
+          this.formErrorModalMessage = "Sorry, you do not have permission to delete this image.";
+        } else if (error.response.status === 406) {
+          this.formErrorModalMessage = "Sorry, something went wrong...";
+        } else {
+          this.$router.push({path: '/timeout'});
+          console.log(error.message);
+        }
+      })
     }
   },
   mounted() {

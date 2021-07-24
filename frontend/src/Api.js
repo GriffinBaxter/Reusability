@@ -266,6 +266,12 @@ export default {
         return instance.post(`/keywords`, {...newKeyword},{
             withCredentials: true
         })
-    }
+    },
 
+    // Sends a delete request to the backend to delete the image of a selected product for a business.
+    deleteProductImage: (businessId, productId, imageId) => {
+        return instance.delete(`/businesses/${businessId}/products/${productId}/images/${imageId}`, {
+            withCredentials: true
+        })
+    }
 }
