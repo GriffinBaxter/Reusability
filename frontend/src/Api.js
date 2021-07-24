@@ -270,4 +270,11 @@ export default {
         })
     },
 
+    // System administrators can delete a keyword.  Keyword is removed from the list and from any cards it appears on.
+    deleteExistingKeyword: (id) => {
+        return instance.delete(`/keywords/${id}`,  {
+            withCredentials: true
+        })
+    }
+
 }
