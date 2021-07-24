@@ -1,7 +1,7 @@
 <template>
     <div class="row">
       <div class="col-md-3">
-        <img class="card-img mt-4" :src="require('../../../public/apples.jpg')" id="product-image">
+        <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image">
       </div>
       <div class="col-md-9">
         <div class="card-body px-3">
@@ -85,6 +85,7 @@ export default {
     }
   },
   mounted() {
+    document.getElementById("product-image").src = require('../../../public/default-product.jpg');
     if (this.images.length > 0) {
       for (let image of this.images) {
         if (image.isPrimary) {

@@ -25,7 +25,7 @@
               <!-- Primary Image -->
               <div class="col-lg-4">
                 <h5>Primary Image:</h5>
-                <img class="card-img px-5 px-lg-0 mb-3" :src="getImageSrc(primaryImageFilename)" id="primary-image">
+                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../../public/default-product.jpg')" id="primary-image">
               </div>
 
               <div class="col-lg-8">
@@ -139,9 +139,16 @@ export default {
           this.primaryImageFilename = image.filename;
         }
       }
-      
+
       this.images = this.currentProduct.data.images;
 
+      if (this.images.length > 0) {
+        document.getElementById("primary-image").src = this.getImageSrc(this.primaryImageFilename);
+      } else {
+        document.getElementById("primary-image").src = require('../../../public/default-product.jpg');
+      }
+
+      this.selectedImage = null;
       // Show the modal
       this.modal.show();
     },
@@ -153,7 +160,7 @@ export default {
         this.selectedImage = id;
       }
     },
-    
+
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
     }

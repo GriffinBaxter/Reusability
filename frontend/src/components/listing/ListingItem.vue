@@ -4,7 +4,7 @@
       <div class="row" id="mainContent">
         <div class="col-12 col-sm-3">
           <div class="ratio ratio-4x3">
-          <img class="card-img" :src="require('../../../public/apples.jpg')" id="listing-item-image">
+          <img class="card-img" :src="require('../../../public/default-product.jpg')" id="listing-item-image">
           </div>
         </div>
         <div class="col">
@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import Api from "@/Api";
+
 export default {
   name: "ListingItem",
   props: {
@@ -113,8 +115,23 @@ export default {
       type: String,
       default: "",
       required: false
+    },
+    images: {
+      type: Array,
+      default: null,
+      required: false
     }
-
+  },
+  mounted() {
+    document.getElementById("listing-item-image").src = require('../../../public/default-product.jpg');
+    if (this.images.length > 0) {
+      for (let image of this.images) {
+        if (image.isPrimary) {
+          document.getElementById("listing-item-image").src = Api.getServerURL() + "/" + image.filename;
+          break;
+        }
+      }
+    }
   }
 }
 </script>
