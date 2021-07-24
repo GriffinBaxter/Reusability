@@ -10,20 +10,22 @@ public class ImagePayload {
     private Integer id;
     private String filename;
     private String thumbnailFilename;
+    private boolean isPrimary;
 
-
-    public ImagePayload(Integer id, String filename, String thumbnailFilename) {
+    public ImagePayload(Integer id, String filename, String thumbnailFilename, boolean isPrimary) {
         this.id = id;
         this.filename = filename;
         this.thumbnailFilename = thumbnailFilename;
-
+        this.isPrimary = isPrimary;
     }
 
     public static List<ImagePayload> convertToImagePayload(List<Image> images) {
         List<ImagePayload> payloads = new ArrayList<>();
         if (images != null) {
             for (Image image : images) {
-                ImagePayload newPayload = new ImagePayload(image.getId(), image.getFilename(), image.getThumbnailFilename());
+                ImagePayload newPayload = new ImagePayload(
+                        image.getId(), image.getFilename(), image.getThumbnailFilename(), image.getIsPrimary()
+                );
                 payloads.add(newPayload);
             }
         }
@@ -52,5 +54,13 @@ public class ImagePayload {
 
     public void setThumbnailFilename(String thumbnailFilename) {
         this.thumbnailFilename = thumbnailFilename;
+    }
+
+    public boolean getIsPrimary() {
+        return isPrimary;
+    }
+
+    public void setIsPrimary(boolean isPrimary) {
+        this.isPrimary = isPrimary;
     }
 }
