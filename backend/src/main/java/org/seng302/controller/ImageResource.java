@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
@@ -149,6 +150,7 @@ public class ImageResource {
 
     }
 
+    @Transactional
     @DeleteMapping("/businesses/{businessId}/products/{productId}/images/{imageId}")
     @ResponseStatus(value = HttpStatus.OK, reason = "Image deleted successfully")
     public void deleteImage(
@@ -171,15 +173,7 @@ public class ImageResource {
         verifyProductId(productId, business, user);
 
         // Verify image id
-        Image image = verifyImageId(imageId, businessId, productId, user);
-
-        // verify file exists & delete image
-        if (!fileStorageService.deleteFile(image.getFilename()) ) {
-            String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
-        }
+        verifyImageId(imageId, businessId, productId, user);
 
         // Delete from database
         imageRepository.deleteByIdAndBussinesIdAndProductId(imageId, businessId, productId);
