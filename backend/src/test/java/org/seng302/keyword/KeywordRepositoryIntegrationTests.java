@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class KeywordRepositoryIntegrationTests {
+class KeywordRepositoryIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;

@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class KeywordResourceIntegrationTests {
+class KeywordResourceIntegrationTests {
     @Autowired
     private MockMvc mvc;
 
@@ -331,9 +331,9 @@ public class KeywordResourceIntegrationTests {
     void returnsListOfKeywordsWhenQuerySubstringExists() throws Exception {
         String searchQuery = "ou";
 
-        String expectedJson = "[{\"id\":0,\"name\":\"Resource\",\"created\":\"2021-01-01T01:01:00\"}," +
-                "{\"id\":0,\"name\":\"Our\",\"created\":\"2021-01-01T01:01:00\"}," +
-                "{\"id\":0,\"name\":\"Out\",\"created\":\"2021-01-01T01:01:00\"}]";
+        String expectedJson = "[{\"id\":0,\"name\":\"Resource\",\"created\":\"2021-01-01T01:01\"}," +
+                "{\"id\":0,\"name\":\"Our\",\"created\":\"2021-01-01T01:01\"}," +
+                "{\"id\":0,\"name\":\"Out\",\"created\":\"2021-01-01T01:01\"}]";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(keywords);

@@ -21,6 +21,7 @@ import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,7 +36,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 public class CardExpirationStepDefs extends CucumberSpringConfiguration {
 
@@ -61,6 +64,7 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
     private MockHttpServletResponse response;
 
     private User user;
+    private User anotherUser;
     private MarketplaceCard card;
     private LocalDateTime initialDisplayPeriodEnd;
 
@@ -79,8 +83,8 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
         )).build();
     }
 
-    @Given("I am logged in and have already created a card.")
-    public void iAmLoggedInAndHaveAlreadyCreatedACard() throws IllegalAddressArgumentException, IllegalUserArgumentException, IllegalMarketplaceCardArgumentException {
+    @Given("I am logged in as a user and have already created a card.")
+    public void iAmLoggedInAsAUserAndHaveAlreadyCreatedACard() throws IllegalAddressArgumentException, IllegalUserArgumentException, IllegalMarketplaceCardArgumentException {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -102,7 +106,7 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
                 "Password123!",
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                Role.GLOBALAPPLICATIONADMIN);
+                Role.USER);
         user.setId(1);
         user.setSessionUUID(User.generateSessionUUID());
 
@@ -122,6 +126,83 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
 
         given(marketplaceCardRepository.findById(card.getId())).willReturn(Optional.ofNullable(card));
         Assertions.assertTrue(marketplaceCardRepository.findById(card.getId()).isPresent());
+    }
+
+    @When("I try to delete this card.")
+    public void i_try_to_delete_this_card() throws Exception {
+        when(marketplaceCardRepository.findById(card.getId())).thenReturn(Optional.ofNullable(card));
+
+        response = cardMVC.perform(delete(String.format("/cards/%d", card.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+    }
+
+    @Then("The card is successfully deleted.")
+    public void the_card_is_successfully_deleted() {
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Given("I login as a GAA.")
+    public void i_login_as_a_gaa() throws Exception {
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+
+        anotherUser = new User("Another",
+                "User",
+                "",
+                "AU",
+                "bio",
+                "anotheruser@example.com",
+                LocalDate.of(2000, 1, 1),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.GLOBALAPPLICATIONADMIN);
+        anotherUser.setId(2);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
+
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.of(anotherUser));
+        Assertions.assertTrue(userRepository.findBySessionUUID(anotherUser.getSessionUUID()).isPresent());
+    }
+
+    @Given("I login as a DGAA.")
+    public void i_login_as_a_dgaa() throws Exception {
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+
+        anotherUser = new User("Another",
+                "User",
+                "",
+                "AU",
+                "bio",
+                "anotheruser@example.com",
+                LocalDate.of(2000, 1, 1),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        anotherUser.setId(2);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
+
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.of(anotherUser));
+        Assertions.assertTrue(userRepository.findBySessionUUID(anotherUser.getSessionUUID()).isPresent());
     }
 
     @When("I extend the display period of the card.")
