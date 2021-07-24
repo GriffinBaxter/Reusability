@@ -12,6 +12,7 @@ import org.seng302.model.User;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.KeywordRepository;
+import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,10 @@ public class CardEditStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    @MockBean
+    private MarketCardNotificationRepository marketCardNotificationRepository;
+
     private MockHttpServletResponse response;
 
     private Address address;
@@ -85,7 +90,11 @@ public class CardEditStepDefs extends CucumberSpringConfiguration {
         keywordRepository = mock(KeywordRepository.class);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, keywordRepository)).build();
+                marketplaceCardRepository,
+                userRepository,
+                keywordRepository,
+                marketCardNotificationRepository
+        )).build();
     }
 
     @Given("I am logged in as a user and another user exists")

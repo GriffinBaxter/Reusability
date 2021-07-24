@@ -10,6 +10,7 @@ import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.KeywordRepository;
+import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,10 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
     @Autowired
     @MockBean
     private KeywordRepository keywordRepository;
+
+    @Autowired
+    @MockBean
+    private MarketCardNotificationRepository marketCardNotificationRepository;
 
 
     private MarketplaceCard marketplaceCard;
@@ -113,7 +118,9 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
         marketplaceCardRepository = mock(MarketplaceCardRepository.class);
         userRepository = mock(UserRepository.class);
         keywordRepository = mock(KeywordRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(marketplaceCardRepository, userRepository, keywordRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
+                marketplaceCardRepository, userRepository, keywordRepository, marketCardNotificationRepository
+        )).build();
     }
 
     @Given("A card with ID {int} exists in the database.")
