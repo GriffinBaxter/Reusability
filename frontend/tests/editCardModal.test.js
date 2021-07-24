@@ -55,6 +55,7 @@ beforeEach(async () => {
 
     editCreateCardModal = await shallowMount(EditCreateCardModal, {localVue})
     await editCreateCardModal.vm.$nextTick();
+    await editCreateCardModal.setProps({currentModal: "edit"});
 
     // Mock opening the modal
     editCreateCardModal.vm.setData(1);
@@ -84,8 +85,8 @@ describe("Testing the behaviour of prefilled input fields", () => {
 
     test("Test that the keywords returned from the Api is stored in the input by default.", async () => {
         // Checking the keywords has been set correctly
-        expect(editCreateCardModal.find("#card-keywords").exists()).toBe(true);
-        expect(editCreateCardModal.find("#card-keywords").element.value).toBe("#Key");
+        expect(editCreateCardModal.find("#card-keywords-edit").exists()).toBe(true);
+        expect(editCreateCardModal.find("#card-keywords-edit").element.value).toBe("#Key");
     })
 })
 
