@@ -14,7 +14,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" tabindex="-1"  ></button>
           </div>
 
-          <EditCreateCardModal ref="editCreateModal"/>
+          <EditCreateCardModal currentModal="create" ref="editCreateModal"/>
 
           <!-- Modal footer -->
           <div class="modal-footer">

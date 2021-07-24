@@ -93,12 +93,12 @@
       <!-- Card Keywords -->
       <div class="row my-4">
         <div class="col-md-3 ">
-          <label for="card-keywords" class="fw-bold">Keywords:</label>
+          <label v-bind:for="'card-keywords-' + this.$props.currentModal" class="fw-bold">Keywords:</label>
         </div>
         <div class="col-md">
           <div style="position: relative; height: 80px;" :class="`form-control ${formErrorClasses.keywordsError}`">
             <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; overflow-y: scroll" disabled />
-            <textarea ref="keywordsInput" id="card-keywords" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
+            <textarea ref="keywordsInput" v-bind:id="'card-keywords-' + this.$props.currentModal" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
                       @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
           </div>
                   <div id="autofill-container" ref="autofill-container">
@@ -129,6 +129,9 @@ import User, { UserRole} from "../../configs/User"
 
 export default {
   name: "EditCreateCardModal",
+  props: [
+      'currentModal'
+  ],
   data() {
     return {
       user: User,
@@ -664,7 +667,8 @@ export default {
      * or outside the keyword text-box).
      */
     onClickOrKeyUp() {
-      if ("card-keywords" === document.activeElement.id) {
+      const elementID = 'card-keywords-' + this.$props.currentModal;
+      if (elementID  === document.activeElement.id) {
         this.updateCursorPosition()
       } else {
         this.autocompleteKeywords = [];
@@ -676,7 +680,8 @@ export default {
      * suggestion, if there is no match, or if a click has been registered outside the text-box.
      */
     updateCursorPosition() {
-      this.textCursorPosition = document.getElementById('card-keywords').selectionStart;
+      const elementID = 'card-keywords-' + this.$props.currentModal;
+      this.textCursorPosition = document.getElementById(elementID).selectionStart;
       this.currentKeyword = "";
       this.autocompleteKeywords = [];
 
@@ -971,10 +976,6 @@ strong.keywordHighlight {
 
   #autofill-container {
     position: relative;
-  }
-
-  #card-keywords::-ms-expand {
-    display: none;
   }
 
   .autofill-options {
