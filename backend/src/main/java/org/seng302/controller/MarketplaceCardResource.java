@@ -3,12 +3,14 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
+import org.seng302.MainApplicationRunner;
 import org.seng302.exceptions.IllegalKeywordArgumentException;
 import org.seng302.exceptions.IllegalMarketplaceCardArgumentException;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.*;
 import org.seng302.model.repository.KeywordRepository;
+import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.utils.PaginationUtils;
@@ -55,6 +57,9 @@ public class MarketplaceCardResource {
     @Autowired
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    private MarketCardNotificationRepository marketCardNotificationRepository;
+
     private static final Logger logger = LogManager.getLogger(MarketplaceCardResource.class.getName());
 
     /**
@@ -66,11 +71,12 @@ public class MarketplaceCardResource {
      */
     public MarketplaceCardResource(
             MarketplaceCardRepository marketplaceCardRepository, UserRepository userRepository,
-            KeywordRepository keywordRepository
+            KeywordRepository keywordRepository, MarketCardNotificationRepository marketCardNotificationRepository
     ) {
         this.marketplaceCardRepository = marketplaceCardRepository;
         this.userRepository = userRepository;
         this.keywordRepository = keywordRepository;
+        this.marketCardNotificationRepository = marketCardNotificationRepository;
     }
 
     /**
@@ -236,7 +242,7 @@ public class MarketplaceCardResource {
             }
 
             // Checks if title was sent
-            if (updatedCardPayload.getTitle() == null){
+            if (updatedCardPayload.getTitle() == null) {
                 logger.error("Card Update Failure - 400 [BAD_REQUEST] - Title was not included");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title was not included");
             }
@@ -441,9 +447,9 @@ public class MarketplaceCardResource {
             @PathVariable Integer id
     ) throws Exception {
         Authorization.getUserVerifySession(sessionToken, userRepository);
-        
+
         Optional<User> cardsUser = userRepository.findById(id);
-        
+
         if (cardsUser.isEmpty()) {
             logger.error("406 [NOT ACCEPTABLE] - User with ID {} does not exist", id);
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The given user does not exist.");
@@ -460,12 +466,12 @@ public class MarketplaceCardResource {
             List<MarketplaceCardPayload> payload = new ArrayList<>();
             for (MarketplaceCard card : cards) {
                 LocalDateTime currentDateTime = LocalDateTime.now();
-                
+
                 if (card.getDisplayPeriodEnd().isAfter(currentDateTime)) {
                     payload.add(card.toMarketplaceCardPayload());
                 }
             }
-            
+
             return ResponseEntity.ok()
                     .body(payload);
         }
@@ -530,9 +536,21 @@ public class MarketplaceCardResource {
             );
         }
 
+        // delete selected card
+        logger.debug("Marketplace card ({}) has been deleted.", marketplaceCard.getTitle());
+        marketCardNotificationRepository.deleteAllByMarketCardId(marketplaceCard.getId());
         marketplaceCardRepository.delete(marketplaceCard);
 
         logger.info("Marketplace Card Delete Success - 200 [OK] -  Marketplace card with ID {} deleted", id);
         logger.debug("Delete marketplace card with ID {}: {}", id, marketplaceCard);
+
+        // Create and save delete message for selected card
+        MarketCardNotification deleteNotification = new MarketCardNotification(currentUser.getId(),
+                null,
+                String.format(MainApplicationRunner.DELETED_NOTIFICATION_MESSAGE, marketplaceCard.getTitle()),
+                LocalDateTime.now());
+        marketCardNotificationRepository.save(deleteNotification);
+
+        logger.debug("Notification message ({}) has been saved.", deleteNotification.getDescription());
     }
 }
