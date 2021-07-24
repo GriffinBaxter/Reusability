@@ -57,6 +57,10 @@
                 <div style="vertical-align:middle; font-size:15px;">
                   <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
                   <a v-bind:title="creator" style="font-size: 17px"> {{ displayCreator }} </a>
+                  <button v-if="deletePermissionCheck()" class="btn btn-outline-success"
+                          style="float:right"
+                          @click="openEdit"
+                          data-bs-dismiss="modal">Edit</button>
                   <button v-if="deletePermissionCheck()"
                           id="remove-card-button"
                           type="button"
@@ -201,6 +205,12 @@ export default {
         flag = (this.currentUserRole !== "USER")
       }
       return flag;
+    },
+    /**
+     * Opens the edit modal
+     */
+    openEdit() {
+      this.$parent.$refs.editCardModal.showModal(this.id)
     }
   },
   /**

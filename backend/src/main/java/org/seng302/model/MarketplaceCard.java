@@ -250,7 +250,7 @@ public class MarketplaceCard {
      * Removes all Keywords from the Marketplace Card
      */
     public void removeAllKeywords() {
-        while (0 > keywords.size()) {
+        while (!keywords.isEmpty()) {
             this.keywords.remove(0);
         }
     }
