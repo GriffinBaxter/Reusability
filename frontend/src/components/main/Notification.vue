@@ -26,19 +26,20 @@
         <div class="accordion-body">
           <div class="row">
             <div class="col" style="float: contour; text-align: center">
-              <button class="btn btn-outline-danger"
+              <button :id="'delete_button_' + card.id"
+                      class="btn btn-outline-danger"
                       @click="deleteCard(card.marketCardId)">
                 Delete Card
               </button>
             </div>
             <div class="col">
-              <button class="btn btn-outline-success"
+              <button :id="'extend_button_' + card.id"
+                      class="btn btn-outline-success"
                       @click="extendCardForDisplayPeriod(card.marketCardId)">
                 Extend Card for 2 Weeks
               </button>
             </div>
           </div>
-          <!--          <strong>More info and button here</strong>-->
         </div>
       </div>
     </div>
@@ -59,6 +60,23 @@ export default {
   props: {},
   methods: {
     /**
+     * catch errors.
+     */
+    errorCatcher(error) {
+      if (error.status === 401) {
+        // Missing or invalid token
+        this.$router.push({path: '/invalidtoken'});
+      } else if (error.status === 403) {
+        // No permission
+        this.$router.push({path: '/invalidtoken'});
+      } else if (error.status === 406) {
+        // Card not exist
+        this.$router.push({path: '/noCard'});
+      } else {
+        console.log(error)
+      }
+    },
+    /**
      * populate date from backend and update allNoticeCards.
      */
     populateNotification(data) {
@@ -78,13 +96,8 @@ export default {
      */
     loadNotifications() {
       Api.getNotifications()
-          .then(response => (this.populateNotification(response.data)))
-          .catch((error) => {
-            if (error.status === 401) {
-              // Missing or invalid token
-              this.$router.push({path: '/invalidtoken'});
-            }
-          })
+          .then(response => this.populateNotification(response.data))
+          .catch((error) => this.errorCatcher(error));
     },
     /**
      * delete a market card
@@ -92,23 +105,8 @@ export default {
      */
     deleteCard(id) {
       Api.deleteACard(id)
-          .then(() => {
-            this.loadNotifications();
-          })
-          .catch((error) => {
-            if (error.status === 401) {
-              // Missing or invalid token
-              this.$router.push({path: '/invalidtoken'});
-            } else if (error.status === 403) {
-              // No permission
-              this.$router.push({path: '/invalidtoken'});
-            } else if (error.status === 406) {
-              // Card not exist
-              this.$router.push({path: '/noCard'});
-            } else {
-              console.log(error)
-            }
-          })
+          .then(() => this.loadNotifications())
+          .catch((error) => this.errorCatcher(error));
     },
     /**
      * extend the DisplayPeriod for given card
@@ -116,23 +114,8 @@ export default {
      */
     extendCardForDisplayPeriod(id) {
       Api.extendCardDisplayPeriod(id)
-          .then(() => {
-            this.loadNotifications();
-          })
-          .catch((error) => {
-            if (error.status === 401) {
-              // Missing or invalid token
-              this.$router.push({path: '/invalidtoken'});
-            } else if (error.status === 403) {
-              // No permission
-              this.$router.push({path: '/invalidtoken'});
-            } else if (error.status === 406) {
-              // Card not exist
-              this.$router.push({path: '/noCard'});
-            } else {
-              console.log(error)
-            }
-          });
+          .then(() => this.loadNotifications())
+          .catch((error) => this.errorCatcher(error));
     }
   },
   beforeMount() {
