@@ -25,7 +25,7 @@
               <!-- Primary Image -->
               <div class="col-lg-4">
                 <h5>Primary Image:</h5>
-                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../../public/apples.jpg')" id="primary-image">
+                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../../public/default-product.jpg')" id="primary-image">
               </div>
 
               <div class="col-lg-8">
@@ -42,9 +42,9 @@
                   </div>
                   <div class="row">
                     <div class="col-3" v-for="image in images" v-bind:key="image.id">
-                      <img v-if="selectedImage === image.id" class="img-fluid rounded border border-primary border-2" :src="image.src" @click="setSelected(image.id)">
-                      <img v-else-if="image.id === primaryImage" class="img-fluid rounded border border-warning border-2" :src="image.src" @click="setSelected(image.id)">
-                      <img v-else class="img-fluid rounded" :src="image.src" @click="setSelected(image.id)">
+                      <img v-if="selectedImage === image.id" class="img-fluid rounded border border-primary border-2" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
+                      <img v-else-if="image.id === primaryImage" class="img-fluid rounded border border-warning border-2" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
+                      <img v-else class="img-fluid rounded" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
                     </div>
                   </div>
                 </div>
@@ -92,7 +92,8 @@ export default {
       modal: null,
 
       selectedImage: null,
-      primaryImage: null,
+      primaryImage: 0,
+      primaryImageFilename: "",
 
       // if an error occurs when a user performs an action then the appropriate error message needs to be displayed.
       formErrorModalMessage: "",
@@ -108,6 +109,9 @@ export default {
           id:1
         }
       ],
+
+      // Create the object that will store the data
+      currentProduct: new Product(this.value.data)
     }
   },
   methods: {
@@ -119,6 +123,33 @@ export default {
       // Prevent any default actions
       event.preventDefault();
 
+      // If the modal is already showing prevent the placeholders from being updated.
+      if (!this.$refs._updateProductImagesModal.classList.contains("show")) {
+        // Update the placeholders
+        this.currentProduct.data.id = this.value.data.id;
+        this.currentProduct.data.name = this.value.data.name;
+        this.currentProduct.data.description = this.value.data.description;
+        this.currentProduct.data.manufacturer = this.value.data.manufacturer;
+        this.currentProduct.data.recommendedRetailPrice = this.value.data.recommendedRetailPrice;
+        this.currentProduct.data.images = this.value.data.images;
+      }
+
+      for (let image of this.currentProduct.data.images) {
+        if (image.isPrimary) {
+          this.primaryImage = image.id
+          this.primaryImageFilename = image.filename;
+        }
+      }
+
+      this.images = this.currentProduct.data.images;
+
+      if (this.images.length > 0) {
+        document.getElementById("primary-image").src = this.getImageSrc(this.primaryImageFilename);
+      } else {
+        document.getElementById("primary-image").src = require('../../../public/default-product.jpg');
+      }
+
+      this.selectedImage = null;
       // Show the modal
       this.modal.show();
     },
@@ -129,6 +160,10 @@ export default {
       } else {
         this.selectedImage = id;
       }
+    },
+
+    getImageSrc(filename) {
+      return Api.getServerURL() + "/" + filename;
     },
 
     /**

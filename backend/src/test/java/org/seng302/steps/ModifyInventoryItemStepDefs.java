@@ -37,7 +37,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-public class ModifyInventoryItem {
+/**
+ * Modify inventory item step definitions class
+ */
+public class ModifyInventoryItemStepDefs {
 
     @Autowired
     private MockMvc mvc;

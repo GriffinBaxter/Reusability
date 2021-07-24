@@ -133,7 +133,7 @@
                 v-for="inventory in inventories"
                 :id="'InventoryItemCard' + inventory.index"
                 v-bind:key="inventory.index"
-                v-bind:image="inventory.image"
+                v-bind:images="inventory.images"
                 v-bind:product-name="inventory.productName"
                 v-bind:product-id="inventory.productId"
                 v-bind:quantity="inventory.quantity"
@@ -581,7 +581,8 @@ export default {
               bestBefore: formatDate(this.InventoryItemList[i].bestBefore, false),
               bestBeforeUnformatted: this.InventoryItemList[i].bestBefore,
               expires: formatDate(this.InventoryItemList[i].expires, false),
-              expiresUnformatted: this.InventoryItemList[i].expires
+              expiresUnformatted: this.InventoryItemList[i].expires,
+              images: this.InventoryItemList[i].product.images
             })
           }
         }

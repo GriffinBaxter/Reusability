@@ -1,7 +1,7 @@
 <template>
     <div class="row">
       <div class="col-md-3">
-        <img class="card-img mt-4" :src="require('../../../public/apples.jpg')" id="product-image">
+        <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image">
       </div>
       <div class="col-md-9">
         <div class="card-body px-3">
@@ -32,11 +32,13 @@
 
 
 <script>
+import Api from "@/Api";
+
 export default {
   name: "ProductModal",
   props: {
-    image: {
-      type: String,
+    images: {
+      type: Array,
       default: null,
       required: false
     },
@@ -82,9 +84,16 @@ export default {
       required: false
     }
   },
-
   mounted() {
-    document.getElementById("product-image").src = this.image;
+    document.getElementById("product-image").src = require('../../../public/default-product.jpg');
+    if (this.images.length > 0) {
+      for (let image of this.images) {
+        if (image.isPrimary) {
+          document.getElementById("product-image").src = Api.getServerURL() + "/" + image.filename;
+          break;
+        }
+      }
+    }
   }
 }
 </script>
