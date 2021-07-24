@@ -38,7 +38,7 @@
                 <!-- Images -->
                 <div class="row">
                   <div v-if="images.length === 0">
-                    No images Uploaded
+                    No Images Uploaded
                   </div>
                   <div class="row">
                     <div class="col-3" v-for="image in images" v-bind:key="image.id">
@@ -69,7 +69,7 @@
 <script>
 import Product from "../../configs/Product";
 import {Modal} from "bootstrap";
-import Api from "@/Api";
+import Api from "../../Api"
 
 export default {
   name: "UpdateProductImagesModal",
@@ -98,17 +98,7 @@ export default {
       // if an error occurs when a user performs an action then the appropriate error message needs to be displayed.
       formErrorModalMessage: "",
 
-      // temp image values
-      images: [
-        {
-          src:require("../../../public/apples.jpg"),
-          id:0
-        },
-        {
-          src:require("../../../public/clothes.jpg"),
-          id:1
-        }
-      ],
+      images: [],
 
       // Create the object that will store the data
       currentProduct: new Product(this.value.data)
@@ -136,7 +126,7 @@ export default {
 
       for (let image of this.currentProduct.data.images) {
         if (image.isPrimary) {
-          this.primaryImage = image.id
+          this.primaryImage = image.id;
           this.primaryImageFilename = image.filename;
         }
       }
@@ -171,10 +161,12 @@ export default {
      * to delete it.
      */
     deleteSelectedImage() {
-      Api.deleteProductImage(this.businessId, this.value.data.id, this.selectedImage).then(
+      Api.deleteProductImage(this.businessId, this.currentProduct.data.id , this.selectedImage).then(
           response => {
             if (response.status === 200) {
               this.formErrorModalMessage = "";
+              // remove the deleted image from the list of images to show.
+              this.images = this.images.filter(item => item.id !== this.selectedImage);
             } else {
               this.formErrorModalMessage = "Sorry, something went wrong...";
             }
