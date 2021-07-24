@@ -32,7 +32,8 @@
                 <!-- Upload -->
                 <div class="row">
                   <label for="imageUpload">Upload Image:</label>
-                  <input type="file" id="imageUpload">
+                  <input type="file" id="imageUpload" ref="image" @change="getImage" name="img"
+                         accept="image/png, image/gif, image/jpeg">
                 </div>
                 <hr>
                 <!-- Images -->
@@ -182,6 +183,20 @@ export default {
           this.$router.push({path: '/timeout'});
           console.log(error.message);
         }
+      })
+    },
+    getImage() {
+      let file = this.$refs.image.files[0];
+      
+      let image = new FormData();
+      image.append("images", file)
+
+      Api.uploadProductImage(this.$props.businessId, this.currentProduct.data.id, image)
+          .then(() => {
+            location.reload();
+          }).catch((error) => {
+        this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image";
+        console.log(error.message);
       })
     }
   },

@@ -273,5 +273,15 @@ export default {
         return instance.delete(`/businesses/${businessId}/products/${productId}/images/${imageId}`, {
             withCredentials: true
         })
+    },
+    
+    // Uploads an image to a given product
+    uploadProductImage: (businessId, productId, image) => {
+        return instance.post(`/businesses/${businessId}/products/${productId}/images`, image, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
     }
 }

@@ -103,7 +103,6 @@ export default {
   },
   methods: {
     getImageSrc(filename) {
-      console.log(this.$props.images)
       return Api.getServerURL() + "/" + filename;
     },
   },
