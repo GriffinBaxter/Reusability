@@ -10,6 +10,7 @@ import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.KeywordRepository;
+import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,9 @@ class MarketplaceCardResourceIntegrationTests {
 
     @MockBean
     private MarketplaceCardRepository marketplaceCardRepository;
+
+    @MockBean
+    private MarketCardNotificationRepository marketCardNotificationRepository;
 
     @MockBean
     private KeywordRepository keywordRepository;
@@ -208,7 +212,7 @@ class MarketplaceCardResourceIntegrationTests {
         anotherMarketplaceCard.setId(2);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, keywordRepository))
+                marketplaceCardRepository, userRepository, keywordRepository, marketCardNotificationRepository))
                 .build();
     }
 

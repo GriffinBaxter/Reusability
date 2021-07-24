@@ -61,7 +61,7 @@
 
 <script>
 
-import CreateCardModal from "../CreateCardModal";
+import CreateCardModal from "./CreateCardModal";
 
 export default {
   name: "OrderingOptionsMenu",

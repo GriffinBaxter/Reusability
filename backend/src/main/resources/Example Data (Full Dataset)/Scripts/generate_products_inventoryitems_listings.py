@@ -14,16 +14,16 @@ with open('product_data.csv') as input_file:
         descriptions.append(description)
         manufacturers.append(manufacturer)
     sql = []
+    lines = 0
+    file_num = 1
     i = 1;
     while i <= 1000:
-        if i < 900:
-            num_of_products = 1
-        elif i < 995:
-            num_of_products = random.randint(2, 3)
+        if i < 995:
+            num_of_products = random.randint(1, 2)
+        elif i < 1000:
+            num_of_products = 250
         elif i == 1000:
-            num_of_products = 50
-        else:
-            num_of_products = random.randint(20, 750)
+            num_of_products = 1000
         j = 0
         created_ids = []
         while j < num_of_products:
@@ -49,9 +49,19 @@ with open('product_data.csv') as input_file:
             sql.append("INSERT INTO inventory_item (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (" + "DATE'2022-05-12', " + str(i) + ", DATE'2023-05-12', " + "DATE'2020-05-12', " + str("%.2f" % round(recommended_price ,2)) + ", '" +
                        prod_id + "', " + str(quantity) + ", DATE'2022-10-12', " + str("%.2f" % round(total_price ,2)) + ");")
             
-            sql.append("INSERT INTO listing (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (" + "DATE'2022-05-12', " + "DATE'2022-05-12', '" + more_info + "', " + str("%.2f" % round(listing_price ,2)) + ", " + str(listing_quantity) + ", " + str(i) + ", " + str(i) + ");")            
+            sql.append("INSERT INTO listing (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (" + "DATE'2022-05-12', " + "DATE'2022-05-12', '" + more_info + "', " + str("%.2f" % round(listing_price ,2)) + ", " + str(listing_quantity) + ", " + str(i) + ", " + str(i) + ");")
+            
             j += 1
+            
+            if lines % 2000 == 0 and lines != 0:
+                with open('products_inventoryitems_listings_' + str(file_num) + '.sql', "w") as output_file:
+                    output_file.write('\n'.join(sql))
+                file_num += 1
+                sql = []
+                
+            lines += 1
         i += 1
-    with open('products_inventoryitems_listings.sql', "w") as output_file:
-        output_file.write('\n'.join(sql))
+    if len(sql) != 0:
+        with open('products_inventoryitems_listings_' + str(file_num) + '.sql', "w") as output_file:
+            output_file.write('\n'.join(sql))     
 print("Done")

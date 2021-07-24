@@ -11,10 +11,7 @@ import org.seng302.model.MarketplaceCard;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
-import org.seng302.model.repository.AddressRepository;
-import org.seng302.model.repository.KeywordRepository;
-import org.seng302.model.repository.MarketplaceCardRepository;
-import org.seng302.model.repository.UserRepository;
+import org.seng302.model.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -62,6 +59,10 @@ public class MarketCardExpiryStep {
     @MockBean
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    @MockBean
+    private MarketCardNotificationRepository marketCardNotificationRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -88,7 +89,11 @@ public class MarketCardExpiryStep {
         keywordRepository = mock(KeywordRepository.class);
 
         this.cardMVC = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, keywordRepository)).build();
+                marketplaceCardRepository,
+                userRepository,
+                keywordRepository,
+                marketCardNotificationRepository
+        )).build();
         this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
