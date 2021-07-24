@@ -55,7 +55,8 @@
                           v-bind:recommended-retail-price="recommendedRetailPrice"
                           v-bind:created="created"
                           v-bind:currencyCode="currencyCode"
-                          v-bind:currencySymbol="currencySymbol"/>
+                          v-bind:currencySymbol="currencySymbol"
+                          v-bind:images="images"/>
                     </div>
                     <div class="modal-footer">
                       <button class="btn btn-primary" @click="(event) => {
@@ -279,6 +280,9 @@ export default {
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+      
+      // Image related variables
+      images: [],
 
       // If product creation was successful the user will be altered.
       creationSuccess: false,
@@ -309,6 +313,7 @@ export default {
       this.created = product.data.created;
       this.currentProduct = product;
       this.currentProductIndex = productIndex;
+      this.images = product.data.images;
       this.showModal = true;
     },
 

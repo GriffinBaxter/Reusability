@@ -38,6 +38,11 @@ const instance = axios.create({
 });
 
 export default {
+    
+    // Retrieves the server URL as a string
+    getServerURL: () => {
+        return SERVER_URL
+    },
 
     // Sends a post request to the backend with a new user object to store
     addNewUser: (user) => instance.post('/users', {
