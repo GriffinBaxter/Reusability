@@ -60,8 +60,8 @@
 
               <!-- Navbar toggle drop down -->
               <a class="nav-link dropdown-toggle" role="button" tabindex="4"
-              @click="() => {toggleBusinessDropdown()}"
-              @keyup.enter="() => {toggleBusinessDropdown()}">
+                 @click="() => {toggleBusinessDropdown()}"
+                 @keyup.enter="() => {toggleBusinessDropdown()}">
                 Business Pages
               </a>
 
@@ -96,15 +96,35 @@
 
             <!-- Log out link-->
             <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">Log out</a>
+              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)"
+                 @keyup.enter="e =>logout(e)">Log out</a>
             </li>
 
+            <!--notification-->
+            <li class="nav-item" style="float: contour; text-align: center; vertical-align:middle">
+              <div style="margin-top: 10px"
+                   type="button"
+                   @click="openNotificationBox = !openNotificationBox">
+                <img v-if="newNotification"
+                     alt="notification"
+                     src="../../../public/notification.png"
+                     height="43"
+                     width="43"/>
+                <img v-else type="button"
+                     alt="notification"
+                     src="../../../public/notification_new.png"
+                     height="43"
+                     width="43"/>
+              </div>
+              <Notification v-if="openNotificationBox" style="position: absolute; right: 50px"/>
+            </li>
           </ul>
 
 
           <ul class="navbar-nav flex-column flex-xl-row">
             <!-- Interact As -->
-            <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
+            <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}"
+                @keyup.enter="() => {toggleInteractAs()}">
               <a class="" role="button">
                 <img src="../../../public/profile_icon_default.png" width="27px"
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
@@ -113,40 +133,43 @@
           </ul>
 
           <ul class="no-space">
-            <div class="center" role="button" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
-              <div v-if="showOmitName">{{ actAsOmit }}</div>
-              <div v-else>{{ actAs }}</div>
-            </div>
-            <div id="interact-dropdown-links-wrapper">
-              <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
+            <li>
+              <div class="center" role="button" @click="() => {toggleInteractAs()}"
+                   @keyup.enter="() => {toggleInteractAs()}">
+                <div v-if="showOmitName">{{ actAsOmit }}</div>
+                <div v-else>{{ actAs }}</div>
+              </div>
+              <div id="interact-dropdown-links-wrapper">
+                <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
 
-                <li class="nav-item">
-                </li>
-                <div v-if="showOmitName">
-                  <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
-                      @click="itemClicked(index)">
-                    <h6 class="ms-3" v-if="index===0"><br>User</h6>
-                    <div v-else-if="index===1">
-                      <hr>
-                      <h6 class="ms-3">Businesses</h6>
-                    </div>
-                    <a class="nav-link">{{ act.name }}</a>
+                  <li class="nav-item">
                   </li>
-                </div>
-                <div v-else>
-                  <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
-                      @click="itemClicked(index)">
-                    <h6 class="ms-3" v-if="index===0"><br>User</h6>
-                    <div v-else-if="index===1">
-                      <hr>
-                      <h6 class="ms-3">Businesses</h6>
-                    </div>
-                    <a class="nav-link">{{ act.name }}</a>
-                  </li>
-                </div>
+                  <div v-if="showOmitName">
+                    <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
+                        @click="itemClicked(index)">
+                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                      <div v-else-if="index===1">
+                        <hr>
+                        <h6 class="ms-3">Businesses</h6>
+                      </div>
+                      <a class="nav-link">{{ act.name }}</a>
+                    </li>
+                  </div>
+                  <div v-else>
+                    <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
+                        @click="itemClicked(index)">
+                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                      <div v-else-if="index===1">
+                        <hr>
+                        <h6 class="ms-3">Businesses</h6>
+                      </div>
+                      <a class="nav-link">{{ act.name }}</a>
+                    </li>
+                  </div>
 
-              </ul>
-            </div>
+                </ul>
+              </div>
+            </li>
           </ul>
 
         </div>
@@ -159,9 +182,14 @@
 <script>
 import Cookies from "js-cookie";
 import Api from "../../Api"
+import Notification from "../../components/main/Notification";
+
 
 export default {
   name: "Navbar",
+  components: {
+    Notification
+  },
   props: {
     // Dictates the transition animation time
     msTransitionDelay: {
@@ -208,11 +236,30 @@ export default {
       // Watch window width
       screenWidth: document.body.clientWidth,
       maxNameLength: 30,
-      omitPoint: 10
+      omitPoint: 10,
+
+      // notice for new notifications
+      newNotification: false,
+      openNotificationBox: false
     }
   },
 
   methods: {
+    /**
+     * update image for bell
+     */
+    updateNotificationState() {
+      Api.getNotifications()
+          .then(response => this.newNotification = (response.data.length === 0))
+          .catch((error) => {
+            if (error.status === 401) {
+              // Missing or invalid token
+              this.$router.push({path: '/invalidtoken'});
+            } else {
+              console.log(error)
+            }
+          });
+    },
     /**
      * Toggle the interactAs menu dropdown
      */
@@ -360,8 +407,8 @@ export default {
        */
       event.preventDefault();
 
-      Cookies.remove('userID', { sameSite: 'strict' });
-      Cookies.remove('actAs', { sameSite: 'strict' });
+      Cookies.remove('userID', {sameSite: 'strict'});
+      Cookies.remove('actAs', {sameSite: 'strict'});
 
       Api.signOut().then(() => {
         this.$router.push({name: 'Login'})
@@ -437,11 +484,11 @@ export default {
           'interact-dropdown-links-wrapper', this.showInteractMenu)
       if (index === 0) {
         // Delete Cookie
-        Cookies.remove('actAs', { sameSite: 'strict' });
+        Cookies.remove('actAs', {sameSite: 'strict'});
         this.$router.go();
       } else {
         // Set Cookie
-        Cookies.set('actAs', this.interactAs[index].id, { sameSite: 'strict' });
+        Cookies.set('actAs', this.interactAs[index].id, {sameSite: 'strict'});
         // Checks if business is allowed on page
         if (this.canGoToPage()) {
           this.$router.go();
@@ -468,7 +515,7 @@ export default {
         }
         // If user not admin of business removes cookie
         if (check === false) {
-          Cookies.remove('actAs', { sameSite: 'strict' });
+          Cookies.remove('actAs', {sameSite: 'strict'});
           this.actAsId = null;
           if (response.nickname == null) {
             this.actAs = response.firstName;
@@ -501,11 +548,7 @@ export default {
      * NOTE: Currently just Marketplace
      */
     canGoToPage() {
-      if (this.$route.name === "Marketplace") {
-        return false;
-      } else {
-        return true;
-      }
+      return this.$route.name !== "Marketplace"
     }
   },
   beforeMount() {
@@ -519,10 +562,13 @@ export default {
 
     // This is for using URL when acting as
     if (this.isActAsBusiness) {
-      if(!this.canGoToPage()) {
+      if (!this.canGoToPage()) {
         this.$router.push({name: "BusinessProfile", params: {id: this.businessAccountId}})
       }
     }
+
+    // update notifications
+    this.updateNotificationState();
   },
   mounted() {
     this.getUserData();
