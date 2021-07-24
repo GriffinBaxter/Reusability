@@ -7,7 +7,6 @@
 <!--links to the business' listings, inventory and catalogue pages.-->
 <!--Bootstrap has been used to build these nav bars.-->
 
-
 <!-------------------------------------------- Navigation Bar --------------------------------------------------------->
 
 <template>
@@ -147,7 +146,21 @@
 
               </ul>
             </div>
+
           </ul>
+
+          <!------------------------------------- Admin Label ------------------------------->
+          <div>
+            <!-- These messages will appear for GAA accounts -->
+            <div class="admin-label" v-if="isGAA(role)">
+              Admin (GAA)
+            </div>
+            <!-- These messages will appear for DGAA accounts -->
+            <div class="admin-label" v-if="isDGAA(role)">
+              Admin (DGAA)
+            </div>
+          </div>
+          <!--------------------------------------------------------------------------------->
 
         </div>
       </div>
@@ -159,6 +172,7 @@
 <script>
 import Cookies from "js-cookie";
 import Api from "../../Api"
+import {UserRole} from "../../configs/User";
 
 export default {
   name: "Navbar",
@@ -208,11 +222,49 @@ export default {
       // Watch window width
       screenWidth: document.body.clientWidth,
       maxNameLength: 30,
-      omitPoint: 10
+      omitPoint: 10,
+
+      // Admin rights
+      role: null,
+
     }
   },
 
   methods: {
+    // ---------------------------------------- Admin Rights --------------------------------
+
+    /** Given a role we test it against two of the possible admin roles. To determine if the role is of type admin.
+     * @param role - A given role of some user.
+     * @return {boolean} Returns true if the role is of type admin. Otherwise false.
+     */
+    hasAdminRights(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * Determines whether a role is DGAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a DGAA. Otherwise return false.
+     */
+    isDGAA(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * Determines whether a role is GAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a GAA. Otherwise return false.
+     */
+    isGAA(role) {
+      return role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * get role of given id
+     */
+    getLoginRole(id) {
+      Api.getUser(id).then(response => (this.role = response.data.role))
+    },
+
+// ------------------------------------------------------------------------------------
+
     /**
      * Toggle the interactAs menu dropdown
      */
@@ -501,11 +553,7 @@ export default {
      * NOTE: Currently just Marketplace
      */
     canGoToPage() {
-      if (this.$route.name === "Marketplace") {
-        return false;
-      } else {
-        return true;
-      }
+      return (this.$route.name !== "Marketplace")
     }
   },
   beforeMount() {
@@ -525,6 +573,16 @@ export default {
     }
   },
   mounted() {
+
+    const currentID = Cookies.get('userID');
+
+    if (currentID) {
+      this.getLoginRole(currentID);
+
+    }
+
+
+
     this.getUserData();
 
     // Sample the navbar max height at mounting
@@ -554,6 +612,7 @@ export default {
       })()
     }
   },
+
   beforeDestroy() {
     window.removeEventListener("resize", this.onResize)
   },
@@ -585,8 +644,8 @@ export default {
 <style scoped>
 
 .no-space {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
 /* Styling for smaller screen sizes begins */
@@ -612,8 +671,8 @@ export default {
   align-items: center;
   max-width: 100%;
   height: auto;
-  margin-left: 0px;
-  padding-left: 0px;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 #interactDrop a {
@@ -715,6 +774,15 @@ export default {
   top: 35px;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
+}
+
+.admin-label {
+  background-color: #fd5050;
+  color: white;
+  border-radius: 6px;
+  padding: 6px;
+  max-width: 120px;
+  margin:12px auto
 }
 
 @media (min-width: 250px) {
