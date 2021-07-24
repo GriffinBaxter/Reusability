@@ -367,6 +367,8 @@ export default {
      * @param extraMaxPixels - Determines additional pixels to add to the maximum height.
      */
     toggleNavbar(preventToggle = false, extraMaxPixels = 0) {
+      // close notification box
+      this.openNotificationBox = false;
 
       // Only if the element exists
       if (document.getElementById("navbar-id")) {
@@ -612,6 +614,9 @@ export default {
         this.timer = true
         let that = this
         setTimeout(function () {
+          // close notification box
+          that.openNotificationBox = false;
+
           // change the display name
           if (that.screenWidth >= 1200) {
             that.showOmitName = true;
