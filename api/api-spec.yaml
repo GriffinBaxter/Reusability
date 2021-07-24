@@ -4,17 +4,17 @@ servers:
     url: https://csse-s302g4.canterbury.ac.nz/test/api/
   - description: API on Production Server
     url: https://csse-s302g4.canterbury.ac.nz/prod/api/
-    
+
 info:
   description: API specification for the SENG302 2021 project
-  version: 4.1.4
-  title: Reusability
+  version: 5.0.2
+  title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
   license:
     name: MIT License
     url: 'https://opensource.org/licenses/MIT'
-    
+
 tags:
   # User stories
   - name: 'U1: Registering and logging into an individual account'
@@ -42,6 +42,7 @@ tags:
   - name: 'UCM6: Keyword management'
   - name: 'UCM7: Keyword search'
   - name: 'U23: Business search'
+  - name: 'UCM9: Edit card'
   # Entities
   - name: 'Users'
     description: 'Grouping of endpoints related to the User entity'
@@ -166,7 +167,7 @@ paths:
           schema:
             type: string
           required: true
-          description: 'Criteria to search users for, e.g: user’s full name or one or more of their names/nickname'
+          description: "Criteria to search users for, e.g: user's full name or one or more of their names/nickname"
         - in: query
           name: orderBy
           schema:
@@ -963,7 +964,7 @@ paths:
           schema:
             type: string
           required: false
-          description: 'Criteria to search businesses for, e.g: business’s full name'
+          description: "Criteria to search businesses for, e.g: business's full name"
         - in: query
           name: businessType
           schema:
@@ -995,6 +996,10 @@ paths:
             * addressASC: alphabetically by address, A - Z
 
             * addressDESC: alphabetically by address, Z - A
+
+            * businessTypeASC: alphabetically by business type, A - Z
+
+            * businessTypeDESC: alphabetically by business type, Z - A
         - in: query
           name: page
           schema:
@@ -1141,6 +1146,38 @@ paths:
           description: 'Forbidden: Returned when a user tries to delete a card that they are not the creator of AND the user is not a GAA'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
+    put:
+      tags:
+        - 'UCM9: Edit card'
+        - 'Cards / community marketplace'
+      summary: Modify an existing marketplace card
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          description: ID of marketplace card to try to find.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+      responses:
+        '200':
+          description: 'Marketplace card updated successfully'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Forbidden: Returned when a user tries to update a card for another user AND the user is not a global application admin'
+
 
   '/cards/{id}/extenddisplayperiod':
     put:
@@ -1280,6 +1317,17 @@ paths:
                   keywordId:
                     type: integer
                     description: The ID of the keyword that has just been created
+                    example: 600
+        '200':
+          description: Keyword already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keywordId:
+                    type: integer
+                    description: The ID of the keyword
                     example: 600
         '400':
           $ref: '#/components/responses/BadRequestError'

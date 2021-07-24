@@ -15,13 +15,14 @@
       <CardDetail v-bind:id="selectedCard"
                   v-bind:section="cardSection"/>
 
-    <!--profile header, contains user search bar-->
-    <div id="profile-header-div">
-      <ProfileHeader/>
-    </div>
+      <!-- Edit Modal for editing your own cards -->
+      <EditCardModal ref="editCardModal"></EditCardModal>
 
     <!--profile container-->
     <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
+
+      <!--profile header, contains user search bar-->
+      <ProfileHeader id="profile-header"/>
 
       <div class="row">
 
@@ -222,7 +223,7 @@
                     <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
                     <div v-else>
                       <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
-                           align="right" @click="pushToBusiness(business.id)">
+                           align="right" @click="redirectToBusiness(business.id)">
                         {{ business.name }}
                       </div>
                     </div>
@@ -278,10 +279,12 @@ import {UserRole} from '../configs/User'
 import {formatDate} from "../dateUtils";
 import Card from "../components/marketplace/Card";
 import CardDetail from "../components/marketplace/CardDetailPopup";
+import EditCardModal from "../components/marketplace/EditCardModal";
 
 export default {
   name: "Profile",
   components: {
+    EditCardModal,
     Footer,
     ProfileHeader,
     Navbar,
@@ -637,8 +640,8 @@ export default {
      * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
      */
     logout() {
-      Cookies.remove('userID');
-      Cookies.remove('actAs');
+      Cookies.remove('userID', { sameSite: 'strict' });
+      Cookies.remove('actAs', { sameSite: 'strict' });
       Api.signOut().then(() => {
         this.$router.push({name: 'Login'})
       })

@@ -10,6 +10,7 @@ import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.KeywordRepository;
+import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,9 @@ class MarketplaceCardResourceIntegrationTests {
 
     @MockBean
     private MarketplaceCardRepository marketplaceCardRepository;
+
+    @MockBean
+    private MarketCardNotificationRepository marketCardNotificationRepository;
 
     @MockBean
     private KeywordRepository keywordRepository;
@@ -208,7 +212,7 @@ class MarketplaceCardResourceIntegrationTests {
         anotherMarketplaceCard.setId(2);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, keywordRepository))
+                marketplaceCardRepository, userRepository, keywordRepository, marketCardNotificationRepository))
                 .build();
     }
 
@@ -1018,5 +1022,329 @@ class MarketplaceCardResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    // ----------------- PUT ---------------------
+
+    /**
+     * Test user can edit their own card
+     * Return OK (200)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void canEditCardWithCreatorCookie() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), "ForSale", marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(marketplaceCard.getSection()).isEqualTo(Section.FORSALE);
+    }
+
+    /**
+     * Test user can't enter bad data ~ Title too small
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_TitleTooSmall() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "", marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user can't enter bad data ~ Title too long
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_TitleTooLong() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), "a".repeat(51), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user can't enter bad data ~ Description too long
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_DescriptionTooLong() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "d".repeat(301),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user can't enter bad data ~ Section is invalid
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithBadData_InvalidSection() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, marketplaceCard.getCreatorId(), "invalidsection", marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user includes all required fields ~ Title
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithMissingData_Title() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
+                "\"section\":\"%s\"," +
+                "\"description\":\"%s\"," +
+                "\"keywords\":%s}";
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getDescription(), "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user includes all required fields ~ Description
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithMissingData_Description() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
+                "\"section\":\"%s\"," +
+                "\"title\":\"%s\"," +
+                "\"keywords\":%s}";
+
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test user includes all required fields ~ Section
+     * Return BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditCardWithMissingData_Section() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        String editedPayloadJson = "{\"creatorId\":\"%d\"," +
+                "\"title\":\"%s\"," +
+                "\"description\":\"%s\"," +
+                "\"keywords\":%s}";
+        payloadJson = String.format(editedPayloadJson, marketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), "[]");
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Test that the user cannot edit another users card
+     * Return FORBIDDEN (403)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void cantEditOtherUsersCard() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(anotherMarketplaceCard.getId())).willReturn(Optional.ofNullable(anotherMarketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, anotherMarketplaceCard.getCreatorId(), "ForSale", anotherMarketplaceCard.getTitle(), anotherMarketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", anotherMarketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that the user cannot change the owner of the card
+     * Return FORBIDDEN (403)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void CantChangeCardOwner() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, anotherUser.getId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Test that the DGAA can edit other users cards
+     * Return OK (200)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void DGAACanEditOtherUsersCard() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+        given(marketplaceCardRepository.findById(anotherMarketplaceCard.getId())).willReturn(Optional.ofNullable(anotherMarketplaceCard));
+
+        String updatedDescription = "New Description";
+
+        payloadJson = String.format(cardPayloadJson, anotherMarketplaceCard.getCreatorId(), anotherMarketplaceCard.getSection(), anotherMarketplaceCard.getTitle(), updatedDescription,
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", anotherMarketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(anotherMarketplaceCard.getDescription()).isEqualTo(updatedDescription);
+    }
+
+    /**
+     * Test the DGAA can change the card creator
+     * Return OK (200)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void DGAACanChangeCardCreator() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        payloadJson = String.format(cardPayloadJson, anotherMarketplaceCard.getCreatorId(), marketplaceCard.getSection(), marketplaceCard.getTitle(), marketplaceCard.getDescription(),
+                "[]");
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson)
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(marketplaceCard.getCreatorId()).isEqualTo(anotherMarketplaceCard.getCreatorId());
+    }
+
+    /**
+     * Test for when Payload is empty
+     * Returns BAD_REQUEST (400)
+     *
+     * @throws Exception In case there is an error with PUT call
+     */
+    @Test
+    void noPayloadIncludedInEdit() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+
+        // when
+        response = mvc.perform(put(String.format("/cards/%d", marketplaceCard.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

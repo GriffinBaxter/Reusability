@@ -9,6 +9,9 @@
     <CardDetail v-bind:id="selectedCard"
                 v-bind:section="selectSection"/>
 
+    <!-- Edit Modal -->
+    <EditCardModal ref="editCardModal"></EditCardModal>
+
     <div id="marketplace-container">
 
       <!------------------------------------------------ marketplace tabs---------------------------------------------->
@@ -91,6 +94,7 @@ import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
 import Api from "../Api";
+import EditCardModal from "../components/marketplace/EditCardModal";
 
 export default {
   name: "Marketplace",
@@ -119,6 +123,7 @@ export default {
     CardDetail,
     Footer,
     Navbar,
+    EditCardModal,
   },
   methods: {
 
@@ -140,6 +145,8 @@ export default {
         case "Exchange":
           this.sortBy = this.exchangeSortBy;
           this.page = this.exchangePage;
+          break;
+        default:
           break;
       }
       this.updateUrl();
@@ -197,7 +204,10 @@ export default {
         console.log(error.message)
       })
     },
-
+    /**
+     * Changes the orderBy for card search
+     * @param orderByValue new orderBy
+     */
     orderedCards(orderByValue) {
       switch (this.selectSection) {
         case "For Sale":

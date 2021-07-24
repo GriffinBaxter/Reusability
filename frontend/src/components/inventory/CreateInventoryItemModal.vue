@@ -13,17 +13,26 @@
         <!--modal body-->
         <div class="modal-body">
           <form class="row" id="inventoryItemCreation" @submit.prevent>
-
             <!--product id-->
             <div class="col-7 form-group py-1 px-3">
               <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
                 <label for="autofill-input">Product ID*: </label>
-                <input type="text" id="autofill-input" ref="autofill-input" class="form-control" v-model="autofillInput">
+                <input type="text" id="autofill-input" ref="autofill-input" :class="inventoryValidationHelper.toggleInvalidClass(productIdErrorMsg)" v-model="autofillInput">
+                <div class="invalid-feedback">
+                  {{ productIdErrorMsg }}
+                </div>
                 <span class="iconSpan">
                     <i class="fas fa-angle-down"></i>
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
-                  <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" tabindex="-1" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product)}}</li>
+                  <!-- Popover for additional info -->
+                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" v-bind:value="product.id" tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus" v-bind:title="product.manufacturer ? 'Manufacturer: ' + product.manufacturer : ''" v-bind:data-bs-content="product.description">
+                        <strong>
+                          {{ product.id }}
+                        </strong>
+                        <br>
+                        {{ product.name + getAutofillCurrencyText(product)}}
+                    </li>
                 </ul>
               </div>
             </div>
@@ -132,11 +141,12 @@
 
 <script>
 
-import {Modal} from "bootstrap"; //uncommenting means the test do not run
+import {Modal, Popover} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
 import Autofill from '../autofill';
 import {parseISO} from 'date-fns'
+import Vue from "vue";
 const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');
 
 export default {
@@ -186,7 +196,8 @@ export default {
       inventoryValidationHelper: inventoryValidationHelper,
       autofillInput: '',
       autofillState: 'initial',
-      currentProduct: null
+      currentProduct: null,
+      tooltipList: []
     }
   },
   props: {
@@ -231,6 +242,13 @@ export default {
     async getAllProducts() {
       await Api.getEveryProduct(this.businessId).then((response) => {
         this.allProducts = [...response.data];
+        const self = this;
+        Vue.nextTick(function() {
+          const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
+          self.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
+            return new Popover(popoverTriggerElement);
+          })
+        })
       }).catch((error) => {
         if (error.response) {
           if (error.response.status === 400) {
@@ -243,6 +261,7 @@ export default {
         } else if (error.request) {
           this.toastErrorMessage = 'Timeout occurred';
         } else {
+          console.log(error)
           this.toastErrorMessage = 'Unexpected error occurred!';
         }
       })
@@ -609,6 +628,23 @@ export default {
         self.autofillState = 'initial';
       }
     })
+
+    // Event listener on the autofill input to allow tabbing to autofill entries
+    document.addEventListener('keydown', function (event) {
+      if (event.shiftKey && event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-product')) {
+          event.preventDefault();
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'back', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
+      } else if (event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-product')) {
+          event.preventDefault();
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'forward', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
+      }
+    })
   }
 };
 </script>
@@ -650,6 +686,8 @@ input:focus, textarea:focus {
   position: absolute;
   width: 100%;
   background-color: #ffffff;
+  overflow-y: auto;
+  max-height: 25em;
 }
 
 .autofill-options li {
