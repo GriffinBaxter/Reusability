@@ -66,12 +66,12 @@ public class AddressPayloadSecure {
 
     @Override
     public String toString() {
-        return "Address(" +
-                "suburb=" + suburb +
-                "city=" + city +
-                ", region=" + region +
-                ", country=" + country +
-                ')';
+        return "{" +
+                "\"suburb\":\"" + suburb + "\"," +
+                "\"city\":\"" + city + "\"," +
+                "\"region\":\"" + region + "\"," +
+                "\"country\":\"" + country + "\"" +
+                "}";
     }
 }
 
