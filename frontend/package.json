@@ -22,6 +22,7 @@
     "express": "^4.17.1",
     "google-fonts-webpack-plugin": "^0.4.4",
     "js-cookie": "^2.2.1",
+    "lodash": "^4.17.21",
     "popper": "^1.0.1",
     "serve": "^11.3.2",
     "vue": "^2.6.12",

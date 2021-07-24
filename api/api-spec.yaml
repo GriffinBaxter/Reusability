@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.0.0
+  version: 5.0.2
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -167,7 +167,7 @@ paths:
           schema:
             type: string
           required: true
-          description: 'Criteria to search users for, e.g: users full name or one or more of their names/nickname'
+          description: "Criteria to search users for, e.g: user's full name or one or more of their names/nickname"
         - in: query
           name: orderBy
           schema:
@@ -964,7 +964,7 @@ paths:
           schema:
             type: string
           required: false
-          description: 'Criteria to search businesses for, e.g: businesss full name'
+          description: "Criteria to search businesses for, e.g: business's full name"
         - in: query
           name: businessType
           schema:
@@ -1317,6 +1317,17 @@ paths:
                   keywordId:
                     type: integer
                     description: The ID of the keyword that has just been created
+                    example: 600
+        '200':
+          description: Keyword already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keywordId:
+                    type: integer
+                    description: The ID of the keyword
                     example: 600
         '400':
           $ref: '#/components/responses/BadRequestError'
@@ -1887,4 +1898,4 @@ components:
         marketplaceCard:
           readOnly: true
           allOf:
-            - $ref: '#/components/schemas/Card' 
+            - $ref: '#/components/schemas/Card'
