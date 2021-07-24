@@ -51,7 +51,7 @@
                 <!-- Buttons -->
                 <div v-if="selectedImage != null">
                   <hr>
-                  <button class="btn btn-danger">Delete Image</button>
+                  <button class="btn btn-danger" @click="deleteSelectedImage()">Delete Image</button>
                   <button v-if="selectedImage != primaryImage" class="btn btn-outline-success float-end">Set Primary Image</button>
                 </div>
               </div>
@@ -69,6 +69,7 @@
 <script>
 import Product from "../../configs/Product";
 import {Modal} from "bootstrap";
+import Api from "@/Api";
 
 export default {
   name: "UpdateProductImagesModal",
@@ -93,6 +94,7 @@ export default {
       selectedImage: null,
       primaryImage: null,
 
+      // if an error occurs when a user performs an action then the appropriate error message needs to be displayed.
       formErrorModalMessage: "",
 
       // temp image values
@@ -105,7 +107,7 @@ export default {
           src:require("../../../public/clothes.jpg"),
           id:1
         }
-      ]
+      ],
     }
   },
   methods: {
@@ -127,6 +129,33 @@ export default {
       } else {
         this.selectedImage = id;
       }
+    },
+
+    /**
+     * When a user selects an image and clicks delete then a call is made to the backend for the selected image
+     * to delete it.
+     */
+    deleteSelectedImage() {
+      Api.deleteProductImage(this.businessId, this.value.data.id, this.selectedImage).then(
+          response => {
+            if (response.status === 200) {
+              this.formErrorModalMessage = "";
+            } else {
+              this.formErrorModalMessage = "Sorry, something went wrong...";
+            }
+          }
+      ).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 403) {
+          this.formErrorModalMessage = "Sorry, you do not have permission to delete this image.";
+        } else if (error.response.status === 406) {
+          this.formErrorModalMessage = "Sorry, something went wrong...";
+        } else {
+          this.$router.push({path: '/timeout'});
+          console.log(error.message);
+        }
+      })
     }
   },
   mounted() {
