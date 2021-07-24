@@ -17,18 +17,18 @@ const localVue = createLocalVue();
 localVue.use(VueLogger, {isEnabled: false});
 localVue.use(VueRouter);
 
-describe("Tests for notification's accordion", () => {
+afterEach(() => {
+    wrapper.destroy();
+});
 
-    afterEach(() => {
-        wrapper.destroy();
+async function mountPage() {
+    wrapper = shallowMount(notification, {
+        localVue,
     });
+    await wrapper.vm.$nextTick();
+}
 
-    async function mountPage() {
-        wrapper = shallowMount(notification, {
-            localVue,
-        });
-        await wrapper.vm.$nextTick();
-    }
+describe("Tests for notification's accordion", () => {
 
     test("Test accordion for Notifications will display all notifications, when data contain multiple notifications", async function () {
         // Given
@@ -129,6 +129,7 @@ describe("Tests for notification's accordion", () => {
                     id: 2,
                     description: "Your card (Red Bull Energy Drink Sugar Free) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
+                    marketplaceCardPayload: null
                 }]
         };
 
