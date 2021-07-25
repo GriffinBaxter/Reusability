@@ -501,11 +501,7 @@ export default {
      * NOTE: Currently just Marketplace
      */
     canGoToPage() {
-      if (this.$route.name === "Marketplace") {
-        return false;
-      } else {
-        return true;
-      }
+      return this.$route.name !== "Marketplace";
     }
   },
   beforeMount() {

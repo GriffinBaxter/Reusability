@@ -633,7 +633,7 @@ export default {
     }
   },
   mounted() {
-    this.getAllInventoryItems().then(() => {});
+    this.getAllInventoryItems();
     this.modal = new Modal(document.getElementById("listingCreationPopup"));
 
     // Global event listener to toggle autofill list display

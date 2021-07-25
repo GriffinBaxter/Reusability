@@ -250,7 +250,7 @@ export default {
       }
 
       // Get all products to display in autofill
-      this.getAllProducts().then(() => {});
+      this.getAllProducts();
 
       // Show the modal
       this.modal.show();
