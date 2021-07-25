@@ -119,8 +119,8 @@ public class MarketCardNotification {
     @Override
     public String toString() {
         return "{\"id\":" + id +
-                ",\"userId\":\"" + userId + "\"" +
-                ",\"marketCardId\":\"" + marketCardId + "\"" +
+                ",\"userId\":" + userId +
+                ",\"marketCardId\":" + marketCardId +
                 ",\"description\":\"" + description + "\"" +
                 ",\"created\":\"" + created + "\"" +
                 "}";
