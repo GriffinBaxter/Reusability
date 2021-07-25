@@ -283,5 +283,13 @@ export default {
                 'Content-Type': 'multipart/form-data'
             }
         })
+    },
+    
+    // Sets the primary image
+    setPrimaryImage: (businessId, productId, imageId) => {
+        return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
+            {}, {
+            withCredentials: true
+        })
     }
 }

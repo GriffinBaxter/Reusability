@@ -53,7 +53,8 @@
                 <div class="actionButtons" v-if="selectedImage != null">
                   <hr>
                   <button class="btn btn-danger" id="delete-button" @click="deleteSelectedImage()">Delete Image</button>
-                  <button v-if="selectedImage != primaryImage" class="btn btn-outline-success float-end">Set Primary Image</button>
+                  <button v-if="selectedImage != primaryImage" class="btn btn-outline-success float-end"
+                  @click="setPrimarySelectedImage()">Set Primary Image</button>
                 </div>
               </div>
             </div>
@@ -183,6 +184,36 @@ export default {
         }
       })
     },
+
+    /**
+     * Sets the selected image to the primary image.
+     */
+    setPrimarySelectedImage() {
+      Api.setPrimaryImage(this.businessId, this.currentProduct.data.id , this.selectedImage).then(
+          response => {
+            if (response.status === 200) {
+              location.reload();
+            } else {
+              this.formErrorModalMessage = "Sorry, something went wrong...";
+            }
+          }
+      ).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 403) {
+          this.formErrorModalMessage = "Sorry, you do not have permission to delete this image.";
+        } else if (error.response.status === 406) {
+          this.formErrorModalMessage = "Sorry, something went wrong...";
+        } else {
+          this.$router.push({path: '/timeout'});
+          console.log(error.message);
+        }
+      })
+    },
+
+    /**
+     * Gets the currently selected image for uploading.
+     */
     getImage() {
       let file = this.$refs.image.files[0];
       

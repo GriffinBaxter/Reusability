@@ -175,8 +175,6 @@ public class ImageResource {
         // Verify image id
         Image image = verifyImageId(imageId, businessId, productId, user);
 
-        // TODO Load the images into variables, to ensure that if an error is thrown, then it will re-create the images in the folder if something goes wrong.
-
         // verify file exists & delete image
         if (!fileStorageService.deleteFile(image.getFilename()) ) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
@@ -216,7 +214,6 @@ public class ImageResource {
 
         // Verify image id
         Image image = verifyImageId(imageId, businessId, productId, user);
-        System.out.println(image.getFilename());
 
         // Set existing primary image to non-primary
         List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
@@ -226,6 +223,9 @@ public class ImageResource {
         
         // Set desired image to primary image
         image.setIsPrimary(true);
+        
+        // Save the image in the repository
+        imageRepository.save(image);
     }
 
     /**
