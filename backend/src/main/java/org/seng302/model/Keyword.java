@@ -168,4 +168,15 @@ public class Keyword {
         return (name.length() >= NAME_MIN_LENGTH) && (name.length() <= NAME_MAX_LENGTH);
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the Keyword.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"name\":\"" + name + "\"" +
+                ",\"created\":\"" + created + "\"}";
+    }
+
 }

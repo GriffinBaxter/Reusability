@@ -9,6 +9,7 @@ import org.seng302.model.Address;
 import org.seng302.model.Keyword;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
+import org.seng302.model.repository.KeywordNotificationRepository;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,10 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    @MockBean
+    private KeywordNotificationRepository keywordNotificationRepository;
+
     private User user;
 
     private MockHttpServletResponse response;
@@ -68,7 +73,8 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
     public void createMockMvc() {
         userRepository = mock(UserRepository.class);
         keywordRepository = mock(KeywordRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository)).build();
+        keywordNotificationRepository = mock(KeywordNotificationRepository.class);
+        this.mvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
     }
 
     @Given("A list of keywords exist in the system")

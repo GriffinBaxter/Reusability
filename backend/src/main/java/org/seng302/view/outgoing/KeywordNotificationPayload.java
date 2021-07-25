@@ -60,12 +60,16 @@ public class KeywordNotificationPayload {
         this.keyword = keyword;
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the KeywordNotificationPayload.
+     */
     @Override
     public String toString() {
         return "{\"id\":" + id +
                 ",\"description\":\"" + description + "\"" +
                 ",\"created\":\"" + created + "\"" +
-                ",\"keyword\":" + keyword.toString() +
+                ",\"keyword\":" + keyword +
                 "}";
     }
 

@@ -415,6 +415,10 @@ public class User {
         return UUID.randomUUID().toString();
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the User.
+     */
     @Override
     public String toString() {
         return "{\"id\":" + id +

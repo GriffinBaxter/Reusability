@@ -84,7 +84,7 @@ public class KeywordNotificationStepDefs extends CucumberSpringConfiguration {
         keywordRepository = mock(KeywordRepository.class);
 
         this.notificationMvc = MockMvcBuilders.standaloneSetup(new NotificationResource(userRepository, marketCardNotificationRepository, keywordNotificationRepository)).build();
-        this.keywordMvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository)).build();
+        this.keywordMvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
     }
 
     @Given("A keyword has been created")

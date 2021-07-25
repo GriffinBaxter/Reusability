@@ -14,9 +14,12 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
+import org.seng302.exceptions.IllegalKeywordArgumentException;
 import org.seng302.model.Keyword;
+import org.seng302.model.KeywordNotification;
 import org.seng302.model.MarketplaceCard;
 import org.seng302.model.User;
+import org.seng302.model.repository.KeywordNotificationRepository;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.incoming.KeywordCreationPayload;
@@ -49,11 +52,15 @@ public class KeywordResource {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private KeywordNotificationRepository keywordNotificationRepository;
+
     private static final Logger logger = LogManager.getLogger(KeywordResource.class.getName());
 
-    public KeywordResource(KeywordRepository keywordRepository, UserRepository userRepository) {
+    public KeywordResource(KeywordRepository keywordRepository, UserRepository userRepository, KeywordNotificationRepository keywordNotificationRepository) {
         this.keywordRepository = keywordRepository;
         this.userRepository = userRepository;
+        this.keywordNotificationRepository = keywordNotificationRepository;
     }
 
     /**
@@ -87,11 +94,26 @@ public class KeywordResource {
         try {
             Keyword newKeyword = new Keyword(keyword, created);
             keywordRepository.save(newKeyword);
-
             logger.info("Keyword {} successfully created - [CREATED]", keyword);
+
+            try {
+                KeywordNotification keywordNotification = new KeywordNotification(String.format("A new keyword, %s, has been created.", newKeyword.getName()), created, newKeyword);
+                keywordNotificationRepository.save(keywordNotification);
+
+                logger.info("Keyword notification created successfully: {}", keywordNotification);
+            } catch (Exception e) {
+                logger.error("Keyword Notification Creation Failure - {}", e, e);
+            }
+
             return ResponseEntity.status(HttpStatus.CREATED).body(new KeywordIdPayload(newKeyword.getId()));
-        } catch(Exception e) {
-            logger.info("Keyword creation Failure - [BAD REQUEST] - Invalid keyword name {}", keyword);
+        } catch (IllegalKeywordArgumentException e) {
+            logger.info("Keyword Creation Failure - [BAD REQUEST] - Invalid keyword name {}", keyword);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    e.getMessage()
+            );
+        } catch (Exception e) {
+            logger.info("Keyword Creation Failure - {}", e, e);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     e.getMessage()

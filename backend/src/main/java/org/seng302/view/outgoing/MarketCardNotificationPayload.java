@@ -60,6 +60,10 @@ public class MarketCardNotificationPayload {
         this.marketplaceCardPayload = marketplaceCardPayload;
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the MarketCardNotificationPayload.
+     */
     @Override
     public String toString() {
         return "{\"id\":" + id +

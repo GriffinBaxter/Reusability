@@ -64,6 +64,10 @@ public class AddressPayloadSecure {
         this.country = country;
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the AddressPayloadSecure.
+     */
     @Override
     public String toString() {
         return "{" +

@@ -164,4 +164,16 @@ public class KeywordNotification {
         return (description.length() >= DESCRIPTION_MIN_LENGTH) &&
                 (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
+
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the KeywordNotification.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id + "," +
+                "\"description\":\"" + description + "\"," +
+                "\"created\":\"" + created + "\"," +
+                "\"keyword\":" + keyword + "}";
+    }
 }
