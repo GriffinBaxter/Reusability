@@ -116,7 +116,16 @@ export default {
       Api.extendCardDisplayPeriod(id)
           .then(() => this.loadNotifications())
           .catch((error) => this.errorCatcher(error));
-    }
+    },
+    /**
+     * Delete a keyword, given that the logged in user is a DGGA or GAA.
+     * @param id, keyword id
+     */
+    deleteKeyword(id) {
+      Api.deleteExistingKeyword(id)
+          .then(() => this.loadNotifications())
+          .catch((error) => this.errorCatcher(error));
+    },
   },
   beforeMount() {
     this.loadNotifications();
