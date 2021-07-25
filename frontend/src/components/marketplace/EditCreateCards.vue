@@ -557,15 +557,15 @@ export default {
         this.creatorId = Cookies.get("userID")
       }
 
+      // Clear the list of keyword IDs
+      this.newKeywordIDs = []
+
       // Check for existing keywords and create ones that don't already exist
       const keywords = this.getKeywords();
       for (const keyword of keywords) {
         await this.createKeywordIfNotExisting(keyword);
       }
       const keywordIds = this.newKeywordIDs;
-
-      // Clear the list of keyword IDs
-      this.newKeywordIDs = []
 
       if (this.description === null) {
         this.description = "";
@@ -577,7 +577,7 @@ export default {
         section: this.sectionSelected,
         title: this.title,
         description: this.description,
-        keywords: keywordIds
+        keywordIds: keywordIds
       }
 
       Api.editCard(this.id, updatedCard).then(
