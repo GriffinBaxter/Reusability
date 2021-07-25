@@ -5,9 +5,11 @@
 import {shallowMount} from '@vue/test-utils';
 import updateProductImagesModal from "../../src/components/productCatalogue/UpdateProductImagesModal";
 import Api from "../../src/Api";
-import {describe, expect, test} from "@jest/globals";
+import {describe, expect, jest, test} from "@jest/globals";
 import Product from "../../src/configs/Product";
 const endOfToday = require('date-fns/endOfToday');
+
+jest.mock("../../src/Api");
 
 const factory = (values = {}) => {
     return shallowMount(updateProductImagesModal, {
@@ -17,24 +19,24 @@ const factory = (values = {}) => {
             }
         },
         propsData: {
-            value: new Product(
-                "VEGE",
-                "Lettuce",
-                "Green and fresh",
-                "Pams",
-                1.99,
-                endOfToday(),
-                [
-                    {filename:"/fakeImage1.jpg", id: 1, isPrimary: true},
-                    {filename:"/fakeImage2.png", id: 2, isPrimary: false}
+            value: new Product({
+                id: "VEGE",
+                name:"Lettuce",
+                description: "Green and fresh",
+                manufacturer: "Pams",
+                recommendedRetailPrice: 1.99,
+                created: endOfToday(),
+                images: [
+                    {filename: "/fakeImage1.jpg", id: 1, isPrimary: true},
+                    {filename: "/fakeImage2.png", id: 2, isPrimary: false}
                 ]
-            ),
+            }),
             businessId: 1
         }
     })
 }
 
-describe("Testing the delete button functionality", () => {
+describe("Testing the delete image functionality", () => {
 
     test('Testing the component containing the delete button is not "visible" when no image is selected', () => {
         const wrapper = factory({
@@ -50,45 +52,55 @@ describe("Testing the delete button functionality", () => {
         expect(wrapper.find('.actionButtons').exists()).toBeTruthy();
     })
 
-    test('Testing the selected image is removed from the list of images (deleted) ' +
-        'when delete button is clicked and a 200 is received from the backend', async () => {
-        const initialImages = [
-            {filename:"/fakeImage1.jpg", id: 1, isPrimary: true},
-            {filename:"/fakeImage2.png", id: 2, isPrimary: false}
-        ];
-
-        const wrapper = factory({
-            selectedImage: 1, // id of selected image
-            images: initialImages
+    test('Testing an error message is set when a user without permission to delete an image' +
+        'tries to delete an image and the frontend receives a 403 error.', async () => {
+        const $router = {
+            push: jest.fn()
+        };
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
         });
 
         const data = {
             response: {
-                status: 200
+                status: 403
             }
         }
 
-        Api.deleteProductImage.mockImplementation(() => Promise.resolve(data));
+        Api.deleteProductImage.mockImplementation(() => Promise.reject(data));
 
-        expect(wrapper.vm.images).toBe(initialImages);
-
-        const button = wrapper.find('button')
-        button.trigger('click')
-
+        await wrapper.vm.deleteSelectedImage();
         await wrapper.vm.$nextTick();
 
-        // the primary image has been removed from list
-        expect(wrapper.vm.images).toBe([{filename:"/fakeImage2.png", id: 2, isPrimary: false}]);
-    })
-
-    test('Testing an error message is displayed when a user without permission to delete an image' +
-        'clicks the delete button and the frontend receives a 403 error.', () => {
+        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, you do not have permission to delete this image.");
 
     })
 
-    test('Testing an error message is displayed when a user tries to delete an image' +
-        'and clicks the delete button and the frontend receives a 406 error.', () => {
+    test('Testing an error message is set when a user tries to delete an image' +
+        'and the frontend receives a 406 error.', async () => {
+        const $router = {
+            push: jest.fn()
+        };
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
+        });
 
+        const data = {
+            response: {
+                status: 406
+            }
+        }
+
+        Api.deleteProductImage.mockImplementation(() => Promise.reject(data));
+
+        await wrapper.vm.deleteSelectedImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, something went wrong...");
     })
 
 

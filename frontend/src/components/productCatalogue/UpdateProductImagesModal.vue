@@ -52,7 +52,7 @@
                 <!-- Buttons -->
                 <div class="actionButtons" v-if="selectedImage != null">
                   <hr>
-                  <button class="btn btn-danger" @click="deleteSelectedImage()">Delete Image</button>
+                  <button class="btn btn-danger" id="delete-button" @click="deleteSelectedImage()">Delete Image</button>
                   <button v-if="selectedImage != primaryImage" class="btn btn-outline-success float-end">Set Primary Image</button>
                 </div>
               </div>
@@ -165,9 +165,7 @@ export default {
       Api.deleteProductImage(this.businessId, this.currentProduct.data.id , this.selectedImage).then(
           response => {
             if (response.status === 200) {
-              this.formErrorModalMessage = "";
-              // remove the deleted image from the list of images to show.
-              this.images = this.images.filter(item => item.id !== this.selectedImage);
+              location.reload();
             } else {
               this.formErrorModalMessage = "Sorry, something went wrong...";
             }
