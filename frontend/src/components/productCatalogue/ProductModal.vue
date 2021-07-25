@@ -1,8 +1,8 @@
 <template>
     <div class="row">
       <div class="col-md-3">
-        <div id="carousel-product-images" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-indicators">
+        <div v-if="this.$props.images.length > 0" id="carousel-product-images" class="carousel slide" data-bs-ride="carousel">
+          <div v-if="this.$props.images.length > 1" class="carousel-indicators">
             <button v-for="(image, index) of this.$props.images" v-bind:key="image.id" type="button" data-bs-target="#carousel-product-images" :data-bs-slide-to="index" :class="image.isPrimary ? 'active' : ''"></button>
           </div>
           <div class="carousel-inner">
@@ -10,14 +10,19 @@
               <img :src="getImageSrc(image.filename)" class="d-block w-100" width="230px" height="230px">
             </div>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carousel-product-images" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carousel-product-images" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
+          <div v-if="this.$props.images.length > 1">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-product-images" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel-product-images" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+        <div v-else>
+          <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image">
         </div>
       </div>
       <div class="col-md-9">
@@ -114,6 +119,12 @@ export default {
 <style scoped>
 
 #carousel-product-images {
+  object-fit: cover;
+  width: 230px;
+  height: 230px;
+}
+
+#product-image {
   object-fit: cover;
   width: 230px;
   height: 230px;
