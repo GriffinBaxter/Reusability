@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.0.2
+  version: 5.0.3
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -60,6 +60,8 @@ tags:
     description: 'Grouping of endpoints related to system-wide keywords that can be added by users and attached to marketplace cards'
   - name: 'MarketplaceCardNotification'
     description: 'Grouping of endpoints related to the community marketplace cards, and the notifications created for them'
+  - name: 'KeywordNotification'
+    description: 'Grouping of endpoints related to notifications created for system-wide keywords'
 
 security:
   - CookieAuth:
@@ -1899,3 +1901,31 @@ components:
           readOnly: true
           allOf:
             - $ref: '#/components/schemas/Card'
+
+    KeywordNotification:
+      type: object
+      description: Notification for keywords
+      required:
+        - id
+        - description
+        - created
+        - keywordId
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automatically generated and assigned by the server
+        description:
+          type: string
+          example: A new keyword, 'Beef', has been added.
+        created:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the notification was created
+        keywordId:
+          type: integer
+          example: 1
+          description: The ID of the new keyword that has been created
