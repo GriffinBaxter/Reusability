@@ -4,7 +4,29 @@
       <div class="row" id="mainContent">
         <div class="col-12 col-sm-3">
           <div class="ratio ratio-4x3">
-          <img class="card-img" :src="require('../../../public/default-product.jpg')" id="listing-item-image">
+            <div v-if="this.$props.images.length > 0" id="carousel-item-images" class="carousel slide" data-bs-ride="carousel">
+              <div v-if="this.$props.images.length > 1" class="carousel-indicators">
+                <button v-for="(image, index) of this.$props.images" v-bind:key="image.id" type="button" data-bs-target="#carousel-product-images" :data-bs-slide-to="index" :class="image.isPrimary ? 'active' : ''"></button>
+              </div>
+              <div class="carousel-inner">
+                <div v-for="image of this.$props.images" v-bind:key="image.id" :class="image.isPrimary ? 'carousel-item active' : 'carousel-item'">
+                  <img :src="getImageSrc(image.filename)" class="d-block w-100" width="230px" height="230px">
+                </div>
+              </div>
+              <div v-if="this.$props.images.length > 1">
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-item-images" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel-item-images" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+            <div v-else>
+              <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="listing-item-image">
+            </div>
           </div>
         </div>
         <div class="col">
@@ -122,23 +144,19 @@ export default {
       required: false
     }
   },
+  methods: {
+    getImageSrc(filename) {
+      return Api.getServerURL() + "/" + filename;
+    },
+  },
   mounted() {
-    document.getElementById("listing-item-image").src = require('../../../public/default-product.jpg');
-    if (this.images.length > 0) {
-      for (let image of this.images) {
-        if (image.isPrimary) {
-          document.getElementById("listing-item-image").src = Api.getServerURL() + "/" + image.filename;
-          break;
-        }
-      }
-    }
   }
 }
 </script>
 
 <style scoped>
 
-img {
+#listing-item-image, #carousel-item-images {
   object-fit: cover;
   width: 100%;
 }

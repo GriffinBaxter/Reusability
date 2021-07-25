@@ -5,7 +5,7 @@
       <!--image-->
       <div class="col-md-3">
         <div class="ratio ratio-1x1">
-          <img class="card-img" :src="image" id="inventory-item-image">
+          <img class="card-img" :src="image" :id="'inventory-item-image-' + this.$props.productId">
         </div>
       </div>
 
@@ -135,11 +135,11 @@ export default {
     }
   },
   mounted() {
-    document.getElementById("inventory-item-image").src = require('../../../public/default-product.jpg');
+    document.getElementById("inventory-item-image-" + this.$props.productId).src = require('../../../public/default-product.jpg');
     if (this.images.length > 0) {
       for (let image of this.images) {
         if (image.isPrimary) {
-          document.getElementById("inventory-item-image").src = Api.getServerURL() + "/" + image.filename;
+          document.getElementById("inventory-item-image-" + this.$props.productId).src = Api.getServerURL() + "/" + image.filename;
           break;
         }
       }
