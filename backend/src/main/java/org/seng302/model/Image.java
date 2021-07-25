@@ -64,6 +64,7 @@ public class Image {
                 "\"id\":\"" + id + "\"," +
                 "\"filename\":\"" + filename + "\"," +
                 "\"thumbnailFilename\":\"" + thumbnailFilename + "\"" +
+                "\"isPrimary\":\"" + isPrimary + "\"," +
                 "}";
     }
 

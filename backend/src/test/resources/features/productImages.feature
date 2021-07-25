@@ -19,6 +19,6 @@ Feature: U16 - Product Images
     And this business has the product with the product name of "Apples"
     And this business only has the image of "apples.js"
     When this file is deleted
-    Then "Apples" has no images
+    Then this business has no images
 
 

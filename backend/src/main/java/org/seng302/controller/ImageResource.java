@@ -313,6 +313,7 @@ public class ImageResource {
      */
     private Image verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
         Optional<Image> image = imageRepository.findImageByIdAndBussinesIdAndProductId(imageId, businessId, productId);
+
         if (image.isEmpty()) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
             logger.error(errorMessage);

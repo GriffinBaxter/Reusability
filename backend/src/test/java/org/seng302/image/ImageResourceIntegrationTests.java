@@ -246,7 +246,7 @@ class ImageResourceIntegrationTests {
         productId = product.getProductId();
         businessId = business.getId();
 
-        primaryImage = new Image(1, productId, businessId, "test/test", "test/test", true);
+        primaryImage = new Image(1, productId, businessId, "storage/test", "test/test", true);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly());
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
@@ -742,7 +742,7 @@ class ImageResourceIntegrationTests {
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
         lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        Image newImage = new Image(2, productId, businessId, "test2/test2", "test2/test2", false);
+        Image newImage = new Image(2, productId, businessId, "storage/test2", "test2/test2", false);
         List<Image> images = List.of(newImage);
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(Collections.emptyList());
         when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
@@ -883,7 +883,7 @@ class ImageResourceIntegrationTests {
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
         List<Image> images = List.of(primaryImage);
-        Image newImage = new Image(2, productId, businessId, "test2/test2", "test2/test2", false);
+        Image newImage = new Image(2, productId, businessId, "storage/test2", "test2/test2", false);
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(newImage));
         response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
