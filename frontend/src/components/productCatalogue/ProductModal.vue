@@ -1,7 +1,29 @@
 <template>
     <div class="row">
       <div class="col-md-3">
-        <img class="card-img mt-4" :src="require('../../../public/apples.jpg')" id="product-image">
+        <div v-if="this.$props.images.length > 0" id="carousel-product-images" class="carousel slide" data-bs-ride="carousel">
+          <div v-if="this.$props.images.length > 1" class="carousel-indicators">
+            <button v-for="(image, index) of this.$props.images" v-bind:key="image.id" type="button" data-bs-target="#carousel-product-images" :data-bs-slide-to="index" :class="image.isPrimary ? 'active' : ''"></button>
+          </div>
+          <div class="carousel-inner">
+            <div v-for="image of this.$props.images" v-bind:key="image.id" :class="image.isPrimary ? 'carousel-item active' : 'carousel-item'">
+              <img :src="getImageSrc(image.filename)" class="d-block w-100" width="230px" height="230px">
+            </div>
+          </div>
+          <div v-if="this.$props.images.length > 1">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-product-images" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel-product-images" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+        <div v-else>
+          <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image">
+        </div>
       </div>
       <div class="col-md-9">
         <div class="card-body px-3">
@@ -32,11 +54,13 @@
 
 
 <script>
+import Api from "../../Api"
+
 export default {
   name: "ProductModal",
   props: {
-    image: {
-      type: String,
+    images: {
+      type: Array,
       default: null,
       required: false
     },
@@ -82,17 +106,28 @@ export default {
       required: false
     }
   },
-
+  methods: {
+    getImageSrc(filename) {
+      return Api.getServerURL() + "/" + filename;
+    },
+  },
   mounted() {
-    document.getElementById("product-image").src = this.image;
   }
 }
 </script>
 
 <style scoped>
-img {
+
+#carousel-product-images {
   object-fit: cover;
   width: 230px;
   height: 230px;
 }
+
+#product-image {
+  object-fit: cover;
+  width: 230px;
+  height: 230px;
+}
+
 </style>

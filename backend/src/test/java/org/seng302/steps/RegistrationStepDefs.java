@@ -32,6 +32,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+/**
+ * Registration step definitions class
+ */
 public class RegistrationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired

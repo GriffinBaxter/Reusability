@@ -33,6 +33,9 @@ public class Keyword {
     @ManyToMany(mappedBy = "keywords", fetch = FetchType.LAZY)
     private List<MarketplaceCard> cards = new ArrayList<>();
 
+    @OneToOne(mappedBy = "keyword")
+    private KeywordNotification keywordNotification;
+
     // Values need for validation.
     private static final Integer NAME_MIN_LENGTH = 2;
     private static final Integer NAME_MAX_LENGTH = 20;
@@ -50,9 +53,9 @@ public class Keyword {
         this.created = created;
     }
 
-    public Keyword(String name, LocalDateTime created) throws Exception {
+    public Keyword(String name, LocalDateTime created) throws IllegalKeywordArgumentException {
         if (!isValidName(name)) {
-            throw new Exception("Invalid name");
+            throw new IllegalKeywordArgumentException("Invalid name");
         }
         this.name = name;
         this.created = created;
@@ -129,6 +132,22 @@ public class Keyword {
             }
         }
         card.removeKeyword(this);
+    }
+
+    /**
+     * Retrieve the notification for this keyword.
+     * @return a notification for this keyword.
+     */
+    public KeywordNotification getKeywordNotification() {
+        return keywordNotification;
+    }
+
+    /**
+     * Set the notification for this keyword to a new one.
+     * @param keywordNotification a notification for a keyword.
+     */
+    public void setKeywordNotification(KeywordNotification keywordNotification) {
+        this.keywordNotification = keywordNotification;
     }
 
     /**

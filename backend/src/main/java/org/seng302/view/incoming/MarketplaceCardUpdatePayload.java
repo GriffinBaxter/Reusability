@@ -9,7 +9,7 @@ public class MarketplaceCardUpdatePayload {
     private String section;
     private String title;
     private String description;
-    private List<Integer> keywords;
+    private List<Integer> keywordIds;
 
     /**
      * Override the toString method for debugging purposes.
@@ -21,7 +21,7 @@ public class MarketplaceCardUpdatePayload {
                 ",\"section\":\"" + section + "\"" +
                 ",\"title\":\"" + title + "\"" +
                 ",\"description\":\"" + description + "\"" +
-                ",\"keywords\":" + keywords  +
+                ",\"keywordIds\":" + keywordIds  +
                 "}";
     }
 
@@ -43,9 +43,13 @@ public class MarketplaceCardUpdatePayload {
 
     public void setDescription(String description) {this.description = description; }
 
-    public List<Integer> getKeywords() {
-        return keywords;
+    public void setKeywordIds(List<Integer> keywordIds) {this.keywordIds = keywordIds; }
+
+    public List<Integer> getKeywordIds() {
+        return keywordIds;
     }
+
+    public void setSection(String section) {this.section = section; }
 
     public Section getSection() {
         return toSectionENUM(section);

@@ -5,7 +5,7 @@
       <!--image-->
       <div class="col-md-3">
         <div class="ratio ratio-1x1">
-          <img class="card-img" :src="image" id="inventory-item-image">
+          <img class="card-img" :src="image" :id="'inventory-item-image-' + this.$props.productId">
         </div>
       </div>
 
@@ -60,12 +60,14 @@
 
 <script>
 
+import Api from "@/Api";
+
 export default {
   name: "InventoryItem",
   props: {
     image: {
       type: String,
-      default: require("../../../public/apples.jpg"),
+      default: require("../../../public/default-product.jpg"),
       required: false
     },
     productName: {
@@ -125,9 +127,24 @@ export default {
       type: String,
       default: "",
       required: false
+    },
+    images: {
+      type: Array,
+      default: null,
+      required: false
     }
   },
   mounted() {
+    document.getElementById("inventory-item-image-" + this.$props.productId).src = require('../../../public/default-product.jpg');
+    if (this.images.length > 0) {
+      for (let image of this.images) {
+        if (image.isPrimary) {
+          document.getElementById("inventory-item-image-" + this.$props.productId).src = Api.getServerURL() + "/" + image.filename;
+          break;
+        }
+      }
+    }
+
   }
 }
 </script>
