@@ -291,5 +291,13 @@ export default {
             {}, {
             withCredentials: true
         })
+    },
+
+    // Extends a given card's display period by 2 weeks.
+    extendCardDisplayPeriod: (id) => {
+        return instance.put(`/cards/${id}/extenddisplayperiod`,{}, {
+            withCredentials: true
+        })
     }
+
 }
