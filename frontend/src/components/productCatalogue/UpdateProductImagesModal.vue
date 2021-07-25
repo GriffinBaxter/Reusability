@@ -50,7 +50,7 @@
                   </div>
                 </div>
                 <!-- Buttons -->
-                <div v-if="selectedImage != null">
+                <div class="actionButtons" v-if="selectedImage != null">
                   <hr>
                   <button class="btn btn-danger" @click="deleteSelectedImage()">Delete Image</button>
                   <button v-if="selectedImage != primaryImage" class="btn btn-outline-success float-end">Set Primary Image</button>
@@ -195,7 +195,7 @@ export default {
           .then(() => {
             location.reload();
           }).catch((error) => {
-        this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image";
+        this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
         console.log(error.message);
       })
     }
