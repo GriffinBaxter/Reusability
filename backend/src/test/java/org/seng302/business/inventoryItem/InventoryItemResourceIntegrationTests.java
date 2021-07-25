@@ -90,7 +90,8 @@ class InventoryItemResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"manufacturer\":\"%s\"," +
             "\"recommendedRetailPrice\":%.2f," +
-            "\"created\":\"%s\"}," +
+            "\"created\":\"%s\"," +
+            "\"images\":[]}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.2f," +
             "\"totalPrice\":%.2f," +

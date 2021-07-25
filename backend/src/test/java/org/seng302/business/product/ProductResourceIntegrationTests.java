@@ -80,7 +80,8 @@ class ProductResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"manufacturer\":\"%s\"," +
             "\"recommendedRetailPrice\":%.1f," +
-            "\"created\":\"%s\"}";
+            "\"created\":\"%s\"," +
+            "\"images\":[]}";
 
     private String expectedJson;
 

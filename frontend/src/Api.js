@@ -38,6 +38,11 @@ const instance = axios.create({
 });
 
 export default {
+    
+    // Retrieves the server URL as a string
+    getServerURL: () => {
+        return SERVER_URL
+    },
 
     // Sends a post request to the backend with a new user object to store
     addNewUser: (user) => instance.post('/users', {
@@ -263,11 +268,36 @@ export default {
         })
     },
 
+    // Sends a delete request to the backend to delete the image of a selected product for a business.
+    deleteProductImage: (businessId, productId, imageId) => {
+        return instance.delete(`/businesses/${businessId}/products/${productId}/images/${imageId}`, {
+            withCredentials: true
+        })
+    },
+    
+    // Uploads an image to a given product
+    uploadProductImage: (businessId, productId, image) => {
+        return instance.post(`/businesses/${businessId}/products/${productId}/images`, image, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+    },
+    
+    // Sets the primary image
+    setPrimaryImage: (businessId, productId, imageId) => {
+        return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
+            {}, {
+            withCredentials: true
+        })
+    },
+
     // Extends a given card's display period by 2 weeks.
     extendCardDisplayPeriod: (id) => {
         return instance.put(`/cards/${id}/extenddisplayperiod`,{}, {
             withCredentials: true
         })
-    },
+    }
 
 }
