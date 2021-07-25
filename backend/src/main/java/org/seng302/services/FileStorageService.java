@@ -94,7 +94,10 @@ public class FileStorageService {
 
     public boolean deleteFile(String fileName) {
         try {
-            return Files.deleteIfExists(this.rootPath.resolve(fileName));
+            if (Paths.get(fileName).startsWith(this.rootPath)) {
+                return Files.deleteIfExists(Paths.get(fileName));
+            }
+            return false;
         } catch (DirectoryNotEmptyException e) {
             var errorMessage = String.format("Directory %s does not exist.", fileName);
             logger.error(errorMessage);

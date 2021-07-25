@@ -49,7 +49,7 @@ public class ImageResource {
     private ImageRepository imageRepository;
 
     @Autowired
-    @Value("storage/product-images")
+    @Value("product-images")
     private FileStorageService fileStorageService;
 
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
@@ -173,12 +173,22 @@ public class ImageResource {
         verifyProductId(productId, business, user);
 
         // Verify image id
-        verifyImageId(imageId, businessId, productId, user);
+        Image image = verifyImageId(imageId, businessId, productId, user);
+
+        // TODO Load the images into variables, to ensure that if an error is thrown, then it will re-create the images in the folder if something goes wrong.
+
+        // verify file exists & delete image
+        if (!fileStorageService.deleteFile(image.getFilename()) ) {
+            String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                    "for example trying to access a resource by an ID that does not exist.");
+        }
+
 
         // Delete from database
         imageRepository.deleteByIdAndBussinesIdAndProductId(imageId, businessId, productId);
         imageRepository.flush();
-
         // Check if primary image and update primary image if it is
         updatePrimaryImage(businessId, productId, true);
     }
@@ -206,6 +216,7 @@ public class ImageResource {
 
         // Verify image id
         Image image = verifyImageId(imageId, businessId, productId, user);
+        System.out.println(image.getFilename());
 
         // Set existing primary image to non-primary
         List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
