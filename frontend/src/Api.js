@@ -298,7 +298,7 @@ export default {
         return instance.put(`/cards/${id}/extenddisplayperiod`,{}, {
             withCredentials: true
         })
-    }
+    },
 
     // System administrators can delete a keyword.  Keyword is removed from the list and from any cards it appears on.
     deleteExistingKeyword: (id) => {

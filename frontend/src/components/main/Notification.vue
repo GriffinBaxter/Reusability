@@ -8,40 +8,76 @@
          v-for="card in allNoticeCards"
          v-bind:key="card.id"
          style="background-color: #ededed">
-      <h2 class="accordion-header" :id="'heading_' + card.id">
-        <button class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                :data-bs-target="'#collapse_' + card.id"
-                aria-expanded="false"
-                :aria-controls="'collapse_' + card.id">
-          <h6>{{ card.description }}</h6>
-        </button>
-      </h2>
-      <div :id="'collapse_' + card.id"
-           v-if="card.operable"
-           class="accordion-collapse collapse"
-           :aria-labelledby="'heading_' + card.id"
-           data-bs-parent="#notificationAccordion">
-        <div class="accordion-body">
-          <div class="row">
-            <div class="col" style="float: contour; text-align: center">
-              <button :id="'delete_button_' + card.id"
-                      class="btn btn-outline-danger"
-                      @click="deleteCard(card.marketCardId)">
-                Delete Card
-              </button>
-            </div>
-            <div class="col">
-              <button :id="'extend_button_' + card.id"
-                      class="btn btn-outline-success"
-                      @click="extendCardForDisplayPeriod(card.marketCardId)">
-                Extend Card for 2 Weeks
-              </button>
+
+      <!-- keyword notification -->
+      <div v-if="card.keyword != null">
+        <h2 class="accordion-header" :id="'heading_' + card.id">
+          <button class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#collapse_' + card.id"
+                  aria-expanded="false"
+                  :aria-controls="'collapse_' + card.id">
+            <h6>{{ card.description }}</h6>
+          </button>
+        </h2>
+        <div :id="'collapse_' + card.id"
+             v-if="card.operable"
+             class="accordion-collapse collapse"
+             :aria-labelledby="'heading_' + card.id"
+             data-bs-parent="#notificationAccordion">
+          <div class="accordion-body">
+            <div class="row">
+              <div class="col" style="float: contour; text-align: center">
+                <button :id="'delete_button_' + card.id"
+                        class="btn btn-outline-danger"
+                        @click="deleteKeyword(card.keywordId)">
+                  Delete Keyword
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- marketplace card notification -->
+      <div v-else>
+        <h2 class="accordion-header" :id="'heading_' + card.id">
+          <button class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#collapse_' + card.id"
+                  aria-expanded="false"
+                  :aria-controls="'collapse_' + card.id">
+            <h6>{{ card.description }}</h6>
+          </button>
+        </h2>
+        <div :id="'collapse_' + card.id"
+             v-if="card.operable"
+             class="accordion-collapse collapse"
+             :aria-labelledby="'heading_' + card.id"
+             data-bs-parent="#notificationAccordion">
+          <div class="accordion-body">
+            <div class="row">
+              <div class="col" style="float: contour; text-align: center">
+                <button :id="'delete_button_' + card.id"
+                        class="btn btn-outline-danger"
+                        @click="deleteCard(card.marketCardId)">
+                  Delete Card
+                </button>
+              </div>
+              <div class="col">
+                <button :id="'extend_button_' + card.id"
+                        class="btn btn-outline-success"
+                        @click="extendCardForDisplayPeriod(card.marketCardId)">
+                  Extend Card for 2 Weeks
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -125,7 +161,7 @@ export default {
       Api.deleteExistingKeyword(id)
           .then(() => this.loadNotifications())
           .catch((error) => this.errorCatcher(error));
-    },
+    }
   },
   beforeMount() {
     this.loadNotifications();
