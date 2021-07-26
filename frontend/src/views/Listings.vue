@@ -24,28 +24,28 @@
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(true, false, false, false)">
                 Quantity
-                <i id="quantityIcon"></i>
+                <i id="quantityIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by price-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, true, false, false)">
                 Price
-                <i id="priceIcon"></i>
+                <i id="priceIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by closing date-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, true, false)">
                 Closing Date
-                <i id="closesIcon"></i>
+                <i id="closesIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by listing date-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, false, true)">
                 Listing Date
-                <i id="createdIcon"></i>
+                <i id="createdIcon" aria-hidden="true"></i>
               </button>
             </ul>
           </div>

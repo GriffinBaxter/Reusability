@@ -7,7 +7,7 @@
           </div>
           <div class="carousel-inner">
             <div v-for="image of this.$props.images" v-bind:key="image.id" :class="image.isPrimary ? 'carousel-item active' : 'carousel-item'">
-              <img alt="product-image" :src="getImageSrc(image.filename)" class="d-block w-100" width="230px" height="230px">
+              <img :src="getImageSrc(image.filename)" class="d-block w-100" width="230px" height="230px" alt="product image">
             </div>
           </div>
           <div v-if="this.$props.images.length > 1">
@@ -22,7 +22,7 @@
           </div>
         </div>
         <div v-else>
-          <img alt="default-product" class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image">
+          <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image" alt="product image">
         </div>
       </div>
       <div class="col-md-9">

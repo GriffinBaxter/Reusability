@@ -5,7 +5,7 @@
       <!--image-->
       <div class="col-md-3">
         <div class="ratio ratio-1x1">
-          <img alt="inventory-image" class="card-img" :src="image" :id="'inventory-item-image-' + this.$props.productId">
+          <img class="card-img" :src="image" :id="'inventory-item-image-' + this.$props.productId" alt="inventory item image">
         </div>
       </div>
 

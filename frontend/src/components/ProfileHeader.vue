@@ -10,7 +10,7 @@
             <button id="business-radio-button" type="button" :class="`btn green-button-transparent ${this.searchType === 'Business' ? 'active': ''}`" @click="changeSearchType('Business')">Business</button>
           </div>
         </div>
-        <div v-if="searchType == 'Business'" id="business-type-combo-box-container" class="col" style="margin-bottom: 10px;">
+        <div v-if="searchType === 'Business'" id="business-type-combo-box-container" class="col" style="margin-bottom: 10px;">
           <label style="padding-right: 10px; padding-left: 70px;" for="business-type-combo-box">Business Type:</label>
           <select id="business-type-combo-box" name="business-type" tabindex="2" v-model="selectedBusinessType">
             <option value="Any" id="default-option">Any</option>
@@ -23,7 +23,7 @@
       <div class="row" id="search-bar-container" style="padding-top: 3px">
         <div class="input-group" id="search-inputs">
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
-          <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search"></i></button>
+          <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search" aria-hidden="true"></i></button>
         </div>
       </div>
       <br>

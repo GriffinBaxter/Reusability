@@ -51,8 +51,8 @@
                     <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                           @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                           tabindex="3">
-                      <i v-if="!showPassword" class="fas fa-eye"></i>
-                      <i v-else class="fas fa-eye-slash"></i>
+                      <i v-if="!showPassword" class="fas fa-eye" aria-hidden="true"></i>
+                      <i v-else class="fas fa-eye-slash" aria-hidden="true"></i>
                       </span>
 
                   </div>
