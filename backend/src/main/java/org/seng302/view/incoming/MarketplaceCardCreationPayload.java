@@ -15,7 +15,7 @@ public class MarketplaceCardCreationPayload {
     private String section;
     private String title;
     private String description;
-    private List<String> keywords;
+    private List<Integer> keywordIds;
 
     /**
      * Retrieve the id of the user who created the card.
@@ -69,11 +69,11 @@ public class MarketplaceCardCreationPayload {
     }
 
     /**
-     * Retrieve the keywords belonging to the card.
-     * @return a list of strings representing keywords belonging to card.
+     * Retrieve the keyword IDs belonging to the card.
+     * @return a list of integers representing keyword IDs belonging to card.
      */
-    public List<String> getKeywords() {
-        return keywords;
+    public List<Integer> getKeywordIds() {
+        return keywordIds;
     }
 
 
@@ -87,8 +87,8 @@ public class MarketplaceCardCreationPayload {
                 ",\"section\":\"" + section + "\"" +
                 ",\"title\":\"" + title + "\"" +
                 ",\"description\":\"" + description + "\"" +
-                ",\"keywords\":" + keywords  +
-                "}";
+                ",\"keywords\": [" + keywordIds  +
+                "]}";
     }
 
 

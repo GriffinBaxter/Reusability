@@ -8,11 +8,11 @@
         <div id="body" class="container all-but-footer mb-3">
 
           <div class="row mt-3">
-            <h2 align="center">Product Catalogue</h2>
+            <h2 style="text-align: center">Product Catalogue</h2>
             <!--Creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col" align="center">{{ userAlertMessage }}</div>
+                <div class="col" style="text-align: center">{{ userAlertMessage }}</div>
               </div>
             </div>
           </div>
@@ -55,7 +55,8 @@
                           v-bind:recommended-retail-price="recommendedRetailPrice"
                           v-bind:created="created"
                           v-bind:currencyCode="currencyCode"
-                          v-bind:currencySymbol="currencySymbol"/>
+                          v-bind:currencySymbol="currencySymbol"
+                          v-bind:images="images"/>
                     </div>
                     <div class="modal-footer">
                       <button class="btn btn-primary" @click="(event) => {
@@ -279,6 +280,9 @@ export default {
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+      
+      // Image related variables
+      images: [],
 
       // If product creation was successful the user will be altered.
       creationSuccess: false,
@@ -309,6 +313,7 @@ export default {
       this.created = product.data.created;
       this.currentProduct = product;
       this.currentProductIndex = productIndex;
+      this.images = product.data.images;
       this.showModal = true;
     },
 
@@ -663,7 +668,7 @@ export default {
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
-                  (e) => console.log(e)
+                  (error) => console.log(error)
               )
             }
           }

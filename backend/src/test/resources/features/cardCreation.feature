@@ -23,7 +23,3 @@ Feature: UCM2 - Card Creation
     When I create a card with more than one keyword.
     Then The card is successfully created.
 
-  Scenario: AC5 - Keywords should have a maximum length.
-    When I create a card with a keyword that is 25 characters long.
-    Then The card is not created.
-

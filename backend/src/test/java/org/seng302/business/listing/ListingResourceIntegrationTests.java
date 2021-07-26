@@ -46,6 +46,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+/**
+ * ListingResource test class
+ */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -109,7 +112,8 @@ class ListingResourceIntegrationTests {
                                                     "\"description\":\"%s\"," +
                                                     "\"manufacturer\":\"%s\"," +
                                                     "\"recommendedRetailPrice\":%.1f," +
-                                                    "\"created\":\"%s\"}," +
+                                                    "\"created\":\"%s\"," +
+                                                    "\"images\":[]}," +
                                                 "\"quantity\":%d," +
                                                 "\"pricePerItem\":%.1f," +
                                                 "\"totalPrice\":%.1f," +

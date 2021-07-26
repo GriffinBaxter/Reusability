@@ -12,7 +12,7 @@
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
       <div class="card p-1">
         <!-- Order Buttons -->
-        <div class="row my-3" align="center">
+        <div class="row my-3" style="text-align: center">
           <!--filter-->
           <div class="btn-group col-3 py-1" role="group">
             <button type="button" class="btn green-button dropdown-toggle col-4"
@@ -24,28 +24,28 @@
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(true, false, false, false)">
                 Quantity
-                <i id="quantityIcon"></i>
+                <i id="quantityIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by price-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, true, false, false)">
                 Price
-                <i id="priceIcon"></i>
+                <i id="priceIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by closing date-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, true, false)">
                 Closing Date
-                <i id="closesIcon"></i>
+                <i id="closesIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by listing date-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, false, true)">
                 Listing Date
-                <i id="createdIcon"></i>
+                <i id="createdIcon" aria-hidden="true"></i>
               </button>
             </ul>
           </div>
@@ -65,7 +65,7 @@
         <!--creation success info-->
         <div class="alert alert-success" role="alert" v-if="creationSuccess">
           <div class="row">
-            <div class="col" align="center">New Listing Created</div>
+            <div class="col"style="text-align: center">New Listing Created</div>
           </div>
         </div>
 
@@ -85,6 +85,7 @@
             v-bind:moreInfo="item.moreInfo"
             v-bind:currency-code="currencyCode"
             v-bind:currency-symbol="currencySymbol"
+            v-bind:images="item.images"
         />
 
         <!--space-->
@@ -103,7 +104,7 @@
     </div>
       <div class="noListings" v-if="noListings">
         <div class="card p-1">
-          <p class="h2 py-5" align="center">No Listings Found</p>
+          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
         </div>
       </div>
     </div>
@@ -372,7 +373,8 @@ name: "Listings",
             listDate: formatDate(response.data[i].created, false),
             closeDate: formatDate(response.data[i].closes, false),
             moreInfo: response.data[i].moreInfo,
-            expires: formatDate(response.data[i].inventoryItem.expires, false)
+            expires: formatDate(response.data[i].inventoryItem.expires, false),
+            images: response.data[i].inventoryItem.product.images,
           })
         }
       }

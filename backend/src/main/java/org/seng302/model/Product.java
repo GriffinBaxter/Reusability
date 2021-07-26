@@ -18,6 +18,7 @@ import org.seng302.exceptions.IllegalProductArgumentException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Class for products
@@ -37,6 +38,9 @@ public class Product {
     @ManyToOne(targetEntity = Business.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "business_id", insertable = false, updatable = false)
     private Business business;
+
+    @OneToMany(mappedBy = "product")
+    private List<Image> images;
 
     @Id
     @Column(name = "business_id")

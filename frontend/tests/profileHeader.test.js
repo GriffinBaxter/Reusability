@@ -3,9 +3,11 @@
  * @jest-environment jsdom
  */
 
-import {jest, describe, expect, test} from "@jest/globals";
-import {shallowMount} from "@vue/test-utils";
+import {describe, expect, test} from "@jest/globals";
+import {createLocalVue, shallowMount} from "@vue/test-utils";
 import ProfileHeader from "../src/components/ProfileHeader";
+import VueRouter from 'vue-router';
+import Search from "../src/views/Search";
 
 describe("Testing the search type functionality", () => {
 
@@ -146,49 +148,58 @@ describe("Testing the search type functionality", () => {
 
     describe("Testing the URL populates correctly when searching for users", () => {
 
-        test('Testing that pressing enter when the search type is User populates the URL correctly', () => {
-            const $router = {
-                push: jest.fn()
-            };
-            const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                mocks: {
-                    $router
-                }
-            });
+        let profileHeaderWrapper;
+        let router;
 
+        beforeAll(() => {
+            const localVue = createLocalVue();
+            localVue.use(VueRouter)
+
+            const routes = [{path: '/profile/:id', component: ProfileHeader, name: 'Profile'},{path: '/search', component: Search, name: 'Search'}]
+            router = new VueRouter({
+                routes
+            })
+            router.push({
+                name: 'Profile',
+                params: {id: '1'}
+            })
+            profileHeaderWrapper = shallowMount(ProfileHeader, {
+                localVue,
+                router
+            });
+        });
+
+        test('Testing that pressing enter when the search type is User populates the URL correctly', () => {
             profileHeaderWrapper.vm.searchType = 'User';
 
             let inputQuery = 'User Search Enter Test';
+            let expectedQuery = 'User%20Search%20Enter%20Test';
             profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
                 let searchBar = profileHeaderWrapper.find('#search-bar');
                 searchBar.trigger('keydown.enter');
 
-                expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+                expect(router.currentRoute.name).toBe('Search')
+                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1`)
             });
         });
 
+
         test('Testing that clicking the search button when the search type is User populates the URL correctly', () => {
-            const $router = {
-                push: jest.fn()
-            };
-            const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                mocks: {
-                    $router
-                }
-            });
 
             profileHeaderWrapper.vm.searchType = 'User';
 
             let inputQuery = 'User Search Click Test';
+            let expectedQuery = 'User%20Search%20Click%20Test';
             profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
                 let searchButton = profileHeaderWrapper.find('#search-button');
                 searchButton.trigger('click');
 
-                expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+                expect(router.currentRoute.name).toBe('Search')
+                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1`)
             });
         });
 
@@ -196,55 +207,64 @@ describe("Testing the search type functionality", () => {
 
     describe("Testing the URL populates correctly when searching for businesses", () => {
 
+        let profileHeaderWrapper;
+        let router;
+
+        beforeAll(() => {
+            const localVue = createLocalVue();
+            localVue.use(VueRouter)
+
+            const routes = [{path: '/profile/:id', component: ProfileHeader, name: 'Profile'},{path: '/search', component: Search, name: 'Search'}]
+            router = new VueRouter({
+                routes
+            })
+            router.push({
+                name: 'Profile',
+                params: {id: '1'}
+            })
+            profileHeaderWrapper = shallowMount(ProfileHeader, {
+                localVue,
+                router
+            });
+        });
+
         describe("Testing URL population when business type is default", () => {
 
             test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Enter Test';
+                let expectedQuery = 'Business%20Search%20Enter%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
                     let searchBar = profileHeaderWrapper.find('#search-bar');
                     searchBar.trigger('keydown.enter');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Any";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
 
             test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Click Test';
+                let expectedQuery = 'Business%20Search%20Click%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
                     let searchButton = profileHeaderWrapper.find('#search-button');
                     searchButton.trigger('click');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Any";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
         });
@@ -252,18 +272,11 @@ describe("Testing the search type functionality", () => {
         describe("Testing URL population when business type is Accommodation and Food Services", () => {
 
             test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Enter Test';
+                let expectedQuery = 'Business%20Search%20Enter%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -273,25 +286,19 @@ describe("Testing the search type functionality", () => {
                     let searchBar = profileHeaderWrapper.find('#search-bar');
                     searchBar.trigger('keydown.enter');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Accommodation%20and%20Food%20Services";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
 
             test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Click Test';
+                let expectedQuery = 'Business%20Search%20Click%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -301,9 +308,10 @@ describe("Testing the search type functionality", () => {
                     let searchButton = profileHeaderWrapper.find('#search-button');
                     searchButton.trigger('click');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Accommodation%20and%20Food%20Services";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
         });
@@ -311,18 +319,11 @@ describe("Testing the search type functionality", () => {
         describe("Testing URL population when business type is Retail Trade", () => {
 
             test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Enter Test';
+                let expectedQuery = 'Business%20Search%20Enter%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -332,25 +333,19 @@ describe("Testing the search type functionality", () => {
                     let searchBar = profileHeaderWrapper.find('#search-bar');
                     searchBar.trigger('keydown.enter');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Retail%20Trade";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
 
             test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Click Test';
+                let expectedQuery = 'Business%20Search%20Click%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -360,9 +355,10 @@ describe("Testing the search type functionality", () => {
                     let searchButton = profileHeaderWrapper.find('#search-button');
                     searchButton.trigger('click');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Retail%20Trade";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
         });
@@ -370,18 +366,11 @@ describe("Testing the search type functionality", () => {
         describe("Testing URL population when business type is Charitable Organisation", () => {
 
             test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Enter Test';
+                let expectedQuery = 'Business%20Search%20Enter%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -391,25 +380,19 @@ describe("Testing the search type functionality", () => {
                     let searchBar = profileHeaderWrapper.find('#search-bar');
                     searchBar.trigger('keydown.enter');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Charitable%20Organisation";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
 
             test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Click Test';
+                let expectedQuery = 'Business%20Search%20Click%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -419,9 +402,10 @@ describe("Testing the search type functionality", () => {
                     let searchButton = profileHeaderWrapper.find('#search-button');
                     searchButton.trigger('click');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Charitable%20Organisation";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
         });
@@ -429,18 +413,11 @@ describe("Testing the search type functionality", () => {
         describe("Testing URL population when business type is Non Profit Organisation", () => {
 
             test('Testing that pressing enter when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Enter Test';
+                let expectedQuery = 'Business%20Search%20Enter%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -450,25 +427,19 @@ describe("Testing the search type functionality", () => {
                     let searchBar = profileHeaderWrapper.find('#search-bar');
                     searchBar.trigger('keydown.enter');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Non%20Profit%20Organisation";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
 
             test('Testing that clicking the search button when the search type is Business populates the URL correctly', () => {
-                const $router = {
-                    push: jest.fn()
-                };
-                const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                    mocks: {
-                        $router
-                    }
-                });
 
                 profileHeaderWrapper.vm.searchType = 'Business';
 
                 let inputQuery = 'Business Search Click Test';
+                let expectedQuery = 'Business%20Search%20Click%20Test';
                 profileHeaderWrapper.vm.$refs.searchInput.value = inputQuery;
 
                 profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -478,9 +449,10 @@ describe("Testing the search type functionality", () => {
                     let searchButton = profileHeaderWrapper.find('#search-button');
                     searchButton.trigger('click');
 
-                    let businessType = profileHeaderWrapper.vm.selectedBusinessType;
+                    let businessType = "Non%20Profit%20Organisation";
 
-                    expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, businessType: `${businessType}`, searchQuery: `${inputQuery}`, orderBy: `nameASC`, page: "1"}});
+                    expect(router.currentRoute.name).toBe('Search')
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
                 });
             });
         });
@@ -488,15 +460,28 @@ describe("Testing the search type functionality", () => {
 
     describe("Search triggering edge cases", () => {
 
-        test('Testing that clicking the search button when the search type is not Business or User does not trigger a router push', () => {
-            const $router = {
-                push: jest.fn()
-            };
-            const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                mocks: {
-                    $router
-                }
+        let profileHeaderWrapper;
+        let router;
+
+        beforeAll(() => {
+            const localVue = createLocalVue();
+            localVue.use(VueRouter)
+
+            const routes = [{path: '/profile/:id', component: ProfileHeader, name: 'Profile'},{path: '/search', component: Search, name: 'Search'}]
+            router = new VueRouter({
+                routes
+            })
+            router.push({
+                name: 'Profile',
+                params: {id: '1'}
+            })
+            profileHeaderWrapper = shallowMount(ProfileHeader, {
+                localVue,
+                router
             });
+        });
+
+        test('Testing that clicking the search button when the search type is not Business or User does not trigger a router push', () => {
 
             profileHeaderWrapper.vm.searchType = 'Other';
 
@@ -504,19 +489,11 @@ describe("Testing the search type functionality", () => {
                 let searchButton = profileHeaderWrapper.find('#search-button');
                 searchButton.trigger('click');
 
-                expect($router.push).toHaveBeenCalledTimes(0);
+                expect(router.currentRoute.name).toBe('Profile')
             });
         });
 
         test('Testing that pressing enter when the search type is not Business or User does not trigger a router push', () => {
-            const $router = {
-                push: jest.fn()
-            };
-            const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                mocks: {
-                    $router
-                }
-            });
 
             profileHeaderWrapper.vm.searchType = 'Other';
 
@@ -524,19 +501,11 @@ describe("Testing the search type functionality", () => {
                 let searchBar = profileHeaderWrapper.find('#search-bar');
                 searchBar.trigger('keydown.enter');
 
-                expect($router.push).toHaveBeenCalledTimes(0);
+                expect(router.currentRoute.name).toBe('Profile')
             });
         });
 
         test('Testing that pressing a key other than enter does not trigger a router push', () => {
-            const $router = {
-                push: jest.fn()
-            };
-            const profileHeaderWrapper = shallowMount(ProfileHeader, {
-                mocks: {
-                    $router
-                }
-            });
 
             profileHeaderWrapper.vm.searchType = 'User';
 
@@ -544,7 +513,7 @@ describe("Testing the search type functionality", () => {
                 let searchBar = profileHeaderWrapper.find('#search-bar');
                 searchBar.trigger('keydown.escape');
 
-                expect($router.push).toHaveBeenCalledTimes(0);
+                expect(router.currentRoute.name).toBe('Profile')
             });
         });
     });

@@ -18,10 +18,6 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.Assert.assertEquals;
-
 /**
  * User test class.
  */
