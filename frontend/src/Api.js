@@ -261,6 +261,45 @@ export default {
         return instance.post(`/keywords`, {...newKeyword},{
             withCredentials: true
         })
+    },
+
+    // Sends a delete request to the backend to delete the image of a selected product for a business.
+    deleteProductImage: (businessId, productId, imageId) => {
+        return instance.delete(`/businesses/${businessId}/products/${productId}/images/${imageId}`, {
+            withCredentials: true
+        })
+    },
+    
+    // Uploads an image to a given product
+    uploadProductImage: (businessId, productId, image) => {
+        return instance.post(`/businesses/${businessId}/products/${productId}/images`, image, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+    },
+    
+    // Sets the primary image
+    setPrimaryImage: (businessId, productId, imageId) => {
+        return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
+            {}, {
+            withCredentials: true
+        })
+    },
+
+    // Extends a given card's display period by 2 weeks.
+    extendCardDisplayPeriod: (id) => {
+        return instance.put(`/cards/${id}/extenddisplayperiod`,{}, {
+            withCredentials: true
+        })
+    },
+
+    // System administrators can delete a keyword.  Keyword is removed from the list and from any cards it appears on.
+    deleteExistingKeyword: (id) => {
+        return instance.delete(`/keywords/${id}`,  {
+            withCredentials: true
+        })
     }
 
 }
