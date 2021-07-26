@@ -134,7 +134,7 @@ import Api from "../../Api";
 import cardConfig from "../../configs/MarketplaceCard"
 import Cookies from "js-cookie";
 import User, { UserRole} from "../../configs/User"
-import Autofill from "@/components/autofill";
+import Autofill from "../autofill";
 
 export default {
   name: "EditCreateCardModal",
