@@ -17,18 +17,18 @@ const localVue = createLocalVue();
 localVue.use(VueLogger, {isEnabled: false});
 localVue.use(VueRouter);
 
-describe("Tests for notification's accordion", () => {
+afterEach(() => {
+    wrapper.destroy();
+});
 
-    afterEach(() => {
-        wrapper.destroy();
+async function mountPage() {
+    wrapper = shallowMount(notification, {
+        localVue,
     });
+    await wrapper.vm.$nextTick();
+}
 
-    async function mountPage() {
-        wrapper = shallowMount(notification, {
-            localVue,
-        });
-        await wrapper.vm.$nextTick();
-    }
+describe("Tests for notification's accordion", () => {
 
     test("Test accordion for Notifications will display all notifications, when data contain multiple notifications", async function () {
         // Given
@@ -129,6 +129,7 @@ describe("Tests for notification's accordion", () => {
                     id: 2,
                     description: "Your card (Red Bull Energy Drink Sugar Free) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
+                    marketplaceCardPayload: null
                 }]
         };
 
@@ -139,5 +140,136 @@ describe("Tests for notification's accordion", () => {
         // Then
         expect(wrapper.find("#emptyMessage").exists()).toBeFalsy()
     });
+
+    test("Tests accordion allow to open if it is not a 'deleted' notification.", async function () {
+        // Given
+        const notificationsData = {
+            status: 200,
+            data: [
+                {
+                    id: 1,
+                    description: "Your card (Nescafe Cafe Menu Coffee Mix Caramel Latte 170G) has been deleted.",
+                    created: "2021-07-21T22:05:55.449072",
+                    marketplaceCardPayload: {
+                        id: 1,
+                    }
+                }]
+        };
+
+        // When
+        Api.getNotifications.mockImplementation(() => Promise.resolve(notificationsData));
+        await mountPage();
+
+        // Then
+        expect(wrapper.find("#collapse_1").exists()).toBeTruthy()
+    });
+
+    test("Tests accordion not allow to open if it is a 'deleted' notification.", async function () {
+        // Given
+        const notificationsData = {
+            status: 200,
+            data: [
+                {
+                    id: 1,
+                    description: "Your card (Nescafe Cafe Menu Coffee Mix Caramel Latte 170G) has been deleted.",
+                    created: "2021-07-21T22:05:55.449072",
+                    marketplaceCardPayload: null
+                }]
+        };
+
+        // When
+        Api.getNotifications.mockImplementation(() => Promise.resolve(notificationsData));
+        await mountPage();
+
+        // Then
+        expect(wrapper.find("#collapse_1").exists()).toBeFalsy()
+    });
 })
 
+describe("Tests delete buttons in accordion", () => {
+    test("Test that when notification contain marketplaceCard, delete button will display.", async function () {
+        // Given
+        const notificationsData = {
+            status: 200,
+            data: [{
+                id: 1,
+                description: "Your card (Beef) will be expired in 2h.",
+                created: "2020-07-14T14:32:00Z",
+                marketplaceCardPayload: {
+                    id: 1,
+                }
+            }]
+        };
+
+        // When
+        Api.getNotifications.mockImplementation(() => Promise.resolve(notificationsData));
+        await mountPage();
+
+        // Then
+        expect(wrapper.find("#delete_button_1").exists()).toBeTruthy()
+    });
+
+    test("Test that when notification not contain any marketplaceCard, delete button will not display.", async function () {
+        // Given
+        const notificationsData = {
+            status: 200,
+            data: [{
+                id: 1,
+                description: "Your card (Beef) will be expired in 2h.",
+                created: "2020-07-14T14:32:00Z",
+                marketplaceCardPayload: null
+            }]
+        };
+
+        // When
+        Api.getNotifications.mockImplementation(() => Promise.resolve(notificationsData));
+        await mountPage();
+
+        // Then
+        expect(wrapper.find("#delete_button_1").exists()).toBeFalsy()
+    });
+})
+
+describe("Tests extend buttons in accordion", () => {
+    test("Test that when notification contain marketplaceCard, extend button will display.", async function () {
+        // Given
+        const notificationsData = {
+            status: 200,
+            data: [{
+                id: 1,
+                description: "Your card (Beef) will be expired in 2h.",
+                created: "2020-07-14T14:32:00Z",
+                marketplaceCardPayload: {
+                    id: 1,
+                }
+            }]
+        };
+
+        // When
+        Api.getNotifications.mockImplementation(() => Promise.resolve(notificationsData));
+        await mountPage();
+
+        // Then
+        expect(wrapper.find("#extend_button_1").exists()).toBeTruthy()
+    });
+
+    test("Test that when notification not contain any marketplaceCard, extend button will not display.", async function () {
+        // Given
+        const notificationsData = {
+            status: 200,
+            data: [{
+                id: 1,
+                description: "Your card (Beef) will be expired in 2h.",
+                created: "2020-07-14T14:32:00Z",
+                marketplaceCardPayload: null
+            }]
+        };
+
+        // When
+        Api.getNotifications.mockImplementation(() => Promise.resolve(notificationsData));
+        await mountPage();
+
+        // Then
+        expect(wrapper.find("#extend_button_1").exists()).toBeFalsy()
+    });
+})

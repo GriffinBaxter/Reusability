@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
@@ -105,12 +107,20 @@ public class ImageResource {
                     "supported. Only JPG, JPEG, PNG and GIF are supported.");
         }
 
+        java.awt.Image thumbnailData;
+        try {
+            BufferedImage thumbnail = ImageIO.read(image.getInputStream());
+            thumbnailData = thumbnail.getScaledInstance(200, 200, java.awt.Image.SCALE_DEFAULT);
+        } catch (IOException e) {
+
+        }
+
         // Store the images in the file system
         String fileName = null;
         try {
             UUID uuid = UUID.randomUUID();
             fileName = uuid + "." + getFileExtension(imageFileName);
-            if (!fileStorageService.storeFile(image, fileName)) {
+            if (!fileStorageService.storeFile(image.getInputStream(), fileName) || !fileStorageService.storeFile(thumbnailData)) {
                 throw new IOException("Failed to store images");
             }
         }

@@ -1,12 +1,13 @@
 <template>
   <div class="accordion" id="notificationAccordion" style="width: 500px">
     <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage">
-      <h2 class="card-body" style="margin: 3px;float: contour; text-align: center">No notification!</h2>
+      <h2 class="card-body" style="margin: 3px; float: contour; text-align: center"> No notification! </h2>
     </div>
     <div :id="'notification_box' + card.id"
-         class="accordion-item border-dark text-white bg-secondary"
+         class="accordion-item"
          v-for="card in allNoticeCards"
-         v-bind:key="card.id">
+         v-bind:key="card.id"
+         style="background-color: #ededed">
       <h2 class="accordion-header" :id="'heading_' + card.id">
         <button class="accordion-button collapsed"
                 type="button"
@@ -17,10 +18,28 @@
           <h6>{{ card.description }}</h6>
         </button>
       </h2>
-      <div :id="'collapse_' + card.id" class="accordion-collapse collapse" :aria-labelledby="'heading_' + card.id"
+      <div :id="'collapse_' + card.id"
+           v-if="card.operable"
+           class="accordion-collapse collapse"
+           :aria-labelledby="'heading_' + card.id"
            data-bs-parent="#notificationAccordion">
         <div class="accordion-body">
-          <strong>More info and button here</strong>
+          <div class="row">
+            <div class="col" style="float: contour; text-align: center">
+              <button :id="'delete_button_' + card.id"
+                      class="btn btn-outline-danger"
+                      @click="deleteCard(card.marketCardId)">
+                Delete Card
+              </button>
+            </div>
+            <div class="col">
+              <button :id="'extend_button_' + card.id"
+                      class="btn btn-outline-success"
+                      @click="extendCardForDisplayPeriod(card.marketCardId)">
+                Extend Card for 2 Weeks
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -40,21 +59,67 @@ export default {
   },
   props: {},
   methods: {
+    /**
+     * catch errors.
+     */
+    errorCatcher(error) {
+      if (error.status === 401) {
+        // Missing or invalid token
+        this.$router.push({path: '/invalidtoken'});
+      } else if (error.status === 403) {
+        // No permission
+        this.$router.push({path: '/invalidtoken'});
+      } else if (error.status === 406) {
+        // Card not exist
+        this.$router.push({path: '/noCard'});
+      } else {
+        console.log(error)
+      }
+    },
+    /**
+     * populate date from backend and update allNoticeCards.
+     */
     populateNotification(data) {
+      let notifications = [];
       data.forEach(notification => {
-        this.allNoticeCards.push({id: notification.id, description: notification.description});
+        notifications.push({
+          id: notification.id,
+          marketCardId : notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
+          description: notification.description,
+          operable: (notification.marketplaceCardPayload !== null)
+        });
       })
+      this.allNoticeCards = notifications.reverse();
+    },
+    /**
+     * this function will reload all notifications for current user.
+     */
+    loadNotifications() {
+      Api.getNotifications()
+          .then(response => this.populateNotification(response.data))
+          .catch((error) => this.errorCatcher(error));
+    },
+    /**
+     * delete a market card
+     * @param id marketplace card id
+     */
+    deleteCard(id) {
+      Api.deleteACard(id)
+          .then(() => this.loadNotifications())
+          .catch((error) => this.errorCatcher(error));
+    },
+    /**
+     * extend the DisplayPeriod for given card
+     * @param id marketplace card id
+     */
+    extendCardForDisplayPeriod(id) {
+      Api.extendCardDisplayPeriod(id)
+          .then(() => this.loadNotifications())
+          .catch((error) => this.errorCatcher(error));
     }
   },
   beforeMount() {
-    Api.getNotifications()
-        .then(response => (this.populateNotification(response.data)))
-        .catch((error) => {
-          if (error.status === 401) {
-            // Missing or invalid token
-            this.$router.push({path: '/invalidtoken'});
-          }
-        })
+    this.loadNotifications();
   }
 }
 </script>

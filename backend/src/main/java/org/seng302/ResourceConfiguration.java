@@ -33,7 +33,17 @@ public class ResourceConfiguration implements WebMvcConfigurer {
 
         if (directoryPath.startsWith("../")) directoryPath = directoryPath.replace("../", "");
 
-        registry.addResourceHandler("/" + directoryPath + "/**").addResourceLocations("file:/"+ uploadPath + "/");
-    }
+        String resourceLocationStart = "";
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            // Using a Windows system
+            resourceLocationStart = "file:/";
+        } else {
+            // Using a Unix-like system
+            resourceLocationStart = "file://";
+        }
 
+        registry.addResourceHandler("/" + directoryPath + "/**").addResourceLocations(
+                resourceLocationStart + uploadPath + "/"
+        );
+    }
 }
