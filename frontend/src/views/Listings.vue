@@ -65,7 +65,7 @@
         <!--creation success info-->
         <div class="alert alert-success" role="alert" v-if="creationSuccess">
           <div class="row">
-            <div class="col"style="text-align: center">New Listing Created</div>
+            <div class="col" style="text-align: center">New Listing Created</div>
           </div>
         </div>
 
