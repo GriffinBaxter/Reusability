@@ -28,6 +28,7 @@ import org.seng302.view.outgoing.KeywordPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -175,6 +176,7 @@ public class KeywordResource {
      * @param sessionToken JSESSIONID for verifying the user is logged in
      */
     @DeleteMapping("/keywords/{id}")
+    @Transactional
     @ResponseStatus(code = HttpStatus.OK, reason = "Keyword Successfully deleted")
     public void deleteKeyword( @PathVariable Integer id,
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken
@@ -208,6 +210,8 @@ public class KeywordResource {
 
         logger.debug("Keyword Deletion Update - Keyword removed from cards");
 
+        keywordNotificationRepository.deleteAllByKeywordId(id);
+        logger.debug("Keyword Notification Deletion - Keyword notifications deleted for keyword with ID {}", id);
         keywordRepository.delete(keyword.get());
         logger.info("Keyword Deletion - 200 [OK] - Keyword at id {} successfully deleted", id);
     }
