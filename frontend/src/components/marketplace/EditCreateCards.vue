@@ -40,17 +40,17 @@
           <label for="card-creator" class="fw-bold">Select creator:</label>
         </div>
         <div class="col-md">
-          <input id="card-creator" @keydown="searchUsers()" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorInput">
-          <div class="invalid-feedback" v-if="formError.creatorIdError">
-            {{formError.creatorIdError}}
+          <div id="autofill-container-users" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
+            <input id="card-creator" @keydown="searchUsers()" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorInput" ref="card-creator">
+            <div class="invalid-feedback" v-if="formError.creatorIdError">
+              {{formError.creatorIdError}}
+            </div>
+            <ul class="autofill-options hidden-all" id="autofill-list-users" ref="autofill-list-users">
+              <li v-for="user in users" v-bind:key="user.id" tabindex="-1" v-bind:value="user.id" data-bs-toggle="popover" data-bs-trigger="hover focus">
+                {{ user.firstName }} {{ user.lastName}}
+              </li>
+            </ul>
           </div>
-        </div>
-        <div id="autofill-container-users" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
-          <ul class="autofill-options hidden-all" id="autofill-list-users" ref="autofill-list-users">
-            <li v-for="user in users" v-bind:key="user.id" tabindex="-1" v-bind:value="user.id" data-bs-toggle="popover" data-bs-trigger="hover focus">
-              {{ user.firstName }} {{ user.lastName}}
-            </li>
-          </ul>
         </div>
       </div>
 
@@ -214,7 +214,9 @@ export default {
       autocompleteKeywords: [],
 
       /** Contains the list of keyword IDs returned by 'createKeywordIfNotExisting' to use in the edit card PUT request */
-      newKeywordIDs: []
+      newKeywordIDs: [],
+
+      autofillState: 'initial',
     }
   },
   methods: {
@@ -814,7 +816,8 @@ export default {
       this.title = data.title;
       this.description = data.description;
       this.keywordsInput = this.convertKeywordsToString(data.keywords);
-
+      this.populateUserInfo(data.creator.id);
+      this.creatorId = data.creator.id;
     },
     /**
      * Converts a list of keywords to a string for populating current data
@@ -876,31 +879,31 @@ export default {
      */
     autofillClick() {
       const currentFocus = document.activeElement;
-      const input = this.$refs["autofill-input"];
+      const input = this.$refs["card-creator"];
       switch (this.autofillState) {
         case "initial":
-          Autofill.toggleList('open', this.$refs["autofill-list"]);
+          Autofill.toggleList('open', this.$refs["autofill-list-users"]);
           this.autofillState = 'opened';
           break;
         case 'opened':
           if (currentFocus === input) {
-            Autofill.toggleList('closed', this.$refs["autofill-list"]);
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"]);
             this.autofillState = 'initial';
           } else if (currentFocus.tagName === 'LI') {
             this.fillData(currentFocus);
-            Autofill.toggleList('closed', this.$refs["autofill-list"]);
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"]);
             this.autofillState = 'closed';
           }
           break;
         case 'filtered':
           if (currentFocus.tagName === 'LI') {
             this.fillData(currentFocus);
-            Autofill.toggleList('closed', this.$refs["autofill-list"]);
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"]);
             this.autofillState = 'closed';
           }
           break;
         case 'closed':
-          Autofill.toggleList('open', this.$refs["autofill-list"]);
+          Autofill.toggleList('open', this.$refs["autofill-list-users"]);
           this.autofillState = 'filtered';
           break;
       }
@@ -920,21 +923,21 @@ export default {
         case 'Enter':
           if (this.autofillState === 'initial') {
             // If state = initial, toggle open and set state to opened
-            Autofill.toggleList('open', this.$refs["autofill-list"]);
+            Autofill.toggleList('open', this.$refs["autofill-list-users"]);
             this.autofillState = 'opened';
           } else if (this.autofillState === 'opened' && currentFocus.tagName === 'LI') {
             // If state = opened and focus on list, fill data and set state to closed
             this.fillData(currentFocus)
-            Autofill.toggleList('closed', this.$refs["autofill-list"])
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"])
             this.autofillState = 'closed';
           } else if (this.autofillState === 'opened' && currentFocus === input) {
             // If state = opened and focus on input, close it
-            Autofill.toggleList('closed', this.$refs["autofill-list"])
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"])
             this.autofillState = 'closed';
           } else if (this.autofillState === 'filtered' && currentFocus.tagName === 'LI') {
             // If state = filtered and focus on list, fill data and set state to closed
             this.fillData(currentFocus)
-            Autofill.toggleList('closed', this.$refs["autofill-list"])
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"])
             this.autofillState = 'closed';
           } else if (this.autofillState === 'filtered' && currentFocus === input) {
             // If state = filtered and focus on input, set state to opened
@@ -942,14 +945,14 @@ export default {
             this.autofillState = 'opened';
           } else {
             // If state = closed, set state to filtered. I.e. open but keep existing input.
-            Autofill.toggleList('open', this.$refs["autofill-list"])
+            Autofill.toggleList('open', this.$refs["autofill-list-users"])
             this.autofillState = ('filtered');
           }
           break;
         case 'Escape':
           if (this.autofillState === 'opened' || this.autofillState === 'filtered') {
             // Close the list
-            Autofill.toggleList('closed', this.$refs["autofill-list"]);
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"]);
             this.autofillState = 'initial';
           }
           break;
@@ -957,42 +960,42 @@ export default {
           if (this.autofillState === 'initial' || this.autofillState === 'closed') {
             // If state = initial or closed, set state to opened and moveFocus to first
             Autofill.toggleList('open')
-            Autofill.moveFocus(input, 'forward', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
+            Autofill.moveFocus(input, 'forward', this.$refs["card-creator"], this.$refs["autofill-list-users"].children, document.activeElement)
             this.autofillState = 'opened';
           } else {
             // If state = opened/filtered and focus on input/list, moveFocus to first/next
-            Autofill.toggleList('open', this.$refs["autofill-list"])
-            Autofill.moveFocus(currentFocus, 'forward', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
+            Autofill.toggleList('open', this.$refs["autofill-list-users"])
+            Autofill.moveFocus(currentFocus, 'forward', this.$refs["card-creator"], this.$refs["autofill-list-users"].children, document.activeElement)
           }
           break;
         case 'ArrowUp':
           if (this.autofillState === 'initial' || this.autofillState === 'closed') {
             // If state = initial, set state to opened and moveFocus to last
             // If state = closed, set state to opened and moveFocus to last
-            Autofill.toggleList('Open', this.$refs["autofill-list"])
-            Autofill.moveFocus(input, 'back', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
+            Autofill.toggleList('Open', this.$refs["autofill-list-users"])
+            Autofill.moveFocus(input, 'back', this.$refs["card-creator"], this.$refs["autofill-list-users"].children, document.activeElement)
             this.autofillState = 'opened';
           } else {
             // If state = opened/filtered and focus on input/list, moveFocus to last/previous
-            Autofill.moveFocus(currentFocus, 'back', this.$refs["autofill-input"], this.$refs["autofill-list"].children, document.activeElement)
+            Autofill.moveFocus(currentFocus, 'back', this.$refs["card-creator"], this.$refs["autofill-list-users"].children, document.activeElement)
           }
           break;
         default:
           if (this.autofillState === 'initial') {
             // If state = initial, toggle open, filter and set state to filtered
-            Autofill.toggleList('open', this.$refs["autofill-list"]);
-            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
+            Autofill.toggleList('open', this.$refs["autofill-list-users"]);
+            Autofill.filterOptions(this.$refs["card-creator"].value, this.$refs["autofill-list-users"].children, this.autofillState);
             this.autofillState = 'filtered';
           } else if (this.autofillState === 'opened') {
             // If state = opened, filter and set state to filtered
-            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
+            Autofill.filterOptions(this.$refs["card-creator"].value, this.$refs["autofill-list-users"].children, this.autofillState);
             this.autofillState = 'filtered';
           } else if (this.autofillState === 'closed') {
             // If state = closed, filter and set state to filtered
-            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
+            Autofill.filterOptions(this.$refs["card-creator"].value, this.$refs["autofill-list-users"].children, this.autofillState);
             this.autofillState = 'filtered';
           } else { // Already filtered
-            Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
+            Autofill.filterOptions(this.$refs["card-creator"].value, this.$refs["autofill-list-users"].children, this.autofillState);
           }
           break;
       }
@@ -1013,7 +1016,7 @@ export default {
       const city = finalUser.homeAddress.city;
       const suburb = finalUser.homeAddress.suburb;
       this.currentUser = finalUser;
-      this.fullName = finalUser.firstName + " " + finalUser.lastName;
+      this.userFullName = finalUser.firstName + " " + finalUser.lastName;
 
       if (suburb && city) {
         this.userLocation = suburb + ", " + city
@@ -1025,14 +1028,14 @@ export default {
         this.userLocation = "N/A"
       }
 
+      this.creatorId = finalUser.id;
+
       this.autofillInput = '';
-      this.$refs.currentlySelectedLabel.className = "";
     },
     searchUsers() {
 
       Api.searchUsers(this.creatorInput, "fullNameASC", 0).then((response) => {
-        this.users = response.data
-        console.log(response.data)
+        this.users = response.data;
       })
     }
   },
@@ -1198,12 +1201,8 @@ strong.keywordHighlight {
     color: #fff;
   }
 
-  .iconSpan {
-    position: absolute;
-    top: 2em;
-    right: 0.75em;
-    z-index: 20;
-    background: transparent;
+  .hidden-all {
+    display: none;
   }
 
 </style>
