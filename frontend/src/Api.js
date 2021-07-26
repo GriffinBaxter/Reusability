@@ -38,7 +38,7 @@ const instance = axios.create({
 });
 
 export default {
-    
+
     // Retrieves the server URL as a string
     getServerURL: () => {
         return SERVER_URL
@@ -274,7 +274,7 @@ export default {
             withCredentials: true
         })
     },
-    
+
     // Uploads an image to a given product
     uploadProductImage: (businessId, productId, image) => {
         return instance.post(`/businesses/${businessId}/products/${productId}/images`, image, {
@@ -284,7 +284,7 @@ export default {
             }
         })
     },
-    
+
     // Sets the primary image
     setPrimaryImage: (businessId, productId, imageId) => {
         return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
@@ -296,6 +296,13 @@ export default {
     // Extends a given card's display period by 2 weeks.
     extendCardDisplayPeriod: (id) => {
         return instance.put(`/cards/${id}/extenddisplayperiod`,{}, {
+            withCredentials: true
+        })
+    },
+
+    // System administrators can delete a keyword.  Keyword is removed from the list and from any cards it appears on.
+    deleteExistingKeyword: (id) => {
+        return instance.delete(`/keywords/${id}`,  {
             withCredentials: true
         })
     }
