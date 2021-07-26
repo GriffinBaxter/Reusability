@@ -22,12 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileAlreadyExistsException;
@@ -117,27 +112,7 @@ public class ImageResource {
         // Creating thumbnail image
         InputStream thumbnailInputStream;
         try {
-            BufferedImage thumbnail = ImageIO.read(image.getInputStream());
-            
-            // Crops image in the centre if not a square
-            int newWidthHeight = Math.min(thumbnail.getWidth(), thumbnail.getHeight());
-            int x = (thumbnail.getWidth() - newWidthHeight) / 2;
-            int y = (thumbnail.getHeight() - newWidthHeight) / 2;
-            BufferedImage cropped = thumbnail.getSubimage(x, y, newWidthHeight, newWidthHeight);
-
-            java.awt.Image thumbnailData = cropped.getScaledInstance(250, 250, java.awt.Image.SCALE_SMOOTH);
-
-            BufferedImage bufferedImage = new BufferedImage(
-                    thumbnailData.getWidth(null),
-                    thumbnailData.getHeight(null),
-                    BufferedImage.TYPE_INT_RGB
-            );
-            Graphics2D graphics2D = bufferedImage.createGraphics();
-            graphics2D.drawImage(thumbnailData, null, null);
-
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, fileExtension, byteArrayOutputStream);
-            thumbnailInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            thumbnailInputStream = fileStorageService.generateThumbnail(image, fileExtension);
         } catch (IOException e) {
             String errorMessage = String.format(
                     "Thumbnail unable to be created from image (name: %s)", image.getName()

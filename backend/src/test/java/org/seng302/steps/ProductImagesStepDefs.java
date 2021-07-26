@@ -37,7 +37,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -196,7 +198,10 @@ public class ProductImagesStepDefs {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
 
@@ -284,7 +289,7 @@ public class ProductImagesStepDefs {
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
-        lenient().when(fileStorageService.deleteFile(primaryImage.getFilename())).thenReturn(true);
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = List.of(primaryImage);
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
@@ -295,10 +300,6 @@ public class ProductImagesStepDefs {
 
     @Then("this business has no images")
     public void this_business_has_no_images() {
-
-        System.out.println(primaryImage.toString());
-
-
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 

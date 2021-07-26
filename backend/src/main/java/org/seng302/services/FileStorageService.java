@@ -10,6 +10,11 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -68,6 +73,38 @@ public class FileStorageService {
             logger.debug(log);
             return false;
         }
+    }
+
+    /**
+     * Generates the thumbnail for an image (cropped to a square, then resized to 250x250 pixels).
+     * 
+     * @param image MultipartFile of the image.
+     * @param fileExtension The image's file extension.
+     * @return InputStream of the thumbnail.
+     * @throws IOException If there is an error in generating the thumbnail, caught in the method that calls it.
+     */
+    public InputStream generateThumbnail(MultipartFile image, String fileExtension) throws IOException {
+        BufferedImage thumbnail = ImageIO.read(image.getInputStream());
+
+        // Crops image to a square aspect ratio
+        int newWidthHeight = Math.min(thumbnail.getWidth(), thumbnail.getHeight());
+        int x = (thumbnail.getWidth() - newWidthHeight) / 2;
+        int y = (thumbnail.getHeight() - newWidthHeight) / 2;
+        BufferedImage cropped = thumbnail.getSubimage(x, y, newWidthHeight, newWidthHeight);
+
+        java.awt.Image thumbnailData = cropped.getScaledInstance(250, 250, java.awt.Image.SCALE_SMOOTH);
+
+        BufferedImage bufferedImage = new BufferedImage(
+                thumbnailData.getWidth(null),
+                thumbnailData.getHeight(null),
+                BufferedImage.TYPE_INT_RGB
+        );
+        Graphics2D graphics2D = bufferedImage.createGraphics();
+        graphics2D.drawImage(thumbnailData, null, null);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, fileExtension, byteArrayOutputStream);
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
     /**
