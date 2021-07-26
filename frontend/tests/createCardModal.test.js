@@ -150,17 +150,6 @@ describe("Testing the behaviour of prefilled input fields", () => {
 
     })
 
-    test("Test that the id returned from the Api is stored in the input by default.", async () => {
-
-        // Checking that the creator id has the correct value
-        expect(createCardModal.vm.$data.creatorId).toBe(36)
-
-        // Checking the form has been updated correctly.
-        expect(createCardModal.find("#card-creator-id").exists()).toBe(true);
-        expect(createCardModal.find("#card-creator-id").element.value).toBe("36")
-
-    })
-
     test("Test that the name field is automatically displaying the correct full name", async () => {
 
         expect(createCardModal.vm.$data.userFullName).toBe("FIRST_NAME LAST_NAME")
@@ -835,9 +824,7 @@ describe("Testing required fields", () => {
         expect(createCardWrapper.vm.$data.sectionSelected).toBe("ForSale");
 
         // Verify that the creator Id is set.
-        expect(createCardWrapper.find("#card-creator-id").exists()).toBe(true);
         expect(createCardWrapper.vm.$data.creatorId).toBe(36);
-        expect(createCardWrapper.find("#card-creator-id").element.value).toBe("36");
 
         // Set and verify the title.
         expect(createCardWrapper.find("#card-title").exists()).toBe(true);

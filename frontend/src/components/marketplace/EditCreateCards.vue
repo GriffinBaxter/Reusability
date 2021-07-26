@@ -166,8 +166,10 @@ export default {
         WANTED: "Wanted",
         EXCHANGE: "Exchange"
       },
-      /** Contains the creators id */
+      /** Contains what is in the creator name input field */
       creatorInput: "",
+      /** Contains the creators id */
+      creatorId: "",
       /** Contains the user's full name to be displayed as a prefilled value*/
       userFullName: "",
       /** Contains the prefilled value of the user's address (only city and suburb)*/
@@ -1036,6 +1038,8 @@ export default {
 
       Api.searchUsers(this.creatorInput, "fullNameASC", 0).then((response) => {
         this.users = response.data;
+      }, (error) => {
+        console.log(error)
       })
     }
   },
