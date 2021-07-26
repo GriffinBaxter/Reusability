@@ -23,28 +23,28 @@
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(true, false, false, false)">
                 Quantity
-                <i id="quantityIcon"></i>
+                <i id="quantityIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by price-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, true, false, false)">
                 Price
-                <i id="priceIcon"></i>
+                <i id="priceIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by closing date-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, true, false)">
                 Closing Date
-                <i id="closesIcon"></i>
+                <i id="closesIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by listing date-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, false, true)">
                 Listing Date
-                <i id="createdIcon"></i>
+                <i id="createdIcon" aria-hidden="true"></i>
               </button>
             </ul>
           </div>
@@ -64,7 +64,7 @@
         <!--creation success info-->
         <div class="alert alert-success" role="alert" v-if="creationSuccess">
           <div class="row">
-            <div class="col" align="center">New Listing Created</div>
+            <div class="col" style="text-align: center">New Listing Created</div>
           </div>
         </div>
 
@@ -103,7 +103,7 @@
     </div>
       <div class="noListings" v-if="noListings">
         <div class="card p-1">
-          <p class="h2 py-5" align="center">No Listings Found</p>
+          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
         </div>
       </div>
     </div>

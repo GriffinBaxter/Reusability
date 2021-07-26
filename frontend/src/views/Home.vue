@@ -12,13 +12,6 @@
 
       <div id="home" class="container all-but-footer">
 
-        <div type="button" @click="newNotification = !newNotification">
-          <img v-if="newNotification" alt="notification" src="../../public/notification.png" height="50" width="50"/>
-          <img v-else type="button" alt="notification" src="../../public/notification_new.png" height="50" width="50"/>
-        </div>
-
-        <Notification v-if="newNotification" style="position: absolute"/>
-
         <!--News feed-->
         <div class="container-news text-font">
 
@@ -107,22 +100,15 @@
 <script>
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
-import Notification from "../components/main/Notification";
 
 export default {
   name: "Home",
   components: {
-    Notification,
     Footer,
     Navbar
   },
   data() {
-    return {
-      newNotification: false
-    }
-  },
-  methods: {},
-  mounted() {
+    return {}
   }
 }
 </script>

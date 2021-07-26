@@ -32,7 +32,7 @@
                   {{ productIdErrorMsg }}
                 </div>
                 <span class="iconSpan">
-                    <i class="fas fa-angle-down"></i>
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
                   <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" tabindex="-1" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product) }}</li>
@@ -250,7 +250,7 @@ export default {
       }
 
       // Get all products to display in autofill
-      this.getAllProducts().then(() => {});
+      this.getAllProducts();
 
       // Show the modal
       this.modal.show();
