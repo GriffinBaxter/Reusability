@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.util.Optional;
@@ -56,9 +57,9 @@ public class FileStorageService {
      * @return true if the file was stored correctly. Otherwise false.
      * @throws FileAlreadyExistsException When the file attempting to be creating already exists in the file system.
      */
-    public boolean storeFile(MultipartFile file, String fileName) throws FileAlreadyExistsException{
+    public boolean storeFile(InputStream file, String fileName) throws FileAlreadyExistsException{
         try {
-            Files.copy(file.getInputStream(), this.rootPath.resolve(fileName));
+            Files.copy(file, this.rootPath.resolve(fileName));
             String log = "Successfully stored file into " + fileName;
             logger.debug(log);
             return true;
