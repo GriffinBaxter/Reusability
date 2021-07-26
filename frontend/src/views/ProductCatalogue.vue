@@ -31,7 +31,8 @@
                  :order-by-override="tableOrderBy" :table-data-is-page="true"
                  @update-current-page="event => updatePage(event)"
                  @order-by-header-index="event => orderProducts(event)"
-                 @row-selected="event => showRowModal(event.index)"/>
+                 @row-selected="event => showRowModal(event.index)"
+                 aria-label="Product Catalogue Table"/>
         </div>
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
@@ -280,7 +281,7 @@ export default {
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
-      
+
       // Image related variables
       images: [],
 
