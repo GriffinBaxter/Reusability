@@ -24,10 +24,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
+import java.util.List;
 
 /**
  * Controller class for images. This class includes:
@@ -107,20 +112,52 @@ public class ImageResource {
                     "supported. Only JPG, JPEG, PNG and GIF are supported.");
         }
 
-        java.awt.Image thumbnailData;
+        String fileExtension = getFileExtension(imageFileName);
+        
+        // Creating thumbnail image
+        InputStream thumbnailInputStream;
         try {
             BufferedImage thumbnail = ImageIO.read(image.getInputStream());
-            thumbnailData = thumbnail.getScaledInstance(200, 200, java.awt.Image.SCALE_DEFAULT);
-        } catch (IOException e) {
+            
+            // Crops image in the centre if not a square
+            int newWidthHeight = Math.min(thumbnail.getWidth(), thumbnail.getHeight());
+            int x = (thumbnail.getWidth() - newWidthHeight) / 2;
+            int y = (thumbnail.getHeight() - newWidthHeight) / 2;
+            BufferedImage cropped = thumbnail.getSubimage(x, y, newWidthHeight, newWidthHeight);
 
+            java.awt.Image thumbnailData = cropped.getScaledInstance(250, 250, java.awt.Image.SCALE_SMOOTH);
+
+            BufferedImage bufferedImage = new BufferedImage(
+                    thumbnailData.getWidth(null),
+                    thumbnailData.getHeight(null),
+                    BufferedImage.TYPE_INT_RGB
+            );
+            Graphics2D graphics2D = bufferedImage.createGraphics();
+            graphics2D.drawImage(thumbnailData, null, null);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, fileExtension, byteArrayOutputStream);
+            thumbnailInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        } catch (IOException e) {
+            String errorMessage = String.format(
+                    "Thumbnail unable to be created from image (name: %s)", image.getName()
+            );
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Thumbnail unable to be created from image.");
         }
 
         // Store the images in the file system
         String fileName = null;
+        String thumbnailFilename = null;
         try {
             UUID uuid = UUID.randomUUID();
-            fileName = uuid + "." + getFileExtension(imageFileName);
-            if (!fileStorageService.storeFile(image.getInputStream(), fileName) || !fileStorageService.storeFile(thumbnailData)) {
+            fileName = uuid + "." + fileExtension;
+            thumbnailFilename = "thumbnail" + fileName;
+            
+            if (
+                    !fileStorageService.storeFile(image.getInputStream(), fileName) ||
+                    !fileStorageService.storeFile(thumbnailInputStream, thumbnailFilename)
+            ) {
                 throw new IOException("Failed to store images");
             }
         }
@@ -129,6 +166,7 @@ public class ImageResource {
             String errorMessage = String.format("File already existed. Canceling storage of image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
             logger.error(errorMessage);
             fileStorageService.deleteFile(fileName);
+            fileStorageService.deleteFile(thumbnailFilename);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
         }
         // If this fails we need to ensure it was removed.
@@ -136,13 +174,16 @@ public class ImageResource {
             String errorMessage = String.format("Failed to store image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
             logger.error(errorMessage);
             fileStorageService.deleteFile(fileName);
+            fileStorageService.deleteFile(thumbnailFilename);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
         }
 
         // If we cannot get the file path, then we have to assume that it failed.
         String imageFilePath = fileStorageService.getPathString(fileName);
-        if (imageFilePath == null) {
+        String thumbnailFilePath = fileStorageService.getPathString(thumbnailFilename);
+        if (imageFilePath == null || thumbnailFilePath == null) {
             fileStorageService.deleteFile(fileName);
+            fileStorageService.deleteFile(thumbnailFilename);
             String errorMessage = String.format("Failed to locate image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
             logger.error(errorMessage);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored");
@@ -151,7 +192,9 @@ public class ImageResource {
         // Store the image data in an object
         List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
         boolean isFirstImage = primaryImages.isEmpty();
-        Image storedImage = imageRepository.saveAndFlush(new Image(productId, businessId, imageFilePath, imageFilePath, isFirstImage));
+        Image storedImage = imageRepository.saveAndFlush(
+                new Image(productId, businessId, imageFilePath, thumbnailFilePath, isFirstImage)
+        );
 
         String successMessage = String.format("Successfully uploaded and stored image under filename \"%s\", for product id: \"%s\", for business id: \"%d\", by a user (id: %d)", storedImage.getFilename(), productId, businessId, user.getId());
         logger.info(successMessage);
@@ -186,13 +229,14 @@ public class ImageResource {
         Image image = verifyImageId(imageId, businessId, productId, user);
 
         // verify file exists & delete image
-        if (!fileStorageService.deleteFile(image.getFilename()) ) {
+        boolean imageDeleted = fileStorageService.deleteFile(image.getFilename());
+        boolean thumbnailDeleted = fileStorageService.deleteFile(image.getThumbnailFilename());
+        if (!imageDeleted || !thumbnailDeleted) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
             logger.error(errorMessage);
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
                     "for example trying to access a resource by an ID that does not exist.");
         }
-
 
         // Delete from database
         imageRepository.deleteByIdAndBussinesIdAndProductId(imageId, businessId, productId);
