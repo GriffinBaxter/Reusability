@@ -1,17 +1,16 @@
 {
 	"info": {
-		"_postman_id": "fd303565-ff6a-4fd1-b3a2-c5658e84bd10",
-		"name": "Delete Keywords",
+		"_postman_id": "18bee525-9cc2-488c-ba14-386afea9e898",
+		"name": "Test DELETE /keywords/{id}",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "1. login",
+			"name": "1. Login",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "13f62a0b-34ec-492b-a095-f8c4aee37c1c",
 						"exec": [
 							"var jsonData = pm.response.json();\r",
 							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
@@ -52,7 +51,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "99565396-5e9d-40a8-a6af-ab41c5969baa",
 						"exec": [
 							"var jsonData = pm.response.json();\r",
 							"pm.collectionVariables.set(\"keywordId\", jsonData[\"keywordId\"]);"
@@ -100,7 +98,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "b87c1fac-5d12-46d8-bf4c-245b58ba4a5f",
 						"exec": [
 							"var jsonData = pm.response.json();\r",
 							"pm.collectionVariables.set(\"cardId\", jsonData[\"cardId\"]);"
@@ -136,7 +133,7 @@
 			"response": []
 		},
 		{
-			"name": "4 & 7. Get Card (GET /cards/{id})",
+			"name": "4 & 8. Get Card (GET /cards/{id})",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -163,7 +160,7 @@
 			"response": []
 		},
 		{
-			"name": "5. Delete Keyword",
+			"name": "7. Delete Keyword",
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -183,12 +180,11 @@
 			"response": []
 		},
 		{
-			"name": "6. DGAA login",
+			"name": "5. DGAA login",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "13f62a0b-34ec-492b-a095-f8c4aee37c1c",
 						"exec": [
 							"var jsonData = pm.response.json();\r",
 							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
@@ -222,27 +218,40 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "6 & 9. Retrieve notifications",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/users/notifications",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"notifications"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [
 		{
-			"id": "4ebd6000-0624-4373-86bd-c48c5e6cd385",
 			"key": "userId",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
-			"id": "39970322-7fd9-412d-b5a4-df491e2f7b6e",
 			"key": "keywordId",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
-			"id": "c4dd5b29-889b-4701-b8fe-3ce41331f792",
 			"key": "cardId",
-			"value": "",
-			"type": "string"
+			"value": ""
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
