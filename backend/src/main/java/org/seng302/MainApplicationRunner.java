@@ -140,7 +140,7 @@ public class MainApplicationRunner implements ApplicationRunner {
      * Check displayPeriodEnd for all Market cards, and compare with current time, if the card will expired in next 24h,
      * create/update a notification for this card.
      */
-    @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
+    @Scheduled(fixedDelayString = "${fixed-delay-for-notification.in.milliseconds}")
     public void checkNotifications() {
         // Time
         LocalDateTime currentTime = LocalDateTime.now();
