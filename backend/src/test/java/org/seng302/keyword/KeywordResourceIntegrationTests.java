@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class KeywordResourceIntegrationTests {
+class KeywordResourceIntegrationTests {
     @Autowired
     private MockMvc mvc;
 

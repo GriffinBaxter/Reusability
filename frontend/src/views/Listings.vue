@@ -85,6 +85,7 @@
             v-bind:moreInfo="item.moreInfo"
             v-bind:currency-code="currencyCode"
             v-bind:currency-symbol="currencySymbol"
+            v-bind:images="item.images"
         />
 
         <!--space-->
@@ -372,7 +373,8 @@ name: "Listings",
             listDate: formatDate(response.data[i].created, false),
             closeDate: formatDate(response.data[i].closes, false),
             moreInfo: response.data[i].moreInfo,
-            expires: formatDate(response.data[i].inventoryItem.expires, false)
+            expires: formatDate(response.data[i].inventoryItem.expires, false),
+            images: response.data[i].inventoryItem.product.images,
           })
         }
       }

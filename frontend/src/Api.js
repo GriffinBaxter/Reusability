@@ -39,6 +39,11 @@ const instance = axios.create({
 
 export default {
 
+    // Retrieves the server URL as a string
+    getServerURL: () => {
+        return SERVER_URL
+    },
+
     // Sends a post request to the backend with a new user object to store
     addNewUser: (user) => instance.post('/users', {
         ...user.data
@@ -269,7 +274,7 @@ export default {
             withCredentials: true
         })
     },
-    
+
     // Uploads an image to a given product
     uploadProductImage: (businessId, productId, image) => {
         return instance.post(`/businesses/${businessId}/products/${productId}/images`, image, {
@@ -279,7 +284,7 @@ export default {
             }
         })
     },
-    
+
     // Sets the primary image
     setPrimaryImage: (businessId, productId, imageId) => {
         return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
