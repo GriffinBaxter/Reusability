@@ -8,11 +8,11 @@
         <div id="body" class="container all-but-footer mb-3">
 
           <div class="row mt-3">
-            <h2 align="center">Product Catalogue</h2>
+            <h2 style="text-align: center">Product Catalogue</h2>
             <!--Creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col" align="center">{{ userAlertMessage }}</div>
+                <div class="col" style="text-align: center">{{ userAlertMessage }}</div>
               </div>
             </div>
           </div>
@@ -668,7 +668,7 @@ export default {
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
-                  (e) => console.log(e)
+                  (error) => console.log(error)
               )
             }
           }
