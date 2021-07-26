@@ -121,9 +121,7 @@ export default {
       newNotification: false
     }
   },
-  methods: {},
-  mounted() {
-  }
+  methods: {}
 }
 </script>
 

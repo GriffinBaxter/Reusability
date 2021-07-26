@@ -22,15 +22,15 @@
           </h6>
 
           <!--price-->
-          <h6 class="card-text" align="right" v-if="pricePerItem != null">
+          <h6 class="card-text" style="text-align: right" v-if="pricePerItem != null">
             Price Per Item: {{ currencySymbol }}{{ pricePerItem }} {{ currencyCode }}
           </h6>
-          <h6 class="card-text" align="right" v-else><br></h6>
+          <h6 class="card-text" style="text-align: right" v-else><br></h6>
 
-          <h6 class="card-text" align="right" v-if="totalPrice != null">
+          <h6 class="card-text" style="text-align: right" v-if="totalPrice != null">
             Total Price: {{ currencySymbol }}{{ totalPrice }} {{ currencyCode }}
           </h6>
-          <h6 class="card-text" align="right" v-else><br></h6>
+          <h6 class="card-text" style="text-align: right" v-else><br></h6>
 
         </div>
       </div>

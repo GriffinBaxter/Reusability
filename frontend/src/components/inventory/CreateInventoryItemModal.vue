@@ -617,7 +617,7 @@ export default {
 
   },
   mounted() {
-    this.getAllProducts().then(() => {});
+    this.getAllProducts().then();
     this.modal = new Modal(document.getElementById("creationPopup"));
 
     // Global event listener to toggle autofill list display

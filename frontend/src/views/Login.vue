@@ -45,7 +45,7 @@
                 <div class="col my-2 my-lg-0">
                   <label for="password-input" class="form-label">Password</label>
                   <div class="input-group">
-                    <input class="form-control" name="password" :type="togglePasswordInputType(showPassword)" tabindex="2" id="password-input" ref="pInput">
+                    <input autocomplete="on" class="form-control" name="password" :type="togglePasswordInputType(showPassword)" tabindex="2" id="password-input" ref="pInput">
 
                     <!--toggle password visibility-->
                     <span class="input-group-text green-search-button" @click="showPassword = !showPassword"

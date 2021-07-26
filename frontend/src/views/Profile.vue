@@ -130,7 +130,7 @@
                     <h6>Name:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" align="right">
+                    <div class="text-secondary" style="text-align: right">
                       {{ firstName }} {{ middleName }} {{ lastName }}
                     </div>
                   </div>
@@ -145,7 +145,7 @@
                     <h6>Email:</h6>
                   </div>
                   <div class="col">
-                    <div class="text-secondary" align="right">
+                    <div class="text-secondary" style="text-align: right">
                       {{ email }}
                     </div>
                   </div>
@@ -160,7 +160,7 @@
                     <h6>Date of Birth:</h6>
                   </div>
                   <div class="col">
-                    <div class="text-secondary" align="right">
+                    <div class="text-secondary" style="text-align: right">
                       {{ dateOfBirth }}
                     </div>
                   </div>
@@ -176,7 +176,7 @@
                     <h6>Phone number:</h6>
                   </div>
                   <div class="col">
-                    <div class="text-secondary" align="right">
+                    <div class="text-secondary" style="text-align: right">
                       {{ phoneNumber }}
                     </div>
                   </div>
@@ -191,7 +191,7 @@
                     <h6>Address:</h6>
                   </div>
                   <div class="col">
-                    <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
+                    <div class="text-secondary" v-for="lines in address" :key="lines.line" style="text-align: right">
                       {{ lines.line }}
                     </div>
                   </div>
@@ -206,7 +206,7 @@
                     <h6>Joined:</h6>
                   </div>
                   <div class="col">
-                    <div class="text-secondary" align="right">
+                    <div class="text-secondary" style="text-align: right">
                       {{ joined }}
                     </div>
                   </div>
@@ -223,7 +223,7 @@
                     <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
                     <div v-else>
                       <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
-                           align="right" @click="redirectToBusiness(business.id)">
+                           style="text-align: right" @click="redirectToBusiness(business.id)">
                         {{ business.name }}
                       </div>
                     </div>

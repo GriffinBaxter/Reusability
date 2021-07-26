@@ -30,20 +30,20 @@
           <h2 class="card-title">{{ productName }}</h2>
           <br>
           <p class="card-text">
-            <b>Product ID:</b> {{ productId }}
+            <strong>Product ID:</strong> {{ productId }}
             <br>
-            <b>Manufacturer:</b> {{ manufacturer }}
+            <strong>Manufacturer:</strong> {{ manufacturer }}
             <br>
-            <b>RRP:</b> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
+            <strong>RRP:</strong> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
             <br>
-            <b>Description:</b>
+            <strong>Description:</strong>
             <br>
             {{ description }}
           </p>
           <hr>
           <div class="row">
             <p class="card-text">
-              <b>Created:</b> {{ created }}
+              <strong>Created:</strong> {{ created }}
             </p>
           </div>
         </div>
@@ -110,8 +110,6 @@ export default {
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
     },
-  },
-  mounted() {
   }
 }
 </script>

@@ -36,7 +36,7 @@
                 <h4 class="card-title">{{quantity}}x {{ productName }}</h4>
               </div>
               <div class="col d-flex align-items-end flex-column col-5" v-if="!(moreInfo.length===0)">
-                <p align="right">{{moreInfo}}</p>
+                <p style="text-align: right">{{moreInfo}}</p>
               </div>
             </div>
             <div class="row py-2" id="main-body">
@@ -148,8 +148,6 @@ export default {
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
     },
-  },
-  mounted() {
   }
 }
 </script>

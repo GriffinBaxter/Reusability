@@ -12,7 +12,7 @@
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
       <div class="card p-1">
         <!-- Order Buttons -->
-        <div class="row my-3" align="center">
+        <div class="row my-3" style="text-align: center">
           <!--filter-->
           <div class="btn-group col-3 py-1" role="group">
             <button type="button" class="btn green-button dropdown-toggle col-4"
@@ -65,7 +65,7 @@
         <!--creation success info-->
         <div class="alert alert-success" role="alert" v-if="creationSuccess">
           <div class="row">
-            <div class="col" align="center">New Listing Created</div>
+            <div class="col"style="text-align: center">New Listing Created</div>
           </div>
         </div>
 
@@ -104,7 +104,7 @@
     </div>
       <div class="noListings" v-if="noListings">
         <div class="card p-1">
-          <p class="h2 py-5" align="center">No Listings Found</p>
+          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
         </div>
       </div>
     </div>

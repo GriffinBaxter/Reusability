@@ -32,7 +32,7 @@
 
         <div class="col">
           <div class="card card-body">
-            <h1 align="center">Inventory</h1>
+            <h1 style="text-align: center">Inventory</h1>
 
             <hr/>
 
@@ -118,7 +118,7 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col" align="center"> {{userAlertMessage}} </div>
+                <div class="col" style="text-align: center"> {{userAlertMessage}} </div>
               </div>
             </div>
 
