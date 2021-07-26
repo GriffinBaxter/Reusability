@@ -553,7 +553,7 @@ export default {
      * NOTE: Currently just Marketplace
      */
     canGoToPage() {
-      return (this.$route.name !== "Marketplace")
+      return this.$route.name !== "Marketplace";
     }
   },
   beforeMount() {
