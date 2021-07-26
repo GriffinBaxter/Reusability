@@ -22,7 +22,7 @@
                   {{ productIdErrorMsg }}
                 </div>
                 <span class="iconSpan">
-                    <i class="fas fa-angle-down"></i>
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
                   <!-- Popover for additional info -->
