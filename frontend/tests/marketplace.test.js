@@ -107,6 +107,9 @@ describe("Testing the marketplace methods", () => {
     describe("Testing the changeSection method", () => {
 
         test("Testing that input of For Sale sets sortBy and page to the For Sale values", () => {
+            // Sets current section to a different section
+            marketplaceWrapper.vm.selectSection = "Exchange";
+
             marketplaceWrapper.vm.sortBy = "createdDESC";
 
             marketplaceWrapper.vm.forSaleSortBy = "locationASC";

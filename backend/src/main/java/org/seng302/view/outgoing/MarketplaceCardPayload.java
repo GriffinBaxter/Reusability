@@ -1,8 +1,6 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.enums.Section;
-import org.seng302.view.outgoing.KeywordPayload;
-import org.seng302.view.outgoing.UserPayloadSecure;
 
 import java.time.LocalDateTime;
 import java.util.List;

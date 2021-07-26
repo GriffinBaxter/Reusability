@@ -22,7 +22,7 @@
                   {{ productIdErrorMsg }}
                 </div>
                 <span class="iconSpan">
-                    <i class="fas fa-angle-down"></i>
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
                   <!-- Popover for additional info -->
@@ -617,7 +617,7 @@ export default {
 
   },
   mounted() {
-    this.getAllProducts().then(() => {});
+    this.getAllProducts().then();
     this.modal = new Modal(document.getElementById("creationPopup"));
 
     // Global event listener to toggle autofill list display

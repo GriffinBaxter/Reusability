@@ -45,14 +45,14 @@
                 <div class="col my-2 my-lg-0">
                   <label for="password-input" class="form-label">Password</label>
                   <div class="input-group">
-                    <input class="form-control" name="password" :type="togglePasswordInputType(showPassword)" tabindex="2" id="password-input" ref="pInput">
+                    <input autocomplete="on" class="form-control" name="password" :type="togglePasswordInputType(showPassword)" tabindex="2" id="password-input" ref="pInput">
 
                     <!--toggle password visibility-->
                     <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                           @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                           tabindex="3">
-                      <i v-if="!showPassword" class="fas fa-eye"></i>
-                      <i v-else class="fas fa-eye-slash"></i>
+                      <i v-if="!showPassword" class="fas fa-eye" aria-hidden="true"></i>
+                      <i v-else class="fas fa-eye-slash" aria-hidden="true"></i>
                       </span>
 
                   </div>

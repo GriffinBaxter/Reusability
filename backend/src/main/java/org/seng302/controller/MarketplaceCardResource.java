@@ -120,21 +120,14 @@ public class MarketplaceCardResource {
                         );
 
                         // Loop through keywords and update card and keywords accordingly.
-                        List<String> keywords = cardPayload.getKeywords();
-                        for (String keyword : keywords) {
-                            Optional<Keyword> existingKeyword = keywordRepository.findByName(keyword);
+                        List<Integer> keywordIds = cardPayload.getKeywordIds();
+                        for (Integer keywordId : keywordIds) {
+                            Optional<Keyword> existingKeyword = keywordRepository.findById(keywordId);
                             if (existingKeyword.isPresent()) { // If keyword exists then update existing keyword.
                                 Keyword existingKeywordPresent = existingKeyword.get();
-                                keywordRepository.save(existingKeywordPresent);
                                 card.addKeyword(existingKeywordPresent);
-                            } else { // If no keyword existing create a new one and save.
-                                Keyword newKeyword = new Keyword(
-                                        keyword,
-                                        LocalDateTime.now(),
-                                        card
-                                );
-                                keywordRepository.save(newKeyword);
-                                card.addKeyword(newKeyword);
+                            } else {
+                                throw new IllegalKeywordArgumentException(String.format("Keyword with ID {} not found", keywordId));
                             }
                         }
                         MarketplaceCard createdCard = marketplaceCardRepository.save(card);
@@ -148,7 +141,7 @@ public class MarketplaceCardResource {
                         );
                     }
                 } catch (IllegalMarketplaceCardArgumentException | IllegalKeywordArgumentException e) {
-                    logger.error("Card Creation Failure - {}", e.getMessage());
+                    logger.error("Card Creation Failure [400]: {}", e.getMessage());
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
                             e.getMessage()
@@ -217,7 +210,8 @@ public class MarketplaceCardResource {
             }
 
             // Checks keyword IDs exist
-            for (Integer keyword : updatedCardPayload.getKeywords()) {
+            List<Integer> keywordIds = updatedCardPayload.getKeywordIds();
+            for (Integer keyword : keywordIds) {
                 if (keywordRepository.findById(keyword).isEmpty()) {
                     logger.error("Keyword ID: {} not found", keyword);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keyword ID not found");
@@ -266,7 +260,7 @@ public class MarketplaceCardResource {
                 storedCard.get().setDescription(updatedCardPayload.getDescription());
                 storedCard.get().setSection(updatedCardPayload.getSection());
                 storedCard.get().removeAllKeywords();
-                for (Integer keyword : updatedCardPayload.getKeywords()) {
+                for (Integer keyword : updatedCardPayload.getKeywordIds()) {
                     Optional<Keyword> optionalKeyword = keywordRepository.findById(keyword);
                     optionalKeyword.ifPresent(value -> storedCard.get().addKeyword(value));
                 }
@@ -427,6 +421,13 @@ public class MarketplaceCardResource {
         }
 
         marketplaceCard.extendDisplayPeriod();
+
+        // Delete all relate notifications
+        Optional<MarketCardNotification> optionalMarketCardNotification = marketCardNotificationRepository.findByUserIdAndMarketCardId(currentUser.getId(), id);
+        if (optionalMarketCardNotification.isPresent()){
+            marketCardNotificationRepository.delete(optionalMarketCardNotification.get());
+        }
+
         marketplaceCardRepository.save(marketplaceCard);
         logger.info("Marketplace Card Modification Success - 200 [OK] - Marketplace card with ID {} has had its display period extended to {}.", id, marketplaceCard.getDisplayPeriodEnd());
     }
@@ -539,7 +540,6 @@ public class MarketplaceCardResource {
 
         // delete selected card
         logger.debug("Marketplace card ({}) has been deleted.", marketplaceCard.getTitle());
-        marketCardNotificationRepository.deleteAllByMarketCardId(marketplaceCard.getId());
         marketplaceCardRepository.delete(marketplaceCard);
 
         logger.info("Marketplace Card Delete Success - 200 [OK] -  Marketplace card with ID {} deleted", id);

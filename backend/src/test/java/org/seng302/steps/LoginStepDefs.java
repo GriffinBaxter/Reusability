@@ -31,6 +31,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+/**
+ * Login step definitions class
+ */
 public class LoginStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
