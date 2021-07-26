@@ -42,7 +42,10 @@ beforeEach(async () => {
                     id: 5,
                     name: "Key"
                 }
-            ]
+            ],
+            creator: {
+                id: 36
+            }
         }
     }
 
