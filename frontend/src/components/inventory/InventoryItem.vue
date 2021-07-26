@@ -139,7 +139,8 @@ export default {
     if (this.images.length > 0) {
       for (let image of this.images) {
         if (image.isPrimary) {
-          document.getElementById("inventory-item-image-" + this.$props.productId).src = Api.getServerURL() + "/" + image.filename;
+          document.getElementById("inventory-item-image-" + this.$props.productId).src =
+              Api.getServerURL() + "/" + image.thumbnailFilename;
           break;
         }
       }
