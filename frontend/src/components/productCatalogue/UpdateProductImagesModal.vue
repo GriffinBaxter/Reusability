@@ -25,7 +25,7 @@
               <!-- Primary Image -->
               <div class="col-lg-4">
                 <h5>Primary Image:</h5>
-                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../../public/default-product.jpg')" id="primary-image">
+                <img alt="default-product" class="card-img px-5 px-lg-0 mb-3" :src="require('../../../public/default-product.jpg')" id="primary-image">
               </div>
 
               <div class="col-lg-8">
@@ -43,9 +43,9 @@
                   </div>
                   <div class="row">
                     <div class="col-3" v-for="image in images" v-bind:key="image.id">
-                      <img v-if="selectedImage === image.id" class="img-fluid rounded border border-primary border-2" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
-                      <img v-else-if="image.id === primaryImage" class="img-fluid rounded border border-warning border-2" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
-                      <img v-else class="img-fluid rounded" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
+                      <img v-if="selectedImage === image.id" alt="selected-image" class="img-fluid rounded border border-primary border-2" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
+                      <img v-else-if="image.id === primaryImage" alt="primary-image" class="img-fluid rounded border border-warning border-2" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
+                      <img v-else class="img-fluid rounded" alt="other-image" :src="getImageSrc(image.filename)" @click="setSelected(image.id)">
                     </div>
                   </div>
                 </div>

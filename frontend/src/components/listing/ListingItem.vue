@@ -10,7 +10,7 @@
               </div>
               <div class="carousel-inner">
                 <div v-for="image of this.$props.images" v-bind:key="image.id" :class="image.isPrimary ? 'carousel-item active' : 'carousel-item'">
-                  <img :src="getImageSrc(image.filename)" class="d-block w-100" width="230px" height="230px">
+                  <img alt="listing-image" :src="getImageSrc(image.filename)" class="d-block w-100" width="230px" height="230px">
                 </div>
               </div>
               <div v-if="this.$props.images.length > 1">
@@ -25,7 +25,7 @@
               </div>
             </div>
             <div v-else>
-              <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="listing-item-image">
+              <img alt="listing-image" class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="listing-item-image">
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@
                 <h4 class="card-title">{{quantity}}x {{ productName }}</h4>
               </div>
               <div class="col d-flex align-items-end flex-column col-5" v-if="!(moreInfo.length===0)">
-                <p align="right">{{moreInfo}}</p>
+                <p style="text-align: right">{{moreInfo}}</p>
               </div>
             </div>
             <div class="row py-2" id="main-body">
@@ -148,8 +148,6 @@ export default {
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
     },
-  },
-  mounted() {
   }
 }
 </script>
