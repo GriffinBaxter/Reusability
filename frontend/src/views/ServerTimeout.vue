@@ -11,9 +11,3 @@ export default {
   name: "ServerTimout"
 }
 </script>
-
-<!-------------------------------------------- Server Timeout Page Styling --------------------------------------------->
-
-<style scoped>
-
-</style>

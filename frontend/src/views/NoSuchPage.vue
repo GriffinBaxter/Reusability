@@ -9,7 +9,3 @@ export default {
   name: "NoSuchPage"
 }
 </script>
-
-<style scoped>
-
-</style>

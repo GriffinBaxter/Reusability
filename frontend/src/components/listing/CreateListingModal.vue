@@ -120,7 +120,7 @@
 
 <script>
 import Api from "../../Api";
-import Listing from "../../configs/Listings";
+import Listing from "../../configs/Listing";
 import Autofill from '../autofill';
 
 import {Modal, Popover} from "bootstrap";

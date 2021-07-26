@@ -450,9 +450,3 @@ export default {
 
 }
 </script>
-
-<!--------------------------------------- Search User by Name Page Styling -------------------------------------------->
-
-<style scoped>
-
-</style>
