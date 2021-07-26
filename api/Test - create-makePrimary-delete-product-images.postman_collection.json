@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "28c8470b-350c-44c8-8bca-f9a689ad56c9",
+		"_postman_id": "9a98b9ad-aa16-45f2-b9cd-2b83545e7798",
 		"name": "images",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -8,111 +8,6 @@
 		{
 			"name": "create-image",
 			"item": [
-				{
-					"name": "create-a-businesses",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"primaryAdministratorId\": 21,\r\n  \"name\": \"Lumbridge General Store\",\r\n  \"description\": \"A one-stop shop for all your adventuring needs\",\r\n  \"address\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"businessType\": \"Accommodation and Food Services\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-a-product",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"id\": \"WATT-420-BEANS1\",\r\n  \"name\": \"Watties Baked Beans - 420g can\",\r\n  \"description\": \"Baked Beans as they should be.\",\r\n  \"manufacturer\": \"Some manufacturer\",\r\n  \"recommendedRetailPrice\": 2.2\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/3/products",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"3",
-								"products"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-image-txt",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Users/Dan Ronen/Desktop/smoothie.txt"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/34565/products/ARNOTTS-CSNAP/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"34565",
-								"products",
-								"ARNOTTS-CSNAP",
-								"images"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "create-image-invalid-business-id",
 					"request": {
@@ -212,6 +107,40 @@
 							"path": [
 								"businesses",
 								"3",
+								"products",
+								"ARNOTTS-CSNAP",
+								"images"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-image-txt",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"contentType": "multipart/form-data",
+									"type": "file",
+									"src": "/C:/Users/Dan Ronen/Desktop/smoothie.txt"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9499/businesses/34565/products/ARNOTTS-CSNAP/images",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"businesses",
+								"34565",
 								"products",
 								"ARNOTTS-CSNAP",
 								"images"
@@ -362,77 +291,6 @@
 			"name": "delete-product-images",
 			"item": [
 				{
-					"name": "create-a-businesses",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"primaryAdministratorId\": 21,\r\n  \"name\": \"Lumbridge General Store\",\r\n  \"description\": \"A one-stop shop for all your adventuring needs\",\r\n  \"address\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"businessType\": \"Accommodation and Food Services\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-a-product",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"id\": \"WATT-420-BEANS1\",\r\n  \"name\": \"Watties Baked Beans - 420g can\",\r\n  \"description\": \"Baked Beans as they should be.\",\r\n  \"manufacturer\": \"Some manufacturer\",\r\n  \"recommendedRetailPrice\": 2.2\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/3/products",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"3",
-								"products"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "create-image",
 					"request": {
 						"method": "POST",
@@ -565,32 +423,177 @@
 			]
 		},
 		{
-			"name": "create-user",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"firstName\": \"John\",\r\n  \"lastName\": \"Smith\",\r\n  \"middleName\": \"Hector\",\r\n  \"nickname\": \"Jonny\",\r\n  \"bio\": \"Likes long walks on the beach\",\r\n  \"email\": \"johnsmith99@gmail.com\",\r\n  \"dateOfBirth\": \"1999-04-27\",\r\n  \"phoneNumber\": \"+64 3 555 0129\",\r\n  \"homeAddress\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"password\": \"1337-H%nt3r2\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "make-primary",
+			"item": [
+				{
+					"name": "make-image-id-2-primary",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9499/businesses/4/products/WATT-420-BEANS1/images/2/makeprimary",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"businesses",
+								"4",
+								"products",
+								"WATT-420-BEANS1",
+								"images",
+								"2",
+								"makeprimary"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:9499/users",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9499",
-					"path": [
-						"users"
-					]
+				{
+					"name": "make-invalid-image-id-primary",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9499/businesses/4/products/WATT-420-BEANS1/images/800/makeprimary",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"businesses",
+								"4",
+								"products",
+								"WATT-420-BEANS1",
+								"images",
+								"800",
+								"makeprimary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make-invalid-product-id-primary",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9499/businesses/4/products/I-DONT-EXIST/images/800/makeprimary",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"businesses",
+								"4",
+								"products",
+								"I-DONT-EXIST",
+								"images",
+								"800",
+								"makeprimary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make-invalid-business-id-primary",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9499/businesses/9999999/products/WATT-420-BEANS1/images/800/makeprimary",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"businesses",
+								"9999999",
+								"products",
+								"WATT-420-BEANS1",
+								"images",
+								"800",
+								"makeprimary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-primary-image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"contentType": "multipart/form-data",
+									"type": "file",
+									"src": "/C:/Dan/Desktop Data/Images/Icons/twitter-logo.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9499/businesses/4/products/WATT-420-BEANS1/images",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"businesses",
+								"4",
+								"products",
+								"WATT-420-BEANS1",
+								"images"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-non-primary-image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"contentType": "multipart/form-data",
+									"type": "file",
+									"src": "/C:/Dan/git_repositories/seng302_team400_project/team-400/api/postman-product-test-images/test-jpg.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9499/businesses/4/products/WATT-420-BEANS1/images",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"businesses",
+								"4",
+								"products",
+								"WATT-420-BEANS1",
+								"images"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "login-as-admin",
@@ -661,6 +664,34 @@
 			"response": []
 		},
 		{
+			"name": "create-gaa",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"John\",\r\n  \"lastName\": \"Smith\",\r\n  \"middleName\": \"Hector\",\r\n  \"nickname\": \"Jonny\",\r\n  \"bio\": \"Likes long walks on the beach\",\r\n  \"email\": \"gaa@email.com\",\r\n  \"dateOfBirth\": \"1999-04-27\",\r\n  \"phoneNumber\": \"+64 3 555 0129\",\r\n  \"homeAddress\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "login-as-gaa",
 			"request": {
 				"method": "POST",
@@ -723,6 +754,105 @@
 					"port": "9499",
 					"path": [
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"John\",\r\n  \"lastName\": \"Smith\",\r\n  \"middleName\": \"Hector\",\r\n  \"nickname\": \"Jonny\",\r\n  \"bio\": \"Likes long walks on the beach\",\r\n  \"email\": \"user@email.com\",\r\n  \"dateOfBirth\": \"1999-04-27\",\r\n  \"phoneNumber\": \"+64 3 555 0129\",\r\n  \"homeAddress\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-a-businesses",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"primaryAdministratorId\": 21,\r\n  \"name\": \"Lumbridge General Store\",\r\n  \"description\": \"A one-stop shop for all your adventuring needs\",\r\n  \"address\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"businessType\": \"Accommodation and Food Services\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9499/businesses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-a-product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": \"WATT-420-BEANS1\",\r\n  \"name\": \"Watties Baked Beans - 420g can\",\r\n  \"description\": \"Baked Beans as they should be.\",\r\n  \"manufacturer\": \"Some manufacturer\",\r\n  \"recommendedRetailPrice\": 2.2\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9499/businesses/4/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses",
+						"4",
+						"products"
 					]
 				}
 			},
