@@ -63,7 +63,7 @@
                   :data-bs-target="'#collapse_' + keyword.keywordId"
                   aria-expanded="false"
                   :aria-controls="'collapse_' + keyword.keywordId">
-            <h6>{{ keyword.name }}</h6>
+            <h6>{{ keyword.description }}</h6>
           </button>
         </h2>
 
@@ -134,13 +134,15 @@ export default {
           description: notification.description,
           operable: (notification.marketplaceCardPayload !== null)
         });
-        notification.forEach(keyword => {
-          keywords.push({
-            keywordId: keyword.id,
-            name: keyword.name
-          })
+      })
+
+      data.forEach(keyword => {
+        keywords.push({
+          keywordId: keyword.id,
+          description: keyword.description
         })
       })
+
       this.allNoticeCards = notifications.reverse();
       this.allNewKeywords = keywords.reverse();
     },
@@ -149,8 +151,13 @@ export default {
      */
     loadNotifications() {
       Api.getNotifications()
-          .then(response => this.populateNotification(response.data))
+          .then(response => {
+            console.log(response.data)
+            this.populateNotification(response.data)
+
+            })
           .catch((error) => this.errorCatcher(error));
+
     },
     /**
      * delete a market card
