@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "fe5b25b6-b6e0-4bbb-9836-5a57742c3177",
+		"_postman_id": "9a1c1053-28be-412e-839b-19e17643c953",
 		"name": "DELETE for MarketplaceCard",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -40,7 +40,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"creatorId\": 21,\n  \"section\": \"ForSale\",\n  \"title\": \"1982 Lada Samara\",\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.\",\n  \"keywords\": [\n      \"Beige\",\n      \"Fair\",\n      \"Rust\"\n  ]\n}",
+					"raw": "{\n  \"creatorId\": 21,\n  \"section\": \"ForSale\",\n  \"title\": \"1982 Lada Samara\",\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.\",\n  \"keywordIds\": [\n      1,\n      2\n  ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
