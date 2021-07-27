@@ -9,6 +9,7 @@ import org.seng302.model.Address;
 import org.seng302.model.Keyword;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
+import org.seng302.model.repository.KeywordNotificationRepository;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,10 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    @MockBean
+    private KeywordNotificationRepository keywordNotificationRepository;
+
     private User user;
 
     private MockHttpServletResponse response;
@@ -57,21 +62,19 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
     // AC3
     private Keyword keyword4;
     private Keyword keyword5;
-    private Keyword keyword6;
 
     private String expectedJson = "{" +
             "\"id\":%d," +
             "\"name\":\"%s\"," +
-            "\"created\":%s" +
+            "\"created\":\"%s\"" +
             "}";
-
-    private String dateJson = "[%d,%d,%d,%d,%d,%d,%d]"; // year, month, day, hours, minutes, seconds, nano
 
     @Before
     public void createMockMvc() {
         userRepository = mock(UserRepository.class);
         keywordRepository = mock(KeywordRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository)).build();
+        keywordNotificationRepository = mock(KeywordNotificationRepository.class);
+        this.mvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
     }
 
     @Given("A list of keywords exist in the system")
@@ -121,25 +124,10 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
 
     @Then("All keywords are returned to the user")
     public void allKeywordsReturned() throws Exception {
-        LocalDateTime date1 = keyword.getCreated();
-        String dateExpected1 = String.format(dateJson, date1.getYear(), date1.getMonthValue(), date1.getDayOfMonth(),
-                date1.getHour(), date1.getMinute(),
-                date1.getSecond(), date1.getNano()) ;
-
-        LocalDateTime date2 = keyword2.getCreated();
-        String dateExpected2 = String.format(dateJson, date2.getYear(), date2.getMonthValue(), date2.getDayOfMonth(),
-                date2.getHour(), date2.getMinute(),
-                date2.getSecond(), date2.getNano()) ;
-
-        LocalDateTime date3 = keyword3.getCreated();
-        String dateExpected3 = String.format(dateJson, date3.getYear(), date3.getMonthValue(), date3.getDayOfMonth(),
-                date3.getHour(), date3.getMinute(),
-                date3.getSecond(), date3.getNano()) ;
-
         String expected = "[" +
-                String.format(expectedJson, keyword.getId(), keyword.getName(), dateExpected1) + "," +
-                String.format(expectedJson, keyword2.getId(), keyword2.getName(), dateExpected2) + "," +
-                String.format(expectedJson, keyword3.getId(), keyword3.getName(), dateExpected3) +
+                String.format(expectedJson, keyword.getId(), keyword.getName(), keyword.getCreated()) + "," +
+                String.format(expectedJson, keyword2.getId(), keyword2.getName(), keyword2.getCreated()) + "," +
+                String.format(expectedJson, keyword3.getId(), keyword3.getName(), keyword3.getCreated()) +
                 "]";
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expected);
@@ -175,7 +163,6 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
 
         keyword4 = new Keyword(keywordName1, LocalDateTime.now());
         keyword5 = new Keyword(keywordName2, LocalDateTime.now());
-        keyword6 = new Keyword(keywordName3, LocalDateTime.now());
 
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
     }
@@ -192,21 +179,10 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
 
     @Then("Keywords {string} and {string} are returned to the user")
     public void certainKeywordsReturned(String keywordName1, String keywordName2) throws Exception {
-
-        LocalDateTime date1 = keyword4.getCreated();
-        String dateExpected1 = String.format(dateJson, date1.getYear(), date1.getMonthValue(), date1.getDayOfMonth(),
-                date1.getHour(), date1.getMinute(),
-                date1.getSecond(), date1.getNano()) ;
-
-        LocalDateTime date2 = keyword5.getCreated();
-        String dateExpected2 = String.format(dateJson, date2.getYear(), date2.getMonthValue(), date2.getDayOfMonth(),
-                date2.getHour(), date2.getMinute(),
-                date2.getSecond(), date2.getNano()) ;
-
         String expected = "[" +
-                String.format(expectedJson, keyword4.getId(), keywordName1, dateExpected1) +
+                String.format(expectedJson, keyword4.getId(), keywordName1, keyword4.getCreated()) +
                 "," +
-                String.format(expectedJson, keyword5.getId(), keywordName2, dateExpected2) +
+                String.format(expectedJson, keyword5.getId(), keywordName2, keyword5.getCreated()) +
                 "]";
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expected);

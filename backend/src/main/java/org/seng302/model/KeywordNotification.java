@@ -2,6 +2,8 @@ package org.seng302.model;
 
 import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalKeywordNotificationArgumentException;
+import org.seng302.view.outgoing.KeywordNotificationPayload;
+import org.seng302.view.outgoing.KeywordPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -146,6 +148,10 @@ public class KeywordNotification {
         this.readKeywordNotifications = readKeywordNotifications;
     }
 
+    public KeywordNotificationPayload toKeywordNotificationPayload() {
+        return new KeywordNotificationPayload(id, description, created, new KeywordPayload(keyword.getId(), keyword.getName(), keyword.getCreated()));
+    }
+
     /*---------------------------------------------------Validation---------------------------------------------------*/
 
     /**
@@ -157,5 +163,17 @@ public class KeywordNotification {
     private boolean isValidDescription(String description) {
         return (description.length() >= DESCRIPTION_MIN_LENGTH) &&
                 (description.length() <= DESCRIPTION_MAX_LENGTH);
+    }
+
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the KeywordNotification.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id + "," +
+                "\"description\":\"" + description + "\"," +
+                "\"created\":\"" + created + "\"," +
+                "\"keyword\":" + keyword + "}";
     }
 }

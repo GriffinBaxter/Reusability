@@ -3,29 +3,29 @@ package org.seng302.view.outgoing;
 import java.time.LocalDateTime;
 
 /**
- * Payload for the MarketCardNotification.
+ * Payload for the KeywordNotification.
  */
-public class MarketCardNotificationPayload {
+public class KeywordNotificationPayload {
 
     private Integer id;
     private String description;
     private String created;
-    private MarketplaceCardPayload marketplaceCardPayload;
+    private KeywordPayload keyword;
 
     /**
      * @param id                     notification id
      * @param description            description
      * @param created                time notification been created
-     * @param marketplaceCardPayload marketplace Card Payload
+     * @param keyword                payload representation of the keyword the notification is for
      */
-    public MarketCardNotificationPayload(Integer id,
-                                         String description,
-                                         LocalDateTime created,
-                                         MarketplaceCardPayload marketplaceCardPayload) {
+    public KeywordNotificationPayload(Integer id,
+                                     String description,
+                                     LocalDateTime created,
+                                     KeywordPayload keyword) {
         this.id = id;
         this.description = description;
         this.created = created.toString();
-        this.marketplaceCardPayload = marketplaceCardPayload;
+        this.keyword = keyword;
     }
 
     public Integer getId() {
@@ -40,8 +40,8 @@ public class MarketCardNotificationPayload {
         return created;
     }
 
-    public MarketplaceCardPayload getMarketplaceCardPayload() {
-        return marketplaceCardPayload;
+    public KeywordPayload getKeyword() {
+        return keyword;
     }
 
     public void setId(Integer id) {
@@ -56,20 +56,21 @@ public class MarketCardNotificationPayload {
         this.created = created;
     }
 
-    public void setMarketplaceCardPayload(MarketplaceCardPayload marketplaceCardPayload) {
-        this.marketplaceCardPayload = marketplaceCardPayload;
+    public void setKeyword(KeywordPayload keyword) {
+        this.keyword = keyword;
     }
 
     /**
      * Override the toString method for debugging purposes.
-     * @return a string representing the MarketCardNotificationPayload.
+     * @return a string representing the KeywordNotificationPayload.
      */
     @Override
     public String toString() {
         return "{\"id\":" + id +
                 ",\"description\":\"" + description + "\"" +
                 ",\"created\":\"" + created + "\"" +
-                ",\"marketplaceCardPayload\":" + marketplaceCardPayload.toString() +
+                ",\"keyword\":" + keyword +
                 "}";
     }
+
 }

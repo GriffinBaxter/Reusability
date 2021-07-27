@@ -7,9 +7,11 @@ import io.cucumber.java.en.When;
 import org.seng302.controller.KeywordResource;
 import org.seng302.controller.UserResource;
 import org.seng302.model.Address;
+import org.seng302.model.KeywordNotification;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
 import org.seng302.model.repository.AddressRepository;
+import org.seng302.model.repository.KeywordNotificationRepository;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,10 @@ public class KeywordManagementStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    @MockBean
+    private KeywordNotificationRepository keywordNotificationRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -70,7 +76,7 @@ public class KeywordManagementStepDefs extends CucumberSpringConfiguration {
         userRepository = mock(UserRepository.class);
         keywordRepository = mock(KeywordRepository.class);
 
-        this.keywordMVC = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository)).build();
+        this.keywordMVC = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
         this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 

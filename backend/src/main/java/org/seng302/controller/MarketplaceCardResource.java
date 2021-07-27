@@ -261,7 +261,8 @@ public class MarketplaceCardResource {
                 storedCard.get().setSection(updatedCardPayload.getSection());
                 storedCard.get().removeAllKeywords();
                 for (Integer keyword : updatedCardPayload.getKeywordIds()) {
-                    storedCard.get().addKeyword(keywordRepository.findById(keyword).get());
+                    Optional<Keyword> optionalKeyword = keywordRepository.findById(keyword);
+                    optionalKeyword.ifPresent(value -> storedCard.get().addKeyword(value));
                 }
                 marketplaceCardRepository.saveAndFlush(storedCard.get());
 

@@ -71,13 +71,13 @@ public class MarketplaceCardPayload {
     @Override
     public String toString() {
         return "{\"id\":" + id +
-                ",\"creator\":\"" + creator.toString() + "\"" +
+                ",\"creator\":" + creator.toString() +
                 ",\"section\":\"" + section + "\"" +
                 ",\"created\":\"" + created + "\"" +
                 ",\"displayPeriodEnd\":\"" + displayPeriodEnd + "\"" +
                 ",\"title\":\"" + title + "\"" +
                 ",\"description\":\"" + description + "\"" +
-                ",\"keywords\": " + keywords +
+                ",\"keywords\":" + keywords +
                 "}";
     }
 }
