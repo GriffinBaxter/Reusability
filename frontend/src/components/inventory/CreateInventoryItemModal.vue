@@ -34,7 +34,8 @@
                         v-bind:id="'li-product-' + product.id" v-bind:value="product.id"
                         tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus"
                         v-bind:title="product.manufacturer ? 'Manufacturer: ' + product.manufacturer : ''"
-                        v-bind:data-bs-content="product.description" class="autofill-option" >
+                        v-bind:data-bs-content="product.description"
+                        class="autofill-option" >
                       <img :src="getThumbnailSrc(product)" :alt="`product thumbnail for product with id ${product.id}`" class="autofill-option-image">
                       <div class="autofill-option-information">
                         <strong>
@@ -247,6 +248,7 @@ export default {
       // of the values that the product exists and that it has images.
       if (product && product.images && product.images.length > 0) {
         const filePath = product.images.filter( (image) => image.isPrimary).pop().thumbnailFilename;
+        if (!filePath) return DefaultProductImage;
         return Api.getServerResourcePath(filePath);
       }
       return DefaultProductImage;
@@ -745,13 +747,18 @@ input:focus, textarea:focus {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  min-width: max-content;
+  min-width: -moz-max-content;
+  min-width: -webkit-max-content;
 }
 
 .autofill-option-information {
-  width: 70%;
+  width: 65%;
+  margin-left: 5%;
   display: flex;
   flex-direction: column;
 }
+
 
 .autofill-option-image {
   max-width: 50px;
