@@ -281,11 +281,7 @@ export default {
 
 #for-sale-tab, #wanted-tab, #exchange-tab {
   font-family: 'Roboto', sans-serif;
-
-}
-
-#create-card-button {
-  float: right;
+  color: black;
 }
 
 </style>

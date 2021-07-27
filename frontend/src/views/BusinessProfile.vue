@@ -42,7 +42,7 @@
                     <h6>Name:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" align="right">{{ name }}</div>
+                    <div class="text-secondary" style="text-align: right">{{ name }}</div>
                   </div>
                 </div>
               </div>
@@ -55,7 +55,7 @@
                     <h6>Business Type:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" align="right">{{ businessType }}</div>
+                    <div class="text-secondary" style="text-align: right">{{ businessType }}</div>
                   </div>
                 </div>
               </div>
@@ -68,7 +68,7 @@
                     <h6>Created Time:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary" align="right">{{ created }}</div>
+                    <div class="text-secondary" style="text-align: right">{{ created }}</div>
                   </div>
                 </div>
               </div>
@@ -82,7 +82,7 @@
                   </div>
                   <div class="col-8">
                     <div class="row">
-                      <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
+                      <div class="text-secondary" v-for="lines in address" :key="lines.line" style="text-align: right">
                         {{ lines.line }}
                       </div>
                     </div>
@@ -98,7 +98,7 @@
                     <h6>Primary Administrator:</h6>
                   </div>
                   <div class="col-8">
-                    <div class="text-secondary primary-administrator" align="right" @click="pushToUser(primaryAdministratorId)">
+                    <div class="text-secondary primary-administrator" style="text-align: right" @click="pushToUser(primaryAdministratorId)">
                       {{ primaryAdministrator }}
                     </div>
                   </div>
@@ -115,7 +115,7 @@
                   <div class="col-8">
                     <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
                          :key="nameOfAdministrator.name"
-                         align="right" @click="pushToUser(nameOfAdministrator.id)">
+                         style="text-align: right" @click="pushToUser(nameOfAdministrator.id)">
                       {{ nameOfAdministrator.name }}
                     </div>
                   </div>
@@ -131,7 +131,7 @@
             </div>
             <div class="col">
               <!--logout button-->
-              <div align="right" id="adminButtonRow" v-if="isAdministrator">
+              <div style="text-align: right" id="adminButtonRow" v-if="isAdministrator">
                 <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
                         @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue
 

@@ -42,6 +42,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -272,7 +274,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
@@ -302,7 +307,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         images.add(primaryImage);
@@ -439,7 +447,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         images.add(primaryImage);
@@ -470,7 +481,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         images.add(primaryImage);
@@ -500,7 +514,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         images.add(primaryImage);
@@ -530,7 +547,7 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         images.add(primaryImage);
@@ -583,7 +600,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
@@ -613,7 +633,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
@@ -643,7 +666,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
@@ -673,7 +699,10 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        lenient().when(fileStorageService.storeFile(any(MultipartFile.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = new ArrayList<Image>();
         when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);

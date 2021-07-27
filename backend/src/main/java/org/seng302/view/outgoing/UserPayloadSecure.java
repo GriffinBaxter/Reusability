@@ -85,4 +85,23 @@ public class UserPayloadSecure extends UserPayloadParent {
         this.homeAddress = homeAddress;
     }
 
+    /**
+     * Override the toString method for debugging and testing purposes.
+     * @return a string representing the secure user payload.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + super.getId() +
+                ",\"firstName\":\"" + super.getFirstName() + "\"" +
+                ",\"lastName\":\"" + super.getLastName() + "\"" +
+                ",\"middleName\":\"" + super.getMiddleName() + "\"" +
+                ",\"nickname\":\"" + super.getNickname() + "\"" +
+                ",\"bio\":\"" + super.getBio() + "\"" +
+                ",\"email\":\"" + super.getEmail() + "\"" +
+                ",\"created\":\"" + super.getCreated() + "\"" +
+                ",\"role\":\"" + super.getRole() + "\"" +
+                ",\"businessesAdministered\":" + super.getBusinessesAdministered().toString() +
+                ",\"homeAddress\":" + homeAddress +
+                "}";
+    }
 }

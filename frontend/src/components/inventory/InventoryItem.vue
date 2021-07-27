@@ -5,7 +5,14 @@
       <!--image-->
       <div class="col-md-3">
         <div class="ratio ratio-1x1">
-          <img class="card-img" :src="image" :id="'inventory-item-image-' + this.$props.productId">
+          <div v-if="this.$props.images.length > 0">
+            <div v-for="image of this.$props.images" v-bind:key="image.id">
+              <img v-if="image.isPrimary" class="card-img" :src="getImageSrc(image.thumbnailFilename)" alt="inventory item image">
+            </div>
+          </div>
+          <div v-else>
+            <img class="card-img" :src="require('../../../public/default-product.jpg')" alt="inventory item image">
+          </div>
         </div>
       </div>
 
@@ -22,15 +29,15 @@
           </h6>
 
           <!--price-->
-          <h6 class="card-text" align="right" v-if="pricePerItem != null">
+          <h6 class="card-text" style="text-align: right" v-if="pricePerItem != null">
             Price Per Item: {{ currencySymbol }}{{ pricePerItem }} {{ currencyCode }}
           </h6>
-          <h6 class="card-text" align="right" v-else><br></h6>
+          <h6 class="card-text" style="text-align: right" v-else><br></h6>
 
-          <h6 class="card-text" align="right" v-if="totalPrice != null">
+          <h6 class="card-text" style="text-align: right" v-if="totalPrice != null">
             Total Price: {{ currencySymbol }}{{ totalPrice }} {{ currencyCode }}
           </h6>
-          <h6 class="card-text" align="right" v-else><br></h6>
+          <h6 class="card-text" style="text-align: right" v-else><br></h6>
 
         </div>
       </div>
@@ -65,11 +72,6 @@ import Api from "@/Api";
 export default {
   name: "InventoryItem",
   props: {
-    image: {
-      type: String,
-      default: require("../../../public/default-product.jpg"),
-      required: false
-    },
     productName: {
       type: String,
       default: "NAME",
@@ -134,17 +136,10 @@ export default {
       required: false
     }
   },
-  mounted() {
-    document.getElementById("inventory-item-image-" + this.$props.productId).src = require('../../../public/default-product.jpg');
-    if (this.images.length > 0) {
-      for (let image of this.images) {
-        if (image.isPrimary) {
-          document.getElementById("inventory-item-image-" + this.$props.productId).src = Api.getServerURL() + "/" + image.filename;
-          break;
-        }
-      }
-    }
-
+  methods: {
+    getImageSrc(filename) {
+      return Api.getServerURL() + "/" + filename;
+    },
   }
 }
 </script>

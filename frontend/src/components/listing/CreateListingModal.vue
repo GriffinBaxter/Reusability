@@ -23,7 +23,7 @@
                     {{ inventoryIdErrorMsg }}
                   </div>
                   <span class="iconSpan">
-                    <i class="fas fa-angle-down"></i>
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
                   </span>
                   <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
                     <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1" v-bind:value="item.id" data-bs-toggle="popover" data-bs-trigger="hover focus" v-bind:title="item.product.name ? 'Product Name: ' + item.product.name : ''" v-bind:data-bs-content="item.product.description">
@@ -120,7 +120,7 @@
 
 <script>
 import Api from "../../Api";
-import Listing from "../../configs/Listings";
+import Listing from "../../configs/Listing";
 import Autofill from '../autofill';
 
 import {Modal, Popover} from "bootstrap";
@@ -633,7 +633,7 @@ export default {
     }
   },
   mounted() {
-    this.getAllInventoryItems().then(() => {});
+    this.getAllInventoryItems();
     this.modal = new Modal(document.getElementById("listingCreationPopup"));
 
     // Global event listener to toggle autofill list display

@@ -26,7 +26,7 @@ import java.util.Optional;
 
 
 /**
- * NotificationRepository test class
+ * MarketCardNotificationRepository test class
  */
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
@@ -215,7 +215,7 @@ class MarketCardNotificationRepositoryIntegrationTests {
     }
 
     /**
-     * Test FindAllByReceiverId()
+     * Test FinalAllByUserId()
      */
     @Test
     void testFindAllByUserId() {
@@ -230,15 +230,19 @@ class MarketCardNotificationRepositoryIntegrationTests {
     }
 
     /**
-     * Test FindAllByReceiverId()
+     * Test DeleteAllByMarketCardId()
      */
     @Test
     void testDeleteAllByMarketCardId() {
+        List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAll();
+        Assertions.assertTrue(marketCardNotifications.contains(marketCardNotification));
+
         // when
         marketCardNotificationRepository.deleteAllByMarketCardId(marketplaceCard.getId());
 
         // then
-        List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAll();
-        Assertions.assertFalse(marketCardNotifications.contains(marketplaceCard));
+        marketCardNotifications = marketCardNotificationRepository.findAll();
+        Assertions.assertFalse(marketCardNotifications.contains(marketCardNotification));
+        Assertions.assertTrue(marketCardNotifications.contains(marketCardNotification2));
     }
 }

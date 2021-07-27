@@ -9,7 +9,3 @@ export default {
   name: "NoSuchCard"
 }
 </script>
-
-<style scoped>
-
-</style>

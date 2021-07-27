@@ -336,7 +336,6 @@ export default {
         'NON PROFIT ORGANISATION']
       if (businessTypes.includes(this.businessType.toUpperCase())) {
         this.businessTypeErrorMsg = "";
-        requestIsInvalid = false
       } else {
         this.businessTypeErrorMsg = "This field is required!"
         requestIsInvalid = true

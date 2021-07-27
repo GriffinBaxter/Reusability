@@ -12,6 +12,7 @@ import org.seng302.model.MarketplaceCard;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
+import org.seng302.model.repository.KeywordNotificationRepository;
 import org.seng302.model.repository.KeywordRepository;
 import org.seng302.model.repository.MarketplaceCardRepository;
 import org.seng302.model.repository.UserRepository;
@@ -47,6 +48,10 @@ public class KeywordDeletionStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    @MockBean
+    private KeywordNotificationRepository keywordNotificationRepository;
+
     private User user;
     private Keyword keyword;
 
@@ -56,8 +61,9 @@ public class KeywordDeletionStepDefs extends CucumberSpringConfiguration {
     public void createMockMvc() {
         userRepository = mock(UserRepository.class);
         keywordRepository = mock(KeywordRepository.class);
+        keywordNotificationRepository = mock(KeywordNotificationRepository.class);
 
-        this.mvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
     }
 
     @Given("I am a system admin and a keyword at id {int} exists")

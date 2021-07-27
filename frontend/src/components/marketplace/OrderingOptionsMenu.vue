@@ -1,7 +1,7 @@
 <template>
 
   <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-    <div class="btn-group me-2" role="group" aria-label="First group" style="">
+    <div class="btn-group me-2" role="group" aria-label="First group">
       <!------------------------------------------ ordering by options menu ------------------------------------------->
       <div class="btn-group col" role="group">
         <button type="button" class="btn green-button dropdown-toggle order-by-options-btn"

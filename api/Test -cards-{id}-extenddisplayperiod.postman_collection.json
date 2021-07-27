@@ -64,7 +64,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"creatorId\": {{userId}},\r\n  \"section\": \"ForSale\",\r\n  \"title\": \"1982 Lada Samara\",\r\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.\",\r\n  \"keywords\": []\r\n}",
+					"raw": "{\r\n  \"creatorId\": {{userId}},\r\n  \"section\": \"ForSale\",\r\n  \"title\": \"1982 Lada Samara\",\r\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.\",\r\n  \"keywordIds\": []\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

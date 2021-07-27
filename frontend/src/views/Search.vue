@@ -25,7 +25,8 @@
                :order-by-override="tableOrderBy" :table-data-is-page="true"
                @update-current-page="event => updatePage(event)"
                @order-by-header-index="event => orderData(event)"
-               @row-selected="event => routeToProfile(event.index)"/>
+               @row-selected="event => routeToProfile(event.index)"
+               aria-label="User & Business Search Result Table"/>
 
       </div>
 
@@ -450,9 +451,3 @@ export default {
 
 }
 </script>
-
-<!--------------------------------------- Search User by Name Page Styling -------------------------------------------->
-
-<style scoped>
-
-</style>

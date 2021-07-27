@@ -7,7 +7,7 @@
           </div>
           <div class="carousel-inner">
             <div v-for="image of this.$props.images" v-bind:key="image.id" :class="image.isPrimary ? 'carousel-item active' : 'carousel-item'">
-              <img :src="getImageSrc(image.filename)" class="d-block w-100" width="230px" height="230px">
+              <img :src="getImageSrc(image.thumbnailFilename)" class="d-block w-100" width="230px" height="230px" alt="product image">
             </div>
           </div>
           <div v-if="this.$props.images.length > 1">
@@ -22,7 +22,7 @@
           </div>
         </div>
         <div v-else>
-          <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image">
+          <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image" alt="product image">
         </div>
       </div>
       <div class="col-md-9">
@@ -30,20 +30,20 @@
           <h2 class="card-title">{{ productName }}</h2>
           <br>
           <p class="card-text">
-            <b>Product ID:</b> {{ productId }}
+            <strong>Product ID:</strong> {{ productId }}
             <br>
-            <b>Manufacturer:</b> {{ manufacturer }}
+            <strong>Manufacturer:</strong> {{ manufacturer }}
             <br>
-            <b>RRP:</b> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
+            <strong>RRP:</strong> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
             <br>
-            <b>Description:</b>
+            <strong>Description:</strong>
             <br>
             {{ description }}
           </p>
           <hr>
           <div class="row">
             <p class="card-text">
-              <b>Created:</b> {{ created }}
+              <strong>Created:</strong> {{ created }}
             </p>
           </div>
         </div>
@@ -110,8 +110,6 @@ export default {
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
     },
-  },
-  mounted() {
   }
 }
 </script>
