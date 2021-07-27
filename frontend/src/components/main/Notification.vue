@@ -22,14 +22,14 @@
       </h2>
 
       <div :id="'collapse_' + card.id"
-           v-if="card.marketplaceCardPayload !== null || card.keywords !== undefined"
-           class="accordion-collapse collapse"
+      v-if="card.marketplaceCardPayload !== null"
+      class="accordion-collapse collapse"
            :aria-labelledby="'heading_' + card.id"
            data-bs-parent="#notificationAccordion">
         <div class="accordion-body">
 
           <!-- marketplace card notifications -->
-          <div class="row" v-if="card.marketplaceCardPayload !== null && card.keywords !== undefined">
+          <div class="row" v-if="card.keywordId === undefined">
             <div class="col" style="float: contour; text-align: center">
               <button :id="'delete_button_' + card.id"
                       class="btn btn-outline-danger"

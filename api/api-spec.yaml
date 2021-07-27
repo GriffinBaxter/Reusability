@@ -1925,7 +1925,7 @@ components:
           example: '2020-07-14T14:32:00Z'
           readOnly: true
           description: Date and time when the notification was created
-        keywordId:
-          type: integer
-          example: 1
-          description: The ID of the new keyword that has been created
+        keywords:
+          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/Keyword'
