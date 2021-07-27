@@ -35,6 +35,7 @@
                         tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus"
                         v-bind:title="product.manufacturer ? 'Manufacturer: ' + product.manufacturer : ''"
                         v-bind:data-bs-content="product.description"
+                        data-bs-placement="top"
                         class="autofill-option" >
                       <img :src="getThumbnailSrc(product)" :alt="`product thumbnail for product with id ${product.id}`" class="autofill-option-image">
                       <div class="autofill-option-information">
@@ -745,7 +746,6 @@ input:focus, textarea:focus {
 
 .autofill-option {
   display: flex;
-  justify-content: space-around;
   align-items: center;
   min-width: max-content;
   min-width: -moz-max-content;
