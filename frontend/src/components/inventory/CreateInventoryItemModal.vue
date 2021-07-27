@@ -753,8 +753,9 @@ input:focus, textarea:focus {
 }
 
 .autofill-option-information {
-  width: 65%;
-  margin-left: 5%;
+  width: max-content;
+  width: -moz-max-content;
+  margin-left: 0.5em;
   display: flex;
   flex-direction: column;
 }
