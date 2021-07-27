@@ -31,14 +31,14 @@
           <!-- marketplace card notifications -->
           <div class="row" v-if="card.keywordId === undefined">
             <div class="col" style="float: contour; text-align: center">
-              <button :id="'delete_button_' + card.id"
+              <button :id="'delete_button_card_' + card.id"
                       class="btn btn-outline-danger"
                       @click="deleteCard(card.marketCardId)">
                 Delete Card
               </button>
             </div>
             <div class="col">
-              <button :id="'extend_button_' + card.id"
+              <button :id="'extend_button_card_' + card.id"
                       class="btn btn-outline-success"
                       @click="extendCardForDisplayPeriod(card.marketCardId)">
                 Extend Card for 2 Weeks
@@ -49,7 +49,7 @@
           <!-- keyword notification -->
           <div class="row" v-else>
             <div class="col" style="float: contour; text-align: center">
-              <button :id="'delete_button_' + card.keywordId"
+              <button :id="'delete_button_keyword_' + card.keywordId"
                       class="btn btn-outline-danger"
                       @click="deleteKeyword(card.keywordId)">
                 Delete Keyword
