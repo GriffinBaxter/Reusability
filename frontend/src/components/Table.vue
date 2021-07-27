@@ -32,7 +32,7 @@
       <!-- Table data rows -->
       <div v-if="dataIsReady && !loadingData">
           <!-- The @click and @keydown are used to trigger events for the parent to be informed that the element row was pressed.-->
-          <div :class="`row mb-3 py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex" style="cursor: pointer; min-height: 7em; align-items: center"
+          <div :class="`row py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex" style="cursor: pointer; min-height: 7em; align-items: center; margin-bottom: 1em"
                @click="() => handleRowClick(rowIndex)" @keydown="(event) => handleRowKeyDown(event, rowIndex)"
                v-for="(row, rowIndex) in currentPageRows" :key="`${tableId}-row-${rowIndex}`">
 
@@ -45,13 +45,13 @@
           <!-- Adds extra rows to maintain table size -->
           <div v-if="currentPageRows.length < maxRowsPerPage">
             <!-- The index is equal to that because, we would have duplicates otherwise with the rows.-->
-            <div v-for="index in maxRowsPerPage - currentPageRows.length" :key="`${tableId}-row-${index + currentPageRows.length}`" :class="`row mb-3 py-4 shadow-sm productRows row-colour`" style="min-height: 7em"></div>
+            <div v-for="index in maxRowsPerPage - currentPageRows.length" :key="`${tableId}-row-${index + currentPageRows.length}`" :class="`row py-4 shadow-sm productRows row-colour`" style="min-height: 7em; margin-bottom: 1em"></div>
           </div>
 
       </div>
 
       <!-- Show a loading icon when the data is not ready -->
-      <div v-else class="text-center d-flex justify-content-center align-items-center" :style="`min-height: ${maxRowsPerPage*7}em`">
+      <div v-else class="text-center d-flex justify-content-center align-items-center" :style="`min-height: ${maxRowsPerPage*8}em`">
         <div class="spinner-grow mx-1" v-for="index in 3" :key="'spinner-'+index" />
       </div>
     </div>
