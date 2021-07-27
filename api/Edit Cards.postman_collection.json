@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "abf4497f-7df7-41af-b635-1ffe3d56e9a1",
+		"_postman_id": "18c2a9e6-9384-4b24-a62f-f8a4c64753d1",
 		"name": "Edit Cards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -162,7 +162,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"creatorId\": \"3\",\r\n  \"section\": \"Exchange\",\r\n  \"title\": \"1982 Lada Samara\",\r\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for bud.\",\r\n  \"keywords\": [1, 4]\r\n}",
+					"raw": "{\r\n  \"creatorId\": \"3\",\r\n  \"section\": \"Exchange\",\r\n  \"title\": \"1982 Lada Samara\",\r\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for bud.\",\r\n  \"keywordIds\": [1, 4]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -227,12 +227,17 @@
 	],
 	"variable": [
 		{
+			"id": "793f0e5f-1a87-47e4-bfe6-75eb7eaada7a",
 			"key": "cardId",
-			"value": ""
+			"value": "",
+			"type": "string"
 		},
 		{
+			"id": "456fe67f-e61e-4e99-bde4-ec7c75d40a69",
 			"key": "userId",
-			"value": ""
+			"value": "",
+			"type": "string"
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
