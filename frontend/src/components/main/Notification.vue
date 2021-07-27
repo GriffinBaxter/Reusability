@@ -1,6 +1,6 @@
 <template>
-  <div class="accordion" id="notificationAccordion" style="width: 500px">
-    <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage">
+  <div class="accordion" id="notificationAccordion">
+    <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage" style="width: 300px">
       <h4 class="card-body" style="margin: 3px; float: contour; text-align: center"> No Notifications! </h4>
     </div>
 
@@ -8,7 +8,7 @@
          class="accordion-item"
          v-for="card in allNoticeCards"
          v-bind:key="card.id"
-         style="background-color: #ededed">
+         style="background-color: #ededed; width: 500px">
 
       <h2 class="accordion-header" :id="'heading_' + card.id">
         <button class="accordion-button collapsed"
@@ -49,7 +49,7 @@
           <!-- keyword notification -->
           <div class="row" v-else>
             <div class="col" style="float: contour; text-align: center">
-              <button :id="'delete_button_keyword_' + card.keywordId"
+              <button :id="'delete_button_keyword_' + card.id"
                       class="btn btn-outline-danger"
                       @click="deleteKeyword(card.keywordId)">
                 Delete Keyword
@@ -76,16 +76,6 @@ export default {
   },
   props: {},
   methods: {
-    /**
-     * change width of the notification box
-     */
-    changeWidth() {
-      if (this.allNoticeCards.length === 0){
-        document.getElementById("notificationAccordion").style.width = "300px";
-      } else {
-        document.getElementById("notificationAccordion").style.width = "500px";
-      }
-    },
     /**
      * catch errors.
      */
@@ -130,7 +120,6 @@ export default {
         index += 1;
       })
       this.allNoticeCards = notifications;
-      this.changeWidth();
     },
     /**
      * this function will reload all notifications for current user.
@@ -170,9 +159,6 @@ export default {
   },
   beforeMount() {
     this.loadNotifications();
-  },
-  mounted() {
-    this.changeWidth();
   }
 }
 </script>

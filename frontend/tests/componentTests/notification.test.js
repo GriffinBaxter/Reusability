@@ -97,7 +97,7 @@ describe("Tests for notification's accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#notification_box1").exists()).toBeFalsy()
+        expect(wrapper.find("#notification_box0").exists()).toBeFalsy()
     });
 
     test("Test the emptyMessage will been display, when data contain no notification", async function () {
@@ -206,7 +206,7 @@ describe("Tests delete buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#delete_button_card_1").exists()).toBeTruthy()
+        expect(wrapper.find("#delete_button_card_0").exists()).toBeTruthy()
     });
 
     test("Test that when notification not contain any marketplaceCard, delete button will not display.", async function () {
@@ -226,7 +226,7 @@ describe("Tests delete buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#delete_button_1").exists()).toBeFalsy()
+        expect(wrapper.find("#delete_button_0").exists()).toBeFalsy()
     });
 
     test("Test that when the notification is a keyword creation notification, the delete button is present.", async function () {
@@ -248,7 +248,8 @@ describe("Tests delete buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#delete_button_keyword_10").exists()).toBeTruthy()
+        console.log(wrapper.html())
+        expect(wrapper.find("#delete_button_keyword_0").exists()).toBeTruthy()
     });
 
 })
@@ -273,7 +274,7 @@ describe("Tests extend buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#extend_button_card_1").exists()).toBeTruthy()
+        expect(wrapper.find("#extend_button_card_0").exists()).toBeTruthy()
     });
 
     test("Test that when notification not contain any marketplaceCard, extend button will not display.", async function () {
@@ -293,6 +294,6 @@ describe("Tests extend buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#extend_button_card_1").exists()).toBeFalsy()
+        expect(wrapper.find("#extend_button_card_0").exists()).toBeFalsy()
     });
 })
