@@ -22,8 +22,8 @@
       </h2>
 
       <div :id="'collapse_' + card.id"
-      v-if="card.marketplaceCardPayload !== null"
-      class="accordion-collapse collapse"
+           v-if="card.marketCardId !== null"
+           class="accordion-collapse collapse"
            :aria-labelledby="'heading_' + card.id"
            data-bs-parent="#notificationAccordion">
         <div class="accordion-body">
@@ -71,8 +71,7 @@ export default {
   name: "Notification",
   data() {
     return {
-      allNoticeCards: [],
-      allNewKeywords: []
+      allNoticeCards: []
     }
   },
   props: {},
@@ -129,7 +128,6 @@ export default {
       Api.getNotifications()
           .then(response => this.populateNotification(response.data))
           .catch((error) => this.errorCatcher(error));
-
     },
     /**
      * delete a market card

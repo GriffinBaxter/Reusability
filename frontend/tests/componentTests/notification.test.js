@@ -161,7 +161,6 @@ describe("Tests for notification's accordion", () => {
         await mountPage();
 
         // Then
-        console.log(wrapper.html())
         expect(wrapper.find("#collapse_0").exists()).toBeTruthy()
     });
 
@@ -183,7 +182,6 @@ describe("Tests for notification's accordion", () => {
         await mountPage();
 
         // Then
-        console.log(wrapper.html())
         expect(wrapper.find("#collapse_0").exists()).toBeFalsy()
     });
 })
