@@ -41,7 +41,7 @@
         </div>
         <div class="col-md">
           <div id="autofill-container-users" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
-            <input id="card-creator" @keydown="searchUsers()" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorInput" ref="card-creator">
+            <input autocomplete="off" id="card-creator" @keydown="searchUsers()" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorInput" ref="card-creator">
             <div class="invalid-feedback" v-if="formError.creatorIdError">
               {{formError.creatorIdError}}
             </div>
