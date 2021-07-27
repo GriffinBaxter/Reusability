@@ -3,82 +3,90 @@
     <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage">
       <h2 class="card-body" style="margin: 3px; float: contour; text-align: center"> No notification! </h2>
     </div>
+
+    <!-- marketplace card notification -->
     <div :id="'notification_box' + card.id"
          class="accordion-item"
          v-for="card in allNoticeCards"
          v-bind:key="card.id"
          style="background-color: #ededed">
 
-      <!-- keyword notification -->
-      <div v-if="card.keyword != null">
-        <h2 class="accordion-header" :id="'heading_' + card.id">
-          <button class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  :data-bs-target="'#collapse_' + card.id"
-                  aria-expanded="false"
-                  :aria-controls="'collapse_' + card.id">
-            <h6>{{ card.description }}</h6>
-          </button>
-        </h2>
-        <div :id="'collapse_' + card.id"
-             v-if="card.operable"
-             class="accordion-collapse collapse"
-             :aria-labelledby="'heading_' + card.id"
-             data-bs-parent="#notificationAccordion">
-          <div class="accordion-body">
-            <div class="row">
-              <div class="col" style="float: contour; text-align: center">
-                <button :id="'delete_button_' + card.id"
-                        class="btn btn-outline-danger"
-                        @click="deleteKeyword(card.keywordId)">
-                  Delete Keyword
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <h2 class="accordion-header" :id="'heading_' + card.id">
+        <button class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                :data-bs-target="'#collapse_' + card.id"
+                aria-expanded="false"
+                :aria-controls="'collapse_' + card.id">
+          <h6>{{ card.description }}</h6>
+        </button>
+      </h2>
 
-      <!-- marketplace card notification -->
-      <div v-else>
-        <h2 class="accordion-header" :id="'heading_' + card.id">
-          <button class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  :data-bs-target="'#collapse_' + card.id"
-                  aria-expanded="false"
-                  :aria-controls="'collapse_' + card.id">
-            <h6>{{ card.description }}</h6>
-          </button>
-        </h2>
-        <div :id="'collapse_' + card.id"
-             v-if="card.operable"
-             class="accordion-collapse collapse"
-             :aria-labelledby="'heading_' + card.id"
-             data-bs-parent="#notificationAccordion">
-          <div class="accordion-body">
-            <div class="row">
-              <div class="col" style="float: contour; text-align: center">
-                <button :id="'delete_button_' + card.id"
-                        class="btn btn-outline-danger"
-                        @click="deleteCard(card.marketCardId)">
-                  Delete Card
-                </button>
-              </div>
-              <div class="col">
-                <button :id="'extend_button_' + card.id"
-                        class="btn btn-outline-success"
-                        @click="extendCardForDisplayPeriod(card.marketCardId)">
-                  Extend Card for 2 Weeks
-                </button>
-              </div>
+      <div :id="'collapse_' + card.id"
+           v-if="card.operable"
+           class="accordion-collapse collapse"
+           :aria-labelledby="'heading_' + card.id"
+           data-bs-parent="#notificationAccordion">
+        <div class="accordion-body">
+          <div class="row">
+            <div class="col" style="float: contour; text-align: center">
+              <button :id="'delete_button_' + card.id"
+                      class="btn btn-outline-danger"
+                      @click="deleteCard(card.marketCardId)">
+                Delete Card
+              </button>
+            </div>
+            <div class="col">
+              <button :id="'extend_button_' + card.id"
+                      class="btn btn-outline-success"
+                      @click="extendCardForDisplayPeriod(card.marketCardId)">
+                Extend Card for 2 Weeks
+              </button>
             </div>
           </div>
         </div>
       </div>
 
     </div>
+
+    <!-- keyword notification -->
+    <div :id="'notification_box' + keyword.id"
+         class="accordion-item"
+         v-for="keyword in allNewKeywords"
+         v-bind:key="keyword.id"
+         style="background-color: #ededed">
+
+        <h2 class="accordion-header" :id="'heading_' + keyword.keywordId">
+          <button class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#collapse_' + keyword.keywordId"
+                  aria-expanded="false"
+                  :aria-controls="'collapse_' + keyword.keywordId">
+            <h6>{{ keyword.name }}</h6>
+          </button>
+        </h2>
+
+        <div :id="'collapse_' + keyword.keywordId"
+             v-if="keyword.operable"
+             class="accordion-collapse collapse"
+             :aria-labelledby="'heading_' + keyword.keywordId"
+             data-bs-parent="#notificationAccordion">
+          <div class="accordion-body">
+            <div class="row">
+              <div class="col" style="float: contour; text-align: center">
+                <button :id="'delete_button_' + keyword.keywordId"
+                        class="btn btn-outline-danger"
+                        @click="deleteKeyword(keyword.keywordId)">
+                  Delete Keyword
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
   </div>
 </template>
 
@@ -90,7 +98,8 @@ export default {
   name: "Notification",
   data() {
     return {
-      allNoticeCards: []
+      allNoticeCards: [],
+      allNewKeywords: []
     }
   },
   props: {},
@@ -117,6 +126,7 @@ export default {
      */
     populateNotification(data) {
       let notifications = [];
+      let keywords = [];
       data.forEach(notification => {
         notifications.push({
           id: notification.id,
@@ -124,8 +134,15 @@ export default {
           description: notification.description,
           operable: (notification.marketplaceCardPayload !== null)
         });
+        notification.forEach(keyword => {
+          keywords.push({
+            keywordId: keyword.id,
+            name: keyword.name
+          })
+        })
       })
       this.allNoticeCards = notifications.reverse();
+      this.allNewKeywords = keywords.reverse();
     },
     /**
      * this function will reload all notifications for current user.
