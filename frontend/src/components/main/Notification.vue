@@ -1,45 +1,62 @@
 <template>
-  <div class="accordion" id="notificationAccordion" style="width: 500px">
-    <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage">
-      <h2 class="card-body" style="margin: 3px; float: contour; text-align: center"> No notification! </h2>
+  <div class="accordion" id="notificationAccordion">
+    <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage" style="width: 300px">
+      <h4 class="card-body" style="margin: 3px; float: contour; text-align: center"> No Notifications! </h4>
     </div>
-    <div :id="'notification_box' + card.id"
+
+    <div :id="'notification_box' + notification.id"
          class="accordion-item"
-         v-for="card in allNoticeCards"
-         v-bind:key="card.id"
-         style="background-color: #ededed">
-      <h2 class="accordion-header" :id="'heading_' + card.id">
+         v-for="notification in allNoticeCards"
+         v-bind:key="notification.id"
+         style="background-color: #ededed; width: 500px">
+
+      <h2 class="accordion-header" :id="'heading_' + notification.id">
         <button class="accordion-button collapsed"
                 type="button"
                 data-bs-toggle="collapse"
-                :data-bs-target="'#collapse_' + card.id"
+                :data-bs-target="'#collapse_' + notification.id"
                 aria-expanded="false"
-                :aria-controls="'collapse_' + card.id">
-          <h6>{{ card.description }}</h6>
+                :aria-controls="'collapse_' + notification.id">
+          <h6>{{ notification.description }}</h6>
         </button>
       </h2>
-      <div :id="'collapse_' + card.id"
-           v-if="card.operable"
+
+      <div :id="'collapse_' + notification.id"
+           v-if="notification.marketCardId !== null"
            class="accordion-collapse collapse"
-           :aria-labelledby="'heading_' + card.id"
+           :aria-labelledby="'heading_' + notification.id"
            data-bs-parent="#notificationAccordion">
         <div class="accordion-body">
-          <div class="row">
+
+          <!-- marketplace card notifications -->
+          <div class="row" v-if="notification.keywordId === undefined">
             <div class="col" style="float: contour; text-align: center">
-              <button :id="'delete_button_' + card.id"
+              <button :id="'delete_button_card_' + notification.id"
                       class="btn btn-outline-danger"
-                      @click="deleteCard(card.marketCardId)">
+                      @click="deleteCard(notification.marketCardId)">
                 Delete Card
               </button>
             </div>
             <div class="col">
-              <button :id="'extend_button_' + card.id"
+              <button :id="'extend_button_card_' + notification.id"
                       class="btn btn-outline-success"
-                      @click="extendCardForDisplayPeriod(card.marketCardId)">
+                      @click="extendCardForDisplayPeriod(notification.marketCardId)">
                 Extend Card for 2 Weeks
               </button>
             </div>
           </div>
+
+          <!-- keyword notification -->
+          <div class="row" v-else>
+            <div class="col" style="float: contour; text-align: center">
+              <button :id="'delete_button_keyword_' + notification.id"
+                      class="btn btn-outline-danger"
+                      @click="deleteKeyword(notification.keywordId)">
+                Delete Keyword
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -81,15 +98,28 @@ export default {
      */
     populateNotification(data) {
       let notifications = [];
+      let index = 0;
       data.forEach(notification => {
-        notifications.push({
-          id: notification.id,
-          marketCardId : notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
-          description: notification.description,
-          operable: (notification.marketplaceCardPayload !== null)
-        });
+
+        // keyword notification
+        if (notification.keyword !== undefined) {
+          notifications.push({
+            id: index,
+            keywordId: notification.keyword.id,
+            description: notification.description,
+            date: notification.created
+          })
+        } else { // marketplace notification
+          notifications.push({
+            id: index,
+            marketCardId: notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
+            description: notification.description,
+            date: notification.created
+          })
+        }
+        index += 1;
       })
-      this.allNoticeCards = notifications.reverse();
+      this.allNoticeCards = notifications;
     },
     /**
      * this function will reload all notifications for current user.
@@ -114,6 +144,15 @@ export default {
      */
     extendCardForDisplayPeriod(id) {
       Api.extendCardDisplayPeriod(id)
+          .then(() => this.loadNotifications())
+          .catch((error) => this.errorCatcher(error));
+    },
+    /**
+     * Delete a keyword, given that the logged in user is a DGGA or GAA.
+     * @param id, keyword id
+     */
+    deleteKeyword(id) {
+      Api.deleteExistingKeyword(id)
           .then(() => this.loadNotifications())
           .catch((error) => this.errorCatcher(error));
     }

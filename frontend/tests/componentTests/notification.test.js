@@ -59,9 +59,9 @@ describe("Tests for notification's accordion", () => {
         await mountPage();
 
         // Then
+        expect(wrapper.find("#notification_box0").exists()).toBeTruthy()
         expect(wrapper.find("#notification_box1").exists()).toBeTruthy()
         expect(wrapper.find("#notification_box2").exists()).toBeTruthy()
-        expect(wrapper.find("#notification_box3").exists()).toBeTruthy()
     });
 
     test("Test accordion for Notifications will display a notification, when data contain one notification", async function () {
@@ -82,7 +82,7 @@ describe("Tests for notification's accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#notification_box1").exists()).toBeTruthy()
+        expect(wrapper.find("#notification_box0").exists()).toBeTruthy()
     });
 
     test("Test accordion for Notifications will display any thing, when data contain no notification", async function () {
@@ -97,7 +97,7 @@ describe("Tests for notification's accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#notification_box1").exists()).toBeFalsy()
+        expect(wrapper.find("#notification_box0").exists()).toBeFalsy()
     });
 
     test("Test the emptyMessage will been display, when data contain no notification", async function () {
@@ -161,7 +161,7 @@ describe("Tests for notification's accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#collapse_1").exists()).toBeTruthy()
+        expect(wrapper.find("#collapse_0").exists()).toBeTruthy()
     });
 
     test("Tests accordion not allow to open if it is a 'deleted' notification.", async function () {
@@ -182,7 +182,7 @@ describe("Tests for notification's accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#collapse_1").exists()).toBeFalsy()
+        expect(wrapper.find("#collapse_0").exists()).toBeFalsy()
     });
 })
 
@@ -206,7 +206,7 @@ describe("Tests delete buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#delete_button_1").exists()).toBeTruthy()
+        expect(wrapper.find("#delete_button_card_0").exists()).toBeTruthy()
     });
 
     test("Test that when notification not contain any marketplaceCard, delete button will not display.", async function () {
@@ -226,8 +226,32 @@ describe("Tests delete buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#delete_button_1").exists()).toBeFalsy()
+        expect(wrapper.find("#delete_button_0").exists()).toBeFalsy()
     });
+
+    test("Test that when the notification is a keyword creation notification, the delete button is present.", async function () {
+        // Given
+        const notificationsData = {
+            status: 200,
+            data: [{
+                id: 1,
+                description: "A new keyword, green, has been created.",
+                created: "2020-08-16T14:32:00Z",
+                keyword: {
+                    id: 10,
+                }
+            }]
+        };
+
+        // When
+        Api.getNotifications.mockImplementation(() => Promise.resolve(notificationsData));
+        await mountPage();
+
+        // Then
+        console.log(wrapper.html())
+        expect(wrapper.find("#delete_button_keyword_0").exists()).toBeTruthy()
+    });
+
 })
 
 describe("Tests extend buttons in accordion", () => {
@@ -250,7 +274,7 @@ describe("Tests extend buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#extend_button_1").exists()).toBeTruthy()
+        expect(wrapper.find("#extend_button_card_0").exists()).toBeTruthy()
     });
 
     test("Test that when notification not contain any marketplaceCard, extend button will not display.", async function () {
@@ -270,6 +294,6 @@ describe("Tests extend buttons in accordion", () => {
         await mountPage();
 
         // Then
-        expect(wrapper.find("#extend_button_1").exists()).toBeFalsy()
+        expect(wrapper.find("#extend_button_card_0").exists()).toBeFalsy()
     });
 })
