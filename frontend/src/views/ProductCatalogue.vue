@@ -28,7 +28,7 @@
           <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0"
                  :table-headers="tableHeaders" :table-data="tableData"
                  :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
-                 :order-by-override="tableOrderBy" :table-data-is-page="true"
+                 :order-by-override="tableOrderBy" :loading-data="loadingProducts" :table-data-is-page="true"
                  @update-current-page="event => updatePage(event)"
                  @order-by-header-index="event => orderProducts(event)"
                  @row-selected="event => showRowModal(event.index)"
@@ -226,6 +226,7 @@ export default {
       rowsPerPage: 5,
       currentPage: 0,
       totalRows: 0,
+      loadingProducts: false,
 
 
       // Product modal variables
@@ -426,6 +427,7 @@ export default {
       this.businessId = parseInt(this.$route.params.id);
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
+      this.loadingProducts = true;
 
       // Perform the call to sort the products and get them back.
       await Api.sortProducts(this.businessId, this.orderByString, this.currentPage).then(response => {
@@ -475,6 +477,7 @@ export default {
           console.log(error.message);
         }
       })
+      this.loadingProducts = false;
     },
 
     /**

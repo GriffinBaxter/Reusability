@@ -23,6 +23,7 @@
                :table-headers="tableHeaders" :table-data="tableData"
                :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
                :order-by-override="tableOrderBy" :table-data-is-page="true"
+               :loading-data="tableDataIsLoading"
                @update-current-page="event => updatePage(event)"
                @order-by-header-index="event => orderData(event)"
                @row-selected="event => routeToProfile(event.index)"
@@ -75,6 +76,7 @@ export default {
       totalRows: 0,
       totalPages: 0,
       maxPage: 0,
+      tableDataIsLoading: false,
       // Used to tell the table what is the current ordering (for visual purposes).
       tableOrderBy: {orderBy: null, isAscending: true},
       orderByString: "",
@@ -159,6 +161,7 @@ export default {
       this.searchType = 'Business';
       this.tableHeaders = this.businessHeaders;
       this.tableOrderByHeaders = this.orderByBusinessHeaders;
+      this.tableDataIsLoading = true;
 
       if (inputQuery !== null) {
         this.query = inputQuery.trim();
@@ -214,6 +217,7 @@ export default {
           }
         })
       }
+      this.tableDataIsLoading = false;
     },
 
     /**
@@ -259,6 +263,7 @@ export default {
       this.searchType = 'User';
       this.tableHeaders = this.userHeaders;
       this.tableOrderByHeaders = this.orderByUserHeaders;
+      this.tableDataIsLoading = true;
 
       if (inputQuery !== null) {
         this.query = inputQuery.trim();
@@ -314,6 +319,7 @@ export default {
           }
         })
       }
+      this.tableDataIsLoading = false;
     },
 
     /**
