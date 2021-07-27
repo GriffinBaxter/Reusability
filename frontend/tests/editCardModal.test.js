@@ -534,4 +534,29 @@ describe("Testing the user dropdown", () => {
         expect(editCreateCardModal.vm.$data.creatorId).toBe(1)
         expect(editCreateCardModal.vm.$data.userLocation).toBe("City")
     })
+    test("Testing the fillData method sets the correct user with no address", async () => {
+
+        editCreateCardModal.vm.$data.users = [
+            {
+                id: 1,
+                firstName: "First",
+                lastName: "Last",
+                homeAddress: {
+                }
+            },
+            {
+                id:2,
+                firstName: "TEST",
+                lastName: "TESTINGTON"
+            }
+        ]
+
+        await editCreateCardModal.vm.$nextTick();
+
+        editCreateCardModal.vm.fillData({value:1});
+        await editCreateCardModal.vm.$nextTick();
+
+        expect(editCreateCardModal.vm.$data.creatorId).toBe(1)
+        expect(editCreateCardModal.vm.$data.userLocation).toBe("N/A")
+    })
 })
