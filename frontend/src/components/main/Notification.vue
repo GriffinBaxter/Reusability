@@ -1,7 +1,7 @@
 <template>
   <div class="accordion" id="notificationAccordion" style="width: 500px">
     <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage">
-      <h2 class="card-body" style="margin: 3px; float: contour; text-align: center"> No notification! </h2>
+      <h4 class="card-body" style="margin: 3px; float: contour; text-align: center"> No Notifications! </h4>
     </div>
 
     <div :id="'notification_box' + card.id"
@@ -77,6 +77,16 @@ export default {
   props: {},
   methods: {
     /**
+     * change width of the notification box
+     */
+    changeWidth() {
+      if (this.allNoticeCards.length === 0){
+        document.getElementById("notificationAccordion").style.width = "300px";
+      } else {
+        document.getElementById("notificationAccordion").style.width = "500px";
+      }
+    },
+    /**
      * catch errors.
      */
     errorCatcher(error) {
@@ -120,6 +130,7 @@ export default {
         index += 1;
       })
       this.allNoticeCards = notifications;
+      this.changeWidth();
     },
     /**
      * this function will reload all notifications for current user.
@@ -159,6 +170,9 @@ export default {
   },
   beforeMount() {
     this.loadNotifications();
+  },
+  mounted() {
+    this.changeWidth();
   }
 }
 </script>
