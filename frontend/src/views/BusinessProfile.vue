@@ -82,7 +82,7 @@
                   </div>
                   <div class="col-8">
                     <div class="row">
-                      <div class="text-secondary" v-for="lines in address" :key="lines.line" style="text-align: right">
+                      <div class="text-secondary" v-for="(lines, i) in address" :key="'address-line-'+i" style="text-align: right">
                         {{ lines.line }}
                       </div>
                     </div>
