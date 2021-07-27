@@ -36,7 +36,7 @@ const factory = (values = {}) => {
     })
 }
 
-describe("Testing the delete image functionality", () => {
+describe("Testing the set primary image, delete and upload image functionality", () => {
 
     test('Testing the component containing the delete button is not "visible" when no image is selected', () => {
         const wrapper = factory({
@@ -103,5 +103,84 @@ describe("Testing the delete image functionality", () => {
         expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, something went wrong...");
     })
 
+    test('Testing an error message is sent when a user without permission tries to ' +
+        'set a primary image and the frontend receives a 403 error.', async () => {
+        const $router = {
+            push: jest.fn()
+        };
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
+        });
 
+        const data = {
+            response: {
+                status: 403
+            }
+        }
+
+        Api.setPrimaryImage.mockImplementation(() => Promise.reject(data));
+
+        await wrapper.vm.setPrimarySelectedImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.formErrorModalMessage).toBe(
+            "Sorry, you do not have permission to change the primary image."
+        );
+
+    })
+
+    test('Testing an error message is sent when a user tries to ' +
+        'set a primary image and the frontend receives a 406 error.', async () => {
+        const $router = {
+            push: jest.fn()
+        };
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
+        });
+
+        const data = {
+            response: {
+                status: 406
+            }
+        }
+
+        Api.setPrimaryImage.mockImplementation(() => Promise.reject(data));
+
+        await wrapper.vm.setPrimarySelectedImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, something went wrong...");
+    })
+
+    test('Testing an error message is sent when a user tries to upload an invalid file (not an image).',
+        async () => {
+        const $router = {
+            push: jest.fn()
+        };
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
+        });
+
+        const data = {
+            response: {
+                status: 400
+            }
+        }
+
+        Api.uploadProductImage.mockImplementation(() => Promise.reject(data));
+
+        await wrapper.vm.getImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.formErrorModalMessage).toBe(
+            "Sorry, the file you uploaded is not a valid image."
+        );
+
+    })
 })

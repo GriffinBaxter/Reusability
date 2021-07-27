@@ -1,7 +1,7 @@
-Page Buttons
-Contains page button components, as well as methods to check if a page number is
-within a valid range and to update the page number in the parent component when the
-page is changed.
+<!--Page Buttons-->
+<!--Contains page button components, as well as methods to check if a page number is-->
+<!--within a valid range and to update the page number in the parent component when the-->
+<!--page is changed.-->
 
 <template>
   <nav>
@@ -80,7 +80,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

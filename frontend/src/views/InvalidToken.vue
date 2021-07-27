@@ -11,8 +11,3 @@ export default {
   name: "InvalidToken"
 }
 </script>
-
-<!-------------------------------------------- Invalid Token Page Styling --------------------------------------------->
-<style scoped>
-
-</style>

@@ -201,7 +201,7 @@ export default {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 403) {
-          this.formErrorModalMessage = "Sorry, you do not have permission to delete this image.";
+          this.formErrorModalMessage = "Sorry, you do not have permission to change the primary image.";
         } else if (error.response.status === 406) {
           this.formErrorModalMessage = "Sorry, something went wrong...";
         } else {
@@ -238,7 +238,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

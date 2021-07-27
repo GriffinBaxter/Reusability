@@ -69,6 +69,9 @@ The backend can be tested by using the examples from the API specification (foun
 
 Additionally, Postman tests are provided as collections, also found within the /api directory.
 
+The steps for adding the images for using the product image Postman tests are accessed via:
+https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/Postman-Testing
+
 ## Demo User Accounts
 - Note: These demo user accounts are only available on our production server. All demo user accounts (aside from the DGAA) have the same password: Qwerty123!
 
@@ -78,9 +81,9 @@ Additionally, Postman tests are provided as collections, also found within the /
 - Email: amabbuttl8@usatoday.com
 
 ### Standard Users With Marketplace Cards
-- Email: farny8u@comcast.net
+- Email: jfarny8u@comcast.net
 - Email: selkincc@canalblog.com
-- Email: shereldc@timesonline.co.uk
+- Email: jshereldc@timesonline.co.uk
 
 ### Standard Users Which Are Primary Administrators (Business Creators)
 - Email: mlinwoodro@issuu.com
@@ -115,6 +118,7 @@ Additionally, Postman tests are provided as collections, also found within the /
 
 ## References
 
+- [Team 400 Wiki](https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/home)
 - [Spring Boot Docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
 - [Spring JPA docs](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)
 - [Vue docs](https://vuejs.org/v2/guide/)
