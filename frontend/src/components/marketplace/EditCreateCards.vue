@@ -464,7 +464,6 @@ export default {
     },
     /**
      * Performs an API call to the backend to create a new card.
-     * @param event {Event} The click event on the submission button.
      * */
     async createNewCard() {
       // Prevent the default submission click
@@ -559,7 +558,6 @@ export default {
     },
     /**
      * Performs an API call to the backend to edit the current card.
-     * @param event {Event} The click event on the save button.
      * */
     async editCurrentCard() {
 
@@ -1034,12 +1032,22 @@ export default {
 
       this.autofillInput = '';
     },
+    /**
+     * Searches for a list of users to display in the dropdown based on an input
+     */
     searchUsers() {
-
       Api.searchUsers(this.creatorInput, "fullNameASC", 0).then((response) => {
         this.users = response.data;
       }, (error) => {
-        console.log(error)
+        if (error.response) {
+          if (error.response.status === 401 ){
+            this.$router.push({path: '/invalidtoken'})
+          } else {
+            console.log(`${error.response.status} - Something went wrong`)
+          }
+        } else {
+          console.log(`${error.response.status} - Something went wrong`)
+        }
       })
     }
   },
