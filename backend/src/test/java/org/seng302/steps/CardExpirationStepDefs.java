@@ -267,7 +267,7 @@ public class CardExpirationStepDefs extends CucumberSpringConfiguration {
                 unMockMarketplaceCardRepository,
                 unMockMarketCardNotificationRepository);
 
-        notificationMessage = "Your card (Hayley's Birthday) has been expired 0h 0m 1s ago.";
+        notificationMessage = "Your card (Hayley's Birthday) expired 0h 0m 1s ago and will soon be deleted.";
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
