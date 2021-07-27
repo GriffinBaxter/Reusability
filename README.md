@@ -81,9 +81,9 @@ https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/Postman-Testing
 - Email: amabbuttl8@usatoday.com
 
 ### Standard Users With Marketplace Cards
-- Email: farny8u@comcast.net
+- Email: jfarny8u@comcast.net
 - Email: selkincc@canalblog.com
-- Email: shereldc@timesonline.co.uk
+- Email: jshereldc@timesonline.co.uk
 
 ### Standard Users Which Are Primary Administrators (Business Creators)
 - Email: mlinwoodro@issuu.com
