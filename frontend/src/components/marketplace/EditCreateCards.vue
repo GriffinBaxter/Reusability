@@ -223,45 +223,6 @@ export default {
   },
   methods: {
     /**
-     * Shows the card creations modal
-     *
-     * @param event The click event.
-     * */
-    showModal(event) {
-      // Prevent any default events by button clicks
-      event.preventDefault();
-      // Resetting all the variables between card creations.
-      this.submitAttempted = false;
-      this.description = ""
-      this.title = ""
-      this.sectionSelected = ""
-      this.keywordsInput = ""
-      this.creatorId = Cookies.get('userID') || "";
-      this.populateUserInfo(this.creatorId);
-
-      // Resetting all the form error classes
-      this.formErrorClasses.sectionSelectionError = ""
-      this.formErrorClasses.titleError = ""
-      this.formErrorClasses.descriptionError = ""
-      this.formErrorClasses.keywordsError = ""
-
-      // Resetting all the form error messages
-      this.formError.sectionSelectionError = ""
-      this.formError.titleError = ""
-      this.formError.descriptionError = ""
-      this.formError.keywordsError = ""
-
-
-      // Show the modal itself.
-      this.modal.show();
-
-
-      // Variables for keyword autocompletion calculations
-      this.textCursorPosition = 0
-      this.currentKeyword = ""
-      this.autocompleteKeywords = []
-    },
-    /**
      * Determines if a section choice made by the user is valid. And updates the error
      * message accordingly and returns the class state. This also updates the form error class.
      *
