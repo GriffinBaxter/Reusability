@@ -1229,7 +1229,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MarketplaceCardNotification'
+                  oneOf:
+                    - $ref: '#/components/schemas/MarketplaceCardNotification'
+                    - $ref: '#/components/schemas/KeywordNotification'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
