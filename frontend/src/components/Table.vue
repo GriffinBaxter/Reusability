@@ -32,7 +32,7 @@
       <!-- Table data rows -->
       <div v-if="dataIsReady && !loadingData">
           <!-- The @click and @keydown are used to trigger events for the parent to be informed that the element row was pressed.-->
-          <div :class="`row mb-3 py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex" style="cursor: pointer;"
+          <div :class="`row mb-3 py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex" style="cursor: pointer; min-height: 7em; align-items: center"
                @click="() => handleRowClick(rowIndex)" @keydown="(event) => handleRowKeyDown(event, rowIndex)"
                v-for="(row, rowIndex) in currentPageRows" :key="`${tableId}-row-${rowIndex}`">
 
