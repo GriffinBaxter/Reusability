@@ -4,7 +4,6 @@
       <h2 class="card-body" style="margin: 3px; float: contour; text-align: center"> No notification! </h2>
     </div>
 
-    <!-- marketplace card notification -->
     <div :id="'notification_box' + card.id"
          class="accordion-item"
          v-for="card in allNoticeCards"
@@ -23,12 +22,14 @@
       </h2>
 
       <div :id="'collapse_' + card.id"
-           v-if="card.operable"
+           v-if="card.marketplaceCardPayload !== null || card.keywords !== undefined"
            class="accordion-collapse collapse"
            :aria-labelledby="'heading_' + card.id"
            data-bs-parent="#notificationAccordion">
         <div class="accordion-body">
-          <div class="row">
+
+          <!-- marketplace card notifications -->
+          <div class="row" v-if="card.marketplaceCardPayload !== null && card.keywords !== undefined">
             <div class="col" style="float: contour; text-align: center">
               <button :id="'delete_button_' + card.id"
                       class="btn btn-outline-danger"
@@ -44,49 +45,21 @@
               </button>
             </div>
           </div>
-        </div>
-      </div>
 
-    </div>
-
-    <!-- keyword notification -->
-    <div :id="'notification_box' + keyword.id"
-         class="accordion-item"
-         v-for="keyword in allNewKeywords"
-         v-bind:key="keyword.id"
-         style="background-color: #ededed">
-
-        <h2 class="accordion-header" :id="'heading_' + keyword.keywordId">
-          <button class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  :data-bs-target="'#collapse_' + keyword.keywordId"
-                  aria-expanded="false"
-                  :aria-controls="'collapse_' + keyword.keywordId">
-            <h6>{{ keyword.description }}</h6>
-          </button>
-        </h2>
-
-        <div :id="'collapse_' + keyword.keywordId"
-             v-if="keyword.operable"
-             class="accordion-collapse collapse"
-             :aria-labelledby="'heading_' + keyword.keywordId"
-             data-bs-parent="#notificationAccordion">
-          <div class="accordion-body">
-            <div class="row">
-              <div class="col" style="float: contour; text-align: center">
-                <button :id="'delete_button_' + keyword.keywordId"
-                        class="btn btn-outline-danger"
-                        @click="deleteKeyword(keyword.keywordId)">
-                  Delete Keyword
-                </button>
-              </div>
+          <!-- keyword notification -->
+          <div class="row" v-else>
+            <div class="col" style="float: contour; text-align: center">
+              <button :id="'delete_button_' + card.keywordId"
+                      class="btn btn-outline-danger"
+                      @click="deleteKeyword(card.keywordId)">
+                Delete Keyword
+              </button>
             </div>
           </div>
+
         </div>
-
+      </div>
     </div>
-
   </div>
 </template>
 
@@ -126,36 +99,35 @@ export default {
      */
     populateNotification(data) {
       let notifications = [];
-      let keywords = [];
+      let index = 0;
       data.forEach(notification => {
-        notifications.push({
-          id: notification.id,
-          marketCardId : notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
-          description: notification.description,
-          operable: (notification.marketplaceCardPayload !== null)
-        });
-      })
 
-      data.forEach(keyword => {
-        keywords.push({
-          keywordId: keyword.id,
-          description: keyword.description
-        })
+        // keyword notification
+        if (notification.keyword !== undefined) {
+          notifications.push({
+            id: index,
+            keywordId: notification.keyword.id,
+            description: notification.description,
+            date: notification.created
+          })
+        } else { // marketplace notification
+          notifications.push({
+            id: index,
+            marketCardId: notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
+            description: notification.description,
+            date: notification.created
+          })
+        }
+        index += 1;
       })
-
-      this.allNoticeCards = notifications.reverse();
-      this.allNewKeywords = keywords.reverse();
+      this.allNoticeCards = notifications;
     },
     /**
      * this function will reload all notifications for current user.
      */
     loadNotifications() {
       Api.getNotifications()
-          .then(response => {
-            console.log(response.data)
-            this.populateNotification(response.data)
-
-            })
+          .then(response => this.populateNotification(response.data))
           .catch((error) => this.errorCatcher(error));
 
     },
