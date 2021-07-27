@@ -13,11 +13,15 @@
         <!--modal body-->
         <div class="modal-body">
           <form class="row" id="inventoryItemCreation" @submit.prevent>
+
+            <div class="create-inventory-item-image-wrapper">
+              <img :src="getThumbnailSrc(currentProduct)" alt="Product image for the new inventory item" class="create-inventory-item-image">
+            </div>
             <!--product id-->
             <div class="col-7 form-group py-1 px-3">
               <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
                 <label for="autofill-input">Product ID*: </label>
-                <input type="text" id="autofill-input" ref="autofill-input" :class="inventoryValidationHelper.toggleInvalidClass(productIdErrorMsg)" v-model="autofillInput">
+                <input type="text" autocomplete="off" id="autofill-input" ref="autofill-input" :class="inventoryValidationHelper.toggleInvalidClass(productIdErrorMsg)" v-model="autofillInput">
                 <div class="invalid-feedback">
                   {{ productIdErrorMsg }}
                 </div>
@@ -26,12 +30,19 @@
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
                   <!-- Popover for additional info -->
-                    <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" v-bind:value="product.id" tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus" v-bind:title="product.manufacturer ? 'Manufacturer: ' + product.manufacturer : ''" v-bind:data-bs-content="product.description">
+                    <li v-for="product in allProducts" v-bind:key="product.id"
+                        v-bind:id="'li-product-' + product.id" v-bind:value="product.id"
+                        tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus"
+                        v-bind:title="product.manufacturer ? 'Manufacturer: ' + product.manufacturer : ''"
+                        v-bind:data-bs-content="product.description" class="autofill-option" >
+                      <img :src="getThumbnailSrc(product)" :alt="`product thumbnail for product with id ${product.id}`" class="autofill-option-image">
+                      <div class="autofill-option-information">
                         <strong>
                           {{ product.id }}
                         </strong>
-                        <br>
-                        {{ product.name + getAutofillCurrencyText(product)}}
+                        <div>{{ product.name }}</div>
+                        <div>{{getAutofillCurrencyText(product)}}</div>
+                      </div>
                     </li>
                 </ul>
               </div>
@@ -144,6 +155,7 @@
 import {Modal, Popover} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
+import DefaultProductImage from "../../../public/default-product.jpg";
 import Autofill from '../autofill';
 import {parseISO} from 'date-fns'
 import Vue from "vue";
@@ -223,6 +235,23 @@ export default {
       this.bestBefore = this.bestBefore.trim();
       this.expires = this.expires.trim();
     },
+
+    /**
+     * Given a product object, we try and find the primary image thumbnail, and return it.
+     *
+     * @param product product object
+     * @returns {string} filepath of the primary thumbnail or the default image if it does not exist.
+     * */
+    getThumbnailSrc(product) {
+      // Since this checks the values on the left of the if statements first, then we can ensure that before we try and access any
+      // of the values that the product exists and that it has images.
+      if (product && product.images && product.images.length > 0) {
+        const filePath = product.images.filter( (image) => image.isPrimary).pop().thumbnailFilename;
+        return Api.getServerResourcePath(filePath);
+      }
+      return DefaultProductImage;
+    },
+
     /**
      * This method checks whether the RRP of the given product is null, and if not returns a formatted string including the RRP to display.
      * Otherwise returns an empty string.
@@ -673,6 +702,7 @@ input:focus, textarea:focus {
 
 #autofill-input::-ms-expand {
   display: none;
+
 }
 
 .autofill-options {
@@ -709,6 +739,33 @@ input:focus, textarea:focus {
   right: 0.75em;
   z-index: 20;
   background: transparent;
+}
+
+.autofill-option {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.autofill-option-information {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+.autofill-option-image {
+  max-width: 50px;
+  height: auto;
+}
+
+.create-inventory-item-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.create-inventory-item-image {
+  max-width: 150px;
 }
 
 /*********************************************************************/

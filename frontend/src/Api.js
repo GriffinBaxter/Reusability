@@ -44,6 +44,11 @@ export default {
         return SERVER_URL
     },
 
+    // Returns the server path .
+    getServerResourcePath: (filepath) => {
+        return `${SERVER_URL}/${filepath}`;
+    },
+
     // Sends a post request to the backend with a new user object to store
     addNewUser: (user) => instance.post('/users', {
         ...user.data
