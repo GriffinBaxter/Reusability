@@ -37,14 +37,6 @@
             <hr/>
 
             <div class="row" role="group" aria-label="Button group with nested dropdown">
-              <div class="col-md-3 py-1">
-                <!--creation button-->
-                <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
-                        data-bs-target="#creationPopup">
-                  Create New
-                </button>
-              </div>
-
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">
                 <button type="button" class="btn green-button dropdown-toggle"
@@ -109,6 +101,15 @@
                   </button>
                 </ul>
               </div>
+
+              <div class="col-md-3 py-1">
+                <!--creation button-->
+                <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
+                        data-bs-target="#creationPopup">
+                  Create New
+                </button>
+              </div>
+
               <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
             </div>
 

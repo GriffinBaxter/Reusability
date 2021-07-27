@@ -11,11 +11,10 @@
     <div class="container">
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
       <div class="card p-1">
-        <!-- Order Buttons -->
-        <div class="row my-3" style="text-align: center">
+        <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
-          <div class="btn-group col-3 py-1" role="group">
-            <button type="button" class="btn green-button dropdown-toggle col-4"
+          <div class="btn-group col-md-3 py-1" role="group">
+            <button type="button" class="btn green-button dropdown-toggle"
                     data-bs-toggle="dropdown" aria-expanded="false">Filter Option
             </button>
 
@@ -50,9 +49,9 @@
             </ul>
           </div>
 
-          <!-- Add new Button -->
-          <div class="col-md" v-if="businessAdmin">
-            <button type="button" class="btn green-button w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
+          <!-- Create New Button -->
+          <div class="col-md-3 py-1" v-if="businessAdmin">
+            <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Create New</button>
           </div>
 
           <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>

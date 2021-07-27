@@ -2,6 +2,8 @@ package org.seng302;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.exceptions.IllegalAddressArgumentException;
+import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.model.MarketCardNotification;
 import org.seng302.model.MarketplaceCard;
@@ -49,7 +51,7 @@ public class MainApplicationRunner implements ApplicationRunner {
     private ConfigurableApplicationContext context;
 
     private static final String NOTIFICATION_MESSAGE_FORMAT = "Your card (%s) will be expired in %s.";
-    private static final String EXPIRED_NOTIFICATION_MESSAGE = "Your card (%s) has been expired %s ago.";
+    private static final String EXPIRED_NOTIFICATION_MESSAGE = "Your card (%s) expired %s ago and will soon be deleted.";
     public static final String DELETED_NOTIFICATION_MESSAGE = "Your card (%s) has been deleted.";
 
     /**
@@ -100,10 +102,11 @@ public class MainApplicationRunner implements ApplicationRunner {
      * fixed-delay.in.milliseconds section in the application.properties file.
      * The system logs are updated when checked.
      *
-     * @throws Exception An exception
+     * @throws IllegalAddressArgumentException thrown if a new address's data is not valid.
+     * @throws IllegalUserArgumentException thrown if a new DGAA's data is not valid.
      */
     @Scheduled(fixedDelayString = "${fixed-delay.in.milliseconds}")
-    public void checkDGAAExists() throws Exception {
+    public void checkDGAAExists() throws IllegalAddressArgumentException, IllegalUserArgumentException {
         if (!(userRepository.existsByRole(Role.DEFAULTGLOBALAPPLICATIONADMIN))) {
             Address address = new Address(
                     "3/24",
