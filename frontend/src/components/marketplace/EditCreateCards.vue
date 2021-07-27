@@ -35,13 +35,21 @@
 
       <!-- Creator id input -->
       <div class="row my-lg-2 my-4" v-if="user.isAdministrator(userRole)">
+
         <div class="col-md-3 ">
-          <label for="card-creator-id" class="fw-bold">Creator Id*:</label>
+          <label for="card-creator" class="fw-bold">Select creator:</label>
         </div>
         <div class="col-md">
-          <input id="card-creator-id" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorId" @input="isCreatorIdInvalid" @focusout="() => populateUserInfo(creatorId)">
-          <div class="invalid-feedback" v-if="formError.creatorIdError">
-            {{formError.creatorIdError}}
+          <div id="autofill-container-users" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
+            <input autocomplete="off" id="card-creator" @keydown="searchUsers()" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorInput" ref="card-creator">
+            <div class="invalid-feedback" v-if="formError.creatorIdError">
+              {{formError.creatorIdError}}
+            </div>
+            <ul class="autofill-options hidden-all" id="autofill-list-users" ref="autofill-list-users">
+              <li v-for="user in users" v-bind:key="user.id" tabindex="-1" v-bind:value="user.id" data-bs-toggle="popover" data-bs-trigger="hover focus">
+                {{ user.firstName }} {{ user.lastName}}
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -126,6 +134,7 @@ import Api from "../../Api";
 import cardConfig from "../../configs/MarketplaceCard"
 import Cookies from "js-cookie";
 import User, { UserRole} from "../../configs/User"
+import Autofill from "../autofill";
 
 export default {
   name: "EditCreateCardModal",
@@ -135,6 +144,8 @@ export default {
   data() {
     return {
       user: User,
+
+      users: [],
 
       /** For api error we display the error through this model error */
       modalError: "",
@@ -155,6 +166,8 @@ export default {
         WANTED: "Wanted",
         EXCHANGE: "Exchange"
       },
+      /** Contains what is in the creator name input field */
+      creatorInput: "",
       /** Contains the creators id */
       creatorId: "",
       /** Contains the user's full name to be displayed as a prefilled value*/
@@ -203,49 +216,12 @@ export default {
       autocompleteKeywords: [],
 
       /** Contains the list of keyword IDs returned by 'createKeywordIfNotExisting' to use in the edit card PUT request */
-      newKeywordIDs: []
+      newKeywordIDs: [],
+
+      autofillState: 'initial',
     }
   },
   methods: {
-    /**
-     * Shows the card creations modal
-     *
-     * @param event The click event.
-     * */
-    showModal(event) {
-      // Prevent any default events by button clicks
-      event.preventDefault();
-      // Resetting all the variables between card creations.
-      this.submitAttempted = false;
-      this.description = ""
-      this.title = ""
-      this.sectionSelected = ""
-      this.keywordsInput = ""
-      this.creatorId = Cookies.get('userID') || "";
-      this.populateUserInfo(this.creatorId);
-
-      // Resetting all the form error classes
-      this.formErrorClasses.sectionSelectionError = ""
-      this.formErrorClasses.titleError = ""
-      this.formErrorClasses.descriptionError = ""
-      this.formErrorClasses.keywordsError = ""
-
-      // Resetting all the form error messages
-      this.formError.sectionSelectionError = ""
-      this.formError.titleError = ""
-      this.formError.descriptionError = ""
-      this.formError.keywordsError = ""
-
-
-      // Show the modal itself.
-      this.modal.show();
-
-
-      // Variables for keyword autocompletion calculations
-      this.textCursorPosition = 0
-      this.currentKeyword = ""
-      this.autocompleteKeywords = []
-    },
     /**
      * Determines if a section choice made by the user is valid. And updates the error
      * message accordingly and returns the class state. This also updates the form error class.
@@ -449,7 +425,6 @@ export default {
     },
     /**
      * Performs an API call to the backend to create a new card.
-     * @param event {Event} The click event on the submission button.
      * */
     async createNewCard() {
       // Prevent the default submission click
@@ -544,7 +519,6 @@ export default {
     },
     /**
      * Performs an API call to the backend to edit the current card.
-     * @param event {Event} The click event on the save button.
      * */
     async editCurrentCard() {
 
@@ -803,7 +777,8 @@ export default {
       this.title = data.title;
       this.description = data.description;
       this.keywordsInput = this.convertKeywordsToString(data.keywords);
-
+      this.populateUserInfo(data.creator.id);
+      this.creatorId = data.creator.id;
     },
     /**
      * Converts a list of keywords to a string for populating current data
@@ -855,6 +830,186 @@ export default {
       this.title = ""
       this.sectionSelected = ""
       this.keywordsInput = ""
+    },
+    /**
+     * Click event handler for the inventory ID input. Will toggle the autofill options display when needed and
+     * also calls fillData, if applicable.
+     *
+     * This function is based off of the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
+     * https://24ways.org/2019/making-a-better-custom-select-element/
+     */
+    autofillClick() {
+      const currentFocus = document.activeElement;
+      const input = this.$refs["card-creator"];
+      switch (this.autofillState) {
+        case "initial":
+          Autofill.toggleList('open', this.$refs["autofill-list-users"]);
+          this.autofillState = 'opened';
+          break;
+        case 'opened':
+          if (currentFocus === input) {
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"]);
+            this.autofillState = 'initial';
+          } else if (currentFocus.tagName === 'LI') {
+            this.fillData(currentFocus);
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"]);
+            this.autofillState = 'closed';
+          }
+          break;
+        case 'filtered':
+          if (currentFocus.tagName === 'LI') {
+            this.fillData(currentFocus);
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"]);
+            this.autofillState = 'closed';
+          }
+          break;
+        case 'closed':
+          Autofill.toggleList('open', this.$refs["autofill-list-users"]);
+          this.autofillState = 'filtered';
+          break;
+      }
+    },
+    /**
+     * Handles keyboard input when navigating autofill dropdown menu
+     *
+     * This function is adapted from the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
+     * https://24ways.org/2019/making-a-better-custom-select-element/
+     */
+    keyPressedOnInput(event) {
+      const key = event.key;
+      const currentFocus = document.activeElement;
+      const input = this.$refs["autofill-input"];
+
+      switch (key) {
+        case 'Enter':
+          if (this.autofillState === 'initial') {
+            // If state = initial, toggle open and set state to opened
+            Autofill.toggleList('open', this.$refs["autofill-list-users"]);
+            this.autofillState = 'opened';
+          } else if (this.autofillState === 'opened' && currentFocus.tagName === 'LI') {
+            // If state = opened and focus on list, fill data and set state to closed
+            this.fillData(currentFocus)
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"])
+            this.autofillState = 'closed';
+          } else if (this.autofillState === 'opened' && currentFocus === input) {
+            // If state = opened and focus on input, close it
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"])
+            this.autofillState = 'closed';
+          } else if (this.autofillState === 'filtered' && currentFocus.tagName === 'LI') {
+            // If state = filtered and focus on list, fill data and set state to closed
+            this.fillData(currentFocus)
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"])
+            this.autofillState = 'closed';
+          } else if (this.autofillState === 'filtered' && currentFocus === input) {
+            // If state = filtered and focus on input, set state to opened
+            Autofill.toggleList('open')
+            this.autofillState = 'opened';
+          } else {
+            // If state = closed, set state to filtered. I.e. open but keep existing input.
+            Autofill.toggleList('open', this.$refs["autofill-list-users"])
+            this.autofillState = ('filtered');
+          }
+          break;
+        case 'Escape':
+          if (this.autofillState === 'opened' || this.autofillState === 'filtered') {
+            // Close the list
+            Autofill.toggleList('closed', this.$refs["autofill-list-users"]);
+            this.autofillState = 'initial';
+          }
+          break;
+        case 'ArrowDown':
+          if (this.autofillState === 'initial' || this.autofillState === 'closed') {
+            // If state = initial or closed, set state to opened and moveFocus to first
+            Autofill.toggleList('open')
+            Autofill.moveFocus(input, 'forward', this.$refs["card-creator"], this.$refs["autofill-list-users"].children, document.activeElement)
+            this.autofillState = 'opened';
+          } else {
+            // If state = opened/filtered and focus on input/list, moveFocus to first/next
+            Autofill.toggleList('open', this.$refs["autofill-list-users"])
+            Autofill.moveFocus(currentFocus, 'forward', this.$refs["card-creator"], this.$refs["autofill-list-users"].children, document.activeElement)
+          }
+          break;
+        case 'ArrowUp':
+          if (this.autofillState === 'initial' || this.autofillState === 'closed') {
+            // If state = initial, set state to opened and moveFocus to last
+            // If state = closed, set state to opened and moveFocus to last
+            Autofill.toggleList('Open', this.$refs["autofill-list-users"])
+            Autofill.moveFocus(input, 'back', this.$refs["card-creator"], this.$refs["autofill-list-users"].children, document.activeElement)
+            this.autofillState = 'opened';
+          } else {
+            // If state = opened/filtered and focus on input/list, moveFocus to last/previous
+            Autofill.moveFocus(currentFocus, 'back', this.$refs["card-creator"], this.$refs["autofill-list-users"].children, document.activeElement)
+          }
+          break;
+        default:
+          if (this.autofillState === 'initial') {
+            // If state = initial, toggle open, filter and set state to filtered
+            Autofill.toggleList('open', this.$refs["autofill-list-users"]);
+            Autofill.filterOptions(this.$refs["card-creator"].value, this.$refs["autofill-list-users"].children, this.autofillState);
+            this.autofillState = 'filtered';
+          } else if (this.autofillState === 'opened') {
+            // If state = opened, filter and set state to filtered
+            Autofill.filterOptions(this.$refs["card-creator"].value, this.$refs["autofill-list-users"].children, this.autofillState);
+            this.autofillState = 'filtered';
+          } else if (this.autofillState === 'closed') {
+            // If state = closed, filter and set state to filtered
+            Autofill.filterOptions(this.$refs["card-creator"].value, this.$refs["autofill-list-users"].children, this.autofillState);
+            this.autofillState = 'filtered';
+          } else { // Already filtered
+            Autofill.filterOptions(this.$refs["card-creator"].value, this.$refs["autofill-list-users"].children, this.autofillState);
+          }
+          break;
+      }
+    },
+    /**
+     * Sets the value of the inventory ID input to the ID of the given item. Does the same for quantity, total price and expiry date.
+     *
+     * This function is based off of the example code found on Julie Grundy's custom select element tutorial on 24ways.org:
+     * https://24ways.org/2019/making-a-better-custom-select-element/
+     */
+    fillData(clickedUser) {
+      let finalUser;
+      for (let user of this.users) {
+        if (user.id === clickedUser.value) {
+          finalUser = user;
+        }
+      }
+      const city = finalUser.homeAddress.city;
+      const suburb = finalUser.homeAddress.suburb;
+      this.currentUser = finalUser;
+      this.userFullName = finalUser.firstName + " " + finalUser.lastName;
+
+      if (suburb && city) {
+        this.userLocation = suburb + ", " + city
+      } else if (suburb) {
+        this.userLocation = suburb
+      } else if (city) {
+        this.userLocation = city
+      } else {
+        this.userLocation = "N/A"
+      }
+
+      this.creatorId = finalUser.id;
+
+      this.autofillInput = '';
+    },
+    /**
+     * Searches for a list of users to display in the dropdown based on an input
+     */
+    searchUsers() {
+      Api.searchUsers(this.creatorInput, "fullNameASC", 0).then((response) => {
+        this.users = response.data;
+      }, (error) => {
+        if (error.response) {
+          if (error.response.status === 401 ){
+            this.$router.push({path: '/invalidtoken'})
+          } else {
+            console.log(`${error.response.status} - Something went wrong`)
+          }
+        } else {
+          console.log(`${error.response.status} - Something went wrong`)
+        }
+      })
     }
   },
   mounted() {
@@ -863,6 +1018,15 @@ export default {
     if (currentID) {
       this.populateUserInfo(currentID)
     }
+
+    // Global event listener to toggle autofill list display
+    let self = this;
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('#autofill-container-users') && self.autofillState !== 'closed' && self.$refs["autofill-list-users"]) {
+        Autofill.toggleList('closed', self.$refs["autofill-list-users"]);
+        self.autofillState = 'initial';
+      }
+    })
 
     document.addEventListener('keyup', this.onClickOrKeyUp)
     document.addEventListener('click', this.onClickOrKeyUp)
@@ -980,8 +1144,12 @@ strong.keywordHighlight {
   https://24ways.org/2019/making-a-better-custom-select-element/
 *********************************************************************/
 
-  #autofill-container {
+  #autofill-container, #autofill-container-users {
     position: relative;
+  }
+
+  #card-creator::-ms-expand {
+    display: none;
   }
 
   .autofill-options {
@@ -1004,6 +1172,10 @@ strong.keywordHighlight {
   .autofill-options li:hover, .autofill-options li:focus {
     background: #1EBA8C;
     color: #fff;
-}
+  }
+
+  .hidden-all {
+    display: none;
+  }
 
 </style>

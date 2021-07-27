@@ -42,7 +42,10 @@ beforeEach(async () => {
                     id: 5,
                     name: "Key"
                 }
-            ]
+            ],
+            creator: {
+                id: 36
+            }
         }
     }
 
@@ -440,4 +443,120 @@ describe("Testing the behaviour of the save button", () => {
 
     });
 
+})
+describe("Testing the user dropdown", () => {
+
+    test("Testing the searchUsers method", async () => {
+        let mockSearchResponse = {
+            status: 200,
+            data: [
+                {
+                    id: 1,
+                    firstName: "First",
+                    lastName: "Last",
+                    homeAddress: {
+                        city: "City",
+                        suburb: "Sub"
+                    }
+                },
+                {
+                    id:2,
+                    firstName: "TEST",
+                    lastName: "TESTINGTON"
+                }
+            ]
+
+        }
+
+        Api.searchUsers.mockImplementation(() => Promise.resolve(mockSearchResponse))
+
+        editCreateCardModal.vm.searchUsers();
+        await editCreateCardModal.vm.$nextTick();
+
+        expect(editCreateCardModal.vm.$data.users.length).toBe(2)
+        expect(editCreateCardModal.vm.$data.users[0].id).toBe(1)
+        expect(editCreateCardModal.vm.$data.users[0].firstName).toBe("First")
+    })
+
+    test("Testing the fillData method sets the correct user", async () => {
+
+        editCreateCardModal.vm.$data.users = [
+            {
+                id: 1,
+                firstName: "First",
+                lastName: "Last",
+                homeAddress: {
+                    city: "City",
+                    suburb: "Sub"
+                }
+            },
+            {
+                id:2,
+                firstName: "TEST",
+                lastName: "TESTINGTON"
+            }
+        ]
+
+        await editCreateCardModal.vm.$nextTick();
+
+        editCreateCardModal.vm.fillData({value:1});
+        await editCreateCardModal.vm.$nextTick();
+
+        expect(editCreateCardModal.vm.$data.userFullName).toBe("First Last")
+        expect(editCreateCardModal.vm.$data.creatorId).toBe(1)
+        expect(editCreateCardModal.vm.$data.userLocation).toBe("Sub, City")
+    })
+
+    test("Testing the fillData method sets the correct user with partial address", async () => {
+
+        editCreateCardModal.vm.$data.users = [
+            {
+                id: 1,
+                firstName: "First",
+                lastName: "Last",
+                homeAddress: {
+                    city: "City"
+                }
+            },
+            {
+                id:2,
+                firstName: "TEST",
+                lastName: "TESTINGTON"
+            }
+        ]
+
+        await editCreateCardModal.vm.$nextTick();
+
+        editCreateCardModal.vm.fillData({value:1});
+        await editCreateCardModal.vm.$nextTick();
+
+        expect(editCreateCardModal.vm.$data.userFullName).toBe("First Last")
+        expect(editCreateCardModal.vm.$data.creatorId).toBe(1)
+        expect(editCreateCardModal.vm.$data.userLocation).toBe("City")
+    })
+    test("Testing the fillData method sets the correct user with no address", async () => {
+
+        editCreateCardModal.vm.$data.users = [
+            {
+                id: 1,
+                firstName: "First",
+                lastName: "Last",
+                homeAddress: {
+                }
+            },
+            {
+                id:2,
+                firstName: "TEST",
+                lastName: "TESTINGTON"
+            }
+        ]
+
+        await editCreateCardModal.vm.$nextTick();
+
+        editCreateCardModal.vm.fillData({value:1});
+        await editCreateCardModal.vm.$nextTick();
+
+        expect(editCreateCardModal.vm.$data.creatorId).toBe(1)
+        expect(editCreateCardModal.vm.$data.userLocation).toBe("N/A")
+    })
 })
