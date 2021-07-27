@@ -10,7 +10,7 @@
               </div>
               <div class="carousel-inner">
                 <div v-for="image of this.$props.images" v-bind:key="image.id" :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
-                  <img :src="getImageSrc(image.filename)" class="card-img" alt="listing image">
+                  <img :src="getImageSrc(image.thumbnailFilename)" class="card-img" alt="listing image">
                 </div>
               </div>
               <div v-if="this.$props.images.length > 1">
