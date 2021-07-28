@@ -110,7 +110,7 @@
                       @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
           </div>
                   <div id="autofill-container" ref="autofill-container">
-                    <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
+                    <ul class="autofill-options" id="autofill-list" ref="autofill-list">
                       <li
                           v-for="keyword in autocompleteKeywords"
                           v-bind:key="keyword.id"
