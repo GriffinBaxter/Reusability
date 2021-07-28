@@ -103,7 +103,7 @@
             <li class="nav-item" style="float: contour; text-align: center; vertical-align:middle">
               <div style="margin-top: 10px"
                    type="button"
-                   @click="openNotificationBox = !openNotificationBox">
+                   @click="switchNotificationBox()">
                 <img v-if="newNotification"
                      alt="notification"
                      src="../../../public/notification.png"
@@ -295,6 +295,18 @@ export default {
     },
 
 // ------------------------------------------------------------------------------------
+    /**
+     * switch Notification Box
+     */
+    switchNotificationBox() {
+      if (!this.openNotificationBox){
+        this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links',
+            'interact-dropdown-links-wrapper', true);
+        this.showBusinessDropdown = this.toggleDropdownAnimated('business-dropdown-links',
+            'business-dropdown-links-wrapper', true);
+      }
+      this.openNotificationBox = ! this.openNotificationBox;
+    },
 
     /**
      * update image for bell

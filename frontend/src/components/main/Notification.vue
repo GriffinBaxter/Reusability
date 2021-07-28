@@ -1,62 +1,75 @@
 <template>
-  <div class="accordion" id="notificationAccordion">
-    <div class="card border-dark text-white bg-secondary mb-3" v-if="allNoticeCards.length === 0" id="emptyMessage" style="width: 300px">
-      <h4 class="card-body" style="margin: 3px; float: contour; text-align: center"> No Notifications! </h4>
+  <div class="card border-dark">
+
+    <div class="accordion" v-if="allNoticeCards.length === 0">
+      <div class="card border-dark text-white bg-secondary"
+           id="emptyMessage"
+           style="width: 300px">
+        <h4 class="card-body" style="margin: 3px; float: contour; text-align: center">
+          No Notifications!
+        </h4>
+      </div>
     </div>
 
-    <div :id="'notification_box' + notification.id"
-         class="accordion-item"
-         v-for="notification in allNoticeCards"
-         v-bind:key="notification.id"
-         style="background-color: #ededed; width: 500px">
+    <div v-else
+         class="accordion"
+         id="notificationAccordion"
+         style="height:400px; width: 500px; overflow:auto">
 
-      <h2 class="accordion-header" :id="'heading_' + notification.id">
-        <button class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                :data-bs-target="'#collapse_' + notification.id"
-                aria-expanded="false"
-                :aria-controls="'collapse_' + notification.id">
-          <h6>{{ notification.description }}</h6>
-        </button>
-      </h2>
+      <div :id="'notification_box' + notification.id"
+           class="accordion-item"
+           v-for="notification in allNoticeCards"
+           v-bind:key="notification.id"
+           style="background-color: #ededed">
 
-      <div :id="'collapse_' + notification.id"
-           v-if="notification.marketCardId !== null"
-           class="accordion-collapse collapse"
-           :aria-labelledby="'heading_' + notification.id"
-           data-bs-parent="#notificationAccordion">
-        <div class="accordion-body">
+        <h2 class="accordion-header" :id="'heading_' + notification.id">
+          <button class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#collapse_' + notification.id"
+                  aria-expanded="false"
+                  :aria-controls="'collapse_' + notification.id">
+            <h6>{{ notification.description }}</h6>
+          </button>
+        </h2>
 
-          <!-- marketplace card notifications -->
-          <div class="row" v-if="notification.keywordId === undefined">
-            <div class="col" style="float: contour; text-align: center">
-              <button :id="'delete_button_card_' + notification.id"
-                      class="btn btn-outline-danger"
-                      @click="deleteCard(notification.marketCardId)">
-                Delete Card
-              </button>
+        <div :id="'collapse_' + notification.id"
+             v-if="notification.marketCardId !== null"
+             class="accordion-collapse collapse"
+             :aria-labelledby="'heading_' + notification.id"
+             data-bs-parent="#notificationAccordion">
+          <div class="accordion-body">
+
+            <!-- marketplace card notifications -->
+            <div class="row" v-if="notification.keywordId === undefined">
+              <div class="col" style="float: contour; text-align: center">
+                <button :id="'delete_button_card_' + notification.id"
+                        class="btn btn-outline-danger"
+                        @click="deleteCard(notification.marketCardId)">
+                  Delete Card
+                </button>
+              </div>
+              <div class="col">
+                <button :id="'extend_button_card_' + notification.id"
+                        class="btn btn-outline-success"
+                        @click="extendCardForDisplayPeriod(notification.marketCardId)">
+                  Extend Card for 2 Weeks
+                </button>
+              </div>
             </div>
-            <div class="col">
-              <button :id="'extend_button_card_' + notification.id"
-                      class="btn btn-outline-success"
-                      @click="extendCardForDisplayPeriod(notification.marketCardId)">
-                Extend Card for 2 Weeks
-              </button>
+
+            <!-- keyword notification -->
+            <div class="row" v-else>
+              <div class="col" style="float: contour; text-align: center">
+                <button :id="'delete_button_keyword_' + notification.id"
+                        class="btn btn-outline-danger"
+                        @click="deleteKeyword(notification.keywordId)">
+                  Delete Keyword
+                </button>
+              </div>
             </div>
+
           </div>
-
-          <!-- keyword notification -->
-          <div class="row" v-else>
-            <div class="col" style="float: contour; text-align: center">
-              <button :id="'delete_button_keyword_' + notification.id"
-                      class="btn btn-outline-danger"
-                      @click="deleteKeyword(notification.keywordId)">
-                Delete Keyword
-              </button>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
