@@ -11,11 +11,10 @@
     <div class="container">
       <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
       <div class="card p-1">
-        <!-- Order Buttons -->
-        <div class="row my-3" align="center">
+        <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
-          <div class="btn-group col-3 py-1" role="group">
-            <button type="button" class="btn green-button dropdown-toggle col-4"
+          <div class="btn-group col-md-3 py-1" role="group">
+            <button type="button" class="btn green-button dropdown-toggle"
                     data-bs-toggle="dropdown" aria-expanded="false">Filter Option
             </button>
 
@@ -24,35 +23,35 @@
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(true, false, false, false)">
                 Quantity
-                <i id="quantityIcon"></i>
+                <i id="quantityIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by price-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, true, false, false)">
                 Price
-                <i id="priceIcon"></i>
+                <i id="priceIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by closing date-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, true, false)">
                 Closing Date
-                <i id="closesIcon"></i>
+                <i id="closesIcon" aria-hidden="true"></i>
               </button>
 
               <!--order by listing date-->
               <button type="button" class="btn green-button-transparent col-12"
                       @click="orderListings(false, false, false, true)">
                 Listing Date
-                <i id="createdIcon"></i>
+                <i id="createdIcon" aria-hidden="true"></i>
               </button>
             </ul>
           </div>
 
-          <!-- Add new Button -->
-          <div class="col-md" v-if="businessAdmin">
-            <button type="button" class="btn green-button w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
+          <!-- Create New Button -->
+          <div class="col-md-3 py-1" v-if="businessAdmin">
+            <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Create New</button>
           </div>
 
           <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
@@ -65,7 +64,7 @@
         <!--creation success info-->
         <div class="alert alert-success" role="alert" v-if="creationSuccess">
           <div class="row">
-            <div class="col" align="center">New Listing Created</div>
+            <div class="col" style="text-align: center">New Listing Created</div>
           </div>
         </div>
 
@@ -85,6 +84,7 @@
             v-bind:moreInfo="item.moreInfo"
             v-bind:currency-code="currencyCode"
             v-bind:currency-symbol="currencySymbol"
+            v-bind:images="item.images"
         />
 
         <!--space-->
@@ -101,9 +101,11 @@
 
       </div>
     </div>
-    <div class="card p-1" v-if="listings.length < 1">
-      <p class="h2 py-5" align="center">No Listings Found</p>
-    </div>
+      <div class="noListings" v-if="noListings">
+        <div class="card p-1">
+          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
+        </div>
+      </div>
     </div>
     <!-- Footer -->
     <Footer class="footer"/>
@@ -111,13 +113,13 @@
 </template>
 
 <script>
-import Navbar from "@/components/main/Navbar";
-import ListingItem from "@/components/listing/ListingItem";
-import Api from "@/Api";
+import Navbar from "../components/main/Navbar";
+import ListingItem from "../components/listing/ListingItem";
+import Api from "../Api";
 import Cookies from "js-cookie";
-import CreateListing from "@/components/listing/CreateListingModal";
-import Footer from "@/components/main/Footer";
-import CurrencyAPI from "@/currencyInstance";
+import CreateListing from "../components/listing/CreateListingModal";
+import Footer from "../components/main/Footer";
+import CurrencyAPI from "../currencyInstance";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 
@@ -129,6 +131,9 @@ name: "Listings",
     return {
       allListings: [],
       listings: [],
+      // When page is initially loaded, we don't want 'No Listings Found' message to display since, listings have not
+      // been retrieved yet.
+      notInitialLoad: false,
       businessName: "",
       businessAdmin: false,
       businessId: -1,
@@ -151,6 +156,11 @@ name: "Listings",
 
       creationSuccess: false
     }
+  },
+  computed: {
+  noListings() {
+    return (this.listings.length < 1) && this.notInitialLoad;
+  }
   },
   methods: {
     /**
@@ -291,6 +301,7 @@ name: "Listings",
         }
 
         this.populatePage(response);
+        this.notInitialLoad = true;
 
       }).catch((error) => {
         if (error.request && !error.response) {
@@ -361,7 +372,8 @@ name: "Listings",
             listDate: formatDate(response.data[i].created, false),
             closeDate: formatDate(response.data[i].closes, false),
             moreInfo: response.data[i].moreInfo,
-            expires: formatDate(response.data[i].inventoryItem.expires, false)
+            expires: formatDate(response.data[i].inventoryItem.expires, false),
+            images: response.data[i].inventoryItem.product.images,
           })
         }
       }
@@ -426,11 +438,11 @@ name: "Listings",
       this.businessId = await parseInt(this.$route.params.id);
       await this.getBusiness(this.businessId);
 
-      await this.currencyRequest();
-
       this.getListings().catch(
           (e) => console.log(e)
-      )
+      );
+
+      await this.currencyRequest();
     }
   }
 }

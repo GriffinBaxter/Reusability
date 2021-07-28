@@ -3,17 +3,21 @@ package org.seng302.business.inventoryItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.seng302.address.Address;
-import org.seng302.business.Business;
-import org.seng302.business.BusinessRepository;
-import org.seng302.business.BusinessType;
-import org.seng302.business.listing.Listing;
-import org.seng302.business.product.Product;
-import org.seng302.business.product.ProductRepository;
-import org.seng302.main.Main;
-import org.seng302.user.Role;
-import org.seng302.user.User;
-import org.seng302.user.UserRepository;
+import org.seng302.exceptions.*;
+import org.seng302.model.Address;
+import org.seng302.model.Business;
+import org.seng302.model.repository.BusinessRepository;
+import org.seng302.model.enums.BusinessType;
+import org.seng302.model.Listing;
+import org.seng302.model.Product;
+import org.seng302.model.repository.ProductRepository;
+import org.seng302.controller.InventoryItemResource;
+import org.seng302.Main;
+import org.seng302.model.InventoryItem;
+import org.seng302.model.repository.InventoryItemRepository;
+import org.seng302.model.enums.Role;
+import org.seng302.model.User;
+import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -86,7 +90,8 @@ class InventoryItemResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"manufacturer\":\"%s\"," +
             "\"recommendedRetailPrice\":%.2f," +
-            "\"created\":\"%s\"}," +
+            "\"created\":\"%s\"," +
+            "\"images\":[]}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.2f," +
             "\"totalPrice\":%.2f," +
@@ -111,7 +116,8 @@ class InventoryItemResourceIntegrationTests {
     private InventoryItem inventoryItem;
 
     @BeforeEach
-    void setup() throws Exception {
+    void setup() throws IllegalAddressArgumentException, IllegalUserArgumentException, IllegalBusinessArgumentException,
+            IllegalProductArgumentException, IllegalInventoryItemArgumentException {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",

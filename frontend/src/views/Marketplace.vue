@@ -9,6 +9,9 @@
     <CardDetail v-bind:id="selectedCard"
                 v-bind:section="selectSection"/>
 
+    <!-- Edit Modal -->
+    <EditCardModal ref="editCardModal"></EditCardModal>
+
     <div id="marketplace-container">
 
       <!------------------------------------------------ marketplace tabs---------------------------------------------->
@@ -44,8 +47,7 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'For Sale'"
                                  v-bind:sectionCards="allCards.ForSale"
-                                 @new-card-created="e => allCards.ForSale.unshift(e)"
-
+                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
           />
@@ -57,7 +59,7 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'Wanted'"
                                  v-bind:sectionCards="allCards.Wanted"
-                                 @new-card-created="e => allCards.Wanted.unshift(e)"
+                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
           />
@@ -69,7 +71,7 @@
                                  :sendData="selectedCard"
                                  v-bind:section="'Exchange'"
                                  v-bind:sectionCards="allCards.Exchange"
-                                 @new-card-created="e => allCards.Exchange.unshift(e)"
+                                 @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
           />
@@ -92,6 +94,7 @@ import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
 import Api from "../Api";
+import EditCardModal from "../components/marketplace/EditCardModal";
 
 export default {
   name: "Marketplace",
@@ -120,6 +123,7 @@ export default {
     CardDetail,
     Footer,
     Navbar,
+    EditCardModal,
   },
   methods: {
 
@@ -128,23 +132,27 @@ export default {
      * @param newSection the section that the user is switching to
      */
     changeSection(newSection) {
-      this.selectSection = newSection;
-      switch (this.selectSection) {
-        case "For Sale":
-          this.sortBy = this.forSaleSortBy;
-          this.page = this.forSalePage;
-          break;
-        case "Wanted":
-          this.sortBy = this.wantedSortBy;
-          this.page = this.wantedPage;
-          break;
-        case "Exchange":
-          this.sortBy = this.exchangeSortBy;
-          this.page = this.exchangePage;
-          break;
+      if (this.selectSection !== newSection) {
+        this.selectSection = newSection;
+        switch (this.selectSection) {
+          case "For Sale":
+            this.sortBy = this.forSaleSortBy;
+            this.page = this.forSalePage;
+            break;
+          case "Wanted":
+            this.sortBy = this.wantedSortBy;
+            this.page = this.wantedPage;
+            break;
+          case "Exchange":
+            this.sortBy = this.exchangeSortBy;
+            this.page = this.exchangePage;
+            break;
+          default:
+            break;
+        }
+        this.updateUrl();
+        this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
       }
-      this.updateUrl();
-      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
     },
 
     /**
@@ -188,7 +196,7 @@ export default {
         this.allCards[section] = response.data;
         this.totalPages = parseInt(response.headers["total-pages"]);
 
-        if (this.totalPages > 0 && this.page > this.totalPages - 1) {
+        if (this.totalPages > 0 && this.page > this.totalPages) {
           this.$router.push({path: '/pageDoesNotExist'});
         }
       }).catch((error) => {
@@ -198,7 +206,10 @@ export default {
         console.log(error.message)
       })
     },
-
+    /**
+     * Changes the orderBy for card search
+     * @param orderByValue new orderBy
+     */
     orderedCards(orderByValue) {
       switch (this.selectSection) {
         case "For Sale":
@@ -270,11 +281,7 @@ export default {
 
 #for-sale-tab, #wanted-tab, #exchange-tab {
   font-family: 'Roboto', sans-serif;
-
-}
-
-#create-card-button {
-  float: right;
+  color: black;
 }
 
 </style>

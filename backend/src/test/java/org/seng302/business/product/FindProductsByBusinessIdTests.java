@@ -2,12 +2,14 @@ package org.seng302.business.product;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.seng302.address.Address;
-import org.seng302.business.Business;
-import org.seng302.business.BusinessType;
-import org.seng302.main.Main;
-import org.seng302.user.Role;
-import org.seng302.user.User;
+import org.seng302.model.Address;
+import org.seng302.model.Business;
+import org.seng302.model.enums.BusinessType;
+import org.seng302.Main;
+import org.seng302.model.Product;
+import org.seng302.model.repository.ProductRepository;
+import org.seng302.model.enums.Role;
+import org.seng302.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -563,7 +565,7 @@ class FindProductsByBusinessIdTests {
     void whenFindAllProductsByBusinessId_thenReturnPageHalfFull() {
         // given
         int pageNo = 0;
-        // Page size 20 means page will be half full with the default 13 users inserted
+        // Page size 10 means page will be half full with the default 5 products inserted
         int pageSize = 10;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
@@ -589,7 +591,7 @@ class FindProductsByBusinessIdTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
-        Page<Product> productPage = productRepository.findProductsByBusinessId(1, pageable);
+        Page<Product> productPage = productRepository.findProductsByBusinessId(2, pageable);
 
         // then
         assertThat(productPage.getTotalElements()).isZero();

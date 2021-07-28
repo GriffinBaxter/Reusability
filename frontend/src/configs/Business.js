@@ -6,7 +6,7 @@ export default class Business{
             name: "Name",
             minLength: 1,
             maxLength: 100,
-            regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
+            regex: /^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]+$/,
             regexMessage: "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$",
         },
         description: {
@@ -21,7 +21,7 @@ export default class Business{
             name: "Business address",
             minLength: 0,
             maxLength: 255,
-            regex: /^[a-zA-Z0-9 '#,.&()-]+$/,
+            regex: /^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]+$/,
             regexMessage: "Must only contain alphanumeric characters, numbers, spaces, or '#,.&()[]-]+$",
         },
         streetNumber: {
@@ -59,7 +59,7 @@ export default class Business{
             minLength: 1,
             maxLength: 255,
             regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
-            regex: /^[a-zA-Z '-]+$/
+            regex: /^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]+$/
         },
     };
 

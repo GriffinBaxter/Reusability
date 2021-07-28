@@ -8,18 +8,18 @@
         <div id="body" class="container all-but-footer mb-3">
 
           <div class="row mt-3">
-            <h2 align="center">Product Catalogue</h2>
+            <h2 style="text-align: center">Product Catalogue</h2>
             <!--Creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col" align="center">{{ userAlertMessage }}</div>
+                <div class="col" style="text-align: center">{{ userAlertMessage }}</div>
               </div>
             </div>
           </div>
 
           <div class="row mb-3">
             <div class="col">
-              <button id="create-product-button" type="button" class="btn btn-md btn-primary float-end" tabindex="0"
+              <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end" tabindex="0"
                       @click="showCreateProductModal()">Create Product
               </button>
             </div>
@@ -28,13 +28,16 @@
           <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0"
                  :table-headers="tableHeaders" :table-data="tableData"
                  :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
-                 :order-by-override="tableOrderBy" :table-data-is-page="true"
+                 :order-by-override="tableOrderBy" :loading-data="loadingProducts" :table-data-is-page="true"
                  @update-current-page="event => updatePage(event)"
                  @order-by-header-index="event => orderProducts(event)"
-                 @row-selected="event => showRowModal(event.index)"/>
+                 @row-selected="event => showRowModal(event.index)"
+                 aria-label="Product Catalogue Table"/>
         </div>
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
+
+        <UpdateProductImagesModal ref="updateProductImagesModal" :business-id="businessId" v-model="currentProduct"/>
 
         <div v-if="showModal">
           <transition name="fade">
@@ -53,9 +56,14 @@
                           v-bind:recommended-retail-price="recommendedRetailPrice"
                           v-bind:created="created"
                           v-bind:currencyCode="currencyCode"
-                          v-bind:currencySymbol="currencySymbol"/>
+                          v-bind:currencySymbol="currencySymbol"
+                          v-bind:images="images"/>
                     </div>
                     <div class="modal-footer">
+                      <button class="btn btn-primary" @click="(event) => {
+                      this.showModal = false;
+                      this.$refs.updateProductImagesModal.showModel(event);
+                    }">Update Photos</button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateProductModel.showModel(event);
@@ -184,6 +192,7 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
+import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 
@@ -191,6 +200,7 @@ export default {
   name: "ProductCatalogue",
   components: {
     UpdateProductModal,
+    UpdateProductImagesModal,
     Table,
     ProductModal,
     Navbar,
@@ -216,6 +226,7 @@ export default {
       rowsPerPage: 5,
       currentPage: 0,
       totalRows: 0,
+      loadingProducts: false,
 
 
       // Product modal variables
@@ -272,6 +283,9 @@ export default {
       currencyCode: "",
       currencySymbol: "",
 
+      // Image related variables
+      images: [],
+
       // If product creation was successful the user will be altered.
       creationSuccess: false,
 
@@ -301,6 +315,7 @@ export default {
       this.created = product.data.created;
       this.currentProduct = product;
       this.currentProductIndex = productIndex;
+      this.images = product.data.images;
       this.showModal = true;
     },
 
@@ -408,10 +423,11 @@ export default {
      */
     async requestProducts() {
 
-      // Getting all the information necssary from the route update (params and query).
+      // Getting all the information necessary from the route update (params and query).
       this.businessId = parseInt(this.$route.params.id);
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
+      this.loadingProducts = true;
 
       // Perform the call to sort the products and get them back.
       await Api.sortProducts(this.businessId, this.orderByString, this.currentPage).then(response => {
@@ -461,6 +477,7 @@ export default {
           console.log(error.message);
         }
       })
+      this.loadingProducts = false;
     },
 
     /**
@@ -502,7 +519,7 @@ export default {
      * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
      */
     getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = ""; //TODO: remove after testing and just have ""
+      let errorMessage = "";
       if (inputVal === "" && minLength >= 1) {
         errorMessage = "Please enter input";
       } else if (!regex.test(inputVal)) {
@@ -655,7 +672,7 @@ export default {
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
-                  (e) => console.log(e)
+                  (error) => console.log(error)
               )
             }
           }
@@ -839,22 +856,9 @@ export default {
   min-height: calc(100vh - 240px);
 }
 
-#create-product-button {
-  background-color: #1EBA8C;
-  border-color: #1EBA8C;
-}
-
-#create-product-button:hover {
-  background-color: transparent;
-  color: #1EBA8C;
-}
-
+/* Here because otherwise button appears blue for 2 seconds when clicked */
 #create-product-button:focus {
   background-color: transparent;
-  color: #1EBA8C;
-}
-
-h6 {
   color: #1EBA8C;
 }
 
@@ -887,22 +891,6 @@ label {
   display: flex;
   flex-direction: column;
 }
-
-
-/*------------------ Hide arrows from input numbers ---------------------*/
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-/*------------------------------------------------------------------------*/
 
 /* Styles the input and textarea's borders to be green when they are focused/tabbed to */
 input:focus, textarea:focus, button:focus, #create-product-button:focus {

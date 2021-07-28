@@ -1,9 +1,13 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
-import org.seng302.address.Address;
-import org.seng302.address.AddressRepository;
-import org.seng302.main.Main;
+import org.seng302.model.Address;
+import org.seng302.model.repository.AddressRepository;
+import org.seng302.controller.UserResource;
+import org.seng302.Main;
+import org.seng302.model.enums.Role;
+import org.seng302.model.User;
+import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -670,9 +674,7 @@ class UserResourceIntegrationTests {
 
 
     /* ------------------------------------- (New) Tests for Searching for User by Name ----------------------------- */
-    // TODO Add more tests to handle error cases (e.g. bad data input)
-    // The sorting done in this is entirely unneeded, this has been moved to SearchUserByNameTests.
-    // TODO Test bad URL params
+
     /**
      * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
      * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
@@ -701,12 +703,12 @@ class UserResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -750,12 +752,12 @@ class UserResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -801,12 +803,12 @@ class UserResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         for (String searchQuery: searchQueryList) {
@@ -850,12 +852,12 @@ class UserResourceIntegrationTests {
         Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
 
         for (String searchQuery: searchQueryList) {
@@ -897,12 +899,12 @@ class UserResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 5, sort);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        when(userRepository.findAllUsersByNames(searchQueryList.get(0), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(1), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(2), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(3), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(4), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(searchQueryList.get(5), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery)
@@ -1055,11 +1057,65 @@ class UserResourceIntegrationTests {
         }
     }
 
+    /**
+     * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
+     * the JSON response is equal to the users searched for. This test tests specifically for more complex search queries
+     * i.e those that contain AND and OR operators.
+     */
+    @Test
+    void canSearchUsersWithComplexQueriesWhenUsersExists() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST OR ALEX",
+                "testfirst or alex",
+                "TESTFIRST AND TESTLAST OR alex",
+                "TESTFIRST OR TESTLAST OR Alex",
+                "TESTFIRST and TESTLAST or ALEX"
+        );
+
+        expectedJson = "[" +
+                String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
+                        user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
+                        null, "[null]",  user.getHomeAddress().toSecureString()) + "," +
+                String.format(expectedSecureUserJson, searchUser1.getId(), searchUser1.getFirstName(),
+                        searchUser1.getLastName(), searchUser1.getMiddleName(), searchUser1.getNickname(),
+                        searchUser1.getBio(), searchUser1.getEmail(), searchUser1.getCreated(),
+                        null, "[null]",  searchUser1.getHomeAddress().toSecureString()) +
+                "]";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        List<User> list = List.of(user, searchUser1);
+        Page<User> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "ALEX"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("testfirst", "alex"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "alex"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "TESTLAST", "Alex"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "ALEX"), paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /* ------------------------------------- Make/Revoke Admin Tests ------------------------------------- */
 
     /**
      * Test that an OK(200) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with a DGAA cookie.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void canChangeUserToGaaWithDgaaCookie() throws Exception {
@@ -1083,7 +1139,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with a GAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithGaaCookie() throws Exception {
@@ -1104,7 +1160,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with a USER cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithUserCookie() throws Exception {
@@ -1125,7 +1181,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an UNAUTHORIZED(401) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with a non-existing ID in the cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithNonExistingIdCookie() throws Exception {
@@ -1147,7 +1203,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an UNAUTHORIZED(401) status is received when sending a USER id to /users/{id}/makeAdmin API endpoint
      * with no cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithNoCookie() throws Exception {
@@ -1163,7 +1219,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an NOT_ACCEPTABLE(406) status is received when sending a non-existing id to /users/{id}/makeAdmin
      * API endpoint with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToGaaWithNonExistingUserAndDgaaCookie() throws Exception {
@@ -1183,7 +1239,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a GAA id to /users/{id}/makeAdmin API endpoint
      * with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToGaaWithDgaaCookie() throws Exception {
@@ -1204,7 +1260,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a DGAA id to /users/{id}/makeAdmin API endpoint
      * with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeDgaaToGaaWithDgaaCookie() throws Exception {
@@ -1225,7 +1281,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an OK(200) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with a DGAA cookie.
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void canChangeGaaToUserWithDgaaCookie() throws Exception {
@@ -1249,7 +1305,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with a GAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithGaaCookie() throws Exception {
@@ -1270,7 +1326,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with a USER cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithUserCookie() throws Exception {
@@ -1291,7 +1347,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an UNAUTHORIZED(401) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with a non-existing ID in the cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithNonExistingIdCookie() throws Exception {
@@ -1313,7 +1369,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an UNAUTHORIZED(401) status is received when sending a GAA id to /users/{id}/revokeAdmin API endpoint
      * with no cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithNoCookie() throws Exception {
@@ -1329,7 +1385,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an NOT_ACCEPTABLE(406) status is received when sending a non-existing id to /users/{id}/revokeAdmin
      * API endpoint with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeGaaToUserWithNonExistingGaaAndDgaaCookie() throws Exception {
@@ -1349,7 +1405,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a USER id to /users/{id}/revokeAdmin API endpoint
      * with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeUserToUserWithDgaaCookie() throws Exception {
@@ -1370,7 +1426,7 @@ class UserResourceIntegrationTests {
     /**
      * Test that an FORBIDDEN(403) status is received when sending a DGAA id to /users/{id}/revokeAdmin API endpoint
      * with a DGAA cookie
-     * @throws Exception
+     * @throws Exception thrown by MockMvc
      */
     @Test
     void cantChangeDgaaToUserWithDgaaCookie() throws Exception {

@@ -65,25 +65,43 @@ To run it on port 8999 (as it is in production), the following commands should b
 
 Running on: http://localhost:8999/ by default
 
-The backend can be tested by using the examples from the [API specification](https://eng-git.canterbury.ac.nz/seng302-2021/seng302-api-spec-2021) in the [Swagger Editor](https://editor.swagger.io/).
+The backend can be tested by using the examples from the API specification (found within the /api directory) in the [Swagger Editor](https://editor.swagger.io/).
+
+Additionally, Postman tests are provided as collections, also found within the /api directory.
+
+The steps for adding the images for using the product image Postman tests are accessed via:
+https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/Postman-Testing
 
 ## Demo User Accounts
+- Note: These demo user accounts are only available on our production server. All demo user accounts (aside from the DGAA) have the same password: Qwerty123!
 
-#### Standard User with business
-- Email: everblanxart@gmail.com
-- Password: Password123!
+### Standard Users
+- Email: mcarnegieh@fc2.com
+- Email: adotterillgm@washingtonpost.com
+- Email: amabbuttl8@usatoday.com
 
-#### Another Standard User with business
-- Email: emailUSER@email.com
-- Password: Password123!
+### Standard Users With Marketplace Cards
+- Email: jfarny8u@comcast.net
+- Email: selkincc@canalblog.com
+- Email: jshereldc@timesonline.co.uk
 
-#### Standard User without business
-- Email: seth.murphy@example.com
-- Password: Password123!
+### Standard Users Which Are Primary Administrators (Business Creators)
+- Email: mlinwoodro@issuu.com
+- Email: jarchrp@goo.gl
+- Email: mclickrq@google.com.hk
 
-#### Admin
+### Standard Users Which Are Business Administrators
+- Email: kastling4s@twitpic.com
+- Email: wsmallsman2r@dmoz.org
+- Email: pmarrettll@wikimedia.org
+
+### Global Application Admin
+- Email: rcrofts1b@example.com
+
+### Default Global Application Admin
 - Email: DGAA_EMAIL (environment variable)
 - Password: DGAA_PASSWORD (environment variable)
+
 
 
 ## Contributors
@@ -100,6 +118,7 @@ The backend can be tested by using the examples from the [API specification](htt
 
 ## References
 
+- [Team 400 Wiki](https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/home)
 - [Spring Boot Docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
 - [Spring JPA docs](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)
 - [Vue docs](https://vuejs.org/v2/guide/)

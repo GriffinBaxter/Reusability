@@ -27,35 +27,16 @@
               </div>
 
             </div>
-            <!--            <div class="card text-center shadow-sm-3">-->
-            <!--              <div class="card-body">-->
-            <!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-            <!--              </div>-->
-            <!--            </div>-->
           </div>
         </div>
 
         <div class="col">
           <div class="card card-body">
-            <h1 align="center">Inventory</h1>
+            <h1 style="text-align: center">Inventory</h1>
 
             <hr/>
 
             <div class="row" role="group" aria-label="Button group with nested dropdown">
-              <div class="col-md-3 py-1">
-                <!--creation button-->
-                <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
-                        data-bs-target="#creationPopup">
-                  Create New
-                </button>
-              </div>
-              <!--search bar-->
-<!--              <div class="input-group col-md py-1">-->
-<!--                <input type="text" class="form-control" placeholder="This is for later use."-->
-<!--                       aria-label="Input group example" aria-describedby="btnGroupAddon">-->
-<!--                <button type="button" class="btn btn-outline-primary">Search</button>-->
-<!--              </div>-->
-
               <!--filter-->
               <div class="btn-group col-md-3 py-1" role="group">
                 <button type="button" class="btn green-button dropdown-toggle"
@@ -67,59 +48,68 @@
                   <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(true, false, false, false, false, false, false, false)">
                     Product ID
-                    <i id="productIdIcon"></i>
+                    <i id="productIdIcon" aria-hidden="true"></i>
                   </button>
 
                   <!--order by quantity-->
                   <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, true, false, false, false, false, false, false)">
                     Quantity
-                    <i id="quantityIcon"></i>
+                    <i id="quantityIcon" aria-hidden="true"></i>
                   </button>
 
                   <!--order by price per item-->
                   <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, true, false, false, false, false, false)">
                     Price Per Item ({{ currencySymbol }} {{ currencyCode }})
-                    <i id="pricePerItemIcon"></i>
+                    <i id="pricePerItemIcon" aria-hidden="true"></i>
                   </button>
 
                   <!--order by total price-->
                   <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, true, false, false, false, false)">
                     Total Price ({{ currencySymbol }} {{ currencyCode }})
-                    <i id="totalPriceIcon"></i>
+                    <i id="totalPriceIcon" aria-hidden="true"></i>
                   </button>
 
                   <!--order by manufactured-->
                   <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, false, true, false, false, false)">
                     Manufactured
-                    <i id="manufacturedIcon"></i>
+                    <i id="manufacturedIcon" aria-hidden="true"></i>
                   </button>
 
                   <!--order by sell by-->
                   <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, false, false, true, false, false)">
                     Sell By
-                    <i id="sellByIcon"></i>
+                    <i id="sellByIcon" aria-hidden="true"></i>
                   </button>
 
                   <!--order by best before-->
                   <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, false, false, false, true, false)">
                     Best Before
-                    <i id="bestBeforeIcon"></i>
+                    <i id="bestBeforeIcon" aria-hidden="true"></i>
                   </button>
 
                   <!--order by expires-->
                   <button type="button" class="btn green-button-transparent col-12"
                           @click="orderInventory(false, false, false, false, false, false, false, true)">
                     Expires
-                    <i id="expiresIcon"></i>
+                    <i id="expiresIcon" aria-hidden="true"></i>
                   </button>
                 </ul>
               </div>
+
+              <div class="col-md-3 py-1">
+                <!--creation button-->
+                <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
+                        data-bs-target="#creationPopup">
+                  Create New
+                </button>
+              </div>
+
               <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
             </div>
 
@@ -129,7 +119,7 @@
             <!--creation success info-->
             <div class="alert alert-success" role="alert" v-if="creationSuccess">
               <div class="row">
-                <div class="col" align="center"> {{userAlertMessage}} </div>
+                <div class="col" style="text-align: center"> {{userAlertMessage}} </div>
               </div>
             </div>
 
@@ -144,7 +134,7 @@
                 v-for="inventory in inventories"
                 :id="'InventoryItemCard' + inventory.index"
                 v-bind:key="inventory.index"
-                v-bind:image="inventory.image"
+                v-bind:images="inventory.images"
                 v-bind:product-name="inventory.productName"
                 v-bind:product-id="inventory.productId"
                 v-bind:quantity="inventory.quantity"
@@ -592,7 +582,8 @@ export default {
               bestBefore: formatDate(this.InventoryItemList[i].bestBefore, false),
               bestBeforeUnformatted: this.InventoryItemList[i].bestBefore,
               expires: formatDate(this.InventoryItemList[i].expires, false),
-              expiresUnformatted: this.InventoryItemList[i].expires
+              expiresUnformatted: this.InventoryItemList[i].expires,
+              images: this.InventoryItemList[i].product.images
             })
           }
         }
@@ -682,18 +673,14 @@ export default {
 
         this.businessId = this.$route.params.id;
 
-        await this.currencyRequest();
-
         this.retrieveBusinessInfo();
         this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
+
+        await this.currencyRequest();
       }
     }
   }
 }
 </script>
-
-
-<style scoped>
-</style>

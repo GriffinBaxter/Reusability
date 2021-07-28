@@ -4,8 +4,6 @@
 <!--400.-->
 <!--It is currently fully responsive, EXCEPT for the text of the logo.-->
 
-<!--TODO fix bug with logo's text's responsiveness.-->
-
 <template>
   <div>
     <div id="main">
@@ -47,14 +45,14 @@
                 <div class="col my-2 my-lg-0">
                   <label for="password-input" class="form-label">Password</label>
                   <div class="input-group">
-                    <input class="form-control" name="password" :type="togglePasswordInputType(showPassword)" tabindex="2" id="password-input" ref="pInput">
+                    <input autocomplete="on" class="form-control" name="password" :type="togglePasswordInputType(showPassword)" tabindex="2" id="password-input" ref="pInput">
 
                     <!--toggle password visibility-->
                     <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                           @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                           tabindex="3">
-                      <i v-if="!showPassword" class="fas fa-eye"></i>
-                      <i v-else class="fas fa-eye-slash"></i>
+                      <i v-if="!showPassword" class="fas fa-eye" aria-hidden="true"></i>
+                      <i v-else class="fas fa-eye-slash" aria-hidden="true"></i>
                       </span>
 
                   </div>
@@ -127,8 +125,8 @@ export default {
       const pass = this.$refs.pInput.value;
       // Backend will hash + salt password before storing it.
       Api.signIn(email, pass).then((response) => {
-        Cookies.remove('actAs');
-        Cookies.set('userID', response.data.userId)
+        Cookies.remove('actAs', { sameSite: 'strict' });
+        Cookies.set('userID', response.data.userId, { sameSite:'strict'})
         // Also grab JSESSIONID when we have agreed on an implementation with the backend team.
         this.$router.push({ name: 'Home' })
         this.$refs.errorLbl.style.visibility = "hidden";

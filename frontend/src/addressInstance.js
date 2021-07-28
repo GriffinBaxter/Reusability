@@ -3,7 +3,7 @@ import axios from "axios";
 // Create an instance to use for the Komoot Photon API
 const addressInstance = axios.create({
     baseURL: "https://photon.komoot.io/api/",
-    timeout: 3000
+    timeout: 10000
 });
 
 export default {

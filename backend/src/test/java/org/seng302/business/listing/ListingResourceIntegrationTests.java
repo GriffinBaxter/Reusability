@@ -4,18 +4,21 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.seng302.address.Address;
-import org.seng302.business.Business;
-import org.seng302.business.BusinessRepository;
-import org.seng302.business.BusinessType;
-import org.seng302.business.inventoryItem.InventoryItem;
-import org.seng302.business.inventoryItem.InventoryItemRepository;
-import org.seng302.business.product.Product;
-import org.seng302.business.product.ProductRepository;
-import org.seng302.main.Main;
-import org.seng302.user.Role;
-import org.seng302.user.User;
-import org.seng302.user.UserRepository;
+import org.seng302.model.Address;
+import org.seng302.model.Business;
+import org.seng302.model.repository.BusinessRepository;
+import org.seng302.model.enums.BusinessType;
+import org.seng302.model.InventoryItem;
+import org.seng302.model.repository.InventoryItemRepository;
+import org.seng302.model.Product;
+import org.seng302.model.repository.ProductRepository;
+import org.seng302.controller.ListingResource;
+import org.seng302.Main;
+import org.seng302.model.Listing;
+import org.seng302.model.repository.ListingRepository;
+import org.seng302.model.enums.Role;
+import org.seng302.model.User;
+import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,6 +46,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+/**
+ * ListingResource test class
+ */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -106,7 +112,8 @@ class ListingResourceIntegrationTests {
                                                     "\"description\":\"%s\"," +
                                                     "\"manufacturer\":\"%s\"," +
                                                     "\"recommendedRetailPrice\":%.1f," +
-                                                    "\"created\":\"%s\"}," +
+                                                    "\"created\":\"%s\"," +
+                                                    "\"images\":[]}," +
                                                 "\"quantity\":%d," +
                                                 "\"pricePerItem\":%.1f," +
                                                 "\"totalPrice\":%.1f," +
@@ -663,7 +670,7 @@ class ListingResourceIntegrationTests {
         given(businessRepository.findBusinessById(0)).willReturn(Optional.empty());
 
         expectedJSON = "";
-        
+
         // when
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);

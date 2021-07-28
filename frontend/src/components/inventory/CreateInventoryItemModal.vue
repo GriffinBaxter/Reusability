@@ -14,16 +14,38 @@
         <div class="modal-body">
           <form class="row" id="inventoryItemCreation" @submit.prevent>
 
+            <div class="create-inventory-item-image-wrapper">
+              <img :src="getThumbnailSrc(currentProduct)" alt="Product image for the new inventory item" class="create-inventory-item-image">
+            </div>
             <!--product id-->
             <div class="col-7 form-group py-1 px-3">
               <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
                 <label for="autofill-input">Product ID*: </label>
-                <input type="text" id="autofill-input" ref="autofill-input" class="form-control" v-model="autofillInput">
+                <input type="text" autocomplete="off" id="autofill-input" ref="autofill-input" :class="inventoryValidationHelper.toggleInvalidClass(productIdErrorMsg)" v-model="autofillInput">
+                <div class="invalid-feedback">
+                  {{ productIdErrorMsg }}
+                </div>
                 <span class="iconSpan">
-                    <i class="fas fa-angle-down"></i>
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
                   </span>
                 <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
-                  <li v-for="product in allProducts" v-bind:key="product.id" v-bind:id="'li-product-' + product.id" tabindex="-1" v-bind:value="product.id"><strong>{{ product.id }}</strong><br>{{ product.name + getAutofillCurrencyText(product)}}</li>
+                  <!-- Popover for additional info -->
+                    <li v-for="product in allProducts" v-bind:key="product.id"
+                        v-bind:id="'li-product-' + product.id" v-bind:value="product.id"
+                        tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus"
+                        v-bind:title="product.manufacturer ? 'Manufacturer: ' + product.manufacturer : ''"
+                        v-bind:data-bs-content="product.description"
+                        data-bs-placement="top"
+                        class="autofill-option" >
+                      <img :src="getThumbnailSrc(product)" :alt="`product thumbnail for product with id ${product.id}`" class="autofill-option-image">
+                      <div class="autofill-option-information">
+                        <strong>
+                          {{ product.id }}
+                        </strong>
+                        <div>{{ product.name }}</div>
+                        <div>{{getAutofillCurrencyText(product)}}</div>
+                      </div>
+                    </li>
                 </ul>
               </div>
             </div>
@@ -132,11 +154,13 @@
 
 <script>
 
-import {Modal} from "bootstrap"; //uncommenting means the test do not run
+import {Modal, Popover} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
+import DefaultProductImage from "../../../public/default-product.jpg";
 import Autofill from '../autofill';
 import {parseISO} from 'date-fns'
+import Vue from "vue";
 const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');
 
 export default {
@@ -186,7 +210,8 @@ export default {
       inventoryValidationHelper: inventoryValidationHelper,
       autofillInput: '',
       autofillState: 'initial',
-      currentProduct: null
+      currentProduct: null,
+      tooltipList: []
     }
   },
   props: {
@@ -212,6 +237,24 @@ export default {
       this.bestBefore = this.bestBefore.trim();
       this.expires = this.expires.trim();
     },
+
+    /**
+     * Given a product object, we try and find the primary image thumbnail, and return it.
+     *
+     * @param product product object
+     * @returns {string} filepath of the primary thumbnail or the default image if it does not exist.
+     * */
+    getThumbnailSrc(product) {
+      // Since this checks the values on the left of the if statements first, then we can ensure that before we try and access any
+      // of the values that the product exists and that it has images.
+      if (product && product.images && product.images.length > 0) {
+        const filePath = product.images.filter( (image) => image.isPrimary).pop().thumbnailFilename;
+        if (!filePath) return DefaultProductImage;
+        return Api.getServerResourcePath(filePath);
+      }
+      return DefaultProductImage;
+    },
+
     /**
      * This method checks whether the RRP of the given product is null, and if not returns a formatted string including the RRP to display.
      * Otherwise returns an empty string.
@@ -231,6 +274,13 @@ export default {
     async getAllProducts() {
       await Api.getEveryProduct(this.businessId).then((response) => {
         this.allProducts = [...response.data];
+        const self = this;
+        Vue.nextTick(function() {
+          const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
+          self.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
+            return new Popover(popoverTriggerElement);
+          })
+        })
       }).catch((error) => {
         if (error.response) {
           if (error.response.status === 400) {
@@ -243,6 +293,7 @@ export default {
         } else if (error.request) {
           this.toastErrorMessage = 'Timeout occurred';
         } else {
+          console.log(error)
           this.toastErrorMessage = 'Unexpected error occurred!';
         }
       })
@@ -598,7 +649,7 @@ export default {
 
   },
   mounted() {
-    this.getAllProducts().then(() => {});
+    this.getAllProducts().then();
     this.modal = new Modal(document.getElementById("creationPopup"));
 
     // Global event listener to toggle autofill list display
@@ -607,6 +658,23 @@ export default {
       if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed' && self.$refs["autofill-list"]) {
         Autofill.toggleList('closed', self.$refs["autofill-list"]);
         self.autofillState = 'initial';
+      }
+    })
+
+    // Event listener on the autofill input to allow tabbing to autofill entries
+    document.addEventListener('keydown', function (event) {
+      if (event.shiftKey && event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-product')) {
+          event.preventDefault();
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'back', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
+      } else if (event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-product')) {
+          event.preventDefault();
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'forward', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
       }
     })
   }
@@ -637,6 +705,7 @@ input:focus, textarea:focus {
 
 #autofill-input::-ms-expand {
   display: none;
+
 }
 
 .autofill-options {
@@ -650,6 +719,8 @@ input:focus, textarea:focus {
   position: absolute;
   width: 100%;
   background-color: #ffffff;
+  overflow-y: auto;
+  max-height: 25em;
 }
 
 .autofill-options li {
@@ -671,6 +742,38 @@ input:focus, textarea:focus {
   right: 0.75em;
   z-index: 20;
   background: transparent;
+}
+
+.autofill-option {
+  display: flex;
+  align-items: center;
+  min-width: max-content;
+  min-width: -moz-max-content;
+  min-width: -webkit-max-content;
+}
+
+.autofill-option-information {
+  width: max-content;
+  width: -moz-max-content;
+  margin-left: 0.5em;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.autofill-option-image {
+  max-width: 50px;
+  height: auto;
+}
+
+.create-inventory-item-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.create-inventory-item-image {
+  max-width: 150px;
 }
 
 /*********************************************************************/

@@ -2,10 +2,12 @@ package org.seng302.marketplace;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.seng302.address.Address;
-import org.seng302.main.Main;
-import org.seng302.user.Role;
-import org.seng302.user.User;
+import org.seng302.model.Address;
+import org.seng302.Main;
+import org.seng302.model.*;
+import org.seng302.model.enums.Role;
+import org.seng302.model.enums.Section;
+import org.seng302.model.repository.MarketplaceCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,11 +46,19 @@ class MarketplaceCardRepositoryIntegrationTests {
 
     private Page<MarketplaceCard> foundMarketplaceCards;
 
+    private List<MarketplaceCard> foundMarketplaceCardsList;
+    
+    private Integer creatorId;
+    private int creatorId1;
+    private int creatorId2;
+
     private MarketplaceCard marketplaceCard;
     private MarketplaceCard marketplaceCard2;
     private MarketplaceCard marketplaceCard3;
     private MarketplaceCard marketplaceCard4;
     private MarketplaceCard marketplaceCard5;
+
+    private List<MarketplaceCard> marketplaceCards;
 
     /**
      * Sets up data for testing
@@ -154,6 +165,11 @@ class MarketplaceCardRepositoryIntegrationTests {
         );
         entityManager.persist(marketplaceCard5);
         entityManager.flush();
+
+        marketplaceCards = List.of(marketplaceCard, marketplaceCard2, marketplaceCard3, marketplaceCard4, marketplaceCard5);
+
+        creatorId1 = user.getId();
+        creatorId2 = user2.getId();
     }
 
     /**
@@ -398,5 +414,71 @@ class MarketplaceCardRepositoryIntegrationTests {
         assertThat(cardPage.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(0));
         assertThat(cardPage2.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(1));
         assertThat(cardPage3.getContent().get(0).getTitle()).isEqualTo(orderedCardTitles.get(2));
+    }
+
+    // -----------------------------Find All Market Card-----------------------------
+
+    /**
+     * Test finding all cards.
+     */
+    @Test
+    void whenFindAll_thenReturnAllCard(){
+        List<MarketplaceCard> marketplaceCards = marketplaceCardRepository.findAll();
+        assertThat(marketplaceCards.size()).isEqualTo(marketplaceCards.size());
+    }
+
+    // ----------------------------- Find By Creator Id -----------------------------
+
+    /**
+     * Tests finding cards created by a given user (creator ID 1).
+     */
+    @Test
+    void whenFindByCreatorId1_thenReturnCreatorsCards() {
+        // given
+        creatorId = creatorId1;
+        
+        // when
+        foundMarketplaceCardsList = marketplaceCardRepository.findMarketplaceCardByCreatorId(creatorId);
+        
+        // then
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard)).isTrue();
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard2)).isTrue();
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard4)).isTrue();
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard5)).isTrue();
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard3)).isFalse();
+    }
+
+    /**
+     * Tests finding cards created by a given user (creator ID 2).
+     */
+    @Test
+    void whenFindByCreatorId2_thenReturnCreatorsCards() {
+        // given
+        creatorId = creatorId2;
+        
+        // when
+        foundMarketplaceCardsList = marketplaceCardRepository.findMarketplaceCardByCreatorId(creatorId);
+
+        // then
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard3)).isTrue();
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard)).isFalse();
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard2)).isFalse();
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard4)).isFalse();
+        assertThat(foundMarketplaceCardsList.contains(marketplaceCard5)).isFalse();
+    }
+
+    /**
+     * Tests attempting to find cards created by a non-existent user (creator ID 0).
+     */
+    @Test
+    void whenFindByCreatorId0_thenReturnEmptyList() {
+        // given
+        creatorId = 0;
+
+        // when
+        foundMarketplaceCardsList = marketplaceCardRepository.findMarketplaceCardByCreatorId(creatorId);
+
+        // then
+        assertThat(foundMarketplaceCardsList.isEmpty()).isTrue();
     }
 }

@@ -3,8 +3,30 @@
     <div class="row">
       <div class="row" id="mainContent">
         <div class="col-12 col-sm-3">
-          <div class="ratio ratio-4x3">
-          <img class="card-img" :src="require('../../../public/apples.jpg')" id="listing-item-image">
+          <div v-if="this.$props.images.length > 0">
+            <div id="carousel-item-images" class="carousel slide" data-bs-ride="carousel">
+              <div v-if="this.$props.images.length > 1" class="carousel-indicators">
+                <button v-for="(image, index) of this.$props.images" v-bind:key="image.id" type="button" data-bs-target="#carousel-product-images" :data-bs-slide-to="index" :class="image.isPrimary ? 'active' : ''"></button>
+              </div>
+              <div class="carousel-inner">
+                <div v-for="image of this.$props.images" v-bind:key="image.id" :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
+                  <img :src="getImageSrc(image.thumbnailFilename)" class="card-img" alt="listing image">
+                </div>
+              </div>
+              <div v-if="this.$props.images.length > 1">
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-item-images" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel-item-images" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="ratio ratio-1x1" v-else>
+            <img class="card-img" :src="require('../../../public/default-product.jpg')" id="listing-item-image" alt="listing default image">
           </div>
         </div>
         <div class="col">
@@ -14,7 +36,7 @@
                 <h4 class="card-title">{{quantity}}x {{ productName }}</h4>
               </div>
               <div class="col d-flex align-items-end flex-column col-5" v-if="!(moreInfo.length===0)">
-                <p align="right">{{moreInfo}}</p>
+                <p style="text-align: right">{{moreInfo}}</p>
               </div>
             </div>
             <div class="row py-2" id="main-body">
@@ -49,6 +71,8 @@
 </template>
 
 <script>
+import Api from "../../Api"
+
 export default {
   name: "ListingItem",
   props: {
@@ -113,16 +137,30 @@ export default {
       type: String,
       default: "",
       required: false
+    },
+    images: {
+      type: Array,
+      default: null,
+      required: false
     }
-
+  },
+  methods: {
+    getImageSrc(filename) {
+      return Api.getServerURL() + "/" + filename;
+    },
   }
 }
 </script>
 
 <style scoped>
 
-img {
+#listing-item-image {
   object-fit: cover;
+  width: 100%;
+}
+
+#carousel-item img {
+  object-fit: cover !important;
   width: 100%;
 }
 

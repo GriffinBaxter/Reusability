@@ -12,7 +12,7 @@ export default class InventoryItem {
         quantity: {
             name: "Quantity",
             minLength: 1,
-            maxLength: 12,
+            maxLength: 9,
             regex: /^[0-9]+$/,
             regexMessage: "Must only contain numbers",
         },
@@ -31,7 +31,7 @@ export default class InventoryItem {
             regexMessage: "Must be a positive double precision floating point number e.g 1.00"
         },
         manufactured: {
-            name: "manufactured"
+            name: "Manufactured"
         },
         sellBy: {
             name: "Sell By"

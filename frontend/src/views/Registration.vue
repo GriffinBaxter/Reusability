@@ -141,8 +141,8 @@
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                         @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                         tabindex="8">
-                    <i v-if="!showPassword" class="fas fa-eye"></i>
-                    <i v-else class="fas fa-eye-slash"></i>
+                    <i v-if="!showPassword" class="fas fa-eye" aria-hidden="true"></i>
+                    <i v-else class="fas fa-eye-slash" aria-hidden="true"></i>
                     </span>
 
                   <div class="invalid-feedback">
@@ -433,21 +433,6 @@ export default {
       addressResultProperties: []
     }
   },
-
-  /**
-   * This is used for creating a prefilled user for testing and bypassing manually filling in the registration page
-   */
-  created() {
-    if (this.DEBUG_MODE) {
-      this.firstName = "Dan";
-      this.lastName = "Ronen";
-      this.dateOfBirth = "2008-02-02";
-      this.email = "demo@example.com";
-      this.password = "1234AaAa@";
-      this.confirmPassword = "1234AaAa@";
-    }
-  },
-
   methods: {
 
     /**
@@ -595,7 +580,7 @@ export default {
      * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
      */
     getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = ""; //TODO: remove after testing and just have ""
+      let errorMessage = "";
       if (inputVal === "" && minLength >= 1) {
         errorMessage = "Please enter input";
       }
@@ -901,11 +886,11 @@ export default {
        */
       Api.addNewUser(user
       ).then( (res) => {
-            Cookies.remove('actAs');
+            Cookies.remove('actAs', { sameSite: 'strict' });
             if (res.status === 201) {
               const {userId} = res.data;
               if (userId) {
-                Cookies.set('userID', userId);
+                Cookies.set('userID', userId, { sameSite:'strict'});
                 this.$router.push('/profile');
               }
             }
@@ -1226,23 +1211,10 @@ label {
 }
 
 /*--------------------- Hide arrows from input numbers ---------------------*/
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
 input:focus, textarea:focus, #register-button:focus, #back-to-login-button:focus {
   outline: none;
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
-
 /*------------------------------------------------------------------------*/
 </style>

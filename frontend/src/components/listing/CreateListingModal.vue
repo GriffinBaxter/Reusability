@@ -18,12 +18,21 @@
               <div class="col form-group py-1 px-3">
                 <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
                   <label for="autofill-input">Select an inventory item*: </label>
-                  <input type="text" id="autofill-input" ref="autofill-input" class="form-control" v-model="autofillInput">
+                  <input type="text" id="autofill-input" ref="autofill-input" :class="toggleInvalidClass(inventoryIdErrorMsg)" v-model="autofillInput">
+                  <div class="invalid-feedback">
+                    {{ inventoryIdErrorMsg }}
+                  </div>
                   <span class="iconSpan">
-                    <i class="fas fa-angle-down"></i>
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
                   </span>
                   <ul class="autofill-options hidden-all" id="autofill-list" ref="autofill-list">
-                    <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1" v-bind:value="item.id"><strong>{{ item.product.id }}</strong><br>{{ 'Quantity: ' + item.quantity + ' Price: ' + (currencySymbol) + item.totalPrice + ' Expires: ' + item.expires + '' }}</li>
+                    <li v-for="item in allInventoryItems" v-bind:key="item.id" v-bind:id="'li-item-' + item.id" tabindex="-1" v-bind:value="item.id" data-bs-toggle="popover" data-bs-trigger="hover focus" v-bind:title="item.product.name ? 'Product Name: ' + item.product.name : ''" v-bind:data-bs-content="item.product.description">
+                      <strong>
+                        {{ item.product.id }}
+                      </strong>
+                      <br>
+                      {{ 'Quantity: ' + item.quantity + ' Price: ' + (currencySymbol) + item.totalPrice + ' Expires: ' + item.expires + '' }}
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -110,11 +119,12 @@
 </template>
 
 <script>
-import Api from "@/Api";
-import Listing from "@/configs/Listings";
+import Api from "../../Api";
+import Listing from "../../configs/Listing";
 import Autofill from '../autofill';
 
-import {Modal} from "bootstrap";
+import {Modal, Popover} from "bootstrap";
+import Vue from "vue";
 
 const datefns = require('date-fns');
 
@@ -421,8 +431,8 @@ export default {
      * So, this must be consistent!
      *
      * @param dateString, string, the date to validate and separate.
-     * @returns {{year: string, day: string, month: string, hour: string, minute: string, seconds: string}|null}, {year, day, month}, if the date meets the expected
-     * format, else null.
+     * @returns {{year: string, month: string, day: string, hour: string, minute: string, seconds: string}|null},
+     * {year, month, day, hour, minute, seconds}, if the date meets the expected format, else null.
      */
     parseSelectedDate(dateString) {
       const newDate = datefns.parseISO(dateString);
@@ -477,6 +487,14 @@ export default {
     async getAllInventoryItems() {
       await Api.getEveryInventoryItem(this.businessId).then((response) => {
         this.allInventoryItems = [...response.data];
+
+        const self = this;
+        Vue.nextTick(function() {
+          const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
+          self.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
+            return new Popover(popoverTriggerElement);
+          })
+        })
       }).catch((error) => {
         if (error.response) {
           if (error.response.status === 400) {
@@ -500,8 +518,11 @@ export default {
     async createNewInventoryItem() {
       let requestIsInvalid = false;
 
-      if (this.currentInventoryItem === null) {
+      if (this.autofillInput === '' && this.currentInventoryItem === null) {
         this.inventoryIdErrorMsg = "Please enter an ID";
+        requestIsInvalid = true;
+      } else if (this.currentInventoryItem === null) {
+        this.inventoryIdErrorMsg = "Please enter a valid ID";
         requestIsInvalid = true;
       } else {
         this.inventoryId = this.currentInventoryItem.id;
@@ -612,7 +633,7 @@ export default {
     }
   },
   mounted() {
-    this.getAllInventoryItems().then(() => {});
+    this.getAllInventoryItems();
     this.modal = new Modal(document.getElementById("listingCreationPopup"));
 
     // Global event listener to toggle autofill list display
@@ -621,6 +642,23 @@ export default {
       if (!event.target.closest('#autofill-container') && self.autofillState !== 'closed' && self.$refs["autofill-list"]) {
         Autofill.toggleList('closed', self.$refs["autofill-list"]);
         self.autofillState = 'initial';
+      }
+    })
+
+    // Event listener on the autofill input to allow tabbing to autofill entries
+    document.addEventListener('keydown', function (event) {
+      if (event.shiftKey && event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-item')) {
+          event.preventDefault();
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'back', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
+      } else if (event.key === 'Tab') {
+        if (event.target.id === 'autofill-input' || event.target.id.startsWith('li-item')) {
+          event.preventDefault();
+          const input = document.activeElement;
+          Autofill.moveFocus(input, 'forward', self.$refs["autofill-input"], self.$refs["autofill-list"].children, document.activeElement);
+        }
       }
     })
 
@@ -665,6 +703,8 @@ input:focus, textarea:focus {
   position: absolute;
   width: 100%;
   background-color: #ffffff;
+  overflow-y: auto;
+  max-height: 22em;
 }
 
 .autofill-options li {

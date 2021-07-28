@@ -1,7 +1,7 @@
-Page Buttons
-Contains page button components, as well as methods to check if a page number is
-within a valid range and to update the page number in the parent component when the
-page is changed.
+<!--Page Buttons-->
+<!--Contains page button components, as well as methods to check if a page number is-->
+<!--within a valid range and to update the page number in the parent component when the-->
+<!--page is changed.-->
 
 <template>
   <nav>
@@ -22,7 +22,7 @@ page is changed.
       </button>
 
       <!-- This converts the current page into 1 origin.-->
-      <button :id="`pageButton${currentPage + 1}`" type="button" class="btn green-button-transparent active">
+      <button :id="`pageButton${currentPage + 1}`" type="button" class="btn green-button active">
         {{currentPage+1}}
       </button>
 
@@ -32,7 +32,7 @@ page is changed.
       </button>
 
       <!-- This is shown when there are more then 2 pages and you are at page 1-->
-      <button :id="`pageButton${currentPage + 3}`" type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage(currentPage-2)">
+      <button :id="`pageButton${currentPage + 3}`" type="button" class="btn green-button-transparent" v-if="isValidPageNumber(currentPage+2) && currentPage === 0" @click="updatePage(currentPage+2)">
         {{currentPage+3}}
       </button>
 
@@ -80,7 +80,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

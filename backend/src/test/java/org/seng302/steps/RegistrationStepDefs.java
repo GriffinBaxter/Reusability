@@ -4,12 +4,12 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.seng302.address.Address;
-import org.seng302.address.AddressRepository;
-import org.seng302.user.Role;
-import org.seng302.user.User;
-import org.seng302.user.UserRepository;
-import org.seng302.user.UserResource;
+import org.seng302.model.Address;
+import org.seng302.model.repository.AddressRepository;
+import org.seng302.model.enums.Role;
+import org.seng302.model.User;
+import org.seng302.model.repository.UserRepository;
+import org.seng302.controller.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -32,6 +32,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+/**
+ * Registration step definitions class
+ */
 public class RegistrationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired

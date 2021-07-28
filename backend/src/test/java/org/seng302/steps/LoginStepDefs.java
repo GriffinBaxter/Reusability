@@ -5,13 +5,13 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.seng302.address.Address;
-import org.seng302.address.AddressRepository;
-import org.seng302.user.Role;
-import org.seng302.user.User;
-import org.seng302.user.UserRepository;
-import org.seng302.user.UserResource;
-import org.seng302.validation.UserValidation;
+import org.assertj.core.api.Assertions;
+import org.seng302.model.Address;
+import org.seng302.model.repository.AddressRepository;
+import org.seng302.model.enums.Role;
+import org.seng302.model.User;
+import org.seng302.model.repository.UserRepository;
+import org.seng302.controller.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -31,6 +31,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+/**
+ * Login step definitions class
+ */
 public class LoginStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
@@ -90,7 +93,7 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
     }
 
     @When("The user supplies an email {string} and password {string} which matches the details in the database")
-    public void theUserSuppliesAnEmailAndPasswordWhichMatchesTheDetailsInTheDatabase(String email, String password) throws UnsupportedEncodingException {
+    public void theUserSuppliesAnEmailAndPasswordWhichMatchesTheDetailsInTheDatabase(String email, String password) {
         User findUser = userRepository.findByEmail(email).get();
 
         assertThat(findUser.getEmail()).isEqualTo(email);
@@ -151,7 +154,7 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
     @And("the password {string} is supplied")
     public void thePasswordIsSupplied(String password) {
         currentPassword = password;
-        assertThat(UserValidation.isValidPassword(currentPassword)).isTrue();
+        assertThat(currentPassword).isNotNull();
     }
 
     @Then("They should not be logged in and an error message stating the email or password is incorrect is displayed")
