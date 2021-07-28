@@ -118,6 +118,7 @@ https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/Postman-Testing
 
 ## References
 
+- [User Guide](https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/User%20Guide)
 - [Team 400 Wiki](https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/home)
 - [Spring Boot Docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
 - [Spring JPA docs](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)
