@@ -61,6 +61,9 @@ public class Product {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
+    @Column(name = "barcode")
+    private String barcode;
+
     private static final Logger logger = LogManager.getLogger(Product.class.getName());
 
     // Values need for validation.
@@ -88,7 +91,7 @@ public class Product {
      * @param description The description of the product (optional).
      * @param manufacturer The manufacturer of the product (optional).
      * @param recommendedRetailPrice The recommended retail price (RRP) of the product (optional).
-     * @param created The date and time the product was created.
+     * @param barcode The barcode of the product. It must be either EAN-13 or UPC.
      * @throws IllegalProductArgumentException Validation exception.
      */
     public Product(String id,
@@ -97,7 +100,7 @@ public class Product {
                    String description,
                    String manufacturer,
                    Double recommendedRetailPrice,
-                   LocalDateTime created
+                   String barcode
     ) throws IllegalProductArgumentException {
         if (!isValidProductId(id)) {
             logger.error("Product Creation Error - Product ID {} is not valid", id);
@@ -119,9 +122,9 @@ public class Product {
             logger.error("Product Creation Error - Manufacturer {} is not valid", manufacturer);
             throw new IllegalProductArgumentException("Invalid manufacturer");
         }
-        if (created == null) {
-            logger.error("Product Creation Error - Created (Date-Time) is null");
-            throw new IllegalProductArgumentException("Invalid date");
+        if (!isValidBarcode(barcode)) {
+            logger.error("Product Creation Error - Barcode {} is not valid", barcode);
+            throw new IllegalProductArgumentException("Invalid barcode");
         }
         this.id = id;
         this.business = business;
@@ -130,7 +133,8 @@ public class Product {
         this.description = (description.equals("")) ? null : description;
         this.manufacturer = (manufacturer.equals("")) ? null : manufacturer;
         this.recommendedRetailPrice = recommendedRetailPrice;
-        this.created = created;
+        this.created = LocalDateTime.now();
+        this.barcode = barcode;
     }
 
     // Getters
@@ -163,6 +167,12 @@ public class Product {
         return created;
     }
 
+    /**
+     * Get the barcode of the product.
+     * @return a string representation of an EAN-13 or UPC barcode.
+     */
+    public String getBarcode() { return barcode; }
+
     // Setters
 
     public void setProductId(String id) {
@@ -191,6 +201,17 @@ public class Product {
 
     public void setCreated(LocalDateTime created) {
         this.created = created;
+    }
+
+    /**
+     * Change the barcode of the product.
+     * Note: the barcode must be a valid EAN-13 or UPC barcode.
+     * @param barcode a string representation of the barcode.
+     */
+    public void setBarcode(String barcode) {
+        if (isValidBarcode(barcode)) {
+            this.barcode = barcode;
+        }
     }
 
     /* --------------------------------------------------Validation-------------------------------------------------- */
@@ -239,6 +260,45 @@ public class Product {
         return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
                 (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
                 (manufacturer.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]*$"));
+    }
+
+    /**
+     * Checks to see whether a barcode is valid using its check digit.
+     * This method can be updated in the future if there is additional constraints.
+     * @param barcode The barcode to be checked.
+     * @return true when the barcode is valid.
+     */
+    private boolean isValidBarcode(String barcode) {
+        // check barcode is numeric
+        if (!barcode.matches("[^0-9]+$")) { return false; }
+
+        // pad with zeros to lengthen to 14 digits, so check digit operation can be performed.
+        switch (barcode.length()) {
+            case 12:
+                // UPC barcode
+                barcode = "00" + barcode;
+                break;
+            case 13:
+                // EAN-13 barcode
+                barcode = "0" + barcode;
+                break;
+            default:
+                // Incorrect barcode, since it has the wrong amount of digits
+                return false;
+        }
+        // check digit operation
+        int sum = 0;
+        for (int i = 0; i < barcode.length(); i++) {
+            int charAsInt = Character.getNumericValue(barcode.charAt(i));
+            // even parity
+            if (i % 2 == 0) {
+                sum += charAsInt * 3;
+            } else
+                sum += charAsInt;
+        }
+        int check = (10 - (sum % 10)) % 10;
+        int checkDigit = Character.getNumericValue(barcode.charAt(13));
+        return check == checkDigit;
     }
 
 }
