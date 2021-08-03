@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -114,7 +113,7 @@ public class ProductResource {
                         productPayload.getDescription(),
                         productPayload.getManufacturer(),
                         productPayload.getRecommendedRetailPrice(),
-                        LocalDateTime.now()
+                        productPayload.getBarcode()
                 );
 
                 productRepository.save(product);
@@ -240,7 +239,8 @@ public class ProductResource {
                     product.getManufacturer(),
                     product.getRecommendedRetailPrice(),
                     product.getCreated(),
-                    product.getImages()
+                    product.getImages(),
+                    product.getBarcode()
             );
             logger.debug("Product payload created: {}", newPayload);
             payloads.add(newPayload);
