@@ -1967,7 +1967,7 @@ components:
           description: Automatically generated and assigned by the server
         description:
           type: string
-          example: Listing (Apple) have been saled.
+          example: Listing (Apple) has been sold.
         created:
           type: string
           format: date-time
