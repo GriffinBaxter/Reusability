@@ -152,14 +152,21 @@
                   </div>
                   <!--product barcode-->
                   <div class="form-group">
-                    <label for="product-barcode">Product Barcode</label>
-                    <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="productBarcode"
-                           :class="toggleInvalidClass(productBarcodeErrorMsg)" :maxlength="config.productBarcode.maxLength">
-                    Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcode" name="img"
-                                            accept="image/png, image/gif, image/jpeg">
-
-                    <div class="invalid-feedback">
-                      {{ productBarcodeErrorMsg }}
+                    <br>
+                    <label for="barcode-checkbox">Add Barcode?&nbsp;</label>
+                    <input type="checkbox" id="barcode-checkbox" name="barcode-checkbox" v-model="addBarcode">
+                    <br>
+                    <div v-if="addBarcode">
+                      <br>
+                      <label for="product-barcode">Barcode</label>
+                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="productBarcode"
+                             :class="toggleInvalidClass(productBarcodeErrorMsg)" :maxlength="config.productBarcode.maxLength">
+                      <br><br>
+                      Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcode" name="img"
+                             accept="image/png, image/gif, image/jpeg">
+                      <div class="invalid-feedback">
+                        {{ productBarcodeErrorMsg }}
+                      </div>
                     </div>
                   </div>
                   <!--toast error-->
@@ -273,6 +280,7 @@ export default {
       // Product barcode related variables
       productBarcode: "",
       productBarcodeErrorMsg: "",
+      addBarcode: false,
 
       // Product name related variables
       productName: "",
@@ -348,6 +356,7 @@ export default {
       // Reset product barcode related variables
       this.productBarcode = "";
       this.productBarcodeErrorMsg = "";
+      this.addBarcode = false;
 
       // Reset product name related variables
       this.productName = "";
@@ -590,7 +599,7 @@ export default {
       }
 
       // Product barcode error checking
-      if (this.productBarcode.length !== 0) {
+      if (this.addBarcode) {
         this.productBarcodeErrorMsg = this.getErrorMessage(
             this.config.productBarcode.name,
             this.productBarcode,
@@ -976,6 +985,11 @@ input:focus, textarea:focus, button:focus, #create-product-button:focus {
   outline: none;
   box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
+}
+
+label, input {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /*------------------------------------------------------------------------*/
