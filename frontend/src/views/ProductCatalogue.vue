@@ -176,11 +176,8 @@
                               config.productBarcode.maxLength,
                               config.productBarcode.regexMessage,
                               config.productBarcode.regex) === '' ? '': 'disabled'}`"
-                              @click="autofillProductFromBarcode(productBarcode)">Autofill Empty Fields
+                              @click="autofillProductFromBarcode()">Autofill Empty Fields
                       </button>
-                      <div class="invalid-feedback">
-                        {{ productBarcodeErrorMsg }}
-                      </div>
                     </div>
                   </div>
                   <!--toast error-->
@@ -871,14 +868,17 @@ export default {
       });
     },
 
-    autofillProductFromBarcode(barcode) {
-      OpenFoodFacts.retrieveProductByBarcode(barcode).then((result) => {
+    autofillProductFromBarcode() {
+      let outerThis = this;
+      outerThis.toastErrorMessage = "";
+
+      OpenFoodFacts.retrieveProductByBarcode(this.productBarcode).then((result) => {
         if (result.data.status === 1) {
           console.log("Name: " + result.data.product.product_name + " " + result.data.product.quantity);
           console.log("Manufacturer: " + result.data.product.brands);
           console.log("Description: " + result.data.product.generic_name);
         } else {
-          console.log(result.data.status_verbose);
+          outerThis.toastErrorMessage = "Could not autofill, product may not exist in database";
         }
       });
     }
