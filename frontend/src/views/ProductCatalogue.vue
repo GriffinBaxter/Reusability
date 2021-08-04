@@ -101,6 +101,9 @@
                       {{ productIDErrorMsg }}
                     </div>
                   </div>
+                  <!--product barcode-->
+                  <input type="file" id="imageUpload" ref="image" @change="getBarcode" name="img"
+                         accept="image/png, image/gif, image/jpeg">
                   <!--product name-->
                   <div class="form-group">
                     <label for="product-name">Product Name*</label>
@@ -195,6 +198,7 @@ import UpdateProductModal from "../components/productCatalogue/UpdateProductModa
 import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
+import Quagga from 'quagga';
 
 export default {
   name: "ProductCatalogue",
@@ -780,6 +784,23 @@ export default {
       this.currencySymbol = response[0].currencies[0].symbol;
     },
 
+    getBarcode() {
+      let file = this.$refs.image.files[0];
+
+      Quagga.decodeSingle({
+        decoder: {
+          readers: ["ean_reader", "upc_reader"]
+        },
+        locate: true,
+        src: URL.createObjectURL(file)
+      }, function (result) {
+        if (result && result.codeResult) {
+          console.log(result.codeResult.code);
+        } else {
+          console.log("Barcode not found");
+        }
+      });
+    }
   },
 
   async mounted() {
