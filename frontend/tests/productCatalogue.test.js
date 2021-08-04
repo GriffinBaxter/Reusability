@@ -2,10 +2,19 @@
  * @jest-environment jsdom
  */
 
-import {test, expect} from "@jest/globals"
+import {test, expect, describe, jest, beforeAll} from "@jest/globals"
 import reg from '../src/views/ProductCatalogue'
 // noinspection DuplicatedCode
 import Product from '../src/configs/Product'
+import {shallowMount} from "@vue/test-utils";
+import ProductCatalogue from "../src/views/ProductCatalogue";
+import Cookies from "js-cookie";
+import Api from "../src/Api";
+import CurrencyApi from "../src/currencyInstance";
+
+jest.mock("../src/Api");
+jest.mock("../src/currencyInstance");
+jest.mock("js-cookie");
 
 // ***************************************** getErrorMessage() Tests ***************************************************
 
@@ -931,3 +940,105 @@ test('RRP contains invalid symbols.', () => {
         )
     ).toBe(expectedMessage);
 })
+
+describe('Testing autofill functionality', function () {
+
+    let productCatalogueWrapper;
+
+    beforeAll(() => {
+        Api.getBusiness.mockImplementation(() => Promise.resolve({data: {address: {country: ''}}}));
+        CurrencyApi.currencyQuery.mockImplementation(() => Promise.resolve({data: [{currencies: [{code: '', symbol: ''}]}]}));
+        Api.sortProducts.mockImplementation(() => Promise.resolve({status: 200, data: {}}));
+
+        let $route = {
+            params: {
+                id: 1
+            },
+            query: {
+                orderBy: '', page: '0'
+            }
+        }
+
+        Cookies.get.mockReturnValue(1);
+
+        productCatalogueWrapper = shallowMount(ProductCatalogue, {
+            mocks: {
+                $route
+            }
+        });
+
+        productCatalogueWrapper.vm.addBarcode = true;
+    });
+
+    test('Testing that the autofill button is enabled when getErrorMessage returns an empty string', () => {
+        productCatalogueWrapper.vm.productBarcode = "111111111111";
+
+        expect(
+            reg.methods.getErrorMessage(
+                Product.config.productBarcode.name,
+                productCatalogueWrapper.vm.productBarcode,
+                Product.config.productBarcode.minLength,
+                Product.config.productBarcode.maxLength,
+                Product.config.productBarcode.regexMessage,
+                Product.config.productBarcode.regex,
+            )
+        ).toBe('');
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            const autofillButton = productCatalogueWrapper.find('#autofill-button');
+            expect(autofillButton.classes().includes('disabled')).toBeFalsy();
+        });
+    });
+
+    test('Testing that the autofill button is disabled when getErrorMessage returns a string', () => {
+        productCatalogueWrapper.vm.productBarcode = "11111111111";
+
+        expect(
+            reg.methods.getErrorMessage(
+                Product.config.productBarcode.name,
+                productCatalogueWrapper.vm.productBarcode,
+                Product.config.productBarcode.minLength,
+                Product.config.productBarcode.maxLength,
+                Product.config.productBarcode.regexMessage,
+                Product.config.productBarcode.regex,
+            )
+        ).toBe('Input must be between 12 and 13 characters long.');
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            const autofillButton = productCatalogueWrapper.find('#autofill-button');
+            expect(autofillButton.classes().includes('disabled')).toBeTruthy();
+        });
+    });
+
+    test('Testing that when the autofill button is clicked, then autofillProductFromBarcode is called', () => {
+        let autofillSpyOn = jest.spyOn(ProductCatalogue.methods, 'autofillProductFromBarcode');
+        productCatalogueWrapper.vm.productBarcode = "111111111111";
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            const autofillButton = productCatalogueWrapper.find('#autofill-button');
+
+            autofillButton.trigger('click');
+            expect(autofillSpyOn).toHaveBeenCalled();
+        });
+    });
+
+    test("Testing that if result.data.status isn't 1, then the toast error message is set", () => {
+
+    });
+
+    test("Testing that when product name is empty, then it is autofilled", () => {
+
+    });
+
+    test("Testing that when manufacturer is empty, then it is autofilled", () => {
+
+    });
+
+    test("Testing that when description is empty, then it is autofilled", () => {
+
+    });
+
+    test("Testing that when product name, manufacturer, and description are empty, then they are autofilled", () => {
+
+    });
+});
