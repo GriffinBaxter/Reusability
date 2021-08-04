@@ -208,9 +208,11 @@ public class Product {
      * Note: the barcode must be a valid EAN-13 or UPC barcode.
      * @param barcode a string representation of the barcode.
      */
-    public void setBarcode(String barcode) {
+    public void setBarcode(String barcode) throws IllegalProductArgumentException {
         if (isValidBarcode(barcode)) {
             this.barcode = barcode;
+        } else {
+            throw new IllegalProductArgumentException("Invalid barcode");
         }
     }
 

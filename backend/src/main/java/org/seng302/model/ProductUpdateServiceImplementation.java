@@ -60,6 +60,7 @@ public class ProductUpdateServiceImplementation implements ProductUpdateService 
         product.setDescription(updatedProduct.getDescription());
         product.setManufacturer(updatedProduct.getManufacturer());
         product.setRecommendedRetailPrice(updatedProduct.getRecommendedRetailPrice());
+        product.setBarcode(updatedProduct.getBarcode());
         logger.debug("Set new attributes for product.");
 
         // Detach the entity so we can update the ID attribute
