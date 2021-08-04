@@ -43,6 +43,7 @@ tags:
   - name: 'UCM7: Keyword search'
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
+  - name: 'U31: Purchases'
   # Entities
   - name: 'Users'
     description: 'Grouping of endpoints related to the User entity'
@@ -58,10 +59,12 @@ tags:
     description: 'Grouping of endpoints related to the community marketplace, and the cards the are created for it'
   - name: 'Keywords'
     description: 'Grouping of endpoints related to system-wide keywords that can be added by users and attached to marketplace cards'
-  - name: 'MarketplaceCardNotification'
+  - name: 'MarketplaceCard Notification'
     description: 'Grouping of endpoints related to the community marketplace cards, and the notifications created for them'
-  - name: 'KeywordNotification'
+  - name: 'Keyword Notification'
     description: 'Grouping of endpoints related to notifications created for system-wide keywords'
+  - name: 'Sold Listing'
+    description: 'Grouping of endpoints related to sold listings'
 
 security:
   - CookieAuth:
@@ -1398,6 +1401,50 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           description: 'Forbidden: Returned if a non-GAA user attempts to delete any card.'
+
+
+  '/businesses/{businessId}/soldListings':
+    get:
+      tags:
+        - 'U31: Purchases'
+        - 'Sold Listing'
+        - 'Business Accounts'
+      summary: 'Search all sold listings for given business'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - in: path
+          name: businessId
+          schema:
+            type: integer
+          required: true
+          description: ID of the business
+          example: 500
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: page of sold listing
+      responses:
+        '200':
+          description: Action completed successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SoldListing'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
   '/cards/search':
     get:
