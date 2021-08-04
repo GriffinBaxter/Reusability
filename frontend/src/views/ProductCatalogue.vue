@@ -874,9 +874,15 @@ export default {
 
       OpenFoodFacts.retrieveProductByBarcode(this.productBarcode).then((result) => {
         if (result.data.status === 1) {
-          console.log("Name: " + result.data.product.product_name + " " + result.data.product.quantity);
-          console.log("Manufacturer: " + result.data.product.brands);
-          console.log("Description: " + result.data.product.generic_name);
+          if (outerThis.productName === "") {
+            outerThis.productName = result.data.product.product_name + " " + result.data.product.quantity;
+          }
+          if (outerThis.manufacturer === "") {
+            outerThis.manufacturer = result.data.product.brands;
+          }
+          if (outerThis.description === "") {
+            outerThis.description = result.data.product.generic_name;
+          }
         } else {
           outerThis.toastErrorMessage = "Could not autofill, product may not exist in database";
         }
