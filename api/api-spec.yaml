@@ -1931,3 +1931,54 @@ components:
           readOnly: true
           allOf:
             - $ref: '#/components/schemas/Keyword'
+
+    SoldListing:
+      type: object
+      description: Cpmtaoms the details of a sale of a listing that was completed.
+      required:
+        - id
+        - saleDate
+        - listingDate
+        - productId
+        - quantity
+        - price
+        - likes
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automtically generated and assigned by the server
+        saleDate:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the sale happened.
+        listingDate:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the items of the sale when they were listed origninally.
+        productId:
+          type: string
+          example: 'PROD-123'
+          readOnly: true
+          description: The id of the product being sold
+        quantity:
+          type: integer
+          example: 200
+          readOnly: true
+          description: The quantity of items sold.
+        price:
+          type: number
+          format: double
+          example: 20.2
+          readOnly: true
+          description: The price of a single item
+        likes:
+          type: integer
+          example: 10
+          readOnly: true
+          description: The amount of likes the listing had before being sold.
