@@ -161,9 +161,23 @@
                       <label for="product-barcode">Barcode</label>
                       <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="productBarcode"
                              :class="toggleInvalidClass(productBarcodeErrorMsg)" :maxlength="config.productBarcode.maxLength">
+                      <div class="invalid-feedback">
+                        {{ productBarcodeErrorMsg }}
+                      </div>
                       <br><br>
                       Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcode" name="img"
                              accept="image/png, image/gif, image/jpeg">
+                      <br><br>
+                      <button id="autofill-button" type="button"
+                              :class="`btn green-button ${getErrorMessage(
+                              config.productBarcode.name,
+                              productBarcode,
+                              config.productBarcode.minLength,
+                              config.productBarcode.maxLength,
+                              config.productBarcode.regexMessage,
+                              config.productBarcode.regex) === '' ? '': 'disabled'}`"
+                              @click="autofillProductFromBarcode(productBarcode)">Autofill Empty Fields
+                      </button>
                       <div class="invalid-feedback">
                         {{ productBarcodeErrorMsg }}
                       </div>
