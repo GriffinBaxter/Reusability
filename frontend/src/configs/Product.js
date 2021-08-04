@@ -9,6 +9,13 @@ export default class Product {
             regex: /^[A-Z0-9-]+$/,
             regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
         },
+        productBarcode: {
+            name: "Product barcode",
+            minLength: 12,
+            maxLength: 13,
+            regex: /^[0-9-]+$/,
+            regexMessage: "Must only contain numbers"
+        },
         productName: {
             name: "Product name",
             minLength: 1,
