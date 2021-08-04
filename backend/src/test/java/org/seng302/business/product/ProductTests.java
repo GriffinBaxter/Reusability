@@ -269,6 +269,10 @@ class ProductTests {
 
     /* ------------------------------------------------- isValidBarcodeTests -----------------------------------------*/
 
+    /**
+     * A barcode must be a string representation of only numbers. Therefore, if the barcode string contains
+     * letters an exception must be thrown. This method tests whether this is the case.
+     */
     @Test
     void isInvalidBarcodeExceptionThrownWhenBarcodeIsAStringNotContainingOnlyNumbersTest() {
         try {
@@ -287,6 +291,10 @@ class ProductTests {
         }
     }
 
+    /**
+     * A barcode must be a string representation of only numbers. Therefore, if the barcode string contains
+     * letters an exception must be thrown. This method tests whether this is the case.
+     */
     @Test
     void isInvalidBarcodeExceptionThrownWhenBarcodeIsAStringContainingOnlyLettersTest() {
         try {
@@ -305,6 +313,11 @@ class ProductTests {
         }
     }
 
+    /**
+     * This method tests whether a valid UPC-A barcode (with correct check digit) is added to
+     * a product when it is created (i.e. no exception is thrown).
+     * @throws IllegalProductArgumentException thrown if a product contains invalid data.
+     */
     @Test
     void isProductCreatedWhenProductHasUPCABarcodeTest() throws IllegalProductArgumentException {
         String upcBarcode = "036000291452";
@@ -320,6 +333,11 @@ class ProductTests {
         assertEquals(upcBarcode, product.getBarcode());
     }
 
+    /**
+     * This method tests whether a valid EAN-13 barcode (with correct check digit) is added to
+     * a product when it is created (i.e. an exception is not thrown).
+     * @throws IllegalProductArgumentException thrown if a product contains invalid data.
+     */
     @Test
     void isProductCreatedWhenProductHasEANBarcodeTest() throws IllegalProductArgumentException {
         String eanBarcode = "9400547002634";
@@ -335,6 +353,10 @@ class ProductTests {
         assertEquals(eanBarcode, product.getBarcode());
     }
 
+    /**
+     * This method tests whether an exception is thrown when a barcode that is too short is added to
+     * a product. The minimum length of a barcode is 12 (for UPC-A).
+     */
     @Test
     void isInvalidBarcodeExceptionThrownWhenBarcodeIsTooShortTest() {
         try {
@@ -353,6 +375,10 @@ class ProductTests {
         }
     }
 
+    /**
+     * This method tests whether an exception is thrown when a barcode that is too long is added to
+     * a product. The maximum length of a barcode is 13 (for EAN-13).
+     */
     @Test
     void isInvalidBarcodeExceptionThrownWhenBarcodeIsTooLongTest() {
         try {
@@ -372,7 +398,10 @@ class ProductTests {
     }
 
     /**
-     * 74
+     * This method checks whether an exception is thrown when the check digit of a barcode is incorrect.
+     * This method specifically tests for transposition. Transposition is when a user manually enters
+     * a barcode and accidentally switches two numbers around i.e. the barcode should be 9400547002634
+     * instead of 9400574002634 (they have switched the 7 and 4).
      */
     @Test
     void isInvalidBarcodeExceptionThrownWhenBarcodeHasIncorrectCheckDigitViaTranspositionTest() {
@@ -393,7 +422,10 @@ class ProductTests {
     }
 
     /**
-     * 55
+     * This method checks whether an exception is thrown when the check digit of a barcode is incorrect.
+     * This method specifically tests for twinning. Twinning is when a user manually enters
+     * a barcode and accidentally duplicates two numbers i.e. the barcode should be 9400547002634
+     * instead of 9400557002634 (they have duplicated 5).
      */
     @Test
     void isInvalidBarcodeExceptionThrownWhenBarcodeHasIncorrectCheckDigitViaTwinningTest() {
