@@ -12,6 +12,7 @@ package org.seng302.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.exceptions.IllegalProductArgumentException;
 import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.repository.ProductUpdateService;
 import org.seng302.view.incoming.ProductUpdatePayload;
@@ -56,25 +57,30 @@ public class ProductUpdateServiceImplementation implements ProductUpdateService 
         logger.debug("Found product from business (business ID: {}) with product ID {}: {}", businessId, productId, product);
 
         // Update the attributes
-        product.setName(updatedProduct.getName());
-        product.setDescription(updatedProduct.getDescription());
-        product.setManufacturer(updatedProduct.getManufacturer());
-        product.setRecommendedRetailPrice(updatedProduct.getRecommendedRetailPrice());
-        product.setBarcode(updatedProduct.getBarcode());
-        logger.debug("Set new attributes for product.");
+        try {
+            product.setName(updatedProduct.getName());
+            product.setDescription(updatedProduct.getDescription());
+            product.setManufacturer(updatedProduct.getManufacturer());
+            product.setRecommendedRetailPrice(updatedProduct.getRecommendedRetailPrice());
+            product.setBarcode(updatedProduct.getBarcode());
 
-        // Detach the entity so we can update the ID attribute
-        entityManager.detach(product);
-        product.setProductId(updatedProduct.getId());
-        logger.debug("Detached and set new product id.");
+            logger.debug("Set new attributes for product.");
 
-        // Adding the new copy to the database.
-        entityManager.persist(product);
-        logger.debug("Re-attached product");
+            // Detach the entity so we can update the ID attribute
+            entityManager.detach(product);
+            product.setProductId(updatedProduct.getId());
+            logger.debug("Detached and set new product id.");
 
-        // Delete the old copy
-        productRepository.deleteByIdAndBusinessId(productId, businessId);
-        logger.debug("Old copy has been deleted.");
+            // Adding the new copy to the database.
+            entityManager.persist(product);
+            logger.debug("Re-attached product");
+
+            // Delete the old copy
+            productRepository.deleteByIdAndBusinessId(productId, businessId);
+            logger.debug("Old copy has been deleted.");
+        } catch (IllegalProductArgumentException e) {
+            logger.error("Transaction failed: {}", e.getMessage());
+        }
     }
 
 }

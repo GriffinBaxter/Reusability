@@ -122,6 +122,10 @@ public class Product {
             logger.error("Product Creation Error - Manufacturer {} is not valid", manufacturer);
             throw new IllegalProductArgumentException("Invalid manufacturer");
         }
+        if (!isValidRecommendedRetailPrice(recommendedRetailPrice)) {
+            logger.error("Product Creation Error -  Recommended Retail Price {} is not valid", recommendedRetailPrice);
+            throw new IllegalProductArgumentException("Invalid recommended retail price");
+        }
         if (!isValidBarcode(barcode)) {
             logger.error("Product Creation Error - Barcode {} is not valid", barcode);
             throw new IllegalProductArgumentException("Invalid barcode");
@@ -183,20 +187,62 @@ public class Product {
         this.businessId = businessId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Change the name of the product.
+     * Note: The name is a required field.
+     *       It is assumed name is not null.
+     * @param name a string representing the name of the product.
+     */
+    public void setName(String name) throws IllegalProductArgumentException {
+        if (isValidName(name)) {
+            this.name = name;
+        } else {
+            throw new IllegalProductArgumentException("Invalid product name");
+        }
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * Change the description of the product.
+     * Note: The description is an optional field.
+     *       It is assumed description is not null.
+     * @param description a string representing the description of the product
+     */
+    public void setDescription(String description) throws IllegalProductArgumentException {
+        if (isValidDescription(description)) {
+            this.description = description;
+        } else {
+            throw new IllegalProductArgumentException("Invalid product description");
+        }
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
+    /**
+     * Change the manufacturer of the product.
+     * Note: The manufacturer is an optional field, and can contain diacritics, symbols,
+     *       and a selected number of symbols.
+     *       It is assumed manufacturer is not null.
+     * @param manufacturer a string representing the name of the business which makes this product.
+     */
+    public void setManufacturer(String manufacturer) throws IllegalProductArgumentException {
+        if (isValidManufacturer(manufacturer)) {
+            this.manufacturer = manufacturer;
+        } else {
+            throw new IllegalProductArgumentException("Invalid manufacturer");
+        }
     }
 
-    public void setRecommendedRetailPrice(Double recommendedRetailPrice) {
-        this.recommendedRetailPrice = recommendedRetailPrice;
+    /**
+     * Change the RRP of the product.
+     * Note: The RRP must be a double >= 0 and <= Positive Infinity.
+     *       The units/currency of the RRP is based on the country the business is located in.
+     *       It is assumed RRP is not null.
+     * @param recommendedRetailPrice a double representing the price of the product.
+     */
+    public void setRecommendedRetailPrice(Double recommendedRetailPrice) throws IllegalProductArgumentException {
+        if (isValidRecommendedRetailPrice(recommendedRetailPrice)) {
+            this.recommendedRetailPrice = recommendedRetailPrice;
+        } else {
+            throw new IllegalProductArgumentException("Invalid recommended retail price");
+        }
     }
 
     public void setCreated(LocalDateTime created) {
@@ -205,7 +251,8 @@ public class Product {
 
     /**
      * Change the barcode of the product.
-     * Note: the barcode must be a valid EAN-13 or UPC barcode.
+     * Note: The barcode must be a valid EAN-13 or UPC barcode.
+     *       It is assumed that barcode is not null.
      * @param barcode a string representation of the barcode.
      */
     public void setBarcode(String barcode) throws IllegalProductArgumentException {
@@ -262,6 +309,18 @@ public class Product {
         return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
                 (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
                 (manufacturer.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]*$"));
+    }
+
+    /**
+     * Checks to see whether a recommendedRetailPrice is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param recommendedRetailPrice Recommended retail price to be checked.
+     * @return true when the recommendedRetailPrice is valid. Otherwise false.
+     */
+    private boolean isValidRecommendedRetailPrice(Double recommendedRetailPrice) {
+        if (recommendedRetailPrice == null) { return true; } // as RRP is optional
+        return RECOMMENDED_RETAIL_PRICE_MINIMUM <= recommendedRetailPrice &&
+                recommendedRetailPrice <= RECOMMENDED_RETAIL_PRICE_MAXIMUM;
     }
 
     /**

@@ -28,11 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ProductTests {
 
     private Address address;
-
     private User user;
-
     private Business business;
-
+    private Product setProduct;
 
     @BeforeEach
     void setup() throws Exception {
@@ -69,6 +67,16 @@ class ProductTests {
                 user
         );
         business.setId(1);
+        setProduct = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                "9400547002634"
+        );
+
     }
 
     /**
@@ -136,6 +144,7 @@ class ProductTests {
                     20.00,
                     ""
             );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid product ID", e.getMessage());
         }
@@ -156,6 +165,7 @@ class ProductTests {
                     20.00,
                     ""
             );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid business", e.getMessage());
         }
@@ -176,6 +186,7 @@ class ProductTests {
                     20.00,
                     ""
             );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid product name", e.getMessage());
         }
@@ -191,11 +202,12 @@ class ProductTests {
                     "PROD",
                     business,
                     "Name",
-                    "A".repeat(101),
+                    "A".repeat(601),
                     "Manufacturer",
                     20.00,
                     ""
             );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid product description", e.getMessage());
         }
@@ -216,16 +228,18 @@ class ProductTests {
                     20.00,
                     ""
             );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid manufacturer", e.getMessage());
         }
     }
 
+
     /**
-     * Tests that an invalid creation date throws an error.
+     * Tests that an invalid RRP throws an error.
      */
     @Test
-    void testInvalidCreatedDate() {
+    void testInvalidRRP() {
         try {
             Product product = new Product(
                     "PROD",
@@ -233,11 +247,12 @@ class ProductTests {
                     "Beans",
                     "Description",
                     "Manufacturer",
-                    20.00,
+                    -1.00,
                     ""
             );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
-            assertEquals("Invalid date", e.getMessage());
+            assertEquals("Invalid recommended retail price", e.getMessage());
         }
     }
 
@@ -439,6 +454,78 @@ class ProductTests {
                     20.00,
                     "9400557002634"
             );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid barcode", e.getMessage());
+        }
+    }
+
+    /* ------------------------------------------------- SetterTests -------------------------------------------------*/
+
+    /**
+     * This method tests whether an exception is thrown when trying to change a product name to something invalid
+     * (e.g. an empty string when name is a required field).
+     */
+    @Test
+    void isIllegalProductArgumentExceptionThrownWhenChangingProductNameToInvalidName() {
+        try {
+            setProduct.setName("");
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid product name", e.getMessage());
+        }
+    }
+
+    /**
+     * This method tests whether an exception is thrown when trying to change a product description to something invalid
+     * (e.g. a string with a length greater than the max length).
+     */
+    @Test
+    void isIllegalProductArgumentExceptionThrownWhenChangingProductDescriptionToInvalidDescription() {
+        try {
+            setProduct.setDescription("A".repeat(601));
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid product description", e.getMessage());
+        }
+    }
+
+    /**
+     * This method tests whether an exception is thrown when trying to change a product manufacturer to something invalid
+     * (e.g. a string with a length greater than the max length).
+     */
+    @Test
+    void isIllegalProductArgumentExceptionThrownWhenChangingProductManufacturerToInvalidManufacturer() {
+        try {
+            setProduct.setManufacturer("A".repeat(101));
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid manufacturer", e.getMessage());
+        }
+    }
+
+    /**
+     * This method tests whether an exception is thrown when trying to change a product RRP to something invalid
+     * (e.g. a RRP which is negative).
+     */
+    @Test
+    void isIllegalProductArgumentExceptionThrownWhenChangingProductRRPToInvalidRRP() {
+        try {
+            setProduct.setRecommendedRetailPrice(-1.0);
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid recommended retail price", e.getMessage());
+        }
+    }
+
+    /**
+     * This method tests whether an exception is thrown when trying to change a product barcode to something invalid
+     * (e.g. a barcode which contains letters).
+     */
+    @Test
+    void isIllegalProductArgumentExceptionThrownWhenChangingProductBarcodeToInvalidBarcode() {
+        try {
+            setProduct.setBarcode("INVALIDBARCODE");
             Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid barcode", e.getMessage());
