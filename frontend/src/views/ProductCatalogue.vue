@@ -199,6 +199,7 @@ import UpdateProductImagesModal from "../components/productCatalogue/UpdateProdu
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 import Quagga from 'quagga';
+import OpenFoodFacts from '../openFoodFactsInstance';
 
 export default {
   name: "ProductCatalogue",
@@ -800,6 +801,18 @@ export default {
           console.log("Barcode not found");
         }
       });
+    },
+
+    autofillProductFromBarcode(barcode) {
+      OpenFoodFacts.retrieveProductByBarcode(barcode).then((result) => {
+        if (result.data.status === 1) {
+          console.log("Name: " + result.data.product.product_name + " " + result.data.product.quantity);
+          console.log("Manufacturer: " + result.data.product.brands);
+          console.log("Description: " + result.data.product.generic_name);
+        } else {
+          console.log(result.data.status_verbose);
+        }
+      });
     }
   },
 
@@ -838,7 +851,7 @@ export default {
     // If the current Product was updated we update the table.
     currentProduct: function () {
       this.requestProducts();
-    }
+    },
   }
 }
 </script>
