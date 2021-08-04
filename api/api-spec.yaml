@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.0.3
+  version: 5.0.6
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -59,12 +59,8 @@ tags:
     description: 'Grouping of endpoints related to the community marketplace, and the cards the are created for it'
   - name: 'Keywords'
     description: 'Grouping of endpoints related to system-wide keywords that can be added by users and attached to marketplace cards'
-  - name: 'MarketplaceCard Notification'
-    description: 'Grouping of endpoints related to the community marketplace cards, and the notifications created for them'
-  - name: 'Keyword Notification'
-    description: 'Grouping of endpoints related to notifications created for system-wide keywords'
-  - name: 'Sold Listing'
-    description: 'Grouping of endpoints related to sold listings'
+  - name: 'Notifications'
+    description: 'Grouping of endpoints related to notifications'
 
 security:
   - CookieAuth:
@@ -1217,7 +1213,7 @@ paths:
     get:
       tags:
         - 'UCM4: Card expiry'
-        - 'MarketplaceCardNotification'
+        - 'Notifications'
       summary: 'Retrieve all notifications for current user'
       security:
         - CookieAuth:
@@ -1242,7 +1238,7 @@ paths:
     delete:
       tags:
         - 'UCM4: Card expiry'
-        - 'MarketplaceCardNotification'
+        - 'Notifications'
       summary: 'Delete a notification by given id'
       security:
         - CookieAuth:
@@ -1407,7 +1403,7 @@ paths:
     get:
       tags:
         - 'U31: Purchases'
-        - 'Sold Listing'
+        - 'Listings / sales'
         - 'Business Accounts'
       summary: 'Search all sold listings for given business'
       security:
