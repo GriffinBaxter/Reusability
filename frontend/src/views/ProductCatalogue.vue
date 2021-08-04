@@ -101,9 +101,6 @@
                       {{ productIDErrorMsg }}
                     </div>
                   </div>
-                  <!--product barcode-->
-                  <input type="file" id="imageUpload" ref="image" @change="getBarcode" name="img"
-                         accept="image/png, image/gif, image/jpeg">
                   <!--product name-->
                   <div class="form-group">
                     <label for="product-name">Product Name*</label>
@@ -151,6 +148,18 @@
                               style="resize: none"/>
                     <div class="invalid-feedback">
                       {{ descriptionErrorMsg }}
+                    </div>
+                  </div>
+                  <!--product barcode-->
+                  <div class="form-group">
+                    <label for="product-barcode">Product Barcode</label>
+                    <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="productBarcode"
+                           :class="toggleInvalidClass(productBarcodeErrorMsg)" :maxlength="config.productBarcode.maxLength">
+                    Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcode" name="img"
+                                            accept="image/png, image/gif, image/jpeg">
+
+                    <div class="invalid-feedback">
+                      {{ productBarcodeErrorMsg }}
                     </div>
                   </div>
                   <!--toast error-->
@@ -260,6 +269,10 @@ export default {
       // Product id related variables
       productID: "",
       productIDErrorMsg: "",
+      
+      // Product barcode related variables
+      productBarcode: "",
+      productBarcodeErrorMsg: "",
 
       // Product name related variables
       productName: "",
@@ -331,6 +344,10 @@ export default {
       // Reset product id related variables
       this.productID = "";
       this.productIDErrorMsg = "";
+
+      // Reset product barcode related variables
+      this.productBarcode = "";
+      this.productBarcodeErrorMsg = "";
 
       // Reset product name related variables
       this.productName = "";
@@ -540,6 +557,7 @@ export default {
      */
     trimTextInputFields() {
       this.productID = this.productID.trim();
+      this.productBarcode = this.productBarcode.trim();
       this.productName = this.productName.trim();
       this.recommendedRetailPrice = this.recommendedRetailPrice.trim();
       this.manufacturer = this.manufacturer.trim();
@@ -568,6 +586,23 @@ export default {
           this.config.productID.regex
       )
       if (this.productIDErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Product barcode error checking
+      if (this.productBarcode.length !== 0) {
+        this.productBarcodeErrorMsg = this.getErrorMessage(
+            this.config.productBarcode.name,
+            this.productBarcode,
+            this.config.productBarcode.minLength,
+            this.config.productBarcode.maxLength,
+            this.config.productBarcode.regexMessage,
+            this.config.productBarcode.regex
+        )
+      } else {
+        this.productBarcodeErrorMsg = ""
+      }
+      if (this.productBarcodeErrorMsg) {
         requestIsInvalid = true
       }
 
@@ -629,6 +664,7 @@ export default {
       // Wrapping up the product submitted fields into a class object (Product).
       const productData = {
         id: this.productID,
+        barcode: this.productBarcode,
         name: this.productName,
         description: this.description,
         manufacturer: this.manufacturer,
@@ -651,6 +687,10 @@ export default {
               // Reset product id related variables
               this.productID = "";
               this.productIDErrorMsg = "";
+
+              // Reset product barcode related variables
+              this.productBarcode = "";
+              this.productBarcodeErrorMsg = "";
 
               // Reset product name related variables
               this.productName = "";
@@ -733,6 +773,10 @@ export default {
       this.productID = "";
       this.productIDErrorMsg = "";
 
+      // Reset product barcode related variables
+      this.productBarcode = "";
+      this.productBarcodeErrorMsg = "";
+
       // Reset product name related variables
       this.productName = "";
       this.productNameErrorMsg = "";
@@ -786,6 +830,7 @@ export default {
     },
 
     getBarcode() {
+      let outerThis = this;
       let file = this.$refs.image.files[0];
 
       Quagga.decodeSingle({
@@ -796,9 +841,9 @@ export default {
         src: URL.createObjectURL(file)
       }, function (result) {
         if (result && result.codeResult) {
-          console.log(result.codeResult.code);
+          outerThis.productBarcode = result.codeResult.code;
         } else {
-          console.log("Barcode not found");
+          outerThis.productBarcodeErrorMsg = "Barcode not found in image";
         }
       });
     },
