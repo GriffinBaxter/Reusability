@@ -225,8 +225,7 @@ class ImageResourceIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
 
         anotherProduct = new Product(
@@ -236,8 +235,7 @@ class ImageResourceIntegrationTests {
                 "Description2",
                 "Manufacturer2",
                 22.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         otherFile = new MockMultipartFile("images", "testImage.other", "something", this.getClass().getResourceAsStream("testImage.jpg"));
         jpgImage = new MockMultipartFile("images", "testImage.jpg", MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));

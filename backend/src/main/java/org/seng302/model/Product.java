@@ -134,7 +134,7 @@ public class Product {
         this.manufacturer = (manufacturer.equals("")) ? null : manufacturer;
         this.recommendedRetailPrice = recommendedRetailPrice;
         this.created = LocalDateTime.now();
-        this.barcode = barcode;
+        this.barcode = (barcode.equals("")) ? null : barcode;
     }
 
     // Getters
@@ -269,6 +269,8 @@ public class Product {
      * @return true when the barcode is valid.
      */
     private boolean isValidBarcode(String barcode) {
+        // barcode is not a required field
+        if (barcode == null || barcode.length() == 0) { return true; }
         // check barcode is numeric
         if (!barcode.matches("[^0-9]+$")) { return false; }
 

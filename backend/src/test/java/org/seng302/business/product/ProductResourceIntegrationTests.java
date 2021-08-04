@@ -205,8 +205,7 @@ class ProductResourceIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
 
         anotherProduct = new Product(
@@ -216,8 +215,7 @@ class ProductResourceIntegrationTests {
                 "Description2",
                 "Manufacturer2",
                 22.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
 
 
@@ -247,8 +245,7 @@ class ProductResourceIntegrationTests {
                 "NewDesc",
                 "Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0))
+                ""
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
                 newProduct.getDescription(), newProduct.getManufacturer(),
@@ -289,8 +286,7 @@ class ProductResourceIntegrationTests {
                 "NewDesc",
                 "Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0))
+                ""
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
                 newProduct.getDescription(), newProduct.getManufacturer(),
@@ -331,8 +327,7 @@ class ProductResourceIntegrationTests {
                 "NewDesc",
                 "Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0))
+                ""
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
                 newProduct.getDescription(), newProduct.getManufacturer(),
@@ -376,8 +371,7 @@ class ProductResourceIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
                 newProduct.getDescription(), newProduct.getManufacturer(),
@@ -473,8 +467,7 @@ class ProductResourceIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
                 newProduct.getDescription(), newProduct.getManufacturer(),
@@ -511,8 +504,7 @@ class ProductResourceIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         payloadJson = String.format(productPayloadJson, newProduct.getProductId(), newProduct.getName(),
                 newProduct.getDescription(), newProduct.getManufacturer(),

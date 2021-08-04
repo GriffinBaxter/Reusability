@@ -84,8 +84,7 @@ class ProductTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                LocalTime.of(0, 0))
+                ""
         );
 
         assertEquals("PROD", product.getProductId());
@@ -113,8 +112,7 @@ class ProductTests {
                 "",
                 "",
                 null,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                LocalTime.of(0, 0))
+                ""
         );
 
         assertNull(product.getDescription());
@@ -135,8 +133,7 @@ class ProductTests {
                     "Description",
                     "Manufacturer",
                     20.00,
-                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                    LocalTime.of(0, 0))
+                    ""
             );
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid product ID", e.getMessage());
@@ -156,8 +153,7 @@ class ProductTests {
                     "Description",
                     "Manufacturer",
                     20.00,
-                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                    LocalTime.of(0, 0))
+                    ""
             );
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid business", e.getMessage());
@@ -177,8 +173,7 @@ class ProductTests {
                     "Description",
                     "Manufacturer",
                     20.00,
-                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                    LocalTime.of(0, 0))
+                    ""
             );
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid product name", e.getMessage());
@@ -198,8 +193,7 @@ class ProductTests {
                     "A".repeat(101),
                     "Manufacturer",
                     20.00,
-                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                            LocalTime.of(0, 0))
+                    ""
             );
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid product description", e.getMessage());
@@ -219,8 +213,7 @@ class ProductTests {
                     "Description",
                     "Manufacturer!23",
                     20.00,
-                    LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                            LocalTime.of(0, 0))
+                    ""
             );
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid manufacturer", e.getMessage());
@@ -240,7 +233,7 @@ class ProductTests {
                     "Description",
                     "Manufacturer",
                     20.00,
-                    null
+                    ""
             );
         } catch (IllegalProductArgumentException e) {
             assertEquals("Invalid date", e.getMessage());
@@ -261,8 +254,7 @@ class ProductTests {
                 "Description",
                 "L'Oréal",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
 
         assertEquals("PROD", product.getProductId());
