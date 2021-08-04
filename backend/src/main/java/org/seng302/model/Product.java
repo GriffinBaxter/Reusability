@@ -269,17 +269,15 @@ public class Product {
      * @return true when the barcode is valid.
      */
     private boolean isValidBarcode(String barcode) {
-        int barcodeLength = barcode.length();
-
         // barcode is not a required field
-        if (barcodeLength == 0) { return true; }
+        if (barcode.length() == 0) { return true; }
         // check barcode is numeric
         if (!barcode.matches("[0-9]+")) {
             return false;
         }
 
         // pad with zeros to lengthen to 14 digits, so check digit operation can be performed.
-        switch (barcodeLength) {
+        switch (barcode.length()) {
             case 12:
                 // UPC-A barcode
                 barcode = "00" + barcode;
@@ -294,7 +292,7 @@ public class Product {
         }
         // check digit operation
         int sum = 0;
-        for (int i = 0; i < (barcodeLength - 1); i++) {
+        for (int i = 0; i < (barcode.length() - 1); i++) {
             int charAsInt = Character.getNumericValue(barcode.charAt(i));
             // even parity
             if (i % 2 == 0) {
@@ -303,7 +301,7 @@ public class Product {
                 sum += charAsInt;
         }
         int check = (10 - (sum % 10)) % 10;
-        int checkDigit = Character.getNumericValue(barcode.charAt(barcodeLength - 1));
+        int checkDigit = Character.getNumericValue(barcode.charAt(barcode.length() - 1));
         return check == checkDigit;
     }
 
