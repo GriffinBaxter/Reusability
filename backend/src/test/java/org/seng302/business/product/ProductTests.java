@@ -1,5 +1,6 @@
 package org.seng302.business.product;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.exceptions.IllegalProductArgumentException;
@@ -76,7 +77,7 @@ class ProductTests {
      * @throws IllegalProductArgumentException Exception error
      */
     @Test
-    void TestValidProduct() throws IllegalProductArgumentException {
+    void testValidProduct() throws IllegalProductArgumentException {
         Product product = new Product(
                 "PROD",
                 business,
@@ -84,7 +85,7 @@ class ProductTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                ""
+                "9400547002634"
         );
 
         assertEquals("PROD", product.getProductId());
@@ -93,18 +94,17 @@ class ProductTests {
         assertEquals("Description", product.getDescription());
         assertEquals("Manufacturer", product.getManufacturer());
         assertEquals(20.00, product.getRecommendedRetailPrice());
-        assertEquals(LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                    LocalTime.of(0, 0)), product.getCreated());
+        assertEquals("9400547002634", product.getBarcode());
     }
 
     /**
-     * Tests that the optional fields (description and recommendedRetailPrice) are set to null when empty,
-     * and that this doesn't prevent a product from being created.
+     * Tests that the optional fields (description, manufacturer, recommendedRetailPrice and barcode)
+     * are set to null when empty, and that this doesn't prevent a product from being created.
      *
      * @throws IllegalProductArgumentException Exception error
      */
     @Test
-    void TestProductOptionalFields() throws IllegalProductArgumentException {
+    void testProductOptionalFields() throws IllegalProductArgumentException {
         Product product = new Product(
                 "PROD",
                 business,
@@ -118,13 +118,14 @@ class ProductTests {
         assertNull(product.getDescription());
         assertNull(product.getManufacturer());
         assertNull(product.getRecommendedRetailPrice());
+        assertNull(product.getBarcode());
     }
 
     /**
      * Tests that an invalid product code throws an error.
      */
     @Test
-    void TestInvalidProductCode() {
+    void testInvalidProductCode() {
         try {
             Product product = new Product(
                     "",
@@ -144,7 +145,7 @@ class ProductTests {
      * Tests that an invalid (null) business object throws an error.
      */
     @Test
-    void TestInvalidBusiness() {
+    void testInvalidBusiness() {
         try {
             Product product = new Product(
                     "PROD",
@@ -164,7 +165,7 @@ class ProductTests {
      * Tests that an invalid name throws an error.
      */
     @Test
-    void TestInvalidName() {
+    void testInvalidName() {
         try {
             Product product = new Product(
                     "PROD",
@@ -184,7 +185,7 @@ class ProductTests {
      * Tests that an invalid description throws an error.
      */
     @Test
-    void TestInvalidDescription() {
+    void testInvalidDescription() {
         try {
             Product product = new Product(
                     "PROD",
@@ -204,7 +205,7 @@ class ProductTests {
      * Tests that an invalid manufacturer throws an error.
      */
     @Test
-    void TestInvalidManufacturer() {
+    void testInvalidManufacturer() {
         try {
             Product product = new Product(
                     "PROD",
@@ -224,7 +225,7 @@ class ProductTests {
      * Tests that an invalid creation date throws an error.
      */
     @Test
-    void TestInvalidCreatedDate() {
+    void testInvalidCreatedDate() {
         try {
             Product product = new Product(
                     "PROD",
@@ -246,7 +247,7 @@ class ProductTests {
      * @throws IllegalProductArgumentException Exception error
      */
     @Test
-    void TestValidProductNameAndManufacturerIncludeDiacritics() throws IllegalProductArgumentException {
+    void testValidProductNameAndManufacturerIncludeDiacritics() throws IllegalProductArgumentException {
         Product product = new Product(
                 "PROD",
                 business,
@@ -254,7 +255,7 @@ class ProductTests {
                 "Description",
                 "L'Oréal",
                 20.00,
-                ""
+                "9400547002634"
         );
 
         assertEquals("PROD", product.getProductId());
@@ -263,7 +264,153 @@ class ProductTests {
         assertEquals("Description", product.getDescription());
         assertEquals("L'Oréal", product.getManufacturer());
         assertEquals(20.00, product.getRecommendedRetailPrice());
-        assertEquals(LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                LocalTime.of(0, 0)), product.getCreated());
+        assertEquals("9400547002634", product.getBarcode());
     }
+
+    /* ------------------------------------------------- isValidBarcodeTests -----------------------------------------*/
+
+    @Test
+    void isInvalidBarcodeExceptionThrownWhenBarcodeIsAStringNotContainingOnlyNumbersTest() {
+        try {
+            Product product = new Product(
+                    "PROD",
+                    business,
+                    "Beans",
+                    "Description",
+                    "Manufacturer",
+                    20.00,
+                    "INVALID123456"
+            );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid barcode", e.getMessage());
+        }
+    }
+
+    @Test
+    void isInvalidBarcodeExceptionThrownWhenBarcodeIsAStringContainingOnlyLettersTest() {
+        try {
+            Product product = new Product(
+                    "PROD",
+                    business,
+                    "Beans",
+                    "Description",
+                    "Manufacturer",
+                    20.00,
+                    "AFAKEBARCODE"
+            );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid barcode", e.getMessage());
+        }
+    }
+
+    @Test
+    void isProductCreatedWhenProductHasUPCABarcodeTest() throws IllegalProductArgumentException {
+        String upcBarcode = "036000291452";
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                upcBarcode
+        );
+        assertEquals(upcBarcode, product.getBarcode());
+    }
+
+    @Test
+    void isProductCreatedWhenProductHasEANBarcodeTest() throws IllegalProductArgumentException {
+        String eanBarcode = "9400547002634";
+        Product product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                eanBarcode
+        );
+        assertEquals(eanBarcode, product.getBarcode());
+    }
+
+    @Test
+    void isInvalidBarcodeExceptionThrownWhenBarcodeIsTooShortTest() {
+        try {
+            Product product = new Product(
+                    "PROD",
+                    business,
+                    "Beans",
+                    "Description",
+                    "Manufacturer",
+                    20.00,
+                    "94005470026"
+            );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid barcode", e.getMessage());
+        }
+    }
+
+    @Test
+    void isInvalidBarcodeExceptionThrownWhenBarcodeIsTooLongTest() {
+        try {
+            Product product = new Product(
+                    "PROD",
+                    business,
+                    "Beans",
+                    "Description",
+                    "Manufacturer",
+                    20.00,
+                    "94005470026345"
+            );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid barcode", e.getMessage());
+        }
+    }
+
+    /**
+     * 74
+     */
+    @Test
+    void isInvalidBarcodeExceptionThrownWhenBarcodeHasIncorrectCheckDigitViaTranspositionTest() {
+        try {
+            Product product = new Product(
+                    "PROD",
+                    business,
+                    "Beans",
+                    "Description",
+                    "Manufacturer",
+                    20.00,
+                    "9400574002634"
+            );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid barcode", e.getMessage());
+        }
+    }
+
+    /**
+     * 55
+     */
+    @Test
+    void isInvalidBarcodeExceptionThrownWhenBarcodeHasIncorrectCheckDigitViaTwinningTest() {
+        try {
+            Product product = new Product(
+                    "PROD",
+                    business,
+                    "Beans",
+                    "Description",
+                    "Manufacturer",
+                    20.00,
+                    "9400557002634"
+            );
+            Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
+        } catch (IllegalProductArgumentException e) {
+            assertEquals("Invalid barcode", e.getMessage());
+        }
+    }
+
 }
