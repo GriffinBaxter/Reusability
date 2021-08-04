@@ -105,6 +105,7 @@ class FindProductsByBusinessIdTests {
         businessId = business.getId();
         entityManager.flush();
 
+
         product1 = new Product(
                 "APPLE",
                 business,
@@ -114,6 +115,8 @@ class FindProductsByBusinessIdTests {
                 21.00,
                 ""
         );
+        product1.setCreated((LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0, 0))));
+
         product2 = new Product(
                 "APP-LE",
                 business,
@@ -123,6 +126,8 @@ class FindProductsByBusinessIdTests {
                 20.00,
                 ""
         );
+        product2.setCreated((LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0, 0))));
+
         product3 = new Product(
                 "APP-LE3",
                 business,
@@ -132,6 +137,8 @@ class FindProductsByBusinessIdTests {
                 null,
                 ""
         );
+        product3.setCreated((LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0, 0))));
+
         product4 = new Product(
                 "DUCT",
                 business,
@@ -141,6 +148,8 @@ class FindProductsByBusinessIdTests {
                 10.00,
                 ""
         );
+        product4.setCreated(LocalDateTime.of(LocalDate.of(2021, 2, 1), LocalTime.of(0, 0)));
+
         product5 = new Product(
                 "PROD",
                 business,
@@ -150,6 +159,8 @@ class FindProductsByBusinessIdTests {
                 10.00,
                 ""
         );
+        product5.setCreated(LocalDateTime.of(LocalDate.of(2021, 2, 1), LocalTime.of(1, 0)));
+
         searchProducts = List.of(product1, product2, product3, product4, product5);
         for (Product product: searchProducts) {
             entityManager.persist(product);

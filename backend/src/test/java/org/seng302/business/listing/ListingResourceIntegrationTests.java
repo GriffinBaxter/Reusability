@@ -114,7 +114,7 @@ class ListingResourceIntegrationTests {
                                                     "\"recommendedRetailPrice\":%.1f," +
                                                     "\"created\":\"%s\"," +
                                                     "\"images\":[]," +
-                                                    "\"barcode\":\"%s\"}" +
+                                                    "\"barcode\":\"%s\"}," +
                                                 "\"quantity\":%d," +
                                                 "\"pricePerItem\":%.1f," +
                                                 "\"totalPrice\":%.1f," +
@@ -270,7 +270,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that a Created status is return if the user is a business administrator for endpoint
      * /businesses/{id}/listings
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void canCreateLisitngWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
@@ -305,7 +305,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that a Bad Request status is returned if the create business data in the payload is invalid at endpoint
      * /businesses/{id}/listings
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void canCreateListingWhenBusinessExistsAndDataInvalidWithBusinessAdministratorUserCookie() throws Exception {
@@ -340,7 +340,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that a Not Acceptable status is returned if the business doesn't exist at ID in the
      * /businesses/{id}/listings endpoint.
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void cantCreateListingWhenBusinessDoesntExistButDataValid() throws Exception {
@@ -372,7 +372,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that an Unauthorized status is returned if the user doesn't have a JSESSIONID at endpoint
      * /businesses/{id}/listings
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void canCreateListingWhenBusinessExistsAndDataValidWithoutUserCookie() throws Exception {
@@ -406,7 +406,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that a created status is returned if the user is a GAA but not a business administrator for endpoint
      * /businesses/{id}/listings
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void canCreateListingWhenBusinessExistsAndDataValidWithUserCookieGAA() throws Exception {
@@ -440,7 +440,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that a created status is returned if the user is a DGAA but not a business administrator for endpoint
      * /businesses/{id}/listings
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void canCreateListingWhenBusinessExistsAndDataValidWithUserCookieDGAA() throws Exception {
@@ -500,7 +500,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that an Unauthorized status is returned if the JSESSIONID is invalid at
      * /businesses/{id}/listings Api endpoint
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void cantCreateListingWhenBusinessExistsAndDataValidWithInvalidUserCookie() throws Exception {
@@ -528,7 +528,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that a Forbidden status is returned if the user is not an admin of business at
      * /businesses/{id}/listings Api endpoint
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void cantCreateListingWhenBusinessExistsAndDataValidWithNoCookie() throws Exception {
@@ -555,7 +555,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that a Forbidden status is returned if the user is not an admin of business at
      * /businesses/{id}/listings Api endpoint
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void cantCreateListingWhenBusinessExistsAndDataValidWithNonAdminUserCookie() throws Exception {
@@ -661,7 +661,7 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that a NOT_ACCEPTABLE status is received if the business at ID in
      * /businesses/{id}/listings endpoint does not exist
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
     void cantRetrieveListingsWhenBusinessDoesntExistWithUserCookie() throws Exception {

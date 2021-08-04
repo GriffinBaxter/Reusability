@@ -264,6 +264,12 @@ public class Product {
 
     /**
      * Checks to see whether a barcode is valid using its check digit.
+     *
+     * A barcode is not a required field therefore it can be empty.
+     * A barcode string must only contain numbers.
+     * A barcode can only have a length of 12 or 13, since we only support
+     * UPC-A (12 digits) and EAN-13 (13 digits)
+     *
      * This method can be updated in the future if there is additional constraints.
      * @param barcode The barcode to be checked.
      * @return true when the barcode is valid.
