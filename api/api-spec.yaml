@@ -2204,7 +2204,7 @@ components:
 
     SoldListing:
       type: object
-      description: Cpmtaoms the details of a sale of a listing that was completed.
+      description: Contains the details of a sale of a listing that was completed.
       required:
         - id
         - saleDate
@@ -2212,7 +2212,7 @@ components:
         - productId
         - quantity
         - price
-        - likes
+        - bookmarks
       properties:
         id:
           type: integer
@@ -2247,8 +2247,8 @@ components:
           example: 20.2
           readOnly: true
           description: The price of a single item
-        likes:
+        bookmarks:
           type: integer
           example: 10
           readOnly: true
-          description: The amount of likes the listing had before being sold.
+          description: The amount of bookmarks the listing had before being sold.
