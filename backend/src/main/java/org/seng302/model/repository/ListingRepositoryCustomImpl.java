@@ -31,7 +31,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param toDate       Later end of close dates to include in search. (Optional)
      * @return A Page object containing all matching listing results.
      *
-     * Preconditions:  A non-null list of names to search for businesses.
+     * Preconditions:  A non-null list of names to search for product names.
      *                 A non-null pageable object.
      * Postconditions: A page object containing all matching listing results.
      */
@@ -64,12 +64,12 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
         // the where clause of the query
-        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicates.size()])));
+        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()])));
 
         // the order by clause of the query
         query.orderBy(QueryUtils.toOrders(pageable.getSort(), listing, criteriaBuilder));
 
-        // this query fetches the businesses as per the page limit
+        // this query fetches the listings as per the page limit
         List<Listing> listings = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
         
         // create a count query used to display "Showing 1-5 of x results"
@@ -77,7 +77,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         Root<Listing> listingRootCount = countQuery.from(Listing.class);
         countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
         
-        // fetches the count of all businesses as per given criteria
+        // fetches the count of all listings as per given criteria
         Long count = entityManager.createQuery(countQuery).getSingleResult();
         
         return new PageImpl<>(listings, pageable, count);
@@ -96,7 +96,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param toDate       Later end of close dates to include in search. (Optional)
      * @return A Page object containing all matching listing results.
      *
-     * Preconditions:  A non-null list of names to search for businesses.
+     * Preconditions:  A non-null list of locations to search for.
      *                 A non-null pageable object.
      * Postconditions: A page object containing all matching listing results.
      */
@@ -122,7 +122,6 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(addressPath.get("region")), "%" + location.toUpperCase() + "%"));
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(addressPath.get("city")), "%" + location.toUpperCase() + "%"));
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(addressPath.get("country")), "%" + location.toUpperCase() + "%"));
-
             }
         }
 
@@ -131,12 +130,12 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
         // the where clause of the query
-        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicates.size()])));
+        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()])));
 
         // the order by clause of the query
         query.orderBy(QueryUtils.toOrders(pageable.getSort(), listing, criteriaBuilder));
 
-        // this query fetches the businesses as per the page limit
+        // this query fetches the listings as per the page limit
         List<Listing> listings = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
 
         // create a count query used to display "Showing 1-5 of x results"
@@ -144,7 +143,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         Root<Listing> listingRootCount = countQuery.from(Listing.class);
         countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
-        // fetches the count of all businesses as per given criteria
+        // fetches the count of all listings as per given criteria
         Long count = entityManager.createQuery(countQuery).getSingleResult();
 
         return new PageImpl<>(listings, pageable, count);
@@ -190,12 +189,12 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
         // the where clause of the query
-        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicates.size()])));
+        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()])));
 
         // the order by clause of the query
         query.orderBy(QueryUtils.toOrders(pageable.getSort(), listing, criteriaBuilder));
 
-        // this query fetches the businesses as per the page limit
+        // this query fetches the listings as per the page limit
         List<Listing> listings = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
 
         // create a count query used to display "Showing 1-5 of x results"
@@ -203,7 +202,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         Root<Listing> listingRootCount = countQuery.from(Listing.class);
         countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
-        // fetches the count of all businesses as per given criteria
+        // fetches the count of all listings as per given criteria
         Long count = entityManager.createQuery(countQuery).getSingleResult();
 
         return new PageImpl<>(listings, pageable, count);
