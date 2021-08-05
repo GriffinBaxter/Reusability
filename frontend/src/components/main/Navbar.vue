@@ -18,8 +18,6 @@
         <router-link class="navbar-brand " to="/home" tabindex="-1">
           <img src="../../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
         </router-link>
-        <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
-
       </div>
 
       <!-- Hamburger icon -->
@@ -35,7 +33,8 @@
 
             <!-- default page links -->
             <li class="nav-item">
-              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
+              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">
+                Home</router-link>
             </li>
             <li class="nav-item" v-if="actAsId === null">
               <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
@@ -48,8 +47,13 @@
                 Profile
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link :class="['nav-link', isActivePath('/browseListings')]" to="/browseListings" tabindex="3">
+                Browse Listings
+              </router-link>
+            </li>
             <li class="nav-item" v-if="!isActAsBusiness">
-              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
+              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="4">
                 Marketplace
               </router-link>
             </li>
@@ -58,7 +62,7 @@
             <li class="nav-item dropdown" v-if="isActAsBusiness">
 
               <!-- Navbar toggle drop down -->
-              <a class="nav-link dropdown-toggle" role="button" tabindex="4"
+              <a class="nav-link dropdown-toggle" role="button" tabindex="5"
                  @click="() => {toggleBusinessDropdown()}"
                  @keyup.enter="() => {toggleBusinessDropdown()}">
                 Business Pages
@@ -90,13 +94,6 @@
                   </li>
                 </ul>
               </div>
-
-            </li>
-
-            <!-- Log out link-->
-            <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)"
-                 @keyup.enter="e =>logout(e)">Log out</a>
             </li>
 
             <!--notification-->
@@ -129,6 +126,7 @@
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
               </a>
             </li>
+
           </ul>
 
           <ul class="no-space">
@@ -148,7 +146,7 @@
                         @click="itemClicked(index)">
                       <h6 class="ms-3" v-if="index===0"><br>User</h6>
                       <div v-else-if="index===1">
-                        <hr>
+                        <hr style="height:2px">
                         <h6 class="ms-3">Businesses</h6>
                       </div>
                       <a class="nav-link">{{ act.name }}</a>
@@ -159,13 +157,18 @@
                         @click="itemClicked(index)">
                       <h6 class="ms-3" v-if="index===0"><br>User</h6>
                       <div v-else-if="index===1">
-                        <hr>
+                        <hr class="line-separator">
                         <h6 class="ms-3">Businesses</h6>
                       </div>
                       <a class="nav-link">{{ act.name }}</a>
                     </li>
                   </div>
-
+                  <hr class="line-separator">
+                  <!-- Log out link-->
+                  <li class="nav-item">
+                    <a class="nav-link" id="logout-btn" style="cursor: pointer; background-color: #fd5050;" tabindex="5" @click="e =>logout(e)"
+                       @keyup.enter="e =>logout(e)">Log out</a>
+                  </li>
                 </ul>
               </div>
             </li>
@@ -712,6 +715,16 @@ export default {
 
 /* Styling for smaller screen sizes begins */
 
+#logout-btn {
+  background-color: #fd5050;
+}
+
+#logout-btn:hover, #logout-btn:focus {
+  background: #ef5e33;
+  outline: none;
+  cursor: pointer;
+}
+
 .logo-container {
   position: center;
 }
@@ -763,26 +776,9 @@ export default {
   outline: none;
 }
 
-.company-name-main-position-nav {
-
-  /* centre text */
-  margin: 0;
-  position: absolute;
-
-  /* align to bottom of logo */
-  /*vertical-align: bottom;*/
-  /*line-height: 90%;*/
-
-}
-
 .nav-link {
   color: white;
   background: #19b092;
-
-  /* fallback for old browsers */
-  /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
-  /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
-
   margin: 10px 0;
   border-radius: 15px;
   text-align: center;
@@ -824,18 +820,6 @@ export default {
   border-right-width: 0;
   border-left-width: 0;
   padding: 0 5rem;
-  /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
-}
-
-.company-name-main-font {
-  font-family: 'Merriweather Sans', sans-serif;
-
-  /* centre text with navbar toggle */
-  margin: 0;
-  position: absolute;
-  top: 35px;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
 }
 
 .admin-label {
@@ -847,15 +831,16 @@ export default {
   margin:12px auto
 }
 
+.line-separator {
+  height:2px
+}
+
 @media (min-width: 250px) {
   .center {
     padding-inline: 15px;
     text-align: center;
   }
 
-  .company-name-main-font {
-    font-size: 12px;
-  }
 }
 
 @media (min-width: 350px) {
@@ -864,9 +849,6 @@ export default {
     text-align: center;
   }
 
-  .company-name-main-font {
-    font-size: 16px;
-  }
 }
 
 @media (min-width: 400px) {
@@ -875,9 +857,6 @@ export default {
     text-align: center;
   }
 
-  .company-name-main-font {
-    font-size: 22px;
-  }
 }
 
 @media (min-width: 450px) {
@@ -886,9 +865,6 @@ export default {
     text-align: center;
   }
 
-  .company-name-main-font {
-    font-size: 28px;
-  }
 }
 
 /*-------------------------------------------- Large break point styling ------------------------------------------*/
@@ -911,17 +887,6 @@ export default {
     margin-left: 28px;
     margin-right: 10px;
     width: 100%;
-  }
-
-  .company-name-main-font {
-    font-size: 32px;
-
-    /* centre text */
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
   }
 
   #navbar-id {
@@ -957,7 +922,6 @@ export default {
 
   #interactDrop {
     max-width: 180px;
-    /*margin-left: 50px;*/
     padding-left: 1em;
   }
 
@@ -987,16 +951,6 @@ export default {
     width: 100%;
   }
 
-  .company-name-main-font {
-    font-size: 40px;
-
-    /* centre text */
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-  }
 }
 
 </style>

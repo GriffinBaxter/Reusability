@@ -27,7 +27,7 @@ public class Image {
     private String productId;
 
     @Column(name = "business_id", nullable = false)
-    private int bussinesId;
+    private int businessId;
 
     // The file name in case we need to resolve it.
     @Column(name = "filename", nullable = false)
@@ -42,18 +42,18 @@ public class Image {
 
 
 
-    public Image(int id, String productId, Integer bussinesId, String filename, String thumbnailFilename, boolean isPrimary) {
+    public Image(int id, String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
         this.id = id;
         this.productId = productId;
-        this.bussinesId = bussinesId;
+        this.businessId = businessId;
         this.filename = filename;
         this.thumbnailFilename = thumbnailFilename;
         this.isPrimary = isPrimary;
     }
 
-    public Image(String productId, Integer bussinesId, String filename, String thumbnailFilename, boolean isPrimary) {
+    public Image(String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
         this.productId = productId;
-        this.bussinesId = bussinesId;
+        this.businessId = businessId;
         this.filename = filename;
         this.thumbnailFilename = thumbnailFilename;
         this.isPrimary = isPrimary;

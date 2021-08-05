@@ -6,32 +6,22 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.seng302.Main;
 import org.seng302.controller.ImageResource;
-import org.seng302.exceptions.IllegalAddressArgumentException;
-import org.seng302.exceptions.IllegalProductArgumentException;
-import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.*;
 import org.seng302.model.repository.*;
 import org.seng302.model.enums.BusinessType;
-import org.seng302.controller.InventoryItemResource;
 import org.seng302.model.enums.Role;
 import org.seng302.services.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
@@ -89,10 +79,6 @@ public class ProductImagesStepDefs {
     private Product product;
     private MockHttpServletResponse response;
     private MockMultipartFile jpgImage;
-    private MockMultipartFile jpegImage;
-    private MockMultipartFile pngImage;
-    private MockMultipartFile gifImage;
-    private MockMultipartFile otherFile;
     private Image primaryImage;
     private Image nonPrimaryImage;
     private Image newImage;
@@ -202,9 +188,9 @@ public class ProductImagesStepDefs {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
+        List<Image> images = new ArrayList<>();
 
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
 
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
@@ -228,7 +214,7 @@ public class ProductImagesStepDefs {
         List <Image> primaryImages = new ArrayList<>();
         primaryImages.add(primaryImage);
         assertThat(primaryImage.getFilename()).isEqualTo(filename);
-        given(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).willReturn(primaryImages);
+        given(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).willReturn(primaryImages);
 
     }
 
@@ -244,7 +230,7 @@ public class ProductImagesStepDefs {
         nonPrimaryImage.setIsPrimary(false);
         List <Image> nonPrimaryImages = new ArrayList<>();
         nonPrimaryImages.add(nonPrimaryImage);
-        given(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, false)).willReturn(nonPrimaryImages);
+        given(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, false)).willReturn(nonPrimaryImages);
 
     }
 
@@ -257,8 +243,8 @@ public class ProductImagesStepDefs {
         List<Image> images = List.of(primaryImage);
         newImage = new Image(2, productId, businessId, filename, filename, false);
 
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.findImageByIdAndBussinesIdAndProductId(newImage.getId(), businessId, productId)).thenReturn(Optional.of(newImage));
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(newImage.getId(), businessId, productId)).thenReturn(Optional.of(newImage));
 
         response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, newImage.getId())).cookie(cookie)).andReturn().getResponse();
 
@@ -278,7 +264,7 @@ public class ProductImagesStepDefs {
 
         primaryImage = new Image(1, productId, businessId, "storage/test-images/" + filename , filename, true);
         List <Image> primaryImages = List.of(primaryImage);
-        given(imageRepository.findImageByBussinesIdAndProductId(businessId, productId)).willReturn(primaryImages);
+        given(imageRepository.findImageByBusinessIdAndProductId(businessId, productId)).willReturn(primaryImages);
 
     }
 
@@ -291,8 +277,8 @@ public class ProductImagesStepDefs {
         lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = List.of(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
         response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
     }

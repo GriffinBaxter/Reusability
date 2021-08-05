@@ -1,11 +1,9 @@
 package org.seng302.image;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.seng302.Main;
@@ -23,7 +21,6 @@ import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.services.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,7 +30,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
@@ -80,8 +76,6 @@ class ImageResourceIntegrationTests {
 
     private FileStorageService fileStorageService;
 
-    private Address address;
-
     private User user;
 
     private User dGAA;
@@ -95,8 +89,6 @@ class ImageResourceIntegrationTests {
     private Business anotherBusiness;
 
     private Product product;
-
-    private Product anotherProduct;
 
     private MockMultipartFile jpgImage;
 
@@ -115,8 +107,6 @@ class ImageResourceIntegrationTests {
     private Integer businessId;
 
     private String sessionToken;
-
-    private String expectedJson;
 
     private MockHttpServletResponse response;
 
@@ -228,15 +218,6 @@ class ImageResourceIntegrationTests {
                 ""
         );
 
-        anotherProduct = new Product(
-                "PROD2",
-                business,
-                "AnotherProduct",
-                "Description2",
-                "Manufacturer2",
-                22.00,
-                ""
-        );
         otherFile = new MockMultipartFile("images", "testImage.other", "something", this.getClass().getResourceAsStream("testImage.jpg"));
         jpgImage = new MockMultipartFile("images", "testImage.jpg", MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
         jpegImage = new MockMultipartFile("images", "testImage.jpeg", MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
@@ -277,8 +258,8 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        List<Image> images = new ArrayList<>();
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
 
@@ -310,9 +291,9 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
+        List<Image> images = new ArrayList<>();
         images.add(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
 
@@ -450,9 +431,9 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
+        List<Image> images = new ArrayList<>();
         images.add(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
 
@@ -484,9 +465,9 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
+        List<Image> images = new ArrayList<>();
         images.add(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
 
@@ -517,9 +498,9 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
+        List<Image> images = new ArrayList<>();
         images.add(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
 
@@ -547,9 +528,9 @@ class ImageResourceIntegrationTests {
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
+        List<Image> images = new ArrayList<>();
         images.add(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
 
@@ -603,8 +584,8 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        List<Image> images = new ArrayList<>();
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(gifImage).cookie(cookie)).andReturn().getResponse();
 
@@ -636,8 +617,8 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        List<Image> images = new ArrayList<>();
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(pngImage).cookie(cookie)).andReturn().getResponse();
 
@@ -669,8 +650,8 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        List<Image> images = new ArrayList<>();
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
 
@@ -702,8 +683,8 @@ class ImageResourceIntegrationTests {
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<Image>();
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        List<Image> images = new ArrayList<>();
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
         when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
 
@@ -739,8 +720,8 @@ class ImageResourceIntegrationTests {
         lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = List.of(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
         response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
@@ -771,9 +752,9 @@ class ImageResourceIntegrationTests {
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         Image newImage = new Image(2, productId, businessId, "storage/test2", "test2/test2", false);
         List<Image> images = List.of(newImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(Collections.emptyList());
-        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
-        when(imageRepository.findImageByBussinesIdAndProductId(businessId, productId)).thenReturn(images);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(Collections.emptyList());
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
+        when(imageRepository.findImageByBusinessIdAndProductId(businessId, productId)).thenReturn(images);
         response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
@@ -830,8 +811,8 @@ class ImageResourceIntegrationTests {
         lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = List.of(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.empty());
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.empty());
         response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
@@ -911,8 +892,8 @@ class ImageResourceIntegrationTests {
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
         List<Image> images = List.of(primaryImage);
         Image newImage = new Image(2, productId, businessId, "storage/test2", "test2/test2", false);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(newImage));
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(newImage));
         response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
@@ -969,8 +950,8 @@ class ImageResourceIntegrationTests {
         lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
         lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
         List<Image> images = List.of(primaryImage);
-        when(imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.findImageByIdAndBussinesIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.empty());
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
 
         // Then
