@@ -11,9 +11,11 @@ import ProductCatalogue from "../src/views/ProductCatalogue";
 import Cookies from "js-cookie";
 import Api from "../src/Api";
 import CurrencyApi from "../src/currencyInstance";
+import OpenFoodFactsApi from "../src/openFoodFactsInstance";
 
 jest.mock("../src/Api");
 jest.mock("../src/currencyInstance");
+jest.mock("../src/openFoodFactsInstance");
 jest.mock("js-cookie");
 
 // ***************************************** getErrorMessage() Tests ***************************************************
@@ -948,7 +950,13 @@ describe('Testing autofill functionality', function () {
     beforeAll(() => {
         Api.getBusiness.mockImplementation(() => Promise.resolve({data: {address: {country: ''}}}));
         CurrencyApi.currencyQuery.mockImplementation(() => Promise.resolve({data: [{currencies: [{code: '', symbol: ''}]}]}));
-        Api.sortProducts.mockImplementation(() => Promise.resolve({status: 200, data: {}}));
+        Api.sortProducts.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: [],
+            headers: {
+                "total-rows": 1,
+                "total-pages": 1
+            }}));
 
         let $route = {
             params: {
@@ -1010,20 +1018,16 @@ describe('Testing autofill functionality', function () {
         });
     });
 
-    test('Testing that when the autofill button is clicked, then autofillProductFromBarcode is called', () => {
-        let autofillSpyOn = jest.spyOn(ProductCatalogue.methods, 'autofillProductFromBarcode');
+    test("Testing that if result.data.status isn't 1, then the toast error message is set", async () => {
         productCatalogueWrapper.vm.productBarcode = "111111111111";
 
-        productCatalogueWrapper.vm.$nextTick().then(() => {
-            const autofillButton = productCatalogueWrapper.find('#autofill-button');
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({data: {status: 0}}));
 
-            autofillButton.trigger('click');
-            expect(autofillSpyOn).toHaveBeenCalled();
-        });
-    });
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
 
-    test("Testing that if result.data.status isn't 1, then the toast error message is set", () => {
+        await Promise.resolve();
 
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("Could not autofill, product may not exist in database");
     });
 
     test("Testing that when product name is empty, then it is autofilled", () => {
