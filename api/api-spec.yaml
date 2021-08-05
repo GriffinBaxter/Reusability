@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.0.6
+  version: 5.0.7
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -947,6 +947,44 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Listing'
+
+
+  '/businesses/{businessId}/listings/{listingId}':
+    delete:
+      tags:
+        - 'U31: Purchases'
+        - 'Listings / sales'
+      summary: Delete a listing/sale
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: businessId
+          in: path
+          description: The id of the business create this listing.
+          required: true
+          schema:
+            type: integer
+            example: 5
+        - name: listingId
+          in: path
+          description: The id of the given listing.
+          required: true
+          schema:
+            type: integer
+            example: 300
+      responses:
+        '200':
+          description: Listing deleted successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: "Forbidden (Buying products from your own business)"
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
   '/businesses/search':
     get:
