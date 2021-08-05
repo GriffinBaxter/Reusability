@@ -921,13 +921,13 @@ paths:
 
             * NON_PROFIT_ORGANISATION
         - in: query
-          name: minimunPrice
+          name: minimumPrice
           schema:
             type: string
           required: false
           description: "Criteria to search listings for, listing's minimum price"
         - in: query
-          name: maximunPrice
+          name: maximumPrice
           schema:
             type: string
           required: false
