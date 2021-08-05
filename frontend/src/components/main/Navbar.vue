@@ -33,7 +33,19 @@
 
             <!-- default page links -->
             <li class="nav-item">
-              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
+              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">
+                Home</router-link>
+            </li>
+            <li class="nav-item" v-if="actAsId === null">
+              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item" v-if=actAsId>
+              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
+                           :to="'/businessProfile/' + actAsId" tabindex="2">
+                Profile
+              </router-link>
             </li>
             <li class="nav-item">
               <router-link :class="['nav-link', isActivePath('/browseListings')]" to="/browseListings" tabindex="3">
@@ -82,18 +94,6 @@
                   </li>
                 </ul>
               </div>
-            </li>
-
-            <li class="nav-item" v-if="actAsId === null">
-              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-                Profile
-              </router-link>
-            </li>
-            <li class="nav-item" v-if=actAsId>
-              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
-                           :to="'/businessProfile/' + actAsId" tabindex="2">
-                Profile
-              </router-link>
             </li>
 
             <!--notification-->
