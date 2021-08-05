@@ -9,7 +9,7 @@ export default class Product {
             regex: /^[A-Z0-9-]+$/,
             regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
         },
-        productBarcode: {
+        barcode: {
             name: "Product barcode",
             minLength: 12,
             maxLength: 13,
@@ -47,9 +47,10 @@ export default class Product {
         }
     };
 
-    constructor({id, name, description, manufacturer, recommendedRetailPrice, created, images}) {
+    constructor({id, barcode, name, description, manufacturer, recommendedRetailPrice, created, images}) {
         this.data = {
             id,
+            barcode,
             name,
             description,
             manufacturer,

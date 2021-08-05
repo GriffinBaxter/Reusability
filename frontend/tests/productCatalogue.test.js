@@ -979,16 +979,16 @@ describe('Testing autofill functionality', function () {
     });
 
     test('Testing that the autofill button is enabled when getErrorMessage returns an empty string', () => {
-        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.barcode = "111111111111";
 
         expect(
             reg.methods.getErrorMessage(
-                Product.config.productBarcode.name,
-                productCatalogueWrapper.vm.productBarcode,
-                Product.config.productBarcode.minLength,
-                Product.config.productBarcode.maxLength,
-                Product.config.productBarcode.regexMessage,
-                Product.config.productBarcode.regex,
+                Product.config.barcode.name,
+                productCatalogueWrapper.vm.barcode,
+                Product.config.barcode.minLength,
+                Product.config.barcode.maxLength,
+                Product.config.barcode.regexMessage,
+                Product.config.barcode.regex,
             )
         ).toBe('');
 
@@ -999,16 +999,16 @@ describe('Testing autofill functionality', function () {
     });
 
     test('Testing that the autofill button is disabled when getErrorMessage returns a string', () => {
-        productCatalogueWrapper.vm.productBarcode = "11111111111";
+        productCatalogueWrapper.vm.barcode = "11111111111";
 
         expect(
             reg.methods.getErrorMessage(
-                Product.config.productBarcode.name,
-                productCatalogueWrapper.vm.productBarcode,
-                Product.config.productBarcode.minLength,
-                Product.config.productBarcode.maxLength,
-                Product.config.productBarcode.regexMessage,
-                Product.config.productBarcode.regex,
+                Product.config.barcode.name,
+                productCatalogueWrapper.vm.barcode,
+                Product.config.barcode.minLength,
+                Product.config.barcode.maxLength,
+                Product.config.barcode.regexMessage,
+                Product.config.barcode.regex,
             )
         ).toBe('Input must be between 12 and 13 characters long.');
 
@@ -1019,7 +1019,7 @@ describe('Testing autofill functionality', function () {
     });
 
     test("Testing that if result.data.status isn't 1, then the toast error message is set", async () => {
-        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.barcode = "111111111111";
 
         OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({data: {status: 0}}));
 
@@ -1031,7 +1031,7 @@ describe('Testing autofill functionality', function () {
     });
 
     test("Testing that when product name is empty, then it is autofilled", async () => {
-        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.barcode = "111111111111";
         productCatalogueWrapper.vm.productName = "";
         productCatalogueWrapper.vm.manufacturer = "Manufacturer";
         productCatalogueWrapper.vm.description = "Description";
@@ -1057,7 +1057,7 @@ describe('Testing autofill functionality', function () {
     });
 
     test("Testing that when manufacturer is empty, then it is autofilled", async () => {
-        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.barcode = "111111111111";
         productCatalogueWrapper.vm.productName = "Product Name";
         productCatalogueWrapper.vm.manufacturer = "";
         productCatalogueWrapper.vm.description = "Description";
@@ -1083,7 +1083,7 @@ describe('Testing autofill functionality', function () {
     });
 
     test("Testing that when description is empty, then it is autofilled", async () => {
-        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.barcode = "111111111111";
         productCatalogueWrapper.vm.productName = "Product Name";
         productCatalogueWrapper.vm.manufacturer = "Manufacturer";
         productCatalogueWrapper.vm.description = "";
@@ -1109,7 +1109,7 @@ describe('Testing autofill functionality', function () {
     });
 
     test("Testing that when product name, manufacturer, and description are empty, then they are autofilled", async () => {
-        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.barcode = "111111111111";
         productCatalogueWrapper.vm.productName = "";
         productCatalogueWrapper.vm.manufacturer = "";
         productCatalogueWrapper.vm.description = "";

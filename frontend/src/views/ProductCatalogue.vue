@@ -159,10 +159,10 @@
                     <div v-if="addBarcode">
                       <br>
                       <label for="product-barcode">Barcode</label>
-                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="productBarcode"
-                             :class="toggleInvalidClass(productBarcodeErrorMsg)" :maxlength="config.productBarcode.maxLength">
+                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="barcode"
+                             :class="toggleInvalidClass(barcodeErrorMsg)" :maxlength="config.barcode.maxLength">
                       <div class="invalid-feedback">
-                        {{ productBarcodeErrorMsg }}
+                        {{ barcodeErrorMsg }}
                       </div>
                       <br><br>
                       Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcode" name="img"
@@ -170,12 +170,12 @@
                       <br><br>
                       <button id="autofill-button" type="button"
                               :class="`btn green-button ${getErrorMessage(
-                              config.productBarcode.name,
-                              productBarcode,
-                              config.productBarcode.minLength,
-                              config.productBarcode.maxLength,
-                              config.productBarcode.regexMessage,
-                              config.productBarcode.regex) === '' ? '': 'disabled'}`"
+                              config.barcode.name,
+                              barcode,
+                              config.barcode.minLength,
+                              config.barcode.maxLength,
+                              config.barcode.regexMessage,
+                              config.barcode.regex) === '' ? '': 'disabled'}`"
                               @click="autofillProductFromBarcode()">Autofill Empty Fields
                       </button>
                     </div>
@@ -289,8 +289,8 @@ export default {
       productIDErrorMsg: "",
       
       // Product barcode related variables
-      productBarcode: "",
-      productBarcodeErrorMsg: "",
+      barcode: "",
+      barcodeErrorMsg: "",
       addBarcode: false,
 
       // Product name related variables
@@ -365,8 +365,8 @@ export default {
       this.productIDErrorMsg = "";
 
       // Reset product barcode related variables
-      this.productBarcode = "";
-      this.productBarcodeErrorMsg = "";
+      this.barcode = "";
+      this.barcodeErrorMsg = "";
       this.addBarcode = false;
 
       // Reset product name related variables
@@ -577,7 +577,7 @@ export default {
      */
     trimTextInputFields() {
       this.productID = this.productID.trim();
-      this.productBarcode = this.productBarcode.trim();
+      this.barcode = this.barcode.trim();
       this.productName = this.productName.trim();
       this.recommendedRetailPrice = this.recommendedRetailPrice.trim();
       this.manufacturer = this.manufacturer.trim();
@@ -611,18 +611,19 @@ export default {
 
       // Product barcode error checking
       if (this.addBarcode) {
-        this.productBarcodeErrorMsg = this.getErrorMessage(
-            this.config.productBarcode.name,
-            this.productBarcode,
-            this.config.productBarcode.minLength,
-            this.config.productBarcode.maxLength,
-            this.config.productBarcode.regexMessage,
-            this.config.productBarcode.regex
+        this.barcodeErrorMsg = this.getErrorMessage(
+            this.config.barcode.name,
+            this.barcode,
+            this.config.barcode.minLength,
+            this.config.barcode.maxLength,
+            this.config.barcode.regexMessage,
+            this.config.barcode.regex
         )
       } else {
-        this.productBarcodeErrorMsg = ""
+        this.barcodeErrorMsg = ""
+        this.barcode = ""
       }
-      if (this.productBarcodeErrorMsg) {
+      if (this.barcodeErrorMsg) {
         requestIsInvalid = true
       }
 
@@ -684,7 +685,7 @@ export default {
       // Wrapping up the product submitted fields into a class object (Product).
       const productData = {
         id: this.productID,
-        barcode: this.productBarcode,
+        barcode: this.barcode,
         name: this.productName,
         description: this.description,
         manufacturer: this.manufacturer,
@@ -709,8 +710,8 @@ export default {
               this.productIDErrorMsg = "";
 
               // Reset product barcode related variables
-              this.productBarcode = "";
-              this.productBarcodeErrorMsg = "";
+              this.barcode = "";
+              this.barcodeErrorMsg = "";
 
               // Reset product name related variables
               this.productName = "";
@@ -745,7 +746,7 @@ export default {
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
-            this.toastErrorMessage = '400 Bad request; invalid product data';
+            this.toastErrorMessage = `Error: ` + error.response.data.message;
           } else if (error.response.status === 403) {
             this.toastErrorMessage = 'User is not an administer of this business.';
           } else {
@@ -794,8 +795,8 @@ export default {
       this.productIDErrorMsg = "";
 
       // Reset product barcode related variables
-      this.productBarcode = "";
-      this.productBarcodeErrorMsg = "";
+      this.barcode = "";
+      this.barcodeErrorMsg = "";
 
       // Reset product name related variables
       this.productName = "";
@@ -861,9 +862,9 @@ export default {
         src: URL.createObjectURL(file)
       }, function (result) {
         if (result && result.codeResult) {
-          outerThis.productBarcode = result.codeResult.code;
+          outerThis.barcode = result.codeResult.code;
         } else {
-          outerThis.productBarcodeErrorMsg = "Barcode not found in image";
+          outerThis.barcodeErrorMsg = "Barcode not found in image";
         }
       });
     },
@@ -872,17 +873,19 @@ export default {
       let outerThis = this;
       outerThis.toastErrorMessage = "";
 
-      OpenFoodFacts.retrieveProductByBarcode(this.productBarcode).then((result) => {
+      OpenFoodFacts.retrieveProductByBarcode(this.barcode).then((result) => {
         if (result.data.status === 1) {
-          if (outerThis.productName === "") {
-            if (result.data.product.product_name !== "") {
-              outerThis.productName = result.data.product.product_name + " " + result.data.product.quantity;
-            }
+          if (
+              outerThis.productName === "" &&
+              result.data.product.product_name !== undefined && result.data.product.product_name !== ""
+          ) {
+            outerThis.productName = result.data.product.product_name + " " + result.data.product.quantity;
           }
-          if (outerThis.manufacturer === "") {
+          if (outerThis.manufacturer === "" && result.data.product.brands !== undefined) {
             outerThis.manufacturer = result.data.product.brands;
           }
-          if (outerThis.description === "") {
+          console.log(result.data.product.generic_name)
+          if (outerThis.description === "" && result.data.product.generic_name !== undefined) {
             outerThis.description = result.data.product.generic_name;
           }
         } else {
