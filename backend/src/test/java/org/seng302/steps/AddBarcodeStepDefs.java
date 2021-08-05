@@ -33,6 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
 
@@ -146,6 +147,20 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Given("I have an existing product with Product Id {string}, name {string}, description {string}, manufacturer {string}, recommendPrice {string} and barcode {string}")
+    public void i_have_an_existing_product_with_product_id_name_description_manufacturer_recommend_price_and_barcode(String id, String name, String description, String manufacturer, String recommendPrice, String barcode) throws IllegalProductArgumentException {
+        product = new Product(
+                id,
+                business,
+                name,
+                description,
+                manufacturer,
+                Double.parseDouble(recommendPrice),
+                barcode
+        );
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), business.getId())).willReturn(Optional.ofNullable(product));
+    }
+
     @When("I create a product with Product Id {string}, name {string}, description {string}, manufacturer {string}, recommendPrice {string} and barcode {string}")
     public void i_create_a_product_with_product_id_name_description_manufacturer_recommend_price_and_barcode(String id, String name, String description, String manufacturer, String recommendPrice, String barcode) throws Exception {
         product = new Product(
@@ -174,9 +189,43 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
                 .andReturn().getResponse();
     }
 
+    @When("I modify the product to have a barcode of {string}")
+    public void i_modify_the_product_to_have_a_barcode_of(String barcode) throws Exception {
+        anotherProduct = new Product(
+                product.getProductId(),
+                business,
+                product.getName(),
+                product.getDescription(),
+                product.getManufacturer(),
+                product.getRecommendedRetailPrice(),
+                barcode
+        );
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        productPayload = String.format(productPayloadFormat, anotherProduct.getProductId(), anotherProduct.getName(), anotherProduct.getDescription(),
+                anotherProduct.getManufacturer(), anotherProduct.getRecommendedRetailPrice(), barcode);
+
+        given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(productRepository.saveAndFlush(any(Product.class))).thenReturn(anotherProduct);
+
+        response = productMVC.perform(put(String.format("/businesses/%d/products/%s", product.getBusinessId(), product.getProductId()))
+                .contentType(MediaType.APPLICATION_JSON).content(productPayload)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+        ).andReturn().getResponse();
+    }
+
     @Then("I expect the product to be successfully created")
     public void i_expect_the_product_to_be_successfully_created() {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Then("I expect the product to successfully be modified")
+    public void i_expect_the_product_to_successfully_be_modified() {
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
 }
