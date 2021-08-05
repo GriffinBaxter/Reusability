@@ -18,10 +18,6 @@
         <router-link class="navbar-brand " to="/home" tabindex="-1">
           <img src="../../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
         </router-link>
-
-<!--        TODO: take out -->
-<!--        <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>-->
-
       </div>
 
       <!-- Hamburger icon -->
@@ -780,20 +776,6 @@ export default {
   outline: none;
 }
 
-       /*TODO: take out -->*!*/
-
-.company-name-main-position-nav {
-
-  /* centre text */
-  margin: 0;
-  position: absolute;
-
-  /* align to bottom of logo */
-  /*vertical-align: bottom;*/
-  /*line-height: 90%;*/
-
-}
-
 .nav-link {
   color: white;
   background: #19b092;
@@ -846,19 +828,6 @@ export default {
   /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
 
-/*<!--        TODO: take out -->*/
-
-.company-name-main-font {
-  font-family: 'Merriweather Sans', sans-serif;
-
-  /* centre text with navbar toggle */
-  margin: 0;
-  position: absolute;
-  top: 35px;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
-}
-
 .admin-label {
   background-color: #fd5050;
   color: white;
@@ -877,12 +846,7 @@ export default {
     padding-inline: 15px;
     text-align: center;
   }
-  /*<!--        TODO: take out -->*/
 
-
-  .company-name-main-font {
-    font-size: 12px;
-  }
 }
 
 @media (min-width: 350px) {
@@ -890,12 +854,7 @@ export default {
     padding-inline: 15px;
     text-align: center;
   }
-  /*<!--        TODO: take out -->*/
 
-
-  .company-name-main-font {
-    font-size: 16px;
-  }
 }
 
 @media (min-width: 400px) {
@@ -904,11 +863,6 @@ export default {
     text-align: center;
   }
 
-  /*<!--        TODO: take out -->*/
-
-  .company-name-main-font {
-    font-size: 22px;
-  }
 }
 
 @media (min-width: 450px) {
@@ -917,12 +871,6 @@ export default {
     text-align: center;
   }
 
-/*<!--        TODO: take out -->*/
-
-
-  .company-name-main-font {
-    font-size: 28px;
-  }
 }
 
 /*-------------------------------------------- Large break point styling ------------------------------------------*/
@@ -945,19 +893,6 @@ export default {
     margin-left: 28px;
     margin-right: 10px;
     width: 100%;
-  }
-
-/*<!--        TODO: take out -->*/
-
-  .company-name-main-font {
-    font-size: 32px;
-
-    /* centre text */
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
   }
 
   #navbar-id {
@@ -1023,18 +958,6 @@ export default {
     width: 100%;
   }
 
-/*<!--        TODO: take out -->*/
-
-  .company-name-main-font {
-    font-size: 40px;
-
-    /* centre text */
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-  }
 }
 
 </style>
