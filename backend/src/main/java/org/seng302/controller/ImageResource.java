@@ -165,7 +165,7 @@ public class ImageResource {
         }
 
         // Store the image data in an object
-        List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
+        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
         boolean isFirstImage = primaryImages.isEmpty();
         Image storedImage = imageRepository.saveAndFlush(
                 new Image(productId, businessId, imageFilePath, thumbnailFilePath, isFirstImage)
@@ -214,10 +214,10 @@ public class ImageResource {
         }
 
         // Delete from database
-        imageRepository.deleteByIdAndBussinesIdAndProductId(imageId, businessId, productId);
+        imageRepository.deleteByIdAndBusinessIdAndProductId(imageId, businessId, productId);
         imageRepository.flush();
         // Check if primary image and update primary image if it is
-        updatePrimaryImage(businessId, productId, true);
+        updatePrimaryImage(businessId, productId);
     }
 
     @PutMapping("/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary")
@@ -245,7 +245,7 @@ public class ImageResource {
         Image image = verifyImageId(imageId, businessId, productId, user);
 
         // Set existing primary image to non-primary
-        List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
+        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
         for (Image primaryImage: primaryImages) {
             primaryImage.setIsPrimary(false);
         }
@@ -341,7 +341,7 @@ public class ImageResource {
      * @param productId
      */
     private Image verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
-        Optional<Image> image = imageRepository.findImageByIdAndBussinesIdAndProductId(imageId, businessId, productId);
+        Optional<Image> image = imageRepository.findImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
 
         if (image.isEmpty()) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
@@ -361,12 +361,11 @@ public class ImageResource {
      * POST CONDITIONS:
      * @param businessId
      * @param productId
-     * @param isPrimary
      */
-    private void updatePrimaryImage(Integer businessId, String productId, boolean isPrimary) {
-        List<Image> primaryImages = imageRepository.findImageByBussinesIdAndProductIdAndIsPrimary(businessId, productId, true);
+    private void updatePrimaryImage(Integer businessId, String productId) {
+        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
         if (primaryImages.isEmpty()) {
-            List<Image> images = imageRepository.findImageByBussinesIdAndProductId(businessId, productId);
+            List<Image> images = imageRepository.findImageByBusinessIdAndProductId(businessId, productId);
             if (!images.isEmpty()) {
                 images.get(0).setIsPrimary(true);
                 imageRepository.save(images.get(0));
