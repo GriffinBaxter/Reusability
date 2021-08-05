@@ -18,7 +18,9 @@
         <router-link class="navbar-brand " to="/home" tabindex="-1">
           <img src="../../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
         </router-link>
-        <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
+
+<!--        TODO: take out -->
+<!--        <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>-->
 
       </div>
 
@@ -37,19 +39,13 @@
             <li class="nav-item">
               <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
             </li>
-            <li class="nav-item" v-if="actAsId === null">
-              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
-                Profile
-              </router-link>
-            </li>
-            <li class="nav-item" v-if=actAsId>
-              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
-                           :to="'/businessProfile/' + actAsId" tabindex="2">
-                Profile
+            <li class="nav-item">
+              <router-link :class="['nav-link', isActivePath('/browseListings/')]" to="/browseListings" tabindex="3">
+                Browse Listings
               </router-link>
             </li>
             <li class="nav-item" v-if="!isActAsBusiness">
-              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
+              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="4">
                 Marketplace
               </router-link>
             </li>
@@ -58,7 +54,7 @@
             <li class="nav-item dropdown" v-if="isActAsBusiness">
 
               <!-- Navbar toggle drop down -->
-              <a class="nav-link dropdown-toggle" role="button" tabindex="4"
+              <a class="nav-link dropdown-toggle" role="button" tabindex="5"
                  @click="() => {toggleBusinessDropdown()}"
                  @keyup.enter="() => {toggleBusinessDropdown()}">
                 Business Pages
@@ -90,13 +86,18 @@
                   </li>
                 </ul>
               </div>
-
             </li>
 
-            <!-- Log out link-->
-            <li class="nav-item">
-              <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)"
-                 @keyup.enter="e =>logout(e)">Log out</a>
+            <li class="nav-item" v-if="actAsId === null">
+              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item" v-if=actAsId>
+              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
+                           :to="'/businessProfile/' + actAsId" tabindex="2">
+                Profile
+              </router-link>
             </li>
 
             <!--notification-->
@@ -129,6 +130,7 @@
                      class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
               </a>
             </li>
+
           </ul>
 
           <ul class="no-space">
@@ -148,7 +150,7 @@
                         @click="itemClicked(index)">
                       <h6 class="ms-3" v-if="index===0"><br>User</h6>
                       <div v-else-if="index===1">
-                        <hr>
+                        <hr style="height:2px">
                         <h6 class="ms-3">Businesses</h6>
                       </div>
                       <a class="nav-link">{{ act.name }}</a>
@@ -159,13 +161,18 @@
                         @click="itemClicked(index)">
                       <h6 class="ms-3" v-if="index===0"><br>User</h6>
                       <div v-else-if="index===1">
-                        <hr>
+                        <hr class="line-separator">
                         <h6 class="ms-3">Businesses</h6>
                       </div>
                       <a class="nav-link">{{ act.name }}</a>
                     </li>
                   </div>
-
+                  <hr class="line-separator">
+                  <!-- Log out link-->
+                  <li class="nav-item">
+                    <a class="nav-link" id="logout-btn" style="cursor: pointer; background-color: #fd5050;" tabindex="5" @click="e =>logout(e)"
+                       @keyup.enter="e =>logout(e)">Log out</a>
+                  </li>
                 </ul>
               </div>
             </li>
@@ -712,6 +719,16 @@ export default {
 
 /* Styling for smaller screen sizes begins */
 
+#logout-btn {
+  background-color: #fd5050;
+}
+
+#logout-btn:hover, #logout-btn:focus {
+  background: #ef5e33;
+  outline: none;
+  cursor: pointer;
+}
+
 .logo-container {
   position: center;
 }
@@ -762,6 +779,8 @@ export default {
 .navbar-brand {
   outline: none;
 }
+
+       /*TODO: take out -->*!*/
 
 .company-name-main-position-nav {
 
@@ -827,6 +846,8 @@ export default {
   /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
 
+/*<!--        TODO: take out -->*/
+
 .company-name-main-font {
   font-family: 'Merriweather Sans', sans-serif;
 
@@ -847,11 +868,17 @@ export default {
   margin:12px auto
 }
 
+.line-separator {
+  height:2px
+}
+
 @media (min-width: 250px) {
   .center {
     padding-inline: 15px;
     text-align: center;
   }
+  /*<!--        TODO: take out -->*/
+
 
   .company-name-main-font {
     font-size: 12px;
@@ -863,6 +890,8 @@ export default {
     padding-inline: 15px;
     text-align: center;
   }
+  /*<!--        TODO: take out -->*/
+
 
   .company-name-main-font {
     font-size: 16px;
@@ -875,6 +904,8 @@ export default {
     text-align: center;
   }
 
+  /*<!--        TODO: take out -->*/
+
   .company-name-main-font {
     font-size: 22px;
   }
@@ -885,6 +916,9 @@ export default {
     padding-inline: 15px;
     text-align: center;
   }
+
+/*<!--        TODO: take out -->*/
+
 
   .company-name-main-font {
     font-size: 28px;
@@ -912,6 +946,8 @@ export default {
     margin-right: 10px;
     width: 100%;
   }
+
+/*<!--        TODO: take out -->*/
 
   .company-name-main-font {
     font-size: 32px;
@@ -986,6 +1022,8 @@ export default {
     margin-right: 10px;
     width: 100%;
   }
+
+/*<!--        TODO: take out -->*/
 
   .company-name-main-font {
     font-size: 40px;
