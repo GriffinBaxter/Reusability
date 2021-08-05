@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.0.4
+  version: 5.1.1
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -44,6 +44,7 @@ tags:
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
   - name: 'U29: Browse/Search Sale Listings'
+  - name: 'U31: Purchases'
   # Entities
   - name: 'Users'
     description: 'Grouping of endpoints related to the User entity'
@@ -59,10 +60,8 @@ tags:
     description: 'Grouping of endpoints related to the community marketplace, and the cards the are created for it'
   - name: 'Keywords'
     description: 'Grouping of endpoints related to system-wide keywords that can be added by users and attached to marketplace cards'
-  - name: 'MarketplaceCardNotification'
-    description: 'Grouping of endpoints related to the community marketplace cards, and the notifications created for them'
-  - name: 'KeywordNotification'
-    description: 'Grouping of endpoints related to notifications created for system-wide keywords'
+  - name: 'Notifications'
+    description: 'Grouping of endpoints related to notifications'
 
 security:
   - CookieAuth:
@@ -1071,6 +1070,37 @@ paths:
             schema:
               $ref: '#/components/schemas/Listing'
 
+
+  '/listings/{id}/buy':
+    put:
+      tags:
+        - 'U31: Purchases'
+        - 'Listings / sales'
+      summary: Delete a listing/sale and create a new soldListing for that listing.
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          description: The id of the given listing.
+          required: true
+          schema:
+            type: integer
+            example: 300
+      responses:
+        '200':
+          description: Listing sold successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: "Forbidden (Buying products from your own business)"
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
+
   '/businesses/search':
     get:
       tags:
@@ -1336,7 +1366,7 @@ paths:
     get:
       tags:
         - 'UCM4: Card expiry'
-        - 'MarketplaceCardNotification'
+        - 'Notifications'
       summary: 'Retrieve all notifications for current user'
       security:
         - CookieAuth:
@@ -1354,6 +1384,7 @@ paths:
                   oneOf:
                     - $ref: '#/components/schemas/MarketplaceCardNotification'
                     - $ref: '#/components/schemas/KeywordNotification'
+                    - $ref: '#/components/schemas/ListingNotification'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
@@ -1361,7 +1392,7 @@ paths:
     delete:
       tags:
         - 'UCM4: Card expiry'
-        - 'MarketplaceCardNotification'
+        - 'Notifications'
       summary: 'Delete a notification by given id'
       security:
         - CookieAuth:
@@ -1376,6 +1407,18 @@ paths:
           required: true
           description: id of notification to delete
           example: 400
+        - in: query
+          name: notification type
+          schema:
+            type: string
+          description: >-
+            Criteria to delete notification:
+
+            * MARKET_CARD
+
+            * KEYWORD
+
+            * LISTING
       responses:
         '200':
           description: Notification successfully deleted
@@ -1520,6 +1563,50 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           description: 'Forbidden: Returned if a non-GAA user attempts to delete any card.'
+
+
+  '/businesses/{businessId}/soldListings':
+    get:
+      tags:
+        - 'U31: Purchases'
+        - 'Listings / sales'
+        - 'Business Accounts'
+      summary: 'Search all sold listings for given business'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - in: path
+          name: businessId
+          schema:
+            type: integer
+          required: true
+          description: ID of the business
+          example: 500
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: page of sold listing
+      responses:
+        '200':
+          description: Action completed successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SoldListing'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
   '/cards/search':
     get:
@@ -2093,3 +2180,82 @@ components:
           readOnly: true
           allOf:
             - $ref: '#/components/schemas/Keyword'
+
+    ListingNotification:
+      type: object
+      description: Notification for Listing
+      required:
+        - id
+        - description
+        - created
+        - userIds
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automatically generated and assigned by the server
+        description:
+          type: string
+          example: Listing (Apple) have been saled.
+        created:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the notification was created
+        userIds:
+          readOnly: true
+          example: [ 1, 2, 3 ]
+
+
+    SoldListing:
+      type: object
+      description: Contains the details of a sale of a listing that was completed.
+      required:
+        - id
+        - saleDate
+        - listingDate
+        - productId
+        - quantity
+        - price
+        - bookmarks
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automtically generated and assigned by the server
+        saleDate:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the sale happened.
+        listingDate:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the items of the sale when they were listed origninally.
+        productId:
+          type: string
+          example: 'PROD-123'
+          readOnly: true
+          description: The id of the product being sold
+        quantity:
+          type: integer
+          example: 200
+          readOnly: true
+          description: The quantity of items sold.
+        price:
+          type: number
+          format: double
+          example: 20.2
+          readOnly: true
+          description: The price of a single item
+        bookmarks:
+          type: integer
+          example: 10
+          readOnly: true
+          description: The amount of bookmarks the listing had before being sold.
