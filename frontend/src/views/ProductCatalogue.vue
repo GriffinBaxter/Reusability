@@ -875,7 +875,9 @@ export default {
       OpenFoodFacts.retrieveProductByBarcode(this.productBarcode).then((result) => {
         if (result.data.status === 1) {
           if (outerThis.productName === "") {
-            outerThis.productName = result.data.product.product_name + " " + result.data.product.quantity;
+            if (result.data.product.product_name !== "") {
+              outerThis.productName = result.data.product.product_name + " " + result.data.product.quantity;
+            }
           }
           if (outerThis.manufacturer === "") {
             outerThis.manufacturer = result.data.product.brands;
