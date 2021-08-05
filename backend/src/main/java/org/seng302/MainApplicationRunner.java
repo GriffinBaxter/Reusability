@@ -167,8 +167,7 @@ public class MainApplicationRunner implements ApplicationRunner {
                             marketplaceCard.getId(), marketplaceCard);
 
                     second = Duration.between(currentTime, marketplaceCard.getDisplayPeriodEnd()).getSeconds();
-                    timeLeft = String.format("%dh %dm %ds", second / 3600, second % 3600 / 60, second % 60)
-                            .replace("-", "");
+                    timeLeft = String.format("%dh", second / 3600).replace("-", "");
 
                     fullNotificationMessage = marketplaceCard.getDisplayPeriodEnd().isAfter(currentTime)
                             ? String.format(NOTIFICATION_MESSAGE_FORMAT, marketplaceCard.getTitle(), timeLeft)

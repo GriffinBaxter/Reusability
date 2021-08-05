@@ -97,8 +97,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                                LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -113,9 +112,8 @@ class ProductRepositoryIntegrationTests {
         assertThat(foundProductList.get().findFirst().get().getDescription()).isEqualTo("Description");
         assertThat(foundProductList.get().findFirst().get().getManufacturer()).isEqualTo("Manufacturer");
         assertThat(foundProductList.get().findFirst().get().getRecommendedRetailPrice()).isEqualTo(20.00);
-        assertThat(foundProductList.get().findFirst().get().getCreated()).isEqualTo(LocalDateTime.of(
-                    LocalDate.of(2021, 1, 1),
-                    LocalTime.of(0, 0)).toString());
+        assertThat(foundProductList.get().findFirst().get().getCreated()).isNotNull();
+        assertThat(foundProductList.get().findFirst().get().getBarcode()).isNull();
     }
 
     /**
@@ -241,8 +239,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -257,9 +254,8 @@ class ProductRepositoryIntegrationTests {
         assertThat(foundProduct.get().getDescription()).isEqualTo("Description");
         assertThat(foundProduct.get().getManufacturer()).isEqualTo("Manufacturer");
         assertThat(foundProduct.get().getRecommendedRetailPrice()).isEqualTo(20.00);
-        assertThat(foundProduct.get().getCreated()).isEqualTo(LocalDateTime.of(
-                    LocalDate.of(2021, 1, 1),
-                    LocalTime.of(0, 0)).toString());
+        assertThat(foundProduct.get().getCreated()).isNotNull();
+        assertThat(foundProduct.get().getBarcode()).isNull();
     }
 
     /**
@@ -317,8 +313,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -385,8 +380,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -454,8 +448,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -523,8 +516,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -592,8 +584,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -661,8 +652,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -729,8 +719,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -742,8 +731,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 30.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -809,8 +797,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
@@ -822,8 +809,7 @@ class ProductRepositoryIntegrationTests {
                 "Description",
                 "Manufacturer",
                 30.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         entityManager.persist(product);
         entityManager.flush();
