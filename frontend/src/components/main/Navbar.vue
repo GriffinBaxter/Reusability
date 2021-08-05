@@ -36,7 +36,7 @@
               <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link :class="['nav-link', isActivePath('/browseListings/')]" to="/browseListings" tabindex="3">
+              <router-link :class="['nav-link', isActivePath('/browseListings')]" to="/browseListings" tabindex="3">
                 Browse Listings
               </router-link>
             </li>
@@ -779,11 +779,6 @@ export default {
 .nav-link {
   color: white;
   background: #19b092;
-
-  /* fallback for old browsers */
-  /*background: -webkit-linear-gradient(to right, #a8e063, #56ab2f);  !* Chrome 10-25, Safari 5.1-6 *!*/
-  /*background: linear-gradient(to right, #199164, #24e09a); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
-
   margin: 10px 0;
   border-radius: 15px;
   text-align: center;
@@ -825,7 +820,6 @@ export default {
   border-right-width: 0;
   border-left-width: 0;
   padding: 0 5rem;
-  /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
 
 .admin-label {
@@ -928,7 +922,6 @@ export default {
 
   #interactDrop {
     max-width: 180px;
-    /*margin-left: 50px;*/
     padding-left: 1em;
   }
 
