@@ -949,26 +949,19 @@ paths:
               $ref: '#/components/schemas/Listing'
 
 
-  '/businesses/{businessId}/listings/{listingId}':
-    delete:
+  '/listings/{id}/buy':
+    put:
       tags:
         - 'U31: Purchases'
         - 'Listings / sales'
-      summary: Delete a listing/sale
+      summary: Delete a listing/sale and create a new soldListing for that listing.
       security:
         - CookieAuth:
             - user
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: businessId
-          in: path
-          description: The id of the business create this listing.
-          required: true
-          schema:
-            type: integer
-            example: 5
-        - name: listingId
+        - name: Id
           in: path
           description: The id of the given listing.
           required: true
@@ -977,7 +970,7 @@ paths:
             example: 300
       responses:
         '200':
-          description: Listing deleted successfully
+          description: Listing sold successfully
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
