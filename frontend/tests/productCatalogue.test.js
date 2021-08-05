@@ -1030,19 +1030,107 @@ describe('Testing autofill functionality', function () {
         expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("Could not autofill, product may not exist in database");
     });
 
-    test("Testing that when product name is empty, then it is autofilled", () => {
+    test("Testing that when product name is empty, then it is autofilled", async () => {
+        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.productName = "";
+        productCatalogueWrapper.vm.manufacturer = "Manufacturer";
+        productCatalogueWrapper.vm.description = "Description";
 
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({
+            data: {
+                status: 1,
+                product: {
+                    product_name: "Barcode Product Name",
+                    quantity: "Quantity",
+                    brands: "Barcode Manufacturer",
+                    generic_name: "Barcode Description"
+                }}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.vm.productName).toBe("Barcode Product Name Quantity");
+        expect(productCatalogueWrapper.vm.manufacturer).toBe("Manufacturer");
+        expect(productCatalogueWrapper.vm.description).toBe("Description");
     });
 
-    test("Testing that when manufacturer is empty, then it is autofilled", () => {
+    test("Testing that when manufacturer is empty, then it is autofilled", async () => {
+        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.productName = "Product Name";
+        productCatalogueWrapper.vm.manufacturer = "";
+        productCatalogueWrapper.vm.description = "Description";
 
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({
+            data: {
+                status: 1,
+                product: {
+                    product_name: "Barcode Product Name",
+                    quantity: "Quantity",
+                    brands: "Barcode Manufacturer",
+                    generic_name: "Barcode Description"
+                }}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.vm.productName).toBe("Product Name");
+        expect(productCatalogueWrapper.vm.manufacturer).toBe("Barcode Manufacturer");
+        expect(productCatalogueWrapper.vm.description).toBe("Description");
     });
 
-    test("Testing that when description is empty, then it is autofilled", () => {
+    test("Testing that when description is empty, then it is autofilled", async () => {
+        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.productName = "Product Name";
+        productCatalogueWrapper.vm.manufacturer = "Manufacturer";
+        productCatalogueWrapper.vm.description = "";
 
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({
+            data: {
+                status: 1,
+                product: {
+                    product_name: "Barcode Product Name",
+                    quantity: "Quantity",
+                    brands: "Barcode Manufacturer",
+                    generic_name: "Barcode Description"
+                }}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.vm.productName).toBe("Product Name");
+        expect(productCatalogueWrapper.vm.manufacturer).toBe("Manufacturer");
+        expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");
     });
 
-    test("Testing that when product name, manufacturer, and description are empty, then they are autofilled", () => {
+    test("Testing that when product name, manufacturer, and description are empty, then they are autofilled", async () => {
+        productCatalogueWrapper.vm.productBarcode = "111111111111";
+        productCatalogueWrapper.vm.productName = "";
+        productCatalogueWrapper.vm.manufacturer = "";
+        productCatalogueWrapper.vm.description = "";
 
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({
+            data: {
+                status: 1,
+                product: {
+                    product_name: "Barcode Product Name",
+                    quantity: "Quantity",
+                    brands: "Barcode Manufacturer",
+                    generic_name: "Barcode Description"
+                }}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.vm.productName).toBe("Barcode Product Name Quantity");
+        expect(productCatalogueWrapper.vm.manufacturer).toBe("Barcode Manufacturer");
+        expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");
     });
 });
