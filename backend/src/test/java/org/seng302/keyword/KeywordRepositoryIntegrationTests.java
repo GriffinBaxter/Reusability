@@ -108,7 +108,7 @@ class KeywordRepositoryIntegrationTests {
         // when
         foundKeywords = keywordRepository.findAllByNameIgnoreCaseContaining(substring);
         // then
-        assertThat(foundKeywords.size()).isEqualTo(0);
+        assertThat(foundKeywords.size()).isZero();
     }
 
     /**
