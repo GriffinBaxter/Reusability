@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.1.0
+  version: 5.1.1
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1854,6 +1854,14 @@ components:
           format: date-time
           example: '2021-07-21T23:59:00Z'
           description: Date and time when the listing closes (defaults to expiry date of related inventory item)
+        isBookmarked:
+          type: boolean
+          example: false
+          description: Whether the listing has been bookmarked by the current user. True if bookmarked
+        totalBookmarks:
+          type: integer
+          example: 150
+          description: The total number of times the listing has been bookmarked by all users
 
     InventoryItem:
       type: object
@@ -2172,7 +2180,6 @@ components:
           readOnly: true
           allOf:
             - $ref: '#/components/schemas/Keyword'
-
 
     ListingNotification:
       type: object
