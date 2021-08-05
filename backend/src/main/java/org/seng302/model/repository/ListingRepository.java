@@ -20,7 +20,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  * ListingRepository interface
  */
 @RepositoryRestResource
-public interface ListingRepository extends JpaRepository<Listing, Integer> {
+public interface ListingRepository extends JpaRepository<Listing, Integer>, ListingRepositoryCustom {
 
     /**
      * Finds any listings with the given business ID.
