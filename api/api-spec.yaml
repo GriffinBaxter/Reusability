@@ -848,6 +848,7 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user tries to update an inventory item for a business they do not administer AND the user is not a global application admin'
 
+
   '/listings':
     get:
       tags:
@@ -920,11 +921,17 @@ paths:
 
             * NON_PROFIT_ORGANISATION
         - in: query
-          name: price
+          name: minimunPrice
           schema:
             type: string
           required: false
-          description: "Criteria to search listings for, e.g: listing's (min AND/OR max) price"
+          description: "Criteria to search listings for, listing's minimum price"
+        - in: query
+          name: maximunPrice
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for, listing's maximum price"
         - in: query
           name: businessName
           schema:
@@ -938,11 +945,17 @@ paths:
           required: false
           description: "Criteria to search listings for, e.g: business's full address"
         - in: query
-          name: closeDate
+          name: fromDate
           schema:
             type: string
           required: false
-          description: "Criteria to search listings for, e.g: some date"
+          description: "Criteria to search listings for dates after this date"
+        - in: query
+          name: toDate
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for dates before this date"
       responses:
         '200':
           description: Request successful, a (possibly empty) list of listing is returned
