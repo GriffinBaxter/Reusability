@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -1382,7 +1383,7 @@ class UserTests {
     @Test
     void testANewListingSuccessfullyBeenAddToBookMark() {
         // Given
-        Assertions.assertTrue(user.getBookMarkedListing().isEmpty());
+        user.setBookMarkedListings(new ArrayList<>());
 
         // When
         user.addAListingToBookMark(listing);
@@ -1398,6 +1399,7 @@ class UserTests {
     @Test
     void testAExistListingNotBeenAddToBookMarkAgain() {
         // Given
+        user.setBookMarkedListings(new ArrayList<>());
         user.addAListingToBookMark(listing);
         Assertions.assertEquals(1, user.getBookMarkedListing().size());
         Assertions.assertEquals(listing, user.getBookMarkedListing().get(0));
@@ -1415,6 +1417,7 @@ class UserTests {
     @Test
     void testAExistListingSuccessfullyBeenRemoveFromBookMark() {
         // Given
+        user.setBookMarkedListings(new ArrayList<>());
         user.addAListingToBookMark(listing);
         Assertions.assertEquals(1, user.getBookMarkedListing().size());
         Assertions.assertEquals(listing, user.getBookMarkedListing().get(0));

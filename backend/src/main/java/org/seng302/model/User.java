@@ -323,6 +323,10 @@ public class User {
         this.readKeywordNotifications = readKeywordNotifications;
     }
 
+    public void setBookMarkedListings(List<Listing> bookMarkedListings) {
+        this.bookMarkedListings = bookMarkedListings;
+    }
+
     /**
      * Calculates the time period between the current date and registration date and creates
      * the appropriate message containing the years and months.
