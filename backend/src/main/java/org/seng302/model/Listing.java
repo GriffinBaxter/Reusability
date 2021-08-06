@@ -10,20 +10,23 @@
  */
 package org.seng302.model;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalListingArgumentException;
+import org.seng302.model.enums.BusinessType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for sale listings
  */
-@Data
 @NoArgsConstructor
 @Entity
 public class Listing {
@@ -37,23 +40,50 @@ public class Listing {
     @JoinColumn(name = "inventoryItemId", nullable = false)
     private InventoryItem inventoryItem;
 
+    @Column(name = "productName")
+    private String productName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "businessType")
+    private BusinessType businessType;
+
     @Column(name = "businessId", nullable = false)
     private Integer businessId;
 
-    @Column (name = "quantity", nullable = false)
+    @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @Column (name = "price", nullable = false)
+    @Column(name = "price", nullable = false)
     private double price;
 
-    @Column (name = "moreInfo", length = 600)
+    @Column(name = "sellerName", nullable = false)
+    private String sellerName;
+
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "moreInfo", length = 600)
     private String moreInfo;
 
-    @Column (name = "created")
+    @Column(name = "created")
     private LocalDateTime created;
 
-    @Column (name = "closes")
+    @Column(name = "closes")
     private LocalDateTime closes;
+
+    @JsonManagedReference
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_book_marks",
+            joinColumns = {@JoinColumn(name = "listings_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private List<User> bookMarkedListings = new ArrayList<>();
+
+    @Column(name = "totalBookMarks")
+    private Integer totalBookMarks;
 
     private static final Logger logger = LogManager.getLogger(Listing.class.getName());
 
@@ -97,15 +127,25 @@ public class Listing {
             logger.error("Listing Creation Error - Closes (Date-Time) is Invalid");
             throw new IllegalListingArgumentException("Invalid closing date.");
         }
+        Product product = inventoryItem.getProduct();
+        Business business = product.getBusiness();
         this.inventoryItem = inventoryItem;
-        this.businessId = inventoryItem.getProduct().getBusinessId();
+        this.businessId = product.getBusinessId();
         this.quantity = quantity;
         // If price is not defined calculate it using price per item.
         this.price = (price == null) ? calculatePrice() : price;
         this.moreInfo = moreInfo;
         this.created = created;
         // If closing date is not defined, use expiry date of inventory item.
-        this.closes = (closes == null) ? LocalDateTime.of(inventoryItem.getExpires(), LocalTime.of(0,0)) : closes;
+        this.closes = (closes == null) ? LocalDateTime.of(inventoryItem.getExpires(), LocalTime.of(0, 0)) : closes;
+        // Read related business info
+        this.productName = product.getName();
+        this.businessType = business.getBusinessType();
+        // Read related seller info
+        this.sellerName = business.getName();
+        this.country = business.getAddress().getCountry();
+        this.city = business.getAddress().getCity();
+        this.totalBookMarks = 0;
     }
 
     /**
@@ -196,6 +236,40 @@ public class Listing {
         return created;
     }
 
+    public String getProductName() {
+        return productName;
+    }
+
+    public BusinessType getBusinessType() {
+        return businessType;
+    }
+
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public Integer getTotalBookMarks() {
+        totalBookMarks = bookMarkedListings.size();
+        return totalBookMarks;
+    }
+
+    public List<User> getBookMarkedListings() {
+        return bookMarkedListings;
+    }
+
+
     /**
      * set Created
      * @param created created
@@ -220,12 +294,55 @@ public class Listing {
         this.closes = closes;
     }
 
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setBusinessType(BusinessType businessType) {
+        this.businessType = businessType;
+    }
+
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void addToANewUserBookMark(User user) {
+        if (!this.bookMarkedListings.contains(user)) {
+            this.bookMarkedListings.add(user);
+        }
+    }
+
+    public void removeFromAUserBookMark(User user) {
+        for (int i = 0; i < this.bookMarkedListings.size(); i++){
+            if(this.bookMarkedListings.get(i) == user){
+                this.bookMarkedListings.remove(i);
+                i--;
+            }
+        }
+    }
+
+    public Boolean isBookmarked(User user) {
+        return this.bookMarkedListings.contains(user);
+    }
+
     /**
      * calculate the price of this Listing.
      */
     public double calculatePrice() {
         double calculatedPrice;
-        if (this.inventoryItem.getQuantity() == this.quantity){
+        if (this.inventoryItem.getQuantity() == this.quantity) {
             calculatedPrice = this.inventoryItem.getTotalPrice();
         } else {
             calculatedPrice = this.inventoryItem.getPricePerItem() * this.quantity;

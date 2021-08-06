@@ -18,6 +18,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -94,6 +95,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<HasKeywordNotification> readKeywordNotifications = new ArrayList<>();
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "bookMarkedListings", fetch = FetchType.LAZY)
+    private List<Listing> bookMarkedListings = new ArrayList<>();
 
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
@@ -250,6 +255,10 @@ public class User {
         return sessionUUID;
     }
 
+    public List<Listing> getBookMarkedListing() {
+        return bookMarkedListings;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -377,6 +386,7 @@ public class User {
         for (int i = 0; i < businessesAdministeredObjects.size(); i++){
             if (businessesAdministeredObjects.get(i).getId() == businessId){
                 this.businessesAdministeredObjects.remove(i);
+                i--;
             }
         }
     }
@@ -390,6 +400,7 @@ public class User {
         for (int i = 0; i < this.cards.size(); i++){
             if (this.cards.get(i).getId() == cardId){
                 this.cards.remove(i);
+                i--;
             }
         }
     }
@@ -405,6 +416,29 @@ public class User {
             businessesAdministered.add(business.getId());
         }
         return businessesAdministered;
+    }
+
+    /**
+     * Add a listing to user bookmark if that listing not in user's bookmark
+     * @param listing listing
+     */
+    public void addAListingToBookMark(Listing listing){
+        if (!this.bookMarkedListings.contains(listing)){
+            this.bookMarkedListings.add(listing);
+        }
+    }
+
+    /**
+     * Add a listing to user bookmark if that listing not in user's bookmark
+     * @param givenListing given listing
+     */
+    public void removeAListingToBookMark(Listing givenListing){
+        for (int i = 0; i < bookMarkedListings.size(); i++) {
+            if (bookMarkedListings.get(i) == givenListing) {
+                bookMarkedListings.remove(i);
+                i--;
+            }
+        }
     }
 
     /**
