@@ -27,12 +27,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * BusinessRepositoryCustomImpl test class
+ * ListingRepositoryCustomImpl test class
  */
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class CustomBusinessRepositoryTests {
+public class CustomListingRepositoryTests {
     @Autowired
     private TestEntityManager entityManager;
 
