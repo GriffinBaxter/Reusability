@@ -24,6 +24,9 @@
           <h6 class="card-text">
             {{ productId }}
           </h6>
+          <h6 class="card-text" v-if="barcode != null">
+            Barcode: {{ barcode }}
+          </h6>
           <h6 class="card-text">
             (Quantity: {{ quantity }})
           </h6>
@@ -81,6 +84,11 @@ export default {
       type: String,
       default: "ID",
       required: true
+    },
+    barcode: {
+      type: String,
+      default: "N/A",
+      required: false
     },
     quantity: {
       type: Number,
