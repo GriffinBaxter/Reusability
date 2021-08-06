@@ -3,7 +3,7 @@
     <div class="row no-gutters">
 
       <!--image-->
-      <div class="col-md-3">
+      <div class="col-md-2">
         <div class="ratio ratio-1x1">
           <div v-if="this.$props.images.length > 0">
             <div v-for="image of this.$props.images" v-bind:key="image.id">
@@ -16,15 +16,15 @@
         </div>
       </div>
 
-      <div class="col-md-9">
-        <div class="card-body px-3 py-3">
+      <div class="col-md-10">
+        <div class="card-body px-2 py-2">
 
           <!--Product info-->
           <h3 class="card-title">{{ productName }}</h3>
           <h6 class="card-text">
             {{ productId }}
           </h6>
-          <h6 class="card-text" v-if="barcode != null">
+          <h6 class="card-text">
             Barcode: {{ barcode }}
           </h6>
           <h6 class="card-text">
@@ -85,11 +85,6 @@ export default {
       default: "ID",
       required: true
     },
-    barcode: {
-      type: String,
-      default: "N/A",
-      required: false
-    },
     quantity: {
       type: Number,
       // eslint-disable-next-line vue/require-valid-default-prop
@@ -141,6 +136,11 @@ export default {
     images: {
       type: Array,
       default: null,
+      required: false
+    },
+    barcode: {
+      type: String,
+      default: "N/A",
       required: false
     }
   },
