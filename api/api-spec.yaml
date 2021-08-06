@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.0.3
+  version: 5.1.1
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -43,7 +43,9 @@ tags:
   - name: 'UCM7: Keyword search'
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
+  - name: 'U29: Browse/Search Sale Listings'
   - name: 'U30: Individual Full Sale Listing'
+  - name: 'U31: Purchases'
   # Entities
   - name: 'Users'
     description: 'Grouping of endpoints related to the User entity'
@@ -59,10 +61,8 @@ tags:
     description: 'Grouping of endpoints related to the community marketplace, and the cards the are created for it'
   - name: 'Keywords'
     description: 'Grouping of endpoints related to system-wide keywords that can be added by users and attached to marketplace cards'
-  - name: 'MarketplaceCardNotification'
-    description: 'Grouping of endpoints related to the community marketplace cards, and the notifications created for them'
-  - name: 'KeywordNotification'
-    description: 'Grouping of endpoints related to notifications created for system-wide keywords'
+  - name: 'Notifications'
+    description: 'Grouping of endpoints related to notifications'
 
 security:
   - CookieAuth:
@@ -848,6 +848,127 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user tries to update an inventory item for a business they do not administer AND the user is not a global application admin'
 
+
+  '/listings':
+    get:
+      tags:
+        - 'U29: Browse/Search Sale Listings'
+        - 'Listings / sales'
+      summary: "Retrieve all listings by given conditions"
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search for, e.g: full listing name"
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            Order the listings by the given property, according to the following rules:
+            (product name, country/city of seller, expiry date, seller, price)
+
+            * productNameASC: the product name from A to Z
+
+            * productNameDESC: the product name from Z to A
+
+            * countryASC: the country from A to Z
+
+            * countryDESC: the country from Z to A
+
+            * cityASC: the city from A to Z
+
+            * cityDESC: the city from Z to A
+
+            * expiryDateASC: expiry date from earliest to latest
+
+            * expiryDateDESC: expiry date from latest to earliest
+
+            * sellerNameASC: seller name from A to Z
+
+            * sellerNameDESC: seller name from Z to A
+
+            * priceASC: the price from low to high
+
+            * priceDESC: the price from high to low
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: 'The page of listing to display.'
+        - in: query
+          name: businessType
+          schema:
+            type: string
+          required: false
+          description: >-
+            Criteria to search listings for, e.g: business type
+
+            * ACCOMMODATION_AND_FOOD_SERVICES
+
+            * RETAIL_TRADE
+
+            * CHARITABLE_ORGANISATION
+
+            * NON_PROFIT_ORGANISATION
+        - in: query
+          name: minimumPrice
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for, listing's minimum price"
+        - in: query
+          name: maximumPrice
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for, listing's maximum price"
+        - in: query
+          name: businessName
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for, e.g: business's full name"
+        - in: query
+          name: location
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for, e.g: business's full address"
+        - in: query
+          name: fromDate
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for dates after this date"
+        - in: query
+          name: toDate
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for dates before this date"
+      responses:
+        '200':
+          description: Request successful, a (possibly empty) list of listing is returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Listing'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+
   '/businesses/{id}/listings':
     get:
       tags:
@@ -949,6 +1070,37 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Listing'
+
+
+  '/listings/{id}/buy':
+    put:
+      tags:
+        - 'U31: Purchases'
+        - 'Listings / sales'
+      summary: Delete a listing/sale and create a new soldListing for that listing.
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          description: The id of the given listing.
+          required: true
+          schema:
+            type: integer
+            example: 300
+      responses:
+        '200':
+          description: Listing sold successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: "Forbidden (Buying products from your own business)"
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
   '/businesses/{businessId}/listings/{listingId}':
     get:
@@ -1252,7 +1404,7 @@ paths:
     get:
       tags:
         - 'UCM4: Card expiry'
-        - 'MarketplaceCardNotification'
+        - 'Notifications'
       summary: 'Retrieve all notifications for current user'
       security:
         - CookieAuth:
@@ -1270,6 +1422,7 @@ paths:
                   oneOf:
                     - $ref: '#/components/schemas/MarketplaceCardNotification'
                     - $ref: '#/components/schemas/KeywordNotification'
+                    - $ref: '#/components/schemas/ListingNotification'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
@@ -1277,7 +1430,7 @@ paths:
     delete:
       tags:
         - 'UCM4: Card expiry'
-        - 'MarketplaceCardNotification'
+        - 'Notifications'
       summary: 'Delete a notification by given id'
       security:
         - CookieAuth:
@@ -1292,6 +1445,18 @@ paths:
           required: true
           description: id of notification to delete
           example: 400
+        - in: query
+          name: notification type
+          schema:
+            type: string
+          description: >-
+            Criteria to delete notification:
+
+            * MARKET_CARD
+
+            * KEYWORD
+
+            * LISTING
       responses:
         '200':
           description: Notification successfully deleted
@@ -1436,6 +1601,50 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           description: 'Forbidden: Returned if a non-GAA user attempts to delete any card.'
+
+
+  '/businesses/{businessId}/soldListings':
+    get:
+      tags:
+        - 'U31: Purchases'
+        - 'Listings / sales'
+        - 'Business Accounts'
+      summary: 'Search all sold listings for given business'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - in: path
+          name: businessId
+          schema:
+            type: integer
+          required: true
+          description: ID of the business
+          example: 500
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: page of sold listing
+      responses:
+        '200':
+          description: Action completed successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SoldListing'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
   '/cards/search':
     get:
@@ -1611,8 +1820,11 @@ components:
       description: A listing for the sale of some product from a business's inventory
       required:
         - inventoryItemId
+        - productName
         - quantity
+        - businessType
         - price
+        - sellerName
       properties:
         id:
           type: integer
@@ -1627,6 +1839,23 @@ components:
           type: integer
           example: 101
           writeOnly: true
+        productName:
+          type: string
+          example: "an Apple"
+          description: "name of product"
+        businessType:
+          type: string
+          example: "ACCOMMODATION_AND_FOOD_SERVICES"
+          description: >-
+            Criteria to search businesses for, e.g: business type
+
+            * ACCOMMODATION_AND_FOOD_SERVICES
+
+            * RETAIL_TRADE
+
+            * CHARITABLE_ORGANISATION
+
+            * NON_PROFIT_ORGANISATION
         quantity:
           type: integer
           example: 3
@@ -1636,6 +1865,18 @@ components:
           format: double
           description: Price of the listing
           example: 17.99
+        sellerName:
+          type: string
+          example: "Lumbridge General Store"
+          description: Name of seller (join with Business)
+        country:
+          type: string
+          example: "New Zealand"
+          description: Country of business Located
+        city:
+          type: string
+          example: "Christchurch"
+          description: City of business Located
         moreInfo:
           type: string
           example: 'Seller may be willing to consider near offers'
@@ -1651,6 +1892,14 @@ components:
           format: date-time
           example: '2021-07-21T23:59:00Z'
           description: Date and time when the listing closes (defaults to expiry date of related inventory item)
+        isBookmarked:
+          type: boolean
+          example: false
+          description: Whether the listing has been bookmarked by the current user. True if bookmarked
+        totalBookmarks:
+          type: integer
+          example: 150
+          description: The total number of times the listing has been bookmarked by all users
 
     InventoryItem:
       type: object
@@ -1969,3 +2218,82 @@ components:
           readOnly: true
           allOf:
             - $ref: '#/components/schemas/Keyword'
+
+    ListingNotification:
+      type: object
+      description: Notification for Listing
+      required:
+        - id
+        - description
+        - created
+        - userIds
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automatically generated and assigned by the server
+        description:
+          type: string
+          example: Listing (Apple) have been saled.
+        created:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the notification was created
+        userIds:
+          readOnly: true
+          example: [ 1, 2, 3 ]
+
+
+    SoldListing:
+      type: object
+      description: Contains the details of a sale of a listing that was completed.
+      required:
+        - id
+        - saleDate
+        - listingDate
+        - productId
+        - quantity
+        - price
+        - bookmarks
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automtically generated and assigned by the server
+        saleDate:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the sale happened.
+        listingDate:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the items of the sale when they were listed origninally.
+        productId:
+          type: string
+          example: 'PROD-123'
+          readOnly: true
+          description: The id of the product being sold
+        quantity:
+          type: integer
+          example: 200
+          readOnly: true
+          description: The quantity of items sold.
+        price:
+          type: number
+          format: double
+          example: 20.2
+          readOnly: true
+          description: The price of a single item
+        bookmarks:
+          type: integer
+          example: 10
+          readOnly: true
+          description: The amount of bookmarks the listing had before being sold.
