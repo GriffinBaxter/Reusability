@@ -3,14 +3,10 @@ package org.seng302.user;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.seng302.exceptions.IllegalAddressArgumentException;
-import org.seng302.exceptions.IllegalBusinessArgumentException;
-import org.seng302.exceptions.IllegalUserArgumentException;
-import org.seng302.model.Address;
-import org.seng302.model.Business;
+import org.seng302.exceptions.*;
+import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
-import org.seng302.model.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,8 +23,16 @@ class UserTests {
 
     private static User user;
 
+    private static Business business;
+
+    private static Product product;
+
+    private static InventoryItem inventoryItem;
+
+    private static Listing listing;
+
     @BeforeAll
-    static void before() throws IllegalAddressArgumentException, IllegalUserArgumentException {
+    static void before() throws Exception {
         address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -51,6 +55,45 @@ class UserTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+        business = new Business(
+                user.getId(),
+                "business name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.now(),
+                user
+        );
+        business.setId(1);
+        product = new Product(
+                "PROD",
+                business,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0))
+        );
+        inventoryItem = new InventoryItem(
+                product,
+                product.getProductId(),
+                4,
+                6.5,
+                21.99,
+                null,
+                null,
+                null,
+                LocalDate.of(2022, 1,1)
+        );
+        listing = new Listing(
+                inventoryItem,
+                2,
+                30.00,
+                "more info",
+                LocalDateTime.now(),
+                LocalDateTime.of(2022, 1, 1, 0, 0)
+        );
     }
 
     /**
@@ -1333,5 +1376,54 @@ class UserTests {
         Assertions.assertEquals(user, business.getAdministrators().get(0));
     }
 
+    /**
+     * Test to see whether the addAListingToBookMark function can successfully add new listing to bookmark
+     */
+    @Test
+    void testANewListingSuccessfullyBeenAddToBookMark() {
+        // Given
+        Assertions.assertTrue(user.getBookMarkedListing().isEmpty());
+
+        // When
+        user.addAListingToBookMark(listing);
+
+        // Then
+        Assertions.assertEquals(1, user.getBookMarkedListing().size());
+        Assertions.assertEquals(listing, user.getBookMarkedListing().get(0));
+    }
+
+    /**
+     * Test to see whether the addAListingToBookMark function will not add exist listing again to bookmark
+     */
+    @Test
+    void testAExistListingNotBeenAddToBookMarkAgain() {
+        // Given
+        user.addAListingToBookMark(listing);
+        Assertions.assertEquals(1, user.getBookMarkedListing().size());
+        Assertions.assertEquals(listing, user.getBookMarkedListing().get(0));
+
+        // When
+        user.addAListingToBookMark(listing);
+
+        // Then
+        Assertions.assertEquals(1, user.getBookMarkedListing().size());
+    }
+
+    /**
+     * Test to see whether the removeAListingToBookMark function will successfully remove given listing if its exist.
+     */
+    @Test
+    void testAExistListingSuccessfullyBeenRemoveFromBookMark() {
+        // Given
+        user.addAListingToBookMark(listing);
+        Assertions.assertEquals(1, user.getBookMarkedListing().size());
+        Assertions.assertEquals(listing, user.getBookMarkedListing().get(0));
+
+        // When
+        user.removeAListingToBookMark(listing);
+
+        // Then
+        Assertions.assertTrue(user.getBookMarkedListing().isEmpty());
+    }
 
 }
