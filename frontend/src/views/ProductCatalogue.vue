@@ -856,6 +856,7 @@ export default {
     getBarcodeStatic() {
       let outerThis = this;
       let file = this.$refs.image.files[0];
+      this.toastErrorMessage = "";
 
       Quagga.decodeSingle({
         decoder: {
@@ -877,7 +878,7 @@ export default {
      */
     autofillProductFromBarcode() {
       let outerThis = this;
-      outerThis.toastErrorMessage = "";
+      this.toastErrorMessage = "";
 
       OpenFoodFacts.retrieveProductByBarcode(this.barcode).then((result) => {
         if (result.data.status === 1) {
