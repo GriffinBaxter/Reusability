@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.1.3
+  version: 5.2.0
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -44,6 +44,7 @@ tags:
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
   - name: 'U29: Browse/Search Sale Listings'
+  - name: 'U30: Individual Full Sale Listing'
   - name: 'U31: Purchases'
   # Entities
   - name: 'Users'
@@ -1658,6 +1659,51 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+
+  '/business/{business_id}/browseListing/{listing_id}/bookmark':
+    put:
+      tags:
+        - 'U30: Individual Full Sale Listing'
+        - 'Listings / sales'
+      summary: Update the bookmark status of a full sale listing.
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: business_id
+          in: path
+          description: The id of the given business.
+          required: true
+          schema:
+            type: integer
+            example: 300
+        - name: listing_id
+          in: path
+          description: The id of the given full sale listing whose bookmark status changed for the user.
+          required: true
+          schema:
+            type: integer
+            example: 118
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isBookmarked:
+                  type: boolean
+                  description: The new bookmark status of an individual full sale listing.
+                  example: true
+      responses:
+        '200':
+          description: Book status update successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
 components:
   securitySchemes:
