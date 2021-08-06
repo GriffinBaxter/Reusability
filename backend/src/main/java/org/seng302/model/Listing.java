@@ -23,7 +23,6 @@ import java.time.LocalTime;
 /**
  * Class for sale listings
  */
-@Data
 @NoArgsConstructor
 @Entity
 public class Listing {
