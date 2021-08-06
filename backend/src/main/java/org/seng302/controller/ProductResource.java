@@ -105,6 +105,9 @@ public class ProductResource {
             if (productRepository.findProductByIdAndBusinessId(productPayload.getId(), id).isPresent()) {
                 logger.error("Product Creation Failure - 400 [BAD REQUEST] - Product with ID {} already exists for business with ID {}", productPayload.getId(), id);
                 throw new IllegalProductArgumentException("Invalid product ID, already in use");
+            } else if (productPayload.getBarcode().length() != 0 && productRepository.findProductByBarcodeAndBusinessId(productPayload.getBarcode(), id).isPresent()) {
+                logger.error("Product Creation Failure - 400 [BAD REQUEST] - Product with barcode {} already exists for business with ID {}", productPayload.getBarcode(), id);
+                throw new IllegalProductArgumentException("Invalid barcode, already in use");
             } else {
                 Product product = new Product(
                         productPayload.getId(),
