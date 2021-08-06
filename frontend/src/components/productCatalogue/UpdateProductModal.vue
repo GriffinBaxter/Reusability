@@ -81,6 +81,37 @@
                   </div>
                 </div>
               </div>
+
+              <!--product barcode-->
+              <div class="form-group">
+                <br>
+                <label for="barcode-checkbox">Edit Barcode?&nbsp;</label>
+                <input type="checkbox" id="barcode-checkbox" name="barcode-checkbox" v-model="editBarcode">
+                <br>
+                <div v-if="editBarcode">
+                  <br>
+                  <label for="product-barcode">Barcode (EAN or UPC)</label>
+                  <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="newProduct.data.barcode"
+                         :class="toggleInvalidClass(errorsMessages.barcode)" :maxlength="config.barcode.maxLength">
+                  <div class="invalid-feedback">
+                    {{ errorsMessages.barcode }}
+                  </div>
+                  <br><br>
+                  Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
+                                          name="img" accept="image/png, image/gif, image/jpeg">
+                  <br><br>
+                  <button id="autofill-button" type="button"
+                          :class="`btn green-button ${getErrorMessage(
+                              config.barcode.name,
+                              newProduct.data.barcode,
+                              config.barcode.minLength,
+                              config.barcode.maxLength,
+                              config.barcode.regexMessage,
+                              config.barcode.regex) === '' ? '': 'disabled'}`"
+                          @click="autofillProductFromBarcode()">Autofill Empty Fields
+                  </button>
+                </div>
+              </div>
             </form>
           </div>
           <div class="modal-footer">
@@ -97,6 +128,7 @@
 import { Modal } from 'bootstrap'
 import Product from "../../configs/Product"
 import Api from "../../Api";
+import Quagga from "quagga";
 
 
 export default {
@@ -135,11 +167,14 @@ export default {
         name: "",
         description: "",
         manufacturer: "",
-        recommendedRetailPrice: ""
+        recommendedRetailPrice: "",
+        barcode: ""
       },
 
       // Keeps track if there is an error or not in the form
-      inputError: false
+      inputError: false,
+      
+      editBarcode: false,
 
     }
   },
@@ -182,6 +217,7 @@ export default {
         this.newProduct.data.description = this.value.data.description;
         this.newProduct.data.manufacturer = this.value.data.manufacturer;
         this.newProduct.data.recommendedRetailPrice = this.value.data.recommendedRetailPrice;
+        this.newProduct.data.barcode = this.value.data.barcode;
 
         // Reset all the error messages
         this.errorsMessages.id = "";
@@ -189,8 +225,11 @@ export default {
         this.errorsMessages.manufacturer = "";
         this.errorsMessages.recommendedRetailPrice = "";
         this.errorsMessages.description = "";
-
+        this.errorsMessages.barcode = "";
       }
+      
+      this.editBarcode = this.newProduct.data.barcode !== null;
+      
       // Show the modal
       this.modal.show();
     },
@@ -296,6 +335,21 @@ export default {
         this.inputError = true;
       }
 
+      // Process new barcode
+      if (this.editBarcode) {
+        this.errorsMessages.barcode = this.getErrorMessage(
+            this.config.barcode.name,
+            this.newProduct.data.barcode,
+            this.config.barcode.minLength,
+            this.config.barcode.maxLength,
+            this.config.barcode.regexMessage,
+            this.config.barcode.regex)
+      } else {
+        this.newProduct.data.barcode = this.value.data.barcode;
+      }
+      if (this.errorsMessages.barcode) {
+        this.inputError = true;
+      }
 
       // If there is an input don't bother making the request to the backend
       if (this.inputError) {
@@ -324,7 +378,7 @@ export default {
                   // There was something wrong with the user data!
                   if (error.response.status === 400) {
                     if (error.response.data.message !== "") {
-                      this.formErrorModalMessage = error.response.data.message;
+                      this.formErrorModalMessage = "Error: " + error.response.data.message;
                     } else {
                       this.formErrorModalMessage = "Some of the information you have entered is invalid.";
                     }
@@ -351,6 +405,28 @@ export default {
               }
           )
     },
+
+    /**
+     * Retrieves the barcode number (EAN or UPC) from an uploaded image.
+     */
+    getBarcodeStatic() {
+      let outerThis = this;
+      let file = this.$refs.image.files[0];
+
+      Quagga.decodeSingle({
+        decoder: {
+          readers: ["upc_reader", "ean_reader"]
+        },
+        locate: true,
+        src: URL.createObjectURL(file)
+      }, function (result) {
+        if (result && result.codeResult) {
+          outerThis.barcode = result.codeResult.code;
+        } else {
+          outerThis.barcodeErrorMsg = "Barcode not found in image";
+        }
+      });
+    }
   },
   mounted() {
     // Create a modal and attach it to the updateProductModel reference.
@@ -367,4 +443,10 @@ input:focus, textarea:focus, button:focus{
   box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
 }
+
+label, input {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 </style>

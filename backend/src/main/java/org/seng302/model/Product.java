@@ -296,6 +296,7 @@ public class Product {
      * @return true when the description is valid
      */
     private boolean isValidDescription(String description) {
+        if (description == null) { return true; } // optional
         return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
@@ -306,6 +307,7 @@ public class Product {
      * @return true when the manufacturer name is valid
      */
     private boolean isValidManufacturer(String manufacturer) {
+        if (manufacturer == null) { return true; } // optional
         return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
                 (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
                 (manufacturer.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]*$"));
@@ -337,7 +339,7 @@ public class Product {
      */
     private boolean isValidBarcode(String barcode) {
         // barcode is not a required field
-        if (barcode.length() == 0) { return true; }
+        if (barcode == null || barcode.length() == 0) { return true; }
         // check barcode is numeric
         if (!barcode.matches("[0-9]+")) {
             return false;

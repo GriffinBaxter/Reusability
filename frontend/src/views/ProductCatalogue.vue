@@ -859,7 +859,7 @@ export default {
 
       Quagga.decodeSingle({
         decoder: {
-          readers: ["ean_reader", "upc_reader"]
+          readers: ["upc_reader", "ean_reader"]
         },
         locate: true,
         src: URL.createObjectURL(file)
