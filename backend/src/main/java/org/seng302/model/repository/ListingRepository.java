@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.Optional;
+
 /**
  * ListingRepository interface
  */
@@ -29,4 +31,13 @@ public interface ListingRepository extends JpaRepository<Listing, Integer> {
      * @return A list of products with the given business ID.
      */
      Page<Listing> findListingsByBusinessId(Integer businessId, Pageable paging);
+
+
+    /**
+     * Finds a single listing with the given business and listing IDs.
+     * @param businessId A business ID.
+     * @param listingId A listing ID.
+     * @return A listing with the given ID if it exists.
+     */
+     Optional<Listing> findListingByBusinessIdAndId(Integer businessId, Integer listingId);
 }
