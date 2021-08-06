@@ -129,6 +129,7 @@ import { Modal } from 'bootstrap'
 import Product from "../../configs/Product"
 import Api from "../../Api";
 import Quagga from "quagga";
+import OpenFoodFacts from '../../openFoodFactsInstance';
 
 
 export default {
@@ -421,9 +422,42 @@ export default {
         src: URL.createObjectURL(file)
       }, function (result) {
         if (result && result.codeResult) {
-          outerThis.barcode = result.codeResult.code;
+          outerThis.newProduct.data.barcode = result.codeResult.code;
         } else {
-          outerThis.barcodeErrorMsg = "Barcode not found in image";
+          outerThis.formErrorModalMessage = "Barcode not found in image";
+        }
+      });
+    },
+
+    /**
+     * Autofills data from the barcode, using the OpenFoodFacts API.
+     */
+    autofillProductFromBarcode() {
+      let outerThis = this;
+      outerThis.formErrorModalMessage = "";
+
+      OpenFoodFacts.retrieveProductByBarcode(this.newProduct.data.barcode).then((result) => {
+        if (result.data.status === 1) {
+          if (
+              (outerThis.newProduct.data.name === "" || outerThis.newProduct.data.name == null) &&
+              result.data.product.product_name !== undefined && result.data.product.product_name !== ""
+          ) {
+            outerThis.newProduct.data.name = result.data.product.product_name + " " + result.data.product.quantity;
+          }
+          if (
+              (outerThis.newProduct.data.manufacturer === "" || outerThis.newProduct.data.manufacturer == null) &&
+              result.data.product.brands !== undefined
+          ) {
+            outerThis.newProduct.data.manufacturer = result.data.product.brands;
+          }
+          if (
+              (outerThis.newProduct.data.description === "" || outerThis.newProduct.data.description == null) &&
+              result.data.product.generic_name !== undefined
+          ) {
+            outerThis.newProduct.data.description = result.data.product.generic_name;
+          }
+        } else {
+          outerThis.formErrorModalMessage = "Could not autofill, product may not exist in database";
         }
       });
     }

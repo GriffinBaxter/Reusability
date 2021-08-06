@@ -890,7 +890,6 @@ export default {
           if (outerThis.manufacturer === "" && result.data.product.brands !== undefined) {
             outerThis.manufacturer = result.data.product.brands;
           }
-          console.log(result.data.product.generic_name)
           if (outerThis.description === "" && result.data.product.generic_name !== undefined) {
             outerThis.description = result.data.product.generic_name;
           }
