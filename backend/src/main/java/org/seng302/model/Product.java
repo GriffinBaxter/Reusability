@@ -128,7 +128,7 @@ public class Product {
         }
         if (!isValidBarcode(barcode)) {
             logger.error("Product Creation Error - Barcode {} is not valid", barcode);
-            throw new IllegalProductArgumentException("Invalid barcode");
+            throw new IllegalProductArgumentException("Invalid barcode checksum");
         }
         this.id = id;
         this.business = business;
@@ -259,7 +259,7 @@ public class Product {
         if (isValidBarcode(barcode)) {
             this.barcode = barcode;
         } else {
-            throw new IllegalProductArgumentException("Invalid barcode");
+            throw new IllegalProductArgumentException("Invalid barcode checksum");
         }
     }
 

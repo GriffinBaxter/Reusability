@@ -302,7 +302,7 @@ class ProductTests {
             );
             Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
-            assertEquals("Invalid barcode", e.getMessage());
+            assertEquals("Invalid barcode checksum", e.getMessage());
         }
     }
 
@@ -324,7 +324,7 @@ class ProductTests {
             );
             Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
-            assertEquals("Invalid barcode", e.getMessage());
+            assertEquals("Invalid barcode checksum", e.getMessage());
         }
     }
 
@@ -386,7 +386,7 @@ class ProductTests {
             );
             Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
-            assertEquals("Invalid barcode", e.getMessage());
+            assertEquals("Invalid barcode checksum", e.getMessage());
         }
     }
 
@@ -408,7 +408,7 @@ class ProductTests {
             );
             Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
-            assertEquals("Invalid barcode", e.getMessage());
+            assertEquals("Invalid barcode checksum", e.getMessage());
         }
     }
 
@@ -432,7 +432,7 @@ class ProductTests {
             );
             Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
-            assertEquals("Invalid barcode", e.getMessage());
+            assertEquals("Invalid barcode checksum", e.getMessage());
         }
     }
 
@@ -456,7 +456,7 @@ class ProductTests {
             );
             Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
-            assertEquals("Invalid barcode", e.getMessage());
+            assertEquals("Invalid barcode checksum", e.getMessage());
         }
     }
 
@@ -528,7 +528,7 @@ class ProductTests {
             setProduct.setBarcode("INVALIDBARCODE");
             Assertions.fail("IllegalProductArgumentException was expected to be thrown.");
         } catch (IllegalProductArgumentException e) {
-            assertEquals("Invalid barcode", e.getMessage());
+            assertEquals("Invalid barcode checksum", e.getMessage());
         }
     }
 
