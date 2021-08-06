@@ -141,8 +141,7 @@ public class ModifyInventoryItemStepDefs {
                 "Description",
                 "Manufacturer",
                 20.99,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         user.setBusinessesAdministeredObjects(List.of(business));
         this.mvc = MockMvcBuilders.standaloneSetup(new InventoryItemResource(
@@ -165,8 +164,8 @@ public class ModifyInventoryItemStepDefs {
         );
     }
 
-    @Given("I have an product with Product Id {string}, name {string}, description {string}, manufacturer {string}, recommendPrice {string} and created {string}.")
-    public void i_have_an_product_with_product_id_name_description_manufacturer_recommend_price_and_created(String productId, String name, String description, String manufacturer, String recommendPrice, String created) throws Exception {
+    @Given("I have an product with Product Id {string}, name {string}, description {string}, manufacturer {string}, recommendPrice {string} and barcode {string}.")
+    public void i_have_an_product_with_product_id_name_description_manufacturer_recommend_price_and_created(String productId, String name, String description, String manufacturer, String recommendPrice, String barcode) throws Exception {
         newProduct = new Product(
                 productId,
                 business,
@@ -174,7 +173,7 @@ public class ModifyInventoryItemStepDefs {
                 description,
                 manufacturer,
                 Double.valueOf(recommendPrice),
-                LocalDateTime.parse(created)
+                barcode
         );
     }
 
