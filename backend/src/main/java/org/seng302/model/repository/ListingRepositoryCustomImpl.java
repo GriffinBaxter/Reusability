@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Custom Implementation of Listing Repository for searching
+ */
 public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
     @Autowired
@@ -44,44 +47,13 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
     ) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
-
         Root<Listing> listing = query.from(Listing.class);
 
         Path<String> namePath = listing.get("inventoryItem").get("product").get("name");
 
-        List<Predicate> predicates = new ArrayList<>();
-        for (String name : names) {
-            if (name.startsWith("\"") && name.endsWith("\"")) {
-                name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
-                predicates.add(criteriaBuilder.equal(namePath, name));
-            } else {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(namePath), "%" + name.toUpperCase() + "%"));
-            }
-        }
+        ArrayList<Predicate> predicates = getNamePredicates(names, namePath, criteriaBuilder);
 
-        ArrayList<Predicate> predicateList = getOptionalPredicates(criteriaBuilder, listing, businessType, minimumPrice, maximumPrice, fromDate, toDate);
-
-        predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
-
-        // the where clause of the query
-        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()])));
-
-        // the order by clause of the query
-        query.orderBy(QueryUtils.toOrders(pageable.getSort(), listing, criteriaBuilder));
-
-        // this query fetches the listings as per the page limit
-        List<Listing> listings = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
-        
-        // create a count query used to display "Showing 1-5 of x results"
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Listing> listingRootCount = countQuery.from(Listing.class);
-        countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
-        
-        // fetches the count of all listings as per given criteria
-        Long count = entityManager.createQuery(countQuery).getSingleResult();
-        
-        return new PageImpl<>(listings, pageable, count);
-
+        return getListings(pageable, businessType, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -109,7 +81,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         Path<String> addressPath = listing.get("inventoryItem").get("product").get("business").get("address");
 
-        List<Predicate> predicates = new ArrayList<>();
+        ArrayList<Predicate> predicates = new ArrayList<>();
         for (String location : locations) {
             if (location.startsWith("\"") && location.endsWith("\"")) {
                 location = location.replaceAll("^\"+|\"+$", ""); // Remove quotations.
@@ -124,29 +96,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(addressPath.get("country")), "%" + location.toUpperCase() + "%"));
             }
         }
-
-        ArrayList<Predicate> predicateList = getOptionalPredicates(criteriaBuilder, listing, businessType, minimumPrice, maximumPrice, fromDate, toDate);
-
-        predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
-
-        // the where clause of the query
-        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()])));
-
-        // the order by clause of the query
-        query.orderBy(QueryUtils.toOrders(pageable.getSort(), listing, criteriaBuilder));
-
-        // this query fetches the listings as per the page limit
-        List<Listing> listings = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
-
-        // create a count query used to display "Showing 1-5 of x results"
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Listing> listingRootCount = countQuery.from(Listing.class);
-        countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
-
-        // fetches the count of all listings as per given criteria
-        Long count = entityManager.createQuery(countQuery).getSingleResult();
-
-        return new PageImpl<>(listings, pageable, count);
+        return getListings(pageable, businessType, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -174,60 +124,60 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         Path<String> businessNamePath = listing.get("inventoryItem").get("product").get("business").get("name");
 
-        List<Predicate> predicates = new ArrayList<>();
-        for (String name : names) {
-            if (name.startsWith("\"") && name.endsWith("\"")) {
-                name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
-                predicates.add(criteriaBuilder.equal(businessNamePath, name));
-            } else {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(businessNamePath), "%" + name.toUpperCase() + "%"));
-            }
-        }
+        ArrayList<Predicate> predicates = getNamePredicates(names, businessNamePath, criteriaBuilder);
 
-        ArrayList<Predicate> predicateList = getOptionalPredicates(criteriaBuilder, listing, businessType, minimumPrice, maximumPrice, fromDate, toDate);
-
-        predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
-
-        // the where clause of the query
-        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()])));
-
-        // the order by clause of the query
-        query.orderBy(QueryUtils.toOrders(pageable.getSort(), listing, criteriaBuilder));
-
-        // this query fetches the listings as per the page limit
-        List<Listing> listings = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
-
-        // create a count query used to display "Showing 1-5 of x results"
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Listing> listingRootCount = countQuery.from(Listing.class);
-        countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
-
-        // fetches the count of all listings as per given criteria
-        Long count = entityManager.createQuery(countQuery).getSingleResult();
-
-        return new PageImpl<>(listings, pageable, count);
+        return getListings(pageable, businessType, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
     }
 
     /**
-     * Gets a list of all optional predicates if they exist.
-     * Optional Predicates include; businessType, price (min/max), and close date (from/to).
+     * Gets Predicates that contain only one field (ie Product name).
      *
-     * @param criteriaBuilder   CriteriaBuilder entity
-     * @param listing           Root location for query
-     * @param businessType      Type of business
-     * @param minimumPrice      Minimum price
-     * @param maximumPrice      Maximum price
-     * @param fromDate          from date for close date
-     * @param toDate            to date for close date
-     * @return ArrayList of Predicates (can be empty)
+     * @param names list of names to search
+     * @param path path to required field
+     * @param criteriaBuilder CriteriaBuilder object
+     * @return ArrayList of Predicates
      *
-     * Preconditions:  criteriaBuilder exists
-     *                 Root is a valid Root location
-     * Postconditions: A list of all optional Predicates if any
+     * Preconditions: path is valid
+     *                names is not empty
+     * Postconditions: List of predicates
      */
-    private ArrayList<Predicate> getOptionalPredicates(CriteriaBuilder criteriaBuilder, Root<Listing> listing, BusinessType businessType, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
-        ArrayList<Predicate> predicateList = new ArrayList<>();
+    private ArrayList<Predicate> getNamePredicates(List<String> names, Path<String> path, CriteriaBuilder criteriaBuilder) {
+        ArrayList<Predicate> predicates = new ArrayList<>();
+        for (String name : names) {
+            if (name.startsWith("\"") && name.endsWith("\"")) {
+                name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
+                predicates.add(criteriaBuilder.equal(path, name));
+            } else {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(path), "%" + name.toUpperCase() + "%"));
+            }
+        }
+        return predicates;
+    }
 
+    /**
+     * Gets the page of Listings from predicates and applies the optional filters.
+     *
+     * @param pageable Pageable for Pagination/Sorting
+     * @param businessType Type of Business
+     * @param minimumPrice Lower end of price range
+     * @param maximumPrice Higher end of price range
+     * @param fromDate Earlier date of close date range
+     * @param toDate Later date of close date range
+     * @param criteriaBuilder Criteria builder
+     * @param query Query for Listings location
+     * @param listing Root for listing location
+     * @param predicates Predicates from searchQuery
+     * @return A Page of Listings that apply to filters (can be empty)
+     *
+     * Preconditions:  predicates contains at least one Predicate
+     *                 pageable is a valid Pageable
+     *                 query and listing are for the same place
+     * Postconditions: A matching Page of Listings
+     */
+    private Page<Listing> getListings(Pageable pageable, BusinessType businessType, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, CriteriaBuilder criteriaBuilder, CriteriaQuery<Listing> query, Root<Listing> listing, ArrayList<Predicate> predicates) {
+
+        // Optional filters
+        ArrayList<Predicate> predicateList = new ArrayList<>();
         if (businessType != null) {
             // where businessType = type
             Predicate predicateForBusinessType = criteriaBuilder.equal(listing.get("inventoryItem").get("product").get("business").get("businessType"), businessType);
@@ -254,6 +204,25 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
             predicateList.add(predicateForToDate);
         }
 
-        return predicateList;
+        predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
+
+        // the where clause of the query
+        query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()])));
+
+        // the order by clause of the query
+        query.orderBy(QueryUtils.toOrders(pageable.getSort(), listing, criteriaBuilder));
+
+        // this query fetches the listings as per the page limit
+        List<Listing> listings = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
+
+        // create a count query used to display "Showing 1-5 of x results"
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Listing> listingRootCount = countQuery.from(Listing.class);
+        countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
+
+        // fetches the count of all listings as per given criteria
+        Long count = entityManager.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(listings, pageable, count);
     }
 }
