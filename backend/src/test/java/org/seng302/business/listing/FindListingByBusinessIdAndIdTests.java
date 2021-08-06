@@ -116,8 +116,7 @@ class FindListingByBusinessIdAndIdTests {
                 "A Description",
                 "Manufacturer",
                 21.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
         entityManager.persist(product);
         entityManager.flush();

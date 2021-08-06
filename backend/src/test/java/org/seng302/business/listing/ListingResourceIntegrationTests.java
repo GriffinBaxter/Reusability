@@ -140,7 +140,8 @@ class ListingResourceIntegrationTests {
                 "\"manufacturer\":\"%s\"," +
                 "\"recommendedRetailPrice\":%.1f," +
                 "\"created\":\"%s\"," +
-                "\"images\":[]}," +
+                "\"images\":[]," +
+                "\"barcode\":\"%s\"}," +
                 "\"quantity\":%d," +
                 "\"pricePerItem\":%.1f," +
                 "\"totalPrice\":%.1f," +
@@ -871,7 +872,7 @@ class ListingResourceIntegrationTests {
 
         expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
 
@@ -902,7 +903,7 @@ class ListingResourceIntegrationTests {
 
         expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
 
