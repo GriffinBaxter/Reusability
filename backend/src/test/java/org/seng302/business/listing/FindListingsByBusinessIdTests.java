@@ -32,8 +32,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * FindInventoryItemsByBusinessId test class - specifically for testing the pagination and ordering of the
- * findInventoryItemsByBusinessId method in InventoryItemsRepository.
+ * FindListingsByBusinessId test class - specifically for testing the pagination and ordering of the
+ * FindListingsByBusinessId method in ListingRepository.
  */
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
