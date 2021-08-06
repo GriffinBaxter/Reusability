@@ -91,7 +91,8 @@ class InventoryItemResourceIntegrationTests {
             "\"manufacturer\":\"%s\"," +
             "\"recommendedRetailPrice\":%.2f," +
             "\"created\":\"%s\"," +
-            "\"images\":[]}," +
+            "\"images\":[]," +
+            "\"barcode\":\"%s\"}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.2f," +
             "\"totalPrice\":%.2f," +
@@ -180,8 +181,7 @@ class InventoryItemResourceIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.99,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
 
         inventoryItem = new InventoryItem(
@@ -787,7 +787,7 @@ class InventoryItemResourceIntegrationTests {
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
         expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
         // when
@@ -825,7 +825,7 @@ class InventoryItemResourceIntegrationTests {
         anotherUser.setRole(Role.GLOBALAPPLICATIONADMIN);
         expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
         // when
@@ -864,7 +864,7 @@ class InventoryItemResourceIntegrationTests {
         anotherUser.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
         expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
         // when
