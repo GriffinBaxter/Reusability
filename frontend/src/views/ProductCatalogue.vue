@@ -57,7 +57,8 @@
                           v-bind:created="created"
                           v-bind:currencyCode="currencyCode"
                           v-bind:currencySymbol="currencySymbol"
-                          v-bind:images="images"/>
+                          v-bind:images="images"
+                          v-bind:barcode="barcode"/>
                     </div>
                     <div class="modal-footer">
                       <button class="btn btn-primary" @click="(event) => {
@@ -268,6 +269,7 @@ export default {
       currentProduct: new Product(
           {
             id: 'temp-id',
+            barcode: 'temp-barcode',
             name: 'temp-name',
             description: 'temp-desc',
             manufacturer: 'temp-man',
@@ -353,6 +355,11 @@ export default {
       this.currentProduct = product;
       this.currentProductIndex = productIndex;
       this.images = product.data.images;
+      this.barcode = product.data.barcode;
+      // these checks are needed so that the default prop is used if there is no data (is null)
+      if (!(this.description)) { this.description = undefined; }
+      if (!(this.manufacturer)) { this.manufacturer = undefined; }
+      if (!(this.barcode)) { this.barcode = undefined; }
       this.showModal = true;
     },
 
@@ -481,6 +488,7 @@ export default {
         this.productList = response.data.map((product) => {
           return new Product(product);
         });
+
         let newtableData = [];
 
         // No results
