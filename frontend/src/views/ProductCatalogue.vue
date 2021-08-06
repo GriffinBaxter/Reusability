@@ -158,15 +158,15 @@
                     <br>
                     <div v-if="addBarcode">
                       <br>
-                      <label for="product-barcode">Barcode</label>
+                      <label for="product-barcode">Barcode (EAN or UPC)</label>
                       <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="barcode"
                              :class="toggleInvalidClass(barcodeErrorMsg)" :maxlength="config.barcode.maxLength">
                       <div class="invalid-feedback">
                         {{ barcodeErrorMsg }}
                       </div>
                       <br><br>
-                      Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcode" name="img"
-                             accept="image/png, image/gif, image/jpeg">
+                      Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
+                                              name="img" accept="image/png, image/gif, image/jpeg">
                       <br><br>
                       <button id="autofill-button" type="button"
                               :class="`btn green-button ${getErrorMessage(
@@ -850,7 +850,10 @@ export default {
       this.currencySymbol = response[0].currencies[0].symbol;
     },
 
-    getBarcode() {
+    /**
+     * Retrieves the barcode number (EAN or UPC) from an uploaded image.
+     */
+    getBarcodeStatic() {
       let outerThis = this;
       let file = this.$refs.image.files[0];
 
@@ -869,6 +872,9 @@ export default {
       });
     },
 
+    /**
+     * Autofills data from the barcode, using the OpenFoodFacts API.
+     */
     autofillProductFromBarcode() {
       let outerThis = this;
       outerThis.toastErrorMessage = "";
