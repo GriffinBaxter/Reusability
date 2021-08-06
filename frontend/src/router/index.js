@@ -191,6 +191,18 @@ const routes = [
         component: () => import('../views/Listings')
     },
     {
+        path: '/businessProfile/:businessId/listings/:listingId',
+        name: 'Listings',
+        props: true,
+        meta: {
+            title: 'Sale Listing'
+        },
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/SaleLisiting')
+    },
+    {
         path: '/marketplace',
         name: 'Marketplace',
         meta: {
