@@ -48,6 +48,18 @@ export default {
       tooltipList: [],
     }
   },
+  methods: {
+    routeToSaleListing(index, businessId) {
+      this.$router.push({
+        path: `/businessProfile/${businessId}/listings/${index}`
+      });
+    },
+    routeToSeller(businessId) {
+      this.$router.push({
+        path: `/businessProfile/${businessId}`
+      });
+    }
+  },
   mounted() {
     const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
     this.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
