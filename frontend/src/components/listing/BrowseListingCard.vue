@@ -2,7 +2,7 @@
   <div class="card" style="width: 18rem;">
     <div class="row">
       <div class="col">
-        <img :src="require('../../../public/test.jpg')" class="card-img-top" alt="default-image">
+        <img :src="require('../../../public/default-product.jpg')" class="card-img-top" alt="default-image">
       </div>
       <div class="col p-0">
           <div class="row">
@@ -12,7 +12,11 @@
           </div>
           <div class="row">
             <div class="card-body">
-              <a class="btn btn-primary green-button" id="seller-info-button">Seller Info</a>
+              <a class="btn btn-primary green-button" id="seller-info-button"
+                 data-bs-toggle="popover" data-bs-trigger="hover focus"
+                 title="Business Name"
+                 data-bs-content="Address line 1 <br> address line 2 and three <br> and so many cities in this country <br> address <br>"
+                 data-bs-placement="top">Seller Info</a>
             </div>
           </div>
         </div>
@@ -34,8 +38,22 @@
 </template>
 
 <script>
+import {Popover} from "bootstrap";
+
 export default {
-  name: "BrowseListingCard"
+  name: "BrowseListingCard",
+  components: {},
+  data() {
+    return {
+      tooltipList: [],
+    }
+  },
+  mounted() {
+    const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    this.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
+      return new Popover(popoverTriggerElement, {sanitize: false, html: true});
+    })
+  }
 }
 </script>
 
@@ -59,5 +77,8 @@ export default {
   box-shadow: 2px 2px lawngreen;
 }
 
+.green-button {
+  white-space: pre-line;
+}
 
 </style>
