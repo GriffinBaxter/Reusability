@@ -243,6 +243,10 @@
       max-width: 530px;
     }
 
+    .buy-button-section {
+      margin-top: 0;
+    }
+
     .listing-wrapper {
       margin: 0 auto;
       max-width: 530px;
@@ -260,6 +264,13 @@
       max-width: 1000px;
       min-height: 100vh;
     }
+    .listing-dates-wrapper {
+      flex-direction: row;
+    }
+
+    .listing-dates-wrapper h6 {
+      margin-right: 1.3em;
+    }
 
     #listing-content-wrapper {
       grid-template-columns: 1fr 1fr;
@@ -268,10 +279,6 @@
     }
 
     .listing-images-wrapper {
-      margin-top: 0;
-    }
-
-    .buy-button-section {
       margin-top: 0;
     }
 
