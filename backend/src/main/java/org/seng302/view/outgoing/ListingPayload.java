@@ -100,7 +100,8 @@ public class ListingPayload {
                 "\"description\":\"" + inventoryItem.getProduct().getBusiness().getDescription() + "\"," +
                 "\"address\":" + inventoryItem.getProduct().getBusiness().getAddress() + "," +
                 "\"businessType\":\"" + inventoryItem.getProduct().getBusiness().getBusinessType() + "\"," +
-                "\"created\":\"" + inventoryItem.getProduct().getBusiness().getCreated() + "\"}}," +
+                "\"created\":\"" + inventoryItem.getProduct().getBusiness().getCreated() + "\"}," +
+                "\"barcode\":\"" + inventoryItem.getProduct().getBarcode() + "\"}" +
                 "\"quantity\":" + inventoryItem.getQuantity() + "," +
                 "\"pricePerItem\":" + inventoryItem.getPricePerItem() + "," +
                 "\"totalPrice\":" + inventoryItem.getTotalPrice() + "," +

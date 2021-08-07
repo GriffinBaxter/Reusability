@@ -11,7 +11,7 @@
 package org.seng302.view.incoming;
 
 /**
- * The payload for when a user request to update a product's details.
+ * The payload for when a user requests to update a product's details.
  */
 public class ProductUpdatePayload {
 
@@ -20,6 +20,7 @@ public class ProductUpdatePayload {
     private String description;
     private String manufacturer;
     private Double recommendedRetailPrice;
+    private String barcode;
 
     @Override
     public String toString() {
@@ -28,7 +29,8 @@ public class ProductUpdatePayload {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", manufacturer='" + manufacturer + '\'' +
-                ", recommendedRetailPrice=" + recommendedRetailPrice +
+                ", recommendedRetailPrice='" + recommendedRetailPrice + '\'' +
+                ", barcode=" + barcode +
                 '}';
     }
 
@@ -50,6 +52,8 @@ public class ProductUpdatePayload {
         return recommendedRetailPrice;
     }
 
+    public String getBarcode() { return barcode; }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -68,5 +72,9 @@ public class ProductUpdatePayload {
 
     public void setRecommendedRetailPrice(Double recommendedRetailPrice) {
         this.recommendedRetailPrice = recommendedRetailPrice;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
     }
 }

@@ -113,7 +113,8 @@ class InventoryItemResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s\"}}," +
+            "\"created\":\"%s\"}," +
+            "\"barcode\":\"%s\"}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.2f," +
             "\"totalPrice\":%.2f," +
@@ -202,8 +203,7 @@ class InventoryItemResourceIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.99,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
 
         inventoryItem = new InventoryItem(
@@ -814,7 +814,7 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
                 user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
                 user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -858,7 +858,7 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
                 user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
                 user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -903,7 +903,7 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
                 user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
                 user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 

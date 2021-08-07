@@ -8,9 +8,10 @@
                     v-bind:currency-code="currencyCode"
                     v-bind:currency-symbol="currencySymbol"/>
     <!-- Listing Container -->
-    <div class="container">
-      <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
-      <div class="card p-1">
+    <div class="container mt-4">
+      <div class="card p-3">
+        <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
+        <hr>
         <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
           <div class="btn-group col-md-3 py-1" role="group">
@@ -85,6 +86,7 @@
             v-bind:currency-code="currencyCode"
             v-bind:currency-symbol="currencySymbol"
             v-bind:images="item.images"
+            v-bind:barcode="item.barcode"
         />
 
         <!--space-->
@@ -374,6 +376,7 @@ name: "Listings",
             moreInfo: response.data[i].moreInfo,
             expires: formatDate(response.data[i].inventoryItem.expires, false),
             images: response.data[i].inventoryItem.product.images,
+            barcode: response.data[i].inventoryItem.product.barcode
           })
         }
       }

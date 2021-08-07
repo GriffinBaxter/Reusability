@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * ProductPayload class
+ * ProductPayload class, used to send product data to the frontend.
  */
 public class ProductPayload {
 
@@ -28,6 +28,7 @@ public class ProductPayload {
     private String created;
     private List<ImagePayload> images;
     private BusinessPayload business;
+    private String barcode;
 
     /**
      * Constructor for product payloads.
@@ -39,6 +40,7 @@ public class ProductPayload {
      * @param recommendedRetailPrice The recommended retail price (RRP) of the product, a double
      * @param created The date and time the product was created
      * @param images The images for the product
+     * @param barcode The barcode of the product. Must be UPC or EAN-13.
      * @param business The payload representation of the business the product belongs to
      */
     public ProductPayload(
@@ -49,7 +51,8 @@ public class ProductPayload {
             Double recommendedRetailPrice,
             LocalDateTime created,
             List<Image> images,
-            BusinessPayload business
+            BusinessPayload business,
+            String barcode
     ) {
         this.id = id;
         this.name = name;
@@ -59,6 +62,7 @@ public class ProductPayload {
         this.created = created.toString();
         this.images = ImagePayload.convertToImagePayload(images);
         this.business = business;
+        this.barcode = barcode;
     }
 
     public String getId() {
@@ -93,6 +97,10 @@ public class ProductPayload {
         return business;
     }
 
+    public String getBarcode() {
+        return barcode;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -103,7 +111,8 @@ public class ProductPayload {
                 "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
                 "\"created\":\"" + created + "," +
                 "\"images\":" + images + "," +
-                "\"business\":" + business + "}";
+                "\"business\":" + business +
+                "\"barcode\":\"" + barcode + "\"}";
     }
 
 }

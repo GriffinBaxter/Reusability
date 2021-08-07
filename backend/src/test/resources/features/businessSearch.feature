@@ -1,4 +1,4 @@
-Feature: U23 Business for business
+Feature: U23 Search for business
 
   Background:
     Given I am logged in.

@@ -161,8 +161,7 @@ public class ProductImagesStepDefs {
                 "NewDesc",
                 "Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2),
-                        LocalTime.of(0, 0))
+                ""
         );
 
         productId = product.getProductId();

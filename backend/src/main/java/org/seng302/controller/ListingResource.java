@@ -44,6 +44,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+
 /**
  * ListingResource class
  */
@@ -103,7 +104,7 @@ public class ListingResource {
                                                                  @RequestParam(defaultValue = "closesASC") String orderBy,
                                                                  @RequestParam(defaultValue = "0") String page) throws Exception {
 
-        logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
+        logger.debug("Business listings retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
         // Checks user logged in - 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -233,6 +234,41 @@ public class ListingResource {
                 "Bad Request - Couldn't make listing"
             );
         }
+    }
+
+    /**
+     * Get method for retrieving a specific listing.
+     * @param businessId Integer Id of business
+     * @param listingId Integer Id of listing
+     * @return Listing payload if it exists
+     */
+    @GetMapping("/businesses/{businessId}/listings/{listingId}")
+    public ListingPayload retrieveListing(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @PathVariable Integer listingId
+    ) throws Exception {
+        logger.debug("Business sale listing retrieval request received with business ID {}, listing ID {}", businessId, listingId);
+
+        // Checks user logged in - 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        // Verify business exists
+        Authorization.verifyBusinessExists(businessId, businessRepository);
+        // Retrieve listing from database
+        Optional<Listing> listing = listingRepository.findListingByBusinessIdAndId(businessId, listingId);
+
+        if (listing.isEmpty()) {
+            logger.error("Listing Retrieval Failure - 400 [BAD REQUEST] - Sale listing at ID {} Not Found", listingId);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Sale Listing Not Found");
+        }
+
+        Listing returnedListing = listing.get();
+
+        logger.debug("Listing retrieved for business with ID {}: {}", businessId, listing);
+
+        return convertToPayload(returnedListing, currentUser);
     }
 
     /**
