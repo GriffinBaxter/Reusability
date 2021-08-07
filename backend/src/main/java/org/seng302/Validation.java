@@ -16,6 +16,10 @@ import java.util.List;
 
 public class Validation {
 
+    // Values need for validation.
+    private static final Integer PRODUCT_ID_MIN_LENGTH = 3;
+    private static final Integer PRODUCT_ID_MAX_LENGTH = 15;
+
     /**
      * Checks if a string is empty.
      * @param string String to be checked
@@ -59,6 +63,18 @@ public class Validation {
             }
         }
         return flag;
+    }
+
+    /**
+     * Checks to see whether a product ID is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param productId The product ID to be checked.
+     * @return true when the product ID is valid
+     */
+    public static boolean isValidProductId(String productId) {
+        return (productId.length() >= PRODUCT_ID_MIN_LENGTH) &&
+                (productId.length() <= PRODUCT_ID_MAX_LENGTH) &&
+                (productId.matches("^[A-Z0-9-]+$"));
     }
 
 

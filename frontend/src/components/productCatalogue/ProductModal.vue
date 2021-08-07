@@ -32,6 +32,8 @@
           <p class="card-text">
             <strong>Product ID:</strong> {{ productId }}
             <br>
+            <strong>Barcode:</strong> {{ barcode }}
+            <br>
             <strong>Manufacturer:</strong> {{ manufacturer }}
             <br>
             <strong>RRP:</strong> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
@@ -103,6 +105,11 @@ export default {
     currencySymbol: {
       type: String,
       default: "",
+      required: false
+    },
+    barcode: {
+      type: String,
+      default: "N/A",
       required: false
     }
   },
