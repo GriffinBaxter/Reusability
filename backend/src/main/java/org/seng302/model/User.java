@@ -100,6 +100,13 @@ public class User {
     @ManyToMany(mappedBy = "bookmarkedListings", fetch = FetchType.LAZY)
     private List<Listing> bookmarkedListings = new ArrayList<>();
 
+    @JsonBackReference
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    private List<ListingNotification> listingNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<HasListingNotification> readListingNotifications = new ArrayList<>();
+
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
     private static final Integer FIRST_NAME_MAX_LENGTH = 255;
@@ -443,6 +450,50 @@ public class User {
                 i--;
             }
         }
+    }
+
+    /**
+     * Add a new listing notification to the list of listing notifications that contain this user.
+     * Also adds this user to the list of users for the corresponding listing notification.
+     *
+     * @param listingNotification a listing notification which contains this user.
+     */
+    public void addListingNotification(ListingNotification listingNotification) {
+        listingNotifications.add(listingNotification);
+        listingNotification.addUser(this);
+    }
+
+    /**
+     * Remove a listing notification from the list of listing notifications that contain this user.
+     * Also removes this user from the list of users for the corresponding listing notification.
+     *
+     * @param listingNotification a listing notification which contains this user.
+     */
+    public void removeListingNotification(ListingNotification listingNotification) {
+        int listingNotificationId = listingNotification.getId();
+        for (int i = 0; i < listingNotifications.size(); i++) {
+            if (listingNotifications.get(i).getId() == listingNotificationId) {
+                this.listingNotifications.remove(i);
+            }
+        }
+
+        listingNotification.removeUser(this);
+    }
+
+    public List<ListingNotification> getListingNotifications() {
+        return listingNotifications;
+    }
+
+    public void setListingNotifications(List<ListingNotification> listingNotifications) {
+        this.listingNotifications = listingNotifications;
+    }
+
+    public List<HasListingNotification> getReadListingNotifications() {
+        return readListingNotifications;
+    }
+
+    public void setReadListingNotifications(List<HasListingNotification> readListingNotifications) {
+        this.readListingNotifications = readListingNotifications;
     }
 
     /**
