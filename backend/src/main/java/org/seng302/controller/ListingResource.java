@@ -325,7 +325,7 @@ public class ListingResource {
         // 406
         Optional<Listing> optionalListing = listingRepository.findById(Integer.valueOf(id));
         if (optionalListing.isEmpty()) {
-            logger.error("406 [BAD REQUEST] - Select listing ({}) not exist", id);
+            logger.error("406 [NOT ACCEPTABLE] - Select listing ({}) not exist", id);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
                     "Select listing not exist"

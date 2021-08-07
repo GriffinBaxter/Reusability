@@ -1013,7 +1013,7 @@ class ListingResourceIntegrationTests {
     }
 
     /**
-     * Test that an OK status return and bookmark states will be change to ture when user not mark given listing.
+     * Test that an OK status return and bookmark states will be change to true when user has not bookmarked given listing.
      *
      * @throws Exception Exception error
      */
@@ -1078,7 +1078,7 @@ class ListingResourceIntegrationTests {
     }
 
     /**
-     * Test that a BAD_REQUEST status return and bookmark states will not be change when given listing not exist.
+     * Test that a NOT_ACCEPTABLE status return and bookmark states will not be change when given listing not exist.
      *
      * @throws Exception Exception error
      */
