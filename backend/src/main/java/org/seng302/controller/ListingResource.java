@@ -14,11 +14,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
+import org.seng302.model.enums.BusinessType;
 import org.seng302.model.repository.BusinessRepository;
 import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.model.InventoryItem;
 import org.seng302.model.Listing;
 import org.seng302.utils.PaginationUtils;
+import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.ListingCreationPayload;
 import org.seng302.view.outgoing.ListingPayload;
 import org.seng302.model.repository.ListingRepository;
@@ -235,6 +237,106 @@ public class ListingResource {
         }
     }
 
+    @GetMapping("/listings")
+    public ResponseEntity<List<ListingPayload>> searchListings(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestParam(defaultValue = "") String searchQuery,
+            @RequestParam(defaultValue = "listingName") String searchType,
+            @RequestParam(defaultValue = "productNameASC") String orderBy,
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "") String businessType,
+            @RequestParam(required = false) Double minimumPrice,
+            @RequestParam(required = false) Double maximumPrice,
+            @RequestParam(required = false) LocalDateTime fromDate,
+            @RequestParam(required = false) LocalDateTime toDate
+    ) {
+        logger.debug(
+                "Listing search request received with search query {}, business type {}, order by {}, page {}",
+                searchQuery, businessType, orderBy, page
+        );
+
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        int pageNo = PaginationUtils.parsePageNumber(page);
+
+        // Front-end displays 10 listings per page
+        int pageSize = 10;
+
+        Sort sortBy;
+        // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
+        // Normally all upper case letters come before any lower case ones.
+        switch (orderBy) {
+            case "productNameASC":
+                sortBy = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+                break;
+            case "productNameDESC":
+                sortBy = Sort.by(Sort.Order.desc("inventoryItemId.product.name").ignoreCase());
+                break;
+            case "countryASC":
+                sortBy = Sort.by(Sort.Order.asc(
+                        "inventoryItemId.product.business_id.address_id.country"
+                ).ignoreCase());
+                break;
+            case "countryDESC":
+                sortBy = Sort.by(Sort.Order.desc(
+                        "inventoryItemId.product.business_id.address_id.country"
+                ).ignoreCase());
+                break;
+            case "cityASC":
+                sortBy = Sort.by(Sort.Order.asc("inventoryItemId.product.business_id.address_id.city").ignoreCase());
+                break;
+            case "cityDESC":
+                sortBy = Sort.by(Sort.Order.desc("inventoryItemId.product.business_id.address_id.city").ignoreCase());
+                break;
+            case "expiryDateASC":
+                sortBy = Sort.by(Sort.Order.asc("inventoryItemId.expires").ignoreCase());
+                break;
+            case "expiryDateDESC":
+                sortBy = Sort.by(Sort.Order.desc("inventoryItemId.expires").ignoreCase());
+                break;
+            case "sellerNameASC":
+                sortBy = Sort.by(Sort.Order.asc("inventoryItemId.product.business_id.name").ignoreCase());
+                break;
+            case "sellerNameDESC":
+                sortBy = Sort.by(Sort.Order.desc("inventoryItemId.product.business_id.name").ignoreCase());
+                break;
+            case "priceASC":
+                sortBy = Sort.by(Sort.Order.asc("price").ignoreCase());
+                break;
+            case "priceDESC":
+                sortBy = Sort.by(Sort.Order.desc("price").ignoreCase());
+                break;
+            default:
+                logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "OrderBy Field invalid"
+                );
+        }
+
+        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Page<Listing> pagedResult = parseAndExecuteQuery(
+                searchQuery, paging, searchType, businessType, minimumPrice, maximumPrice, fromDate, toDate
+        );
+
+        int totalPages = pagedResult.getTotalPages();
+        int totalRows = (int) pagedResult.getTotalElements();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
+
+        logger.info(
+                "Search Success - 200 [OK] - Listings retrieved for search query {}, business type {}, order by {}, page {}",
+                searchQuery, businessType, orderBy, pageNo
+        );
+
+        logger.debug("Listings Found: {}", pagedResult.toList());
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(ListingPayload.toListingPayload(pagedResult.getContent()));
+    }
+
     /**
      * Converts a list of Listings to a list of ListingPayloads.
      * @param listingList The given list of listings
@@ -258,5 +360,50 @@ public class ListingResource {
         return payloads;
     }
 
-}
+    private Page<Listing> parseAndExecuteQuery(
+            String searchQuery, Pageable paging,
+            String searchType,
+            String businessType,
+            Double minimumPrice, Double maximumPrice,
+            LocalDateTime fromDate, LocalDateTime toDate
+    ) {
+        BusinessType convertedBusinessType = toBusinessType(businessType);
+        List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
+        if (searchType.equals("businessName")) {
+            return listingRepository.findAllListingsByBusinessName(
+                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+            );
+        } else if (searchType.equals("location")) {
+            return listingRepository.findAllListingsByLocation(
+                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+            );
+        } else {
+            return listingRepository.findAllListingsByProductName(
+                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+            );
+        }
+    }
 
+    /**
+     * Converts a string representation of business type to a enum representation (BusinessType). If the string does
+     * not represent a valid business type then null is returned.
+     * @param type A string representing business type.
+     * @return An enum representation of business type (null if string representation is not valid).
+     *
+     * Preconditions:  A string representation of a valid business type.
+     * Postconditions: An enum representation of business type.
+     */
+    private BusinessType toBusinessType(String type) {
+        BusinessType businessType = null;
+        if (type.equalsIgnoreCase("ACCOMMODATION_AND_FOOD_SERVICES")) {
+            businessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+        } else if (type.equalsIgnoreCase("RETAIL_TRADE")) {
+            businessType = BusinessType.RETAIL_TRADE;
+        } else if (type.equalsIgnoreCase("CHARITABLE_ORGANISATION")) {
+            businessType = BusinessType.CHARITABLE_ORGANISATION;
+        } else if (type.equalsIgnoreCase("NON_PROFIT_ORGANISATION")) {
+            businessType = BusinessType.NON_PROFIT_ORGANISATION;
+        }
+        return businessType;
+    }
+}

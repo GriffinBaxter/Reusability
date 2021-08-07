@@ -936,25 +936,29 @@ paths:
         - in: query
           name: minimumPrice
           schema:
-            type: string
+            type: number
+            format: double
           required: false
           description: "Criteria to search listings for, listing's minimum price"
         - in: query
           name: maximumPrice
           schema:
-            type: string
+            type: number
+            format: double
           required: false
           description: "Criteria to search listings for, listing's maximum price"
         - in: query
           name: fromDate
           schema:
             type: string
+            format: date-time
           required: false
           description: "Criteria to search listings for dates after this date"
         - in: query
           name: toDate
           schema:
             type: string
+            format: date-time
           required: false
           description: "Criteria to search listings for dates before this date"
       responses:
