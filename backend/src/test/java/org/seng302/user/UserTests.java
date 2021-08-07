@@ -1378,55 +1378,55 @@ class UserTests {
     }
 
     /**
-     * Test to see whether the addAListingToBookMark function can successfully add new listing to bookmark
+     * Test to see whether the addAListingToBookmark function can successfully add new listing to bookmark
      */
     @Test
-    void testANewListingSuccessfullyBeenAddToBookMark() {
+    void testANewListingSuccessfullyBeenAddToBookmark() {
         // Given
-        user.setBookMarkedListings(new ArrayList<>());
+        user.setBookmarkedListings(new ArrayList<>());
 
         // When
-        user.addAListingToBookMark(listing);
+        user.addAListingToBookmark(listing);
 
         // Then
-        Assertions.assertEquals(1, user.getBookMarkedListing().size());
-        Assertions.assertEquals(listing, user.getBookMarkedListing().get(0));
+        Assertions.assertEquals(1, user.getBookmarkedListing().size());
+        Assertions.assertEquals(listing, user.getBookmarkedListing().get(0));
     }
 
     /**
-     * Test to see whether the addAListingToBookMark function will not add exist listing again to bookmark
+     * Test to see whether the addAListingToBookmark function will not add exist listing again to bookmark
      */
     @Test
-    void testAExistListingNotBeenAddToBookMarkAgain() {
+    void testAExistListingNotBeenAddToBookmarkAgain() {
         // Given
-        user.setBookMarkedListings(new ArrayList<>());
-        user.addAListingToBookMark(listing);
-        Assertions.assertEquals(1, user.getBookMarkedListing().size());
-        Assertions.assertEquals(listing, user.getBookMarkedListing().get(0));
+        user.setBookmarkedListings(new ArrayList<>());
+        user.addAListingToBookmark(listing);
+        Assertions.assertEquals(1, user.getBookmarkedListing().size());
+        Assertions.assertEquals(listing, user.getBookmarkedListing().get(0));
 
         // When
-        user.addAListingToBookMark(listing);
+        user.addAListingToBookmark(listing);
 
         // Then
-        Assertions.assertEquals(1, user.getBookMarkedListing().size());
+        Assertions.assertEquals(1, user.getBookmarkedListing().size());
     }
 
     /**
-     * Test to see whether the removeAListingToBookMark function will successfully remove given listing if its exist.
+     * Test to see whether the removeAListingToBookmark function will successfully remove given listing if its exist.
      */
     @Test
-    void testAExistListingSuccessfullyBeenRemoveFromBookMark() {
+    void testAExistListingSuccessfullyBeenRemoveFromBookmark() {
         // Given
-        user.setBookMarkedListings(new ArrayList<>());
-        user.addAListingToBookMark(listing);
-        Assertions.assertEquals(1, user.getBookMarkedListing().size());
-        Assertions.assertEquals(listing, user.getBookMarkedListing().get(0));
+        user.setBookmarkedListings(new ArrayList<>());
+        user.addAListingToBookmark(listing);
+        Assertions.assertEquals(1, user.getBookmarkedListing().size());
+        Assertions.assertEquals(listing, user.getBookmarkedListing().get(0));
 
         // When
-        user.removeAListingToBookMark(listing);
+        user.removeAListingFromBookmark(listing);
 
         // Then
-        Assertions.assertTrue(user.getBookMarkedListing().isEmpty());
+        Assertions.assertTrue(user.getBookmarkedListing().isEmpty());
     }
 
 }

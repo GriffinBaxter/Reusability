@@ -420,7 +420,7 @@ class ListingTests {
      * Test that product name will be correctly add to listing
      */
     @Test
-    void isProductNameBeenCurrentlyAdd_WhenListingCreat() throws IllegalListingArgumentException {
+    void isProductNameBeingAdded_WhenListingCreated() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 2,
@@ -436,7 +436,7 @@ class ListingTests {
      * Test that seller's business type will be correctly add to listing
      */
     @Test
-    void isBusinessTypeBeenCurrentlyAdd_WhenListingCreat() throws IllegalListingArgumentException {
+    void isBusinessTypeBeingAdded_WhenListingCreat() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 2,
@@ -452,7 +452,7 @@ class ListingTests {
      * Test that seller's name will be correctly add to listing
      */
     @Test
-    void isSellerNameBeenCurrentlyAdd_WhenListingCreat() throws IllegalListingArgumentException {
+    void isSellerNameBeingAdded_WhenListingCreat() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 2,
@@ -468,7 +468,7 @@ class ListingTests {
      * Test that seller's country will be correctly add to listing
      */
     @Test
-    void isSellerCountryBeenCurrentlyAdd_WhenListingCreat() throws IllegalListingArgumentException {
+    void isSellerCountryBeingAdded_WhenListingCreat() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 2,
@@ -484,7 +484,7 @@ class ListingTests {
      * Test that seller's city will be correctly add to listing (country exist)
      */
     @Test
-    void isSellerCityBeenCurrentlyAdd_WhenListingCreat() throws IllegalListingArgumentException {
+    void isSellerCityBeingAdded_WhenListingCreat() throws IllegalListingArgumentException {
         Listing listing = new Listing(
                 inventoryItem,
                 2,
@@ -500,7 +500,7 @@ class ListingTests {
      * Test that seller's city will be correctly add to listing (country exist)
      */
     @Test
-    void isSellerCityBeenCurrentlyAdd_WhenListingCreatAndBusinessCityNotExist() throws IllegalListingArgumentException {
+    void isSellerCityBeingAdded_WhenListingCreatAndBusinessCityNotExist() throws IllegalListingArgumentException {
         address.setCity(null);
         business.setAddress(address);
         product.setBusiness(business);
@@ -517,10 +517,10 @@ class ListingTests {
     }
 
     /**
-     * Test to see whether the addToANewUserBookMark function can successfully add new user to bookmarked list
+     * Test to see whether the addToANewUserBookmark function can successfully add new user to bookmarked list
      */
     @Test
-    void testANewUserSuccessfullyBeenBookMarkCurrentListing() throws IllegalListingArgumentException {
+    void testANewUserSuccessfullyBeenBookmarkCurrentListing() throws IllegalListingArgumentException {
         // Given
         Listing listing = new Listing(
                 inventoryItem,
@@ -530,21 +530,21 @@ class ListingTests {
                 LocalDateTime.now(),
                 LocalDateTime.of(2022, 1, 1, 0, 0)
         );
-        Assertions.assertTrue(listing.getBookMarkedListings().isEmpty());
+        Assertions.assertTrue(listing.getBookmarkedListings().isEmpty());
 
         // When
-        listing.addToANewUserBookMark(user);
+        listing.addUserToANewBookmark(user);
 
         // Then
-        Assertions.assertEquals(1, listing.getBookMarkedListings().size());
-        Assertions.assertEquals(user, listing.getBookMarkedListings().get(0));
+        Assertions.assertEquals(1, listing.getBookmarkedListings().size());
+        Assertions.assertEquals(user, listing.getBookmarkedListings().get(0));
     }
 
     /**
      * Test to see whether the addToANewUserBookMark function will not add exist user again to bookmarked list
      */
     @Test
-    void testAExistUserCanNotBookMarkCurrentListingAgain() throws IllegalListingArgumentException {
+    void testAExistUserCanNotBookmarkCurrentListingAgain() throws IllegalListingArgumentException {
         // Given
         Listing listing = new Listing(
                 inventoryItem,
@@ -554,22 +554,22 @@ class ListingTests {
                 LocalDateTime.now(),
                 LocalDateTime.of(2022, 1, 1, 0, 0)
         );
-        listing.addToANewUserBookMark(user);
-        Assertions.assertEquals(1, listing.getBookMarkedListings().size());
-        Assertions.assertEquals(user, listing.getBookMarkedListings().get(0));
+        listing.addUserToANewBookmark(user);
+        Assertions.assertEquals(1, listing.getBookmarkedListings().size());
+        Assertions.assertEquals(user, listing.getBookmarkedListings().get(0));
 
         // When
-        listing.addToANewUserBookMark(user);
+        listing.addUserToANewBookmark(user);
 
         // Then
-        Assertions.assertEquals(1, listing.getBookMarkedListings().size());
+        Assertions.assertEquals(1, listing.getBookmarkedListings().size());
     }
 
     /**
      * Test to see whether the removeFromAUserBookMark function will successfully remove given user if its exist.
      */
     @Test
-    void testAExistListingSuccessfullyBeenRemoveFromBookMark() throws IllegalListingArgumentException {
+    void testAExistListingSuccessfullyBeenRemoveFromBookmark() throws IllegalListingArgumentException {
         // Given
         Listing listing = new Listing(
                 inventoryItem,
@@ -579,15 +579,15 @@ class ListingTests {
                 LocalDateTime.now(),
                 LocalDateTime.of(2022, 1, 1, 0, 0)
         );
-        listing.addToANewUserBookMark(user);
-        Assertions.assertEquals(1, listing.getBookMarkedListings().size());
-        Assertions.assertEquals(user, listing.getBookMarkedListings().get(0));
+        listing.addUserToANewBookmark(user);
+        Assertions.assertEquals(1, listing.getBookmarkedListings().size());
+        Assertions.assertEquals(user, listing.getBookmarkedListings().get(0));
 
         // When
-        listing.removeFromAUserBookMark(user);
+        listing.removeUserFromABookmark(user);
 
         // Then
-        Assertions.assertTrue(listing.getBookMarkedListings().isEmpty());
+        Assertions.assertTrue(listing.getBookmarkedListings().isEmpty());
     }
 
     /**
@@ -604,9 +604,9 @@ class ListingTests {
                 LocalDateTime.now(),
                 LocalDateTime.of(2022, 1, 1, 0, 0)
         );
-        listing.addToANewUserBookMark(user);
-        Assertions.assertEquals(1, listing.getBookMarkedListings().size());
-        Assertions.assertEquals(user, listing.getBookMarkedListings().get(0));
+        listing.addUserToANewBookmark(user);
+        Assertions.assertEquals(1, listing.getBookmarkedListings().size());
+        Assertions.assertEquals(user, listing.getBookmarkedListings().get(0));
 
         //When
         Assertions.assertTrue(listing.isBookmarked(user));
@@ -626,7 +626,7 @@ class ListingTests {
                 LocalDateTime.now(),
                 LocalDateTime.of(2022, 1, 1, 0, 0)
         );
-        Assertions.assertTrue(listing.getBookMarkedListings().isEmpty());
+        Assertions.assertTrue(listing.getBookmarkedListings().isEmpty());
 
         //When
         Assertions.assertFalse(listing.isBookmarked(user));

@@ -97,8 +97,8 @@ public class User {
     private List<HasKeywordNotification> readKeywordNotifications = new ArrayList<>();
 
     @JsonBackReference
-    @ManyToMany(mappedBy = "bookMarkedListings", fetch = FetchType.LAZY)
-    private List<Listing> bookMarkedListings = new ArrayList<>();
+    @ManyToMany(mappedBy = "bookmarkedListings", fetch = FetchType.LAZY)
+    private List<Listing> bookmarkedListings = new ArrayList<>();
 
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
@@ -255,8 +255,8 @@ public class User {
         return sessionUUID;
     }
 
-    public List<Listing> getBookMarkedListing() {
-        return bookMarkedListings;
+    public List<Listing> getBookmarkedListing() {
+        return bookmarkedListings;
     }
 
     public void setId(int id) {
@@ -323,8 +323,8 @@ public class User {
         this.readKeywordNotifications = readKeywordNotifications;
     }
 
-    public void setBookMarkedListings(List<Listing> bookMarkedListings) {
-        this.bookMarkedListings = bookMarkedListings;
+    public void setBookmarkedListings(List<Listing> bookMarkedListings) {
+        this.bookmarkedListings = bookMarkedListings;
     }
 
     /**
@@ -426,20 +426,20 @@ public class User {
      * Add a listing to user bookmark if that listing not in user's bookmark
      * @param listing listing
      */
-    public void addAListingToBookMark(Listing listing){
-        if (!this.bookMarkedListings.contains(listing)){
-            this.bookMarkedListings.add(listing);
+    public void addAListingToBookmark(Listing listing){
+        if (!this.bookmarkedListings.contains(listing)){
+            this.bookmarkedListings.add(listing);
         }
     }
 
     /**
-     * Add a listing to user bookmark if that listing not in user's bookmark
+     * Remove a listing from user bookmark if that listing not in user's bookmark
      * @param givenListing given listing
      */
-    public void removeAListingToBookMark(Listing givenListing){
-        for (int i = 0; i < bookMarkedListings.size(); i++) {
-            if (bookMarkedListings.get(i) == givenListing) {
-                bookMarkedListings.remove(i);
+    public void removeAListingFromBookmark(Listing givenListing){
+        for (int i = 0; i < bookmarkedListings.size(); i++) {
+            if (bookmarkedListings.get(i) == givenListing) {
+                bookmarkedListings.remove(i);
                 i--;
             }
         }

@@ -77,13 +77,13 @@ public class Listing {
     @JsonManagedReference
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_book_marks",
+    @JoinTable(name = "users_bookmarks",
             joinColumns = {@JoinColumn(name = "listings_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
-    private List<User> bookMarkedListings = new ArrayList<>();
+    private List<User> bookmarkedListings = new ArrayList<>();
 
-    @Column(name = "totalBookMarks")
-    private Integer totalBookMarks;
+    @Column(name = "totalBookmarks")
+    private Integer totalBookmarks;
 
     private static final Logger logger = LogManager.getLogger(Listing.class.getName());
 
@@ -145,7 +145,7 @@ public class Listing {
         this.sellerName = business.getName();
         this.country = business.getAddress().getCountry();
         this.city = business.getAddress().getCity();
-        this.totalBookMarks = 0;
+        this.totalBookmarks = 0;
     }
 
     /**
@@ -260,13 +260,13 @@ public class Listing {
         return city;
     }
 
-    public Integer getTotalBookMarks() {
-        totalBookMarks = bookMarkedListings.size();
-        return totalBookMarks;
+    public Integer getTotalBookmarks() {
+        totalBookmarks = bookmarkedListings.size();
+        return totalBookmarks;
     }
 
-    public List<User> getBookMarkedListings() {
-        return bookMarkedListings;
+    public List<User> getBookmarkedListings() {
+        return bookmarkedListings;
     }
 
 
@@ -318,23 +318,23 @@ public class Listing {
         this.city = city;
     }
 
-    public void addToANewUserBookMark(User user) {
-        if (!this.bookMarkedListings.contains(user)) {
-            this.bookMarkedListings.add(user);
+    public void addUserToANewBookmark(User user) {
+        if (!this.bookmarkedListings.contains(user)) {
+            this.bookmarkedListings.add(user);
         }
     }
 
-    public void removeFromAUserBookMark(User user) {
-        for (int i = 0; i < this.bookMarkedListings.size(); i++){
-            if(this.bookMarkedListings.get(i) == user){
-                this.bookMarkedListings.remove(i);
+    public void removeUserFromABookmark(User user) {
+        for (int i = 0; i < this.bookmarkedListings.size(); i++){
+            if(this.bookmarkedListings.get(i) == user){
+                this.bookmarkedListings.remove(i);
                 i--;
             }
         }
     }
 
     public Boolean isBookmarked(User user) {
-        return this.bookMarkedListings.contains(user);
+        return this.bookmarkedListings.contains(user);
     }
 
     /**
