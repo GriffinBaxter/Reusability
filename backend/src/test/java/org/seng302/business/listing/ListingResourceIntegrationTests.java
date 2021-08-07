@@ -6,19 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
-import org.seng302.model.repository.BusinessRepository;
+import org.seng302.model.repository.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.InventoryItem;
-import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.model.Product;
-import org.seng302.model.repository.ProductRepository;
 import org.seng302.controller.ListingResource;
 import org.seng302.Main;
 import org.seng302.model.Listing;
-import org.seng302.model.repository.ListingRepository;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
-import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -73,6 +69,9 @@ class ListingResourceIntegrationTests {
 
     @MockBean
     private ListingRepository listingRepository;
+
+    @MockBean
+    private SoldListingRepository soldListingRepository;
 
     private MockHttpServletResponse response;
 
@@ -290,7 +289,7 @@ class ListingResourceIntegrationTests {
         listing.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository))
                 .build();
     }
 

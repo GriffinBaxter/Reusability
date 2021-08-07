@@ -1,4 +1,4 @@
-/**
+ /**
  * Summary. This file contains the definition for the ListingResource.
  *
  * Description. This file contains the defintion for the ListingResource.
@@ -14,26 +14,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
-import org.seng302.model.Business;
+import org.seng302.model.*;
 import org.seng302.model.enums.Role;
-import org.seng302.model.repository.BusinessRepository;
-import org.seng302.model.repository.InventoryItemRepository;
-import org.seng302.model.InventoryItem;
-import org.seng302.model.Listing;
+import org.seng302.model.repository.*;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.view.incoming.ListingCreationPayload;
-import org.seng302.view.outgoing.ListingPayload;
-import org.seng302.model.repository.ListingRepository;
-import org.seng302.model.repository.ProductRepository;
+import org.seng302.view.outgoing.*;
 
 import org.seng302.Authorization;
 
-import org.seng302.model.repository.UserRepository;
-import org.seng302.model.User;
-
-import org.seng302.view.outgoing.UserPayload;
-import org.seng302.view.outgoing.UserPayloadParent;
-import org.seng302.view.outgoing.UserPayloadSecure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -72,6 +61,9 @@ public class ListingResource {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SoldListingRepository soldListingRepository;
+
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
     /**
@@ -87,13 +79,15 @@ public class ListingResource {
                            InventoryItemRepository inventoryItemRepository,
                            ProductRepository productRepository,
                            BusinessRepository businessRepository,
-                           UserRepository userRepository)
+                           UserRepository userRepository,
+                           SoldListingRepository soldListingRepository)
     {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.productRepository = productRepository;
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
+        this.soldListingRepository = soldListingRepository;
     }
 
     /**
@@ -289,6 +283,52 @@ public class ListingResource {
     }
 
     /**
+     * Get method for retrieving a list of sold Listings for a business
+     * @param sessionToken Session Token
+     * @param businessId ID of business
+     * @param page Page number to retrieve
+     * @return The requested page of Sold Listings
+     */
+    @GetMapping("/businesses/{businessId}/soldListings")
+    public ResponseEntity<List<SoldListingPayload>> retrieveSoldListing(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @RequestParam(defaultValue = "0") String page
+    ) {
+        // Checks user logged in - 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        // Checks business at ID exists - 406
+        Authorization.verifyBusinessExists(businessId, businessRepository);
+        // Checks user is business admin - 403
+        Authorization.verifyBusinessAdmin(currentUser, businessId);
+        // Checks page number is valid - 400
+        int pageNo = PaginationUtils.parsePageNumber(page);
+
+        // Paging
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+        Pageable pageable = PageRequest.of(pageNo, 10, sortBy);
+
+        Page<SoldListing> pagedResult = soldListingRepository.findAllByBusinessId(businessId, pageable);
+
+        int totalPages = pagedResult.getTotalPages();
+        int totalRows = (int) pagedResult.getTotalElements();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
+
+        logger.info("Sold Listing Retrieval Success - 200 [OK] - Sold Listings retrieved for business with ID {}", businessId);
+
+        List<SoldListingPayload> listingPayloads = convertToSoldPayload(pagedResult.getContent());
+
+        logger.debug("Sold Listings retrieved for business with ID {}: {}", businessId, listingPayloads);
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(listingPayloads);
+    }
+
+    /**
      * Converts a list of Listings to a list of ListingPayloads.
      * @param listingList The given list of listings
      * @return A list of productPayloads.
@@ -306,6 +346,29 @@ public class ListingResource {
                     listing.getCloses().toString()
             );
             logger.debug("Listing payload created: {}", newPayload);
+            payloads.add(newPayload);
+        }
+        return payloads;
+    }
+
+    /**
+     * Converts a list of Sold Listings to a list of SoldListingPayloads.
+     * @param soldListings The given list of sold listings
+     * @return A list of Sold Listings in payload form.
+     */
+    public List<SoldListingPayload> convertToSoldPayload(List<SoldListing> soldListings) {
+        List<SoldListingPayload> payloads = new ArrayList<>();
+        for (SoldListing soldListing : soldListings) {
+            SoldListingPayload newPayload = new SoldListingPayload(
+                    soldListing.getId(),
+                    soldListing.getSaleDate().toString(),
+                    soldListing.getListingDate().toString(),
+                    soldListing.getProductId().toString(),
+                    soldListing.getQuantity(),
+                    soldListing.getPrice(),
+                    soldListing.getBookmarks()
+            );
+            logger.debug("Sold Listing payload created: {}", newPayload);
             payloads.add(newPayload);
         }
         return payloads;
