@@ -303,7 +303,7 @@ public class ListingResource {
                 listing.getCreated().toString(),
                 listing.getCloses().toString(),
                 listing.isBookmarked(user),
-                listing.getTotalBookMarks()
+                listing.getTotalBookmarks()
         );
         logger.debug("Listing payload created: {}", newPayload);
         return newPayload;
