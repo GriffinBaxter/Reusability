@@ -6,7 +6,7 @@
 
         <!-- Listing header -->
         <div class="title-content">
-          <h1>Product Name</h1>
+          <div id="Listing-name">Product Name</div>
           <div class="listing-dates-wrapper">
             <h6>Listing Date: [Listing Date]</h6>
             <h6>Closing Date: [closing Date]</h6>
@@ -127,6 +127,12 @@
 
 <style scoped>
   h5, h1 {
+    font-family: 'Merriweather Sans', sans-serif;
+  }
+
+  #Listing-name {
+    font-size: 3rem;
+    margin-left: -0.18rem;
     font-family: 'Merriweather Sans', sans-serif;
   }
 
@@ -265,11 +271,15 @@
       margin-top: 0;
     }
 
+    .buy-button-section {
+      margin-top: 0;
+    }
+
     .right-content {
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       align-items: flex-start;
-      justify-content: flex-end;
+      justify-content: flex-start;
       width: 100%;
     }
   }
