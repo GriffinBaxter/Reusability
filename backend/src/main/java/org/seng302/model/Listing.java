@@ -16,7 +16,6 @@ import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalListingArgumentException;
-import org.seng302.model.enums.BusinessType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -40,13 +39,6 @@ public class Listing {
     @JoinColumn(name = "inventoryItemId", nullable = false)
     private InventoryItem inventoryItem;
 
-    @Column(name = "productName")
-    private String productName;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "businessType")
-    private BusinessType businessType;
-
     @Column(name = "businessId", nullable = false)
     private Integer businessId;
 
@@ -55,15 +47,6 @@ public class Listing {
 
     @Column(name = "price", nullable = false)
     private double price;
-
-    @Column(name = "sellerName", nullable = false)
-    private String sellerName;
-
-    @Column(name = "country")
-    private String country;
-
-    @Column(name = "city")
-    private String city;
 
     @Column(name = "moreInfo", length = 600)
     private String moreInfo;
@@ -127,10 +110,8 @@ public class Listing {
             logger.error("Listing Creation Error - Closes (Date-Time) is Invalid");
             throw new IllegalListingArgumentException("Invalid closing date.");
         }
-        Product product = inventoryItem.getProduct();
-        Business business = product.getBusiness();
         this.inventoryItem = inventoryItem;
-        this.businessId = product.getBusinessId();
+        this.businessId = inventoryItem.getProduct().getBusinessId();
         this.quantity = quantity;
         // If price is not defined calculate it using price per item.
         this.price = (price == null) ? calculatePrice() : price;
@@ -138,14 +119,7 @@ public class Listing {
         this.created = created;
         // If closing date is not defined, use expiry date of inventory item.
         this.closes = (closes == null) ? LocalDateTime.of(inventoryItem.getExpires(), LocalTime.of(0, 0)) : closes;
-        // Read related business info
-        this.productName = product.getName();
-        this.businessType = business.getBusinessType();
-        // Read related seller info
-        this.sellerName = business.getName();
-        this.country = business.getAddress().getCountry();
-        this.city = business.getAddress().getCity();
-        this.totalBookmarks = 0;
+        this.totalBookmarks = bookmarkedListings.size();
     }
 
     /**
@@ -179,6 +153,7 @@ public class Listing {
     public void setInventoryItem(InventoryItem inventoryItem) {
         this.inventoryItem = inventoryItem;
     }
+
 
     /**
      * get quantity
@@ -236,28 +211,8 @@ public class Listing {
         return created;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public BusinessType getBusinessType() {
-        return businessType;
-    }
-
     public Integer getBusinessId() {
         return businessId;
-    }
-
-    public String getSellerName() {
-        return sellerName;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public String getCity() {
-        return city;
     }
 
     public Integer getTotalBookmarks() {
@@ -268,7 +223,6 @@ public class Listing {
     public List<User> getBookmarkedListings() {
         return bookmarkedListings;
     }
-
 
     /**
      * set Created
@@ -294,28 +248,8 @@ public class Listing {
         this.closes = closes;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public void setBusinessType(BusinessType businessType) {
-        this.businessType = businessType;
-    }
-
     public void setBusinessId(Integer businessId) {
         this.businessId = businessId;
-    }
-
-    public void setSellerName(String sellerName) {
-        this.sellerName = sellerName;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public void addUserToANewBookmark(User user) {
