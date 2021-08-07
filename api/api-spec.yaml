@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.2.1
+  version: 5.3.0
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1734,6 +1734,31 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
+  '/home/bookmarkMessages':
+    get:
+      tags:
+        - 'U30: Individual Full Sale Listing'
+        - 'Bookmark messages'
+      summary: Retrieves the bookmarked listings' messages.
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      responses:
+        '200':
+          description: Request successful, a (possibly empty) list of bookmark messages is returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookmarkMessage'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
 components:
   securitySchemes:
@@ -2256,7 +2281,6 @@ components:
           readOnly: true
           example: [ 1, 2, 3 ]
 
-
     SoldListing:
       type: object
       description: Contains the details of a sale of a listing that was completed.
@@ -2307,3 +2331,28 @@ components:
           example: 10
           readOnly: true
           description: The amount of bookmarks the listing had before being sold.
+
+    BookmarkMessage:
+      type: object
+      description: Message/notification for bookmarked individual full sale listing
+      required:
+        - id
+        - description
+        - created
+        - userIds
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automatically generated and assigned by the server
+        description:
+          type: string
+          example: Listing (Apple) is bookmarked.
+          description: Message content
+        created:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the notification was created

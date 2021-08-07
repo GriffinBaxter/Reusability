@@ -493,7 +493,7 @@ class ListingTests {
      * Test is isBookmarked function return true when user marked current listing
      */
     @Test
-    void testIsBookmarkedReturnTure_whenItMarked() throws IllegalListingArgumentException {
+    void testIsBookmarkedReturnTrue_whenBookmarked() throws IllegalListingArgumentException {
         // Given
         Listing listing = new Listing(
                 inventoryItem,
@@ -515,7 +515,7 @@ class ListingTests {
      * Test is isBookmarked function return false when user do not mark current listing
      */
     @Test
-    void testIsBookmarkedReturnTure_whenItNotMarked() throws IllegalListingArgumentException {
+    void testIsBookmarkedReturnFalse_whenNotBookmarked() throws IllegalListingArgumentException {
         // Given
         Listing listing = new Listing(
                 inventoryItem,
