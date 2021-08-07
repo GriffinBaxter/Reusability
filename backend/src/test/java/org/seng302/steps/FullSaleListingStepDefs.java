@@ -169,7 +169,8 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                     "\"manufacturer\":\"" + product.getManufacturer() + "\"," +
                     "\"recommendedRetailPrice\":" + product.getRecommendedRetailPrice() + "," +
                     "\"created\":\"" + product.getCreated() + "\"," +
-                    "\"images\":[]" +
+                    "\"images\":[]," +
+                    "\"barcode\":\"" + product.getBarcode() + "\"" +
                 "}," +
                 "\"quantity\":" + inventoryItem.getQuantity() + "," +
                 "\"pricePerItem\":" + inventoryItem.getPricePerItem() + "," +
