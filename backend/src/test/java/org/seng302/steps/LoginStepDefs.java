@@ -109,7 +109,7 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
 
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, user.getId()));
         assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
-        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(3600);
+        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(28800);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
