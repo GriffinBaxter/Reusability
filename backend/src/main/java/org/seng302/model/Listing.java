@@ -19,6 +19,8 @@ import org.seng302.exceptions.IllegalListingArgumentException;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for sale listings
@@ -54,6 +56,11 @@ public class Listing {
 
     @Column (name = "closes")
     private LocalDateTime closes;
+
+    // BookmarkedListingMessage
+    @OneToMany(mappedBy = "bookmarkedListingMessage", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<BookmarkedListingMessage> bookmarkedListingMessages = new ArrayList<>();
 
     private static final Logger logger = LogManager.getLogger(Listing.class.getName());
 
