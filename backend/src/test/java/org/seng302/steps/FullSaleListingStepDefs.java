@@ -215,7 +215,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
             "\"created\":\"" + listing.getCreated() + "\"," +
             "\"closes\":\"" + listing.getCloses() + "\"," +
             "\"isBookmarked\":" + listing.isBookmarked(user) + "," +
-            "\"totalBookmarks\":" + listing.getTotalBookMarks() + "}";
+            "\"totalBookmarks\":" + listing.getTotalBookmarks() + "}";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));

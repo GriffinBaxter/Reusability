@@ -684,7 +684,7 @@ class ListingResourceIntegrationTests {
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
-                listing.isBookmarked(user), listing.getTotalBookMarks());
+                listing.isBookmarked(user), listing.getTotalBookmarks());
 
         // when
         List<Listing> list = List.of(listing);
@@ -727,7 +727,7 @@ class ListingResourceIntegrationTests {
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
-                listing.isBookmarked(user), listing.getTotalBookMarks());
+                listing.isBookmarked(user), listing.getTotalBookmarks());
 
         // when
         List<Listing> list = List.of(listing);
@@ -847,7 +847,7 @@ class ListingResourceIntegrationTests {
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
-                listing.isBookmarked(user), listing.getTotalBookMarks());
+                listing.isBookmarked(user), listing.getTotalBookmarks());
 
         // when
         List<Listing> list = List.of(listing);
@@ -949,7 +949,7 @@ class ListingResourceIntegrationTests {
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
-                listing.isBookmarked(user), listing.getTotalBookMarks());
+                listing.isBookmarked(user), listing.getTotalBookmarks());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -987,7 +987,7 @@ class ListingResourceIntegrationTests {
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
-                listing.isBookmarked(user), listing.getTotalBookMarks());
+                listing.isBookmarked(user), listing.getTotalBookmarks());
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
