@@ -36,6 +36,7 @@ import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -826,6 +827,415 @@ class ListingResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+    
+    // GET listings search tests
+
+    /**
+     * Tests that an OK status is received when searching for a listing using the /listings API endpoint
+     * and that the JSON response is equal to the listing searched for. The listing is searched for using the
+     * listing name.
+     * Test specifically for when the user searching for a listing as a DGAA.
+     */
+    @Test
+    void canSearchListingsByNameWhenListingExistsWithDgaaCookieTest() throws Exception {
+        // given
+        String searchQuery = "Beans";
+        List<String> names = Arrays.asList(searchQuery);
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 10, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, null, null, null, null, null
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a listing using the /listings API endpoint
+     * and that the JSON response is equal to the listing searched for. The listing is searched for using the
+     * listing name.
+     * Test specifically for when the order by and page params provided are valid.
+     */
+    @Test
+    void canSearchListingsWhenListingExistsWithValidOrderByAndPageParamsTest() throws Exception {
+        // given
+        String searchQuery = "Beans";
+        List<String> names = Arrays.asList(searchQuery);
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 10, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, null, null, null, null, null
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("orderBy", "productNameASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a listing using the /listings API endpoint
+     * and that the JSON response is equal to the listing searched for. The listing is searched for using the
+     * listing name.
+     * Test specifically for when the user searching for a listing as a USER.
+     */
+    @Test
+    void canSearchListingsByNameWhenListingExistsWithUserCookieTest() throws Exception {
+        // given
+        String searchQuery = "Beans";
+        List<String> names = Arrays.asList(searchQuery);
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 10, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, null, null, null, null, null
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests for an OK status but an empty response is received when searching for a listing that does not exist using
+     * the /listings API endpoint. The listing (that does not exist by the name searched for) is searched for
+     * using the listing name.
+     */
+    @Test
+    void emptySearchListingsByNameWhenListingDoesntExistTest() throws Exception {
+        // given
+        String searchQuery = "PRODUCT";
+        List<String> names = Arrays.asList(searchQuery);
+
+        expectedJSON = "[]";
+
+        // when
+        List<Listing> list = List.of();
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 10, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, null, null, null, null, null
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a listing using the /listings API endpoint
+     * when the order by param is invalid.
+     * Test specifically for when the order by param provided is invalid.
+     */
+    @Test
+    void cantSearchListingsWithInvalidOrderByParam() throws Exception {
+        // given
+        String searchQuery = "Beans";
+
+        expectedJSON = "";
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("orderBy", "b")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a listing using the /listings API endpoint
+     * when the page param is invalid.
+     * Test specifically for when the page param provided is invalid.
+     */
+    @Test
+    void cantSearchListingsWithInvalidPageParam() throws Exception {
+        // given
+        String searchQuery = "Beans";
+
+        expectedJSON = "";
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("orderBy", "productNameASC")
+                .param("page", "b")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when searching for a listing using the /listings API endpoint
+     * when the cookie contains a non-existing ID.
+     */
+    @Test
+    void cantSearchListingsWithNonExistingIdCookie() throws Exception {
+        // given
+        String searchQuery = "Beans";
+
+        expectedJSON = "";
+
+        // when
+        when(userRepository.findBySessionUUID("1")).thenReturn(Optional.empty());
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when searching for a listing using the /listings API endpoint
+     * when there is no cookie.
+     */
+    @Test
+    void cantSearchListingsWithNoCookie() throws Exception {
+        // given
+        String searchQuery = "Beans";
+
+        expectedJSON = "";
+
+        // when
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for listings using the /listings API endpoint
+     * and that the JSON response is equal to the listings searched for. The listings are searched for using business
+     * type.
+     * Test specifically for when searching only by business type.
+     */
+    @Test
+    void canSearchListingsByTypeWhenListingExistsTest() throws Exception {
+        // given
+        String searchQuery = "";
+        List<String> names = Arrays.asList(searchQuery);
+        
+        String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
+        BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 10, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, convertedBusinessType, null, null, null, null
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("businessType", businessType)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a listing using the /listings API endpoint
+     * and that the JSON response is equal to the listing searched for. The listing is searched for using business
+     * type and listing name.
+     * Test specifically for when searching by business type and listing name.
+     */
+    @Test
+    void canSearchListingsByNameAndTypeWhenListingExistsTest() throws Exception {
+        // given
+        String searchQuery = "Beans";
+        List<String> names = Arrays.asList(searchQuery);
+
+        String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
+        BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 10, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, convertedBusinessType, null, null, null, null
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("businessType", businessType)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a listing using the /listings API endpoint
+     * and that the JSON response is equal to the listing searched for. The listing is searched for using business
+     * type, business name and filters.
+     * Test specifically for when searching by business type, business name and filters.
+     */
+    @Test
+    void canSearchListingsByBusinessNameAndTypeAndFiltersWhenListingExistsTest() throws Exception {
+        // given
+        String searchQuery = "name";
+        List<String> names = Arrays.asList(searchQuery);
+
+        String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
+        BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.business.address.country").ignoreCase());
+        Pageable paging = PageRequest.of(0, 10, sort);
+
+        when(listingRepository.findAllListingsByBusinessName(
+                names, paging, convertedBusinessType,
+                10.0, 11.0,
+                LocalDateTime.of(2021, 1, 1, 0, 0),
+                LocalDateTime.of(2022, 1, 1, 0, 0)
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("searchType", "businessName")
+                .param("orderBy", "countryASC")
+                .param("businessType", businessType)
+                .param("minimumPrice", "10.0")
+                .param("maximumPrice", "11.0")
+                .param("fromDate", "2021-01-01T00:00")
+                .param("toDate", "2022-01-01T00:00")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a listing using the /listings API endpoint
+     * and that the JSON response is equal to the listing searched for. The listing is searched for using business
+     * type, location and filters.
+     * Test specifically for when searching by business type, location and filters.
+     */
+    @Test
+    void canSearchListingsByLocationAndBusinessTypeAndFiltersWhenListingExistsTest() throws Exception {
+        // given
+        String searchQuery = "Christchurch";
+        List<String> names = Arrays.asList(searchQuery);
+
+        String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
+        BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+
+        expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+
+        // when
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.expires").ignoreCase());
+        Pageable paging = PageRequest.of(0, 10, sort);
+
+        when(listingRepository.findAllListingsByLocation(
+                names, paging, convertedBusinessType,
+                9.0, 12.0,
+                LocalDateTime.of(2020, 1, 1, 0, 0),
+                LocalDateTime.of(2023, 1, 1, 0, 0)
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("searchType", "location")
+                .param("orderBy", "expiryDateASC")
+                .param("businessType", businessType)
+                .param("minimumPrice", "9.0")
+                .param("maximumPrice", "12.0")
+                .param("fromDate", "2020-01-01T00:00")
+                .param("toDate", "2023-01-01T00:00")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 

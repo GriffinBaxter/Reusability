@@ -36,6 +36,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -247,8 +248,8 @@ public class ListingResource {
             @RequestParam(defaultValue = "") String businessType,
             @RequestParam(required = false) Double minimumPrice,
             @RequestParam(required = false) Double maximumPrice,
-            @RequestParam(required = false) LocalDateTime fromDate,
-            @RequestParam(required = false) LocalDateTime toDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate
     ) {
         logger.debug(
                 "Listing search request received with search query {}, business type {}, order by {}, page {}",
@@ -274,19 +275,19 @@ public class ListingResource {
                 break;
             case "countryASC":
                 sortBy = Sort.by(Sort.Order.asc(
-                        "inventoryItemId.product.business_id.address_id.country"
+                        "inventoryItemId.product.business.address.country"
                 ).ignoreCase());
                 break;
             case "countryDESC":
                 sortBy = Sort.by(Sort.Order.desc(
-                        "inventoryItemId.product.business_id.address_id.country"
+                        "inventoryItemId.product.business.address.country"
                 ).ignoreCase());
                 break;
             case "cityASC":
-                sortBy = Sort.by(Sort.Order.asc("inventoryItemId.product.business_id.address_id.city").ignoreCase());
+                sortBy = Sort.by(Sort.Order.asc("inventoryItemId.product.business.address.city").ignoreCase());
                 break;
             case "cityDESC":
-                sortBy = Sort.by(Sort.Order.desc("inventoryItemId.product.business_id.address_id.city").ignoreCase());
+                sortBy = Sort.by(Sort.Order.desc("inventoryItemId.product.business.address.city").ignoreCase());
                 break;
             case "expiryDateASC":
                 sortBy = Sort.by(Sort.Order.asc("inventoryItemId.expires").ignoreCase());
@@ -295,10 +296,10 @@ public class ListingResource {
                 sortBy = Sort.by(Sort.Order.desc("inventoryItemId.expires").ignoreCase());
                 break;
             case "sellerNameASC":
-                sortBy = Sort.by(Sort.Order.asc("inventoryItemId.product.business_id.name").ignoreCase());
+                sortBy = Sort.by(Sort.Order.asc("inventoryItemId.product.business.name").ignoreCase());
                 break;
             case "sellerNameDESC":
-                sortBy = Sort.by(Sort.Order.desc("inventoryItemId.product.business_id.name").ignoreCase());
+                sortBy = Sort.by(Sort.Order.desc("inventoryItemId.product.business.name").ignoreCase());
                 break;
             case "priceASC":
                 sortBy = Sort.by(Sort.Order.asc("price").ignoreCase());
@@ -331,7 +332,7 @@ public class ListingResource {
                 searchQuery, businessType, orderBy, pageNo
         );
 
-        logger.debug("Listings Found: {}", pagedResult.toList());
+        logger.debug("Listings Found");
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(ListingPayload.toListingPayload(pagedResult.getContent()));
