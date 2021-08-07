@@ -3,6 +3,8 @@ package org.seng302.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.seng302.exceptions.IllegalKeywordNotificationArgumentException;
+import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -40,13 +42,20 @@ public class ListingNotification {
     @OneToMany(mappedBy = "listingNotification")
     private List<HasListingNotification> readListingNotifications = new ArrayList<>();
 
+    // Values need for validation.
+    private static final Integer DESCRIPTION_MIN_LENGTH = 10;
+    private static final Integer DESCRIPTION_MAX_LENGTH = 600;
+
     /**
      * Constructor for ListingNotification.
      * Only the description is required as the ID is generated, and created is generated upon construction.
      *
      * @param description the message of the notification
      */
-    public ListingNotification(String description) {
+    public ListingNotification(String description) throws IllegalListingNotificationArgumentException {
+        if (!(isValidDescription(description))) {
+            throw new IllegalListingNotificationArgumentException("Invalid description");
+        }
         this.description = description;
         this.created = LocalDateTime.now();
     }
@@ -156,6 +165,29 @@ public class ListingNotification {
      */
     public void setReadListingNotifications(List<HasListingNotification> readListingNotifications) {
         this.readListingNotifications = readListingNotifications;
+    }
+
+    /**
+     * Checks to see whether a listing notification's description is valid based on its constraints
+     * This method can be updated in the future if there is additional constraints.
+     * @param description The description to be checked.
+     * @return true when the description is valid
+     */
+    private boolean isValidDescription(String description) {
+        return (description.length() >= DESCRIPTION_MIN_LENGTH) &&
+                (description.length() <= DESCRIPTION_MAX_LENGTH);
+    }
+
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the ListingNotification.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id + "," +
+                "\"description\":\"" + description + "\"," +
+                "\"created\":\"" + created + "\"," +
+                "\"users\":" + users + "}";
     }
 
 }
