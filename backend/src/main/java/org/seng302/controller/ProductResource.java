@@ -352,7 +352,18 @@ public class ProductResource {
         }
 
         // If the payload doesn't include a barcode use the previously defined value.
-        if (updatedProduct.getBarcode() == null) {
+        if (updatedProduct.getBarcode() != null) {
+            logger.debug("updatedProduct contains a new barcode: {}", updatedProduct.getBarcode());
+            // No point in checking this if it is already the same value.
+            if (product.get().getBarcode() == null || !product.get().getBarcode().equals(updatedProduct.getBarcode())) {
+                logger.debug("New barcode: {} differs then the origin barcode: {}", updatedProduct.getBarcode(), product.get().getBarcode());
+                // Verify that product doesn't exist with same barcode
+                if (updatedProduct.getBarcode().length() != 0 && productRepository.findProductByBarcodeAndBusinessId(updatedProduct.getBarcode(), businessId).isPresent()) {
+                    logger.error("Product Modify Failure - 400 [BAD REQUEST] - Barcode {} cannot be modified if it already exists.", product.get().getBarcode());
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new barcode already exists within this business.");
+                }
+            }
+        } else {
             logger.debug("Product update does not contain a new barcode.");
             updatedProduct.setBarcode(product.get().getBarcode());
         }

@@ -138,7 +138,7 @@ class MainApplicationRunnerTest {
                 user.getId(),
                 user,
                 Section.FORSALE,
-                LocalDateTime.now().plusHours(2).minusWeeks(2), // expired 1 hour later
+                LocalDateTime.now().plusHours(1).plusMinutes(30).minusWeeks(2), // expired 1 hour later
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!");
         entityManager.persist(marketplaceCard);
@@ -165,7 +165,7 @@ class MainApplicationRunnerTest {
                 user.getId(),
                 user,
                 Section.FORSALE,
-                LocalDateTime.now().plusHours(2).minusWeeks(2), // expired 1 hour later
+                LocalDateTime.now().plusHours(1).plusMinutes(30).minusWeeks(2), // expired 1 hour later
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!");
         entityManager.persist(marketplaceCard);
