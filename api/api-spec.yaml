@@ -44,6 +44,7 @@ tags:
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
   - name: 'U29: Browse/Search Sale Listings'
+  - name: 'U30: Individual Full Sale Listing'
   - name: 'U31: Purchases'
   # Entities
   - name: 'Users'
@@ -1100,6 +1101,43 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
+
+  '/businesses/{businessId}/listings/{listingId}':
+    get:
+      tags:
+        - 'U30: Individual Full Sale Listing'
+        - 'Listings / sales'
+      summary: 'Retrieve a single listing based on its ID'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: businessId
+          in: path
+          description: Business ID
+          required: true
+          schema:
+            type: integer
+        - name: listingId
+          in: path
+          description: Listing ID
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Listing retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
 
   '/businesses/search':
     get:

@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
+import org.seng302.model.Business;
+import org.seng302.model.enums.Role;
 import org.seng302.model.repository.BusinessRepository;
 import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.model.InventoryItem;
@@ -29,6 +31,9 @@ import org.seng302.Authorization;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.model.User;
 
+import org.seng302.view.outgoing.UserPayload;
+import org.seng302.view.outgoing.UserPayloadParent;
+import org.seng302.view.outgoing.UserPayloadSecure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +48,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static org.seng302.Authorization.verifyRole;
 
 /**
  * ListingResource class
@@ -103,7 +110,7 @@ public class ListingResource {
                                                                  @RequestParam(defaultValue = "closesASC") String orderBy,
                                                                  @RequestParam(defaultValue = "0") String page) {
 
-        logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
+        logger.debug("Business listings retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
         // Checks user logged in - 401
         Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -233,6 +240,52 @@ public class ListingResource {
                 "Bad Request - Couldn't make listing"
             );
         }
+    }
+
+    /**
+     * Get method for retrieving a specific listing.
+     * @param businessId Integer Id of business
+     * @param listingId Integer Id of listing
+     * @return Listing payload if it exists
+     */
+    @GetMapping("/businesses/{businessId}/listings/{listingId}")
+    public ListingPayload retrieveListing(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @PathVariable Integer listingId
+    ) {
+        logger.debug("Business sale listing retrieval request received with business ID {}, listing ID {}", businessId, listingId);
+
+        // Checks user logged in - 401
+        Authorization.getUserVerifySession(sessionToken, userRepository);
+        // Verify business exists
+        Authorization.verifyBusinessExists(businessId, businessRepository);
+        // Retrieve listing from database
+        Optional<Listing> listing = listingRepository.findListingByBusinessIdAndId(businessId, listingId);
+
+        if (listing.isEmpty()) {
+            logger.error("Listing Retrieval Failure - 400 [BAD REQUEST] - Sale listing at ID {} Not Found", listingId);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Sale Listing Not Found");
+        }
+
+        Listing returnedListing = listing.get();
+
+        logger.info("Listing Retrieval Success - 200 [OK] -  Listing retrieved with ID {} and business ID {}", listingId, businessId);
+
+        ListingPayload listingPayload = new ListingPayload(
+                returnedListing.getId(),
+                InventoryItemResource.convertToPayload(returnedListing.getInventoryItem()),
+                returnedListing.getQuantity(),
+                returnedListing.getPrice(),
+                returnedListing.getMoreInfo(),
+                returnedListing.getCreated().toString(),
+                returnedListing.getCloses().toString());
+
+        logger.debug("Listing retrieved for business with ID {}: {}", businessId, listing);
+
+        return listingPayload;
     }
 
     /**
