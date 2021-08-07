@@ -34,7 +34,7 @@
                         v-bind:id="'li-product-' + product.id" v-bind:value="product.id"
                         tabindex="-1" data-bs-toggle="popover" data-bs-trigger="hover focus"
                         v-bind:title="product.manufacturer ? 'Manufacturer: ' + product.manufacturer : ''"
-                        v-bind:data-bs-content="product.description"
+                        v-bind:data-bs-content="product.description ? product.description : ''"
                         data-bs-placement="top"
                         class="autofill-option" >
                       <img :src="getThumbnailSrc(product)" :alt="`product thumbnail for product with id ${product.id}`" class="autofill-option-image">
