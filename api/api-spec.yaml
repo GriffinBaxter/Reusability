@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.2.0
+  version: 5.2.1
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1660,7 +1660,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  '/business/{business_id}/browseListing/{listing_id}/bookmark':
+  '/listings/{id}/bookmark':
     put:
       tags:
         - 'U30: Individual Full Sale Listing'
@@ -1672,14 +1672,7 @@ paths:
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: business_id
-          in: path
-          description: The id of the given business.
-          required: true
-          schema:
-            type: integer
-            example: 300
-        - name: listing_id
+        - name: id
           in: path
           description: The id of the given full sale listing whose bookmark status changed for the user.
           required: true
