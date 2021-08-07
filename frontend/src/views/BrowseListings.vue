@@ -4,6 +4,13 @@
       <!-- Navbar -->
       <Navbar/>
       <div class="container mt-5">
+        <div class="row" id="search-bar-container">
+          <div class="input-group" id="search-inputs" style="alignment: center">
+            <input type="text" id="search-bar" ref="searchInput" class="form-control">
+            <button class="btn green-search-button" id="search-button"><i class="fas fa-search" aria-hidden="true"></i></button>
+          </div>
+        </div>
+        <br>
 <!--        <input class="form-control" type="text">-->
         <div class="row pb-5 mb-4">
           <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
