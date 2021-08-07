@@ -3,7 +3,6 @@ package org.seng302.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.seng302.exceptions.IllegalKeywordNotificationArgumentException;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 
 import javax.persistence.*;
