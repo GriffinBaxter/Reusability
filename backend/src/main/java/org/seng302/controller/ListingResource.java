@@ -310,8 +310,9 @@ public class ListingResource {
 
     /**
      * Add/Remove given user from/to bookmark of given listing.
+     *
      * @param sessionToken user's session token
-     * @param id given listing id
+     * @param id           given listing id
      * @return status of bookmark
      */
     @PutMapping("/listings/{id}/bookmark")
