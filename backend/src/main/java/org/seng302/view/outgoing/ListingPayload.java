@@ -14,7 +14,6 @@ public class ListingPayload {
 
     private Integer id;
     private InventoryItemPayload inventoryItem;
-    private BusinessPayload business;
     private Integer quantity;
     private Double price;
     private String moreInfo;
@@ -25,7 +24,6 @@ public class ListingPayload {
 
     public ListingPayload(int id,
                           InventoryItemPayload inventoryItem,
-                          BusinessPayload business,
                           Integer quantity,
                           Double price,
                           String moreInfo,
@@ -36,7 +34,6 @@ public class ListingPayload {
                           ) {
     this.id = id;
     this.inventoryItem = inventoryItem;
-    this.business = business;
     this.quantity = quantity;
     this.price = price;
     this.moreInfo = moreInfo;
@@ -53,10 +50,6 @@ public class ListingPayload {
 
     public InventoryItemPayload getInventoryItem() {
         return inventoryItem;
-    }
-
-    public BusinessPayload getBusiness() {
-        return business;
     }
 
     public Integer getQuantity() {
@@ -98,7 +91,16 @@ public class ListingPayload {
                 "\"description\":\"" + inventoryItem.getProduct().getDescription() + "\"," +
                 "\"manufacturer\":\"" + inventoryItem.getProduct().getManufacturer() + "\"," +
                 "\"recommendedRetailPrice\":" + inventoryItem.getProduct().getRecommendedRetailPrice() + "," +
-                "\"created\":\"" + inventoryItem.getProduct().getCreated() + "\"}," +
+                "\"created\":\"" + inventoryItem.getProduct().getCreated() + "\"" +
+                "\"business\":" +
+                "{\"id\":" + inventoryItem.getProduct().getBusiness().getId() + "," +
+                "\"administrators\":" + inventoryItem.getProduct().getBusiness().getAdministrators() + "," +
+                "\"primaryAdministratorId\":" + inventoryItem.getProduct().getBusiness().getPrimaryAdministratorId() + "," +
+                "\"name\":\"" + inventoryItem.getProduct().getBusiness().getName() + "\"," +
+                "\"description\":\"" + inventoryItem.getProduct().getBusiness().getDescription() + "\"," +
+                "\"address\":" + inventoryItem.getProduct().getBusiness().getAddress() + "," +
+                "\"businessType\":\"" + inventoryItem.getProduct().getBusiness().getBusinessType() + "\"," +
+                "\"created\":\"" + inventoryItem.getProduct().getBusiness().getCreated() + "\"}}," +
                 "\"quantity\":" + inventoryItem.getQuantity() + "," +
                 "\"pricePerItem\":" + inventoryItem.getPricePerItem() + "," +
                 "\"totalPrice\":" + inventoryItem.getTotalPrice() + "," +
@@ -106,15 +108,6 @@ public class ListingPayload {
                 "\"sellBy\":\"" + inventoryItem.getSellBy() + "\"," +
                 "\"bestBefore\":\"" + inventoryItem.getBestBefore() + "\"," +
                 "\"expires\":\"" + inventoryItem.getExpires() + "\"}," +
-                "\"business\":" +
-                "{\"id\":" + business.getId() + "," +
-                "\"administrators\":" + business.getAdministrators() + "," +
-                "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
-                "\"name\":\"" + business.getName() + "\"," +
-                "\"description\":\"" + business.getDescription() + "\"," +
-                "\"address\":" + business.getAddress() + "," +
-                "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                "\"created\":\"" + business.getCreated() + "\"}," +
                 "\"quantity\":" + quantity + "," +
                 "\"price\":" + price + "," +
                 "\"moreInfo\":\"" + moreInfo + "\"," +

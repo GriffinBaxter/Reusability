@@ -101,12 +101,12 @@ public class ListingResource {
     public ResponseEntity<List<ListingPayload>> retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                                  @PathVariable Integer id,
                                                                  @RequestParam(defaultValue = "closesASC") String orderBy,
-                                                                 @RequestParam(defaultValue = "0") String page) {
+                                                                 @RequestParam(defaultValue = "0") String page) throws Exception {
 
         logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
         // Checks user logged in - 401
-        Authorization.getUserVerifySession(sessionToken, userRepository);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Authorization.verifyBusinessExists(id, businessRepository);
 
@@ -166,7 +166,7 @@ public class ListingResource {
 
         logger.info("Listing Retrieval Success - 200 [OK] -  Listings retrieved for business with ID {}", id);
 
-        List<ListingPayload> listingPayloads = convertToPayload(pagedResult.getContent());
+        List<ListingPayload> listingPayloads = convertToPayloadList(pagedResult.getContent(), currentUser);
 
         logger.debug("Listings retrieved for business with ID {}: {}", id, listingPayloads);
 
@@ -238,24 +238,39 @@ public class ListingResource {
     /**
      * Converts a list of Listings to a list of ListingPayloads.
      * @param listingList The given list of listings
-     * @return A list of productPayloads.
+     * @param user The User who requested the listings
+     * @return A list of ListingPayloads.
      */
-    public List<ListingPayload> convertToPayload(List<Listing> listingList) {
+    public List<ListingPayload> convertToPayloadList(List<Listing> listingList, User user) throws Exception {
         List<ListingPayload> payloads = new ArrayList<>();
         for (Listing listing : listingList) {
-            ListingPayload newPayload = new ListingPayload(
-                    listing.getId(),
-                    InventoryItemResource.convertToPayload(listing.getInventoryItem()),
-                    listing.getQuantity(),
-                    listing.getPrice(),
-                    listing.getMoreInfo(),
-                    listing.getCreated().toString(),
-                    listing.getCloses().toString()
-            );
+            ListingPayload newPayload = convertToPayload(listing, user);
             logger.debug("Listing payload created: {}", newPayload);
             payloads.add(newPayload);
         }
         return payloads;
+    }
+
+    /**
+     * Converts a Listing to a ListingPayload.
+     * @param listing The given listing
+     * @param user The User who requested the listing
+     * @return A ListingPayload.
+     */
+    public ListingPayload convertToPayload(Listing listing, User user) throws Exception {
+        ListingPayload newPayload = new ListingPayload(
+                listing.getId(),
+                listing.getInventoryItem().convertToPayload(),
+                listing.getQuantity(),
+                listing.getPrice(),
+                listing.getMoreInfo(),
+                listing.getCreated().toString(),
+                listing.getCloses().toString(),
+                listing.isBookmarked(user),
+                listing.getTotalBookMarks()
+        );
+        logger.debug("Listing payload created: {}", newPayload);
+        return newPayload;
     }
 
 }
