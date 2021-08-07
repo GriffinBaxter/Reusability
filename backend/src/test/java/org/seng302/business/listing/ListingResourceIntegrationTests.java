@@ -113,7 +113,29 @@ class ListingResourceIntegrationTests {
                                                     "\"manufacturer\":\"%s\"," +
                                                     "\"recommendedRetailPrice\":%.1f," +
                                                     "\"created\":\"%s\"," +
-                                                    "\"images\":[]}," +
+                                                    "\"images\":[]," +
+                                                    "\"business\":{" +
+                                                    "\"id\":%d," +
+                                                    "\"administrators\":" +
+                                                        "[{\"id\":%d," +
+                                                        "\"firstName\":\"%s\"," +
+                                                        "\"lastName\":\"%s\"," +
+                                                        "\"middleName\":\"%s\"," +
+                                                        "\"nickname\":\"%s\"," +
+                                                        "\"bio\":\"%s\"," +
+                                                        "\"email\":\"%s\"," +
+                                                        "\"created\":\"%s\"," +
+                                                        "\"role\":\"%s\"," +
+                                                        "\"businessesAdministered\":[null]," +
+                                                        "\"dateOfBirth\":\"%s\"," +
+                                                        "\"phoneNumber\":\"%s\"," +
+                                                        "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]," +
+                                                    "\"primaryAdministratorId\":%d," +
+                                                    "\"name\":\"%s\"," +
+                                                    "\"description\":\"%s\"," +
+                                                    "\"address\":%s," +
+                                                    "\"businessType\":\"%s\"," +
+                                                    "\"created\":\"%s\"}}," +
                                                 "\"quantity\":%d," +
                                                 "\"pricePerItem\":%.1f," +
                                                 "\"totalPrice\":%.1f," +
@@ -125,8 +147,10 @@ class ListingResourceIntegrationTests {
                                             "\"price\":%.1f," +
                                             "\"moreInfo\":\"%s\"," +
                                             "\"created\":\"%s\"," +
-                                            "\"closes\":\"%s\"}" +
-                                            "]";
+                                            "\"closes\":\"%s\"," +
+                                            "\"isBookmarked\":%s," +
+                                            "\"totalBookmarks\":%d" +
+                                            "}]";
 
 
     @BeforeAll
@@ -601,9 +625,16 @@ class ListingResourceIntegrationTests {
 
         expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
-                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
+                listing.isBookmarked(user), listing.getTotalBookMarks());
 
         // when
         List<Listing> list = List.of(listing);
@@ -637,9 +668,16 @@ class ListingResourceIntegrationTests {
 
         expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
-                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
+                listing.isBookmarked(user), listing.getTotalBookMarks());
 
         // when
         List<Listing> list = List.of(listing);
@@ -750,9 +788,16 @@ class ListingResourceIntegrationTests {
 
         expectedJSON = String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
-                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString());
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
+                listing.isBookmarked(user), listing.getTotalBookMarks());
 
         // when
         List<Listing> list = List.of(listing);
