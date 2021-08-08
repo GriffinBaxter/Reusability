@@ -18,6 +18,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -94,6 +95,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<HasKeywordNotification> readKeywordNotifications = new ArrayList<>();
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "bookmarkedListings", fetch = FetchType.LAZY)
+    private List<Listing> bookmarkedListings = new ArrayList<>();
 
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
@@ -250,6 +255,10 @@ public class User {
         return sessionUUID;
     }
 
+    public List<Listing> getBookmarkedListing() {
+        return bookmarkedListings;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -312,6 +321,10 @@ public class User {
 
     public void setReadKeywordNotifications(List<HasKeywordNotification> readKeywordNotifications) {
         this.readKeywordNotifications = readKeywordNotifications;
+    }
+
+    public void setBookmarkedListings(List<Listing> bookMarkedListings) {
+        this.bookmarkedListings = bookMarkedListings;
     }
 
     /**
@@ -377,6 +390,7 @@ public class User {
         for (int i = 0; i < businessesAdministeredObjects.size(); i++){
             if (businessesAdministeredObjects.get(i).getId() == businessId){
                 this.businessesAdministeredObjects.remove(i);
+                i--;
             }
         }
     }
@@ -390,6 +404,7 @@ public class User {
         for (int i = 0; i < this.cards.size(); i++){
             if (this.cards.get(i).getId() == cardId){
                 this.cards.remove(i);
+                i--;
             }
         }
     }
@@ -405,6 +420,29 @@ public class User {
             businessesAdministered.add(business.getId());
         }
         return businessesAdministered;
+    }
+
+    /**
+     * Add a listing to user bookmark if that listing not in user's bookmark
+     * @param listing listing
+     */
+    public void addAListingToBookmark(Listing listing){
+        if (!this.bookmarkedListings.contains(listing)){
+            this.bookmarkedListings.add(listing);
+        }
+    }
+
+    /**
+     * Remove a listing from user bookmark if that listing not in user's bookmark
+     * @param givenListing given listing
+     */
+    public void removeAListingFromBookmark(Listing givenListing){
+        for (int i = 0; i < bookmarkedListings.size(); i++) {
+            if (bookmarkedListings.get(i) == givenListing) {
+                bookmarkedListings.remove(i);
+                i--;
+            }
+        }
     }
 
     /**
