@@ -22,7 +22,7 @@ import java.util.Optional;
  * ListingRepository interface
  */
 @RepositoryRestResource
-public interface ListingRepository extends JpaRepository<Listing, Integer> {
+public interface ListingRepository extends JpaRepository<Listing, Integer>, ListingRepositoryCustom {
 
     /**
      * Finds any listings with the given business ID.
