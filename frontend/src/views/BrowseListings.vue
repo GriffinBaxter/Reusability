@@ -50,6 +50,7 @@
 import Navbar from "../components/main/Navbar";
 import Footer from "../components/main/Footer";
 import BrowseListingCard from "../components/listing/BrowseListingCard";
+import Api from "../Api"
 
 export default {
   name: "Listings",
@@ -60,6 +61,15 @@ export default {
   computed: {
   },
   methods: {
+  },
+  async mounted() {
+
+    await Api.searchListings('Waste', 'businessName', 'expiryDateASC', '0', 'RETAIL_TRADE', '10.00', '90.00', '2021-05-15T00:00', '2022-01-01T00:00').then((response) => {
+      console.log(response);
+    }, (error) => {
+      console.log(error)
+    });
+
   }
 }
 
