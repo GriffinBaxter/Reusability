@@ -238,6 +238,22 @@ public class ListingResource {
         }
     }
 
+    /**
+     * Search for listings with filtering and ordering.
+     * Returns paginated and ordered results based on input query params.
+     * 
+     * @param sessionToken Session token used to authenticate user (is user logged in?).
+     * @param searchQuery Search query.
+     * @param searchType Search type.
+     * @param orderBy Column to order the results by.
+     * @param page Page number to return results from.
+     * @param businessType Business type to search by.
+     * @param minimumPrice Minimum price.
+     * @param maximumPrice Maximum price.
+     * @param fromDate From date (closing).
+     * @param toDate To date (closing).
+     * @return A list of ListingPayload objects matching the search query
+     */
     @GetMapping("/listings")
     public ResponseEntity<List<ListingPayload>> searchListings(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
@@ -361,6 +377,19 @@ public class ListingResource {
         return payloads;
     }
 
+    /**
+     * This method parses the search criteria and then calls the needed methods to execute the "query".
+     * 
+     * @param searchQuery Criteria to search for listings.
+     * @param paging Information used to paginate the retrieved listings.
+     * @param searchType Search type.
+     * @param businessType Criteria to search for listings using business type.
+     * @param minimumPrice Minimum price.
+     * @param maximumPrice Maximum price.
+     * @param fromDate From date (closing).
+     * @param toDate To date (closing).
+     * @return Page<Listing> A page of listings matching the search criteria.
+     */
     private Page<Listing> parseAndExecuteQuery(
             String searchQuery, Pageable paging,
             String searchType,
