@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "cf610cec-a5ae-49a8-9c0e-f64becd01272",
+		"name": "GET for listings search",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1 & 3. Get all listings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/listings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"listings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"emailUSER@email.com\",\n  \"password\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Get specific listings (ordering and filtering)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/listings?searchQuery=Waste&searchType=businessName&orderBy=expiryDateASC&businessType=RETAIL_TRADE&minimumPrice=10.00&maximumPrice=90.00&fromDate=2021-05-15T00:00&toDate=2022-01-01T00:00",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"listings"
+					],
+					"query": [
+						{
+							"key": "searchQuery",
+							"value": "Waste"
+						},
+						{
+							"key": "searchType",
+							"value": "businessName"
+						},
+						{
+							"key": "orderBy",
+							"value": "expiryDateASC"
+						},
+						{
+							"key": "businessType",
+							"value": "RETAIL_TRADE"
+						},
+						{
+							"key": "minimumPrice",
+							"value": "10.00"
+						},
+						{
+							"key": "maximumPrice",
+							"value": "90.00"
+						},
+						{
+							"key": "fromDate",
+							"value": "2021-05-15T00:00"
+						},
+						{
+							"key": "toDate",
+							"value": "2022-01-01T00:00"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Get listings (incorrect ordering type)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/listings?orderBy=incorrectOrderASC",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"listings"
+					],
+					"query": [
+						{
+							"key": "orderBy",
+							"value": "incorrectOrderASC"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "userId",
+			"value": ""
+		}
+	]
+}
