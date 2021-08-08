@@ -11,31 +11,18 @@
           </div>
         </div>
         <br>
-<!--        <input class="form-control" type="text">-->
         <div class="row pb-5 mb-4">
-          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
-            <BrowseListingCard></BrowseListingCard>
-          </div>
-          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
-            <BrowseListingCard></BrowseListingCard>
-          </div>
-          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
-            <BrowseListingCard></BrowseListingCard>
-          </div>
-          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
-            <BrowseListingCard></BrowseListingCard>
-          </div>
-          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
-            <BrowseListingCard></BrowseListingCard>
-          </div>
-          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
-            <BrowseListingCard></BrowseListingCard>
-          </div>
-          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
-            <BrowseListingCard></BrowseListingCard>
-          </div>
-          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center">
-            <BrowseListingCard></BrowseListingCard>
+          <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center" v-for="listing in listingList" v-bind:key="listing.id">
+            <BrowseListingCard
+                v-bind:id="listing.id"
+                v-bind:inventory-item="listing.inventoryItem"
+                v-bind:created="listing.created"
+                v-bind:closes="listing.closes"
+                v-bind:is-bookmarked="listing.isBookmarked"
+                v-bind:more-info="listing.moreInfo"
+                v-bind:price="listing.price"
+                v-bind:quantity="listing.quantity"
+                v-bind:total-bookmarks="listing.totalBookmarks"/>
           </div>
         </div>
       </div>
@@ -56,7 +43,10 @@ export default {
   name: "Listings",
   components: {Footer, Navbar, BrowseListingCard},
   data() {
-    return {}
+    return {
+      // Array that stores all retrieved listings
+      listingList: []
+    }
   },
   computed: {
   },
@@ -64,8 +54,9 @@ export default {
   },
   async mounted() {
 
-    await Api.searchListings('Waste', 'businessName', 'expiryDateASC', '0', 'RETAIL_TRADE', '10.00', '90.00', '2021-05-15T00:00', '2022-01-01T00:00').then((response) => {
-      console.log(response);
+    await Api.searchListings('a', 'businessName', 'expiryDateASC', '0', 'RETAIL_TRADE', '0.00', '10000.00', '2021-05-15T00:00', '2022-01-01T00:00').then((response) => {
+      this.listingList = [...response.data];
+      console.log(this.listingList);
     }, (error) => {
       console.log(error)
     });

@@ -7,29 +7,28 @@
       <div class="col p-0">
           <div class="row">
             <div class="card-body" id="price-div">
-              <h3>$2.99</h3>
+              <h3>{{ '$' + price }}</h3>
             </div>
           </div>
           <div class="row">
             <div class="card-body">
               <a class="btn btn-primary green-button" id="seller-info-button"
                  data-bs-toggle="popover" data-bs-trigger="hover focus"
-                 title="Business Name"
+                 v-bind:title="inventoryItem.product.business.name"
                  data-bs-content="Address line 1 <br> address line 2 and three <br> and so many cities in this country <br> address <br>"
                  data-bs-placement="top">Seller Info</a>
             </div>
           </div>
         </div>
-
     </div>
     <div class="row">
       <div class="col">
         <div class="card-body pb-0 py-1">
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item pb-1 "><h5>Apple (Green) x2</h5></li>
-          <li class="list-group-item">Closing Date: 2nd Sep 2021</li>
-          <li class="list-group-item">Expires: 10th Nov 2021</li>
+          <li class="list-group-item pb-1 "><h5>{{ inventoryItem.product.name + ' x' + quantity }}</h5></li>
+          <li class="list-group-item">{{ 'Closing Date: ' + closes }}</li>
+          <li class="list-group-item">{{ 'Expires: ' + inventoryItem.expires }}</li>
         </ul>
       </div>
     </div>
@@ -42,7 +41,53 @@ import {Popover} from "bootstrap";
 
 export default {
   name: "BrowseListingCard",
-  components: {},
+  props: {
+    id: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    inventoryItem: {
+      type: Object,
+      default: function () {return {}},
+      required: true
+    },
+    created: {
+      type: String,
+      default: "",
+      required: true
+    },
+    closes: {
+      type: String,
+      default: "",
+      required: true
+    },
+    isBookmarked: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    moreInfo: {
+      type: String,
+      default: "",
+      required: true
+    },
+    price: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    quantity: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    totalBookmarks: {
+      type: Number,
+      default: 0,
+      required: true
+    }
+  },
   data() {
     return {
       tooltipList: [],
