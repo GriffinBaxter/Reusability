@@ -33,7 +33,7 @@ public class ListingPayload {
      * @param listings a list of listings
      * @return a list of ListingPayload
      */
-    public static List<ListingPayload> toListingPayload (List<Listing> listings) {
+    public static List<ListingPayload> toListingPayload (List<Listing> listings, User currentUser) throws Exception {
         List<ListingPayload> listingPayloads = new ArrayList<>();
         ListingPayload listingPayload;
         for (Listing listing: listings) {
@@ -46,7 +46,9 @@ public class ListingPayload {
                     product.getManufacturer(),
                     product.getRecommendedRetailPrice(),
                     product.getCreated(),
-                    product.getImages()
+                    product.getImages(),
+                    product.getBusiness().toBusinessPayload(),
+                    product.getBarcode()
             );
 
             InventoryItem inventoryItem = listing.getInventoryItem();
@@ -69,7 +71,9 @@ public class ListingPayload {
                     listing.getPrice(),
                     listing.getMoreInfo(),
                     listing.getCreated().toString(),
-                    listing.getCloses().toString()
+                    listing.getCloses().toString(),
+                    listing.isBookmarked(currentUser),
+                    listing.getTotalBookmarks()
             );
 
             listingPayloads.add(listingPayload);

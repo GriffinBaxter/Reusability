@@ -143,8 +143,7 @@ public class CustomListingRepositoryTests {
                 "A Description",
                 "Manufacturer",
                 21.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
         product2 = new Product(
                 "BEAN",
@@ -153,8 +152,7 @@ public class CustomListingRepositoryTests {
                 "Description",
                 "A Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2020, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
         product3 = new Product(
                 "BEAN3",
@@ -163,8 +161,7 @@ public class CustomListingRepositoryTests {
                 "Description",
                 "A Manufacturer",
                 11.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
         product4 = new Product(
                 "DUCT",
@@ -173,8 +170,7 @@ public class CustomListingRepositoryTests {
                 "Brand new Description",
                 "A New Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
         product5 = new Product(
                 "PROD",
@@ -183,8 +179,7 @@ public class CustomListingRepositoryTests {
                 "New Description",
                 "New Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 1),
-                        LocalTime.of(1, 0))
+                "9400547002634"
         );
 
         products = List.of(product1, product2, product3, product4, product5);

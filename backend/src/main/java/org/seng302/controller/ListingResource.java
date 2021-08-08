@@ -251,13 +251,13 @@ public class ListingResource {
             @RequestParam(required = false) Double maximumPrice,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate
-    ) {
+    ) throws Exception {
         logger.debug(
                 "Listing search request received with search query {}, business type {}, order by {}, page {}",
                 searchQuery, businessType, orderBy, page
         );
 
-        Authorization.getUserVerifySession(sessionToken, userRepository);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         int pageNo = PaginationUtils.parsePageNumber(page);
 
@@ -336,7 +336,7 @@ public class ListingResource {
         logger.debug("Listings Found");
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(ListingPayload.toListingPayload(pagedResult.getContent()));
+                .body(ListingPayload.toListingPayload(pagedResult.getContent(), currentUser));
     }
 
     /**
