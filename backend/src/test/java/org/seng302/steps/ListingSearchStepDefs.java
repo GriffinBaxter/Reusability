@@ -80,16 +80,10 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     private Listing listing;
     private Listing listing2;
 
-    private final String listingPayload = "{\"inventoryItemId\":\"%s\"," +
-            "\"quantity\":%d," +
-            "\"price\":%.1f," +
-            "\"moreInfo\":\"%s\"," +
-            "\"closes\":\"%s\"}";
-
     private String expectedJSON;
 
-    private final String expectedListingJSON =
-            "{\"id\":%s," +
+    private final String expectedListingJSON = "{" +
+            "\"id\":%s," +
             "\"inventoryItem\":" +
             "{\"id\":%s," +
             "\"product\":{" +
@@ -99,7 +93,8 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
             "\"manufacturer\":\"%s\"," +
             "\"recommendedRetailPrice\":%.1f," +
             "\"created\":\"%s\"," +
-            "\"images\":[]}," +
+            "\"images\":[]," +
+            "\"barcode\":\"%s\"}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.1f," +
             "\"totalPrice\":%.1f," +
@@ -111,7 +106,8 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
             "\"price\":%.1f," +
             "\"moreInfo\":\"%s\"," +
             "\"created\":\"%s\"," +
-            "\"closes\":\"%s\"}";
+            "\"closes\":\"%s\"" +
+            "}";
 
     @Before
     public void setup() throws Exception {
@@ -227,8 +223,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
 
         inventoryItem = new InventoryItem(
@@ -251,8 +246,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 "Description",
                 "Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
 
         inventoryItem2 = new InventoryItem(
@@ -318,14 +312,14 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     public void iReceiveTheListingWithName(String name) throws UnsupportedEncodingException {
         if (name.equals("Beans")) {
             expectedJSON = "[" + String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), name,
-                    product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                    product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(), product.getBarcode(),
                     inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                     inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                     listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString())
                     + "]";
         } else {
             expectedJSON = "[" + String.format(expectedListingJSON, listing2.getId(), inventoryItem2.getId(), product2.getProductId(), name,
-                    product2.getDescription(), product2.getManufacturer(), product2.getRecommendedRetailPrice(), product2.getCreated(),
+                    product2.getDescription(), product2.getManufacturer(), product2.getRecommendedRetailPrice(), product2.getCreated(), product2.getBarcode(),
                     inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
                     inventoryItem2.getManufactured(), inventoryItem2.getSellBy(), inventoryItem2.getBestBefore(), inventoryItem2.getExpires(),
                     listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString())
@@ -388,12 +382,12 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     @Then("I receive the listings with names {string} and {string} in that order")
     public void iReceiveTheListingsWithNamesAndInThatOrder(String name2, String name1) throws UnsupportedEncodingException {
         expectedJSON = "[" + String.format(expectedListingJSON, listing2.getId(), inventoryItem2.getId(), product2.getProductId(), name2,
-                product2.getDescription(), product2.getManufacturer(), product2.getRecommendedRetailPrice(), product2.getCreated(),
+                product2.getDescription(), product2.getManufacturer(), product2.getRecommendedRetailPrice(), product2.getCreated(), product2.getBarcode(),
                 inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
                 inventoryItem2.getManufactured(), inventoryItem2.getSellBy(), inventoryItem2.getBestBefore(), inventoryItem2.getExpires(),
                 listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString())
                 + "," + String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), name1,
-                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString())

@@ -43,7 +43,8 @@ public class ListingPayload {
                     product.getManufacturer(),
                     product.getRecommendedRetailPrice(),
                     product.getCreated(),
-                    product.getImages()
+                    product.getImages(),
+                    product.getBarcode()
             );
 
             InventoryItem inventoryItem = listing.getInventoryItem();

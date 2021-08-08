@@ -15,8 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
 import org.seng302.model.enums.BusinessType;
-import org.seng302.model.Business;
-import org.seng302.model.enums.Role;
 import org.seng302.model.repository.BusinessRepository;
 import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.model.InventoryItem;
@@ -24,7 +22,6 @@ import org.seng302.model.Listing;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.ListingCreationPayload;
-import org.seng302.view.incoming.UserIdPayload;
 import org.seng302.view.outgoing.*;
 import org.seng302.model.repository.ListingRepository;
 import org.seng302.model.repository.ProductRepository;
@@ -49,8 +46,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
-
-import static org.seng302.Authorization.verifyRole;
 
 /**
  * ListingResource class
@@ -474,7 +469,7 @@ public class ListingResource {
 
         return new BookmarkStatusPayload(currentStatus);
     }
-}
+
     /**
      * This method parses the search criteria and then calls the needed methods to execute the "query".
      * 
@@ -497,18 +492,25 @@ public class ListingResource {
     ) {
         BusinessType convertedBusinessType = toBusinessType(businessType);
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        if (searchType.equals("businessName")) {
-            return listingRepository.findAllListingsByBusinessName(
-                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
-            );
-        } else if (searchType.equals("location")) {
-            return listingRepository.findAllListingsByLocation(
-                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
-            );
-        } else {
-            return listingRepository.findAllListingsByProductName(
-                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
-            );
+        switch (searchType) {
+            case "listingName":
+                return listingRepository.findAllListingsByProductName(
+                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                );
+            case "businessName":
+                return listingRepository.findAllListingsByBusinessName(
+                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                );
+            case "location":
+                return listingRepository.findAllListingsByLocation(
+                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                );
+            default:
+                logger.error("400 [BAD REQUEST] - {} is not a valid search type parameter", searchType);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "searchType Field invalid"
+                );
         }
     }
 
