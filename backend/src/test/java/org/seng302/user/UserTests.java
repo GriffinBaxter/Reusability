@@ -73,7 +73,7 @@ class UserTests {
                 "Description",
                 "Manufacturer",
                 20.00,
-                "3274080005003"
+                "9400547002634"
         );
         inventoryItem = new InventoryItem(
                 product,
