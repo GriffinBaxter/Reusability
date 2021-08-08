@@ -192,7 +192,7 @@ const routes = [
     },
     {
         path: '/businessProfile/:businessId/listings/:listingId',
-        name: 'Listings',
+        name: 'Sale Listing',
         props: true,
         meta: {
             title: 'Sale Listing'

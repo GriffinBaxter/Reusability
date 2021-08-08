@@ -16,17 +16,18 @@
         <div class="left-content">
           <!-- Image section -->
           <div class="listing-images-wrapper">
-            <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image"/>
+            <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image" class="no-highlight"/>
             <div class="images-carousel-wrapper">
-              <div class="carousel-arrow">
+              <div class="carousel-arrow clickable no-highlight" @click="nextImage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
                 </svg>
               </div>
               <div class="images-carousel">
-                <img class="sale-carousel-image" v-for="(image, index) in saleImages" :key="index" :src="image.thumbnailFilename" alt="Product [product - name ] image 2">
+                <img :class="`sale-carousel-image no-highlight clickable ` + (mainImageIndex === imageIndex ? 'main-carousel-image' : '')"
+                     v-for="(imageIndex, index) in getVisibleImages()" @click="mainImageIndex=imageIndex" :key="index" :src="getCarouselImage(imageIndex)" alt="Product [product - name ] image 2">
               </div>
-              <div class="carousel-arrow">
+              <div class="carousel-arrow clickable no-highlight" @click="previousImage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -88,6 +89,7 @@
   import Navbar from "@/components/main/Navbar";
   import Footer from "@/components/main/Footer"
   import DefaultImage from "../../public/default-product.jpg"
+  import Api from "../Api";
 
   export default {
     name: "SaleListing",
@@ -98,28 +100,93 @@
     data() {
       return {
         mainImageIndex: 0,
+        carouselStartIndex: 0,
+        carouselNumImages: 3,
         saleImages: [
           {
-            thumbnailFilename: "default-product.jpg",
-            filename: "default-product.jpg"
+            thumbnailFilename: "",
+            filename: ""
           },
           {
-            thumbnailFilename: "default-product.jpg",
-            filename: "default-product.jpg"
+            thumbnailFilename: "",
+            filename: ""
           },
           {
-            thumbnailFilename: "default-product.jpg",
-            filename: "default-product.jpg"
+            thumbnailFilename: "",
+            filename: ""
+          },
+          {
+            thumbnailFilename: "",
+            filename: ""
+          },
+          {
+            thumbnailFilename: "",
+            filename: ""
           }
         ],
       }
     },
     methods: {
+      /**
+       * Retrieves the filename (url path) for the currently chosen image for the listing.
+       *
+       * @return {string|*} Returns the URL to the image source (either backend or default image if not found).
+       */
       getMainImage() {
-        if (this.mainImageIndex < this.saleImages.length) {
-          return this.saleImages[this.mainImageIndex].filename;
+        if (this.mainImageIndex < this.saleImages.length && this.saleImages[this.mainImageIndex].filename) {
+          return Api.getServerResourcePath(this.saleImages[this.mainImageIndex].filename);
         }
         return DefaultImage;
+      },
+      /**
+       * Retrieves the carousel (thumbnail) image for a given index.
+       *
+       * @param index Index of the image in the salesImages array.
+       * @return {string|*} Returns the URL to the image source (either backend or default image if not found).
+       */
+      getCarouselImage(index) {
+        if (this.saleImages > index && this.saleImages[index].thumbnailFilename) {
+          return Api.getServerResourcePath(this.saleImages[index].thumbnailFilename);
+        }
+        return DefaultImage;
+      },
+      /**
+       * Retrives the list of image indexes visible.
+       *
+       * @return {number[]} Returns a list of the images currently visible in the carousel (3 images)
+       */
+      getVisibleImages() {
+        let visibleImageIndices = [];
+        for (let i = this.carouselStartIndex; i<this.carouselStartIndex+this.carouselNumImages; i++) {
+          visibleImageIndices.push(this.boundIndex(i, this.saleImages.length));
+        }
+        return visibleImageIndices;
+      },
+      /**
+       * Bounds an index to the possible values within the given max length.
+       *
+       * @param index Index we want to bound.
+       * @param maxLength Max length of the list.
+       * @return {number} Returns the index within the bounds.
+       */
+      boundIndex(index, maxLength) {
+        let newIndex = index;
+        while (newIndex < 0) {
+          newIndex += maxLength;
+        }
+        return newIndex % maxLength;
+      },
+      /**
+       * Goes to the next iamge on the carousel.
+       */
+      nextImage() {
+        this.carouselStartIndex = this.boundIndex(this.carouselStartIndex+1, this.saleImages.length);
+      },
+      /**
+       * Goes to the previous iamge on the carousel.
+       */
+      previousImage() {
+        this.carouselStartIndex = this.boundIndex(this.carouselStartIndex-1, this.saleImages.length);
       }
     }
   }
@@ -128,6 +195,10 @@
 <style scoped>
   h5, h1 {
     font-family: 'Merriweather Sans', sans-serif;
+  }
+
+  .clickable {
+    cursor: pointer;
   }
 
   #Listing-name {
@@ -156,6 +227,14 @@
 
   .images-carousel-wrapper {
     display: none;
+  }
+
+  .no-highlight::-moz-selection {
+    background-color: transparent;
+  }
+
+  .no-highlight::selection {
+    background-color: transparent;
   }
 
   .listing-images-wrapper {
@@ -230,6 +309,10 @@
   .sale-carousel-image {
     width: 100%;
     height: auto;
+  }
+
+  .main-carousel-image {
+    border: black solid 1px;
   }
 
   .carousel-arrow {
