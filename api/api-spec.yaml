@@ -868,6 +868,19 @@ paths:
           required: false
           description: "Criteria to search for, e.g: full listing name"
         - in: query
+          name: searchType
+          schema: 
+            type: string
+          required: false
+          description: >-
+            Search type, the following options are available
+
+            * listingName: the listing name (default)
+
+            * businessName: the business name
+            
+            * location: the location
+        - in: query
           name: orderBy
           schema:
             type: string
@@ -932,18 +945,6 @@ paths:
             type: string
           required: false
           description: "Criteria to search listings for, listing's maximum price"
-        - in: query
-          name: businessName
-          schema:
-            type: string
-          required: false
-          description: "Criteria to search listings for, e.g: business's full name"
-        - in: query
-          name: location
-          schema:
-            type: string
-          required: false
-          description: "Criteria to search listings for, e.g: business's full address"
         - in: query
           name: fromDate
           schema:
