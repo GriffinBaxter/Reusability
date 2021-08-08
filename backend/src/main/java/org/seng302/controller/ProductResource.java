@@ -12,12 +12,12 @@ package org.seng302.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.seng302.Validation;
 import org.seng302.exceptions.IllegalProductArgumentException;
 import org.seng302.model.*;
 import org.seng302.Authorization;
 import org.seng302.model.User;
 import org.seng302.model.repository.*;
-import org.seng302.ProductValidation;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.view.incoming.ProductCreationPayload;
 import org.seng302.view.outgoing.ProductPayload;
@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +105,9 @@ public class ProductResource {
             if (productRepository.findProductByIdAndBusinessId(productPayload.getId(), id).isPresent()) {
                 logger.error("Product Creation Failure - 400 [BAD REQUEST] - Product with ID {} already exists for business with ID {}", productPayload.getId(), id);
                 throw new IllegalProductArgumentException("Invalid product ID, already in use");
+            } else if (productPayload.getBarcode().length() != 0 && productRepository.findProductByBarcodeAndBusinessId(productPayload.getBarcode(), id).isPresent()) {
+                logger.error("Product Creation Failure - 400 [BAD REQUEST] - Product with barcode {} already exists for business with ID {}", productPayload.getBarcode(), id);
+                throw new IllegalProductArgumentException("Invalid barcode, already in use");
             } else {
                 Product product = new Product(
                         productPayload.getId(),
@@ -114,7 +116,7 @@ public class ProductResource {
                         productPayload.getDescription(),
                         productPayload.getManufacturer(),
                         productPayload.getRecommendedRetailPrice(),
-                        LocalDateTime.now()
+                        productPayload.getBarcode()
                 );
 
                 productRepository.save(product);
@@ -146,7 +148,7 @@ public class ProductResource {
             @PathVariable Integer id,
             @RequestParam(defaultValue = "productIdASC") String orderBy,
             @RequestParam(defaultValue = "0") String page
-    ) {
+    ) throws Exception {
         logger.debug("Product retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -230,18 +232,10 @@ public class ProductResource {
      * @param productList The given list of products
      * @return A list of productPayloads.
      */
-    public List<ProductPayload> convertToPayload(List<Product> productList) {
+    public List<ProductPayload> convertToPayload(List<Product> productList) throws Exception {
         List<ProductPayload> payloads = new ArrayList<>();
         for (Product product : productList) {
-            ProductPayload newPayload = new ProductPayload(
-                    product.getProductId(),
-                    product.getName(),
-                    product.getDescription(),
-                    product.getManufacturer(),
-                    product.getRecommendedRetailPrice(),
-                    product.getCreated(),
-                    product.getImages()
-            );
+            ProductPayload newPayload = product.convertToPayload();
             logger.debug("Product payload created: {}", newPayload);
             payloads.add(newPayload);
         }
@@ -283,7 +277,6 @@ public class ProductResource {
 
         logger.debug("Product with ID {} from business with ID {} was found: {}", productId, businessId, product.get());
 
-
         // Verify the user has permission to update that product.
         Authorization.verifyBusinessAdmin(requestingUser, businessId);
 
@@ -313,7 +306,7 @@ public class ProductResource {
                 }
 
                 // Verify the new id is unique are valid
-                if (!ProductValidation.isValidProductId(updatedProduct.getId()) || productRepository.findProductByIdAndBusinessId(updatedProduct.getId(), businessId).isPresent()) {
+                if (!Validation.isValidProductId(updatedProduct.getId()) || productRepository.findProductByIdAndBusinessId(updatedProduct.getId(), businessId).isPresent()) {
                     logger.error("Product Modify Failure - 400 [BAD REQUEST] - New product ID {} either already exists OR is invalid.", updatedProduct.getId());
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product id already exists OR product id is invalid.");
                 }
@@ -325,59 +318,45 @@ public class ProductResource {
             updatedProduct.setId(product.get().getProductId());
         }
 
-
         // Verify the name is included!
         if (updatedProduct.getName() == null) {
             logger.error("Product Modify Failure - 400 [BAD REQUEST] - New product does not contain a name as required.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product must have a name.");
         }
-        // Verify the new name is valid
-        else if (!ProductValidation.isValidName(updatedProduct.getName())) {
-            logger.error("Product Modify Failure - 400 [BAD REQUEST] - New product name is invalid: \"{}\"", updatedProduct.getName());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product name is invalid.");
-        }
-        logger.debug("Product update name is valid: \"{}\"", updatedProduct.getName());
 
-
-        // If the payload includes a new description check if it is valid. Otherwise use the previously defined value.
-        if (updatedProduct.getDescription() != null) {
-            logger.debug("Product update contains new description: \"{}\"", updatedProduct.getDescription());
-            // Verify the description is valid
-            if (!ProductValidation.isValidDescription(updatedProduct.getDescription())) {
-                logger.error("Product Modify Failure - 400 [BAD REQUEST] - New product contains invalid description: \"{}\"", updatedProduct.getDescription());
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product description is invalid.");
-            }
-        } else {
+        // If the payload doesn't include a new description use the previously defined value.
+        if (updatedProduct.getDescription() == null) {
             logger.debug("Product update does not contain new description.");
             updatedProduct.setDescription(product.get().getDescription());
         }
 
-
-        // If the payload includes a new manufacturer check if it is valid. Otherwise use the previously defined value.
-        if (updatedProduct.getManufacturer() != null) {
-            logger.debug("Product update contains new manufacturer: \"{}\"", updatedProduct.getManufacturer());
-            // Verify the manufacturer is valid
-            if (!ProductValidation.isValidManufacturer(updatedProduct.getManufacturer())) {
-                logger.error("Product Modify Failure - 400 [BAD REQUEST] - The new product manufacturer is invalid: \"{}\"", updatedProduct.getManufacturer());
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new product manufacturer is invalid.");
-            }
-        } else {
+        // If the payload doesn't include a new manufacturer use the previously defined value.
+        if (updatedProduct.getManufacturer() == null) {
             logger.debug("Product update does not contain new manufacturer.");
             updatedProduct.setManufacturer(product.get().getManufacturer());
         }
 
-
-        // If the payload includes a new recommendedRetailPrice check if it is valid. Otherwise use the previously defined value.
-        if (updatedProduct.getRecommendedRetailPrice() != null) {
-            logger.debug("Product update contains new manufacturer: \"{}\"", updatedProduct.getDescription());
-            // Verify the recommendedRetailPrice is valid
-            if (!ProductValidation.isValidRecommendeRetailPrice(updatedProduct.getRecommendedRetailPrice())) {
-                logger.error("Product Modify Failure - 400 [BAD REQUEST] - New product recommended product retail price is invalid: {}", updatedProduct.getRecommendedRetailPrice());
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new recommended product retail price is invalid.");
-            }
-        } else {
+        // If the payload doesn't include a new recommendedRetailPrice use the previously defined value.
+        if (updatedProduct.getRecommendedRetailPrice() == null) {
             logger.debug("Product update does not contain a new recommended retail price.");
             updatedProduct.setRecommendedRetailPrice(product.get().getRecommendedRetailPrice());
+        }
+
+        // If the payload doesn't include a barcode use the previously defined value.
+        if (updatedProduct.getBarcode() != null) {
+            logger.debug("updatedProduct contains a new barcode: {}", updatedProduct.getBarcode());
+            // No point in checking this if it is already the same value.
+            if (product.get().getBarcode() == null || !product.get().getBarcode().equals(updatedProduct.getBarcode())) {
+                logger.debug("New barcode: {} differs then the origin barcode: {}", updatedProduct.getBarcode(), product.get().getBarcode());
+                // Verify that product doesn't exist with same barcode
+                if (updatedProduct.getBarcode().length() != 0 && productRepository.findProductByBarcodeAndBusinessId(updatedProduct.getBarcode(), businessId).isPresent()) {
+                    logger.error("Product Modify Failure - 400 [BAD REQUEST] - Barcode {} cannot be modified if it already exists.", product.get().getBarcode());
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new barcode already exists within this business.");
+                }
+            }
+        } else {
+            logger.debug("Product update does not contain a new barcode.");
+            updatedProduct.setBarcode(product.get().getBarcode());
         }
 
         // Check if we can prevent the transaction, as it is more risky and could take longer.
@@ -387,14 +366,19 @@ public class ProductResource {
             logger.debug("Transactional product update approach was performed.");
         } else {
             // Update the attributes
-            product.get().setName(updatedProduct.getName());
-            product.get().setDescription(updatedProduct.getDescription());
-            product.get().setManufacturer(updatedProduct.getManufacturer());
-            product.get().setRecommendedRetailPrice(updatedProduct.getRecommendedRetailPrice());
-            productRepository.saveAndFlush(product.get());
-            logger.debug("Non transactional product update approach was performed.");
+            try {
+                product.get().setName(updatedProduct.getName());
+                product.get().setDescription(updatedProduct.getDescription());
+                product.get().setManufacturer(updatedProduct.getManufacturer());
+                product.get().setRecommendedRetailPrice(updatedProduct.getRecommendedRetailPrice());
+                product.get().setBarcode(updatedProduct.getBarcode());
+                productRepository.saveAndFlush(product.get());
+                logger.debug("Non transactional product update approach was performed.");
+            } catch (IllegalProductArgumentException e) {
+                logger.error("Product Modify Failure - 400 [BAD REQUEST] - {}", e.getMessage());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            }
         }
-
         logger.info("Product Modify Success - 200 [OK] - Product with ID {} for business with ID {} has been updated.", productId, businessId);
         logger.debug("Product update for business with ID {} with product ID {}: {}", businessId, productId, product);
     }
@@ -408,7 +392,7 @@ public class ProductResource {
     @GetMapping("/businesses/{id}/productAll")
     public ResponseEntity<List<ProductPayload>> retrieveAllProducts(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-            @PathVariable Integer id) {
+            @PathVariable Integer id) throws Exception {
         logger.debug("Product catalogue retrieval request (all items) received with business ID {}", id);
 
         // Checks user logged in - 401

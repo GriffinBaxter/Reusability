@@ -120,8 +120,7 @@ class FindInventoryItemsByBusinessIdTests {
                 "A Description",
                 "Manufacturer",
                 21.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         product2 = new Product(
                 "APP-LE",
@@ -130,8 +129,7 @@ class FindInventoryItemsByBusinessIdTests {
                 "Description",
                 "A Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2020, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         product3 = new Product(
                 "APP-LE3",
@@ -140,8 +138,7 @@ class FindInventoryItemsByBusinessIdTests {
                 "Description",
                 "A Manufacturer",
                 11.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         product4 = new Product(
                 "DUCT",
@@ -150,8 +147,7 @@ class FindInventoryItemsByBusinessIdTests {
                 "Brand new Description",
                 "A New Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
         product5 = new Product(
                 "PROD",
@@ -160,8 +156,7 @@ class FindInventoryItemsByBusinessIdTests {
                 "New Description",
                 "New Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 1),
-                        LocalTime.of(1, 0))
+                ""
         );
 
         products = List.of(product1, product2, product3, product4, product5);

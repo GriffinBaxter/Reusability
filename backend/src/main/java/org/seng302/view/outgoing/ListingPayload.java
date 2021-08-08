@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListingPayload {
+
     private Integer id;
     private InventoryItemPayload inventoryItem;
     private Integer quantity;
@@ -24,6 +25,8 @@ public class ListingPayload {
     private String moreInfo;
     private String created;
     private String closes;
+    private boolean isBookmarked;
+    private Integer totalBookmarks;
 
     /**
      * Translate a list of Listing to a list of ListingPayload
@@ -81,7 +84,9 @@ public class ListingPayload {
                           Double price,
                           String moreInfo,
                           String created,
-                          String closes
+                          String closes,
+                          boolean isBookmarked,
+                          Integer totalBookmarks
                           ) {
     this.id = id;
     this.inventoryItem = inventoryItem;
@@ -90,29 +95,45 @@ public class ListingPayload {
     this.moreInfo = moreInfo;
     this.created = created;
     this.closes = closes;
+    this.isBookmarked = isBookmarked;
+    this.totalBookmarks = totalBookmarks;
     }
 
     // Getters
     public int getId() {
         return id;
     }
+
     public InventoryItemPayload getInventoryItem() {
         return inventoryItem;
     }
+
     public Integer getQuantity() {
         return quantity;
     }
+
     public Double getPrice() {
         return price;
     }
+
     public String getMoreInfo() {
         return moreInfo;
     }
+
     public String getCreated() {
         return created;
     }
+
     public String getCloses() {
         return closes;
+    }
+
+    public boolean getIsBookmarked() {
+        return isBookmarked;
+    }
+
+    public Integer getTotalBookmarks() {
+        return totalBookmarks;
     }
 
     @Override
@@ -126,7 +147,17 @@ public class ListingPayload {
                 "\"description\":\"" + inventoryItem.getProduct().getDescription() + "\"," +
                 "\"manufacturer\":\"" + inventoryItem.getProduct().getManufacturer() + "\"," +
                 "\"recommendedRetailPrice\":" + inventoryItem.getProduct().getRecommendedRetailPrice() + "," +
-                "\"created\":\"" + inventoryItem.getProduct().getCreated() + "\"}," +
+                "\"created\":\"" + inventoryItem.getProduct().getCreated() + "\"" +
+                "\"business\":" +
+                "{\"id\":" + inventoryItem.getProduct().getBusiness().getId() + "," +
+                "\"administrators\":" + inventoryItem.getProduct().getBusiness().getAdministrators() + "," +
+                "\"primaryAdministratorId\":" + inventoryItem.getProduct().getBusiness().getPrimaryAdministratorId() + "," +
+                "\"name\":\"" + inventoryItem.getProduct().getBusiness().getName() + "\"," +
+                "\"description\":\"" + inventoryItem.getProduct().getBusiness().getDescription() + "\"," +
+                "\"address\":" + inventoryItem.getProduct().getBusiness().getAddress() + "," +
+                "\"businessType\":\"" + inventoryItem.getProduct().getBusiness().getBusinessType() + "\"," +
+                "\"created\":\"" + inventoryItem.getProduct().getBusiness().getCreated() + "\"}," +
+                "\"barcode\":\"" + inventoryItem.getProduct().getBarcode() + "\"}" +
                 "\"quantity\":" + inventoryItem.getQuantity() + "," +
                 "\"pricePerItem\":" + inventoryItem.getPricePerItem() + "," +
                 "\"totalPrice\":" + inventoryItem.getTotalPrice() + "," +
@@ -138,6 +169,8 @@ public class ListingPayload {
                 "\"price\":" + price + "," +
                 "\"moreInfo\":\"" + moreInfo + "\"," +
                 "\"created\":\"" + created + "\"," +
-                "\"closes\":\"" + closes + "\"}";
+                "\"closes\":\"" + closes + "\"," +
+                "\"isBookmarked\":" + isBookmarked + "," +
+                "\"totalBookmarks\":" + totalBookmarks + "}";
     }
 }

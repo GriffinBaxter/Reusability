@@ -10,8 +10,9 @@
  */
 package org.seng302.model;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalListingArgumentException;
@@ -19,11 +20,12 @@ import org.seng302.exceptions.IllegalListingArgumentException;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for sale listings
  */
-@Data
 @NoArgsConstructor
 @Entity
 public class Listing {
@@ -40,20 +42,31 @@ public class Listing {
     @Column(name = "businessId", nullable = false)
     private Integer businessId;
 
-    @Column (name = "quantity", nullable = false)
+    @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @Column (name = "price", nullable = false)
+    @Column(name = "price", nullable = false)
     private double price;
 
-    @Column (name = "moreInfo", length = 600)
+    @Column(name = "moreInfo", length = 600)
     private String moreInfo;
 
-    @Column (name = "created")
+    @Column(name = "created")
     private LocalDateTime created;
 
-    @Column (name = "closes")
+    @Column(name = "closes")
     private LocalDateTime closes;
+
+    @JsonManagedReference
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_bookmarks",
+            joinColumns = {@JoinColumn(name = "listings_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private List<User> bookmarkedListings = new ArrayList<>();
+
+    @Column(name = "totalBookmarks")
+    private Integer totalBookmarks;
 
     private static final Logger logger = LogManager.getLogger(Listing.class.getName());
 
@@ -105,7 +118,8 @@ public class Listing {
         this.moreInfo = moreInfo;
         this.created = created;
         // If closing date is not defined, use expiry date of inventory item.
-        this.closes = (closes == null) ? LocalDateTime.of(inventoryItem.getExpires(), LocalTime.of(0,0)) : closes;
+        this.closes = (closes == null) ? LocalDateTime.of(inventoryItem.getExpires(), LocalTime.of(0, 0)) : closes;
+        this.totalBookmarks = bookmarkedListings.size();
     }
 
     /**
@@ -139,6 +153,7 @@ public class Listing {
     public void setInventoryItem(InventoryItem inventoryItem) {
         this.inventoryItem = inventoryItem;
     }
+
 
     /**
      * get quantity
@@ -196,6 +211,19 @@ public class Listing {
         return created;
     }
 
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public Integer getTotalBookmarks() {
+        totalBookmarks = bookmarkedListings.size();
+        return totalBookmarks;
+    }
+
+    public List<User> getBookmarkedListings() {
+        return bookmarkedListings;
+    }
+
     /**
      * set Created
      * @param created created
@@ -220,12 +248,35 @@ public class Listing {
         this.closes = closes;
     }
 
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
+    public void addUserToANewBookmark(User user) {
+        if (!this.bookmarkedListings.contains(user)) {
+            this.bookmarkedListings.add(user);
+        }
+    }
+
+    public void removeUserFromABookmark(User user) {
+        for (int i = 0; i < this.bookmarkedListings.size(); i++){
+            if(this.bookmarkedListings.get(i) == user){
+                this.bookmarkedListings.remove(i);
+                i--;
+            }
+        }
+    }
+
+    public Boolean isBookmarked(User user) {
+        return this.bookmarkedListings.contains(user);
+    }
+
     /**
      * calculate the price of this Listing.
      */
     public double calculatePrice() {
         double calculatedPrice;
-        if (this.inventoryItem.getQuantity() == this.quantity){
+        if (this.inventoryItem.getQuantity() == this.quantity) {
             calculatedPrice = this.inventoryItem.getTotalPrice();
         } else {
             calculatedPrice = this.inventoryItem.getPricePerItem() * this.quantity;

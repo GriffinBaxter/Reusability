@@ -91,7 +91,30 @@ class InventoryItemResourceIntegrationTests {
             "\"manufacturer\":\"%s\"," +
             "\"recommendedRetailPrice\":%.2f," +
             "\"created\":\"%s\"," +
-            "\"images\":[]}," +
+            "\"images\":[]," +
+            "\"business\":{" +
+            "\"id\":%d," +
+            "\"administrators\":" +
+            "[{\"id\":%d," +
+            "\"firstName\":\"%s\"," +
+            "\"lastName\":\"%s\"," +
+            "\"middleName\":\"%s\"," +
+            "\"nickname\":\"%s\"," +
+            "\"bio\":\"%s\"," +
+            "\"email\":\"%s\"," +
+            "\"created\":\"%s\"," +
+            "\"role\":\"%s\"," +
+            "\"businessesAdministered\":[null]," +
+            "\"dateOfBirth\":\"%s\"," +
+            "\"phoneNumber\":\"%s\"," +
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]," +
+            "\"primaryAdministratorId\":%d," +
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"address\":%s," +
+            "\"businessType\":\"%s\"," +
+            "\"created\":\"%s\"}," +
+            "\"barcode\":\"%s\"}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.2f," +
             "\"totalPrice\":%.2f," +
@@ -180,8 +203,7 @@ class InventoryItemResourceIntegrationTests {
                 "Description",
                 "Manufacturer",
                 20.99,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                "9400547002634"
         );
 
         inventoryItem = new InventoryItem(
@@ -787,6 +809,12 @@ class InventoryItemResourceIntegrationTests {
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
         expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -825,6 +853,12 @@ class InventoryItemResourceIntegrationTests {
         anotherUser.setRole(Role.GLOBALAPPLICATIONADMIN);
         expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -864,6 +898,12 @@ class InventoryItemResourceIntegrationTests {
         anotherUser.setRole(Role.DEFAULTGLOBALAPPLICATIONADMIN);
         expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 

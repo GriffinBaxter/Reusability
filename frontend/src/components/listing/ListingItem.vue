@@ -2,7 +2,7 @@
   <div class="card border-secondary mb-3 px-2 py-2 shadow">
     <div class="row">
       <div class="row" id="mainContent">
-        <div class="col-12 col-sm-3">
+        <div class="col-12 col-sm-2">
           <div v-if="this.$props.images.length > 0">
             <div id="carousel-item-images" class="carousel slide" data-bs-ride="carousel">
               <div v-if="this.$props.images.length > 1" class="carousel-indicators">
@@ -30,10 +30,10 @@
           </div>
         </div>
         <div class="col">
-          <div class="card-body px-3" id="card-body">
+          <div class="card-body px-2" id="card-body">
             <div class="row">
               <div class="col">
-                <h4 class="card-title">{{quantity}}x {{ productName }}</h4>
+                <h4>{{quantity}}x {{ productName }}</h4>
               </div>
               <div class="col d-flex align-items-end flex-column col-5" v-if="!(moreInfo.length===0)">
                 <p style="text-align: right">{{moreInfo}}</p>
@@ -44,10 +44,13 @@
                 <p class="card-text">
                   {{ productId }}
                 </p>
+                <h6 class="card-text mt-auto" id="price">Price: {{ currencySymbol }}{{ price }} {{ currencyCode }}</h6>
               </div>
               <div class="col d-flex align-items-end flex-column">
                 <p>{{ description }}</p>
-                <p class="card-text mt-auto" id="price">Price: {{ currencySymbol }}{{ price }} {{ currencyCode }}</p>
+                <p v-if="barcode != null" class="card-text">
+                  Barcode: {{ barcode }}
+                </p>
               </div>
             </div>
           </div>
@@ -140,6 +143,11 @@ export default {
     },
     images: {
       type: Array,
+      default: null,
+      required: false
+    },
+    barcode: {
+      type: String,
       default: null,
       required: false
     }
