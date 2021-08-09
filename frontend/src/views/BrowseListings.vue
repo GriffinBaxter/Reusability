@@ -7,6 +7,7 @@
       <!-- TODO: make this a separate component once finished  -->
 
       <!--------------------------------------------  Searching, ordering, filtering   -------------------------------->
+      <div id="search-filter-ordering-options-container">
 
         <!-- Search Bar  -->
         <div class="container mt-5">
@@ -17,92 +18,98 @@
             </div>
           </div>
 
-          <!-- Match Fields -->
-          <div class="row" id="search-filter-ordering-options-container">
-            <div class="col-2" id="match-fields">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="checkbox-product-name">
-                <label class="form-check-label" for="checkbox-product-name">
+          <!------------------------------------------ searching, ordering and filtering container -------------------->
+          <div class="row" id="filter-ordering-options-container">
+
+            <!-- Match Fields -->
+            <div class="col-3 mx-lg-5 my-3 d-inline-block p-2" id="match-fields">
+
+              <div class="row">
+                <label class="d-inline-block fs-5 my-2 text-center">Match Fields</label>
+              </div>
+
+              <div class="form-check d-inline-block px-3">
+                <input class="form-check-input" type="radio" value="" id="radio-product-name">
+                <label class="form-check-label" for="radio-product-name">
                   Product Name
                 </label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="checkbox-seller-location">
-                <label class="form-check-label" for="checkbox-seller-location">
+              <div class="form-check d-inline-block px-3">
+                <input class="form-check-input" type="radio" value="" id="radio-seller-location">
+                <label class="form-check-label" for="radio-seller-location">
                   Seller Location
                 </label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="checkbox-seller-name">
-                <label class="form-check-label" for="checkbox-seller-name">
+              <div class="form-check d-inline-block px-3">
+                <input class="form-check-input" type="radio" value="" id="radio-seller-name">
+                <label class="form-check-label" for="radio-seller-name">
                   Seller Name
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="checkbox-seller-type">
-                <label class="form-check-label" for="checkbox-seller-type">
-                  Seller Type
                 </label>
               </div>
             </div>
 
-            <div class="col-2" id="order-menu">
+            <div class="col-2 my-4" id="order-menu">
 
               <!------------------------------------------ ordering by options menu ------------------------------------------->
-              <div class="row">
-                <p class="fw-normal">Order By</p>
-              </div>
 
               <div class="row">
-                <div class="btn-group col" role="group">
+                <label class="d-inline-block p-2 fs-5 text-center">Order By </label>
 
-                  <button type="button" class="btn green-button dropdown-toggle order-by-options-btn"
+                <div class="btn-group col d-inline-block p-2" role="group">
+
+                  <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
                           data-bs-toggle="dropdown" aria-expanded="false">{{ orderByOption }}
                   </button>
 
                   <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                     <!--order by price-->
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                            @click="setOrderByOption(true, false, false, false, false, false, false)">
+                            @click="setOrderByOption(true, false, false, false, false, false, false, false)">
                       Price Low
                     </button>
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                            @click="setOrderByOption(false, true, false, false, false, false, false, false)">
+                            @click="setOrderByOption(false, true, false, false, false, false, false, false, false)">
                       Price High
                     </button>
 
                     <!--order by product name-->
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                            @click="setOrderByOption(false, false, true, false, false, false, false, false)">
+                            @click="setOrderByOption(false, false, true, false, false, false, false, false, false)">
                       Product Name
                     </button>
 
                     <!--order by country-->
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                            @click="setOrderByOption(false, false, false, true, false, false, false, false)">
+                            @click="setOrderByOption(false, false, false, true, false, false, false, false, false)">
                       Country
                     </button>
 
                     <!--order by city-->
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                            @click="setOrderByOption(false, false, false, false, true, false, false, false)">
+                            @click="setOrderByOption(false, false, false, false, true, false, false, false, false)">
                       City
                     </button>
 
                     <!--order by expiry date-->
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                            @click="setOrderByOption(false, false, false, false, false, true, false, false)">
+                            @click="setOrderByOption(false, false, false, false, false, true, false, false, false)">
                       Expiry Date Earliest
                     </button>
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                            @click="setOrderByOption(false, false, false, false, false, false, true, false)">
+                            @click="setOrderByOption(false, false, false, false, false, false, true, false, false)">
                       Expiry Date Latest
                     </button>
 
                     <!--order by seller name-->
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                            @click="setOrderByOption(false, false, false, false, false, false, false, true)">
+                            @click="setOrderByOption(false, false, false, false, false, false, false, true, false)">
                       Seller Name
+                    </button>
+
+                    <!--order by seller type-->
+                    <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                            @click="setOrderByOption(false, false, false, false, false, false, false, false, true)">
+                      Seller Type
                     </button>
                   </ul>
                 </div>
@@ -112,53 +119,54 @@
               <!--------------------------------------------------------------------------------------------------------->
 
             </div>
-            <div class="col-6" id="price-and-date-filters">
+            <div class="col-6 text-center my-4" id="price-and-date-filters">
+
+              <label class="d-inline-block fs-5 my-2 text-center">Filters</label>
 
               <div class="row">
                 <form>
                   <div class="form-group" id="price-filtering-container">
-                    <label for="lowest-price-input" class="d-inline-block">Price Range $ </label>
+                    <label for="lowest-price-input" class="d-inline-block p-2">Price Range $ </label>
                     <input type="number" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00">
 
-                    <label for="lowest-price-input" id="date-filtering-container"> to $ </label>
+                    <label for="highest-price-input" class="d-inline-block p-2"> to $ </label>
                     <input type="number" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00">
                   </div>
                 </form>
               </div>
 
-              <div class="row">
+              <div class="row m-2">
                 <form>
-                  <div class="form-group">
-                    <label for="lowest-price-input" class="d-inline-block">Closing Date </label>
-                    <input type="date" class="form-control filter-input d-inline-block " id="start-date">
+                  <div class="form-group" id="date-filtering-container">
+                    <label for="start-date-input" class="d-inline-block p-2">Closing Date </label>
+                    <input type="date" class="form-control filter-input d-inline-block" id="start-date-input">
 
-                    <label for="lowest-price-input" class="d-inline-block"> to $ </label>
-                    <input type="date" class="form-control filter-input d-inline-block" id="end-date">
+                    <label for="end-date-input" class="d-inline-block p-2"> to </label>
+                    <input type="date" class="form-control filter-input d-inline-block" id="end-date-input">
                   </div>
                 </form>
               </div>
 
-              <div class="row" id="filter-buttons-container">
+              <div class="text-center" id="filter-buttons-container">
 
                 <!--------------------------------------- apply filters button -------------------------------------------->
-                <div class="col">
                   <!--   TODO: add @click event               -->
-                  <button type="button" class="btn btn-md btn-outline-primary green-button m-2">
+                  <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25">
                     Apply Filters
                   </button>
-                </div>
 
                 <!--------------------------------------- clear filters button -------------------------------------------->
-                <div class="col">
                   <!--   TODO: add @click event               -->
-                  <button type="button" class="btn btn-md btn-outline-primary green-button m-2">
+                  <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25">
                     Clear Filters
                   </button>
-                </div>
 
               </div>
+
             </div>
           </div>
+        </div>
+      </div>
 
         <!----------------------------------------  Searching, ordering, filtering ends ------------------------------->
 
@@ -177,7 +185,6 @@
                 v-bind:total-bookmarks="listing.totalBookmarks"/>
           </div>
         </div>
-      </div>
 
     </div>
     <!-- Footer -->
@@ -199,7 +206,7 @@ export default {
       // Array that stores all retrieved listings
       listingList: [],
 
-      orderByOption: "priceASC",         // default
+      orderByOption: "Price Low",         // default
       orderBy: this.$route.query["orderBy"] || "priceASC" // gets orderBy from URL or (if not there) sets to default
 
     }
@@ -210,7 +217,7 @@ export default {
     /**
      * Sets the order by option
      */
-    setOrderByOption(priceLow, priceHigh, productName, country, city, expiryDateEarliest, expiryDateLatest, sellerName) {
+    setOrderByOption(priceLow, priceHigh, productName, country, city, expiryDateEarliest, expiryDateLatest, sellerName, sellerType) {
       if (priceLow) {
         this.orderByOption = "Price Low"
       } else if (priceHigh) {
@@ -227,6 +234,8 @@ export default {
         this.orderByOption = "Expiry Date Latest"
       } else if (sellerName) {
         this.orderByOption = "Seller Name"
+      } else if (sellerType) {
+        this.orderByOption = "Seller Type"
       }
       this.orderCards();
     },
@@ -281,20 +290,20 @@ export default {
 
 <style scoped>
 
-#price-filtering-container, #date-filtering-container {
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-#filter-buttons-container, #price-and-date-filters {
-  /*margin: auto;*/
-  /*width: 50%;*/
-  text-align: center;
-}
-
 /* styling for price and date range input fields */
 .form-control {
-  width: 26%;
+  width: 28%;
+}
+
+#search-filter-ordering-options-container {
+  background-color: #f1f4f5;
+  border-radius: 20px;
+  margin-right: 10%;
+  margin-left: 10%;
+}
+
+#search-bar-container {
+  padding-top: 30px;
 }
 
 </style>
