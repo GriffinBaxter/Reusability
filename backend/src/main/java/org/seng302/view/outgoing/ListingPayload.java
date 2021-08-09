@@ -11,11 +11,15 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.*;
-import org.seng302.view.outgoing.InventoryItemPayload;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Listing Payload
+ *
+ * Listing payload to send to the API (outgoing).
+ */
 public class ListingPayload {
 
     private Integer id;
@@ -37,36 +41,9 @@ public class ListingPayload {
         List<ListingPayload> listingPayloads = new ArrayList<>();
         ListingPayload listingPayload;
         for (Listing listing: listings) {
-
-            Product product = listing.getInventoryItem().getProduct();
-            ProductPayload productPayload = new ProductPayload(
-                    product.getProductId(),
-                    product.getName(),
-                    product.getDescription(),
-                    product.getManufacturer(),
-                    product.getRecommendedRetailPrice(),
-                    product.getCreated(),
-                    product.getImages(),
-                    product.getBusiness().toBusinessPayload(),
-                    product.getBarcode()
-            );
-
-            InventoryItem inventoryItem = listing.getInventoryItem();
-            InventoryItemPayload inventoryItemPayload = new InventoryItemPayload(
-                    inventoryItem.getId(),
-                    productPayload,
-                    inventoryItem.getQuantity(),
-                    inventoryItem.getPricePerItem(),
-                    inventoryItem.getTotalPrice(),
-                    inventoryItem.getManufactured().toString(),
-                    inventoryItem.getSellBy().toString(),
-                    inventoryItem.getBestBefore().toString(),
-                    inventoryItem.getExpires().toString()
-            );
-
             listingPayload = new ListingPayload(
                     listing.getId(),
-                    inventoryItemPayload,
+                    listing.getInventoryItem().convertToPayload(),
                     listing.getQuantity(),
                     listing.getPrice(),
                     listing.getMoreInfo(),

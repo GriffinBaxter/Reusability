@@ -30,11 +30,9 @@
 
               <div class="col-lg-8">
                 <!-- Upload -->
-                <div class="row">
-                  <label for="imageUpload">Upload Image:</label>
+                  <button class="btn green-button" @click="onUploadClick">Upload image</button>
                   <input type="file" id="imageUpload" ref="image" @change="getImage" name="img"
                          accept="image/png, image/gif, image/jpeg">
-                </div>
                 <hr>
                 <!-- Images -->
                 <div class="row">
@@ -227,6 +225,10 @@ export default {
         this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
         console.log(error.message);
       })
+    },
+
+    onUploadClick() {
+      this.$refs.image.click();
     }
   },
   mounted() {

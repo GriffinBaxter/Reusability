@@ -98,6 +98,10 @@ input:focus, textarea:focus, button:focus, #create-product-button:focus, textare
   border: 1px solid #1EBABC;
 }
 
+input[type="file"] {
+  display: none;
+}
+
 /* Fix Footer */
 #main{
   min-height: calc(100vh - 72px); /* 100px is the height of Footer */

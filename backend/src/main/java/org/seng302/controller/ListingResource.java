@@ -1,12 +1,12 @@
 /**
  * Summary. This file contains the definition for the ListingResource.
- *
+ * <p>
  * Description. This file contains the defintion for the ListingResource.
  *
- * @link   team-400/src/main/java/org/seng302/business/listing/ListingResource
- * @file   This file contains the definition for ListingResource.
+ * @link team-400/src/main/java/org/seng302/business/listing/ListingResource
+ * @file This file contains the definition for ListingResource.
  * @author team-400.
- * @since  5.5.2021
+ * @since 5.5.2021
  */
 package org.seng302.controller;
 
@@ -22,7 +22,7 @@ import org.seng302.model.Listing;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.ListingCreationPayload;
-import org.seng302.view.outgoing.ListingPayload;
+import org.seng302.view.outgoing.*;
 import org.seng302.model.repository.ListingRepository;
 import org.seng302.model.repository.ProductRepository;
 
@@ -84,8 +84,7 @@ public class ListingResource {
                            InventoryItemRepository inventoryItemRepository,
                            ProductRepository productRepository,
                            BusinessRepository businessRepository,
-                           UserRepository userRepository)
-    {
+                           UserRepository userRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.productRepository = productRepository;
@@ -190,8 +189,8 @@ public class ListingResource {
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Listing Created successfully")
     public void createListing(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                @PathVariable Integer id,
-                @RequestBody ListingCreationPayload listingPayload) {
+            @PathVariable Integer id,
+            @RequestBody ListingCreationPayload listingPayload) {
         logger.debug("Listing payload received: {}", listingPayload);
         // Checks if User is logged in 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -207,7 +206,7 @@ public class ListingResource {
         if (inventoryItem.isEmpty()) {
             logger.error("Listing Creation Failure - 400 [BAD REQUEST] - Inventory Item at ID {} Not Found", listingPayload.getInventoryItemId());
             throw new ResponseStatusException(
-                     HttpStatus.BAD_REQUEST,
+                    HttpStatus.BAD_REQUEST,
                     "Inventory Item Not Found");
         }
 
@@ -220,12 +219,12 @@ public class ListingResource {
         // Creates Listing
         try {
             Listing listing = new Listing(
-                inventoryItem.get(),
-                quantity,
-                price,
-                moreInfo,
-                created,
-                closes
+                    inventoryItem.get(),
+                    quantity,
+                    price,
+                    moreInfo,
+                    created,
+                    closes
             );
             listingRepository.save(listing);
 
@@ -233,8 +232,8 @@ public class ListingResource {
         } catch (IllegalListingArgumentException e) {
             logger.error("Couldn't make listing {}", e.getMessage());
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Bad Request - Couldn't make listing"
+                    HttpStatus.BAD_REQUEST,
+                    "Bad Request - Couldn't make listing"
             );
         }
     }
@@ -277,8 +276,8 @@ public class ListingResource {
 
         int pageNo = PaginationUtils.parsePageNumber(page);
 
-        // Front-end displays 10 listings per page
-        int pageSize = 10;
+        // Front-end displays 9 listings per page
+        int pageSize = 9;
 
         Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
@@ -429,6 +428,54 @@ public class ListingResource {
     }
 
     /**
+     * Add/Remove given user from/to bookmark of given listing.
+     *
+     * @param sessionToken user's session token
+     * @param id           given listing id
+     * @return status of bookmark
+     */
+    @PutMapping("/listings/{id}/bookmark")
+    public BookmarkStatusPayload updateBookmarkStatus(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                                      @PathVariable String id) {
+        // 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User retrieved, ID: {}.", currentUser.getId());
+
+        // 406
+        Optional<Listing> optionalListing = listingRepository.findById(Integer.valueOf(id));
+        if (optionalListing.isEmpty()) {
+            logger.error("406 [NOT ACCEPTABLE] - Select listing ({}) not exist", id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Select listing not exist"
+            );
+        }
+
+        Listing listing = optionalListing.get();
+        String nameOfProduct = listing.getInventoryItem().getProduct().getName();
+        logger.debug("Listing {} retrieved, ID: {}.", nameOfProduct, listing.getId());
+
+        boolean currentStatus;
+        if (Boolean.TRUE.equals(listing.isBookmarked(currentUser))) {
+            // if marked before
+            listing.removeUserFromABookmark(currentUser);
+            currentStatus = false;
+            logger.info("Listing {} has been add to current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
+        } else {
+            // if not marked before
+            listing.addUserToANewBookmark(currentUser);
+            currentStatus = true;
+            logger.info("Listing {} has been remove from current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
+        }
+
+        // Save status change
+        listingRepository.save(listing);
+        logger.debug("Status ({}) change saved!", currentStatus);
+
+        return new BookmarkStatusPayload(currentStatus);
+    }
+
+    /**
      * This method parses the search criteria and then calls the needed methods to execute the "query".
      *
      * @param searchQuery Criteria to search for listings.
@@ -450,18 +497,25 @@ public class ListingResource {
     ) {
         BusinessType convertedBusinessType = toBusinessType(businessType);
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-        if (searchType.equals("businessName")) {
-            return listingRepository.findAllListingsByBusinessName(
-                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
-            );
-        } else if (searchType.equals("location")) {
-            return listingRepository.findAllListingsByLocation(
-                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
-            );
-        } else {
-            return listingRepository.findAllListingsByProductName(
-                    names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
-            );
+        switch (searchType) {
+            case "listingName":
+                return listingRepository.findAllListingsByProductName(
+                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                );
+            case "businessName":
+                return listingRepository.findAllListingsByBusinessName(
+                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                );
+            case "location":
+                return listingRepository.findAllListingsByLocation(
+                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                );
+            default:
+                logger.error("400 [BAD REQUEST] - {} is not a valid search type parameter", searchType);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "searchType Field invalid"
+                );
         }
     }
 

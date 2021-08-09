@@ -5,6 +5,8 @@
       <Navbar/>
 
       <!-- TODO: make this a separate component once finished  -->
+      <!--          <BrowseListingsSearch  @requestListings="requestListings"/>
+    -->
 
       <!--------------------------------------------  Searching, ordering, filtering   -------------------------------->
       <div id="search-filter-ordering-options-container">
@@ -237,10 +239,11 @@ import Navbar from "../components/main/Navbar";
 import Footer from "../components/main/Footer";
 import BrowseListingCard from "../components/listing/BrowseListingCard";
 import Api from "../Api"
+import BrowseListingsSearch from '../components/listing/BrowseListingsSearch';
 
 export default {
   name: "Listings",
-  components: {Footer, Navbar, BrowseListingCard},
+  components: {Footer, Navbar, BrowseListingCard, BrowseListingsSearch},
   data() {
     return {
       // Array that stores all retrieved listings
@@ -314,14 +317,31 @@ export default {
 
     },
   },
-  async mounted() {
 
-    await Api.searchListings('a', 'businessName', 'expiryDateASC', '0', 'RETAIL_TRADE', '0.00', '10000.00', '2021-05-15T00:00', '2022-01-01T00:00').then((response) => {
+  async requestListings() {
+
+    const searchQuery = this.$route.query.searchQuery || '';
+    const searchType = this.$route.query.searchType || '';
+    const orderBy = this.$route.query.orderBy || '';
+    const page = this.$route.query.page || '0';
+    const businessType = this.$route.query.businessType || '';
+    const minimumPrice = this.$route.query.minimumPrice || '';
+    const maximumPrice = this.$route.query.maximumPrice || '';
+    const fromDate = this.$route.query.fromDate || '';
+    const toDate = this.$route.query.toDate || '';
+
+    await Api.searchListings(
+        searchQuery, searchType, orderBy, page, businessType, minimumPrice, maximumPrice, fromDate, toDate
+    ).then((response) => {
       this.listingList = [...response.data];
-      console.log(this.listingList);
     }, (error) => {
       console.log(error)
     });
+
+  },
+  async mounted() {
+
+    await this.requestListings();
 
   }
 }

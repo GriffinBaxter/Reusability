@@ -44,8 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * ListingResource test class
@@ -204,6 +203,9 @@ class ListingResourceIntegrationTests {
             "\"totalBookmarks\":%d" +
             "}";
 
+    private final String expectedBookMarkStatusPayload = "{" +
+            "\"bookmarked\":%s" +
+            "}";
 
     @BeforeAll
     void setup() throws Exception {
@@ -348,7 +350,7 @@ class ListingResourceIntegrationTests {
      * @throws Exception thrown if there is an error with MockMVC.
      */
     @Test
-    void canCreateLisitngWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
+    void canCreateListingWhenBusinessExistsAndDataValidWithBusinessAdministratorUserCookie() throws Exception {
         given(userRepository.findById(3)).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
         given(productRepository.findProductByIdAndBusinessId(product.getProductId(), 1)).willReturn(Optional.ofNullable(product));
@@ -956,7 +958,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -999,7 +1001,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1044,7 +1046,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1075,7 +1077,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of();
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1209,7 +1211,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, convertedBusinessType, null, null, null, null
@@ -1256,7 +1258,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, convertedBusinessType, null, null, null, null
@@ -1303,7 +1305,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.business.address.country").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByBusinessName(
                 names, paging, convertedBusinessType,
@@ -1359,7 +1361,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.expires").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByLocation(
                 names, paging, convertedBusinessType,
@@ -1446,7 +1448,9 @@ class ListingResourceIntegrationTests {
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
-                listing.isBookmarked(user), listing.getTotalBookmarks());
+                listing.isBookmarked(anotherUser), listing.getTotalBookmarks());
+
+
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
@@ -1551,4 +1555,88 @@ class ListingResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 
+    /**
+     * Test that an OK status return and bookmark states will be change to true when user has not bookmarked given listing.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canChangeListingBookmarkState_WhenUserNotMarkedGivenListingBefore() throws Exception {
+        // given
+        expectedJSON = String.format(expectedBookMarkStatusPayload, "true");
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%s/bookmark", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Test that an OK status return and bookmark states will be change to false when user marked given listing.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canChangeListingBookmarkState_WhenUserMarkedGivenListing() throws Exception {
+        // given
+        expectedJSON = String.format(expectedBookMarkStatusPayload, "false");
+        listing.addUserToANewBookmark(user);
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%s/bookmark", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Test that an UNAUTHORIZED status return and bookmark states will not be change when user not login (or miss
+     * section token).
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canNotChangeListingBookmarkState_WhenUserNotLogin() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.empty());
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%s/bookmark", listing.getId())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Test that a NOT_ACCEPTABLE status return and bookmark states will not be change when given listing not exist.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canNotChangeListingBookmarkState_WhenListingNotExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%s/bookmark", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
 }

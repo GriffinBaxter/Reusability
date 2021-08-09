@@ -97,7 +97,8 @@
                     {{ errorsMessages.barcode }}
                   </div>
                   <br><br>
-                  Scan from image: <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
+                  <button class="btn green-button-transparent" @click="onUploadClick">Scan from image</button>
+                  <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
                                           name="img" accept="image/png, image/gif, image/jpeg">
                   <br><br>
                   <button id="autofill-button" type="button"
@@ -406,6 +407,10 @@ export default {
               }
           )
     },
+    
+    onUploadClick() {
+      this.$refs.image.click();
+    },
 
     /**
      * Retrieves the barcode number (EAN or UPC) from an uploaded image.
@@ -439,11 +444,15 @@ export default {
 
       OpenFoodFacts.retrieveProductByBarcode(this.newProduct.data.barcode).then((result) => {
         if (result.data.status === 1) {
+          let quantity = ""
+          if (result.data.product.quantity !== undefined) {
+            quantity = " " + result.data.product.quantity;
+          }
           if (
               (outerThis.newProduct.data.name === "" || outerThis.newProduct.data.name == null) &&
               result.data.product.product_name !== undefined && result.data.product.product_name !== ""
           ) {
-            outerThis.newProduct.data.name = result.data.product.product_name + " " + result.data.product.quantity;
+            outerThis.productName = result.data.product.product_name + quantity;
           }
           if (
               (outerThis.newProduct.data.manufacturer === "" || outerThis.newProduct.data.manufacturer == null) &&
