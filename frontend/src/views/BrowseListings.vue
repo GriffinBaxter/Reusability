@@ -49,22 +49,6 @@ export default {
   methods: {
 
     /**
-     * Order the cards
-     */
-    orderCards() {
-      const order = this.createOrderByParams()
-
-      // Checks the orderBy has changed to prevent NavigationDuplicated Errors
-      if (order !== this.orderBy) {
-        this.orderBy = order;
-        this.$parent.$emit("orderedCards", this.orderBy)
-      }
-
-      // now can use this.orderBy to request cards from backend
-
-    },
-
-    /**
      * Takes the search query params from the current URL and executes an API call to filter listings
      * @return {Promise<void>}
      */

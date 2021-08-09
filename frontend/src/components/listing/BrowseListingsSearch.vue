@@ -78,32 +78,6 @@
                 </label>
               </div>
             </div>
-<!--            <div class="btn-group radio-padding-left" role="group">-->
-
-<!--              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn d-inline-block"-->
-<!--                      data-bs-toggle="dropdown" aria-expanded="false">{{ businessTypeOptionText }}-->
-<!--              </button>-->
-
-<!--              <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">-->
-<!--                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"-->
-<!--                        @click="setBusinessTypeOption(true, false, false, false)">-->
-<!--                  Accommodation and Food Services-->
-<!--                </button>-->
-<!--                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"-->
-<!--                        @click="setBusinessTypeOption(false, true, false, false)">-->
-<!--                  Retail Trade-->
-<!--                </button>-->
-<!--                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"-->
-<!--                        @click="setBusinessTypeOption(false, false, true, false)">-->
-<!--                  Charitable Organisation-->
-<!--                </button>-->
-<!--                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"-->
-<!--                        @click="setBusinessTypeOption(false, false, false, true)">-->
-<!--                  Non-profit Organisation-->
-<!--                </button>-->
-
-<!--              </ul>-->
-<!--            </div>-->
 
             <div class="text-center" id="match-fields-clear-btn-container">
 
@@ -192,10 +166,10 @@
               <form>
                 <div class="form-group" id="price-filtering-container">
                   <label for="lowest-price-input" class="d-inline-block p-2">Price Range $ </label>
-                  <input type="number" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00">
+                  <input type="number" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00" v-bind="lowestPrice">
 
                   <label for="highest-price-input" class="d-inline-block p-2"> to $ </label>
-                  <input type="number" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00">
+                  <input type="number" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00" v-bind="highestPrice">
                 </div>
               </form>
             </div>
@@ -204,25 +178,19 @@
               <form>
                 <div class="form-group" id="date-filtering-container">
                   <label for="start-date-input" class="d-inline-block p-2">Closing Date </label>
-                  <input type="date" class="form-control filter-input d-inline-block" id="start-date-input">
+                  <input type="date" class="form-control filter-input d-inline-block" id="start-date-input" v-bind="startDate">
 
                   <label for="end-date-input" class="d-inline-block p-2"> to </label>
-                  <input type="date" class="form-control filter-input d-inline-block" id="end-date-input">
+                  <input type="date" class="form-control filter-input d-inline-block" id="end-date-input" v-bind="endDate">
                 </div>
               </form>
             </div>
 
             <div class="text-center" id="filter-buttons-container">
 
-              <!--------------------------------------- apply filters button -------------------------------------------->
-              <!--   TODO: add @click event               -->
-              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25">
-                Apply Filters
-              </button>
-
               <!--------------------------------------- clear filters button -------------------------------------------->
               <!--   TODO: add @click event               -->
-              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25">
+              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25" @click="clearFilters()">
                 Clear Filters
               </button>
 
@@ -238,6 +206,7 @@
 </template>
 
 <script>
+import compareAsc from 'date-fns/compareAsc'
 export default {
   name: "BrowseListingsSearch",
   data() {
@@ -246,7 +215,11 @@ export default {
       orderBy: this.$route.query["orderBy"] || "priceASC", // gets orderBy from URL or (if not there) sets to default
       orderByOptionText: "Price Low",
       businessTypeOption: null,
-      businessTypeOptionText: 'Business Type'
+      businessTypeOptionText: 'Business Type',
+      lowestPrice: null,
+      highestPrice: null,
+      startDate: null,
+      endDate: null
     }
   },
   methods: {
@@ -286,15 +259,19 @@ export default {
      * Search button is clicked and query/filters for listings search are executed.
      */
     searchClicked() {
+
+      this.validatePriceInput(this.lowestPrice, this.highestPrice);
+      this.validateDateInput(this.startDate, this.endDate);
+
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
       const orderBy = this.orderByOption;
       const page = 0;
       const businessType = this.getSelectedRadio('business');
-      const minimumPrice = null;
-      const maximumPrice = null;
-      const fromDate = null;
-      const toDate = null;
+      const minimumPrice = this.lowestPrice;
+      const maximumPrice = this.highestPrice;
+      const fromDate = this.startDate;
+      const toDate = this.endDate;
 
       this.$router.push({ path: '/browseListings', query: {
         searchQuery: searchQuery, searchType: searchType,
@@ -354,24 +331,50 @@ export default {
     },
 
     /**
-     * Sets the business type option.
+     * Order the cards
      */
-    setBusinessTypeOption(acommodation, retail, charitable, nonProfit) {
-      if (acommodation) {
-        this.businessTypeOption = 'ACCOMMODATION_AND_FOOD_SERVICES';
-        this.businessTypeOptionText = 'Accommodation and Food Services';
-      } else if (retail) {
-        this.businessTypeOption = 'RETAIL_TRADE';
-        this.businessTypeOptionText = 'Retail Trade';
-      } else if (charitable) {
-        this.businessTypeOption = 'CHARITABLE_ORGANISATION';
-        this.businessTypeOptionText = 'Charitable Organisation';
-      } else if (nonProfit) {
-        this.businessTypeOption = 'NON_PROFIT_ORGANISATION';
-        this.businessTypeOptionText = 'Non-profit Organisation';
+    orderCards() {
+      const order = this.createOrderByParams()
+
+      // Checks the orderBy has changed to prevent NavigationDuplicated Errors
+      if (order !== this.orderBy) {
+        this.orderBy = order;
+        this.$parent.$emit("orderedCards", this.orderBy)
       }
-      this.orderCards();
-    }
+
+      // now can use this.orderBy to request cards from backend
+
+    },
+
+    /**
+     * Resets the filters to their default values
+     */
+    clearFilters() {
+
+    },
+
+    /**
+     * Checks that the price entered is a positive number.
+     * If both prices are provided, then the first must be smaller than the second and non-negative
+     * If only one is provided, it must be non-negative.
+     * Returns true in these cases, otherwise false.
+     */
+    validatePriceInput(firstPrice, secondPrice) {
+      if (firstPrice && secondPrice) {
+        return (firstPrice >= 0 && secondPrice > secondPrice)
+      } else if (firstPrice) {
+        return (firstPrice >= 0)
+      } else if (secondPrice) {
+        return (secondPrice >= 0)
+      }
+    },
+
+    validateDateInput(firstDate, secondDate) {
+      if (firstDate && secondDate) {
+        const outcome = compareAsc(firstDate, secondDate)
+        return (outcome === -1) // -1 if the first date is before the second
+      }
+    },
 
   }
 }
