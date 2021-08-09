@@ -239,52 +239,6 @@ public class ListingResource {
     }
 
     /**
-     * Get method for retrieving a specific listing.
-     * @param businessId Integer Id of business
-     * @param listingId Integer Id of listing
-     * @return Listing payload if it exists
-     */
-    @GetMapping("/businesses/{businessId}/listings/{listingId}")
-    public ListingPayload retrieveListing(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-            @PathVariable Integer businessId,
-            @PathVariable Integer listingId
-    ) {
-        logger.debug("Business sale listing retrieval request received with business ID {}, listing ID {}", businessId, listingId);
-
-        // Checks user logged in - 401
-        Authorization.getUserVerifySession(sessionToken, userRepository);
-        // Verify business exists
-        Authorization.verifyBusinessExists(businessId, businessRepository);
-        // Retrieve listing from database
-        Optional<Listing> listing = listingRepository.findListingByBusinessIdAndId(businessId, listingId);
-
-        if (listing.isEmpty()) {
-            logger.error("Listing Retrieval Failure - 400 [BAD REQUEST] - Sale listing at ID {} Not Found", listingId);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Sale Listing Not Found");
-        }
-
-        Listing returnedListing = listing.get();
-
-        logger.info("Listing Retrieval Success - 200 [OK] -  Listing retrieved with ID {} and business ID {}", listingId, businessId);
-
-        ListingPayload listingPayload = new ListingPayload(
-                returnedListing.getId(),
-                InventoryItemResource.convertToPayload(returnedListing.getInventoryItem()),
-                returnedListing.getQuantity(),
-                returnedListing.getPrice(),
-                returnedListing.getMoreInfo(),
-                returnedListing.getCreated().toString(),
-                returnedListing.getCloses().toString());
-
-        logger.debug("Listing retrieved for business with ID {}: {}", businessId, listing);
-
-        return listingPayload;
-    }
-
-    /**
      * Search for listings with filtering and ordering.
      * Returns paginated and ordered results based on input query params.
      *

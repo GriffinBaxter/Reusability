@@ -1448,7 +1448,9 @@ class ListingResourceIntegrationTests {
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
-                listing.isBookmarked(user), listing.getTotalBookmarks());
+                listing.isBookmarked(anotherUser), listing.getTotalBookmarks());
+
+
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
