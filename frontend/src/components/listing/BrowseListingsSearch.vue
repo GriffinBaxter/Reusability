@@ -21,63 +21,95 @@
               <label class="d-inline-block fs-5 my-2 text-center">Match Fields</label>
             </div>
 
-            <!--  match product name -->
-            <div class="form-check radio-padding-left">
-              <input class="form-check-input" type="radio" value="" id="radio-product-name">
-              <label class="form-check-label" for="radio-product-name">
-                Product Name
-              </label>
+            <div class="match-radio-container py-2">
+              <!--  match product name -->
+              <div class="form-check radio-padding-left">
+                <input class="form-check-input" type="radio" name="match-radios" value="listingName" id="radio-product-name">
+                <label class="form-check-label" for="radio-product-name">
+                  Product Name
+                </label>
+              </div>
+
+              <!--  match seller location -->
+              <div class="form-check radio-padding-left">
+                <input class="form-check-input " type="radio" name="match-radios" value="location" id="radio-seller-location">
+                <label class="form-check-label" for="radio-seller-location">
+                  Business Location
+                </label>
+              </div>
+
+              <!--  match seller name -->
+              <div class="form-check radio-padding-left">
+                <input class="form-check-input " type="radio" name="match-radios" value="businessName" id="radio-seller-name">
+                <label class="form-check-label" for="radio-seller-name">
+                  Business Name
+                </label>
+              </div>
             </div>
-
-            <!--  match seller location -->
-            <div class="form-check radio-padding-left">
-              <input class="form-check-input " type="radio" value="" id="radio-seller-location">
-              <label class="form-check-label" for="radio-seller-location">
-                Business Location
-              </label>
-            </div>
-
-            <!--  match seller name -->
-            <div class="form-check radio-padding-left">
-              <input class="form-check-input " type="radio" value="" id="radio-seller-name">
-              <label class="form-check-label" for="radio-seller-name">
-                Business Name
-              </label>
-            </div>
-
-            <!--  match seller type -->
-            <div class="btn-group radio-padding-left" role="group">
-
-              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn d-inline-block"
-                      data-bs-toggle="dropdown" aria-expanded="false">{{ matchBusinessTypeOption }}
+            <div class="text-center">
+              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50" @click="clearRadios('match')">
+                Clear Field
               </button>
-
-              <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                        @click="setOrderByOption(true, false, false, false)">
-                  Accommodation and Food Services
-                </button>
-                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                        @click="setOrderByOption(false, true, false, false)">
-                  Retail Trade
-                </button>
-                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                        @click="setOrderByOption(false, false, true, false)">
-                  Charitable Organisation
-                </button>
-                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                        @click="setOrderByOption(false, false, false, true)">
-                  Non-profit Organisation
-                </button>
-
-              </ul>
             </div>
+            <!--  match seller type -->
+            <div class="business-radio-container my-3 py-2">
+              <div class="form-check radio-padding-left">
+                <input class="form-check-input" type="radio" name="business-type-radios" value="ACCOMMODATION_AND_FOOD_SERVICES" id="radio-accommodation">
+                <label class="form-check-label" for="radio-accommodation">
+                  Accommodation and Food Services
+                </label>
+              </div>
+              <div class="form-check radio-padding-left">
+                <input class="form-check-input " type="radio" name="business-type-radios" value="RETAIL_TRADE" id="radio-retail">
+                <label class="form-check-label" for="radio-retail">
+                  Retail Trade
+                </label>
+              </div>
+              <div class="form-check radio-padding-left">
+                <input class="form-check-input " type="radio" name="business-type-radios" value="CHARITABLE_ORGANISATION" id="radio-charitable">
+                <label class="form-check-label" for="radio-charitable">
+                  Charitable Organisation
+                </label>
+              </div>
+              <div class="form-check radio-padding-left">
+                <input class="form-check-input " type="radio" name="business-type-radios" value="NON_PROFIT_ORGANISATION" id="radio-non-profit">
+                <label class="form-check-label" for="radio-non-profit">
+                  Non-profit Organisation
+                </label>
+              </div>
+            </div>
+<!--            <div class="btn-group radio-padding-left" role="group">-->
+
+<!--              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn d-inline-block"-->
+<!--                      data-bs-toggle="dropdown" aria-expanded="false">{{ businessTypeOptionText }}-->
+<!--              </button>-->
+
+<!--              <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">-->
+<!--                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"-->
+<!--                        @click="setBusinessTypeOption(true, false, false, false)">-->
+<!--                  Accommodation and Food Services-->
+<!--                </button>-->
+<!--                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"-->
+<!--                        @click="setBusinessTypeOption(false, true, false, false)">-->
+<!--                  Retail Trade-->
+<!--                </button>-->
+<!--                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"-->
+<!--                        @click="setBusinessTypeOption(false, false, true, false)">-->
+<!--                  Charitable Organisation-->
+<!--                </button>-->
+<!--                <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"-->
+<!--                        @click="setBusinessTypeOption(false, false, false, true)">-->
+<!--                  Non-profit Organisation-->
+<!--                </button>-->
+
+<!--              </ul>-->
+<!--            </div>-->
 
             <div class="text-center" id="match-fields-clear-btn-container">
 
               <!--------------------------------------- clear field match button -------------------------------------------->
               <!--   TODO: add @click event               -->
-              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50">
+              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50" @click="clearRadios('business')">
                 Clear Field
               </button>
 
@@ -213,7 +245,8 @@ export default {
       orderByOption: "priceASC",         // default
       orderBy: this.$route.query["orderBy"] || "priceASC", // gets orderBy from URL or (if not there) sets to default
       orderByOptionText: "Price Low",
-      matchBusinessTypeOption: "Business Type"
+      businessTypeOption: null,
+      businessTypeOptionText: 'Business Type'
     }
   },
   methods: {
@@ -227,14 +260,37 @@ export default {
       }
     },
     /**
+     * Finds the selected radio button
+     * @return The value of the selected radio button
+     */
+    getSelectedRadio(type) {
+      let radios;
+      if (type === 'match') {
+        radios = document.querySelectorAll("input[name='match-radios']");
+      } else if (type === 'business') {
+        radios = document.querySelectorAll("input[name='business-type-radios']");
+      }
+      let value;
+      for (const radio of radios) {
+        if (radio.checked) {
+          value = radio.value;
+        }
+      }
+
+      if (!value) {
+        return null
+      }
+      return value;
+    },
+    /**
      * Search button is clicked and query/filters for listings search are executed.
      */
     searchClicked() {
       const searchQuery = this.$refs.searchInput.value;
-      const searchType = 'listingName';
+      const searchType = this.getSelectedRadio('match');
       const orderBy = this.orderByOption;
       const page = 0;
-      const businessType = null;
+      const businessType = this.getSelectedRadio('business');
       const minimumPrice = null;
       const maximumPrice = null;
       const fromDate = null;
@@ -246,9 +302,25 @@ export default {
           minimumPrice: minimumPrice, maximumPrice: maximumPrice,
           fromDate: fromDate, toDate: toDate
       }});
+
+
+
       this.$emit('requestListings', searchQuery);
     },
-
+    /**
+     * Clears the radio buttons used to select the match fields
+     */
+    clearRadios(type) {
+      let radios;
+      if (type === 'match') {
+        radios = document.querySelectorAll("input[name='match-radios']");
+      } else if (type === 'business') {
+        radios = document.querySelectorAll("input[name='business-type-radios']");
+      }
+      radios.forEach(function(radio) {
+        radio.checked = false
+      })
+    },
     /**
      * Sets the order by option
      */
@@ -281,6 +353,26 @@ export default {
       this.orderCards();
     },
 
+    /**
+     * Sets the business type option.
+     */
+    setBusinessTypeOption(acommodation, retail, charitable, nonProfit) {
+      if (acommodation) {
+        this.businessTypeOption = 'ACCOMMODATION_AND_FOOD_SERVICES';
+        this.businessTypeOptionText = 'Accommodation and Food Services';
+      } else if (retail) {
+        this.businessTypeOption = 'RETAIL_TRADE';
+        this.businessTypeOptionText = 'Retail Trade';
+      } else if (charitable) {
+        this.businessTypeOption = 'CHARITABLE_ORGANISATION';
+        this.businessTypeOptionText = 'Charitable Organisation';
+      } else if (nonProfit) {
+        this.businessTypeOption = 'NON_PROFIT_ORGANISATION';
+        this.businessTypeOptionText = 'Non-profit Organisation';
+      }
+      this.orderCards();
+    }
+
   }
 }
 </script>
@@ -297,6 +389,11 @@ export default {
   border-radius: 20px;
   margin-right: 10%;
   margin-left: 10%;
+}
+
+.match-radio-container, .business-radio-container {
+  background-color: white;
+  border-radius: 10px;
 }
 
 #search-bar-container {
