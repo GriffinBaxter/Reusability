@@ -80,12 +80,6 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     private Listing listing;
     private Listing listing2;
 
-    private final String listingPayload = "{\"inventoryItemId\":\"%s\"," +
-            "\"quantity\":%d," +
-            "\"price\":%.1f," +
-            "\"moreInfo\":\"%s\"," +
-            "\"closes\":\"%s\"}";
-
     private String expectedJSON;
 
     private final String expectedListingJSON =

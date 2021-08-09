@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "ec35a5a8-2752-49df-b98f-60447ca00cb4",
+		"name": "Put for bookmark",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"emailUSER@email.com\",\n  \"password\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "like",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userId\": 4\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/listings/1/bookmark",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"listings",
+						"1",
+						"bookmark"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dislike",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userId\": 4\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/listings/1/bookmark",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"listings",
+						"1",
+						"bookmark"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

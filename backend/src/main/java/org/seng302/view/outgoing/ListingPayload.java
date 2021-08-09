@@ -11,11 +11,15 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.*;
-import org.seng302.view.outgoing.InventoryItemPayload;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Listing Payload
+ *
+ * Listing payload to send to the API (outgoing).
+ */
 public class ListingPayload {
 
     private Integer id;
