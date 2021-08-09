@@ -14,7 +14,6 @@ describe("Testing the 'Go to Business Profile' button", () => {
     let $route;
     let goToButton;
 
-
     beforeEach(() => {
         $router = {
             push: jest.fn()

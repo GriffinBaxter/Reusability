@@ -79,11 +79,11 @@
 
           <!-- Return to sales listings button-->
           <div class="return-button-wrapper w-100">
-            <button class="btn btn-lg green-button mb-2 mt-2 w-100" @click="return_sales()" id="return-button">Return to Sale Listings</button>
+            <button class="btn btn-lg green-button mt-2 w-100" v-if="fromListings" @click="returnToSales()" id="return-button">Return to Sale Listings</button>
           </div>
           <!-- Go to business profile button -->
           <div class="goto-button-wrapper w-100">
-            <button class="btn btn-lg green-button w-100" @click="goToBusiness()" id="go-to-button">Go to Business Profile</button>
+            <button class="btn btn-lg green-button mt-2 w-100" @click="goToBusiness()" id="go-to-button">Go to Business Profile</button>
           </div>
 
         </div>
@@ -95,119 +95,139 @@
 </template>
 
 <script>
-  import Navbar from "../components/main/Navbar";
-  import Footer from "../components/main/Footer"
-  import DefaultImage from "../../public/default-product.jpg"
-  import Api from "../Api";
+import Navbar from "../components/main/Navbar";
+import Footer from "../components/main/Footer"
+import DefaultImage from "../../public/default-product.jpg"
+import Api from "../Api";
 
-  export default {
-    name: "SaleListing",
-    components: {
-      Navbar,
-      Footer
-    },
-    data() {
-      return {
-        mainImageIndex: 0,
-        carouselStartIndex: 0,
-        carouselNumImages: 3,
-        saleImages: [
-          {
-            thumbnailFilename: "",
-            filename: ""
-          },
-          {
-            thumbnailFilename: "",
-            filename: ""
-          },
-          {
-            thumbnailFilename: "",
-            filename: ""
-          },
-          {
-            thumbnailFilename: "",
-            filename: ""
-          },
-          {
-            thumbnailFilename: "",
-            filename: ""
-          }
-        ],
-      }
-    },
-    methods: {
-      /**
-       * Retrieves the filename (url path) for the currently chosen image for the listing.
-       *
-       * @return {string|*} Returns the URL to the image source (either backend or default image if not found).
-       */
-      getMainImage() {
-        if (this.mainImageIndex < this.saleImages.length && this.saleImages[this.mainImageIndex].filename) {
-          return Api.getServerResourcePath(this.saleImages[this.mainImageIndex].filename);
+export default {
+  name: "SaleListing",
+  components: {
+    Navbar,
+    Footer
+  },
+  data() {
+    return {
+      mainImageIndex: 0,
+      carouselStartIndex: 0,
+      carouselNumImages: 3,
+      saleImages: [
+        {
+          thumbnailFilename: "",
+          filename: ""
+        },
+        {
+          thumbnailFilename: "",
+          filename: ""
+        },
+        {
+          thumbnailFilename: "",
+          filename: ""
+        },
+        {
+          thumbnailFilename: "",
+          filename: ""
+        },
+        {
+          thumbnailFilename: "",
+          filename: ""
         }
-        return DefaultImage;
-      },
-      /**
-       * Retrieves the carousel (thumbnail) image for a given index.
-       *
-       * @param index Index of the image in the salesImages array.
-       * @return {string|*} Returns the URL to the image source (either backend or default image if not found).
-       */
-      getCarouselImage(index) {
-        if (this.saleImages > index && this.saleImages[index].thumbnailFilename) {
-          return Api.getServerResourcePath(this.saleImages[index].thumbnailFilename);
-        }
-        return DefaultImage;
-      },
-      /**
-       * Retrives the list of image indexes visible.
-       *
-       * @return {number[]} Returns a list of the images currently visible in the carousel (3 images)
-       */
-      getVisibleImages() {
-        let visibleImageIndices = [];
-        for (let i = this.carouselStartIndex; i<this.carouselStartIndex+this.carouselNumImages; i++) {
-          visibleImageIndices.push(this.boundIndex(i, this.saleImages.length));
-        }
-        return visibleImageIndices;
-      },
-      /**
-       * Bounds an index to the possible values within the given max length.
-       *
-       * @param index Index we want to bound.
-       * @param maxLength Max length of the list.
-       * @return {number} Returns the index within the bounds.
-       */
-      boundIndex(index, maxLength) {
-        let newIndex = index;
-        while (newIndex < 0) {
-          newIndex += maxLength;
-        }
-        return newIndex % maxLength;
-      },
-      /**
-       * Goes to the next iamge on the carousel.
-       */
-      nextImage() {
-        this.carouselStartIndex = this.boundIndex(this.carouselStartIndex+1, this.saleImages.length);
-      },
-      /**
-       * Goes to the previous iamge on the carousel.
-       */
-      previousImage() {
-        this.carouselStartIndex = this.boundIndex(this.carouselStartIndex-1, this.saleImages.length);
-      },
-      /**
-       * Redirect the user to the page for the profile of the business who listed the current sale.
-       */
-      goToBusiness() {
-        const businessId = this.$route.params.businessId;
-        this.$router.push({
-          path: `/businessProfile/${businessId}`
-        });
-      }
+      ],
+      // keep track of if user came from full listings page so they can return.
+      fromListings: false
     }
+  },
+  methods: {
+    /**
+     * Retrieves the filename (url path) for the currently chosen image for the listing.
+     *
+     * @return {string|*} Returns the URL to the image source (either backend or default image if not found).
+     */
+    getMainImage() {
+      if (this.mainImageIndex < this.saleImages.length && this.saleImages[this.mainImageIndex].filename) {
+        return Api.getServerResourcePath(this.saleImages[this.mainImageIndex].filename);
+      }
+      return DefaultImage;
+    },
+    /**
+     * Retrieves the carousel (thumbnail) image for a given index.
+     *
+     * @param index Index of the image in the salesImages array.
+     * @return {string|*} Returns the URL to the image source (either backend or default image if not found).
+     */
+    getCarouselImage(index) {
+      if (this.saleImages > index && this.saleImages[index].thumbnailFilename) {
+        return Api.getServerResourcePath(this.saleImages[index].thumbnailFilename);
+      }
+      return DefaultImage;
+    },
+    /**
+     * Retrives the list of image indexes visible.
+     *
+     * @return {number[]} Returns a list of the images currently visible in the carousel (3 images)
+     */
+    getVisibleImages() {
+      let visibleImageIndices = [];
+      for (let i = this.carouselStartIndex; i < this.carouselStartIndex + this.carouselNumImages; i++) {
+        visibleImageIndices.push(this.boundIndex(i, this.saleImages.length));
+      }
+      return visibleImageIndices;
+    },
+    /**
+     * Bounds an index to the possible values within the given max length.
+     *
+     * @param index Index we want to bound.
+     * @param maxLength Max length of the list.
+     * @return {number} Returns the index within the bounds.
+     */
+    boundIndex(index, maxLength) {
+      let newIndex = index;
+      while (newIndex < 0) {
+        newIndex += maxLength;
+      }
+      return newIndex % maxLength;
+    },
+    /**
+     * Goes to the next iamge on the carousel.
+     */
+    nextImage() {
+      this.carouselStartIndex = this.boundIndex(this.carouselStartIndex + 1, this.saleImages.length);
+    },
+    /**
+     * Goes to the previous iamge on the carousel.
+     */
+    previousImage() {
+      this.carouselStartIndex = this.boundIndex(this.carouselStartIndex - 1, this.saleImages.length);
+    },
+    /**
+     * Redirect the user to the page for the profile of the business who listed the current sale.
+     */
+    goToBusiness() {
+      const businessId = this.$route.params.businessId;
+      this.$router.push({
+        path: `/businessProfile/${businessId}`
+      });
+    },
+    /**
+     * Redirect the user back to the full sale listings page.
+     */
+    returnToSales() {
+      this.$router.back();
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from a page which contains listings then the return to listings button component
+      // should be rendered.
+      if (from.name === 'BrowseListings') {
+        vm.fromListings = true;
+      } else {
+        vm.fromListings = false;
+      }
+      next();
+    });
   }
+}
 </script>
 
 <style scoped>
