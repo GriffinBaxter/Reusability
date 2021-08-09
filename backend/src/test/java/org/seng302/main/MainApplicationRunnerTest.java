@@ -133,12 +133,12 @@ class MainApplicationRunnerTest {
     @Test
     void testCheckNotificationsWillCreateNotificationForCardExpiredInNext24h() throws IllegalMarketplaceCardArgumentException {
         // Given
-        givenMessage = "Your card (Hayley's Birthday) will be expired in 0h 59m 59s.";
+        givenMessage = "Your card (Hayley's Birthday) will be expired in 1h.";
         marketplaceCard = new MarketplaceCard(
                 user.getId(),
                 user,
                 Section.FORSALE,
-                LocalDateTime.now().plusHours(1).minusWeeks(2), // expired 1 hour later
+                LocalDateTime.now().plusHours(1).plusMinutes(30).minusWeeks(2), // expired 1 hour later
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!");
         entityManager.persist(marketplaceCard);
@@ -160,12 +160,12 @@ class MainApplicationRunnerTest {
     @Test
     void testCheckNotificationsWillUpdateNotificationForCardExpiredInNext24h() throws IllegalMarketplaceCardArgumentException {
         // Given
-        givenMessage = "Your card (Hayley's Birthday) will be expired in 0h 59m 59s.";
+        givenMessage = "Your card (Hayley's Birthday) will be expired in 1h.";
         marketplaceCard = new MarketplaceCard(
                 user.getId(),
                 user,
                 Section.FORSALE,
-                LocalDateTime.now().plusHours(1).minusWeeks(2), // expired 1 hour later
+                LocalDateTime.now().plusHours(1).plusMinutes(30).minusWeeks(2), // expired 1 hour later
                 "Hayley's Birthday",
                 "Come join Hayley and help her celebrate her birthday!");
         entityManager.persist(marketplaceCard);
@@ -194,7 +194,7 @@ class MainApplicationRunnerTest {
     @Test
     void testCheckNotificationsWillCreateNotificationForCardExpiredLessThen24h() throws IllegalMarketplaceCardArgumentException {
         // Given
-        givenMessage = "Your card (Hayley's Birthday) expired 5h 0m 1s ago and will soon be deleted.";
+        givenMessage = "Your card (Hayley's Birthday) expired 5h ago and will soon be deleted.";
         marketplaceCard = new MarketplaceCard(
                 user.getId(),
                 user,
@@ -221,7 +221,7 @@ class MainApplicationRunnerTest {
     @Test
     void testCheckNotificationsWillUpdateNotificationForCardExpiredLessThen24h() throws IllegalMarketplaceCardArgumentException {
         // Given
-        givenMessage = "Your card (Hayley's Birthday) expired 5h 0m 1s ago and will soon be deleted.";
+        givenMessage = "Your card (Hayley's Birthday) expired 5h ago and will soon be deleted.";
         marketplaceCard = new MarketplaceCard(
                 user.getId(),
                 user,

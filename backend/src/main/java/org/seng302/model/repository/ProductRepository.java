@@ -43,6 +43,15 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     Optional<Product> findProductByIdAndBusinessId(String id, Integer businessId);
 
     /**
+     * Finds a product with the given barcode and business ID if one exists.
+     *
+     * @param barcode A barcode
+     * @param businessId A business ID
+     * @return A product with the given barcode and business ID.
+     */
+    Optional<Product> findProductByBarcodeAndBusinessId(String barcode, Integer businessId);
+
+    /**
      * Deletes any products with a matching product ID and a business ID.
      * @param id The ID of the product
      * @param businessId The ID of the business
