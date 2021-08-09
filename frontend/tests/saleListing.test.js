@@ -291,8 +291,219 @@ describe("Tests for getVisibleImages function", () => {
     })
 })
 
-describe("Tests for boundIndex function", () => {})
+describe("Tests for boundIndex function", () => {
 
-describe("Tests for nextImage function", () => {})
+    test("Testing boundIndex(), with negative random index", async () => {
+        wrapper = shallowMount(listing, {localVue});
+        expect(wrapper.vm.boundIndex(-5, 5)).toStrictEqual(0);
+    });
 
-describe("Tests for previousImage function", () => {})
+    test("Testing boundIndex(), with -1 index", async () => {
+        wrapper = shallowMount(listing, {localVue});
+        expect(wrapper.vm.boundIndex(-1, 4)).toStrictEqual(3);
+    });
+
+    test("Testing boundIndex(), with 0 index", async () => {
+        wrapper = shallowMount(listing, {localVue});
+        expect(wrapper.vm.boundIndex(0, 5)).toStrictEqual(0);
+    });
+
+    test("Testing boundIndex(), with 1 index", async () => {
+        wrapper = shallowMount(listing, {localVue});
+        expect(wrapper.vm.boundIndex(1, 7)).toStrictEqual(1);
+    });
+
+    test("Testing boundIndex(), with n-1 index", async () => {
+        wrapper = shallowMount(listing, {localVue});
+        expect(wrapper.vm.boundIndex(17, 18)).toStrictEqual(17);
+    });
+
+    test("Testing boundIndex(), with n index", async () => {
+        wrapper = shallowMount(listing, {localVue});
+        expect(wrapper.vm.boundIndex(30, 30)).toStrictEqual(0);
+    });
+
+    test("Testing boundIndex(), with n+1 index", async () => {
+        wrapper = shallowMount(listing, {localVue});
+        expect(wrapper.vm.boundIndex(6, 5)).toStrictEqual(1);
+    });
+
+    test("Testing boundIndex(), with n+13 index", async () => {
+        wrapper = shallowMount(listing, {localVue});
+        expect(wrapper.vm.boundIndex(18, 5)).toStrictEqual(3);
+    });
+})
+
+describe("Tests for nextImage function", () => {
+
+    test("Testing that we get the next image at 0 index in 5 n array", async () => {
+        wrapper = shallowMount(listing, {
+            localVue,
+            data() {
+                return {
+                    carouselStartIndex: 0,
+                    saleImages: [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                    ]
+                }
+            }
+        })
+        wrapper.vm.nextImage();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(1);
+    })
+
+    test("Testing that we get the next image at 4 index in 5 n array", async () => {
+        wrapper = shallowMount(listing, {
+            localVue,
+            data() {
+                return {
+                    carouselStartIndex: 4,
+                    saleImages: [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                    ]
+                }
+            }
+        })
+        wrapper.vm.nextImage();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(0);
+    })
+
+    test("Testing that we get the next image at 5 index in 5 n array", async () => {
+        wrapper = shallowMount(listing, {
+            localVue,
+            data() {
+                return {
+                    carouselStartIndex: 5,
+                    saleImages: [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                    ]
+                }
+            }
+        })
+        wrapper.vm.nextImage();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(1);
+    })
+
+    test("Testing that we get the next image at 6 index in 5 n array", async () => {
+        wrapper = shallowMount(listing, {
+            localVue,
+            data() {
+                return {
+                    carouselStartIndex: 6,
+                    saleImages: [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                    ]
+                }
+            }
+        })
+        wrapper.vm.nextImage();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(2);
+    })
+})
+
+describe("Tests for previousImage function", () => {
+
+    test("Testing that we get the previous image at 0 index in 5 n array", async () => {
+        wrapper = shallowMount(listing, {
+            localVue,
+            data() {
+                return {
+                    carouselStartIndex: 0,
+                    saleImages: [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                    ]
+                }
+            }
+        })
+        wrapper.vm.previousImage();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(4);
+    })
+
+    test("Testing that we get the previous image at 4 index in 5 n array", async () => {
+        wrapper = shallowMount(listing, {
+            localVue,
+            data() {
+                return {
+                    carouselStartIndex: 4,
+                    saleImages: [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                    ]
+                }
+            }
+        })
+        wrapper.vm.previousImage();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(3);
+    })
+
+    test("Testing that we get the previous image at 5 index in 5 n array", async () => {
+        wrapper = shallowMount(listing, {
+            localVue,
+            data() {
+                return {
+                    carouselStartIndex: 5,
+                    saleImages: [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                    ]
+                }
+            }
+        })
+        wrapper.vm.previousImage();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(4);
+    })
+
+    test("Testing that we get the previous image at 6 index in 5 n array", async () => {
+        wrapper = shallowMount(listing, {
+            localVue,
+            data() {
+                return {
+                    carouselStartIndex: 6,
+                    saleImages: [
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                    ]
+                }
+            }
+        })
+        wrapper.vm.previousImage();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(0);
+    })
+})
