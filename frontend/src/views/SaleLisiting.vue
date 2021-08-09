@@ -86,8 +86,8 @@
 </template>
 
 <script>
-  import Navbar from "@/components/main/Navbar";
-  import Footer from "@/components/main/Footer"
+  import Navbar from "../components/main/Navbar";
+  import Footer from "../components/main/Footer"
   import DefaultImage from "../../public/default-product.jpg"
   import Api from "../Api";
 
@@ -130,10 +130,10 @@
       /**
        * Retrieves the filename (url path) for the currently chosen image for the listing.
        *
-       * @return {string|*} Returns the URL to the image source (either backend or default image if not found).
+       * @return {string} Returns the URL to the image source (either backend or default image if not found).
        */
       getMainImage() {
-        if (this.mainImageIndex < this.saleImages.length && this.saleImages[this.mainImageIndex].filename) {
+        if (this.mainImageIndex < this.saleImages.length && this.mainImageIndex >= 0 && this.saleImages[this.mainImageIndex].filename) {
           return Api.getServerResourcePath(this.saleImages[this.mainImageIndex].filename);
         }
         return DefaultImage;
@@ -142,10 +142,10 @@
        * Retrieves the carousel (thumbnail) image for a given index.
        *
        * @param index Index of the image in the salesImages array.
-       * @return {string|*} Returns the URL to the image source (either backend or default image if not found).
+       * @return {string} Returns the URL to the image source (either backend or default image if not found).
        */
       getCarouselImage(index) {
-        if (this.saleImages > index && this.saleImages[index].thumbnailFilename) {
+        if (this.saleImages.length > index && index >= 0 && this.saleImages[index].thumbnailFilename) {
           return Api.getServerResourcePath(this.saleImages[index].thumbnailFilename);
         }
         return DefaultImage;
@@ -306,6 +306,7 @@
     max-width: 90%;
   }
 
+  /* These two classes are used, but are not being picked up... :*( */
   .sale-carousel-image {
     width: 100%;
     height: auto;
