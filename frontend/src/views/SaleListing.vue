@@ -3,9 +3,9 @@
     <Navbar />
 
     <main class="listing-wrapper">
-
         <!-- Listing header -->
         <div class="title-content">
+          <!-- Product info -->
           <div id="Listing-name">Product Name</div>
           <div class="listing-dates-wrapper">
             <h6>Listing Date: [Listing Date]</h6>
@@ -35,7 +35,7 @@
             </div>
           </div>
 
-          <!-- Bussiness information -->
+          <!-- Business information -->
           <div class="business-wrapper">
             <h5>Business Name</h5>
             <div class="business-address-wrapper">
@@ -77,6 +77,15 @@
             </div>
           </div>
 
+          <!-- Return to sales listings button-->
+          <div class="return-button-wrapper w-100">
+            <button class="btn btn-lg green-button mb-2 mt-2 w-100" @click="return_sales()" id="return-button">Return to Sale Listings</button>
+          </div>
+          <!-- Go to business profile button -->
+          <div class="goto-button-wrapper w-100">
+            <button class="btn btn-lg green-button w-100" @click="goToBusiness()" id="go-to-button">Go to Business Profile</button>
+          </div>
+
         </div>
       </div>
     </main>
@@ -86,8 +95,8 @@
 </template>
 
 <script>
-  import Navbar from "@/components/main/Navbar";
-  import Footer from "@/components/main/Footer"
+  import Navbar from "../components/main/Navbar";
+  import Footer from "../components/main/Footer"
   import DefaultImage from "../../public/default-product.jpg"
   import Api from "../Api";
 
@@ -187,6 +196,15 @@
        */
       previousImage() {
         this.carouselStartIndex = this.boundIndex(this.carouselStartIndex-1, this.saleImages.length);
+      },
+      /**
+       * Redirect the user to the page for the profile of the business who listed the current sale.
+       */
+      goToBusiness() {
+        const businessId = this.$route.params.businessId;
+        this.$router.push({
+          path: `/businessProfile/${businessId}`
+        });
       }
     }
   }
