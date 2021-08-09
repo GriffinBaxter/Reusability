@@ -84,6 +84,7 @@ class ListingNotificationTests {
     void isListingNotificationNotCreatedWhenDescriptionIsLessThanMinimumLengthTest() {
         try {
             ListingNotification newListingNotification = new ListingNotification("Descripti");
+            Assertions.fail("IllegalListingNotificationArgumentException was expected to be thrown.");
         } catch (IllegalListingNotificationArgumentException e) {
             Assertions.assertEquals("Invalid description", e.getMessage());
         }
@@ -110,6 +111,7 @@ class ListingNotificationTests {
     void isListingNotificationNotCreatedWhenDescriptionIsGreaterThanMaximumLengthTest() {
         try {
             ListingNotification newListingNotification = new ListingNotification("D".repeat(601));
+            Assertions.fail("IllegalListingNotificationArgumentException was expected to be thrown.");
         } catch (IllegalListingNotificationArgumentException e) {
             Assertions.assertEquals("Invalid description", e.getMessage());
         }
