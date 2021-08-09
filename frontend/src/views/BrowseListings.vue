@@ -60,9 +60,10 @@ export default {
       const fromDate = this.$route.query.fromDate || '';
       const toDate = this.$route.query.toDate || '';
 
-      await Api.searchListings(searchQuery, searchType, orderBy, page, businessType, minimumPrice, maximumPrice, fromDate, toDate).then((response) => {
+      await Api.searchListings(
+          searchQuery, searchType, orderBy, page, businessType, minimumPrice, maximumPrice, fromDate, toDate
+      ).then((response) => {
         this.listingList = [...response.data];
-        console.log(this.listingList);
       }, (error) => {
         console.log(error)
       });
