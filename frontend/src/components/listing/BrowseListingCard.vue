@@ -27,8 +27,8 @@
         </div>
         <ul class="list-group list-group-flush">
           <li class="list-group-item pb-1 "><h5>{{ inventoryItem.product.name + ' x' + quantity }}</h5></li>
-          <li class="list-group-item">{{ 'Closing Date: ' + closes }}</li>
-          <li class="list-group-item">{{ 'Expires: ' + inventoryItem.expires }}</li>
+          <li class="list-group-item">{{ 'Closing Date: ' + formatDateFunction(closes, false) }}</li>
+          <li class="list-group-item">{{ 'Expires: ' + formatDateFunction(inventoryItem.expires, false) }}</li>
         </ul>
       </div>
     </div>
@@ -39,6 +39,7 @@
 <script>
 import {Popover} from "bootstrap";
 import Api from "../../Api";
+import {formatDate} from "../../dateUtils";
 
 export default {
   name: "BrowseListingCard",
@@ -104,6 +105,9 @@ export default {
       this.$router.push({
         path: `/businessProfile/${businessId}`
       });
+    },
+    formatDateFunction(date, dateAndTime) {
+      return formatDate(date, dateAndTime);
     },
     getPrimaryImageSrc(images) {
       if (images.length > 0) {
