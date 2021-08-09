@@ -4,21 +4,12 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.seng302.model.Address;
-import org.seng302.model.Business;
-import org.seng302.model.repository.BusinessRepository;
+import org.seng302.model.*;
+import org.seng302.model.repository.*;
 import org.seng302.model.enums.BusinessType;
-import org.seng302.model.InventoryItem;
-import org.seng302.model.repository.InventoryItemRepository;
-import org.seng302.model.Product;
-import org.seng302.model.repository.ProductRepository;
 import org.seng302.controller.ListingResource;
 import org.seng302.Main;
-import org.seng302.model.Listing;
-import org.seng302.model.repository.ListingRepository;
 import org.seng302.model.enums.Role;
-import org.seng302.model.User;
-import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -73,6 +64,12 @@ class ListingResourceIntegrationTests {
     @MockBean
     private ListingRepository listingRepository;
 
+    @MockBean
+    private SoldListingRepository soldListingRepository;
+
+    @MockBean
+    private ListingNotificationRepository listingNotificationRepository;
+
     private MockHttpServletResponse response;
 
     private User dGAA;
@@ -87,11 +84,23 @@ class ListingResourceIntegrationTests {
 
     private Business anotherBusiness;
 
+    private Business adminBusiness;
+
     private Product product;
+
+    private Product adminProduct;
 
     private InventoryItem inventoryItem;
 
+    private InventoryItem adminInventoryItem;
+
     private Listing listing;
+
+    private Listing adminListing;
+
+    private SoldListing soldListing;
+
+    private ListingNotification listingNotification;
 
     private final String listingPayload = "{\"inventoryItemId\":\"%s\"," +
                                                 "\"quantity\":%d," +
@@ -291,8 +300,59 @@ class ListingResourceIntegrationTests {
         );
         listing.setId(1);
 
+        soldListing = new SoldListing(business, anotherUser, listing.getCreated(),
+                                        new ProductId(product.getProductId(), business.getId()),
+                                        listing.getQuantity(), listing.getPrice(), listing.getTotalBookmarks());
+
+        listingNotification = new ListingNotification("Listing notification");
+
+        adminBusiness = new Business(
+                dGAA.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
+                dGAA
+        );
+        adminBusiness.setId(3);
+        dGAA.setBusinessesAdministeredObjects(List.of(adminBusiness));
+
+        adminProduct = new Product(
+                "PROD",
+                adminBusiness,
+                "Beans",
+                "Description",
+                "Manufacturer",
+                20.00,
+                "9400547002634"
+        );
+
+        adminInventoryItem = new InventoryItem(
+                adminProduct,
+                "PROD",
+                20,
+                10.00,
+                20.00,
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(1)
+        );
+        adminInventoryItem.setId(1);
+
+        adminListing = new Listing(
+                adminInventoryItem,
+                3,
+                10.5,
+                "more info",
+                LocalDateTime.now().minusDays(10),
+                dateTime
+        );
+        adminListing.setId(1);
+
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository))
                 .build();
     }
 
@@ -1095,5 +1155,183 @@ class ListingResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Test that when buying a listing as a DGAA then an OK status is received, two listing notifications are created,
+     * a sold listing is created, inventory item quantity is updated, and the listing is deleted.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canBuyListing_WhenUserIsDgaa() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(dGAA.getSessionUUID())).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId())).willReturn(Optional.ofNullable(inventoryItem));
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+
+        // when
+        when(soldListingRepository.save(any(SoldListing.class))).thenReturn(soldListing);
+        when(listingNotificationRepository.save(any(ListingNotification.class))).thenReturn(listingNotification);
+        when(inventoryItemRepository.save(inventoryItem)).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that when buying a listing as a User then an OK status is received, two listing notifications are created,
+     * a sold listing is created, inventory item quantity is updated, and the listing is deleted.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canBuyListing_WhenUserAndNotBusinessAdministrator() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId())).willReturn(Optional.ofNullable(inventoryItem));
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+
+        // when
+        when(soldListingRepository.save(any(SoldListing.class))).thenReturn(soldListing);
+        when(listingNotificationRepository.save(any(ListingNotification.class))).thenReturn(listingNotification);
+        when(inventoryItemRepository.save(inventoryItem)).thenReturn(inventoryItem);
+        response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that when buying a listing when not logged in, an UNAUTHORIZED status is received.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cannotBuyListing_WhenNoCookie() throws Exception {
+        // when
+        response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Test that when buying a listing as a DGAA and an administrator of the business, a FORBIDDEN status is received.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cannotBuyListing_WhenDgaaAndBusinessAdministrator() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(dGAA.getSessionUUID())).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(adminBusiness.getId())).willReturn(Optional.ofNullable(adminBusiness));
+        given(listingRepository.findById(adminListing.getId())).willReturn(Optional.ofNullable(adminListing));
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%d/buy", adminListing.getId()))
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Cannot purchase your own listing");
+    }
+
+    /**
+     * Test that when buying a listing as a User and an administrator of the business, a FORBIDDEN status is received.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cannotBuyListing_WhenUserAndBusinessAdministrator() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Cannot purchase your own listing");
+    }
+
+    /**
+     * Test that when buying a listing when a listing with the given ID doesn't exist then a NOT_ACCEPTABLE status is received.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cannotBuyListing_WhenListingDoesNotExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Listing does not exist");
+    }
+
+    /**
+     * Test that when buying a listing when the business the listing belongs to doesn't exist then an
+     * INTERNAL_SERVER_ERROR status is received.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cannotBuyListing_WhenListingBusinessDoesNotExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Business for listing does not exist");
+    }
+
+    /**
+     * Test that when buying a listing when the inventory item the listing is for to doesn't exist then an
+     * INTERNAL_SERVER_ERROR status is received.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cannotBuyListing_WhenListingInventoryItemDoesNotExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId())).willReturn(Optional.empty());
+        given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+
+        // when
+        response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Inventory item for listing does not exist");
     }
 }

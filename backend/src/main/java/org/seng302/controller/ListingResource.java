@@ -378,7 +378,7 @@ public class ListingResource {
             logger.error("406 [NOT ACCEPTABLE] - Select listing ({}) not exist", id);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "Select listing not exist"
+                    "Listing does not exist"
             );
         }
 
@@ -396,13 +396,22 @@ public class ListingResource {
 
         Optional<Business> optionalBusiness = businessRepository.findBusinessById(listing.getBusinessId());
         if (optionalBusiness.isEmpty()) {
-            logger.error("406 [NOT ACCEPTABLE] - Business with ID {} for listing with ID {} does not exist", listing.getBusinessId(), id);
+            logger.error("500 [INTERNAL SERVER ERROR] - Business with ID {} for listing with ID {} does not exist", listing.getBusinessId(), id);
             throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
                     "Business for listing does not exist"
             );
         }
         Business business = optionalBusiness.get();
+
+        Optional<InventoryItem> optionalInventoryItem = inventoryItemRepository.findInventoryItemById(listing.getInventoryItem().getId());
+        if (optionalInventoryItem.isEmpty()) {
+            logger.error("500 [INTERNAL SERVER ERROR] - Inventory item with ID {} for listing with ID {} does not exist", listing.getInventoryItem().getId(), id);
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Inventory item for listing does not exist"
+            );
+        }
 
         SoldListing soldListing = new SoldListing(business, currentUser, listing.getCreated(),
                                                     new ProductId(listing.getInventoryItem().getProduct().getProductId(),
@@ -443,15 +452,11 @@ public class ListingResource {
         listingRepository.delete(listing);
         logger.info("Listing Notification Deletion Success - Listing with ID {} has been deleted", id);
 
-        Optional<InventoryItem> optionalInventoryItem = inventoryItemRepository.findInventoryItemById(listing.getInventoryItem().getId());
-        if (optionalInventoryItem.isPresent()) {
-            logger.debug("Inventory item retrieved, ID: {}.", listing.getInventoryItem().getId());
-            InventoryItem inventoryItem = optionalInventoryItem.get();
-            inventoryItem.setQuantity(inventoryItem.getQuantity() - listing.getQuantity());
+        logger.debug("Inventory item retrieved, ID: {}.", listing.getInventoryItem().getId());
+        InventoryItem inventoryItem = optionalInventoryItem.get();
+        inventoryItem.setQuantity(inventoryItem.getQuantity() - listing.getQuantity());
 
-            inventoryItemRepository.save(inventoryItem);
-            logger.info("Inventory item with ID {} has been updated with its new quantity.", listing.getInventoryItem().getId());
-        }
+        inventoryItemRepository.save(inventoryItem);
     }
 }
 
