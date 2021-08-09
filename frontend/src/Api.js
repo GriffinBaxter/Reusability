@@ -310,6 +310,19 @@ export default {
         return instance.delete(`/keywords/${id}`,  {
             withCredentials: true
         })
-    }
+    },
 
+    // Retrieving a specific listing by given id.
+    getDetailForAListing: (businessId, listingId) => {
+        return instance.get(`/businesses/${businessId}/listings/${listingId}`, {
+            withCredentials: true
+        })
+    },
+
+    // Change the status for current user to given listing.
+    changeStatusOfAListing: (id) => {
+        return instance.put(`/listings/${id}/bookmark`, {
+            withCredentials: true
+        })
+    },
 }
