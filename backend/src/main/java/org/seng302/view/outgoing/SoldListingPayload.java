@@ -22,6 +22,16 @@ public class SoldListingPayload {
     private Double price;
     private Integer bookmarks;
 
+    /**
+     * Creates a payload for SoldListings
+     * @param id Identifier number for Sold Listing
+     * @param saleDate Date of sale
+     * @param listingDate Date of Listing
+     * @param productId Products ID
+     * @param quantity Number of item brought
+     * @param price Price of item brought
+     * @param bookmarks Number of people that bookmarked the listing
+     */
     public SoldListingPayload(Integer id, String saleDate, String listingDate, String productId, Integer quantity, Double price, Integer bookmarks) {
         this.id = id;
         this.saleDate = saleDate;

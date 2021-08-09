@@ -40,7 +40,7 @@ public class SoldListing {
     private LocalDateTime listingDate;
 
     @JoinColumn(name = "productId", nullable = false)
-    private ProductId productId;
+    private String productId;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
@@ -53,7 +53,7 @@ public class SoldListing {
 
     private static final Logger logger = LogManager.getLogger(SoldListing.class.getName());
 
-    public SoldListing(Business business, User customer, LocalDateTime listingDate, ProductId productId, Integer quantity, Double price, Integer bookmarks) throws IllegalSoldListingArgumentException {
+    public SoldListing(Business business, User customer, LocalDateTime listingDate, String productId, Integer quantity, Double price, Integer bookmarks) throws IllegalSoldListingArgumentException {
         if (business != null) {
             this.business = business;
         } else {
@@ -72,7 +72,7 @@ public class SoldListing {
             logger.error("Sold Listing Creation Error - listingDate is null or after saleDate");
             throw new IllegalSoldListingArgumentException("Invalid listingDate");
         }
-        if (productId != null) {
+        if (productId != null && !productId.equals("")) {
             this.productId = productId;
         } else {
             logger.error("Sold Listing Creation Error - productId is null");

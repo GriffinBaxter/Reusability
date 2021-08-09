@@ -163,7 +163,7 @@ public class SoldListingRepositoryIntegrationTests {
                 business,
                 user,
                 LocalDateTime.now().minusDays(3),
-                new ProductId(product.getId(), businessId),
+                product.getId(),
                 listing.getQuantity(),
                 listing.getPrice(),
                 0);
@@ -174,7 +174,7 @@ public class SoldListingRepositoryIntegrationTests {
                 business,
                 user,
                 LocalDateTime.now().minusDays(3),
-                new ProductId(anotherProduct.getId(), businessId),
+                anotherProduct.getId(),
                 listing.getQuantity(),
                 listing.getPrice(),
                 0);
