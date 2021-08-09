@@ -440,6 +440,18 @@ public class ListingResource {
             logger.error("Couldn't create listing removal notification - {}", e.getMessage());
         }
 
+        listingRepository.delete(listing);
+        logger.info("Listing Notification Deletion Success - Listing with ID {} has been deleted", id);
+
+        Optional<InventoryItem> optionalInventoryItem = inventoryItemRepository.findInventoryItemById(listing.getInventoryItem().getId());
+        if (optionalInventoryItem.isPresent()) {
+            logger.debug("Inventory item retrieved, ID: {}.", listing.getInventoryItem().getId());
+            InventoryItem inventoryItem = optionalInventoryItem.get();
+            inventoryItem.setQuantity(inventoryItem.getQuantity() - listing.getQuantity());
+
+            inventoryItemRepository.save(inventoryItem);
+            logger.info("Inventory item with ID {} has been updated with its new quantity.", listing.getInventoryItem().getId());
+        }
     }
 }
 
