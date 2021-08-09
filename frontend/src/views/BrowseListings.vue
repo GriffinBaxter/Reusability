@@ -19,7 +19,7 @@
 
           <!-- Match Fields -->
           <div class="row" id="search-filter-ordering-options-container">
-            <div class="col" id="match-fields">
+            <div class="col-2" id="match-fields">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" id="checkbox-product-name">
                 <label class="form-check-label" for="checkbox-product-name">
@@ -46,7 +46,7 @@
               </div>
             </div>
 
-            <div class="col" id="order-menu">
+            <div class="col-2" id="order-menu">
 
               <!------------------------------------------ ordering by options menu ------------------------------------------->
               <div class="row">
@@ -112,16 +112,16 @@
               <!--------------------------------------------------------------------------------------------------------->
 
             </div>
-            <div class="col" id="price-and-date-filters">
+            <div class="col-6" id="price-and-date-filters">
 
               <div class="row">
                 <form>
-                  <div class="form-group">
-                    <label for="lowest-price-input">Price Range $</label>
-                    <input type="number" class="form-control" id="lowest-price-input" placeholder="0.00">
+                  <div class="form-group" id="price-filtering-container">
+                    <label for="lowest-price-input" class="d-inline-block">Price Range $ </label>
+                    <input type="number" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00">
 
-                    <label for="lowest-price-input">to $</label>
-                    <input type="number" class="form-control" id="highest-price-input" placeholder="0.00">
+                    <label for="lowest-price-input" id="date-filtering-container"> to $ </label>
+                    <input type="number" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00">
                   </div>
                 </form>
               </div>
@@ -129,21 +129,21 @@
               <div class="row">
                 <form>
                   <div class="form-group">
-                    <label for="lowest-price-input">Closing Date</label>
-                    <input type="date" class="form-control" id="start-date">
+                    <label for="lowest-price-input" class="d-inline-block">Closing Date </label>
+                    <input type="date" class="form-control filter-input d-inline-block " id="start-date">
 
-                    <label for="lowest-price-input">to $</label>
-                    <input type="date" class="form-control" id="end-date">
+                    <label for="lowest-price-input" class="d-inline-block"> to $ </label>
+                    <input type="date" class="form-control filter-input d-inline-block" id="end-date">
                   </div>
                 </form>
               </div>
 
-              <div class="row">
+              <div class="row" id="filter-buttons-container">
 
                 <!--------------------------------------- apply filters button -------------------------------------------->
                 <div class="col">
                   <!--   TODO: add @click event               -->
-                  <button type="button" class="btn btn-md btn-outline-primary green-button">
+                  <button type="button" class="btn btn-md btn-outline-primary green-button m-2">
                     Apply Filters
                   </button>
                 </div>
@@ -151,7 +151,7 @@
                 <!--------------------------------------- clear filters button -------------------------------------------->
                 <div class="col">
                   <!--   TODO: add @click event               -->
-                  <button type="button" class="btn btn-md btn-outline-primary green-button">
+                  <button type="button" class="btn btn-md btn-outline-primary green-button m-2">
                     Clear Filters
                   </button>
                 </div>
@@ -280,5 +280,21 @@ export default {
 </script>
 
 <style scoped>
+
+#price-filtering-container, #date-filtering-container {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+#filter-buttons-container, #price-and-date-filters {
+  /*margin: auto;*/
+  /*width: 50%;*/
+  text-align: center;
+}
+
+/* styling for price and date range input fields */
+.form-control {
+  width: 26%;
+}
 
 </style>
