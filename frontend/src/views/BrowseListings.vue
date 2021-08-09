@@ -53,23 +53,13 @@
               </div>
 
               <!--  match seller type -->
-              <div class="row">
+                <div class="btn-group radio-padding-left" role="group">
 
-                <div class="col-4 form-check radio-seller-type-padding-left">
-                  <input class="form-check-input " type="radio" value="" id="radio-seller-type">
-                  <label class="form-check-label" for="radio-seller-type">
-                    Business Type
-                  </label>
-                </div>
-
-                <div class=" col-5 btn-group p-2" role="group">
-
-                  <button type="button" class="btn green-button dropdown-toggle order-by-options-btn"
+                  <button type="button" class="btn green-button dropdown-toggle order-by-options-btn d-inline-block"
                           data-bs-toggle="dropdown" aria-expanded="false">{{ matchBusinessTypeOption }}
                   </button>
 
                   <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <!--order by price-->
                     <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
                             @click="setOrderByOption(true, false, false, false)">
                       Accommodation and Food Services
@@ -94,13 +84,12 @@
 
                   <!--------------------------------------- clear field match button -------------------------------------------->
                   <!--   TODO: add @click event               -->
-                  <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25">
+                  <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50">
                     Clear Field
                   </button>
 
                 </div>
 
-              </div>
 
             </div>
 
@@ -359,10 +348,6 @@ export default {
 
 .radio-padding-left {
   padding-left: 60px;
-}
-
-.radio-seller-type-padding-left {
-  padding-left: 72px;
 }
 
 </style>
