@@ -958,7 +958,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1001,7 +1001,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1046,7 +1046,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1077,7 +1077,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of();
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1211,7 +1211,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, convertedBusinessType, null, null, null, null
@@ -1258,7 +1258,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, convertedBusinessType, null, null, null, null
@@ -1305,7 +1305,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.business.address.country").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByBusinessName(
                 names, paging, convertedBusinessType,
@@ -1361,7 +1361,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.expires").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByLocation(
                 names, paging, convertedBusinessType,
