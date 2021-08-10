@@ -10,8 +10,16 @@
  */
 package org.seng302.view.outgoing;
 
-import org.seng302.view.outgoing.InventoryItemPayload;
+import org.seng302.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Listing Payload
+ *
+ * Listing payload to send to the API (outgoing).
+ */
 public class ListingPayload {
     private Integer id;
     private InventoryItemPayload inventoryItem;
@@ -20,6 +28,57 @@ public class ListingPayload {
     private String moreInfo;
     private String created;
     private String closes;
+
+    /**
+     * Translate a list of Listing to a list of ListingPayload
+     * @param listings a list of listings
+     * @return a list of ListingPayload
+     */
+    public static List<ListingPayload> toListingPayload (List<Listing> listings) {
+        List<ListingPayload> listingPayloads = new ArrayList<>();
+        ListingPayload listingPayload;
+        for (Listing listing: listings) {
+
+            Product product = listing.getInventoryItem().getProduct();
+            ProductPayload productPayload = new ProductPayload(
+                    product.getProductId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getManufacturer(),
+                    product.getRecommendedRetailPrice(),
+                    product.getCreated(),
+                    product.getImages(),
+                    product.getBarcode()
+            );
+
+            InventoryItem inventoryItem = listing.getInventoryItem();
+            InventoryItemPayload inventoryItemPayload = new InventoryItemPayload(
+                    inventoryItem.getId(),
+                    productPayload,
+                    inventoryItem.getQuantity(),
+                    inventoryItem.getPricePerItem(),
+                    inventoryItem.getTotalPrice(),
+                    inventoryItem.getManufactured().toString(),
+                    inventoryItem.getSellBy().toString(),
+                    inventoryItem.getBestBefore().toString(),
+                    inventoryItem.getExpires().toString()
+            );
+
+            listingPayload = new ListingPayload(
+                    listing.getId(),
+                    inventoryItemPayload,
+                    listing.getQuantity(),
+                    listing.getPrice(),
+                    listing.getMoreInfo(),
+                    listing.getCreated().toString(),
+                    listing.getCloses().toString()
+            );
+
+            listingPayloads.add(listingPayload);
+        }
+
+        return listingPayloads;
+    }
 
     public ListingPayload(int id,
                           InventoryItemPayload inventoryItem,
