@@ -4,6 +4,12 @@
       <!-- Navbar -->
       <Navbar/>
 
+      <div class="noListings" v-if="noListings">
+        <div class="card p-1">
+          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
+        </div>
+      </div>
+      
       <BrowseListingsSearch  @requestListings="requestListings"/>
       <br>
       <div class="row pb-5 mb-4">
@@ -45,6 +51,7 @@ export default {
     return {
       // Array that stores all retrieved listings
       listingList: [],
+      notInitialLoad: false,
 
       searchQuery: "",
       searchType: "",
@@ -61,6 +68,9 @@ export default {
     }
   },
   computed: {
+    noListings() {
+      return (this.listingList.length < 1) && this.notInitialLoad;
+    }
   },
   methods: {
 
@@ -73,14 +83,16 @@ export default {
       this.searchQuery = this.$route.query.searchQuery || '';
       this.searchType = this.$route.query.searchType || '';
       this.orderBy = this.$route.query.orderBy || '';
-      this.currentPage = this.$route.query.page || 0;
+      this.currentPage = parseInt(this.$route.query.page) - 1 || 0;
       this.businessType = this.$route.query.businessType || '';
       this.minimumPrice = this.$route.query.minimumPrice || '';
       this.maximumPrice = this.$route.query.maximumPrice || '';
       this.fromDate = this.$route.query.fromDate || '';
       this.toDate = this.$route.query.toDate || '';
-      
-      this.currentPage = parseInt(this.currentPage)
+
+      if (this.currentPage < 0) {
+        this.currentPage = 0
+      }
 
       await Api.searchListings(
           this.searchQuery, this.searchType,
@@ -93,6 +105,8 @@ export default {
         if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
           this.$router.push({path: '/pageDoesNotExist'});
         }
+
+        this.notInitialLoad = true;
 
         this.listingList = [...response.data];
       }, (error) => {
@@ -110,7 +124,7 @@ export default {
       await this.$router.push({
         path: '/browseListings', query: {
           searchQuery: this.searchQuery, searchType: this.searchType,
-          orderBy: this.orderBy, page: this.currentPage, businessType: this.businessType,
+          orderBy: this.orderBy, page: (this.currentPage + 1).toString(), businessType: this.businessType,
           minimumPrice: this.minimumPrice, maximumPrice: this.maximumPrice,
           fromDate: this.fromDate, toDate: this.toDate
         }
