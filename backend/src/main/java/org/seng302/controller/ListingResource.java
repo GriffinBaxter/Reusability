@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalListingArgumentException;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 import org.seng302.model.*;
+import org.seng302.model.enums.BusinessType;
 import org.seng302.model.repository.*;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
