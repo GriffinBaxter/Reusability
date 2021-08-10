@@ -14,6 +14,10 @@
         </div>
       <div id="listing-content-wrapper">
         <div class="left-content">
+          <!-- Return to sales listings button-->
+          <div class="return-button-wrapper mb-3 w-100" v-if="fromListings">
+            <button class="btn btn-lg green-button w-100" @click="returnToSales()" id="return-button">Return to Sale Listings</button>
+          </div>
           <!-- Image section -->
           <div class="listing-images-wrapper">
             <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image" class="no-highlight"/>
@@ -40,6 +44,10 @@
             <h5>Business Name</h5>
             <div class="business-address-wrapper">
               [business address]
+            </div>
+            <!-- Go to business profile button -->
+            <div class="goto-button-wrapper w-100">
+              <button class="btn btn-lg green-button mt-2 w-100" @click="goToBusiness()" id="go-to-button">Go to Business Profile</button>
             </div>
           </div>
         </div>
@@ -75,15 +83,6 @@
               <div>Expires: [Expires]</div>
               <div>Manufacturer: [Manufacturer]</div>
             </div>
-          </div>
-
-          <!-- Return to sales listings button-->
-          <div class="return-button-wrapper w-100">
-            <button class="btn btn-lg green-button mt-2 w-100" v-if="fromListings" @click="returnToSales()" id="return-button">Return to Sale Listings</button>
-          </div>
-          <!-- Go to business profile button -->
-          <div class="goto-button-wrapper w-100">
-            <button class="btn btn-lg green-button mt-2 w-100" @click="goToBusiness()" id="go-to-button">Go to Business Profile</button>
           </div>
 
         </div>
@@ -219,11 +218,7 @@ export default {
     next(vm => {
       // If the user has come from a page which contains listings then the return to listings button component
       // should be rendered.
-      if (from.name === 'BrowseListings') {
-        vm.fromListings = true;
-      } else {
-        vm.fromListings = false;
-      }
+      vm.fromListings = from.name === 'BrowseListings';
       next();
     });
   }
@@ -344,6 +339,10 @@ export default {
     max-width: 90%;
   }
 
+  .listing-dates-wrapper {
+    margin-bottom: 1.5rem;
+  }
+
   .sale-carousel-image {
     width: 100%;
     height: auto;
@@ -385,6 +384,11 @@ export default {
       max-width: 1000px;
       min-height: 100vh;
     }
+
+    .return-button-wrapper {
+      width: 50%;
+    }
+
     .listing-dates-wrapper {
       flex-direction: row;
     }
