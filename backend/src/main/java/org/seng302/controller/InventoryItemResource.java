@@ -21,7 +21,6 @@ import org.seng302.model.repository.InventoryItemRepository;
 import org.seng302.view.incoming.InventoryRegistrationPayload;
 import org.seng302.model.Listing;
 import org.seng302.model.Product;
-import org.seng302.view.outgoing.ProductPayload;
 import org.seng302.model.repository.ProductRepository;
 import org.seng302.Authorization;
 import org.seng302.model.User;
@@ -84,35 +83,6 @@ public class InventoryItemResource {
         this.userRepository = userRepository;
     }
 
-    public static InventoryItemPayload convertToPayload(InventoryItem item){
-
-        String manufactured;
-        if (item.getManufactured() == null) {
-            manufactured = "";
-        } else {
-            manufactured = item.getManufactured().toString();
-        }
-
-        String bestBefore;
-        if (item.getBestBefore() == null) {
-            bestBefore = "";
-        } else {
-            bestBefore = item.getBestBefore().toString();
-        }
-
-        String sellBy;
-        if (item.getSellBy() == null) {
-            sellBy = "";
-        } else {
-            sellBy = item.getSellBy().toString();
-        }
-
-        return new InventoryItemPayload(item.getId(), ProductPayload.convertProductToProductPayload(item.getProduct()),
-                item.getQuantity(), item.getPricePerItem(), item.getTotalPrice(), manufactured,
-                bestBefore, sellBy, item.getExpires().toString());
-    }
-
-
     /**
      * Retrieve a business's product inventory with the given business ID, 5 pages a time.
      * The page is ordered based on orderBy and the specified page given by page is returned.
@@ -130,7 +100,7 @@ public class InventoryItemResource {
             @PathVariable Integer id,
             @RequestParam(defaultValue = "productIdASC") String orderBy,
             @RequestParam(defaultValue = "0") String page
-    ) {
+    ) throws Exception {
 
         logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}",
                 id, orderBy, page);
@@ -269,7 +239,7 @@ public class InventoryItemResource {
         logger.info("Product Inventory Retrieval Success - 200 [OK] - " +
                 "Product inventory retrieved for business with ID {}", id);
 
-        List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(pagedResult.getContent());
+        List<InventoryItemPayload> inventoryItemPayloads = convertToPayloadList(pagedResult.getContent());
 
         logger.info("The size of the product inventory payload is {}", inventoryItemPayloads.size());
 
@@ -289,7 +259,7 @@ public class InventoryItemResource {
     @GetMapping("/businesses/{id}/inventoryAll")
     public ResponseEntity<List<InventoryItemPayload>> retrieveAllInventoryItems(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-            @PathVariable Integer id) {
+            @PathVariable Integer id) throws Exception {
         logger.debug("Product inventory retrieval request (all items) received with business ID {}", id);
 
         // Checks user logged in - 401
@@ -303,7 +273,7 @@ public class InventoryItemResource {
         logger.info("Inventory Retrieval Success - 200 [OK] -  " +
                 "All inventory items retrieved for business with ID {}", id);
 
-        List<InventoryItemPayload> inventoryItemPayloads = convertToPayload(inventoryItems);
+        List<InventoryItemPayload> inventoryItemPayloads = convertToPayloadList(inventoryItems);
 
         logger.debug("All inventory items retrieved for business with ID {}: {}",
                 id,
@@ -319,31 +289,10 @@ public class InventoryItemResource {
      * @param inventoryList The given list of product inventory items
      * @return A list of inventoryPayloads.
      */
-    public List<InventoryItemPayload> convertToPayload(List<InventoryItem> inventoryList) { //TODO: Test this function
+    public List<InventoryItemPayload> convertToPayloadList(List<InventoryItem> inventoryList) throws Exception {
         List<InventoryItemPayload> payloads = new ArrayList<>();
-        InventoryItemPayload newPayload;
-        String manufactured;
-        String sellBy;
-        String bestBefore;
-        String expires;
-
         for (InventoryItem inventoryItem : inventoryList) {
-            manufactured = (inventoryItem.getManufactured() == null) ? null : inventoryItem.getManufactured().toString();
-            sellBy = (inventoryItem.getSellBy() == null) ? null : inventoryItem.getSellBy().toString();
-            bestBefore = (inventoryItem.getBestBefore() == null) ? null : inventoryItem.getBestBefore().toString();
-            expires = (inventoryItem.getExpires() == null) ? null : inventoryItem.getExpires().toString();
-
-            newPayload = new InventoryItemPayload(
-                    inventoryItem.getId(),
-                    ProductPayload.convertProductToProductPayload(inventoryItem.getProduct()),
-                    inventoryItem.getQuantity(),
-                    inventoryItem.getPricePerItem(),
-                    inventoryItem.getTotalPrice(),
-                    manufactured,
-                    sellBy,
-                    bestBefore,
-                    expires
-            );
+            InventoryItemPayload newPayload = inventoryItem.convertToPayload();
             logger.debug("Product inventory payload created: {}", newPayload);
             payloads.add(newPayload);
         }

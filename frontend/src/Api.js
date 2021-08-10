@@ -149,6 +149,7 @@ export default {
             withCredentials: true
         })
     },
+
     // Sends a PUT request to modify a product from some given business ID
     modifyProduct: (productId, businessId, newProduct) => {
         return instance.put(`/businesses/${businessId}/products/${productId}`, {
@@ -157,6 +158,7 @@ export default {
             withCredentials: true
         })
     },
+
     // Sends a post request to the backend with a new product object to store
     addNewProduct: (businessID, product) => {
         return instance.post('/businesses/' + businessID + '/products', {
@@ -308,6 +310,13 @@ export default {
     // System administrators can delete a keyword.  Keyword is removed from the list and from any cards it appears on.
     deleteExistingKeyword: (id) => {
         return instance.delete(`/keywords/${id}`,  {
+            withCredentials: true
+        })
+    },
+
+    // Sends a GET request to the backend asking for any listings matching the given criteria (paginated)
+    searchListings: (searchQuery, searchType, orderBy, page, businessType, minimumPrice, maximumPrice, fromDate, toDate) => {
+        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessType=${businessType}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`,  {
             withCredentials: true
         })
     },

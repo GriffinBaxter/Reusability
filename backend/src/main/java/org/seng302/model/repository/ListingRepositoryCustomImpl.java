@@ -218,7 +218,11 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         // create a count query used to display "Showing 1-5 of x results"
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         Root<Listing> listingRootCount = countQuery.from(Listing.class);
-        countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
+        countQuery.select(criteriaBuilder.count(listingRootCount)).where(criteriaBuilder
+                .and(predicateList.toArray(
+                        new Predicate[predicateList.size()])),
+                        criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()]))
+        );
 
         // fetches the count of all listings as per given criteria
         Long count = entityManager.createQuery(countQuery).getSingleResult();
