@@ -26,7 +26,7 @@
             <div class="match-radio-container py-2">
               <!--  match product name -->
               <div class="form-check radio-padding-left">
-                <input class="form-check-input" type="radio" name="match-radios" value="listingName" id="radio-product-name">
+                <input class="form-check-input" type="radio" name="match-radios" value="listingName" id="radio-product-name" checked>
                 <label class="form-check-label" for="radio-product-name">
                   Product Name
                 </label>
@@ -48,11 +48,7 @@
                 </label>
               </div>
             </div>
-            <div class="text-center">
-              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50" @click="clearRadios('match')">
-                Clear Field
-              </button>
-            </div>
+
             <!--  match seller type -->
             <div class="business-radio-container my-3 py-2">
               <div class="form-check radio-padding-left">
@@ -168,10 +164,10 @@
               <form>
                 <div class="form-group" id="price-filtering-container">
                   <label for="lowest-price-input" class="d-inline-block p-2">Price Range $ </label>
-                  <input type="number" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00" v-bind="lowestPrice">
+                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00" v-model="lowestPrice" oninput="this.value = Math.abs(this.value)">
 
                   <label for="highest-price-input" class="d-inline-block p-2"> to $ </label>
-                  <input type="number" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00" v-bind="highestPrice">
+                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00" v-model="highestPrice" oninput="this.value = Math.abs(this.value)">
                 </div>
               </form>
             </div>
@@ -180,10 +176,10 @@
               <form>
                 <div class="form-group" id="date-filtering-container">
                   <label for="start-date-input" class="d-inline-block p-2">Closing Date </label>
-                  <input type="date" class="form-control filter-input d-inline-block" id="start-date-input" v-bind="startDate">
+                  <input type="date" class="form-control filter-input d-inline-block" id="start-date-input" v-model="startDate">
 
                   <label for="end-date-input" class="d-inline-block p-2"> to </label>
-                  <input type="date" class="form-control filter-input d-inline-block" id="end-date-input" v-bind="endDate">
+                  <input type="date" class="form-control filter-input d-inline-block" id="end-date-input" v-model="endDate">
                 </div>
               </form>
             </div>
@@ -191,7 +187,6 @@
             <div class="text-center" id="filter-buttons-container">
 
               <!--------------------------------------- clear filters button -------------------------------------------->
-              <!--   TODO: add @click event               -->
               <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25" @click="clearFilters()">
                 Clear Filters
               </button>
@@ -262,8 +257,16 @@ export default {
      */
     searchClicked() {
 
-      this.validatePriceInput(this.lowestPrice, this.highestPrice);
-      this.validateDateInput(this.startDate, this.endDate);
+      if (!this.validateDateInput(this.startDate, this.endDate)) {
+        const temp = this.startDate
+        this.startDate = this.endDate
+        this.endDate = temp
+      }
+      if (!this.validatePriceInput(this.lowestPrice, this.highestPrice)) {
+        const temp = this.lowestPrice
+        this.lowestPrice = this.highestPrice
+        this.highestPrice = temp
+      }
 
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
@@ -275,25 +278,24 @@ export default {
       const fromDate = this.startDate;
       const toDate = this.endDate;
 
-      this.$router.push({ path: '/browseListings', query: {
-        searchQuery: searchQuery, searchType: searchType,
+      this.$router.push({
+        path: '/browseListings', query: {
+          searchQuery: searchQuery, searchType: searchType,
           orderBy: orderBy, page: page, businessType: businessType,
           minimumPrice: minimumPrice, maximumPrice: maximumPrice,
           fromDate: fromDate, toDate: toDate
-      }});
-
-
+        }
+      });
 
       this.$emit('requestListings', searchQuery);
+
     },
     /**
      * Clears the radio buttons used to select the match fields
      */
     clearRadios(type) {
       let radios;
-      if (type === 'match') {
-        radios = document.querySelectorAll("input[name='match-radios']");
-      } else if (type === 'business') {
+      if (type === 'business') {
         radios = document.querySelectorAll("input[name='business-type-radios']");
       }
       radios.forEach(function(radio) {
@@ -349,34 +351,44 @@ export default {
     },
 
     /**
-     * Resets the filters to their default values
-     */
-    clearFilters() {
-
-    },
-
-    /**
      * Checks that the price entered is a positive number.
      * If both prices are provided, then the first must be smaller than the second and non-negative
-     * If only one is provided, it must be non-negative.
-     * Returns true in these cases, otherwise false.
+     * Returns true if condition met
+     * @param firstPrice first price
+     * @param secondPrice second price
+     * @return {boolean}
      */
     validatePriceInput(firstPrice, secondPrice) {
+      console.log(firstPrice)
+      console.log(secondPrice)
       if (firstPrice && secondPrice) {
-        return (firstPrice >= 0 && secondPrice > secondPrice)
-      } else if (firstPrice) {
-        return (firstPrice >= 0)
-      } else if (secondPrice) {
-        return (secondPrice >= 0)
+        console.log(parseFloat(firstPrice) <= parseFloat(secondPrice))
+        return ( parseFloat(firstPrice) <= parseFloat(secondPrice) )
       }
     },
 
+    /**
+     * Checks that the second date is after the first date. Returns true if this is the case.
+     * @param firstDate first date
+     * @param secondDate second date
+     * @return {boolean}
+     */
     validateDateInput(firstDate, secondDate) {
       if (firstDate && secondDate) {
         const outcome = compareAsc(firstDate, secondDate)
         return (outcome === -1) // -1 if the first date is before the second
       }
     },
+
+    /**
+     * Resets the filters to their default values
+     */
+    clearFilters() {
+      this.lowestPrice = null
+      this.highestPrice = null
+      this.startDate = null
+      this.endDate = null
+    }
 
   }
 }
