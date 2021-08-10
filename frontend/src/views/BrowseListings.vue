@@ -20,7 +20,10 @@
               v-bind:total-bookmarks="listing.totalBookmarks"/>
         </div>
       </div>
-      <PageButtons></PageButtons>
+      <PageButtons
+          v-bind:totalPages="totalPages"
+          v-bind:currentPage="currentPage"
+          @updatePage="updatePage"/>
     </div>
     <!-- Footer -->
     <Footer class="footer"/>
@@ -42,6 +45,19 @@ export default {
     return {
       // Array that stores all retrieved listings
       listingList: [],
+
+      searchQuery: "",
+      searchType: "",
+      orderBy: "",
+      businessType: "",
+      minimumPrice: "",
+      maximumPrice: "",
+      fromDate: "",
+      toDate: "",
+
+      currentPage: 0,
+      totalPages: 0,
+      totalRows: 0,
     }
   },
   computed: {
@@ -54,23 +70,52 @@ export default {
      */
     async requestListings() {
 
-      const searchQuery = this.$route.query.searchQuery || '';
-      const searchType = this.$route.query.searchType || '';
-      const orderBy = this.$route.query.orderBy || '';
-      const page = this.$route.query.page || '0';
-      const businessType = this.$route.query.businessType || '';
-      const minimumPrice = this.$route.query.minimumPrice || '';
-      const maximumPrice = this.$route.query.maximumPrice || '';
-      const fromDate = this.$route.query.fromDate || '';
-      const toDate = this.$route.query.toDate || '';
+      this.searchQuery = this.$route.query.searchQuery || '';
+      this.searchType = this.$route.query.searchType || '';
+      this.orderBy = this.$route.query.orderBy || '';
+      this.currentPage = this.$route.query.page || 0;
+      this.businessType = this.$route.query.businessType || '';
+      this.minimumPrice = this.$route.query.minimumPrice || '';
+      this.maximumPrice = this.$route.query.maximumPrice || '';
+      this.fromDate = this.$route.query.fromDate || '';
+      this.toDate = this.$route.query.toDate || '';
+      
+      this.currentPage = parseInt(this.currentPage)
 
       await Api.searchListings(
-          searchQuery, searchType, orderBy, page, businessType, minimumPrice, maximumPrice, fromDate, toDate
+          this.searchQuery, this.searchType,
+          this.orderBy, this.currentPage, this.businessType,
+          this.minimumPrice, this.maximumPrice,
+          this.fromDate, this.toDate
       ).then((response) => {
+        this.totalPages = parseInt(response.headers["total-pages"]);
+
+        if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
+          this.$router.push({path: '/pageDoesNotExist'});
+        }
+
         this.listingList = [...response.data];
       }, (error) => {
         console.log(error)
       });
+    },
+    
+    /**
+     * Updates the display to show the new page when a user clicks to move to a different page.
+     *
+     * @param newPageNumber The new page number
+     */
+    async updatePage(newPageNumber) {
+      this.currentPage = newPageNumber;
+      await this.$router.push({
+        path: '/browseListings', query: {
+          searchQuery: this.searchQuery, searchType: this.searchType,
+          orderBy: this.orderBy, page: this.currentPage, businessType: this.businessType,
+          minimumPrice: this.minimumPrice, maximumPrice: this.maximumPrice,
+          fromDate: this.fromDate, toDate: this.toDate
+        }
+      });
+      await this.requestListings();
     },
   },
 
