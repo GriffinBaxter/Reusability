@@ -289,7 +289,7 @@ public class InventoryItemResource {
      * @param inventoryList The given list of product inventory items
      * @return A list of inventoryPayloads.
      */
-    public List<InventoryItemPayload> convertToPayloadList(List<InventoryItem> inventoryList) throws Exception { //TODO: Test this function
+    public List<InventoryItemPayload> convertToPayloadList(List<InventoryItem> inventoryList) throws Exception {
         List<InventoryItemPayload> payloads = new ArrayList<>();
         for (InventoryItem inventoryItem : inventoryList) {
             InventoryItemPayload newPayload = inventoryItem.convertToPayload();
