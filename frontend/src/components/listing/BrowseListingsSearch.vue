@@ -106,45 +106,45 @@
                 <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                   <!--order by price-->
                   <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                          @click="setOrderByOption(true, false, false, false, false, false, false, false)">
+                          @click="setOrderByOption('priceASC')">
                     Price Low
                   </button>
                   <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                          @click="setOrderByOption(false, true, false, false, false, false, false, false)">
+                          @click="setOrderByOption('priceDESC')">
                     Price High
                   </button>
 
                   <!--order by product name-->
                   <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                          @click="setOrderByOption(false, false, true, false, false, false, false, false)">
+                          @click="setOrderByOption('productNameASC')">
                     Product Name
                   </button>
 
                   <!--order by country-->
                   <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                          @click="setOrderByOption(false, false, false, true, false, false, false, false)">
+                          @click="setOrderByOption('countryASC')">
                     Country
                   </button>
 
                   <!--order by city-->
                   <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                          @click="setOrderByOption(false, false, false, false, true, false, false, false)">
+                          @click="setOrderByOption('cityASC')">
                     City
                   </button>
 
                   <!--order by expiry date-->
                   <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                          @click="setOrderByOption(false, false, false, false, false, true, false, false)">
+                          @click="setOrderByOption('expiryDateASC')">
                     Expiry Date Earliest
                   </button>
                   <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                          @click="setOrderByOption(false, false, false, false, false, false, true, false)">
+                          @click="setOrderByOption('expiryDateDESC')">
                     Expiry Date Latest
                   </button>
 
                   <!--order by seller name-->
                   <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                          @click="setOrderByOption(false, false, false, false, false, false, false, true)">
+                          @click="setOrderByOption('sellerNameASC')">
                     Seller Name
                   </button>
 
@@ -204,6 +204,7 @@
 
 <script>
 import compareAsc from 'date-fns/compareAsc'
+import {parseISO} from "date-fns";
 export default {
   name: "BrowseListingsSearch",
   data() {
@@ -275,8 +276,14 @@ export default {
       const businessType = this.getSelectedRadio('business');
       const minimumPrice = this.lowestPrice;
       const maximumPrice = this.highestPrice;
-      const fromDate = this.startDate;
-      const toDate = this.endDate;
+      let fromDate = this.startDate;
+      let toDate = this.endDate;
+      if (fromDate != null) {
+        fromDate += "T00:00";
+      }
+      if (toDate != null) {
+        toDate += "T00:00";
+      }
 
       this.$router.push({
         path: '/browseListings', query: {
@@ -285,6 +292,8 @@ export default {
           minimumPrice: minimumPrice, maximumPrice: maximumPrice,
           fromDate: fromDate, toDate: toDate
         }
+      }).catch(() => {
+        // NavigationDuplicated
       });
 
       this.$emit('requestListings', searchQuery);
@@ -305,49 +314,25 @@ export default {
     /**
      * Sets the order by option
      */
-    setOrderByOption(priceLow, priceHigh, productName, country, city, expiryDateEarliest, expiryDateLatest, sellerName) {
-      if (priceLow) {
-        this.orderByOption = "priceASC"
+    setOrderByOption(orderBy) {
+      this.orderByOption = orderBy
+      if (this.orderByOption === "priceASC") {
         this.orderByOptionText = "Price Low"
-      } else if (priceHigh) {
-        this.orderByOption = "priceDESC"
+      } else if (this.orderByOption === "priceDESC") {
         this.orderByOptionText = "Price High"
-      } else if (productName) {
-        this.orderByOption = "productNameASC"
+      } else if (this.orderByOption === "productNameASC") {
         this.orderByOptionText = "Product Name"
-      } else if (country) {
-        this.orderByOption = "countryASC"
+      } else if (this.orderByOption === "countryASC") {
         this.orderByOptionText = "Country"
-      } else if (city) {
-        this.orderByOption = "cityASC"
+      } else if (this.orderByOption === "cityASC") {
         this.orderByOptionText = "City"
-      } else if (expiryDateEarliest) {
-        this.orderByOption = "expiryDateASC"
+      } else if (this.orderByOption === "expiryDateASC") {
         this.orderByOptionText = "Expiry Date Earliest"
-      } else if (expiryDateLatest) {
-        this.orderByOption = "expiryDateDESC"
+      } else if (this.orderByOption === "expiryDateDESC") {
         this.orderByOptionText = "Expiry Date Latest"
-      } else if (sellerName) {
-        this.orderByOption = "sellerNameASC"
+      } else if (this.orderByOption === "sellerNameASC") {
         this.orderByOptionText = "Business Name"
       }
-      this.orderCards();
-    },
-
-    /**
-     * Order the cards
-     */
-    orderCards() {
-      const order = this.createOrderByParams()
-
-      // Checks the orderBy has changed to prevent NavigationDuplicated Errors
-      if (order !== this.orderBy) {
-        this.orderBy = order;
-        this.$parent.$emit("orderedCards", this.orderBy)
-      }
-
-      // now can use this.orderBy to request cards from backend
-
     },
 
     /**
@@ -359,11 +344,10 @@ export default {
      * @return {boolean}
      */
     validatePriceInput(firstPrice, secondPrice) {
-      console.log(firstPrice)
-      console.log(secondPrice)
-      if (firstPrice && secondPrice) {
-        console.log(parseFloat(firstPrice) <= parseFloat(secondPrice))
-        return ( parseFloat(firstPrice) <= parseFloat(secondPrice) )
+      if (firstPrice != null && secondPrice != null) {
+        return parseFloat(firstPrice) <= parseFloat(secondPrice)
+      } else {
+        return true
       }
     },
 
@@ -374,9 +358,11 @@ export default {
      * @return {boolean}
      */
     validateDateInput(firstDate, secondDate) {
-      if (firstDate && secondDate) {
-        const outcome = compareAsc(firstDate, secondDate)
+      if (firstDate != null && secondDate != null) {
+        const outcome = compareAsc(parseISO(firstDate), parseISO(secondDate))
         return (outcome === -1) // -1 if the first date is before the second
+      } else {
+        return true
       }
     },
 
