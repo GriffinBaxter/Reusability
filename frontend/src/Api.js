@@ -319,6 +319,6 @@ export default {
         return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessType=${businessType}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`,  {
             withCredentials: true
         })
-    }
+    },
 
 }
