@@ -83,6 +83,28 @@ class ProductResourceIntegrationTests {
             "\"recommendedRetailPrice\":%.1f," +
             "\"created\":\"%s\"," +
             "\"images\":[]," +
+            "\"business\":{" +
+            "\"id\":%d," +
+            "\"administrators\":" +
+            "[{\"id\":%d," +
+            "\"firstName\":\"%s\"," +
+            "\"lastName\":\"%s\"," +
+            "\"middleName\":\"%s\"," +
+            "\"nickname\":\"%s\"," +
+            "\"bio\":\"%s\"," +
+            "\"email\":\"%s\"," +
+            "\"created\":\"%s\"," +
+            "\"role\":\"%s\"," +
+            "\"businessesAdministered\":[null]," +
+            "\"dateOfBirth\":\"%s\"," +
+            "\"phoneNumber\":\"%s\"," +
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]," +
+            "\"primaryAdministratorId\":%d," +
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"address\":%s," +
+            "\"businessType\":\"%s\"," +
+            "\"created\":\"%s\"}," +
             "\"barcode\":\"%s\"}";
 
     private String expectedJson;
@@ -564,7 +586,12 @@ class ProductResourceIntegrationTests {
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                product.getCreated(), product.getBarcode()) + "]";
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -598,7 +625,12 @@ class ProductResourceIntegrationTests {
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                product.getCreated(), product.getBarcode()) + "]";
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -632,7 +664,12 @@ class ProductResourceIntegrationTests {
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                product.getCreated(), product.getBarcode()) + "]";
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -666,7 +703,12 @@ class ProductResourceIntegrationTests {
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                product.getCreated(), product.getBarcode()) + "]";
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -1205,10 +1247,20 @@ class ProductResourceIntegrationTests {
 
         expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
-                product.getCreated(), product.getBarcode()) + "," +
-                String.format(expectedProductJson, anotherProduct.getProductId(),
-                anotherProduct.getName(), anotherProduct.getDescription(), anotherProduct.getManufacturer(),
-                anotherProduct.getRecommendedRetailPrice(), anotherProduct.getCreated(), anotherProduct.getBarcode()) + "]";
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "," +
+                String.format(expectedProductJson, anotherProduct.getProductId(), anotherProduct.getName(),
+                anotherProduct.getDescription(), anotherProduct.getManufacturer(), anotherProduct.getRecommendedRetailPrice(),
+                anotherProduct.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), anotherProduct.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product, anotherProduct);
