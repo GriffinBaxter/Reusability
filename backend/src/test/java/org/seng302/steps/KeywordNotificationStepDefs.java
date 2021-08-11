@@ -15,10 +15,7 @@ import org.seng302.model.Keyword;
 import org.seng302.model.KeywordNotification;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
-import org.seng302.model.repository.KeywordNotificationRepository;
-import org.seng302.model.repository.KeywordRepository;
-import org.seng302.model.repository.MarketCardNotificationRepository;
-import org.seng302.model.repository.UserRepository;
+import org.seng302.model.repository.*;
 import org.seng302.view.outgoing.KeywordPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -63,6 +60,10 @@ public class KeywordNotificationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
     @MockBean
+    private ListingNotificationRepository listingNotificationRepository;
+
+    @Autowired
+    @MockBean
     private KeywordRepository keywordRepository;
 
     private MockHttpServletResponse response;
@@ -81,9 +82,11 @@ public class KeywordNotificationStepDefs extends CucumberSpringConfiguration {
         userRepository = mock(UserRepository.class);
         marketCardNotificationRepository = mock(MarketCardNotificationRepository.class);
         keywordNotificationRepository = mock(KeywordNotificationRepository.class);
+        listingNotificationRepository = mock(ListingNotificationRepository.class);
         keywordRepository = mock(KeywordRepository.class);
 
-        this.notificationMvc = MockMvcBuilders.standaloneSetup(new NotificationResource(userRepository, marketCardNotificationRepository, keywordNotificationRepository)).build();
+        this.notificationMvc = MockMvcBuilders.standaloneSetup(new NotificationResource(userRepository, marketCardNotificationRepository,
+                keywordNotificationRepository, listingNotificationRepository)).build();
         this.keywordMvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
     }
 
