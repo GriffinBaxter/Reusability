@@ -1,5 +1,5 @@
 <template>
-  <div class="card" style="width: 18rem;">
+  <div class="card" style="width: 18rem;" @click="routeToSaleListing(id, inventoryItem.product.business.id)">
     <div class="row">
       <div class="col">
         <img :src="getPrimaryImageSrc(inventoryItem.product.images)" class="card-img-top" alt="default-image">
