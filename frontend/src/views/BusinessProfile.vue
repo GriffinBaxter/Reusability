@@ -130,7 +130,6 @@
               <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="11">Listings</button>
             </div>
             <div class="col">
-              <!--logout button-->
               <div style="text-align: right" id="adminButtonRow" v-if="isAdministrator">
                 <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
                         @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue

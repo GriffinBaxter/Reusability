@@ -460,12 +460,12 @@ public class ListingResource {
             // if marked before
             listing.removeUserFromABookmark(currentUser);
             currentStatus = false;
-            logger.info("Listing {} has been add to current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
+            logger.info("Listing {} has been remove from current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
         } else {
             // if not marked before
             listing.addUserToANewBookmark(currentUser);
             currentStatus = true;
-            logger.info("Listing {} has been remove from current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
+            logger.info("Listing {} has been add to current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
         }
 
         // Save status change
