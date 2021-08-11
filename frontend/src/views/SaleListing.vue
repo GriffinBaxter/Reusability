@@ -217,7 +217,9 @@ export default {
     next(vm => {
       // If the user has come from a page which contains listings then the return to listings button component
       // should be rendered.
-      vm.fromListings = from.name === 'BrowseListings';
+      if (from.name === 'BrowseListings' || from.name === 'BusinessProfile') {
+        vm.fromListings = true;
+      }
       next();
     });
   }
