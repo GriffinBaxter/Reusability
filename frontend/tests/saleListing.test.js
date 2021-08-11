@@ -525,7 +525,7 @@ describe("Testing the 'Go to Business Profile' button", () => {
                 listingId: 11
             }
         };
-        saleListingWrapper = shallowMount(SaleListing, {
+        saleListingWrapper = shallowMount(listing, {
             mocks: {
                 $router,
                 $route
