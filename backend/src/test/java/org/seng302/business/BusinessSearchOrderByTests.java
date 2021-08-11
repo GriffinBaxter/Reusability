@@ -339,16 +339,16 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
 
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
-        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
-        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("14798, Terry Highway, Frankton, Queenstown-Lakes, District, New Zealand, 2982");
+        orderedAddress.add("14798, Terry Highway, Frankton, Queenstown-Lakes, District, New Zealand, 2982");
+        orderedAddress.add("14798, Terry Highway, Frankton, Queenstown-Lakes, District, New Zealand, 2982");
 
         // when
         Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
@@ -373,9 +373,9 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
 
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
 
         // when
         Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);
@@ -400,16 +400,16 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
 
-        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
-        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
-        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
+        orderedAddress.add("14798, Terry Highway, Frankton, Queenstown-Lakes, District, New Zealand, 2982");
+        orderedAddress.add("14798, Terry Highway, Frankton, Queenstown-Lakes, District, New Zealand, 2982");
+        orderedAddress.add("14798, Terry Highway, Frankton, Queenstown-Lakes, District, New Zealand, 2982");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
 
         // when
         Page<Business> businessPage = businessRepository.findAllBusinessesByNames(names, pageable);
@@ -434,9 +434,9 @@ class BusinessSearchOrderByTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedAddress = new ArrayList<>();
 
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
 
         // when
         Page<Business> businessPage = businessRepository.findAllBusinessesByNamesAndType(names, businessType, pageable);

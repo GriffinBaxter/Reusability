@@ -14,22 +14,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
+import org.seng302.exceptions.IllegalListingNotificationArgumentException;
+import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
-import org.seng302.model.repository.BusinessRepository;
-import org.seng302.model.repository.InventoryItemRepository;
-import org.seng302.model.InventoryItem;
-import org.seng302.model.Listing;
+import org.seng302.model.repository.*;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.ListingCreationPayload;
 import org.seng302.view.outgoing.*;
-import org.seng302.model.repository.ListingRepository;
-import org.seng302.model.repository.ProductRepository;
 
 import org.seng302.Authorization;
-
-import org.seng302.model.repository.UserRepository;
-import org.seng302.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -69,6 +63,12 @@ public class ListingResource {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SoldListingRepository soldListingRepository;
+
+    @Autowired
+    private ListingNotificationRepository listingNotificationRepository;
+
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
     /**
@@ -79,17 +79,23 @@ public class ListingResource {
      * @param productRepository ProductRepository
      * @param businessRepository BusinessRepository
      * @param userRepository UserRepository
+     * @param soldListingRepository SoldListingRepository
+     * @param listingNotificationRepository ListingNotificationRepository
      */
     public ListingResource(ListingRepository listingRepository,
                            InventoryItemRepository inventoryItemRepository,
                            ProductRepository productRepository,
                            BusinessRepository businessRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           SoldListingRepository soldListingRepository,
+                           ListingNotificationRepository listingNotificationRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.productRepository = productRepository;
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
+        this.soldListingRepository = soldListingRepository;
+        this.listingNotificationRepository = listingNotificationRepository;
     }
 
     /**
@@ -473,6 +479,108 @@ public class ListingResource {
         logger.debug("Status ({}) change saved!", currentStatus);
 
         return new BookmarkStatusPayload(currentStatus);
+    }
+
+    /**
+     * PUT endpoint to purchase a given listing.
+     * Creates a SoldListing to store the sale history for the business, creates a ListingNotification for the purchaser to remind them about the purchase,
+     * creates a ListingNotification for the users who had the listing bookmarked to inform them of its removal, and deletes the Listing.
+     *
+     * @param sessionToken user's session token
+     * @param id           given listing id
+     */
+    @PutMapping("/listings/{id}/buy")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Listing bought successfully")
+    public void buyListing(@CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable String id) {
+        // 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User retrieved, ID: {}.", currentUser.getId());
+
+        // 406
+        Optional<Listing> optionalListing = listingRepository.findById(Integer.valueOf(id));
+        if (optionalListing.isEmpty()) {
+            logger.error("406 [NOT ACCEPTABLE] - Select listing ({}) not exist", id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Listing does not exist"
+            );
+        }
+
+        Listing listing = optionalListing.get();
+        String nameOfProduct = listing.getInventoryItem().getProduct().getName();
+        logger.debug("Listing {} retrieved, ID: {}.", nameOfProduct, listing.getId());
+
+        if (currentUser.getBusinessesAdministered().contains(listing.getBusinessId())) {
+            logger.error("403 [FORBIDDEN] - Cannot purchase your own listing");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Cannot purchase your own listing"
+            );
+        }
+
+        Optional<Business> optionalBusiness = businessRepository.findBusinessById(listing.getBusinessId());
+        if (optionalBusiness.isEmpty()) {
+            logger.error("500 [INTERNAL SERVER ERROR] - Business with ID {} for listing with ID {} does not exist", listing.getBusinessId(), id);
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Business for listing does not exist"
+            );
+        }
+        Business business = optionalBusiness.get();
+
+        Optional<InventoryItem> optionalInventoryItem = inventoryItemRepository.findInventoryItemById(listing.getInventoryItem().getId());
+        if (optionalInventoryItem.isEmpty()) {
+            logger.error("500 [INTERNAL SERVER ERROR] - Inventory item with ID {} for listing with ID {} does not exist", listing.getInventoryItem().getId(), id);
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Inventory item for listing does not exist"
+            );
+        }
+
+        SoldListing soldListing = new SoldListing(business, currentUser, listing.getCreated(),
+                                                    new ProductId(listing.getInventoryItem().getProduct().getProductId(),
+                                                    listing.getBusinessId()), listing.getQuantity(), listing.getPrice(),
+                                                    listing.getTotalBookmarks());
+        soldListingRepository.save(soldListing);
+        logger.info("Sold Listing Creation Success - Sold listing created for business with ID {}", listing.getBusinessId());
+
+        try {
+            String purchaserMessage = String.format("You have purchased %s x%d for $%.2f. Your purchase can be picked up from %s.",
+                                                    listing.getInventoryItem().getProduct().getName(), listing.getQuantity(),
+                                                    listing.getPrice(), business.getAddress().toOneLineString());
+            ListingNotification purchaserListingNotification = new ListingNotification(purchaserMessage);
+            purchaserListingNotification.addUser(currentUser);
+            listingNotificationRepository.save(purchaserListingNotification);
+
+            logger.info("Listing Notification Creation Success - Listing purchase notification created for purchaser");
+        } catch (IllegalListingNotificationArgumentException e) {
+            logger.error("Couldn't create listing purchase notification - {}", e.getMessage());
+        }
+
+        try {
+            String bookmarkMessage = String.format("A listing you bookmarked, %s x%d from %s, has been removed.",
+                                                    listing.getInventoryItem().getProduct().getName(), listing.getQuantity(),
+                                                    business.getName());
+            ListingNotification bookmarkListingNotification = new ListingNotification(bookmarkMessage);
+            for (User user : listing.getBookmarkedListings()) {
+                bookmarkListingNotification.addUser(user);
+            }
+            bookmarkListingNotification.removeUser(currentUser);
+            listingNotificationRepository.save(bookmarkListingNotification);
+
+            logger.info("Listing Notification Creation Success - Listing removal notification created");
+        } catch (IllegalListingNotificationArgumentException e) {
+            logger.error("Couldn't create listing removal notification - {}", e.getMessage());
+        }
+
+        listingRepository.delete(listing);
+        logger.info("Listing Notification Deletion Success - Listing with ID {} has been deleted", id);
+
+        logger.debug("Inventory item retrieved, ID: {}.", listing.getInventoryItem().getId());
+        InventoryItem inventoryItem = optionalInventoryItem.get();
+        inventoryItem.setQuantity(inventoryItem.getQuantity() - listing.getQuantity());
+
+        inventoryItemRepository.save(inventoryItem);
     }
 
     /**

@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Date;
 public class SoldListing {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -30,10 +33,10 @@ public class SoldListing {
     private User customer;
 
     @Column(name = "saleDate", nullable = false)
-    private Date saleDate;
+    private LocalDateTime saleDate;
 
     @Column(name = "listingDate", nullable = false)
-    private Date listingDate;
+    private LocalDateTime listingDate;
 
     @JoinColumn(name = "productId", nullable = false)
     private ProductId productId;
@@ -46,4 +49,15 @@ public class SoldListing {
 
     @Column(name = "bookmarks", nullable = false)
     private Integer bookmarks;
+
+    public SoldListing(Business business, User customer, LocalDateTime listingDate, ProductId productId, Integer quantity, Double price, Integer bookmarks) {
+        this.business = business;
+        this.customer = customer;
+        this.saleDate = LocalDateTime.now();
+        this.listingDate = listingDate;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.price = price;
+        this.bookmarks = bookmarks;
+    }
 }
