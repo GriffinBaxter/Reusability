@@ -2,6 +2,7 @@
   <div class="card" style="width: 18rem;">
     <!--Bookmark-->
     <div class="tag-vertical discount"
+         :id="'bookmarkButton_'+id"
          style="position:absolute; right: 5px"
          type="button"
          @click="changeBookmarkStatus">
