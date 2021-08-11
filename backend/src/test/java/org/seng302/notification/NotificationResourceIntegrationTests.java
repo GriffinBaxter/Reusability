@@ -9,6 +9,7 @@ import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.KeywordNotificationRepository;
+import org.seng302.model.repository.ListingNotificationRepository;
 import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.outgoing.KeywordPayload;
@@ -58,6 +59,9 @@ class NotificationResourceIntegrationTests {
 
     @MockBean
     private KeywordNotificationRepository keywordNotificationRepository;
+
+    @MockBean
+    private ListingNotificationRepository listingNotificationRepository;
 
     private MockHttpServletResponse response;
 
@@ -189,7 +193,8 @@ class NotificationResourceIntegrationTests {
         keywordNotification.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(
-                new NotificationResource(userRepository, marketCardNotificationRepository, keywordNotificationRepository))
+                new NotificationResource(userRepository, marketCardNotificationRepository,
+                        keywordNotificationRepository, listingNotificationRepository))
                 .build();
     }
 

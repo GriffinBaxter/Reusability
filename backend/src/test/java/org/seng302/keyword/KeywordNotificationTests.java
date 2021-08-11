@@ -11,8 +11,6 @@ import org.seng302.model.Keyword;
 import org.seng302.model.KeywordNotification;
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.fail;
-
 
 /**
  * KeywordNotification test class.
