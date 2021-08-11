@@ -1,5 +1,5 @@
 import {test, expect, describe, jest, beforeEach} from "@jest/globals"
-import listing from "@/views/SaleListing"
+import listing from "../src/views/SaleListing"
 import defaultImage from "./../public/default-product.jpg"
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import VueLogger from "vuejs-logger";
