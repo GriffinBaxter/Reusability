@@ -82,32 +82,56 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
 
     private String expectedJSON;
 
-    private final String expectedListingJSON = "{" +
-            "\"id\":%s," +
-            "\"inventoryItem\":" +
-            "{\"id\":%s," +
-            "\"product\":{" +
-            "\"id\":\"%s\"," +
-            "\"name\":\"%s\"," +
-            "\"description\":\"%s\"," +
-            "\"manufacturer\":\"%s\"," +
-            "\"recommendedRetailPrice\":%.1f," +
-            "\"created\":\"%s\"," +
-            "\"images\":[]," +
-            "\"barcode\":\"%s\"}," +
-            "\"quantity\":%d," +
-            "\"pricePerItem\":%.1f," +
-            "\"totalPrice\":%.1f," +
-            "\"manufactured\":\"%s\"," +
-            "\"sellBy\":\"%s\"," +
-            "\"bestBefore\":\"%s\"," +
-            "\"expires\":\"%s\"}," +
-            "\"quantity\":%d," +
-            "\"price\":%.1f," +
-            "\"moreInfo\":\"%s\"," +
-            "\"created\":\"%s\"," +
-            "\"closes\":\"%s\"" +
-            "}";
+    private final String expectedListingJSON =
+            "{\"id\":%d," +
+                    "\"inventoryItem\":" +
+                    "{\"id\":%d," +
+                    "\"product\":{" +
+                    "\"id\":\"%s\"," +
+                    "\"name\":\"%s\"," +
+                    "\"description\":\"%s\"," +
+                    "\"manufacturer\":\"%s\"," +
+                    "\"recommendedRetailPrice\":%.1f," +
+                    "\"created\":\"%s\"," +
+                    "\"images\":[]," +
+                    "\"business\":{" +
+                    "\"id\":%d," +
+                    "\"administrators\":" +
+                    "[{\"id\":%d," +
+                    "\"firstName\":\"%s\"," +
+                    "\"lastName\":\"%s\"," +
+                    "\"middleName\":\"%s\"," +
+                    "\"nickname\":\"%s\"," +
+                    "\"bio\":\"%s\"," +
+                    "\"email\":\"%s\"," +
+                    "\"created\":\"%s\"," +
+                    "\"role\":\"%s\"," +
+                    "\"businessesAdministered\":[null]," +
+                    "\"dateOfBirth\":\"%s\"," +
+                    "\"phoneNumber\":\"%s\"," +
+                    "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]," +
+                    "\"primaryAdministratorId\":%d," +
+                    "\"name\":\"%s\"," +
+                    "\"description\":\"%s\"," +
+                    "\"address\":%s," +
+                    "\"businessType\":\"%s\"," +
+                    "\"created\":\"%s\"}," +
+                    "\"barcode\":\"%s\"}," +
+                    "\"quantity\":%d," +
+                    "\"pricePerItem\":%.1f," +
+                    "\"totalPrice\":%.1f," +
+                    "\"manufactured\":\"%s\"," +
+                    "\"sellBy\":\"%s\"," +
+                    "\"bestBefore\":\"%s\"," +
+                    "\"expires\":\"%s\"}," +
+                    "\"quantity\":%d," +
+                    "\"price\":%.1f," +
+                    "\"moreInfo\":\"%s\"," +
+                    "\"created\":\"%s\"," +
+                    "\"closes\":\"%s\"," +
+                    "\"isBookmarked\":%s," +
+                    "\"totalBookmarks\":%d" +
+                    "}";
 
     @Before
     public void setup() throws Exception {
@@ -275,7 +299,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     @Given("there exists a listing with name {string}")
     public void thereExistsAListingWithName(String name) throws IllegalListingArgumentException {
         LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
-        
+
         listing = new Listing(
                 inventoryItem,
                 3,
@@ -293,11 +317,11 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     public void iSearchForListingsWithNoFilters() throws Exception {
         String searchQuery = "";
         List<String> names = Arrays.asList(searchQuery);
-        
+
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -311,27 +335,41 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     @Then("I receive the listing with name {string}")
     public void iReceiveTheListingWithName(String name) throws UnsupportedEncodingException {
         if (name.equals("Beans")) {
-            expectedJSON = "[" + String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), name,
-                    product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(), product.getBarcode(),
-                    inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+            expectedJSON = "[" + String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                    product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                    anotherBusiness.getId(), anotherUser.getId(), anotherUser.getFirstName(), anotherUser.getLastName(), anotherUser.getMiddleName(), anotherUser.getNickname(),
+                    anotherUser.getBio(), anotherUser.getEmail(), anotherUser.getCreated(), anotherUser.getRole(), anotherUser.getDateOfBirth(), anotherUser.getPhoneNumber(),
+                    anotherUser.getHomeAddress().getStreetNumber(), anotherUser.getHomeAddress().getStreetName(), anotherUser.getHomeAddress().getCity(),
+                    anotherUser.getHomeAddress().getRegion(), anotherUser.getHomeAddress().getCountry(), anotherUser.getHomeAddress().getPostcode(),
+                    anotherUser.getHomeAddress().getSuburb(), anotherBusiness.getPrimaryAdministratorId(), anotherBusiness.getName(),
+                    anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(),
+                    product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                     inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
-                    listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString())
+                    listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
+                    listing.isBookmarked(anotherUser), listing.getTotalBookmarks())
                     + "]";
         } else {
-            expectedJSON = "[" + String.format(expectedListingJSON, listing2.getId(), inventoryItem2.getId(), product2.getProductId(), name,
-                    product2.getDescription(), product2.getManufacturer(), product2.getRecommendedRetailPrice(), product2.getCreated(), product2.getBarcode(),
-                    inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
+            expectedJSON = "[" + String.format(expectedListingJSON, listing2.getId(), inventoryItem2.getId(), product2.getProductId(), product2.getName(),
+                    product2.getDescription(), product2.getManufacturer(), product2.getRecommendedRetailPrice(), product2.getCreated(),
+                    business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                    user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                    user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                    user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                    user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                    business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                    product2.getBarcode(), inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
                     inventoryItem2.getManufactured(), inventoryItem2.getSellBy(), inventoryItem2.getBestBefore(), inventoryItem2.getExpires(),
-                    listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString())
+                    listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString(),
+                    listing2.isBookmarked(user), listing2.getTotalBookmarks())
                     + "]";
         }
-        
+
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 
     /* ------------------------------------------AC4------------------------------------------ */
-    
+
     @Given("there exists listings with names {string} and {string}")
     public void thereExistsListingsWithNamesAnd(String name1, String name2) throws IllegalListingArgumentException {
 
@@ -367,7 +405,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing2, listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.desc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -381,16 +419,31 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
 
     @Then("I receive the listings with names {string} and {string} in that order")
     public void iReceiveTheListingsWithNamesAndInThatOrder(String name2, String name1) throws UnsupportedEncodingException {
-        expectedJSON = "[" + String.format(expectedListingJSON, listing2.getId(), inventoryItem2.getId(), product2.getProductId(), name2,
-                product2.getDescription(), product2.getManufacturer(), product2.getRecommendedRetailPrice(), product2.getCreated(), product2.getBarcode(),
-                inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
+
+        expectedJSON = "[" + String.format(expectedListingJSON, listing2.getId(), inventoryItem2.getId(), product2.getProductId(), product2.getName(),
+                product2.getDescription(), product2.getManufacturer(), product2.getRecommendedRetailPrice(), product2.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
+                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
+                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                product2.getBarcode(), inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
                 inventoryItem2.getManufactured(), inventoryItem2.getSellBy(), inventoryItem2.getBestBefore(), inventoryItem2.getExpires(),
-                listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString())
-                + "," + String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), name1,
-                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(), product.getBarcode(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString(),
+                listing2.isBookmarked(user), listing2.getTotalBookmarks())
+                + "," + String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                anotherBusiness.getId(), anotherUser.getId(), anotherUser.getFirstName(), anotherUser.getLastName(), anotherUser.getMiddleName(), anotherUser.getNickname(),
+                anotherUser.getBio(), anotherUser.getEmail(), anotherUser.getCreated(), anotherUser.getRole(), anotherUser.getDateOfBirth(), anotherUser.getPhoneNumber(),
+                anotherUser.getHomeAddress().getStreetNumber(), anotherUser.getHomeAddress().getStreetName(), anotherUser.getHomeAddress().getCity(),
+                anotherUser.getHomeAddress().getRegion(), anotherUser.getHomeAddress().getCountry(), anotherUser.getHomeAddress().getPostcode(),
+                anotherUser.getHomeAddress().getSuburb(), anotherBusiness.getPrimaryAdministratorId(), anotherBusiness.getName(),
+                anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
-                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString())
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
+                listing.isBookmarked(anotherUser), listing.getTotalBookmarks())
                 + "]";
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -398,7 +451,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     }
 
     /* ------------------------------------------AC5------------------------------------------ */
-    
+
     @When("I search for listings with businesses of type retail trade")
     public void iSearchForListingsWithBusinessesOfTypeRetailTrade() throws Exception {
         String searchQuery = "";
@@ -410,7 +463,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing2);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, convertedBusinessType, null, null, null, null
@@ -423,7 +476,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     }
 
     /* ------------------------------------------AC6------------------------------------------ */
-    
+
     @When("I search for product names with the query {string}")
     public void iSearchForProductNamesWithTheQuery(String query) throws Exception {
         List<String> names = Arrays.asList(query);
@@ -431,7 +484,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -452,7 +505,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, minimum, maximum, null, null
@@ -466,7 +519,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     }
 
     /* ------------------------------------------AC8------------------------------------------ */
-    
+
     @When("I search for products for business names with the query {string}")
     public void iSearchForProductsForBusinessNamesWithTheQuery(String businessName) throws Exception {
         List<String> names = Arrays.asList(businessName);
@@ -474,7 +527,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing2);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByBusinessName(
                 names, paging, null, null, null, null, null
@@ -487,7 +540,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     }
 
     /* ------------------------------------------AC9------------------------------------------ */
-    
+
     @When("I search for products for business addresses with the query {string}")
     public void iSearchForProductsForBusinessAddressesWithTheQuery(String addressName) throws Exception {
         List<String> names = Arrays.asList(addressName);
@@ -495,7 +548,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByLocation(
                 names, paging, null, null, null, null, null
@@ -508,7 +561,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     }
 
     /* ------------------------------------------AC10------------------------------------------ */
-    
+
     @When("I limit the closing date range to from {string} to {string}")
     public void iLimitTheClosingDateRangeToFromTo(String fromDate, String toDate) throws Exception {
         String searchQuery = "";
@@ -517,7 +570,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 10, sort);
+        Pageable paging = PageRequest.of(0, 9, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null,

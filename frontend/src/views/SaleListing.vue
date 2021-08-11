@@ -5,8 +5,7 @@
     <main class="listing-wrapper">
         <!-- Listing header -->
         <div class="title-content">
-          <!-- Product info -->
-          <div id="Listing-name">Product Name</div>
+          <div id="listing-name">Product Name</div>
           <div class="listing-dates-wrapper">
             <h6>Listing Date: [Listing Date]</h6>
             <h6>Closing Date: [closing Date]</h6>
@@ -94,10 +93,10 @@
 </template>
 
 <script>
-import Navbar from "../components/main/Navbar";
-import Footer from "../components/main/Footer"
-import DefaultImage from "../../public/default-product.jpg"
-import Api from "../Api";
+  import Navbar from "../components/main/Navbar";
+  import Footer from "../components/main/Footer"
+  import DefaultImage from "../../public/default-product.jpg"
+  import Api from "../Api";
 
 export default {
   name: "SaleListing",
@@ -223,6 +222,105 @@ export default {
     });
   }
 }
+  export default {
+    name: "SaleListing",
+    components: {
+      Navbar,
+      Footer
+    },
+    data() {
+      return {
+        mainImageIndex: 0,
+        carouselStartIndex: 0,
+        carouselNumImages: 3,
+        saleImages: [
+          {
+            thumbnailFilename: "",
+            filename: ""
+          },
+          {
+            thumbnailFilename: "",
+            filename: ""
+          },
+          {
+            thumbnailFilename: "",
+            filename: ""
+          },
+          {
+            thumbnailFilename: "",
+            filename: ""
+          },
+          {
+            thumbnailFilename: "",
+            filename: ""
+          }
+        ],
+      }
+    },
+    methods: {
+      /**
+       * Retrieves the filename (url path) for the currently chosen image for the listing.
+       *
+       * @return {string} Returns the URL to the image source (either backend or default image if not found).
+       */
+      getMainImage() {
+        if (this.mainImageIndex < this.saleImages.length && this.mainImageIndex >= 0 && this.saleImages[this.mainImageIndex].filename) {
+          return Api.getServerResourcePath(this.saleImages[this.mainImageIndex].filename);
+        }
+        return DefaultImage;
+      },
+      /**
+       * Retrieves the carousel (thumbnail) image for a given index.
+       *
+       * @param index Index of the image in the salesImages array.
+       * @return {string} Returns the URL to the image source (either backend or default image if not found).
+       */
+      getCarouselImage(index) {
+        if (this.saleImages.length > index && index >= 0 && this.saleImages[index].thumbnailFilename) {
+          return Api.getServerResourcePath(this.saleImages[index].thumbnailFilename);
+        }
+        return DefaultImage;
+      },
+      /**
+       * Retrives the list of image indexes visible.
+       *
+       * @return {number[]} Returns a list of the images currently visible in the carousel (3 images)
+       */
+      getVisibleImages() {
+        let visibleImageIndices = [];
+        for (let i = this.carouselStartIndex; i<this.carouselStartIndex+this.carouselNumImages; i++) {
+          visibleImageIndices.push(this.boundIndex(i, this.saleImages.length));
+        }
+        return visibleImageIndices;
+      },
+      /**
+       * Bounds an index to the possible values within the given max length.
+       *
+       * @param index Index we want to bound.
+       * @param maxLength Max length of the list.
+       * @return {number} Returns the index within the bounds.
+       */
+      boundIndex(index, maxLength) {
+        let newIndex = index;
+        while (newIndex < 0) {
+          newIndex += maxLength;
+        }
+        return newIndex % maxLength;
+      },
+      /**
+       * Goes to the next iamge on the carousel.
+       */
+      nextImage() {
+        this.carouselStartIndex = this.boundIndex(this.carouselStartIndex+1, this.saleImages.length);
+      },
+      /**
+       * Goes to the previous iamge on the carousel.
+       */
+      previousImage() {
+        this.carouselStartIndex = this.boundIndex(this.carouselStartIndex-1, this.saleImages.length);
+      }
+    }
+  }
 </script>
 
 <style scoped>
@@ -234,7 +332,7 @@ export default {
     cursor: pointer;
   }
 
-  #Listing-name {
+  #listing-name {
     font-size: 3rem;
     margin-left: -0.18rem;
     font-family: 'Merriweather Sans', sans-serif;
@@ -343,6 +441,7 @@ export default {
     margin-bottom: 1.5rem;
   }
 
+  /* These two classes are used, but are not being picked up... :*( */
   .sale-carousel-image {
     width: 100%;
     height: auto;
