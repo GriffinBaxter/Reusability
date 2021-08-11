@@ -330,7 +330,7 @@ export default {
 
     // Change the status for current user to given listing.
     changeStatusOfAListing: (id) => {
-        return instance.put(`/listings/${id}/bookmark`, {
+        return instance.put(`/listings/${id}/bookmark`, {},{
             withCredentials: true
         })
     },
