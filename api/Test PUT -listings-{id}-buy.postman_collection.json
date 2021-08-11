@@ -51,7 +51,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:9499/businesses/2/inventoryItem/15",
+					"raw": "http://localhost:9499/businesses/2/inventory",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -60,8 +60,7 @@
 					"path": [
 						"businesses",
 						"2",
-						"inventoryItem",
-						"15"
+						"inventory"
 					]
 				}
 			},
@@ -113,7 +112,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:9499/businesses/2/listings/12",
+					"raw": "http://localhost:9499/businesses/2/listings/15",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -123,7 +122,7 @@
 						"businesses",
 						"2",
 						"listings",
-						"12"
+						"15"
 					]
 				}
 			},
