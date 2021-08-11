@@ -6,7 +6,7 @@
 
         <!-- Listing header -->
         <div class="title-content">
-          <div id="Listing-name">Product Name</div>
+          <div id="listing-name">Product Name</div>
           <div class="listing-dates-wrapper">
             <h6>Listing Date: [Listing Date]</h6>
             <h6>Closing Date: [closing Date]</h6>
@@ -35,7 +35,7 @@
             </div>
           </div>
 
-          <!-- Bussiness information -->
+          <!-- Business information -->
           <div class="business-wrapper">
             <h5>Business Name</h5>
             <div class="business-address-wrapper">
@@ -201,7 +201,7 @@
     cursor: pointer;
   }
 
-  #Listing-name {
+  #listing-name {
     font-size: 3rem;
     margin-left: -0.18rem;
     font-family: 'Merriweather Sans', sans-serif;
