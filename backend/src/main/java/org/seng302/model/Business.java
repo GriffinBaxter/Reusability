@@ -17,6 +17,8 @@ import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.Validation;
+import org.seng302.view.outgoing.AddressPayload;
+import org.seng302.view.outgoing.BusinessPayload;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -287,6 +289,25 @@ public class Business {
             }
         }
         return false;
+    }
+
+    /**
+     * Converts the business to payload form and returns it.
+     * @return A payload representation of the business
+     */
+    public BusinessPayload toBusinessPayload () throws Exception {
+        AddressPayload addressPayload = address.toAddressPayload();
+
+        return new BusinessPayload(
+                id,
+                administrators,
+                primaryAdministratorId,
+                name,
+                description,
+                addressPayload,
+                businessType,
+                created
+        );
     }
 
     /**

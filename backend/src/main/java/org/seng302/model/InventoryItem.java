@@ -14,6 +14,7 @@ package org.seng302.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalInventoryItemArgumentException;
+import org.seng302.view.outgoing.InventoryItemPayload;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -253,11 +254,43 @@ public class InventoryItem {
      * This quantity is needed to validate whether a listing should be created based on its quantity.
      * @return totalListed the total quantity of this inventory item listed for sale.
      */
-    public int getInventoryItemQuantityListed(){
+    public int getInventoryItemQuantityListed() {
         int totalListed = 0;
         for (Listing listing: listings) {
             totalListed += listing.getQuantity();
         }
         return totalListed;
+    }
+
+    /**
+     * Converts an inventory item into an InventoryItemPayload
+     * @throws Exception An exception that may be thrown from converting a product to a payload form
+     */
+    public InventoryItemPayload convertToPayload() throws Exception {
+
+        String manufacturedString;
+        if (manufactured == null) {
+            manufacturedString = "";
+        } else {
+            manufacturedString = manufactured.toString();
+        }
+
+        String bestBeforeString;
+        if (bestBefore == null) {
+            bestBeforeString = "";
+        } else {
+            bestBeforeString = bestBefore.toString();
+        }
+
+        String sellByString;
+        if (sellBy == null) {
+            sellByString = "";
+        } else {
+            sellByString = sellBy.toString();
+        }
+
+        return new InventoryItemPayload(id, product.convertToPayload(),
+                quantity, pricePerItem, totalPrice, manufacturedString,
+                sellByString, bestBeforeString, expires.toString());
     }
 }

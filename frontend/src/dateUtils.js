@@ -8,11 +8,14 @@ import {format, parseISO} from "date-fns";
  * @return {string|null}
  */
 export function formatDate(dateString, dateAndTime=true) {
+    if (dateString === "") {
+        return null
+    }
     if (dateAndTime) {
         if (typeof dateString === "string") {
-            return format(parseISO(dateString), "do MMM yyyy h:m bbb")
+            return format(parseISO(dateString), "do MMM yyyy h:mm aaa")
         } else {
-            return dateString ? format(dateString, "do MMM yyyy h:m bbb") : null
+            return dateString ? format(dateString, "do MMM yyyy h:mm aaa") : null
         }
     } else {
         if (typeof dateString === "string") {
