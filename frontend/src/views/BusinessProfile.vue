@@ -9,7 +9,7 @@
     <div class="container p-5" id="profileContainer">
       <div class="row">
       <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
-        <button class="btn btn-lg green-button w-100" @click="returnToListing()" id="return-button">Return to Sale Listing</button>
+        <button class="btn btn-lg green-button w-100" @click="returnToListing()" id="return-button" tabindex="9">Return to Sale Listing</button>
       </div>
       </div>
 
@@ -133,17 +133,17 @@
           <div class="row">
 
             <div class="col">
-              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="11">Listings</button>
+              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="0">Listings</button>
             </div>
 
             <div class="col">
               <div style="text-align: right" id="adminButtonRow" v-if="isAdministrator">
-                <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
-                        @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue
-
+                <button class="btn green-button mt-4 mx-2" id="InventoryButton"
+                        @click="navigateTo('Inventory')" tabindex="0">Inventory
                 </button>
-                <button class="btn green-button float-end mt-4 mx-2" id="InventoryButton"
-                        @click="navigateTo('Inventory')" tabindex="12">Inventory
+                <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
+                        @click="navigateTo('ProductCatalogue')" tabindex="0">Product Catalogue
+
                 </button>
               </div>
             </div>

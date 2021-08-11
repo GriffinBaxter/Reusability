@@ -15,7 +15,7 @@
         <div class="left-content">
           <!-- Return to sales listings button-->
           <div class="return-button-wrapper mb-3 w-100" v-if="fromListings">
-            <button class="btn btn-lg green-button w-100" @click="returnToSales()" id="return-button">Return to Sale Listings</button>
+            <button class="btn btn-lg green-button w-100" @click="returnToSales()" id="return-button" tabindex="8">Return to Sale Listings</button>
           </div>
           <!-- Image section -->
           <div class="listing-images-wrapper">
@@ -59,7 +59,7 @@
               $3000.00
             </h6>
             <div class="buy-button-wrapper">
-              <div class="buy-button merriweather">
+              <div class="buy-button merriweather" tabindex="9">
                 Buy
               </div>
               <div class="barcode-wrapper">

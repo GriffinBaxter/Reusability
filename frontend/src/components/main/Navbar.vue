@@ -166,7 +166,7 @@
                   <hr class="line-separator">
                   <!-- Log out link-->
                   <li class="nav-item">
-                    <a class="nav-link" id="logout-btn" style="cursor: pointer; background-color: #fd5050;" tabindex="5" @click="e =>logout(e)"
+                    <a class="nav-link" id="logout-btn" style="cursor: pointer; background-color: #fd5050;" @click="e =>logout(e)"
                        @keyup.enter="e =>logout(e)">Log out</a>
                   </li>
                 </ul>
