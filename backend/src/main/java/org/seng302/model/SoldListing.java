@@ -2,6 +2,7 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.view.outgoing.SoldListingPayload;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -59,5 +60,14 @@ public class SoldListing {
         this.quantity = quantity;
         this.price = price;
         this.bookmarks = bookmarks;
+    }
+
+    /**
+     * Converts a SoldListing into its payload representation
+     * @return SoldListingPayload
+     * @throws Exception an exception potentially thrown by the conversion of the user to a payload
+     */
+    public SoldListingPayload toSoldListingPayload() throws Exception {
+        return new SoldListingPayload(id, customer.toUserPayloadSecure(), productId, quantity, price, bookmarks, listingDate.toString(), saleDate.toString());
     }
 }

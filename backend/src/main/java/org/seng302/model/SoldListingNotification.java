@@ -2,6 +2,9 @@ package org.seng302.model;
 
 import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
+import org.seng302.model.enums.NotificationType;
+import org.seng302.view.outgoing.ListingNotificationPayload;
+import org.seng302.view.outgoing.SoldListingNotificationPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -60,6 +63,27 @@ public class SoldListingNotification {
         this.soldListing = soldListing.getBusiness().getBusinessId();
         this.description = description;
         this.created = LocalDateTime.now();
+    }
+
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the SoldListingNotification.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id + "," +
+                "\"businessId\":" + businessId + "," +
+                "\"soldListing\":" + soldListing + "," +
+                "\"description\":\"" + description + "\"," +
+                "\"created\":\"" + created + "\"}";
+    }
+
+    /**
+     * Create a new payload that will be sent to the frontend in a GET request
+     * @return a payload representing the sold listing notification
+     */
+    public SoldListingNotificationPayload toSoldListingNotificationPayload() throws Exception {
+        return new SoldListingNotificationPayload(id, soldListing.toSoldListingPayload(), description, created, NotificationType.SOLD_LISTING);
     }
 
     /*---------------------------------------------------Validation---------------------------------------------------*/
