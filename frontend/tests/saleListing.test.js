@@ -30,7 +30,11 @@ let response = {
                 manufacturer: "Arnotts",
                 recommendedRetailPrice: 2.99,
                 created: "2021-05-12T00:00",
-                images: [{isPrimary: "true"}],
+                images: [
+                    {isPrimary: false},
+                    {isPrimary: false},
+                    {isPrimary: true}
+                ],
                 business: {
                     id: 1,
                     administrators: [
@@ -90,8 +94,8 @@ let response = {
         moreInfo: "Limited Stock.",
         created: "2021-05-12T00:00",
         closes: "2021-09-10T00:00",
-        isBookmarked: false,
-        totalBookmarks: 0
+        isBookmarked: "false",
+        totalBookmarks: 10
     }
 
 }
@@ -685,3 +689,73 @@ describe("Tests for previousImage function", () => {
         expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(0);
     })
 })
+
+describe("Test data population", () =>{
+    beforeEach(() => {
+        wrapper = shallowMount(listing, {
+            localVue,
+        })
+        wrapper.vm.populateData(response.data)
+    })
+
+    test("Test product info been populated", async () => {
+        expect(wrapper.vm.$data.productName).toStrictEqual(response.data.inventoryItem.product.name);
+        expect(wrapper.vm.$data.productId).toStrictEqual(response.data.inventoryItem.product.id);
+        expect(wrapper.vm.$data.price).toStrictEqual(response.data.price);
+        expect(wrapper.vm.$data.barcode).toStrictEqual(response.data.inventoryItem.product.barcode);
+        expect(wrapper.vm.$data.description).toStrictEqual(response.data.inventoryItem.product.description);
+        expect(wrapper.vm.$data.quantity).toStrictEqual(response.data.quantity);
+    })
+
+    test("Test image info been populated", async () => {
+        expect(wrapper.vm.$data.saleImages).toStrictEqual(response.data.inventoryItem.product.images);
+        expect(wrapper.vm.$data.carouselNumImages).toStrictEqual(response.data.inventoryItem.product.images.length);
+        expect(wrapper.vm.$data.mainImageIndex).toStrictEqual(2);
+        expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(2);
+    })
+
+    test("Test date info been populated", async () => {
+        expect(wrapper.vm.$data.startDate).toStrictEqual(response.data.created);
+        expect(wrapper.vm.$data.closeData).toStrictEqual(response.data.closes);
+        expect(wrapper.vm.$data.manufactured).toStrictEqual(response.data.inventoryItem.manufactured);
+        expect(wrapper.vm.$data.sellBy).toStrictEqual(response.data.inventoryItem.sellBy);
+        expect(wrapper.vm.$data.bestBefore).toStrictEqual(response.data.inventoryItem.bestBefore);
+        expect(wrapper.vm.$data.expires).toStrictEqual(response.data.inventoryItem.expires);
+        expect(wrapper.vm.$data.manufacturer).toStrictEqual(response.data.inventoryItem.product.manufacturer);
+    })
+
+    test("Test business info been populated", async () => {
+        expect(wrapper.vm.$data.businessName).toStrictEqual(response.data.inventoryItem.product.business.name);
+        expect(wrapper.vm.$data.businessAddress).toStrictEqual(response.data.inventoryItem.product.business.address);
+    })
+
+    test("Test address info been populated", async () => {
+        expect(wrapper.vm.$data.businessAddressLine1).toStrictEqual("86 High Street");
+        expect(wrapper.vm.$data.businessAddressLine2).toBeNull();
+        expect(wrapper.vm.$data.businessAddressLine3).toStrictEqual("Picton, 7220");
+        expect(wrapper.vm.$data.businessAddressLine4).toStrictEqual("Marlborough, New Zealand");
+    })
+
+    test("Test bookmark info been populated", async () => {
+        expect(wrapper.vm.$data.listingId).toStrictEqual(response.data.id);
+        expect(wrapper.vm.$data.isBookmarked).toStrictEqual(response.data.isBookmarked);
+        expect(wrapper.vm.$data.totalBookmarks).toStrictEqual(10);
+    })
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

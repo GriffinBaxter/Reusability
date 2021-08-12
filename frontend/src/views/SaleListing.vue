@@ -255,6 +255,7 @@ export default {
      * @param data data
      */
     populateData(data) {
+      // product info
       this.productName = data.inventoryItem.product.name;
       this.productId = data.inventoryItem.product.id;
       this.price = data.price;
