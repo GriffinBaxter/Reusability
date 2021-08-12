@@ -94,7 +94,7 @@ let response = {
         moreInfo: "Limited Stock.",
         created: "2021-05-12T00:00",
         closes: "2021-09-10T00:00",
-        isBookmarked: "false",
+        isBookmarked: false,
         totalBookmarks: 10
     }
 
@@ -103,6 +103,7 @@ let response = {
 beforeEach(() => {
     Api.getServerResourcePath.mockImplementation((stringPart) => resourcePath + stringPart);
     Api.getDetailForAListing.mockImplementation(() => Promise.resolve(response));
+    Api.changeStatusOfAListing.mockResolvedValue(() => {});
 })
 
 afterEach(() => {
@@ -692,13 +693,17 @@ describe("Tests for previousImage function", () => {
 
 describe("Test data population", () =>{
     beforeEach(() => {
+        // given
         wrapper = shallowMount(listing, {
             localVue,
         })
+
+        // when
         wrapper.vm.populateData(response.data)
     })
 
     test("Test product info been populated", async () => {
+        // then
         expect(wrapper.vm.$data.productName).toStrictEqual(response.data.inventoryItem.product.name);
         expect(wrapper.vm.$data.productId).toStrictEqual(response.data.inventoryItem.product.id);
         expect(wrapper.vm.$data.price).toStrictEqual(response.data.price);
@@ -708,6 +713,7 @@ describe("Test data population", () =>{
     })
 
     test("Test image info been populated", async () => {
+        // then
         expect(wrapper.vm.$data.saleImages).toStrictEqual(response.data.inventoryItem.product.images);
         expect(wrapper.vm.$data.carouselNumImages).toStrictEqual(response.data.inventoryItem.product.images.length);
         expect(wrapper.vm.$data.mainImageIndex).toStrictEqual(2);
@@ -715,6 +721,7 @@ describe("Test data population", () =>{
     })
 
     test("Test date info been populated", async () => {
+        // then
         expect(wrapper.vm.$data.startDate).toStrictEqual(response.data.created);
         expect(wrapper.vm.$data.closeData).toStrictEqual(response.data.closes);
         expect(wrapper.vm.$data.manufactured).toStrictEqual(response.data.inventoryItem.manufactured);
@@ -725,11 +732,13 @@ describe("Test data population", () =>{
     })
 
     test("Test business info been populated", async () => {
+        // then
         expect(wrapper.vm.$data.businessName).toStrictEqual(response.data.inventoryItem.product.business.name);
         expect(wrapper.vm.$data.businessAddress).toStrictEqual(response.data.inventoryItem.product.business.address);
     })
 
     test("Test address info been populated", async () => {
+        // then
         expect(wrapper.vm.$data.businessAddressLine1).toStrictEqual("86 High Street");
         expect(wrapper.vm.$data.businessAddressLine2).toBeNull();
         expect(wrapper.vm.$data.businessAddressLine3).toStrictEqual("Picton, 7220");
@@ -737,13 +746,69 @@ describe("Test data population", () =>{
     })
 
     test("Test bookmark info been populated", async () => {
+        // then
         expect(wrapper.vm.$data.listingId).toStrictEqual(response.data.id);
         expect(wrapper.vm.$data.isBookmarked).toStrictEqual(response.data.isBookmarked);
         expect(wrapper.vm.$data.totalBookmarks).toStrictEqual(10);
     })
 })
 
+describe("Test bookmark display counter and icon", () => {
+    beforeEach(() => {
+        // given
+        wrapper = shallowMount(listing, {
+            localVue
+        });
+    })
 
+    test("Test user can add a bookmark, if user not mark current listing.", async function () {
+        expect(wrapper.find("#bookmarks").text()).toBe("10")
+
+        // when
+        await wrapper.find("#bookmarks").trigger('click');
+        await wrapper.vm.$nextTick()
+
+        // then
+        expect(wrapper.find("#bookmarks").text()).toBe("11")
+    });
+
+    test("Test user can remove a bookmark, if user marked current listing.", async function () {
+        await wrapper.find("#bookmarks").trigger('click');
+        await wrapper.vm.$nextTick()
+        expect(wrapper.find("#bookmarks").text()).toBe("11")
+
+        // when
+        await wrapper.find("#bookmarks").trigger('click');
+        await wrapper.vm.$nextTick()
+
+        // then
+        expect(wrapper.find("#bookmarks").text()).toBe("10")
+    });
+
+    test("Test when user add a bookmark, the icon change .", async function () {
+        expect(wrapper.find("#un-marked").exists()).toBeTruthy()
+
+        // when
+        await wrapper.find("#bookmarks").trigger('click');
+        await wrapper.vm.$nextTick()
+
+        // then
+        expect(wrapper.find("#marked").exists()).toBeTruthy()
+    });
+
+    test("Test when user remove a bookmark, the icon change.", async function () {
+        await wrapper.find("#bookmarks").trigger('click');
+        await wrapper.vm.$nextTick()
+        expect(wrapper.find("#marked").exists()).toBeTruthy()
+
+        // when
+        await wrapper.find("#bookmarks").trigger('click');
+        await wrapper.vm.$nextTick()
+
+        // then
+        expect(wrapper.find("#un-marked").exists()).toBeTruthy()
+    });
+})
 
 
 
