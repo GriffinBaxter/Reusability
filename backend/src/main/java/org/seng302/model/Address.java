@@ -381,13 +381,14 @@ public class Address {
      * @return a string containing address info in string form
      */
     public String toOneLineString() {
-        return streetNumber + ", "
-                + streetName + ", "
-                + suburb + ", "
-                + city + ", "
-                + region + ", "
-                + country + ", "
-                + postcode;
+        String address = (streetNumber != null ? streetNumber : "")
+                        + (streetName != null ? ", " + streetName : "")
+                        + (suburb != null ? ", " + suburb : "")
+                        + (city != null ? ", " + city : "")
+                        + (region != null ? ", " + region : "")
+                        + (country != null ? ", " + country : "")
+                        + (postcode != null ? ", " + postcode : "");
+        return (address.startsWith(", ") ? address.substring(2) : address);
     }
 
     /* --------------------------------Validation-------------------------------- */
