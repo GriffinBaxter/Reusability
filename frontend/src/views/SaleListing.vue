@@ -17,8 +17,10 @@
         <div class="left-content">
           <!-- Image section -->
           <div class="listing-images-wrapper">
-            <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image" class="no-highlight"/>
-            <div class="images-carousel-wrapper">
+            <div id="main-image-wrapper">
+              <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image" class="no-highlight"/>
+            </div>
+            <div class="images-carousel-wrapper" v-if="saleImages.length > 1">
               <div class="carousel-arrow clickable no-highlight" @click="nextImage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                      class="bi bi-chevron-left" viewBox="0 0 16 16">
@@ -76,7 +78,7 @@
                 Buy
               </div>
               <div class="barcode-wrapper">
-                <div id="barcode-number">Barcode: {{ barcode }}</div>
+                <div id="barcode-number" v-if="barcode">Barcode: {{ barcode }}</div>
               </div>
             </div>
           </div>
@@ -89,11 +91,11 @@
               <div>Quantity: {{ quantity }}</div>
             </div>
             <div class="product-information-space">
-              <div>Manufactured: {{ manufactured }}</div>
-              <div>Sell by: {{ sellBy }}</div>
-              <div>Best before: {{ bestBefore }}</div>
+              <div v-if="manufactured">Manufactured: {{ manufactured }}</div>
+              <div v-if="sellBy">Sell by: {{ sellBy }}</div>
+              <div v-if="bestBefore">Best before: {{ bestBefore }}</div>
               <div>Expires: {{ expires }}</div>
-              <div>Manufacturer: {{ manufacturer }}</div>
+              <div v-if="manufacturer">Manufacturer: {{ manufacturer }}</div>
             </div>
           </div>
 
@@ -131,28 +133,7 @@ export default {
       mainImageIndex: 0,
       carouselStartIndex: 0,
       carouselNumImages: 3,
-      saleImages: [
-        {
-          thumbnailFilename: "",
-          filename: ""
-        },
-        {
-          thumbnailFilename: "",
-          filename: ""
-        },
-        {
-          thumbnailFilename: "",
-          filename: ""
-        },
-        {
-          thumbnailFilename: "",
-          filename: ""
-        },
-        {
-          thumbnailFilename: "",
-          filename: ""
-        }
-      ],
+      saleImages: [],
 
       // Date info
       startDate: "",
@@ -229,12 +210,14 @@ export default {
      * Goes to the next image on the carousel.
      */
     nextImage() {
+      if (this.saleImages.length < this.carouselNumImages) return;
       this.carouselStartIndex = this.boundIndex(this.carouselStartIndex + 1, this.saleImages.length);
     },
     /**
      * Goes to the previous image on the carousel.
      */
     previousImage() {
+      if (this.saleImages.length < this.carouselNumImages) return;
       this.carouselStartIndex = this.boundIndex(this.carouselStartIndex - 1, this.saleImages.length);
     },
     /**
@@ -242,19 +225,18 @@ export default {
      * @param data data
      */
     populateData(data) {
-      console.log(data);
       this.productName = data.inventoryItem.product.name;
       this.productId = data.inventoryItem.product.id;
       this.price = data.price;
       this.barcode = data.inventoryItem.product.barcode;
-      this.description = data.moreInfo;
+      this.description = data.inventoryItem.product.description;
       this.quantity = data.quantity;
 
       // image info
       this.saleImages = data.inventoryItem.product.images;
-      this.mainImageIndex = data.inventoryItem.product;
-      this.carouselStartIndex = data.inventoryItem.product;
-      this.carouselNumImages = data.inventoryItem.product;
+      this.carouselNumImages = data.inventoryItem.product.images.length;
+      this.mainImageIndex = this.saleImages.findIndex((value) => value.isPrimary);
+      this.carouselStartIndex = this.saleImages.findIndex((value) => value.isPrimary);
 
       // Date info
       this.startDate = data.created;
@@ -266,7 +248,6 @@ export default {
       this.manufacturer = data.inventoryItem.product.manufacturer;
 
       // Business info
-      console.log(data.inventoryItem.product.business.address)
       this.businessName = data.inventoryItem.product.business.name;
       this.businessAddress = data.inventoryItem.product.business.address;
 
@@ -359,13 +340,24 @@ h6 {
 }
 
 #listing-image {
-  width: 100%;
-  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#main-image-wrapper {
+  max-width: 530px;
+  max-height: 530px;
+  overflow: auto;
+  border: 1px #2c2c2c solid;
+  background-color: rgba(125, 125, 125, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #price {
   font-weight: bold;
-  font-size: 1.3em;
+  font-size: 2.5rem;
 }
 
 .business-wrapper {
@@ -436,6 +428,11 @@ h6 {
 @media (min-width: 530px) {
   #listing-image {
     max-width: 530px;
+  }
+
+  #main-image-wrapper {
+    width: 530px;
+    height: 530px;
   }
 
   .buy-button-section {
