@@ -211,7 +211,7 @@ export default {
       return DefaultImage;
     },
     /**
-     * Retrives the list of image indexes visible.
+     * Retrieves the list of image indexes visible.
      *
      * @return {number[]} Returns a list of the images currently visible in the carousel (3 images)
      */
@@ -294,7 +294,6 @@ export default {
           : this.businessAddress.region + this.businessAddress.country;
 
       // bookmark info
-      console.log(data)
       this.listingId = data.id;
       this.isBookmarked = data.isBookmarked;
       this.totalBookmarks = data.totalBookmarks;
@@ -304,12 +303,12 @@ export default {
     const url = document.URL;
     const businessId = url.substring(url.lastIndexOf('/businessProfile/') + 17, url.lastIndexOf('/listings/'));
     const listingId = url.substring(url.lastIndexOf('/') + 1);
-
+    const self = this;
     Api.getDetailForAListing(businessId, listingId)
         .then(response => this.populateData(response.data))
         .catch(error => {
-          this.$router.push({path: '/noListing'});
-          console.log(error.message);
+          self.$router.push({path: '/noListing'});
+          console.log(error);
         });
 
   }
