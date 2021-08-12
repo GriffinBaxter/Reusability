@@ -41,7 +41,7 @@
           <div class="accordion-body">
 
             <!-- marketplace card notifications -->
-            <div class="row" v-if="notification.marketplaceCardPayload !== undefined">
+            <div class="row" v-if="notification.marketCardId !== undefined">
               <div class="col" style="float: contour; text-align: center">
                 <button :id="'delete_button_card_' + notification.id"
                         class="btn btn-outline-danger"
