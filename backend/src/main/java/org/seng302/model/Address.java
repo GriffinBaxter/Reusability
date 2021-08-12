@@ -383,11 +383,11 @@ public class Address {
     public String toOneLineString() {
         return streetNumber + ", "
                 + streetName + ", "
+                + suburb + ", "
                 + city + ", "
                 + region + ", "
                 + country + ", "
-                + postcode + ", "
-                + suburb;
+                + postcode;
     }
 
     /* --------------------------------Validation-------------------------------- */
