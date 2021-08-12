@@ -148,7 +148,7 @@ public class ProductResource {
             @PathVariable Integer id,
             @RequestParam(defaultValue = "productIdASC") String orderBy,
             @RequestParam(defaultValue = "0") String page
-    ) {
+    ) throws Exception {
         logger.debug("Product retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -232,19 +232,10 @@ public class ProductResource {
      * @param productList The given list of products
      * @return A list of productPayloads.
      */
-    public List<ProductPayload> convertToPayload(List<Product> productList) {
+    public List<ProductPayload> convertToPayload(List<Product> productList) throws Exception {
         List<ProductPayload> payloads = new ArrayList<>();
         for (Product product : productList) {
-            ProductPayload newPayload = new ProductPayload(
-                    product.getProductId(),
-                    product.getName(),
-                    product.getDescription(),
-                    product.getManufacturer(),
-                    product.getRecommendedRetailPrice(),
-                    product.getCreated(),
-                    product.getImages(),
-                    product.getBarcode()
-            );
+            ProductPayload newPayload = product.convertToPayload();
             logger.debug("Product payload created: {}", newPayload);
             payloads.add(newPayload);
         }
@@ -352,7 +343,18 @@ public class ProductResource {
         }
 
         // If the payload doesn't include a barcode use the previously defined value.
-        if (updatedProduct.getBarcode() == null) {
+        if (updatedProduct.getBarcode() != null) {
+            logger.debug("updatedProduct contains a new barcode: {}", updatedProduct.getBarcode());
+            // No point in checking this if it is already the same value.
+            if (product.get().getBarcode() == null || !product.get().getBarcode().equals(updatedProduct.getBarcode())) {
+                logger.debug("New barcode: {} differs then the origin barcode: {}", updatedProduct.getBarcode(), product.get().getBarcode());
+                // Verify that product doesn't exist with same barcode
+                if (updatedProduct.getBarcode().length() != 0 && productRepository.findProductByBarcodeAndBusinessId(updatedProduct.getBarcode(), businessId).isPresent()) {
+                    logger.error("Product Modify Failure - 400 [BAD REQUEST] - Barcode {} cannot be modified if it already exists.", product.get().getBarcode());
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new barcode already exists within this business.");
+                }
+            }
+        } else {
             logger.debug("Product update does not contain a new barcode.");
             updatedProduct.setBarcode(product.get().getBarcode());
         }
@@ -390,7 +392,7 @@ public class ProductResource {
     @GetMapping("/businesses/{id}/productAll")
     public ResponseEntity<List<ProductPayload>> retrieveAllProducts(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-            @PathVariable Integer id) {
+            @PathVariable Integer id) throws Exception {
         logger.debug("Product catalogue retrieval request (all items) received with business ID {}", id);
 
         // Checks user logged in - 401

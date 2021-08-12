@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalProductArgumentException;
+import org.seng302.view.outgoing.ProductPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -250,6 +251,22 @@ public class Product {
     }
 
     /**
+     * Converts a Product to a ProductPayload
+     * @return ProductPayload of the product
+     */
+    public ProductPayload convertToPayload() throws Exception {
+        return new ProductPayload(id,
+                name,
+                description,
+                manufacturer,
+                recommendedRetailPrice,
+                created,
+                images,
+                business.toBusinessPayload(),
+                barcode);
+    }
+
+    /**
      * Change the barcode of the product.
      * Note: The barcode must be a valid EAN-13 or UPC barcode.
      *       It is assumed that barcode is not null.
@@ -296,6 +313,7 @@ public class Product {
      * @return true when the description is valid
      */
     private boolean isValidDescription(String description) {
+        if (description == null) { return true; } // optional
         return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
@@ -306,6 +324,7 @@ public class Product {
      * @return true when the manufacturer name is valid
      */
     private boolean isValidManufacturer(String manufacturer) {
+        if (manufacturer == null) { return true; } // optional
         return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
                 (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
                 (manufacturer.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]*$"));
@@ -337,7 +356,7 @@ public class Product {
      */
     private boolean isValidBarcode(String barcode) {
         // barcode is not a required field
-        if (barcode.length() == 0) { return true; }
+        if (barcode == null || barcode.length() == 0) { return true; }
         // check barcode is numeric
         if (!barcode.matches("[0-9]+")) {
             return false;

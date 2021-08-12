@@ -9,7 +9,7 @@
                              v-bind:currency-symbol="currencySymbol"/>
 
     <!--inventory container-->
-    <div class="container p-5 mt-3" id="profileContainer">
+    <div class="container p-4 mt-3" id="profileContainer">
       <div class="row">
 
         <div class="col-xl-2 mb-2">
@@ -146,6 +146,7 @@
                 v-bind:expires="inventory.expires"
                 v-bind:currency-code="currencyCode"
                 v-bind:currency-symbol="currencySymbol"
+                v-bind:barcode="inventory.barcode"
                 v-on:click="triggerUpdateInventoryItemModal(inventory)"
             />
 
@@ -567,6 +568,10 @@ export default {
             if (i === this.InventoryItemList.length) {
               return
             }
+            // to use default prop
+            let barcode = this.InventoryItemList[i].product.barcode;
+            if (!(barcode)) { barcode = undefined; }
+
             this.inventories.push({
               index: i,
               id: this.InventoryItemList[i].id,
@@ -583,7 +588,8 @@ export default {
               bestBeforeUnformatted: this.InventoryItemList[i].bestBefore,
               expires: formatDate(this.InventoryItemList[i].expires, false),
               expiresUnformatted: this.InventoryItemList[i].expires,
-              images: this.InventoryItemList[i].product.images
+              images: this.InventoryItemList[i].product.images,
+              barcode: barcode
             })
           }
         }
