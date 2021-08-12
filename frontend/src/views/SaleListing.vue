@@ -17,8 +17,10 @@
         <div class="left-content">
           <!-- Image section -->
           <div class="listing-images-wrapper">
-            <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image" class="no-highlight"/>
-            <div class="images-carousel-wrapper">
+            <div id="main-image-wrapper">
+              <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image" class="no-highlight"/>
+            </div>
+            <div class="images-carousel-wrapper" v-if="saleImages.length > 1">
               <div class="carousel-arrow clickable no-highlight" @click="nextImage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                      class="bi bi-chevron-left" viewBox="0 0 16 16">
@@ -71,12 +73,29 @@
             <h6 id="price" class="merryweather">
               $ {{ price }}
             </h6>
+            <div style="width: fit-content">
+              <h6 id="bookmarks" class="merryweather" @click="changeBookmarkStatus">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                     class="bi bi-bookmark-heart-fill" viewBox="0 0 16 16" v-if="isBookmarked">
+                  <path
+                      d="M2 15.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v13.5zM8 4.41c1.387-1.425 4.854 1.07 0 4.277C3.146 5.48 6.613 2.986 8 4.412z"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                     class="bi bi-bookmark-heart" viewBox="0 0 16 16" v-else>
+                  <path fill-rule="evenodd"
+                        d="M8 4.41c1.387-1.425 4.854 1.07 0 4.277C3.146 5.48 6.613 2.986 8 4.412z"/>
+                  <path
+                      d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+                </svg>
+                {{ totalBookmarks }}
+              </h6>
+            </div>
             <div class="buy-button-wrapper">
               <div class="buy-button merryweather">
                 Buy
               </div>
               <div class="barcode-wrapper">
-                <div id="barcode-number">Barcode: {{ barcode }}</div>
+                <div id="barcode-number" v-if="barcode">Barcode: {{ barcode }}</div>
               </div>
             </div>
           </div>
@@ -89,11 +108,11 @@
               <div>Quantity: {{ quantity }}</div>
             </div>
             <div class="product-information-space">
-              <div>Manufactured: {{ manufactured }}</div>
-              <div>Sell by: {{ sellBy }}</div>
-              <div>Best before: {{ bestBefore }}</div>
+              <div v-if="manufactured">Manufactured: {{ manufactured }}</div>
+              <div v-if="sellBy">Sell by: {{ sellBy }}</div>
+              <div v-if="bestBefore">Best before: {{ bestBefore }}</div>
               <div>Expires: {{ expires }}</div>
-              <div>Manufacturer: {{ manufacturer }}</div>
+              <div v-if="manufacturer">Manufacturer: {{ manufacturer }}</div>
             </div>
           </div>
 
@@ -131,28 +150,7 @@ export default {
       mainImageIndex: 0,
       carouselStartIndex: 0,
       carouselNumImages: 3,
-      saleImages: [
-        {
-          thumbnailFilename: "",
-          filename: ""
-        },
-        {
-          thumbnailFilename: "",
-          filename: ""
-        },
-        {
-          thumbnailFilename: "",
-          filename: ""
-        },
-        {
-          thumbnailFilename: "",
-          filename: ""
-        },
-        {
-          thumbnailFilename: "",
-          filename: ""
-        }
-      ],
+      saleImages: [],
 
       // Date info
       startDate: "",
@@ -171,11 +169,24 @@ export default {
       businessAddressLine3: "",
       businessAddressLine4: "",
 
+      listingId: null,
       isBookmarked: null,
       totalBookmarks: 0,
     }
   },
   methods: {
+    /**
+     * change bookmark status
+     */
+    changeBookmarkStatus() {
+      this.isBookmarked = !this.isBookmarked
+      this.totalBookmarks = this.isBookmarked ? this.totalBookmarks + 1 : this.totalBookmarks - 1;
+      Api.changeStatusOfAListing(this.listingId)
+          .catch(() => {
+            this.isBookmarked = !this.isBookmarked
+            this.totalBookmarks = this.isBookmarked ? this.totalBookmarks + 1 : this.totalBookmarks - 1;
+          })
+    },
     /**
      * Retrieves the filename (url path) for the currently chosen image for the listing.
      *
@@ -229,12 +240,14 @@ export default {
      * Goes to the next image on the carousel.
      */
     nextImage() {
+      if (this.saleImages.length < this.carouselNumImages) return;
       this.carouselStartIndex = this.boundIndex(this.carouselStartIndex + 1, this.saleImages.length);
     },
     /**
      * Goes to the previous image on the carousel.
      */
     previousImage() {
+      if (this.saleImages.length < this.carouselNumImages) return;
       this.carouselStartIndex = this.boundIndex(this.carouselStartIndex - 1, this.saleImages.length);
     },
     /**
@@ -242,19 +255,18 @@ export default {
      * @param data data
      */
     populateData(data) {
-      console.log(data);
       this.productName = data.inventoryItem.product.name;
       this.productId = data.inventoryItem.product.id;
       this.price = data.price;
       this.barcode = data.inventoryItem.product.barcode;
-      this.description = data.moreInfo;
+      this.description = data.inventoryItem.product.description;
       this.quantity = data.quantity;
 
       // image info
       this.saleImages = data.inventoryItem.product.images;
-      this.mainImageIndex = data.inventoryItem.product;
-      this.carouselStartIndex = data.inventoryItem.product;
-      this.carouselNumImages = data.inventoryItem.product;
+      this.carouselNumImages = data.inventoryItem.product.images.length;
+      this.mainImageIndex = this.saleImages.findIndex((value) => value.isPrimary);
+      this.carouselStartIndex = this.saleImages.findIndex((value) => value.isPrimary);
 
       // Date info
       this.startDate = data.created;
@@ -266,7 +278,6 @@ export default {
       this.manufacturer = data.inventoryItem.product.manufacturer;
 
       // Business info
-      console.log(data.inventoryItem.product.business.address)
       this.businessName = data.inventoryItem.product.business.name;
       this.businessAddress = data.inventoryItem.product.business.address;
 
@@ -283,6 +294,8 @@ export default {
           : this.businessAddress.region + this.businessAddress.country;
 
       // bookmark info
+      console.log(data)
+      this.listingId = data.id;
       this.isBookmarked = data.isBookmarked;
       this.totalBookmarks = data.totalBookmarks;
     }
@@ -359,13 +372,36 @@ h6 {
 }
 
 #listing-image {
-  width: 100%;
-  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#main-image-wrapper {
+  max-width: 530px;
+  max-height: 530px;
+  overflow: auto;
+  border: 1px #2c2c2c solid;
+  background-color: rgba(125, 125, 125, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #price {
   font-weight: bold;
-  font-size: 1.3em;
+  font-size: 2.5rem;
+}
+
+#bookmarks {
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.5rem;
+  margin-top: 0.4em;
+}
+
+#bookmarks:hover {
+  color: #00d9a9;
+  fill: #00d9a9;
 }
 
 .business-wrapper {
@@ -436,6 +472,11 @@ h6 {
 @media (min-width: 530px) {
   #listing-image {
     max-width: 530px;
+  }
+
+  #main-image-wrapper {
+    width: 530px;
+    height: 530px;
   }
 
   .buy-button-section {

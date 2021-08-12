@@ -36,3 +36,4 @@ out/
 .vscode/
 .settings/
 bin/
+/backend/storage/
