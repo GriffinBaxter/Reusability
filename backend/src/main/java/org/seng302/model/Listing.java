@@ -58,7 +58,7 @@ public class Listing {
     private LocalDateTime closes;
 
     // BookmarkedListingMessage
-    @OneToMany(mappedBy = "bookmarkedListingMessage", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "listing", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private List<BookmarkedListingMessage> bookmarkedListingMessages = new ArrayList<>();
 
