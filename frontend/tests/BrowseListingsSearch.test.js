@@ -31,7 +31,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
                 }]
         }
 
-        // Api.getAllCards().mockImplementation(() => Promise.resolve(data));
+        // Api.searchListings().mockImplementation(() => Promise.resolve(data));
 
         browseListingsSearchWrapper = shallowMount(
             BrowseListingsSearch,
