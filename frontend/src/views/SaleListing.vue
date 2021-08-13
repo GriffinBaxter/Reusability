@@ -52,7 +52,7 @@
               $3000.00
             </h6>
             <div class="buy-button-wrapper">
-              <div class="buy-button merriweather">
+              <div :class="`buy-button merriweather ${isActingAsUser() ? '' : 'disabled'}`">
                 Buy
               </div>
               <div class="barcode-wrapper">
@@ -90,6 +90,7 @@
   import Footer from "../components/main/Footer"
   import DefaultImage from "../../public/default-product.jpg"
   import Api from "../Api";
+  import Cookies from "js-cookie";
 
   export default {
     name: "SaleListing",
@@ -187,6 +188,15 @@
        */
       previousImage() {
         this.carouselStartIndex = this.boundIndex(this.carouselStartIndex-1, this.saleImages.length);
+      },
+      /**
+       * Determines if the user is acting as the user, and not as a business.
+       *
+       * @return {boolean} Returns true if is acting as user. Otherwise false.
+       */
+      isActingAsUser() {
+        const value =  Cookies.get("actAs");
+        return value === null || value === undefined;
       }
     }
   }
@@ -289,6 +299,11 @@
     background-color: #19b092;
     border: 1px solid #fff;
     color: #fff;
+  }
+
+  .buy-button.disabled {
+    pointer-events: none;
+    background-color: #e8e8e8;
   }
 
   #barcode-number {
