@@ -4,6 +4,7 @@ import defaultImage from "./../public/default-product.jpg"
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import VueLogger from "vuejs-logger";
 import Api from "./../src/Api";
+import Cookies from "js-cookie"
 
 const localVue = createLocalVue();
 const resourcePath = "some.test.url.com/";
@@ -505,5 +506,61 @@ describe("Tests for previousImage function", () => {
         wrapper.vm.previousImage();
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.$data.carouselStartIndex).toStrictEqual(0);
+    })
+})
+
+describe("Testing disabled class behaviour on buy button", () => {
+
+    test("Testing for when you are acting as a bussiness that the disabled class is added.", async () => {
+
+        // returns bussiness id 5.
+        Cookies.get.mockImplementation( () => 5);
+        // Mount and let it at least run a single tick.
+        wrapper = shallowMount(
+            listing,
+            {localVue}
+        )
+        await wrapper.vm.$nextTick();
+        // Get the buy button
+        const buyButton = wrapper.find(".buy-button");
+
+        // Check the class
+        expect(buyButton.classes().find( (val) => val === "disabled")).toBeTruthy()
+    })
+
+
+    test("Testing for when you are acting as a user (undefined value) that the disabled class is not present.", async () => {
+        // returns bussiness undefined when the cookie is not present (which is there if you are acting as a business).
+        Cookies.get.mockImplementation( () => undefined);
+        // Mount and let it at least run a single tick.
+        wrapper = shallowMount(
+            listing,
+            {localVue}
+        )
+        await wrapper.vm.$nextTick();
+        // Get the buy button
+        const buyButton = wrapper.find(".buy-button");
+        expect(buyButton.exists()).toBeTruthy();
+
+        // Check the class
+        expect(buyButton.classes().find( (val) => val === "disabled")).toBeFalsy()
+    })
+
+
+    test("Testing for when you are acting as a user (null value) that the disabled class is not present.", async () => {
+        // returns bussiness undefined when the cookie is not present (which is there if you are acting as a business).
+        Cookies.get.mockImplementation( () => null);
+        // Mount and let it at least run a single tick.
+        wrapper = shallowMount(
+            listing,
+            {localVue}
+        )
+        await wrapper.vm.$nextTick();
+        // Get the buy button
+        const buyButton = wrapper.find(".buy-button");
+        expect(buyButton.exists()).toBeTruthy();
+
+        // Check the class
+        expect(buyButton.classes().find( (val) => val === "disabled")).toBeFalsy()
     })
 })
