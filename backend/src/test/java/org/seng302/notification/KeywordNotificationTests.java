@@ -1,4 +1,4 @@
-package org.seng302.keyword;
+package org.seng302.notification;
 
 import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
