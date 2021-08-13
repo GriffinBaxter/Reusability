@@ -152,6 +152,18 @@ public class KeywordNotification {
         return new KeywordNotificationPayload(id, description, created, new KeywordPayload(keyword.getId(), keyword.getName(), keyword.getCreated()));
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the KeywordNotification.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id + "," +
+                "\"description\":\"" + description + "\"," +
+                "\"created\":\"" + created + "\"," +
+                "\"keyword\":" + keyword + "}";
+    }
+
     /*---------------------------------------------------Validation---------------------------------------------------*/
 
     /**
@@ -165,15 +177,4 @@ public class KeywordNotification {
                 (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
-    /**
-     * Override the toString method for debugging purposes.
-     * @return a string representing the KeywordNotification.
-     */
-    @Override
-    public String toString() {
-        return "{\"id\":" + id + "," +
-                "\"description\":\"" + description + "\"," +
-                "\"created\":\"" + created + "\"," +
-                "\"keyword\":" + keyword + "}";
-    }
 }
