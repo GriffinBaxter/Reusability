@@ -282,8 +282,8 @@ public class ListingResource {
 
         int pageNo = PaginationUtils.parsePageNumber(page);
 
-        // Front-end displays 9 listings per page
-        int pageSize = 9;
+        // Front-end displays 12 listings per page
+        int pageSize = 12;
 
         Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.

@@ -12,8 +12,8 @@
       
       <BrowseListingsSearch  @requestListings="requestListings"/>
       <br>
-      <div class="row pb-5 mb-4">
-        <div class="col-md-5 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center" v-for="listing in listingList" v-bind:key="listing.id">
+      <div id="all-listings-cards-container" class="row pb-5 mb-4">
+        <div class="col-md-6 col-xxl-3 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center" v-for="listing in listingList" v-bind:key="listing.id">
           <BrowseListingCard
               v-bind:id="listing.id"
               v-bind:inventory-item="listing.inventoryItem"
@@ -144,5 +144,14 @@ export default {
 </script>
 
 <style scoped>
+
+
+
+@media (min-width: 720px) {
+  #all-listings-cards-container {
+    margin-left: 120px;
+    margin-right: 120px;
+  }
+}
 
 </style>
