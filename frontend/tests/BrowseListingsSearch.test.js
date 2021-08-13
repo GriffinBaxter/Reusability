@@ -3,11 +3,12 @@
  * @jest-environment jsdom
  */
 
-import { shallowMount } from '@vue/test-utils'
-import {afterEach, beforeAll, describe, expect, jest} from "@jest/globals";
+import {createLocalVue, shallowMount} from '@vue/test-utils'
+import {afterEach, beforeAll, describe, expect, jest, test} from "@jest/globals";
 
 import BrowseListingsSearch from "../src/components/listing/BrowseListingsSearch";
 import Api from "../src/Api"
+import VueRouter from "vue-router";
 
 jest.mock("../src/Api");
 
@@ -169,7 +170,6 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
         })
 
-
     }),
 
     describe('Tests the getSelectedRadio method.', () => {
@@ -192,10 +192,65 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
         })
 
-
     }),
 
-    describe('Tests the searchClicked method.', () => {
+    describe('Tests the URL populates correctly when searching for all relevant listings.', () => {
+
+        let browseListingsSearchWrapper;
+        let router;
+
+        beforeAll(() => {
+            const localVue = createLocalVue();
+            localVue.use(VueRouter)
+
+            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
+            router = new VueRouter({
+                routes
+            })
+            router.push({
+                name: 'BrowseListings',
+            })
+            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
+                localVue,
+                router
+            });
+        });
+
+        test('Testing that pressing enter populates the URL correctly', () => {
+
+            browseListingsSearchWrapper.vm.searchType = "Product Name";
+
+            let inputQuery = 'Browse Listings Search Enter Test';
+            let expectedQuery = 'Browse%20Listings%20Search%20Enter%20Test';
+            browseListingsSearchWrapper.vm.$refs.searchInput.value = inputQuery;
+
+            browseListingsSearchWrapper.vm.$nextTick().then(() => {
+                let searchBar = browseListingsSearchWrapper.find('#search-bar');
+                searchBar.trigger('keydown.enter');
+
+                expect(router.currentRoute.name).toBe('BrowseListings')
+                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType=listingName&orderBy=priceASC&page=0&businessType&minimumPrice&maximumPrice&fromDate&toDate`)
+
+            });
+        });
+
+
+        test('Testing that clicking the search button populates the URL correctly', () => {
+
+            browseListingsSearchWrapper.vm.searchType = 'User';
+
+            let inputQuery = 'User Search Click Test';
+            let expectedQuery = 'User%20Search%20Click%20Test';
+            browseListingsSearchWrapper.vm.$refs.searchInput.value = inputQuery;
+
+            browseListingsSearchWrapper.vm.$nextTick().then(() => {
+                let searchButton = browseListingsSearchWrapper.find('#search-button');
+                searchButton.trigger('click');
+
+                expect(router.currentRoute.name).toBe('BrowseListings')
+                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType=listingName&orderBy=priceASC&page=0&businessType&minimumPrice&maximumPrice&fromDate&toDate`)
+            });
+        });
 
     }),
 
