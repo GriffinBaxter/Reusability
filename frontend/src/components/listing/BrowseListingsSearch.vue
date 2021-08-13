@@ -273,7 +273,7 @@ export default {
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
       const orderBy = this.orderByOption;
-      const page = 0;
+      const page = 1;
       const businessType = this.getSelectedRadio('business');
       const minimumPrice = this.lowestPrice;
       const maximumPrice = this.highestPrice;
