@@ -3,18 +3,14 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
-import org.seng302.model.KeywordNotification;
-import org.seng302.model.MarketCardNotification;
-import org.seng302.model.User;
+import org.seng302.model.*;
 import org.seng302.model.repository.KeywordNotificationRepository;
+import org.seng302.model.repository.ListingNotificationRepository;
 import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.UserRepository;
-import org.seng302.view.outgoing.MarketCardNotificationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -33,13 +29,20 @@ public class NotificationResource {
     @Autowired
     private KeywordNotificationRepository keywordNotificationRepository;
 
-    public NotificationResource(UserRepository userRepository, MarketCardNotificationRepository marketCardNotificationRepository, KeywordNotificationRepository keywordNotificationRepository) {
+    @Autowired
+    private ListingNotificationRepository listingNotificationRepository;
+
+    public NotificationResource(UserRepository userRepository,
+                                MarketCardNotificationRepository marketCardNotificationRepository,
+                                KeywordNotificationRepository keywordNotificationRepository,
+                                ListingNotificationRepository listingNotificationRepository) {
         this.userRepository = userRepository;
         this.marketCardNotificationRepository = marketCardNotificationRepository;
         this.keywordNotificationRepository = keywordNotificationRepository;
+        this.listingNotificationRepository = listingNotificationRepository;
     }
 
-    private static final Logger logger = LogManager.getLogger(MarketplaceCardResource.class.getName());
+    private static final Logger logger = LogManager.getLogger(NotificationResource.class.getName());
 
     /**
      * Retrieve all notifications for the current user.
@@ -59,6 +62,7 @@ public class NotificationResource {
         List<Object> notificationPayloads = new ArrayList<>();
         List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAllByUserId(currentUser.getId());
         List<KeywordNotification> keywordNotifications = new ArrayList<>();
+        List<ListingNotification> listingNotifications = listingNotificationRepository.findAllByUsersId(currentUser.getId());
         if (Authorization.isGAAorDGAA(currentUser)) {
             keywordNotifications = keywordNotificationRepository.findAll();
         }
@@ -71,6 +75,11 @@ public class NotificationResource {
             logger.debug("Keyword Notification (Id: {}) received.", keywordNotification.getId());
             notificationPayloads.add(keywordNotification.toKeywordNotificationPayload());
         }
+        for (ListingNotification listingNotification : listingNotifications) {
+            logger.debug("Listing Notification (Id: {}) received.", listingNotification.getId());
+            notificationPayloads.add(listingNotification.toListingNotificationPayload());
+        }
+
         return notificationPayloads;
     }
 }

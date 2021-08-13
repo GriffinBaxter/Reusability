@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
+import org.seng302.view.outgoing.ListingNotificationPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -167,17 +168,6 @@ public class ListingNotification {
     }
 
     /**
-     * Checks to see whether a listing notification's description is valid based on its constraints
-     * This method can be updated in the future if there is additional constraints.
-     * @param description The description to be checked.
-     * @return true when the description is valid
-     */
-    private boolean isValidDescription(String description) {
-        return (description.length() >= DESCRIPTION_MIN_LENGTH) &&
-                (description.length() <= DESCRIPTION_MAX_LENGTH);
-    }
-
-    /**
      * Override the toString method for debugging purposes.
      * @return a string representing the ListingNotification.
      */
@@ -187,6 +177,26 @@ public class ListingNotification {
                 "\"description\":\"" + description + "\"," +
                 "\"created\":\"" + created + "\"," +
                 "\"users\":" + users + "}";
+    }
+
+    /**
+     * Create a new payload that will be sent to the frontend in a GET request
+     * @return a payload representing the listing notification
+     */
+    public ListingNotificationPayload toListingNotificationPayload() {
+        return new ListingNotificationPayload(id, description, created);
+    }
+
+    /*---------------------------------------------------Validation---------------------------------------------------*/
+    /**
+     * Checks to see whether a listing notification's description is valid based on its constraints
+     * This method can be updated in the future if there is additional constraints.
+     * @param description The description to be checked.
+     * @return true when the description is valid
+     */
+    private boolean isValidDescription(String description) {
+        return (description.length() >= DESCRIPTION_MIN_LENGTH) &&
+                (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
 }
