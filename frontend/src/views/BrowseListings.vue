@@ -4,6 +4,8 @@
       <!-- Navbar -->
       <Navbar/>
 
+      <h1 style="text-align: center" class="mt-5 mb-0">Browse Listings</h1>
+
       <div class="noListings" v-if="noListings">
         <div class="card p-1">
           <p class="h2 py-5" style="text-align: center">No Listings Found</p>

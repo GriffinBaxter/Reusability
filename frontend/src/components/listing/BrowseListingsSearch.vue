@@ -17,7 +17,7 @@
         <div class="row collapse" id="filter-ordering-options-container">
 
           <!-- Match Fields -->
-          <div class="col-4 my-3 p-2" id="match-fields">
+          <div class="col-xl-4 col-md-6 mt-3 p-2" id="match-fields">
 
             <div class="row">
               <label class="d-inline-block fs-5 my-2 text-center">Match Fields</label>
@@ -89,7 +89,7 @@
 
           </div>
 
-          <div class="col-2 my-4" id="order-menu">
+          <div class="col-xl-4 col-md-6 mt-4" id="order-menu">
 
             <!------------------------------------------ ordering by options menu ------------------------------------------->
 
@@ -155,7 +155,7 @@
             <!--------------------------------------------------------------------------------------------------------->
 
           </div>
-          <div class="col-5 text-center my-4" id="price-and-date-filters">
+          <div class="col-xl-4 text-center mt-4" id="price-and-date-filters">
 
             <label class="d-inline-block fs-5 my-2 text-center">Filters</label>
 
@@ -404,6 +404,7 @@ export default {
   border-radius: 20px;
   margin-right: 10%;
   margin-left: 10%;
+  padding-bottom: 30px;
 }
 
 .match-radio-container, .business-radio-container {
