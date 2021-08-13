@@ -288,16 +288,26 @@ export default {
         toDate += "T00:00";
       }
 
-      this.$router.push({
-        path: '/browseListings', query: {
-          searchQuery: searchQuery, searchType: searchType,
-          orderBy: orderBy, page: page, businessType: businessType,
-          minimumPrice: minimumPrice, maximumPrice: maximumPrice,
-          fromDate: fromDate, toDate: toDate
-        }
-      }).catch(() => {
-        // NavigationDuplicated
-      });
+      if (
+          searchQuery !== this.$route.query.searchQuery ||
+          searchType !== this.$route.query.searchType ||
+          orderBy !== this.$route.query.orderBy ||
+          String(page) !== this.$route.query.page ||
+          businessType !== this.$route.query.businessType ||
+          minimumPrice !== this.$route.query.minimumPrice ||
+          maximumPrice !== this.$route.query.maximumPrice ||
+          fromDate !== this.$route.query.fromDate ||
+          toDate !== this.$route.query.toDate
+      ) {
+        this.$router.push({
+          path: '/browseListings', query: {
+            searchQuery: searchQuery, searchType: searchType,
+            orderBy: orderBy, page: page, businessType: businessType,
+            minimumPrice: minimumPrice, maximumPrice: maximumPrice,
+            fromDate: fromDate, toDate: toDate
+          }
+        });
+      }
 
       this.$emit('requestListings', searchQuery);
 

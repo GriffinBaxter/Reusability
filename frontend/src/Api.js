@@ -257,7 +257,7 @@ export default {
 
 
     editCard: (cardId, updatedCard) => {
-        return instance.put(`/cards/${cardId}`, {...updatedCard},{
+        return instance.put(`/cards/${cardId}`, {...updatedCard}, {
             withCredentials: true
         })
     },
@@ -270,7 +270,7 @@ export default {
     },
 
     addNewKeyword: (newKeyword) => {
-        return instance.post(`/keywords`, {...newKeyword},{
+        return instance.post(`/keywords`, {...newKeyword}, {
             withCredentials: true
         })
     },
@@ -296,29 +296,42 @@ export default {
     setPrimaryImage: (businessId, productId, imageId) => {
         return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
             {}, {
-            withCredentials: true
-        })
+                withCredentials: true
+            })
     },
 
     // Extends a given card's display period by 2 weeks.
     extendCardDisplayPeriod: (id) => {
-        return instance.put(`/cards/${id}/extenddisplayperiod`,{}, {
+        return instance.put(`/cards/${id}/extenddisplayperiod`, {}, {
             withCredentials: true
         })
     },
 
     // System administrators can delete a keyword.  Keyword is removed from the list and from any cards it appears on.
     deleteExistingKeyword: (id) => {
-        return instance.delete(`/keywords/${id}`,  {
+        return instance.delete(`/keywords/${id}`, {
             withCredentials: true
         })
     },
 
     // Sends a GET request to the backend asking for any listings matching the given criteria (paginated)
     searchListings: (searchQuery, searchType, orderBy, page, businessType, minimumPrice, maximumPrice, fromDate, toDate) => {
-        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessType=${businessType}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`,  {
+        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessType=${businessType}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
             withCredentials: true
         })
-    }
+    },
 
+    // Retrieving a specific listing by given id.
+    getDetailForAListing: (businessId, listingId) => {
+        return instance.get(`/businesses/${businessId}/listings/${listingId}`, {
+            withCredentials: true
+        })
+    },
+
+    // Change the status for current user to given listing.
+    changeStatusOfAListing: (id) => {
+        return instance.put(`/listings/${id}/bookmark`, {}, {
+            withCredentials: true
+        })
+    },
 }
