@@ -1,5 +1,5 @@
 <template>
-  <div class="card" style="width: 18rem;" @click="routeToSaleListing(id, inventoryItem.product.business.id)">
+  <div class="card" style="width: 18rem;">
     <!--Bookmark-->
     <div class="tag-vertical discount"
          :id="'bookmarkButton_'+id"
@@ -9,6 +9,7 @@
       <div :id="'bookmark_'+id" v-if="isMarked">&#9829;</div>
     </div>
 
+    <div class="everything-but-bookmark" @click="routeToSaleListing(id, inventoryItem.product.business.id)">
     <div class="row">
       <div class="col">
         <img :src="getPrimaryImageSrc(inventoryItem.product.images)" class="card-img-top" alt="default-image">
@@ -41,7 +42,7 @@
         </ul>
       </div>
     </div>
-
+    </div>
   </div>
 </template>
 
