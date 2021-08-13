@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.seng302.Main;
-import org.seng302.controller.BusinessResource;
 import org.seng302.controller.ListingResource;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
@@ -61,6 +60,9 @@ public class SoldListingResourceIntegrationTests {
 
     @MockBean
     private SoldListingRepository soldListingRepository;
+
+    @MockBean
+    private ListingNotificationRepository listingNotificationRepository;
 
     private MockHttpServletResponse response;
 
@@ -245,7 +247,7 @@ public class SoldListingResourceIntegrationTests {
                 0);
         soldListing.setId(1);
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository))
                 .build();
     }
 

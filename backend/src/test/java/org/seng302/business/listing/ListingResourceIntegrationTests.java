@@ -8,7 +8,6 @@ import org.seng302.model.Address;
 import org.seng302.model.Business;
 import org.seng302.model.repository.*;
 import org.seng302.model.*;
-import org.seng302.model.repository.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.InventoryItem;
 import org.seng302.model.Product;
@@ -356,8 +355,8 @@ class ListingResourceIntegrationTests {
         listing.setId(1);
 
         soldListing = new SoldListing(business, anotherUser, listing.getCreated(),
-                                        new ProductId(product.getProductId(), business.getId()),
-                                        listing.getQuantity(), listing.getPrice(), listing.getTotalBookmarks());
+                                        product.getProductId(), listing.getQuantity(),
+                                        listing.getPrice(), listing.getTotalBookmarks());
 
         listingNotification = new ListingNotification("Listing notification");
 

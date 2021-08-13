@@ -14,13 +14,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
+import org.seng302.exceptions.IllegalSoldListingArgumentException;
 import org.seng302.model.*;
-import org.seng302.model.enums.Role;
 import org.seng302.model.repository.*;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
-import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
-import org.seng302.model.repository.*;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.ListingCreationPayload;
@@ -586,13 +584,16 @@ public class ListingResource {
             );
         }
 
-        SoldListing soldListing = new SoldListing(business, currentUser, listing.getCreated(),
-                                                    new ProductId(listing.getInventoryItem().getProduct().getProductId(),
-                                                    listing.getBusinessId()), listing.getQuantity(), listing.getPrice(),
-                                                    listing.getTotalBookmarks());
-        soldListingRepository.save(soldListing);
-        logger.info("Sold Listing Creation Success - Sold listing created for business with ID {}", listing.getBusinessId());
-
+        try {
+            SoldListing soldListing = new SoldListing(business, currentUser, listing.getCreated(),
+                    listing.getInventoryItem().getProduct().getProductId(),
+                    listing.getQuantity(), listing.getPrice(),
+                    listing.getTotalBookmarks());
+            soldListingRepository.save(soldListing);
+            logger.info("Sold Listing Creation Success - Sold listing created for business with ID {}", listing.getBusinessId());
+        } catch (IllegalSoldListingArgumentException e) {
+            logger.error("Couldn't create sold listing - {}", e.getMessage());
+        }
         try {
             String purchaserMessage = String.format("You have purchased %s x%d for $%.2f. Your purchase can be picked up from %s.",
                                                     listing.getInventoryItem().getProduct().getName(), listing.getQuantity(),
@@ -711,7 +712,7 @@ public class ListingResource {
                     soldListing.getId(),
                     soldListing.getSaleDate().toString(),
                     soldListing.getListingDate().toString(),
-                    soldListing.getProductId().toString(),
+                    soldListing.getProductId(),
                     soldListing.getQuantity(),
                     soldListing.getPrice(),
                     soldListing.getBookmarks()
