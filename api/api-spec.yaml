@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.2.1
+  version: 5.3.0
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -868,6 +868,19 @@ paths:
           required: false
           description: "Criteria to search for, e.g: full listing name"
         - in: query
+          name: searchType
+          schema: 
+            type: string
+          required: false
+          description: >-
+            Search type, the following options are available
+
+            * listingName: the listing name (default)
+
+            * businessName: the business name
+            
+            * location: the location
+        - in: query
           name: orderBy
           schema:
             type: string
@@ -923,37 +936,29 @@ paths:
         - in: query
           name: minimumPrice
           schema:
-            type: string
+            type: number
+            format: double
           required: false
           description: "Criteria to search listings for, listing's minimum price"
         - in: query
           name: maximumPrice
           schema:
-            type: string
+            type: number
+            format: double
           required: false
           description: "Criteria to search listings for, listing's maximum price"
-        - in: query
-          name: businessName
-          schema:
-            type: string
-          required: false
-          description: "Criteria to search listings for, e.g: business's full name"
-        - in: query
-          name: location
-          schema:
-            type: string
-          required: false
-          description: "Criteria to search listings for, e.g: business's full address"
         - in: query
           name: fromDate
           schema:
             type: string
+            format: date-time
           required: false
           description: "Criteria to search listings for dates after this date"
         - in: query
           name: toDate
           schema:
             type: string
+            format: date-time
           required: false
           description: "Criteria to search listings for dates before this date"
       responses:
@@ -1734,6 +1739,31 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
+  '/home/bookmarkMessages':
+    get:
+      tags:
+        - 'U30: Individual Full Sale Listing'
+        - 'Bookmark messages'
+      summary: Retrieves the bookmarked listings' messages.
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      responses:
+        '200':
+          description: Request successful, a (possibly empty) list of bookmark messages is returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookmarkMessage'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
 components:
   securitySchemes:
@@ -1858,11 +1888,8 @@ components:
       description: A listing for the sale of some product from a business's inventory
       required:
         - inventoryItemId
-        - productName
         - quantity
-        - businessType
         - price
-        - sellerName
       properties:
         id:
           type: integer
@@ -1877,23 +1904,6 @@ components:
           type: integer
           example: 101
           writeOnly: true
-        productName:
-          type: string
-          example: "an Apple"
-          description: "name of product"
-        businessType:
-          type: string
-          example: "ACCOMMODATION_AND_FOOD_SERVICES"
-          description: >-
-            Criteria to search businesses for, e.g: business type
-
-            * ACCOMMODATION_AND_FOOD_SERVICES
-
-            * RETAIL_TRADE
-
-            * CHARITABLE_ORGANISATION
-
-            * NON_PROFIT_ORGANISATION
         quantity:
           type: integer
           example: 3
@@ -1903,18 +1913,6 @@ components:
           format: double
           description: Price of the listing
           example: 17.99
-        sellerName:
-          type: string
-          example: "Lumbridge General Store"
-          description: Name of seller (join with Business)
-        country:
-          type: string
-          example: "New Zealand"
-          description: Country of business Located
-        city:
-          type: string
-          example: "Christchurch"
-          description: City of business Located
         moreInfo:
           type: string
           example: 'Seller may be willing to consider near offers'
@@ -2288,7 +2286,6 @@ components:
           readOnly: true
           example: [ 1, 2, 3 ]
 
-
     SoldListing:
       type: object
       description: Contains the details of a sale of a listing that was completed.
@@ -2339,3 +2336,28 @@ components:
           example: 10
           readOnly: true
           description: The amount of bookmarks the listing had before being sold.
+
+    BookmarkMessage:
+      type: object
+      description: Message/notification for bookmarked individual full sale listing
+      required:
+        - id
+        - description
+        - created
+        - userIds
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automatically generated and assigned by the server
+        description:
+          type: string
+          example: Listing (Apple) is bookmarked.
+          description: Message content
+        created:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the notification was created

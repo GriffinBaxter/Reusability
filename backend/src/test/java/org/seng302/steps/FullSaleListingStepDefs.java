@@ -61,6 +61,10 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private SoldListingRepository soldListingRepository;
 
+    @Autowired
+    @MockBean
+    private ListingNotificationRepository listingNotificationRepository;
+
     private User user;
 
     private Business business;
@@ -82,8 +86,8 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
         productRepository = mock(ProductRepository.class);
         businessRepository = mock(BusinessRepository.class);
         userRepository = mock(UserRepository.class);
+        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository)).build();
         soldListingRepository = mock(SoldListingRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository)).build();
     }
 
     @Given("I am logged in as a business administrator.")
@@ -146,9 +150,8 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                 LocalDate.of(2024, 1, 1)
         );
         user.setBusinessesAdministeredObjects(List.of(business));
-        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository,
-                        inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository))
-                .build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository,
+                    businessRepository, userRepository, soldListingRepository, listingNotificationRepository)).build();
     }
 
     @Given("I have a listing with quantity {int}, price {double}, closing date {string}, and {string} in the more-info section.")
@@ -175,6 +178,35 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                     "\"recommendedRetailPrice\":" + product.getRecommendedRetailPrice() + "," +
                     "\"created\":\"" + product.getCreated() + "\"," +
                     "\"images\":[]," +
+                    "\"business\":" +
+                        "{\"id\":" + business.getId() + "," +
+                        "\"administrators\":" +
+                            "[{\"id\":" + user.getId() + "," +
+                            "\"firstName\":\"" + user.getFirstName() + "\"," +
+                            "\"lastName\":\"" + user.getLastName() + "\"," +
+                            "\"middleName\":\"" + user.getMiddleName() + "\"," +
+                            "\"nickname\":\"" + user.getNickname() + "\"," +
+                            "\"bio\":\"" + user.getBio() + "\"," +
+                            "\"email\":\"" + user.getEmail() + "\"," +
+                            "\"created\":\"" + user.getCreated() + "\"," +
+                            "\"role\":\"" + user.getRole() + "\"," +
+                            "\"businessesAdministered\":[null]," +
+                            "\"dateOfBirth\":\"" + user.getDateOfBirth() + "\"," +
+                            "\"phoneNumber\":\"" + user.getPhoneNumber() + "\"," +
+                            "\"homeAddress\":{" +
+                                "\"streetNumber\":\"" + user.getHomeAddress().getStreetNumber() + "\"," +
+                                "\"streetName\":\"" + user.getHomeAddress().getStreetName() + "\"," +
+                                "\"city\":\"" + user.getHomeAddress().getCity() + "\"," +
+                                "\"region\":\"" + user.getHomeAddress().getRegion() + "\"," +
+                                "\"country\":\"" + user.getHomeAddress().getCountry() + "\"," +
+                                "\"postcode\":\"" + user.getHomeAddress().getPostcode() + "\"," +
+                                "\"suburb\":\"" + user.getHomeAddress().getSuburb() + "\"}}]," +
+                        "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
+                        "\"name\":\"" + business.getName() + "\"," +
+                        "\"description\":\"" + business.getDescription() + "\"," +
+                        "\"address\":" + business.getAddress() + "," +
+                        "\"businessType\":\"" + business.getBusinessType() + "\"," +
+                        "\"created\":\"" + business.getCreated() + "\"}," +
                     "\"barcode\":\"" + product.getBarcode() + "\"" +
                 "}," +
                 "\"quantity\":" + inventoryItem.getQuantity() + "," +
@@ -189,8 +221,9 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
             "\"price\":" + listing.getPrice() + "," +
             "\"moreInfo\":\"" + listing.getMoreInfo() + "\"," +
             "\"created\":\"" + listing.getCreated() + "\"," +
-            "\"closes\":\"" + listing.getCloses() + "\"" +
-        "}";
+            "\"closes\":\"" + listing.getCloses() + "\"," +
+            "\"isBookmarked\":" + listing.isBookmarked(user) + "," +
+            "\"totalBookmarks\":" + listing.getTotalBookmarks() + "}";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));

@@ -7,7 +7,9 @@ import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalSoldListingArgumentException;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Class for Sold listings
@@ -21,7 +23,7 @@ import java.time.LocalDateTime;
 public class SoldListing {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // autoincrement the ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 

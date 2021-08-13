@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalProductArgumentException;
+import org.seng302.view.outgoing.ProductPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -247,6 +248,22 @@ public class Product {
 
     public void setCreated(LocalDateTime created) {
         this.created = created;
+    }
+
+    /**
+     * Converts a Product to a ProductPayload
+     * @return ProductPayload of the product
+     */
+    public ProductPayload convertToPayload() throws Exception {
+        return new ProductPayload(id,
+                name,
+                description,
+                manufacturer,
+                recommendedRetailPrice,
+                created,
+                images,
+                business.toBusinessPayload(),
+                barcode);
     }
 
     /**
