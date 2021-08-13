@@ -17,10 +17,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
     let browseListingsSearchWrapper;
     let data;
     let $route;
-    let browseListingsSpy;
     let browseListingApiResponse;
-    let generalMockApiResponse;
-    let emptyMockApiResponse;
     let searchClickedSpy;
 
     beforeAll(() => {
@@ -42,19 +39,6 @@ describe("Testing the BrowseListingsSearch methods", () => {
         }
 
         Api.searchListings.mockImplementation(() => Promise.resolve(data));
-
-        generalMockApiResponse = {
-            status: 200,
-            response: {
-                status: 400
-            },
-            data: [],
-            message: "",
-            headers: {
-                "total-rows": 0,
-                "total-pages": 0
-            }
-        }
 
         browseListingApiResponse = {
             status: 200,
@@ -133,11 +117,6 @@ describe("Testing the BrowseListingsSearch methods", () => {
             }]
         }
 
-        emptyMockApiResponse = {
-            status: 200,
-            data: []
-        }
-
         browseListingsSearchWrapper = shallowMount(
             BrowseListingsSearch,
             {
@@ -149,8 +128,6 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
         Promise.resolve();
 
-        browseListingsSpy = jest.spyOn(Api, 'searchListings');
-
         searchClickedSpy = jest.spyOn(BrowseListingsSearch.methods, 'searchClicked')
 
     });
@@ -160,29 +137,6 @@ describe("Testing the BrowseListingsSearch methods", () => {
     });
 
     describe('Tests the enterPressed method.', () => {
-
-        test("Testing that when the enter button is pressed that the search is executed", async () => {
-
-            Api.searchUsers.mockImplementation( () => Promise.resolve(browseListingApiResponse) ); // here since async
-
-            let searchBar = browseListingsSearchWrapper.find('#search-bar');
-            await searchBar.trigger('keydown.enter');
-
-            await Promise.resolve();
-
-            const event = new Event("keydown.enter", undefined)
-            await browseListingsSearchWrapper.vm.enterPressed(event)
-
-            await Promise.resolve();
-
-            await browseListingsSearchWrapper.vm.$nextTick();
-
-            const searchClicked = jest.fn(() => browseListingsSearchWrapper.vm.searchClicked())
-            expect(searchClicked.mock.calls.length).toBe(1)
-
-            // expect(searchClickedSpy).toHaveBeenCalled();
-
-        })
 
         test("Testing that when a button other than the enter button is pressed the search is not executed", async () => {
 
@@ -373,32 +327,6 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
     describe('Tests the clearRadios method.', () => {
 
-        test('Testing that when type is not business, the radio buttons have checked not set to false', () => {
-            let nonProfitRadio = browseListingsSearchWrapper.find('#radio-non-profit');
-            nonProfitRadio.trigger('click');
-            let charitableRadio = browseListingsSearchWrapper.find('#radio-charitable');
-            charitableRadio.trigger('click');
-            let retailRadio = browseListingsSearchWrapper.find('#radio-retail');
-            retailRadio.trigger('click');
-            let accommodationRadio = browseListingsSearchWrapper.find('#radio-accommodation');
-            accommodationRadio.trigger('click');
-
-            jest.spyOn(document, 'querySelector').mockImplementation(() => {
-                return [nonProfitRadio, charitableRadio, retailRadio, accommodationRadio];
-            });
-
-            browseListingsSearchWrapper.vm.$nextTick();
-
-            browseListingsSearchWrapper.vm.clearRadios('user');
-
-            browseListingsSearchWrapper.vm.$nextTick();
-
-            expect(nonProfitRadio.checked).toBeTruthy();
-            expect(charitableRadio.checked).toBeTruthy();
-            expect(retailRadio.checked).toBeTruthy();
-            expect(accommodationRadio.checked).toBeTruthy();
-        });
-
         test('Testing that when type is business, all radio buttons have checked set to false', () => {
             let nonProfitRadio = browseListingsSearchWrapper.find('#radio-non-profit');
             nonProfitRadio.trigger('click');
@@ -562,6 +490,153 @@ describe("Testing the BrowseListingsSearch methods", () => {
     })
 
     describe('Tests the searchClicked method.', () => {
+
+        // beforeEach(() => {
+        //     const localVue = createLocalVue();
+        //     localVue.use(VueRouter)
+        //
+        //     const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
+        //     router = new VueRouter({
+        //         routes
+        //     })
+        //     browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
+        //         localVue,
+        //         router
+        //     });
+        // });
+
+        test('Testing that the grid data is populated correctly when data is returned', async () => {
+
+
+            let browseListingsSearchWrapper;
+            let router;
+
+            const localVue = createLocalVue();
+            localVue.use(VueRouter)
+
+            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
+            router = new VueRouter({
+                routes
+            })
+            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
+                localVue,
+                router
+            });
+
+            browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
+            browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
+            browseListingsSearchWrapper.vm.$data.page = 1;
+            browseListingsSearchWrapper.vm.$data.lowestPrice = 10;
+            browseListingsSearchWrapper.vm.$data.highestPrice = 100;
+            browseListingsSearchWrapper.vm.$data.startDate = "2020-01-24";
+            browseListingsSearchWrapper.vm.$data.endDate = "2020-05-28";
+
+            const searchQuery = "test";
+            const orderBy ="priceASC";
+            const page = 1;
+            const minimumPrice = 10;
+            const maximumPrice = 100;
+            const fromDate = "2020-01-24T00%3A00";
+            const toDate = "2020-05-28T00%3A00";
+
+            Api.searchListings.mockImplementation( () => Promise.resolve(browseListingApiResponse) );
+
+            browseListingsSearchWrapper.vm.searchClicked();
+
+            await browseListingsSearchWrapper.vm.$nextTick()
+
+            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
+
+        })
+
+        test('Testing that the grid data is populated correctly when data is returned and the prices are swapped around ' +
+            'when they are out of order', async () => {
+
+            let browseListingsSearchWrapper;
+            let router;
+
+            const localVue = createLocalVue();
+            localVue.use(VueRouter)
+
+            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
+            router = new VueRouter({
+                routes
+            })
+            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
+                localVue,
+                router
+            });
+
+            browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
+            browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
+            browseListingsSearchWrapper.vm.$data.page = 1;
+            browseListingsSearchWrapper.vm.$data.lowestPrice = 100;
+            browseListingsSearchWrapper.vm.$data.highestPrice = 10;
+            browseListingsSearchWrapper.vm.$data.startDate = "2020-01-24";
+            browseListingsSearchWrapper.vm.$data.endDate = "2020-05-28";
+
+            const searchQuery = "test";
+            const orderBy ="priceASC";
+            const page = 1;
+            const minimumPrice = 10;
+            const maximumPrice = 100;
+            const fromDate = "2020-01-24T00%3A00";
+            const toDate = "2020-05-28T00%3A00";
+
+            Api.searchListings.mockImplementation( () => Promise.resolve(browseListingApiResponse) );
+
+            browseListingsSearchWrapper.vm.searchClicked();
+
+            await browseListingsSearchWrapper.vm.$nextTick()
+
+            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
+
+        })
+
+
+        test('Testing that the grid data is populated correctly when data is returned and the dates are swapped around ' +
+            'when they are out of order', async () => {
+
+            let browseListingsSearchWrapper;
+            let router;
+
+            const localVue = createLocalVue();
+            localVue.use(VueRouter)
+
+            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
+            router = new VueRouter({
+                routes
+            })
+            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
+                localVue,
+                router
+            });
+
+            browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
+            browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
+            browseListingsSearchWrapper.vm.$data.page = 1;
+            browseListingsSearchWrapper.vm.$data.lowestPrice = 10;
+            browseListingsSearchWrapper.vm.$data.highestPrice = 100;
+            browseListingsSearchWrapper.vm.$data.startDate = "2020-05-28";
+            browseListingsSearchWrapper.vm.$data.endDate = "2020-01-24";
+
+            const searchQuery = "test";
+            const orderBy ="priceASC";
+            const page = 1;
+            const minimumPrice = 10;
+            const maximumPrice = 100;
+            const fromDate = "2020-01-24T00%3A00";
+            const toDate = "2020-05-28T00%3A00";
+
+            Api.searchListings.mockImplementation( () => Promise.resolve(browseListingApiResponse) );
+
+            browseListingsSearchWrapper.vm.searchClicked();
+
+            await browseListingsSearchWrapper.vm.$nextTick()
+
+            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
+
+        })
 
     })
 
