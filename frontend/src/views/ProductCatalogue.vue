@@ -227,8 +227,7 @@ import UpdateProductModal from "../components/productCatalogue/UpdateProductModa
 import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
-import Quagga from 'quagga';
-import OpenFoodFacts from '../openFoodFactsInstance';
+import {autofillProductFromBarcode, getBarcodeStatic} from "../barcodeUtils";
 
 export default {
   name: "ProductCatalogue",
@@ -867,22 +866,9 @@ export default {
      * Retrieves the barcode number (EAN or UPC) from an uploaded image.
      */
     getBarcodeStatic() {
-      let outerThis = this;
-      let file = this.$refs.image.files[0];
       this.toastErrorMessage = "";
-
-      Quagga.decodeSingle({
-        decoder: {
-          readers: ["upc_reader", "ean_reader"]
-        },
-        locate: true,
-        src: URL.createObjectURL(file)
-      }, function (result) {
-        if (result && result.codeResult) {
-          outerThis.barcode = result.codeResult.code;
-        } else {
-          outerThis.barcodeErrorMsg = "Barcode not found in image";
-        }
+      getBarcodeStatic(this, function () {
+        return undefined;
       });
     },
 
@@ -890,30 +876,9 @@ export default {
      * Autofills data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
-      let outerThis = this;
       this.toastErrorMessage = "";
-
-      OpenFoodFacts.retrieveProductByBarcode(this.barcode).then((result) => {
-        if (result.data.status === 1) {
-          let quantity = ""
-          if (result.data.product.quantity !== undefined) {
-            quantity = " " + result.data.product.quantity;
-          }
-          if (
-              outerThis.productName === "" &&
-              result.data.product.product_name !== undefined && result.data.product.product_name !== ""
-          ) {
-            outerThis.productName = result.data.product.product_name + quantity;
-          }
-          if (outerThis.manufacturer === "" && result.data.product.brands !== undefined) {
-            outerThis.manufacturer = result.data.product.brands;
-          }
-          if (outerThis.description === "" && result.data.product.generic_name !== undefined) {
-            outerThis.description = result.data.product.generic_name;
-          }
-        } else {
-          outerThis.toastErrorMessage = "Could not autofill, product may not exist in database";
-        }
+      autofillProductFromBarcode(this, function () {
+        return undefined;
       });
     }
   },

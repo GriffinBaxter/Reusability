@@ -129,8 +129,7 @@
 import { Modal } from 'bootstrap'
 import Product from "../../configs/Product"
 import Api from "../../Api";
-import Quagga from "quagga";
-import OpenFoodFacts from '../../openFoodFactsInstance';
+import {autofillProductFromBarcode, getBarcodeStatic} from "../../barcodeUtils";
 
 
 export default {
@@ -177,6 +176,12 @@ export default {
       inputError: false,
       
       editBarcode: false,
+      
+      barcode: "",
+      barcodeErrorMsg: "",
+      productName: "",
+      manufacturer: "",
+      description: "",
 
     }
   },
@@ -416,22 +421,13 @@ export default {
      * Retrieves the barcode number (EAN or UPC) from an uploaded image.
      */
     getBarcodeStatic() {
-      let outerThis = this;
-      let file = this.$refs.image.files[0];
       this.formErrorModalMessage = "";
+      this.barcode = this.newProduct.data.barcode;
 
-      Quagga.decodeSingle({
-        decoder: {
-          readers: ["upc_reader", "ean_reader"]
-        },
-        locate: true,
-        src: URL.createObjectURL(file)
-      }, function (result) {
-        if (result && result.codeResult) {
-          outerThis.newProduct.data.barcode = result.codeResult.code;
-        } else {
-          outerThis.formErrorModalMessage = "Barcode not found in image";
-        }
+      let outerThis = this;
+      getBarcodeStatic(this, function () {
+        outerThis.newProduct.data.barcode = outerThis.barcode;
+        outerThis.formErrorModalMessage = outerThis.barcodeErrorMsg;
       });
     },
 
@@ -439,36 +435,17 @@ export default {
      * Autofills data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
-      let outerThis = this;
       this.formErrorModalMessage = "";
+      this.barcode = this.newProduct.data.barcode;
+      this.productName = this.newProduct.data.name;
+      this.manufacturer = this.newProduct.data.manufacturer;
+      this.description = this.newProduct.data.description;
 
-      OpenFoodFacts.retrieveProductByBarcode(this.newProduct.data.barcode).then((result) => {
-        if (result.data.status === 1) {
-          let quantity = ""
-          if (result.data.product.quantity !== undefined) {
-            quantity = " " + result.data.product.quantity;
-          }
-          if (
-              (outerThis.newProduct.data.name === "" || outerThis.newProduct.data.name == null) &&
-              result.data.product.product_name !== undefined && result.data.product.product_name !== ""
-          ) {
-            outerThis.productName = result.data.product.product_name + quantity;
-          }
-          if (
-              (outerThis.newProduct.data.manufacturer === "" || outerThis.newProduct.data.manufacturer == null) &&
-              result.data.product.brands !== undefined
-          ) {
-            outerThis.newProduct.data.manufacturer = result.data.product.brands;
-          }
-          if (
-              (outerThis.newProduct.data.description === "" || outerThis.newProduct.data.description == null) &&
-              result.data.product.generic_name !== undefined
-          ) {
-            outerThis.newProduct.data.description = result.data.product.generic_name;
-          }
-        } else {
-          outerThis.formErrorModalMessage = "Could not autofill, product may not exist in database";
-        }
+      let outerThis = this;
+      autofillProductFromBarcode(outerThis, function () {
+        outerThis.newProduct.data.name = outerThis.productName;
+        outerThis.newProduct.data.manufacturer = outerThis.manufacturer;
+        outerThis.newProduct.data.description = outerThis.description;
       });
     }
   },
