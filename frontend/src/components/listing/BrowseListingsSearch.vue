@@ -242,6 +242,9 @@ export default {
         radios = document.querySelectorAll("input[name='business-type-radios']");
       }
       let value;
+
+      console.log(radios) // TODO: remove
+
       for (const radio of radios) {
         if (radio.checked) {
           value = radio.value;

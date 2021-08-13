@@ -109,6 +109,7 @@ export default {
         this.notInitialLoad = true;
 
         this.listingList = [...response.data];
+
       }, (error) => {
         console.log(error)
       });
