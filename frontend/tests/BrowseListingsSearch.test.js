@@ -200,7 +200,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
         })
 
-    }),
+    })
 
     describe('Tests the getSelectedRadio method.', () => {
 
@@ -309,7 +309,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             })
         })
 
-    }),
+    })
 
     describe('Tests the URL populates correctly when searching for all relevant listings.', () => {
 
@@ -369,25 +369,199 @@ describe("Testing the BrowseListingsSearch methods", () => {
             });
         });
 
-    }),
+    })
 
     describe('Tests the clearRadios method.', () => {
 
-    }),
+        test('Testing that when type is not business, the radio buttons have checked not set to false', () => {
+            let nonProfitRadio = browseListingsSearchWrapper.find('#radio-non-profit');
+            nonProfitRadio.trigger('click');
+            let charitableRadio = browseListingsSearchWrapper.find('#radio-charitable');
+            charitableRadio.trigger('click');
+            let retailRadio = browseListingsSearchWrapper.find('#radio-retail');
+            retailRadio.trigger('click');
+            let accommodationRadio = browseListingsSearchWrapper.find('#radio-accommodation');
+            accommodationRadio.trigger('click');
+
+            jest.spyOn(document, 'querySelector').mockImplementation(() => {
+                return [nonProfitRadio, charitableRadio, retailRadio, accommodationRadio];
+            });
+
+            browseListingsSearchWrapper.vm.$nextTick();
+
+            browseListingsSearchWrapper.vm.clearRadios('user');
+
+            browseListingsSearchWrapper.vm.$nextTick();
+
+            expect(nonProfitRadio.checked).toBeTruthy();
+            expect(charitableRadio.checked).toBeTruthy();
+            expect(retailRadio.checked).toBeTruthy();
+            expect(accommodationRadio.checked).toBeTruthy();
+        });
+
+        test('Testing that when type is business, all radio buttons have checked set to false', () => {
+            let nonProfitRadio = browseListingsSearchWrapper.find('#radio-non-profit');
+            nonProfitRadio.trigger('click');
+            let charitableRadio = browseListingsSearchWrapper.find('#radio-charitable');
+            charitableRadio.trigger('click');
+            let retailRadio = browseListingsSearchWrapper.find('#radio-retail');
+            retailRadio.trigger('click');
+            let accommodationRadio = browseListingsSearchWrapper.find('#radio-accommodation');
+            accommodationRadio.trigger('click');
+
+            jest.spyOn(document, 'querySelector').mockImplementation(() => {
+                return [nonProfitRadio, charitableRadio, retailRadio, accommodationRadio];
+            });
+
+            browseListingsSearchWrapper.vm.$nextTick();
+
+            browseListingsSearchWrapper.vm.clearRadios('business');
+
+            browseListingsSearchWrapper.vm.$nextTick();
+
+            expect(nonProfitRadio.checked).toBeFalsy();
+            expect(charitableRadio.checked).toBeFalsy();
+            expect(retailRadio.checked).toBeFalsy();
+            expect(accommodationRadio.checked).toBeFalsy();
+        });
+    })
 
     describe('Tests the setOrderByOption method.', () => {
 
-    }),
+        test('Testing that when orderBy is priceASC, orderByOptionText is Price Low', () => {
+            browseListingsSearchWrapper.vm.orderByOption = "None";
+            browseListingsSearchWrapper.vm.orderByOptionText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("priceASC");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("priceASC");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Price Low");
+        });
+
+        test('Testing that when orderBy is priceDESC, orderByOptionText is Price High', () => {
+            browseListingsSearchWrapper.vm.orderByOption = "None";
+            browseListingsSearchWrapper.vm.orderByOptionText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("priceDESC");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("priceDESC");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Price High");
+        });
+
+        test('Testing that when orderBy is productNameASC, orderByOptionText is Product Name', () => {
+            browseListingsSearchWrapper.vm.orderByOption = "None";
+            browseListingsSearchWrapper.vm.orderByOptionText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("productNameASC");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("productNameASC");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Product Name");
+        });
+
+        test('Testing that when orderBy is countryASC, orderByOptionText is Country', () => {
+            browseListingsSearchWrapper.vm.orderByOption = "None";
+            browseListingsSearchWrapper.vm.orderByOptionText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("countryASC");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("countryASC");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Country");
+        });
+
+        test('Testing that when orderBy is cityASC, orderByOptionText is City', () => {
+            browseListingsSearchWrapper.vm.orderByOption = "None";
+            browseListingsSearchWrapper.vm.orderByOptionText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("cityASC");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("cityASC");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("City");
+        });
+
+        test('Testing that when orderBy is expiryDateASC, orderByOptionText is Expiry Date Earliest', () => {
+            browseListingsSearchWrapper.vm.orderByOption = "None";
+            browseListingsSearchWrapper.vm.orderByOptionText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("expiryDateASC");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("expiryDateASC");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Expiry Date Earliest");
+        });
+
+        test('Testing that when orderBy is expiryDateDESC, orderByOptionText is Expiry Date Latest', () => {
+            browseListingsSearchWrapper.vm.orderByOption = "None";
+            browseListingsSearchWrapper.vm.orderByOptionText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("expiryDateDESC");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("expiryDateDESC");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Expiry Date Latest");
+        });
+
+        test('Testing that when orderBy is sellerNameASC, orderByOptionText is Expiry Date Latest', () => {
+            browseListingsSearchWrapper.vm.orderByOption = "None";
+            browseListingsSearchWrapper.vm.orderByOptionText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("sellerNameASC");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("sellerNameASC");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Business Name");
+        });
+    })
 
     describe('Tests the validatePriceInput method.', () => {
 
-    }),
+        test('Testing that when one of the input prices is null, then true is returned', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput(null, 20)).toBeTruthy();
+        });
+
+        test('Testing that when neither of the input prices are null and firstPrice is less than secondPrice then true is returned', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput(10, 20)).toBeTruthy();
+        });
+
+        test('Testing that when neither of the input prices are null and firstPrice is equal to secondPrice then true is returned', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput(20, 20)).toBeTruthy();
+        });
+
+        test('Testing that when neither of the input prices are null and firstPrice is greater than secondPrice then false is returned', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput(20, 10)).toBeFalsy();
+        });
+    })
 
     describe('Tests the validateDateInput method.', () => {
 
-    }),
+        test('Testing that when one of the input dates is null, then true is returned', () => {
+            expect(browseListingsSearchWrapper.vm.validateDateInput(null, '2020-01-25')).toBeTruthy();
+        });
+
+        test('Testing that when neither of the input dates are null and firstDate is earlier than secondDate then true is returned', () => {
+            expect(browseListingsSearchWrapper.vm.validateDateInput('2020-01-24', '2020-01-25')).toBeTruthy();
+        });
+
+        test('Testing that when neither of the input dates are null and firstDate is the same as secondDate then false is returned', () => {
+            expect(browseListingsSearchWrapper.vm.validateDateInput('2020-01-25', '2020-01-25')).toBeFalsy();
+        });
+
+        test('Testing that when neither of the input dates are null and firstDate is later than secondDate then false is returned', () => {
+            expect(browseListingsSearchWrapper.vm.validateDateInput('2020-01-28', '2020-01-25')).toBeFalsy();
+        });
+    })
 
     describe('Tests the clearFilters method.', () => {
+
+        test('Testing that clearFilters clears the filters', () => {
+            browseListingsSearchWrapper.vm.lowestPrice = "price";
+            browseListingsSearchWrapper.vm.highestPrice = "price";
+            browseListingsSearchWrapper.vm.startDate = "date";
+            browseListingsSearchWrapper.vm.endDate = "date";
+
+            expect(browseListingsSearchWrapper.vm.lowestPrice).toBe("price");
+            expect(browseListingsSearchWrapper.vm.highestPrice).toBe("price");
+            expect(browseListingsSearchWrapper.vm.startDate).toBe("date");
+            expect(browseListingsSearchWrapper.vm.endDate).toBe("date");
+
+            browseListingsSearchWrapper.vm.clearFilters();
+
+            expect(browseListingsSearchWrapper.vm.lowestPrice).toBeNull();
+            expect(browseListingsSearchWrapper.vm.highestPrice).toBeNull();
+            expect(browseListingsSearchWrapper.vm.startDate).toBeNull();
+            expect(browseListingsSearchWrapper.vm.endDate).toBeNull();
+        });
+    })
+
+    describe('Tests the searchClicked method.', () => {
 
     })
 
