@@ -80,7 +80,6 @@
             <div class="text-center" id="match-fields-clear-btn-container">
 
               <!--------------------------------------- clear field match button -------------------------------------------->
-              <!--   TODO: add @click event               -->
               <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50" @click="clearRadios('business')">
                 Clear Field
               </button>
@@ -243,8 +242,6 @@ export default {
       }
       let value;
 
-      console.log(radios) // TODO: remove
-
       for (const radio of radios) {
         if (radio.checked) {
           value = radio.value;
@@ -271,6 +268,7 @@ export default {
         this.lowestPrice = this.highestPrice
         this.highestPrice = temp
       }
+
 
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
@@ -299,6 +297,7 @@ export default {
           fromDate !== this.$route.query.fromDate ||
           toDate !== this.$route.query.toDate
       ) {
+
         this.$router.push({
           path: '/browseListings', query: {
             searchQuery: searchQuery, searchType: searchType,
