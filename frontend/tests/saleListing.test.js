@@ -722,8 +722,8 @@ describe("Test data population", () =>{
 
     test("Test date info been populated", async () => {
         // then
-        expect(wrapper.vm.$data.startDate).toStrictEqual(response.data.created);
-        expect(wrapper.vm.$data.closeData).toStrictEqual(response.data.closes);
+        expect(wrapper.vm.$data.startDate).toStrictEqual("12th May 2021");
+        expect(wrapper.vm.$data.closeData).toStrictEqual("10th Sep 2021");
         expect(wrapper.vm.$data.manufactured).toStrictEqual(response.data.inventoryItem.manufactured);
         expect(wrapper.vm.$data.sellBy).toStrictEqual(response.data.inventoryItem.sellBy);
         expect(wrapper.vm.$data.bestBefore).toStrictEqual(response.data.inventoryItem.bestBefore);

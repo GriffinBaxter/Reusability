@@ -128,7 +128,8 @@
 import Navbar from "../components/main/Navbar";
 import Footer from "../components/main/Footer"
 import DefaultImage from "../../public/default-product.jpg"
-import Api from "../Api";
+import Api from "../Api"
+import {formatDate} from "../dateUtils";
 
 export default {
   name: "SaleListing",
@@ -270,8 +271,8 @@ export default {
       this.carouselStartIndex = this.saleImages.findIndex((value) => value.isPrimary);
 
       // Date info
-      this.startDate = data.created;
-      this.closeData = data.closes;
+      this.startDate = formatDate(data.created, false);
+      this.closeData = formatDate(data.closes, false);
       this.manufactured = data.inventoryItem.manufactured;
       this.sellBy = data.inventoryItem.sellBy;
       this.bestBefore = data.inventoryItem.bestBefore;
