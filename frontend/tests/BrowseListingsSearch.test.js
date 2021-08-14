@@ -26,7 +26,13 @@ describe("Testing the BrowseListingsSearch methods", () => {
         }
         $route = {
             path: '/browseListings',
-            query: {}
+            name: 'BrowseListing',
+            query: {
+                searchQuery: null, searchType: null,
+                orderBy: null, page: null, businessType: null,
+                minimumPrice: null, maximumPrice: null,
+                fromDate: null, toDate: null
+            }
         }
         data = {
             status: 200,
