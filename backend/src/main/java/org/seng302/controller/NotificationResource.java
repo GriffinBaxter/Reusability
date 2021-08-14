@@ -4,13 +4,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
 import org.seng302.model.*;
-import org.seng302.model.repository.KeywordNotificationRepository;
-import org.seng302.model.repository.ListingNotificationRepository;
-import org.seng302.model.repository.MarketCardNotificationRepository;
-import org.seng302.model.repository.UserRepository;
+import org.seng302.model.repository.*;
+import org.seng302.view.outgoing.SoldListingNotificationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -32,14 +31,19 @@ public class NotificationResource {
     @Autowired
     private ListingNotificationRepository listingNotificationRepository;
 
+    @Autowired
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
     public NotificationResource(UserRepository userRepository,
                                 MarketCardNotificationRepository marketCardNotificationRepository,
                                 KeywordNotificationRepository keywordNotificationRepository,
-                                ListingNotificationRepository listingNotificationRepository) {
+                                ListingNotificationRepository listingNotificationRepository,
+                                SoldListingNotificationRepository soldListingNotificationRepository) {
         this.userRepository = userRepository;
         this.marketCardNotificationRepository = marketCardNotificationRepository;
         this.keywordNotificationRepository = keywordNotificationRepository;
         this.listingNotificationRepository = listingNotificationRepository;
+        this.soldListingNotificationRepository = soldListingNotificationRepository;
     }
 
     private static final Logger logger = LogManager.getLogger(NotificationResource.class.getName());
@@ -81,5 +85,34 @@ public class NotificationResource {
         }
 
         return notificationPayloads;
+    }
+
+    /**
+     * Retrieve all notifications for a business.
+     *
+     * @param id The ID of the business you'd like to retrieve the notifications for.
+     * @param sessionToken The token used to identify the user.
+     * @return List<SoldListingNotificationPayloads> The list of sold listing notifications for the business.
+     * @throws Exception Exception
+     */
+    @GetMapping("/businesses/{id}/notifications")
+    public List<SoldListingNotificationPayload> retrieveAllBusinessNotifications(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
+    ) throws Exception {
+        //401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User (Id: {}) received.", currentUser.getId());
+
+        Authorization.verifyBusinessAdmin(currentUser, id);
+
+        List<SoldListingNotification> soldListingNotifications = soldListingNotificationRepository.findAllByBusinessId(id);
+        List<SoldListingNotificationPayload> soldListingNotificationPayloads = new ArrayList<>();
+
+        for (SoldListingNotification soldListingNotification : soldListingNotifications) {
+            logger.debug("Sold Listing Notification received: {}", soldListingNotification);
+            soldListingNotificationPayloads.add(soldListingNotification.toSoldListingNotificationPayload());
+        }
+
+        return soldListingNotificationPayloads;
     }
 }

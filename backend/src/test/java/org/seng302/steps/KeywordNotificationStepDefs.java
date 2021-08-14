@@ -64,6 +64,10 @@ public class KeywordNotificationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
     @MockBean
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
+    @Autowired
+    @MockBean
     private KeywordRepository keywordRepository;
 
     private MockHttpServletResponse response;
@@ -86,7 +90,7 @@ public class KeywordNotificationStepDefs extends CucumberSpringConfiguration {
         keywordRepository = mock(KeywordRepository.class);
 
         this.notificationMvc = MockMvcBuilders.standaloneSetup(new NotificationResource(userRepository, marketCardNotificationRepository,
-                keywordNotificationRepository, listingNotificationRepository)).build();
+                keywordNotificationRepository, listingNotificationRepository, soldListingNotificationRepository)).build();
         this.keywordMvc = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
     }
 

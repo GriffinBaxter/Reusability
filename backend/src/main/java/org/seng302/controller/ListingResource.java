@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
+import org.seng302.exceptions.IllegalSoldListingNotificationArgumentException;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.repository.*;
@@ -69,6 +70,9 @@ public class ListingResource {
     @Autowired
     private ListingNotificationRepository listingNotificationRepository;
 
+    @Autowired
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
     /**
@@ -81,6 +85,7 @@ public class ListingResource {
      * @param userRepository UserRepository
      * @param soldListingRepository SoldListingRepository
      * @param listingNotificationRepository ListingNotificationRepository
+     * @param soldListingNotificationRepository SoldListingNotificationRepository
      */
     public ListingResource(ListingRepository listingRepository,
                            InventoryItemRepository inventoryItemRepository,
@@ -88,7 +93,8 @@ public class ListingResource {
                            BusinessRepository businessRepository,
                            UserRepository userRepository,
                            SoldListingRepository soldListingRepository,
-                           ListingNotificationRepository listingNotificationRepository) {
+                           ListingNotificationRepository listingNotificationRepository,
+                           SoldListingNotificationRepository soldListingNotificationRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.productRepository = productRepository;
@@ -96,6 +102,7 @@ public class ListingResource {
         this.userRepository = userRepository;
         this.soldListingRepository = soldListingRepository;
         this.listingNotificationRepository = listingNotificationRepository;
+        this.soldListingNotificationRepository = soldListingNotificationRepository;
     }
 
     /**
@@ -541,8 +548,18 @@ public class ListingResource {
                                                     new ProductId(listing.getInventoryItem().getProduct().getProductId(),
                                                     listing.getBusinessId()), listing.getQuantity(), listing.getPrice(),
                                                     listing.getTotalBookmarks());
-        soldListingRepository.save(soldListing);
+        soldListing = soldListingRepository.save(soldListing);
         logger.info("Sold Listing Creation Success - Sold listing created for business with ID {}", listing.getBusinessId());
+
+        try {
+            String soldListingMessage = String.format("A listing of yours, %s x%d, has been sold.", listing.getInventoryItem().getProduct().getName(), listing.getQuantity());
+            SoldListingNotification soldListingNotification = new SoldListingNotification(business.getId(), soldListing, soldListingMessage);
+            soldListingNotificationRepository.save(soldListingNotification);
+
+            logger.info("Sold Listing Notification Creation Success - Sold listing notification created for business with ID {}", business.getId());
+        } catch (IllegalSoldListingNotificationArgumentException e) {
+            logger.error("Couldn't create sold listing notification - {}", e.getMessage());
+        }
 
         try {
             String purchaserMessage = String.format("You have purchased %s x%d for $%.2f. Your purchase can be picked up from %s.",

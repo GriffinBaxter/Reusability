@@ -8,10 +8,7 @@ import org.seng302.controller.NotificationResource;
 import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
-import org.seng302.model.repository.KeywordNotificationRepository;
-import org.seng302.model.repository.ListingNotificationRepository;
-import org.seng302.model.repository.MarketCardNotificationRepository;
-import org.seng302.model.repository.UserRepository;
+import org.seng302.model.repository.*;
 import org.seng302.view.outgoing.KeywordPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -62,6 +59,9 @@ class NotificationResourceIntegrationTests {
 
     @MockBean
     private ListingNotificationRepository listingNotificationRepository;
+
+    @MockBean
+    private SoldListingNotificationRepository soldListingNotificationRepository;
 
     private MockHttpServletResponse response;
 
@@ -194,7 +194,7 @@ class NotificationResourceIntegrationTests {
 
         this.mvc = MockMvcBuilders.standaloneSetup(
                 new NotificationResource(userRepository, marketCardNotificationRepository,
-                        keywordNotificationRepository, listingNotificationRepository))
+                        keywordNotificationRepository, listingNotificationRepository, soldListingNotificationRepository))
                 .build();
     }
 

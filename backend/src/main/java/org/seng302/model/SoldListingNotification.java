@@ -2,6 +2,7 @@ package org.seng302.model;
 
 import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
+import org.seng302.exceptions.IllegalSoldListingNotificationArgumentException;
 import org.seng302.model.enums.NotificationType;
 import org.seng302.view.outgoing.ListingNotificationPayload;
 import org.seng302.view.outgoing.SoldListingNotificationPayload;
@@ -29,7 +30,7 @@ public class SoldListingNotification {
     @JoinColumn(name = "sold_listing_id", referencedColumnName = "id")
     private SoldListing soldListing;
 
-    @Column(name = "sold_listing_id", nullable = false)
+    @Column(name = "sold_listing_id", nullable = false, insertable = false, updatable = false)
     private Integer soldListingId;
 
     @Column(name = "description", nullable = false)
@@ -50,17 +51,17 @@ public class SoldListingNotification {
      * @param soldListing the sold listing this notification refers to
      * @param description the message of the notification
      */
-    public SoldListingNotification(Integer businessId, SoldListing soldListing, String description) throws IllegalListingNotificationArgumentException {
-        if (businessId != soldListing.getBusiness().getBusinessId()) {
-            throw new IllegalListingNotificationArgumentException("Invalid business ID");
+    public SoldListingNotification(Integer businessId, SoldListing soldListing, String description) throws IllegalSoldListingNotificationArgumentException {
+        if (businessId != soldListing.getBusiness().getId()) {
+            throw new IllegalSoldListingNotificationArgumentException("Invalid business ID");
         }
         if (!(isValidDescription(description))) {
-            throw new IllegalListingNotificationArgumentException("Invalid description");
+            throw new IllegalSoldListingNotificationArgumentException("Invalid description");
         }
 
         this.businessId = businessId;
         this.soldListing = soldListing;
-        this.soldListing = soldListing.getBusiness().getBusinessId();
+        this.soldListingId = soldListing.getId();
         this.description = description;
         this.created = LocalDateTime.now();
     }
