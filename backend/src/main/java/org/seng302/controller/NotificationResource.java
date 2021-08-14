@@ -23,6 +23,9 @@ public class NotificationResource {
     private UserRepository userRepository;
 
     @Autowired
+    private BusinessRepository businessRepository;
+
+    @Autowired
     private MarketCardNotificationRepository marketCardNotificationRepository;
 
     @Autowired
@@ -35,11 +38,13 @@ public class NotificationResource {
     private SoldListingNotificationRepository soldListingNotificationRepository;
 
     public NotificationResource(UserRepository userRepository,
+                                BusinessRepository businessRepository,
                                 MarketCardNotificationRepository marketCardNotificationRepository,
                                 KeywordNotificationRepository keywordNotificationRepository,
                                 ListingNotificationRepository listingNotificationRepository,
                                 SoldListingNotificationRepository soldListingNotificationRepository) {
         this.userRepository = userRepository;
+        this.businessRepository = businessRepository;
         this.marketCardNotificationRepository = marketCardNotificationRepository;
         this.keywordNotificationRepository = keywordNotificationRepository;
         this.listingNotificationRepository = listingNotificationRepository;
@@ -102,6 +107,8 @@ public class NotificationResource {
         //401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         logger.debug("User (Id: {}) received.", currentUser.getId());
+
+        Authorization.verifyBusinessExists(id, businessRepository);
 
         Authorization.verifyBusinessAdmin(currentUser, id);
 

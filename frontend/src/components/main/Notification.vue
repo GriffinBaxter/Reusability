@@ -85,6 +85,7 @@
 <script>
 
 import Api from "../../Api";
+import Cookies from "js-cookie";
 
 export default {
   name: "Notification",
@@ -147,12 +148,19 @@ export default {
       this.allNoticeCards = notifications;
     },
     /**
-     * this function will reload all notifications for current user.
+     * this function will reload all notifications for current user or selected business.
      */
     loadNotifications() {
-      Api.getNotifications()
-          .then(response => this.populateNotification(response.data))
-          .catch((error) => this.errorCatcher(error));
+      if (Cookies.get('actAs') !== undefined) {
+        console.log(Cookies.get('actAs'))
+        Api.getBusinessNotifications(Cookies.get('actAs'))
+            .then(response => this.populateNotification(response.data))
+            .catch((error) => this.errorCatcher(error));
+      } else {
+        Api.getNotifications()
+            .then(response => this.populateNotification(response.data))
+            .catch((error) => this.errorCatcher(error));
+      }
     },
     /**
      * delete a market card

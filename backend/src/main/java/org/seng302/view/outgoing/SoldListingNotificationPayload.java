@@ -37,4 +37,44 @@ public class SoldListingNotificationPayload {
         this.created = created.toString();
         this.notificationType = notificationType.toString();
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public SoldListingPayload getSoldListing() {
+        return soldListing;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    public void setSoldListing(SoldListingPayload soldListing) {
+        this.soldListing = soldListing;
+    }
+
+    public void setNotificationType(String notificationType) {
+        this.notificationType = notificationType;
+    }
 }

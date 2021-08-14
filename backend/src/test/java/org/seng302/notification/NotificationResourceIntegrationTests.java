@@ -52,6 +52,9 @@ class NotificationResourceIntegrationTests {
     private UserRepository userRepository;
 
     @MockBean
+    private BusinessRepository businessRepository;
+
+    @MockBean
     private MarketCardNotificationRepository marketCardNotificationRepository;
 
     @MockBean
@@ -193,7 +196,7 @@ class NotificationResourceIntegrationTests {
         keywordNotification.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(
-                new NotificationResource(userRepository, marketCardNotificationRepository,
+                new NotificationResource(userRepository, businessRepository, marketCardNotificationRepository,
                         keywordNotificationRepository, listingNotificationRepository, soldListingNotificationRepository))
                 .build();
     }

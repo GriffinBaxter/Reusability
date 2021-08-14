@@ -36,4 +36,12 @@ public class ProductId implements Serializable {
         this.businessId = businessId;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
 }
