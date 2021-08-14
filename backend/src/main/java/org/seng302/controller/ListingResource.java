@@ -476,7 +476,7 @@ public class ListingResource {
 
             try {
                 BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
-                        String.format("Product listing '%s' has been un-bookmarked.", listing.getInventoryItem().getProduct().getName()),
+                        String.format("Bookmark for product listing '%s' has been removed.", listing.getInventoryItem().getProduct().getName()),
                         created,
                         listing);
                 bookmarkedListingMessage.addUser(currentUser);
@@ -487,7 +487,7 @@ public class ListingResource {
                 logger.error("Bookmarked listing message creation failure - {}", ex, ex);
             }
 
-            logger.info("Listing {} has been remove from current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
+            logger.info("Listing {} has been removed from current user's (Id: {}) bookmarks.", nameOfProduct, currentUser.getId());
         } else {
             // if not marked before
             listing.addUserToANewBookmark(currentUser);
@@ -506,7 +506,7 @@ public class ListingResource {
                 logger.error("Bookmarked listing message creation failure - {}", ex, ex);
             }
 
-            logger.info("Listing {} has been add to current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
+            logger.info("Listing {} has been added to current user's (Id: {}) bookmarks.", nameOfProduct, currentUser.getId());
         }
 
         // Save status change
