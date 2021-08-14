@@ -175,8 +175,11 @@
                         Scan using camera
                       </button>
                       <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent"
-                              @click="liveStreaming = false">
-                        Stop Stream
+                              @click="
+                              liveStreaming = false;
+                              removeCameraError();
+                              ">
+                        Stop scanning
                       </button>
                       <button v-if="liveStreaming && barcodeFound" class="btn green-button"
                               @click="liveStreaming = false">
@@ -243,7 +246,7 @@ import UpdateProductModal from "../components/productCatalogue/UpdateProductModa
 import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
-import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic,} from "../barcodeUtils";
+import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
 
 export default {
   name: "ProductCatalogue",
@@ -897,6 +900,13 @@ export default {
      */
     getBarcodeLiveStream() {
       getBarcodeLiveStream(this);
+    },
+
+    /**
+     * Removes the camera error message after stopping the scanning.
+     */
+    removeCameraError() {
+      document.querySelector('#liveStreamCamera').innerHTML = ""
     },
 
     /**

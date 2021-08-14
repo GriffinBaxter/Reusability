@@ -43,7 +43,16 @@ function detectBarcodeLiveStream(callback) {
         }
     }, function(err) {
         if (err) {
-            console.log(err);
+            if (err.message === "Could not start video source") {
+                document.querySelector('#liveStreamCamera').innerHTML =
+                    "Error: Camera in use by another program.";
+            } else if (err.message === "Permission denied" || err.message === "Permission dismissed") {
+                document.querySelector('#liveStreamCamera').innerHTML =
+                    "Error: Insufficient browser permissions to use camera.";
+            } else {
+                document.querySelector('#liveStreamCamera').innerHTML =
+                    "Error: Camera not found/available.";
+            }
             return
         }
         console.log("Initialization finished. Ready to start");
@@ -59,7 +68,7 @@ function detectBarcodeLiveStream(callback) {
  */
 export function getBarcodeLiveStream(outerThis) {
     outerThis.liveStreaming = true;
-    let barcodeJson = {};
+    let barcodeOccurrences = {};
     detectBarcodeLiveStream(function (barcodeObject) {
 
         const drawingCanvas = Quagga.canvas.dom.overlay;
@@ -67,10 +76,10 @@ export function getBarcodeLiveStream(outerThis) {
 
         if (barcodeObject !== undefined && barcodeObject.codeResult !== undefined) {
             outerThis.barcodeFound = true;
-            if (Object.prototype.hasOwnProperty.call(barcodeJson, barcodeObject.codeResult.code)) {
-                barcodeJson[barcodeObject.codeResult.code] += 1
+            if (Object.prototype.hasOwnProperty.call(barcodeOccurrences, barcodeObject.codeResult.code)) {
+                barcodeOccurrences[barcodeObject.codeResult.code] += 1
             } else {
-                barcodeJson[barcodeObject.codeResult.code] = 1
+                barcodeOccurrences[barcodeObject.codeResult.code] = 1
             }
         }
 
@@ -78,9 +87,9 @@ export function getBarcodeLiveStream(outerThis) {
             let barcodeScanned = null;
             let barcodeScannedNum = 0;
 
-            Object.keys(barcodeJson).forEach(function(barcode) {
-                if (barcodeJson[barcode] > barcodeScannedNum) {
-                    barcodeScannedNum = barcodeJson[barcode]
+            Object.keys(barcodeOccurrences).forEach(function(barcode) {
+                if (barcodeOccurrences[barcode] > barcodeScannedNum) {
+                    barcodeScannedNum = barcodeOccurrences[barcode]
                     barcodeScanned = barcode;
                 }
             })
