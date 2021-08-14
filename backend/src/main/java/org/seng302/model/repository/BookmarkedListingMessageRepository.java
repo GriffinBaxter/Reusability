@@ -13,13 +13,13 @@ import java.util.List;
 @EnableJpaRepositories
 public interface BookmarkedListingMessageRepository extends JpaRepository<BookmarkedListingMessage, Integer> {
 
-//    /**
-//     * Search for a list of bookmarked listings messages matching given a user id.
-//     * Note: it is findAllByUsersId (plural), not findAllByUserId because the BookmarkedListingMessage entity has
-//     *       a list of users.
-//     * @param id The id of the user to search by
-//     * @return A list of bookmarked listings messages for the given user.
-//     */
-//    List<BookmarkedListingMessage> findAllByUsersId(Integer id);
+    /**
+     * Search for a list of bookmarked listings messages matching given a user id.
+     * Note: it is findAllByUsersId (plural), not findAllByUserId because the BookmarkedListingMessage entity has
+     *       a list of users.
+     * @param id The id of the user to search by
+     * @return A list of bookmarked listings messages for the given user.
+     */
+    List<BookmarkedListingMessage> findAllByUsersId(Integer id);
 
 }

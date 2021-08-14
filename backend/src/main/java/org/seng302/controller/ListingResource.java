@@ -70,9 +70,6 @@ public class ListingResource {
     private ListingNotificationRepository listingNotificationRepository;
 
     @Autowired
-    private HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository;
-
-    @Autowired
     private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
@@ -95,7 +92,6 @@ public class ListingResource {
                            UserRepository userRepository,
                            SoldListingRepository soldListingRepository,
                            ListingNotificationRepository listingNotificationRepository,
-                           HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository,
                            BookmarkedListingMessageRepository bookmarkedListingMessageRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
@@ -104,7 +100,6 @@ public class ListingResource {
         this.userRepository = userRepository;
         this.soldListingRepository = soldListingRepository;
         this.listingNotificationRepository = listingNotificationRepository;
-        this.hasBookmarkedListingMessageRepository = hasBookmarkedListingMessageRepository;
         this.bookmarkedListingMessageRepository = bookmarkedListingMessageRepository;
     }
 
