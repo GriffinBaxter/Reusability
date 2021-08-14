@@ -15,6 +15,10 @@
       </div>
       <div id="listing-content-wrapper">
         <div class="left-content">
+          <!-- Return to sales listings button-->
+          <div class="return-button-wrapper mb-3 w-100" v-if="fromListings">
+            <button class="btn btn-lg green-button w-100" @click="returnToSales()" id="return-button" tabindex="8">Return to Sale Listings</button>
+          </div>
           <!-- Image section -->
           <div class="listing-images-wrapper">
             <div id="main-image-wrapper">
@@ -62,6 +66,10 @@
             <div class="business-address-wrapper"
                  v-if="businessAddressLine4 !== null && businessAddressLine4.length > 2">
               {{ businessAddressLine4 }}
+            </div>
+            <!-- Go to business profile button -->
+            <div class="goto-button-wrapper w-100">
+              <button class="btn btn-lg green-button mt-2 w-100" @click="goToBusiness()" id="go-to-button">Go to Business Profile</button>
             </div>
           </div>
         </div>
@@ -173,6 +181,9 @@ export default {
       listingId: null,
       isBookmarked: null,
       totalBookmarks: 0,
+
+      // keep track of if user came from full listings page so they can return.
+      fromListings: false,
     }
   },
   methods: {
@@ -299,7 +310,32 @@ export default {
       this.listingId = data.id;
       this.isBookmarked = data.isBookmarked;
       this.totalBookmarks = data.totalBookmarks;
+    },
+    /**
+     * Redirect the user to the page for the profile of the business who listed the current sale.
+     */
+    goToBusiness() {
+      const businessId = this.$route.params.businessId;
+      this.$router.push({
+        path: `/businessProfile/${businessId}`
+      });
+    },
+    /**
+     * Redirect the user back to the full sale listings page.
+     */
+    returnToSales() {
+      this.$router.back();
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from a page which contains listings then the return to listings button component
+      // should be rendered.
+      if (from.name === 'BrowseListings' || from.name === 'BusinessProfile') {
+        vm.fromListings = true;
+      }
+      next();
+    });
   },
   beforeMount() {
     const url = document.URL;
@@ -504,6 +540,10 @@ h6 {
 
   .listing-dates-wrapper {
     flex-direction: row;
+  }
+
+  .return-button-wrapper {
+    width: 50%;
   }
 
   .listing-dates-wrapper h6 {
