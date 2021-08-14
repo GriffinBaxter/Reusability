@@ -99,9 +99,12 @@
               </h6>
             </div>
             <div class="buy-button-wrapper">
-              <div class="buy-button merryweather">
+              <button v-if="canBuy" class="buy-button merryweather w-100" @click="buy">
                 Buy
-              </div>
+              </button>
+              <button v-else class="buy-button-disabled merryweather w-100" disabled>
+                Can't buy own listing
+              </button>
               <div class="barcode-wrapper">
                 <div id="barcode-number" v-if="barcode">Barcode: {{ barcode }}</div>
               </div>
@@ -138,6 +141,7 @@ import Footer from "../components/main/Footer"
 import DefaultImage from "../../public/default-product.jpg"
 import Api from "../Api"
 import {formatDate} from "../dateUtils";
+import Cookies from "js-cookie";
 
 export default {
   name: "SaleListing",
@@ -177,16 +181,42 @@ export default {
       businessAddressLine2: "",
       businessAddressLine3: "",
       businessAddressLine4: "",
+      businessAdmins: [],
 
       listingId: null,
       isBookmarked: null,
       totalBookmarks: 0,
+
+      currentID: null,
+      canBuy: true,
 
       // keep track of if user came from full listings page so they can return.
       fromListings: false,
     }
   },
   methods: {
+    /**
+     * Attempts to buy the viewed listing and if successful returns the user to their home page
+     */
+    buy() {
+      Api.buyListing(this.listingId).then(() => {
+        this.$router.push({name: 'Home'})
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$router.push({name: 'InvalidToken'})
+          } else if (err.response.status === 403) {
+            console.log(err.response.data.message)
+          } else if (err.response.status === 406) {
+            this.$router.push({path: '/noListing'});
+          } else {
+            console.log(err.response)
+          }
+        } else {
+          console.log(err)
+        }
+      })
+    },
     /**
      * change bookmark status
      */
@@ -294,6 +324,15 @@ export default {
       this.businessName = data.inventoryItem.product.business.name;
       this.businessAddress = data.inventoryItem.product.business.address;
 
+      // Administrators
+      this.businessAdmins = data.inventoryItem.product.business.administrators
+
+      for (let i=0; i < this.businessAdmins.length; i++) {
+        if (this.businessAdmins[i].id.toString() === this.currentID) {
+          this.canBuy = false
+        }
+      }
+
       // address population
       this.businessAddressLine1 = (this.businessAddress.streetNumber !== "" && this.businessAddress.streetName !== "")
           ? this.businessAddress.streetNumber + " " + this.businessAddress.streetName
@@ -342,13 +381,14 @@ export default {
     const businessId = url.substring(url.lastIndexOf('/businessProfile/') + 17, url.lastIndexOf('/listings/'));
     const listingId = url.substring(url.lastIndexOf('/') + 1);
     const self = this;
+    this.currentID = Cookies.get('userID');
+
     Api.getDetailForAListing(businessId, listingId)
         .then(response => this.populateData(response.data))
         .catch(error => {
           self.$router.push({path: '/noListing'});
           console.log(error);
         });
-
   }
 }
 </script>
@@ -448,6 +488,25 @@ h6 {
 .buy-button-section {
   margin-top: 2rem;
   width: 100%;
+}
+
+.buy-button-disabled {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: lightgray;
+  border: 1px solid #19b092;
+  color: #19b092;
+
+  padding: 0.65em 0;
+  margin: 1.45em 0;
+  border-radius: 0.25em;
+
+  cursor: pointer;
+  transition: 150ms ease-in-out;
+
+  font-size: 1.5em;
 }
 
 .buy-button {
