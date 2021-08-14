@@ -25,6 +25,35 @@ export function getBarcodeStatic(outerThis, callback) {
 }
 
 /**
+ * Retrieves the barcode number (EAN or UPC) from a live camera feed.
+ */
+export function getBarcodeLiveStream(callback) {
+    Quagga.init({
+        inputStream : {
+            name : "Live",
+            type : "LiveStream",
+            target: document.querySelector('#liveStreamCamera')
+        },
+        decoder : {
+            readers : ["upc_reader", "ean_reader"]
+        }
+    }, function(err) {
+        if (err) {
+            console.log(err);
+            return
+        }
+        console.log("Initialization finished. Ready to start");
+        Quagga.start();
+        Quagga.onDetected(callback)
+        Quagga.onProcessed(callback)
+    });
+}
+
+export function stopLiveStream() {
+    Quagga.stop()
+}
+
+/**
  * Autofills data from the barcode, using the OpenFoodFacts API.
  */
 export function autofillProductFromBarcode(outerThis, callback) {

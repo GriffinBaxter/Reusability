@@ -170,6 +170,12 @@
                       <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
                                               name="img" accept="image/png, image/gif, image/jpeg">
                       <br><br>
+
+                      <button v-if="liveStreamAvailable" class="btn green-button-transparent" @click="getBarcodeLiveStream">Scan from livestream</button>
+                      <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent" @click="liveStreaming = false">Stop Stream</button>
+                      <button v-if="liveStreaming && barcodeFound" class="btn green-button-transparent" @click="liveStreaming = false">Save Scanned Barcode</button>
+                      <div id="liveStreamCamera"></div>
+                      
                       <button id="autofill-button" type="button"
                               :class="`btn green-button ${getErrorMessage(
                               config.barcode.name,
@@ -227,7 +233,7 @@ import UpdateProductModal from "../components/productCatalogue/UpdateProductModa
 import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
-import {autofillProductFromBarcode, getBarcodeStatic} from "../barcodeUtils";
+import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic, stopLiveStream} from "../barcodeUtils";
 
 export default {
   name: "ProductCatalogue",
@@ -294,6 +300,9 @@ export default {
       barcode: "",
       barcodeErrorMsg: "",
       addBarcode: false,
+      liveStreamAvailable: false,
+      liveStreaming: false,
+      barcodeFound: false,
 
       // Product name related variables
       productName: "",
@@ -871,6 +880,31 @@ export default {
         return undefined;
       });
     },
+    
+    getBarcodeLiveStream() {
+      let barcodeJson = {};
+      this.liveStreaming = true;
+      let outerThis = this;
+      
+      getBarcodeLiveStream(function (barcodeObject) {
+        if (barcodeObject !== undefined && barcodeObject.codeResult !== undefined) {
+          outerThis.barcodeFound = true;
+          if (Object.prototype.hasOwnProperty.call(barcodeJson, barcodeObject.codeResult.code)) {
+            barcodeJson[barcodeObject.codeResult.code] += 1
+          } else {
+            barcodeJson[barcodeObject.codeResult.code] = 1
+          }
+        }
+        
+        if (!outerThis.liveStreaming && outerThis.barcodeFound) {
+          // TODO
+        } else if (!outerThis.liveStreaming) {
+          stopLiveStream();
+          document.querySelector('#liveStreamCamera').innerHTML = "";
+          outerThis.barcodeFound = false;
+        }
+      });
+    },
 
     /**
      * Autofills data from the barcode, using the OpenFoodFacts API.
@@ -913,6 +947,8 @@ export default {
         this.$router.push({name: 'Login'});
       }
     }
+
+    this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
   },
   watch: {
     // If the current Product was updated we update the table.
