@@ -97,10 +97,29 @@
                     {{ errorsMessages.barcode }}
                   </div>
                   <br><br>
-                  <button class="btn green-button-transparent" @click="onUploadClick">Scan from image</button>
+                  <button class="btn green-button-transparent" @click="onUploadClick">Scan by uploading image</button>
                   <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
                                           name="img" accept="image/png, image/gif, image/jpeg">
                   <br><br>
+                  <button v-if="liveStreamAvailable && !liveStreaming" class="btn green-button-transparent"
+                          @click="getBarcodeLiveStream">
+                    Scan using camera
+                  </button>
+                  <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent"
+                          @click="
+                              liveStreaming = false;
+                              removeCameraError();
+                              ">
+                    Stop scanning  (barcode not found)
+                  </button>
+                  <button v-if="liveStreaming && barcodeFound" class="btn green-button"
+                          @click="liveStreaming = false">
+                    Save Scanned Barcode
+                  </button>
+                  <br>
+                  <div v-if="liveStreaming"><br></div>
+                  <div id="editLiveStreamCamera"></div>
+                  <br>
                   <button id="autofill-button" type="button"
                           :class="`btn green-button ${getErrorMessage(
                               config.barcode.name,
@@ -129,7 +148,7 @@
 import { Modal } from 'bootstrap'
 import Product from "../../configs/Product"
 import Api from "../../Api";
-import {autofillProductFromBarcode, getBarcodeStatic} from "../../barcodeUtils";
+import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../../barcodeUtils";
 
 
 export default {
@@ -176,6 +195,9 @@ export default {
       inputError: false,
       
       editBarcode: false,
+      liveStreamAvailable: false,
+      liveStreaming: false,
+      barcodeFound: false,
       
       barcode: "",
       barcodeErrorMsg: "",
@@ -236,6 +258,9 @@ export default {
       }
       
       this.editBarcode = this.newProduct.data.barcode !== null;
+      this.barcode = ""
+      this.liveStreaming = false;
+      this.barcodeFound = false;
       
       // Show the modal
       this.modal.show();
@@ -432,6 +457,26 @@ export default {
     },
 
     /**
+     * Retrieves the barcode number (EAN or UPC) from a live camera feed, based on the most commonly occurring barcode
+     * per each frame scan.
+     */
+    getBarcodeLiveStream() {
+      this.barcode = this.newProduct.data.barcode;
+
+      let outerThis = this;
+      getBarcodeLiveStream(this, 375, "#editLiveStreamCamera", function() {
+        outerThis.newProduct.data.barcode = outerThis.barcode;
+      });
+    },
+
+    /**
+     * Removes the camera error message after stopping the scanning.
+     */
+    removeCameraError() {
+      document.querySelector('#editLiveStreamCamera').innerHTML = ""
+    },
+
+    /**
      * Autofills data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
@@ -452,6 +497,8 @@ export default {
   mounted() {
     // Create a modal and attach it to the updateProductModel reference.
     this.modal = new Modal(this.$refs._updateProductModel);
+
+    this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
   }
 }
 </script>

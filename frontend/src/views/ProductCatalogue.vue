@@ -179,7 +179,7 @@
                               liveStreaming = false;
                               removeCameraError();
                               ">
-                        Stop scanning
+                        Stop scanning (barcode not found)
                       </button>
                       <button v-if="liveStreaming && barcodeFound" class="btn green-button"
                               @click="liveStreaming = false">
@@ -187,7 +187,7 @@
                       </button>
                       <br>
                       <div v-if="liveStreaming"><br></div>
-                      <div id="liveStreamCamera"></div>
+                      <div id="createLiveStreamCamera"></div>
                       <br>
                       <button id="autofill-button" type="button"
                               :class="`btn green-button ${getErrorMessage(
@@ -417,6 +417,9 @@ export default {
       // Reset toast related variables
       this.toastErrorMessage = "";
       this.cannotProceed = false;
+
+      this.liveStreaming = false;
+      this.barcodeFound = false;
 
       this.modal.show();
     },
@@ -899,14 +902,16 @@ export default {
      * per each frame scan.
      */
     getBarcodeLiveStream() {
-      getBarcodeLiveStream(this);
+      getBarcodeLiveStream(this, 460, "#createLiveStreamCamera", function () {
+        return undefined;
+      });
     },
 
     /**
      * Removes the camera error message after stopping the scanning.
      */
     removeCameraError() {
-      document.querySelector('#liveStreamCamera').innerHTML = ""
+      document.querySelector('#createLiveStreamCamera').innerHTML = ""
     },
 
     /**

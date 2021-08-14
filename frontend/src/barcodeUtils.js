@@ -27,14 +27,14 @@ export function getBarcodeStatic(outerThis, callback) {
 /**
  * Detects the barcode number (EAN or UPC) from a live camera feed per-frame.
  */
-function detectBarcodeLiveStream(callback) {
+function detectBarcodeLiveStream(width, div, callback) {
     Quagga.init({
         inputStream : {
             name : "Live",
             type : "LiveStream",
-            target: document.querySelector('#liveStreamCamera'),
+            target: document.querySelector(div),
             constraints: {
-                width: 460,
+                width: width,
                 height: 345,
             },
         },
@@ -44,18 +44,17 @@ function detectBarcodeLiveStream(callback) {
     }, function(err) {
         if (err) {
             if (err.message === "Could not start video source") {
-                document.querySelector('#liveStreamCamera').innerHTML =
+                document.querySelector(div).innerHTML =
                     "Error: Camera in use by another program.";
             } else if (err.message === "Permission denied" || err.message === "Permission dismissed") {
-                document.querySelector('#liveStreamCamera').innerHTML =
+                document.querySelector(div).innerHTML =
                     "Error: Insufficient browser permissions to use camera.";
             } else {
-                document.querySelector('#liveStreamCamera').innerHTML =
+                document.querySelector(div).innerHTML =
                     "Error: Camera not found/available.";
             }
             return
         }
-        console.log("Initialization finished. Ready to start");
         Quagga.start();
         Quagga.onDetected(callback)
         Quagga.onProcessed(callback)
@@ -66,10 +65,10 @@ function detectBarcodeLiveStream(callback) {
  * Retrieves the barcode number (EAN or UPC) from a live camera feed, based on the most commonly occurring barcode
  * per each frame scan.
  */
-export function getBarcodeLiveStream(outerThis) {
+function retrieveBarcodeLiveStream(outerThis, width, div, callback) {
     outerThis.liveStreaming = true;
     let barcodeOccurrences = {};
-    detectBarcodeLiveStream(function (barcodeObject) {
+    detectBarcodeLiveStream(width, div, function (barcodeObject) {
 
         const drawingCanvas = Quagga.canvas.dom.overlay;
         drawingCanvas.style.display = 'none';
@@ -98,10 +97,28 @@ export function getBarcodeLiveStream(outerThis) {
         }
         if (!outerThis.liveStreaming) {
             Quagga.stop();
-            document.querySelector('#liveStreamCamera').innerHTML = "";
-            outerThis.barcodeFound = false;
+            try {
+                document.querySelector(div).innerHTML = "";
+                outerThis.barcodeFound = false;
+                callback();
+            } catch {
+                outerThis.barcodeFound = false;
+                callback();
+            }
         }
     });
+}
+
+/**
+ * Initially stops Quagga if it's already in-use, then runs the barcode retrieval process.
+ */
+export function getBarcodeLiveStream(outerThis, width, div, callback) {
+    try {
+        Quagga.stop();
+        retrieveBarcodeLiveStream(outerThis, width, div, callback)
+    } catch {
+        retrieveBarcodeLiveStream(outerThis, width, div, callback)
+    }
 }
 
 /**
