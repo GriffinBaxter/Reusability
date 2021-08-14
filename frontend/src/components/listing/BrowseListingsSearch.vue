@@ -251,7 +251,6 @@ export default {
       if (!value) {
         return null
       }
-      console.log(value);
       return value;
     },
     /**
@@ -269,7 +268,6 @@ export default {
         this.lowestPrice = this.highestPrice
         this.highestPrice = temp
       }
-
 
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
@@ -298,7 +296,6 @@ export default {
           fromDate !== this.$route.query.fromDate ||
           toDate !== this.$route.query.toDate
       ) {
-
         this.$router.push({
           path: '/browseListings', query: {
             searchQuery: searchQuery, searchType: searchType,

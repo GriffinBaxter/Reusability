@@ -162,147 +162,6 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
     })
 
-    //TODO False Positive
-    describe('Tests the getSelectedRadio method.', () => {
-
-        test("Testing that when the Product Name radio button is checked that it is correctly selected", async () => {
-
-            const type = 'match';
-            browseListingsSearchWrapper.vm.searchType = 'businessName';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('businessName');
-
-            let radioProductNameButton = browseListingsSearchWrapper.find('#radio-product-name');
-            let radioSellerLocationButton = browseListingsSearchWrapper.find('#radio-seller-location');
-            let radioSellerNameButton = browseListingsSearchWrapper.find('#radio-seller-name');
-
-            expect(radioProductNameButton.exists()).toBeTruthy();
-            expect(radioSellerLocationButton.exists()).toBeTruthy();
-            expect(radioSellerNameButton.exists()).toBeTruthy();
-            radioProductNameButton.trigger('click');
-
-            await browseListingsSearchWrapper.vm.$nextTick();
-
-            jest.spyOn(document, 'querySelectorAll').mockImplementation((selector) => {
-                switch (selector) {
-                    case "input[name='match-radios']":
-                        return [radioProductNameButton.element, radioSellerLocationButton.element, radioSellerNameButton.element];
-                    default:
-                        return null;
-                }
-            });
-
-            await browseListingsSearchWrapper.vm.$nextTick();
-
-            expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('listingName');
-
-        })
-
-        test("Testing that when the Business Name radio button is checked that it is correctly selected", async () => {
-
-            const type = 'match';
-            browseListingsSearchWrapper.vm.searchType = 'listingName';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('listingName');
-
-            let radioProductNameButton = browseListingsSearchWrapper.find('#radio-product-name');
-            let radioSellerLocationButton = browseListingsSearchWrapper.find('#radio-seller-location');
-            let radioSellerNameButton = browseListingsSearchWrapper.find('#radio-seller-name');
-
-            expect(radioProductNameButton.exists()).toBeTruthy();
-            expect(radioSellerLocationButton.exists()).toBeTruthy();
-            expect(radioSellerNameButton.exists()).toBeTruthy();
-            radioSellerNameButton.trigger('click');
-
-            jest.spyOn(document, 'querySelectorAll').mockImplementation((selector) => {
-                switch (selector) {
-                    case "input[name='match-radios']":
-                        return [radioProductNameButton.element, radioSellerLocationButton.element, radioSellerNameButton.element];
-                    default:
-                        return null;
-                }
-            });
-
-            await browseListingsSearchWrapper.vm.$nextTick();
-
-            expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('businessName');
-        })
-
-        test("Testing that when the Business Location radio button is checked that it is correctly selected", () => {
-
-            const type = 'match';
-            browseListingsSearchWrapper.vm.searchType = 'Business Name';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('Business Name');
-
-            let radioButton = browseListingsSearchWrapper.find('#radio-seller-location');
-            expect(radioButton.exists()).toBeTruthy();
-            radioButton.trigger('click');
-
-            browseListingsSearchWrapper.vm.$nextTick().then(() => {
-                expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('Business Location');
-            })
-        })
-
-        test("Testing that when the NON_PROFIT_ORGANISATION radio button is checked that it is correctly selected", () => {
-
-            const type = 'business';
-            browseListingsSearchWrapper.vm.searchType = 'CHARITABLE_ORGANISATION"';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('CHARITABLE_ORGANISATION"');
-
-            let radioButton = browseListingsSearchWrapper.find('#radio-non-profit');
-            expect(radioButton.exists()).toBeTruthy();
-            radioButton.trigger('click');
-
-            browseListingsSearchWrapper.vm.$nextTick().then(() => {
-                expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('NON_PROFIT_ORGANISATION');
-            })
-        })
-
-        test("Testing that when the CHARITABLE_ORGANISATION radio button is checked that it is correctly selected", () => {
-
-            const type = 'business';
-            browseListingsSearchWrapper.vm.searchType = 'NON_PROFIT_ORGANISATION"';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('NON_PROFIT_ORGANISATION"');
-
-            let radioButton = browseListingsSearchWrapper.find('#radio-non-profit');
-            expect(radioButton.exists()).toBeTruthy();
-            radioButton.trigger('click');
-
-            browseListingsSearchWrapper.vm.$nextTick().then(() => {
-                expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('CHARITABLE_ORGANISATION');
-            })
-        })
-
-        test("Testing that when the RETAIL_TRADE radio button is checked that it is correctly selected", () => {
-
-            const type = 'business';
-            browseListingsSearchWrapper.vm.searchType = 'NON_PROFIT_ORGANISATION"';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('NON_PROFIT_ORGANISATION"');
-
-            let radioButton = browseListingsSearchWrapper.find('#radio-non-profit');
-            expect(radioButton.exists()).toBeTruthy();
-            radioButton.trigger('click');
-
-            browseListingsSearchWrapper.vm.$nextTick().then(() => {
-                expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('RETAIL_TRADE');
-            })
-        })
-
-        test("Testing that when the ACCOMMODATION_AND_FOOD_SERVICES radio button is checked that it is correctly selected", () => {
-
-            const type = 'business';
-            browseListingsSearchWrapper.vm.searchType = 'NON_PROFIT_ORGANISATION"';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('NON_PROFIT_ORGANISATION"');
-
-            let radioButton = browseListingsSearchWrapper.find('#radio-non-profit');
-            expect(radioButton.exists()).toBeTruthy();
-            radioButton.trigger('click');
-
-            browseListingsSearchWrapper.vm.$nextTick().then(() => {
-                expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('ACCOMMODATION_AND_FOOD_SERVICES');
-            })
-        })
-
-    })
-
     describe('Tests the URL populates correctly when searching for all relevant listings.', () => {
 
         let browseListingsSearchWrapper;
@@ -325,29 +184,21 @@ describe("Testing the BrowseListingsSearch methods", () => {
             });
         });
 
-        test('Testing that pressing enter populates the URL correctly', () => {
-
-            browseListingsSearchWrapper.vm.searchType = "Product Name";
-
+        test('Testing that pressing enter populates the URL correctly', async() => {
             let inputQuery = 'Browse Listings Search Enter Test';
             let expectedQuery = 'Browse%20Listings%20Search%20Enter%20Test';
             browseListingsSearchWrapper.vm.$refs.searchInput.value = inputQuery;
 
-            browseListingsSearchWrapper.vm.$nextTick().then(() => {
-                let searchBar = browseListingsSearchWrapper.find('#search-bar');
-                searchBar.trigger('keydown.enter');
+            let searchBar = browseListingsSearchWrapper.find('#search-bar');
+            searchBar.trigger('keydown.enter');
 
-                expect(router.currentRoute.name).toBe('BrowseListings')
-                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType=listingName&orderBy=priceASC&page=0&businessType&minimumPrice&maximumPrice&fromDate&toDate`)
+            await browseListingsSearchWrapper.vm.$nextTick();
 
-            });
+            expect(router.currentRoute.name).toBe('BrowseListings')
+            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType&orderBy=priceASC&page=1&businessType&minimumPrice&maximumPrice&fromDate&toDate`)
         });
 
-
         test('Testing that clicking the search button populates the URL correctly', () => {
-
-            browseListingsSearchWrapper.vm.searchType = 'User';
-
             let inputQuery = 'User Search Click Test';
             let expectedQuery = 'User%20Search%20Click%20Test';
             browseListingsSearchWrapper.vm.$refs.searchInput.value = inputQuery;
@@ -357,10 +208,9 @@ describe("Testing the BrowseListingsSearch methods", () => {
                 searchButton.trigger('click');
 
                 expect(router.currentRoute.name).toBe('BrowseListings')
-                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType=listingName&orderBy=priceASC&page=0&businessType&minimumPrice&maximumPrice&fromDate&toDate`)
+                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType&orderBy=priceASC&page=1&businessType&minimumPrice&maximumPrice&fromDate&toDate`)
             });
         });
-
     })
 
     describe('Tests the clearRadios method.', () => {
@@ -642,5 +492,164 @@ describe("Testing the BrowseListingsSearch methods", () => {
                     minimumPrice: minimumPrice, maximumPrice: maximumPrice,
                     fromDate: fromDate, toDate: toDate }})
         })
+    })
+})
+
+describe('Tests the getSelectedRadio method.', () => {
+
+    let browseListingsSearchWrapper;
+    let $route;
+
+    let radioProductNameButton;
+    let radioSellerLocationButton;
+    let radioSellerNameButton;
+    let radioNonProfitButton;
+    let radioCharitableButton;
+    let radioRetailTradeButton;
+    let radioAccommodationButton;
+
+    beforeAll(() => {
+        const $router = {
+            push: jest.fn()
+        }
+        $route = {
+            path: '/browseListings',
+            name: 'BrowseListing',
+            query: {
+                searchQuery: null, searchType: null,
+                orderBy: null, page: null, businessType: null,
+                minimumPrice: null, maximumPrice: null,
+                fromDate: null, toDate: null
+            }
+        }
+
+        browseListingsSearchWrapper = shallowMount(
+            BrowseListingsSearch,
+            {
+                mocks: {
+                    $router,
+                    $route
+                }
+            });
+
+        radioProductNameButton = browseListingsSearchWrapper.find('#radio-product-name');
+        radioSellerLocationButton = browseListingsSearchWrapper.find('#radio-seller-location');
+        radioSellerNameButton = browseListingsSearchWrapper.find('#radio-seller-name');
+
+        radioNonProfitButton = browseListingsSearchWrapper.find('#radio-non-profit');
+        radioCharitableButton = browseListingsSearchWrapper.find('#radio-charitable');
+        radioRetailTradeButton = browseListingsSearchWrapper.find('#radio-retail');
+        radioAccommodationButton = browseListingsSearchWrapper.find('#radio-accommodation');
+
+        expect(radioProductNameButton.exists()).toBeTruthy();
+        expect(radioSellerLocationButton.exists()).toBeTruthy();
+        expect(radioSellerNameButton.exists()).toBeTruthy();
+        expect(radioNonProfitButton.exists()).toBeTruthy();
+        expect(radioCharitableButton.exists()).toBeTruthy();
+        expect(radioRetailTradeButton.exists()).toBeTruthy();
+        expect(radioAccommodationButton.exists()).toBeTruthy();
+
+        // mock the call which gets the radio buttons
+        jest.spyOn(document, 'querySelectorAll').mockImplementation((selector) => {
+            switch (selector) {
+                case "input[name='match-radios']":
+                    return [radioProductNameButton.element, radioSellerLocationButton.element, radioSellerNameButton.element];
+                case "input[name='business-type-radios']":
+                    return [radioNonProfitButton.element, radioCharitableButton.element, radioRetailTradeButton.element, radioAccommodationButton.element];
+                default:
+                    return null;
+            }
+        });
+    });
+
+    test("Testing that when the Product Name radio button is checked that it is correctly selected", async () => {
+        const type = 'match';
+        browseListingsSearchWrapper.vm.searchType = 'businessName';
+        expect(browseListingsSearchWrapper.vm.searchType).toEqual('businessName');
+
+        // trigger the button click which selects the radio button
+        radioProductNameButton.trigger('click');
+
+        await browseListingsSearchWrapper.vm.$nextTick();
+
+        expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('listingName');
+    })
+
+    test("Testing that when the Business Name radio button is checked that it is correctly selected", async () => {
+        const type = 'match';
+        browseListingsSearchWrapper.vm.searchType = 'listingName';
+        expect(browseListingsSearchWrapper.vm.searchType).toEqual('listingName');
+
+        // trigger the button click which selects the radio button
+        radioSellerNameButton.trigger('click');
+
+        await browseListingsSearchWrapper.vm.$nextTick();
+
+        expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('businessName');
+    })
+
+    test("Testing that when the Business Location radio button is checked that it is correctly selected", async () => {
+        const type = 'match';
+        browseListingsSearchWrapper.vm.searchType = 'businessName';
+        expect(browseListingsSearchWrapper.vm.searchType).toEqual('businessName');
+
+        // trigger the button click which selects the radio button
+        radioSellerLocationButton.trigger('click');
+
+        await browseListingsSearchWrapper.vm.$nextTick();
+
+        expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('location');
+    })
+
+    test("Testing that when the NON_PROFIT_ORGANISATION radio button is checked that it is correctly selected", async () => {
+        const type = 'business';
+        browseListingsSearchWrapper.vm.searchType = 'CHARITABLE_ORGANISATION"';
+        expect(browseListingsSearchWrapper.vm.searchType).toEqual('CHARITABLE_ORGANISATION"');
+
+        // trigger the button click which selects the radio button
+        radioNonProfitButton.trigger('click');
+
+        await browseListingsSearchWrapper.vm.$nextTick();
+
+        expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('NON_PROFIT_ORGANISATION');
+    })
+
+    test("Testing that when the CHARITABLE_ORGANISATION radio button is checked that it is correctly selected", async () => {
+        const type = 'business';
+        browseListingsSearchWrapper.vm.searchType = 'NON_PROFIT_ORGANISATION"';
+        expect(browseListingsSearchWrapper.vm.searchType).toEqual('NON_PROFIT_ORGANISATION"');
+
+        // trigger the button click which selects the radio button
+        radioCharitableButton.trigger('click');
+
+        await browseListingsSearchWrapper.vm.$nextTick();
+
+        expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('CHARITABLE_ORGANISATION');
+    })
+
+    test("Testing that when the RETAIL_TRADE radio button is checked that it is correctly selected", async () => {
+        const type = 'business';
+        browseListingsSearchWrapper.vm.searchType = 'NON_PROFIT_ORGANISATION"';
+        expect(browseListingsSearchWrapper.vm.searchType).toEqual('NON_PROFIT_ORGANISATION"');
+
+        // trigger the button click which selects the radio button
+        radioRetailTradeButton.trigger('click');
+
+        await browseListingsSearchWrapper.vm.$nextTick();
+
+        expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('RETAIL_TRADE');
+    })
+
+    test("Testing that when the ACCOMMODATION_AND_FOOD_SERVICES radio button is checked that it is correctly selected", async () => {
+        const type = 'business';
+        browseListingsSearchWrapper.vm.searchType = 'NON_PROFIT_ORGANISATION"';
+        expect(browseListingsSearchWrapper.vm.searchType).toEqual('NON_PROFIT_ORGANISATION"');
+
+        // trigger the button click which selects the radio button
+        radioAccommodationButton.trigger('click');
+
+        await browseListingsSearchWrapper.vm.$nextTick();
+
+        expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('ACCOMMODATION_AND_FOOD_SERVICES');
     })
 })
