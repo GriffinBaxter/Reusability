@@ -9,6 +9,7 @@ import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.KeywordNotificationRepository;
+import org.seng302.model.repository.ListingNotificationRepository;
 import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.view.outgoing.KeywordPayload;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +61,9 @@ class NotificationResourceIntegrationTests {
     @MockBean
     private KeywordNotificationRepository keywordNotificationRepository;
 
+    @MockBean
+    private ListingNotificationRepository listingNotificationRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -79,6 +84,10 @@ class NotificationResourceIntegrationTests {
                                                     "\"created\":\"%s\"," +
                                                     "\"keyword\":%s}]";
 
+    private final String listingNotificationPayloadJson = "[{\"id\":%d," +
+            "\"description\":\"%s\"," +
+            "\"created\":\"%s\"}]";
+
     private String payloadJson;
 
     private MarketplaceCard marketplaceCard;
@@ -92,6 +101,8 @@ class NotificationResourceIntegrationTests {
     private MarketCardNotification anotherMarketplaceCardNotification;
 
     private KeywordNotification keywordNotification;
+
+    private ListingNotification listingNotification;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -188,8 +199,14 @@ class NotificationResourceIntegrationTests {
         );
         keywordNotification.setId(1);
 
+        listingNotification = new ListingNotification(
+                "Listing for Pizza has sold."
+        );
+        listingNotification.setId(1);
+
         this.mvc = MockMvcBuilders.standaloneSetup(
-                new NotificationResource(userRepository, marketCardNotificationRepository, keywordNotificationRepository))
+                new NotificationResource(userRepository, marketCardNotificationRepository,
+                        keywordNotificationRepository, listingNotificationRepository))
                 .build();
     }
 
@@ -257,9 +274,10 @@ class NotificationResourceIntegrationTests {
         // Given
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         payloadJson = "[]";
+        List<MarketCardNotification> emptyMarketNotifications = new ArrayList<>();
 
         // When
-        //when(marketCardNotificationRepository.findAllByUserId(user.getId())).thenReturn(List.of(marketCardNotification));
+        when(marketCardNotificationRepository.findAllByUserId(user.getId())).thenReturn(emptyMarketNotifications);
         response = mvc.perform(get("/users/notifications")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn()
@@ -280,10 +298,12 @@ class NotificationResourceIntegrationTests {
         // Given
         given(userRepository.findBySessionUUID(admin.getSessionUUID())).willReturn(Optional.ofNullable(admin));
         payloadJson = "[]";
+        List<MarketCardNotification> emptyMarketNotifications = new ArrayList<>();
+        List<KeywordNotification> emptyKeywordNotifications = new ArrayList<>();
 
         // When
-        //when(marketCardNotificationRepository.findAllByUserId(admin.getId())).thenReturn(List.of(anotherMarketplaceCardNotification));
-        //when(keywordNotificationRepository.findAll()).thenReturn(List.of());
+        when(marketCardNotificationRepository.findAllByUserId(admin.getId())).thenReturn(emptyMarketNotifications);
+        when(keywordNotificationRepository.findAll()).thenReturn(emptyKeywordNotifications);
         response = mvc.perform(get("/users/notifications")
                 .cookie(new Cookie("JSESSIONID", admin.getSessionUUID())))
                 .andReturn()
@@ -312,6 +332,30 @@ class NotificationResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an OK status and a list containing a listing notification is received when a user tries to retrieve notifications when logged in.
+     *
+     * @throws Exception thrown if there is an error with MockMvc
+     */
+    @Test
+    void canRetrieveListingNotificationsAsUser() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        payloadJson = String.format(listingNotificationPayloadJson, listingNotification.getId(),
+                listingNotification.getDescription(), listingNotification.getCreated());
+
+        // When
+        when(listingNotificationRepository.findAllByUsersId(user.getId())).thenReturn(List.of(listingNotification));
+        response = mvc.perform(get("/users/notifications")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(payloadJson);
     }
 
 }

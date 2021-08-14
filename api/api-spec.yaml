@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.3.0
+  version: 5.3.1
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -2266,7 +2266,6 @@ components:
         - id
         - description
         - created
-        - userIds
       properties:
         id:
           type: integer
@@ -2282,9 +2281,6 @@ components:
           example: '2020-07-14T14:32:00Z'
           readOnly: true
           description: Date and time when the notification was created
-        userIds:
-          readOnly: true
-          example: [ 1, 2, 3 ]
 
     SoldListing:
       type: object

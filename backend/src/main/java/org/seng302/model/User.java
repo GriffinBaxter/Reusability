@@ -145,7 +145,7 @@ public class User {
      * @param dateOfBirth Date of birth
      * @param phoneNumber Phone number
      * @param homeAddress Home address
-     * @param password User's password (not stored in plaintext
+     * @param password User's password (not stored in plaintext)
      * @param created Date individual signed up
      * @param role Role determines admin privileges.
      * @throws IllegalUserArgumentException  Validation exception

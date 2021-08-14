@@ -1,4 +1,4 @@
-package org.seng302.keyword;
+package org.seng302.notification;
 
 import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
@@ -10,8 +10,6 @@ import org.seng302.exceptions.IllegalKeywordNotificationArgumentException;
 import org.seng302.model.Keyword;
 import org.seng302.model.KeywordNotification;
 import java.time.LocalDateTime;
-
-import static org.junit.Assert.fail;
 
 
 /**
