@@ -844,3 +844,47 @@ describe("Testing the 'Go to Business Profile' button", () => {
         expect($router.push).toHaveBeenCalledWith({ path: `/businessProfile/${businessId}`});
     });
 });
+
+describe("Testing buy listing functionality", () => {
+
+    let saleListingWrapper;
+    let $router;
+    let $route;
+
+    beforeEach(() => {
+        $router = {
+            push: jest.fn()
+        };
+        $route = {
+            params: {
+                businessId: 2,
+                listingId: 11
+            }
+        };
+        saleListingWrapper = shallowMount(listing, {
+            mocks: {
+                $router,
+                $route
+            }
+        });
+
+    });
+
+    test("Test v-if button variable is set correctly when user isn't business admin", (() => {
+        saleListingWrapper.vm.$data.currentID = "2";
+        saleListingWrapper.vm.populateData(response.data);
+
+        saleListingWrapper.vm.$nextTick();
+
+        expect(saleListingWrapper.vm.$data.canBuy).toBeTruthy();
+    }));
+
+    test("Test v-if button variable is set correctly when user is business admin", (() => {
+        saleListingWrapper.vm.$data.currentID = "1";
+        saleListingWrapper.vm.populateData(response.data);
+
+        saleListingWrapper.vm.$nextTick();
+
+        expect(saleListingWrapper.vm.$data.canBuy).toBeFalsy();
+    }));
+});
