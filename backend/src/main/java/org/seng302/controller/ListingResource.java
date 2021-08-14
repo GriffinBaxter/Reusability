@@ -14,10 +14,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
-import org.seng302.exceptions.IllegalListingNotificationArgumentException;
+import org.seng302.exceptions.IllegalSoldListingArgumentException;
 import org.seng302.model.*;
-import org.seng302.model.enums.BusinessType;
 import org.seng302.model.repository.*;
+import org.seng302.exceptions.IllegalListingNotificationArgumentException;
+import org.seng302.model.enums.BusinessType;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.ListingCreationPayload;
@@ -396,6 +397,52 @@ public class ListingResource {
     }
 
     /**
+     * Get method for retrieving a list of sold Listings for a business
+     * @param sessionToken Session Token
+     * @param businessId ID of business
+     * @param page Page number to retrieve
+     * @return The requested page of Sold Listings
+     */
+    @GetMapping("/businesses/{businessId}/soldListings")
+    public ResponseEntity<List<SoldListingPayload>> retrieveSoldListing(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @RequestParam(defaultValue = "0") String page
+    ) {
+        // Checks user logged in - 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        // Checks business at ID exists - 406
+        Authorization.verifyBusinessExists(businessId, businessRepository);
+        // Checks user is business admin - 403
+        Authorization.verifyBusinessAdmin(currentUser, businessId);
+        // Checks page number is valid - 400
+        int pageNo = PaginationUtils.parsePageNumber(page);
+
+        // Paging
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+        Pageable pageable = PageRequest.of(pageNo, 10, sortBy);
+
+        Page<SoldListing> pagedResult = soldListingRepository.findAllByBusinessId(businessId, pageable);
+
+        int totalPages = pagedResult.getTotalPages();
+        int totalRows = (int) pagedResult.getTotalElements();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Total-Pages", String.valueOf(totalPages));
+        responseHeaders.add("Total-Rows", String.valueOf(totalRows));
+
+        logger.info("Sold Listing Retrieval Success - 200 [OK] - Sold Listings retrieved for business with ID {}", businessId);
+
+        List<SoldListingPayload> listingPayloads = convertToSoldPayload(pagedResult.getContent());
+
+        logger.debug("Sold Listings retrieved for business with ID {}: {}", businessId, listingPayloads);
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(listingPayloads);
+    }
+
+    /**
      * Converts a list of Listings to a list of ListingPayloads.
      * @param listingList The given list of listings
      * @param user The User who requested the listings
@@ -537,13 +584,16 @@ public class ListingResource {
             );
         }
 
-        SoldListing soldListing = new SoldListing(business, currentUser, listing.getCreated(),
-                                                    new ProductId(listing.getInventoryItem().getProduct().getProductId(),
-                                                    listing.getBusinessId()), listing.getQuantity(), listing.getPrice(),
-                                                    listing.getTotalBookmarks());
-        soldListingRepository.save(soldListing);
-        logger.info("Sold Listing Creation Success - Sold listing created for business with ID {}", listing.getBusinessId());
-
+        try {
+            SoldListing soldListing = new SoldListing(business, currentUser, listing.getCreated(),
+                    listing.getInventoryItem().getProduct().getProductId(),
+                    listing.getQuantity(), listing.getPrice(),
+                    listing.getTotalBookmarks());
+            soldListingRepository.save(soldListing);
+            logger.info("Sold Listing Creation Success - Sold listing created for business with ID {}", listing.getBusinessId());
+        } catch (IllegalSoldListingArgumentException e) {
+            logger.error("Couldn't create sold listing - {}", e.getMessage());
+        }
         try {
             String purchaserMessage = String.format("You have purchased %s x%d for $%.2f. Your purchase can be picked up from %s.",
                                                     listing.getInventoryItem().getProduct().getName(), listing.getQuantity(),
@@ -648,5 +698,28 @@ public class ListingResource {
             businessType = BusinessType.NON_PROFIT_ORGANISATION;
         }
         return businessType;
+    }
+
+    /**
+     * Converts a list of Sold Listings to a list of SoldListingPayloads.
+     * @param soldListings The given list of sold listings
+     * @return A list of Sold Listings in payload form.
+     */
+    public List<SoldListingPayload> convertToSoldPayload(List<SoldListing> soldListings) {
+        List<SoldListingPayload> payloads = new ArrayList<>();
+        for (SoldListing soldListing : soldListings) {
+            SoldListingPayload newPayload = new SoldListingPayload(
+                    soldListing.getId(),
+                    soldListing.getSaleDate().toString(),
+                    soldListing.getListingDate().toString(),
+                    soldListing.getProductId(),
+                    soldListing.getQuantity(),
+                    soldListing.getPrice(),
+                    soldListing.getBookmarks()
+            );
+            logger.debug("Sold Listing payload created: {}", newPayload);
+            payloads.add(newPayload);
+        }
+        return payloads;
     }
 }

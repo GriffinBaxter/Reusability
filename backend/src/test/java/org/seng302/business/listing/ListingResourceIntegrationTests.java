@@ -4,12 +4,18 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.seng302.model.*;
+import org.seng302.model.Address;
+import org.seng302.model.Business;
 import org.seng302.model.repository.*;
+import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
+import org.seng302.model.InventoryItem;
+import org.seng302.model.Product;
 import org.seng302.controller.ListingResource;
 import org.seng302.Main;
+import org.seng302.model.Listing;
 import org.seng302.model.enums.Role;
+import org.seng302.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -349,8 +355,8 @@ class ListingResourceIntegrationTests {
         listing.setId(1);
 
         soldListing = new SoldListing(business, anotherUser, listing.getCreated(),
-                                        new ProductId(product.getProductId(), business.getId()),
-                                        listing.getQuantity(), listing.getPrice(), listing.getTotalBookmarks());
+                                        product.getProductId(), listing.getQuantity(),
+                                        listing.getPrice(), listing.getTotalBookmarks());
 
         listingNotification = new ListingNotification("Listing notification");
 

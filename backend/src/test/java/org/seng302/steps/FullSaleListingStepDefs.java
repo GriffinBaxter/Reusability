@@ -86,6 +86,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
         productRepository = mock(ProductRepository.class);
         businessRepository = mock(BusinessRepository.class);
         userRepository = mock(UserRepository.class);
+        soldListingRepository = mock(SoldListingRepository.class);
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository)).build();
     }
 
