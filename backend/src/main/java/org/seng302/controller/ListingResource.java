@@ -69,6 +69,9 @@ public class ListingResource {
     @Autowired
     private ListingNotificationRepository listingNotificationRepository;
 
+    @Autowired
+    private HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository;
+
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
     /**
@@ -88,7 +91,8 @@ public class ListingResource {
                            BusinessRepository businessRepository,
                            UserRepository userRepository,
                            SoldListingRepository soldListingRepository,
-                           ListingNotificationRepository listingNotificationRepository) {
+                           ListingNotificationRepository listingNotificationRepository,
+                           HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.productRepository = productRepository;
@@ -96,6 +100,7 @@ public class ListingResource {
         this.userRepository = userRepository;
         this.soldListingRepository = soldListingRepository;
         this.listingNotificationRepository = listingNotificationRepository;
+        this.hasBookmarkedListingMessageRepository = hasBookmarkedListingMessageRepository;
     }
 
     /**
@@ -482,6 +487,37 @@ public class ListingResource {
     }
 
     /**
+     * GET endpoint to retrieve the listing bookmark messages for a given user.
+     * A message is created when a listing is bookmarked or when a bookmark is removed.
+     *
+     * @param sessionToken The current user's session token
+     * @return A list of BookmarkedListingMessages.
+     */
+    @GetMapping("/home/bookmarkMessages")
+    public List<BookmarkedListingMessagePayload> getBookmarkMessages(@CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+        // 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User retrieved, ID: {}.", currentUser.getId());
+
+        Integer currentUserId = currentUser.getId();
+
+        List<HasBookmarkedListingMessage> hasBookmarkedListingMessages = hasBookmarkedListingMessageRepository.findAllByUserId(currentUserId);
+        logger.info("HasBookmarkedListingMessage Retrieval Success - 200 [OK] -  " +
+                "All HasBookmarkedListingMessage entities retrieved for user with ID {}", currentUserId);
+
+        List<BookmarkedListingMessage> bookmarkedListingMessages = new ArrayList<>();
+
+        for (HasBookmarkedListingMessage hasBookmarkedListingMessage : hasBookmarkedListingMessages) {
+            bookmarkedListingMessages.add(hasBookmarkedListingMessage.getBookmarkedListingMessage());
+        }
+
+        logger.info("BookmarkedListingMessages Retrieval Success - " +
+                "All bookmarkedListingMessages entities retrieved from HasBookmarkedListingMessage entities for user with ID {}: {}", currentUserId, bookmarkedListingMessages);
+
+        return convertBookmarkedListingMessageListToPayload(bookmarkedListingMessages);
+    }
+
+    /**
      * PUT endpoint to purchase a given listing.
      * Creates a SoldListing to store the sale history for the business, creates a ListingNotification for the purchaser to remind them about the purchase,
      * creates a ListingNotification for the users who had the listing bookmarked to inform them of its removal, and deletes the Listing.
@@ -625,6 +661,25 @@ public class ListingResource {
                         "searchType Field invalid"
                 );
         }
+    }
+
+    /**
+     * Takes a list of BookmarkedListingMessages and returns a list of BookmarkedListingMessagePayloads
+     * @param bookmarkedListingMessages The given list of BookmarkedListingMessages.
+     * @return A list of BookmarkedListingMessagePayloads.
+     */
+    public List<BookmarkedListingMessagePayload> convertBookmarkedListingMessageListToPayload(List<BookmarkedListingMessage> bookmarkedListingMessages) {
+        List<BookmarkedListingMessagePayload> bookmarkedListingMessagePayloads = new ArrayList<>();
+
+        for (BookmarkedListingMessage bookmarkedListingMessage : bookmarkedListingMessages) {
+            bookmarkedListingMessagePayloads.add(new BookmarkedListingMessagePayload(
+                    bookmarkedListingMessage.getId(),
+                    bookmarkedListingMessage.getDescription(),
+                    bookmarkedListingMessage.getCreated()
+            ));
+        }
+
+        return bookmarkedListingMessagePayloads;
     }
 
     /**
