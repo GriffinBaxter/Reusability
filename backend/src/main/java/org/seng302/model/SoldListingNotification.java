@@ -1,5 +1,6 @@
 package org.seng302.model;
 
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 import org.seng302.exceptions.IllegalSoldListingNotificationArgumentException;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  * Sold listing notifications are associated with a business and a sold listing.
  */
 @NoArgsConstructor
+@Data
 @Entity
 public class SoldListingNotification {
 
