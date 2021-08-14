@@ -102,8 +102,9 @@
               <div class="buy-button merryweather">
                 Buy
               </div>
-              <div class="barcode-wrapper">
-                <div id="barcode-number" v-if="barcode">Barcode: {{ barcode }}</div>
+              <div class="barcode-wrapper" v-if="barcode">
+                <img :src="getBarcodeImage()" alt="Product [product - name ] barcode image" id="barcode-image" class="no-highlight"/>
+                <div id="barcode-number">Barcode: {{ barcode }}</div>
               </div>
             </div>
           </div>
@@ -325,7 +326,27 @@ export default {
      */
     returnToSales() {
       this.$router.back();
-    }
+    },
+    /**
+     * Retrieves the filename (url path) for the barcode image for the listing.
+     * This is retrieved via an api bwip-js.
+     *
+     * Preconditions:  this.barcode is not null (i.e. this function is only called when this.barcode exists.
+     * Postconditions: a url which can be used to retrieve a barcode image.
+     *
+     * @return {string} Returns the URL to the image source.
+     */
+    getBarcodeImage() {
+      let type;
+      if (this.barcode.length === 12) {
+        type = "upca";
+      } else if (this.barcode.length === 13) {
+        type = "ean13";
+      } else {
+        return "";
+      }
+      return "https://bwipjs-api.metafloor.com/?bcid=" + type + "&text=" + this.barcode;
+    },
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
