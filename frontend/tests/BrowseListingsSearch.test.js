@@ -4,7 +4,7 @@
  */
 
 import {createLocalVue, shallowMount} from '@vue/test-utils'
-import {afterEach, beforeAll, describe, expect, jest, test} from "@jest/globals";
+import {afterEach, beforeAll, beforeEach, describe, expect, jest, test} from "@jest/globals";
 
 import BrowseListingsSearch from "../src/components/listing/BrowseListingsSearch";
 import Api from "../src/Api"
@@ -156,36 +156,68 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
     })
 
+    //TODO False Positive
     describe('Tests the getSelectedRadio method.', () => {
 
-        test("Testing that when the Product Name radio button is checked that it is correctly selected", () => {
+        test("Testing that when the Product Name radio button is checked that it is correctly selected", async () => {
 
             const type = 'match';
-            browseListingsSearchWrapper.vm.searchType = 'Business Name';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('Business Name');
+            browseListingsSearchWrapper.vm.searchType = 'businessName';
+            expect(browseListingsSearchWrapper.vm.searchType).toEqual('businessName');
 
-            let radioButton = browseListingsSearchWrapper.find('#radio-product-name');
-            expect(radioButton.exists()).toBeTruthy();
-            radioButton.trigger('click');
+            let radioProductNameButton = browseListingsSearchWrapper.find('#radio-product-name');
+            let radioSellerLocationButton = browseListingsSearchWrapper.find('#radio-seller-location');
+            let radioSellerNameButton = browseListingsSearchWrapper.find('#radio-seller-name');
 
-            browseListingsSearchWrapper.vm.$nextTick().then(() => {
-                expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('Product Name');
-            })
+            expect(radioProductNameButton.exists()).toBeTruthy();
+            expect(radioSellerLocationButton.exists()).toBeTruthy();
+            expect(radioSellerNameButton.exists()).toBeTruthy();
+            radioProductNameButton.trigger('click');
+
+            await browseListingsSearchWrapper.vm.$nextTick();
+
+            jest.spyOn(document, 'querySelectorAll').mockImplementation((selector) => {
+                switch (selector) {
+                    case "input[name='match-radios']":
+                        return [radioProductNameButton.element, radioSellerLocationButton.element, radioSellerNameButton.element];
+                    default:
+                        return null;
+                }
+            });
+
+            await browseListingsSearchWrapper.vm.$nextTick();
+
+            expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('listingName');
+
         })
 
-        test("Testing that when the Business Name radio button is checked that it is correctly selected", () => {
+        test("Testing that when the Business Name radio button is checked that it is correctly selected", async () => {
 
             const type = 'match';
-            browseListingsSearchWrapper.vm.searchType = 'Product Name';
-            expect(browseListingsSearchWrapper.vm.searchType).toEqual('Product Name');
+            browseListingsSearchWrapper.vm.searchType = 'listingName';
+            expect(browseListingsSearchWrapper.vm.searchType).toEqual('listingName');
 
-            let radioButton = browseListingsSearchWrapper.find('#radio-seller-name');
-            expect(radioButton.exists()).toBeTruthy();
-            radioButton.trigger('click');
+            let radioProductNameButton = browseListingsSearchWrapper.find('#radio-product-name');
+            let radioSellerLocationButton = browseListingsSearchWrapper.find('#radio-seller-location');
+            let radioSellerNameButton = browseListingsSearchWrapper.find('#radio-seller-name');
 
-            browseListingsSearchWrapper.vm.$nextTick().then(() => {
-                expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('Business Name');
-            })
+            expect(radioProductNameButton.exists()).toBeTruthy();
+            expect(radioSellerLocationButton.exists()).toBeTruthy();
+            expect(radioSellerNameButton.exists()).toBeTruthy();
+            radioSellerNameButton.trigger('click');
+
+            jest.spyOn(document, 'querySelectorAll').mockImplementation((selector) => {
+                switch (selector) {
+                    case "input[name='match-radios']":
+                        return [radioProductNameButton.element, radioSellerLocationButton.element, radioSellerNameButton.element];
+                    default:
+                        return null;
+                }
+            });
+
+            await browseListingsSearchWrapper.vm.$nextTick();
+
+            expect(browseListingsSearchWrapper.vm.getSelectedRadio(type)).toEqual('businessName');
         })
 
         test("Testing that when the Business Location radio button is checked that it is correctly selected", () => {
@@ -491,38 +523,28 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
     describe('Tests the searchClicked method.', () => {
 
-        // beforeEach(() => {
-        //     const localVue = createLocalVue();
-        //     localVue.use(VueRouter)
-        //
-        //     const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
-        //     router = new VueRouter({
-        //         routes
-        //     })
-        //     browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
-        //         localVue,
-        //         router
-        //     });
-        // });
+        let browseListingsSearchWrapper;
+        let $router;
+        let $route;
+
+        beforeEach(() => {
+            $router = {
+                push: jest.fn()
+            };
+            $route = {
+                query: {
+                    orderBy: "priceASC"
+                }
+            };
+            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
+                mocks: {
+                    $router,
+                    $route
+                }
+            });
+        });
 
         test('Testing that the grid data is populated correctly when data is returned', async () => {
-
-
-            let browseListingsSearchWrapper;
-            let router;
-
-            const localVue = createLocalVue();
-            localVue.use(VueRouter)
-
-            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
-            router = new VueRouter({
-                routes
-            })
-            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
-                localVue,
-                router
-            });
-
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
             browseListingsSearchWrapper.vm.$data.page = 1;
@@ -536,37 +558,24 @@ describe("Testing the BrowseListingsSearch methods", () => {
             const page = 1;
             const minimumPrice = 10;
             const maximumPrice = 100;
-            const fromDate = "2020-01-24T00%3A00";
-            const toDate = "2020-05-28T00%3A00";
+            const fromDate = "2020-01-24T00:00";
+            const toDate = "2020-05-28T00:00";
 
             Api.searchListings.mockImplementation( () => Promise.resolve(browseListingApiResponse) );
 
             browseListingsSearchWrapper.vm.searchClicked();
 
-            await browseListingsSearchWrapper.vm.$nextTick()
+            await browseListingsSearchWrapper.vm.$nextTick();
 
-            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
-
-        })
+            expect($router.push).toHaveBeenCalledWith({ path: `/browseListings`,
+                query: { searchQuery: searchQuery, searchType: null,
+                orderBy: orderBy, page: page, businessType: null,
+                minimumPrice: minimumPrice, maximumPrice: maximumPrice,
+                fromDate: fromDate, toDate: toDate }})
+        });
 
         test('Testing that the grid data is populated correctly when data is returned and the prices are swapped around ' +
             'when they are out of order', async () => {
-
-            let browseListingsSearchWrapper;
-            let router;
-
-            const localVue = createLocalVue();
-            localVue.use(VueRouter)
-
-            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
-            router = new VueRouter({
-                routes
-            })
-            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
-                localVue,
-                router
-            });
-
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
             browseListingsSearchWrapper.vm.$data.page = 1;
@@ -580,8 +589,8 @@ describe("Testing the BrowseListingsSearch methods", () => {
             const page = 1;
             const minimumPrice = 10;
             const maximumPrice = 100;
-            const fromDate = "2020-01-24T00%3A00";
-            const toDate = "2020-05-28T00%3A00";
+            const fromDate = "2020-01-24T00:00";
+            const toDate = "2020-05-28T00:00";
 
             Api.searchListings.mockImplementation( () => Promise.resolve(browseListingApiResponse) );
 
@@ -589,29 +598,16 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
             await browseListingsSearchWrapper.vm.$nextTick()
 
-            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
-
+            expect($router.push).toHaveBeenCalledWith({ path: `/browseListings`,
+                query: { searchQuery: searchQuery, searchType: null,
+                    orderBy: orderBy, page: page, businessType: null,
+                    minimumPrice: minimumPrice, maximumPrice: maximumPrice,
+                    fromDate: fromDate, toDate: toDate }})
         })
 
 
         test('Testing that the grid data is populated correctly when data is returned and the dates are swapped around ' +
             'when they are out of order', async () => {
-
-            let browseListingsSearchWrapper;
-            let router;
-
-            const localVue = createLocalVue();
-            localVue.use(VueRouter)
-
-            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
-            router = new VueRouter({
-                routes
-            })
-            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
-                localVue,
-                router
-            });
-
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
             browseListingsSearchWrapper.vm.$data.page = 1;
@@ -625,8 +621,8 @@ describe("Testing the BrowseListingsSearch methods", () => {
             const page = 1;
             const minimumPrice = 10;
             const maximumPrice = 100;
-            const fromDate = "2020-01-24T00%3A00";
-            const toDate = "2020-05-28T00%3A00";
+            const fromDate = "2020-01-24T00:00";
+            const toDate = "2020-05-28T00:00";
 
             Api.searchListings.mockImplementation( () => Promise.resolve(browseListingApiResponse) );
 
@@ -634,10 +630,11 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
             await browseListingsSearchWrapper.vm.$nextTick()
 
-            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
-
+            expect($router.push).toHaveBeenCalledWith({ path: `/browseListings`,
+                query: { searchQuery: searchQuery, searchType: null,
+                    orderBy: orderBy, page: page, businessType: null,
+                    minimumPrice: minimumPrice, maximumPrice: maximumPrice,
+                    fromDate: fromDate, toDate: toDate }})
         })
-
     })
-
 })

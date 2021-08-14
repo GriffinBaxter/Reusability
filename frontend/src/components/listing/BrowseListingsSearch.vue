@@ -26,7 +26,7 @@
             <div class="match-radio-container py-2">
               <!--  match product name -->
               <div class="form-check radio-padding-left">
-                <input class="form-check-input" type="radio" name="match-radios" value="listingName" id="radio-product-name" checked>
+                <input class="form-check-input" type="radio" name="match-radios" value="listingName" id="radio-product-name">
                 <label class="form-check-label" for="radio-product-name">
                   Product Name
                 </label>
@@ -34,7 +34,7 @@
 
               <!--  match seller location -->
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="match-radios" value="location" id="radio-seller-location">
+                <input class="form-check-input" type="radio" name="match-radios" value="location" id="radio-seller-location">
                 <label class="form-check-label" for="radio-seller-location">
                   Business Location
                 </label>
@@ -42,7 +42,7 @@
 
               <!--  match seller name -->
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="match-radios" value="businessName" id="radio-seller-name">
+                <input class="form-check-input" type="radio" name="match-radios" value="businessName" id="radio-seller-name">
                 <label class="form-check-label" for="radio-seller-name">
                   Business Name
                 </label>
@@ -251,6 +251,7 @@ export default {
       if (!value) {
         return null
       }
+      console.log(value);
       return value;
     },
     /**
