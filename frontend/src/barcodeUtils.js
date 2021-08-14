@@ -25,14 +25,18 @@ export function getBarcodeStatic(outerThis, callback) {
 }
 
 /**
- * Retrieves the barcode number (EAN or UPC) from a live camera feed.
+ * Detects the barcode number (EAN or UPC) from a live camera feed per-frame.
  */
-export function getBarcodeLiveStream(callback) {
+function detectBarcodeLiveStream(callback) {
     Quagga.init({
         inputStream : {
             name : "Live",
             type : "LiveStream",
-            target: document.querySelector('#liveStreamCamera')
+            target: document.querySelector('#liveStreamCamera'),
+            constraints: {
+                width: 460,
+                height: 345,
+            },
         },
         decoder : {
             readers : ["upc_reader", "ean_reader"]
@@ -49,8 +53,46 @@ export function getBarcodeLiveStream(callback) {
     });
 }
 
-export function stopLiveStream() {
-    Quagga.stop()
+/**
+ * Retrieves the barcode number (EAN or UPC) from a live camera feed, based on the most commonly occurring barcode
+ * per each frame scan.
+ */
+export function getBarcodeLiveStream(outerThis) {
+    outerThis.liveStreaming = true;
+    let barcodeJson = {};
+    detectBarcodeLiveStream(function (barcodeObject) {
+
+        const drawingCanvas = Quagga.canvas.dom.overlay;
+        drawingCanvas.style.display = 'none';
+
+        if (barcodeObject !== undefined && barcodeObject.codeResult !== undefined) {
+            outerThis.barcodeFound = true;
+            if (Object.prototype.hasOwnProperty.call(barcodeJson, barcodeObject.codeResult.code)) {
+                barcodeJson[barcodeObject.codeResult.code] += 1
+            } else {
+                barcodeJson[barcodeObject.codeResult.code] = 1
+            }
+        }
+
+        if (!outerThis.liveStreaming && outerThis.barcodeFound) {
+            let barcodeScanned = null;
+            let barcodeScannedNum = 0;
+
+            Object.keys(barcodeJson).forEach(function(barcode) {
+                if (barcodeJson[barcode] > barcodeScannedNum) {
+                    barcodeScannedNum = barcodeJson[barcode]
+                    barcodeScanned = barcode;
+                }
+            })
+
+            outerThis.barcode = barcodeScanned;
+        }
+        if (!outerThis.liveStreaming) {
+            Quagga.stop();
+            document.querySelector('#liveStreamCamera').innerHTML = "";
+            outerThis.barcodeFound = false;
+        }
+    });
 }
 
 /**

@@ -166,16 +166,26 @@
                         {{ barcodeErrorMsg }}
                       </div>
                       <br><br>
-                      <button class="btn green-button-transparent" @click="onUploadClick">Scan from image</button>
+                      <button class="btn green-button-transparent" @click="onUploadClick">Scan by uploading image</button>
                       <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
                                               name="img" accept="image/png, image/gif, image/jpeg">
                       <br><br>
-
-                      <button v-if="liveStreamAvailable" class="btn green-button-transparent" @click="getBarcodeLiveStream">Scan from livestream</button>
-                      <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent" @click="liveStreaming = false">Stop Stream</button>
-                      <button v-if="liveStreaming && barcodeFound" class="btn green-button-transparent" @click="liveStreaming = false">Save Scanned Barcode</button>
+                      <button v-if="liveStreamAvailable && !liveStreaming" class="btn green-button-transparent"
+                              @click="getBarcodeLiveStream">
+                        Scan using camera
+                      </button>
+                      <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent"
+                              @click="liveStreaming = false">
+                        Stop Stream
+                      </button>
+                      <button v-if="liveStreaming && barcodeFound" class="btn green-button"
+                              @click="liveStreaming = false">
+                        Save Scanned Barcode
+                      </button>
+                      <br>
+                      <div v-if="liveStreaming"><br></div>
                       <div id="liveStreamCamera"></div>
-                      
+                      <br>
                       <button id="autofill-button" type="button"
                               :class="`btn green-button ${getErrorMessage(
                               config.barcode.name,
@@ -233,7 +243,7 @@ import UpdateProductModal from "../components/productCatalogue/UpdateProductModa
 import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
-import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic, stopLiveStream} from "../barcodeUtils";
+import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic,} from "../barcodeUtils";
 
 export default {
   name: "ProductCatalogue",
@@ -880,30 +890,13 @@ export default {
         return undefined;
       });
     },
-    
+
+    /**
+     * Retrieves the barcode number (EAN or UPC) from a live camera feed, based on the most commonly occurring barcode
+     * per each frame scan.
+     */
     getBarcodeLiveStream() {
-      let barcodeJson = {};
-      this.liveStreaming = true;
-      let outerThis = this;
-      
-      getBarcodeLiveStream(function (barcodeObject) {
-        if (barcodeObject !== undefined && barcodeObject.codeResult !== undefined) {
-          outerThis.barcodeFound = true;
-          if (Object.prototype.hasOwnProperty.call(barcodeJson, barcodeObject.codeResult.code)) {
-            barcodeJson[barcodeObject.codeResult.code] += 1
-          } else {
-            barcodeJson[barcodeObject.codeResult.code] = 1
-          }
-        }
-        
-        if (!outerThis.liveStreaming && outerThis.barcodeFound) {
-          // TODO
-        } else if (!outerThis.liveStreaming) {
-          stopLiveStream();
-          document.querySelector('#liveStreamCamera').innerHTML = "";
-          outerThis.barcodeFound = false;
-        }
-      });
+      getBarcodeLiveStream(this);
     },
 
     /**
