@@ -12,13 +12,13 @@ import java.util.List;
 @EnableJpaRepositories
 public interface HasBookmarkedListingMessageRepository extends JpaRepository<HasBookmarkedListingMessage, Integer> {
 
-    /**
-     * Search for all HasBookmarkedListingMessage based on the given user id.
-     * Note: This is an intermediary table so the actual bookmark messages will
-     * need to be retrieved after looking them up using this method.
-     * @param id The ID of the user to search by
-     * @return A list of HasBookmarkedListingMessage entities for the given user.
-     */
-    List<HasBookmarkedListingMessage> findAllByUserId(Integer id);
+//    /**
+//     * Search for all HasBookmarkedListingMessage based on the given user id.
+//     * Note: This is an intermediary table so the actual bookmark messages will
+//     * need to be retrieved after looking them up using this method.
+//     * @param id The ID of the user to search by
+//     * @return A list of HasBookmarkedListingMessage entities for the given user.
+//     */
+//    List<HasBookmarkedListingMessage> findAllByUserId(Integer id);
 
 }

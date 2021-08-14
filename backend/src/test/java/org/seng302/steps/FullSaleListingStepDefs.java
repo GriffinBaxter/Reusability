@@ -69,6 +69,10 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository;
 
+    @Autowired
+    @MockBean
+    private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+
     private User user;
 
     private Business business;
@@ -90,7 +94,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
         productRepository = mock(ProductRepository.class);
         businessRepository = mock(BusinessRepository.class);
         userRepository = mock(UserRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, hasBookmarkedListingMessageRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, hasBookmarkedListingMessageRepository, bookmarkedListingMessageRepository)).build();
     }
 
     @Given("I am logged in as a business administrator.")
@@ -154,7 +158,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
         );
         user.setBusinessesAdministeredObjects(List.of(business));
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository,
-                    businessRepository, userRepository, soldListingRepository, listingNotificationRepository, hasBookmarkedListingMessageRepository)).build();
+                    businessRepository, userRepository, soldListingRepository, listingNotificationRepository, hasBookmarkedListingMessageRepository, bookmarkedListingMessageRepository)).build();
     }
 
     @Given("I have a listing with quantity {int}, price {double}, closing date {string}, and {string} in the more-info section.")

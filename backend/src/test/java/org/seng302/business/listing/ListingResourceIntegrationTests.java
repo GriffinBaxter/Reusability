@@ -74,6 +74,8 @@ class ListingResourceIntegrationTests {
     @MockBean
     private HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository;
 
+    @MockBean BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+
     private MockHttpServletResponse response;
 
     private User dGAA;
@@ -403,7 +405,7 @@ class ListingResourceIntegrationTests {
         adminListing.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, hasBookmarkedListingMessageRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, hasBookmarkedListingMessageRepository, bookmarkedListingMessageRepository))
                 .build();
     }
 

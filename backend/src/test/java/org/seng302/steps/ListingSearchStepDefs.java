@@ -69,6 +69,10 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository;
 
+    @Autowired
+    @MockBean
+    private  BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+
     private MockHttpServletResponse response;
 
     private User dGAA;
@@ -302,7 +306,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         listingRepository = mock(ListingRepository.class);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                        listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, hasBookmarkedListingMessageRepository))
+                        listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, hasBookmarkedListingMessageRepository, bookmarkedListingMessageRepository))
                 .build();
     }
 

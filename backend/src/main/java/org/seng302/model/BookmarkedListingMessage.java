@@ -1,6 +1,8 @@
 package org.seng302.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.seng302.exceptions.IllegalBookmarkedListingMessageArgumentException;
 import org.seng302.view.outgoing.BookmarkedListingMessagePayload;
 import javax.persistence.*;
@@ -34,6 +36,14 @@ public class BookmarkedListingMessage {
 
     @OneToMany(mappedBy = "bookmarkedListingMessage")
     private List<HasBookmarkedListingMessage> readBookmarkedListingMessages = new ArrayList<>();
+
+    @JsonManagedReference
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "bookmarked_listing_message_users",
+            joinColumns = {@JoinColumn(name = "bookmarked_listing_message_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private List<User> users = new ArrayList<>();
 
     // Values need for validation.
     private static final Integer DESCRIPTION_MIN_LENGTH = 2;
@@ -125,6 +135,46 @@ public class BookmarkedListingMessage {
      */
     public void setListing(Listing listing) {
         this.listing = listing;
+    }
+
+    /**
+     * Get the list of users associated with the bookmarked listing message.
+     * @return the list of users associated with the bookmarked listing message.
+     */
+    public List<User> getUsers() {
+        return users;
+    }
+
+    /**
+     * Set the list of users associated with the bookmarked listing message.
+     * @param users A list of users to set.
+     */
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    /**
+     * Add a user to the list of users for this bookmarked listing message.
+     * Called when a new bookmarked listing message is created.
+     *
+     * @param user a user that is to be added to this bookmarked listing message.
+     */
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    /**
+     * Remove a user from the list of users for this bookmarked listing message.
+     *
+     * @param user a user that is to be removed from this bookmarked listing message.
+     */
+    public void removeUser(User user) {
+        int userId = user.getId();
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId() == userId) {
+                this.users.remove(i);
+            }
+        }
     }
 
     /**

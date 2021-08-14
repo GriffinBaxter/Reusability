@@ -72,6 +72,9 @@ public class ListingResource {
     @Autowired
     private HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository;
 
+    @Autowired
+    private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
     /**
@@ -92,7 +95,8 @@ public class ListingResource {
                            UserRepository userRepository,
                            SoldListingRepository soldListingRepository,
                            ListingNotificationRepository listingNotificationRepository,
-                           HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository) {
+                           HasBookmarkedListingMessageRepository hasBookmarkedListingMessageRepository,
+                           BookmarkedListingMessageRepository bookmarkedListingMessageRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.productRepository = productRepository;
@@ -101,6 +105,7 @@ public class ListingResource {
         this.soldListingRepository = soldListingRepository;
         this.listingNotificationRepository = listingNotificationRepository;
         this.hasBookmarkedListingMessageRepository = hasBookmarkedListingMessageRepository;
+        this.bookmarkedListingMessageRepository = bookmarkedListingMessageRepository;
     }
 
     /**
@@ -466,16 +471,46 @@ public class ListingResource {
         String nameOfProduct = listing.getInventoryItem().getProduct().getName();
         logger.debug("Listing {} retrieved, ID: {}.", nameOfProduct, listing.getId());
 
+        LocalDateTime created = LocalDateTime.now();
+
         boolean currentStatus;
         if (Boolean.TRUE.equals(listing.isBookmarked(currentUser))) {
             // if marked before
             listing.removeUserFromABookmark(currentUser);
             currentStatus = false;
+
+            try {
+                BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                        String.format("Product listing '%s' has been un-bookmarked.", listing.getInventoryItem().getProduct().getName()),
+                        created,
+                        listing);
+                bookmarkedListingMessage.addUser(currentUser);
+                bookmarkedListingMessageRepository.save(bookmarkedListingMessage);
+
+                logger.info("Bookmarked listing message created successfully: {}", bookmarkedListingMessage);
+            } catch (Exception ex) {
+                logger.error("Bookmarked listing message creation failure - {}", ex, ex);
+            }
+
             logger.info("Listing {} has been remove from current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
         } else {
             // if not marked before
             listing.addUserToANewBookmark(currentUser);
             currentStatus = true;
+
+            try {
+                BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                        String.format("Product listing '%s' has been bookmarked.", listing.getInventoryItem().getProduct().getName()),
+                        created,
+                        listing);
+                bookmarkedListingMessage.addUser(currentUser);
+                bookmarkedListingMessageRepository.save(bookmarkedListingMessage);
+
+                logger.info("Bookmarked listing message created successfully: {}", bookmarkedListingMessage);
+            } catch (Exception ex) {
+                logger.error("Bookmarked listing message creation failure - {}", ex, ex);
+            }
+
             logger.info("Listing {} has been add to current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
         }
 
@@ -501,15 +536,7 @@ public class ListingResource {
 
         Integer currentUserId = currentUser.getId();
 
-        List<HasBookmarkedListingMessage> hasBookmarkedListingMessages = hasBookmarkedListingMessageRepository.findAllByUserId(currentUserId);
-        logger.info("HasBookmarkedListingMessage Retrieval Success - 200 [OK] -  " +
-                "All HasBookmarkedListingMessage entities retrieved for user with ID {}", currentUserId);
-
-        List<BookmarkedListingMessage> bookmarkedListingMessages = new ArrayList<>();
-
-        for (HasBookmarkedListingMessage hasBookmarkedListingMessage : hasBookmarkedListingMessages) {
-            bookmarkedListingMessages.add(hasBookmarkedListingMessage.getBookmarkedListingMessage());
-        }
+        List<BookmarkedListingMessage> bookmarkedListingMessages = currentUser.getBookmarkedListingMessages();
 
         logger.info("BookmarkedListingMessages Retrieval Success - " +
                 "All bookmarkedListingMessages entities retrieved from HasBookmarkedListingMessage entities for user with ID {}: {}", currentUserId, bookmarkedListingMessages);
