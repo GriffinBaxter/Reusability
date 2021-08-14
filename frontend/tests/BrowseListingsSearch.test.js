@@ -26,7 +26,13 @@ describe("Testing the BrowseListingsSearch methods", () => {
         }
         $route = {
             path: '/browseListings',
-            query: {}
+            name: 'BrowseListing',
+            query: {
+                searchQuery: null, searchType: null,
+                orderBy: null, page: null, businessType: null,
+                minimumPrice: null, maximumPrice: null,
+                fromDate: null, toDate: null
+            }
         }
         data = {
             status: 200,
@@ -491,37 +497,28 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
     describe('Tests the searchClicked method.', () => {
 
-        // beforeEach(() => {
-        //     const localVue = createLocalVue();
-        //     localVue.use(VueRouter)
-        //
-        //     const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
-        //     router = new VueRouter({
-        //         routes
-        //     })
-        //     browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
-        //         localVue,
-        //         router
-        //     });
-        // });
+        // let browseListingsSearchWrapper;
+        // let router;
+
+        beforeEach(() => {
+            // const localVue = createLocalVue();
+            // localVue.use(VueRouter)
+            //
+            // const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
+            // router = new VueRouter({
+            //     routes
+            // })
+            browseListingsSearchWrapper.vm.$router.push({
+                name: 'BrowseListings',
+            })
+
+            // browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
+            //     localVue,
+            //     router
+            // });
+        });
 
         test('Testing that the grid data is populated correctly when data is returned', async () => {
-
-
-            let browseListingsSearchWrapper;
-            let router;
-
-            const localVue = createLocalVue();
-            localVue.use(VueRouter)
-
-            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
-            router = new VueRouter({
-                routes
-            })
-            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
-                localVue,
-                router
-            });
 
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
@@ -530,6 +527,8 @@ describe("Testing the BrowseListingsSearch methods", () => {
             browseListingsSearchWrapper.vm.$data.highestPrice = 100;
             browseListingsSearchWrapper.vm.$data.startDate = "2020-01-24";
             browseListingsSearchWrapper.vm.$data.endDate = "2020-05-28";
+
+
 
             const searchQuery = "test";
             const orderBy ="priceASC";
@@ -545,27 +544,17 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
             await browseListingsSearchWrapper.vm.$nextTick()
 
-            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
+            console.log(browseListingsSearchWrapper.vm.$route.query.searchQuery)
+
+            expect(browseListingsSearchWrapper.vm.$router.push).toHaveBeenCalledWith({ path: `/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`});
+
+
+            // expect(browseListingsSearchWrapper.vm.$router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
 
         })
 
         test('Testing that the grid data is populated correctly when data is returned and the prices are swapped around ' +
             'when they are out of order', async () => {
-
-            let browseListingsSearchWrapper;
-            let router;
-
-            const localVue = createLocalVue();
-            localVue.use(VueRouter)
-
-            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
-            router = new VueRouter({
-                routes
-            })
-            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
-                localVue,
-                router
-            });
 
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
@@ -589,28 +578,13 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
             await browseListingsSearchWrapper.vm.$nextTick()
 
-            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
+            expect(browseListingsSearchWrapper.vm.$router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
 
         })
 
 
         test('Testing that the grid data is populated correctly when data is returned and the dates are swapped around ' +
             'when they are out of order', async () => {
-
-            let browseListingsSearchWrapper;
-            let router;
-
-            const localVue = createLocalVue();
-            localVue.use(VueRouter)
-
-            const routes = [{path: '/browseListings', component: BrowseListingsSearch, name: 'BrowseListings'}]
-            router = new VueRouter({
-                routes
-            })
-            browseListingsSearchWrapper = shallowMount(BrowseListingsSearch, {
-                localVue,
-                router
-            });
 
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
@@ -634,7 +608,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
             await browseListingsSearchWrapper.vm.$nextTick()
 
-            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
+            expect(browseListingsSearchWrapper.vm.$router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${searchQuery}&searchType&orderBy=${orderBy}&page=${page}&businessType&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`);
 
         })
 
