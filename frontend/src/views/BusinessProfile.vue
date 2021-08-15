@@ -6,7 +6,12 @@
     <Navbar></Navbar>
 
     <!--profile container-->
-    <div class="container p-5 mt-3" id="profileContainer">
+    <div class="container p-5" id="profileContainer">
+      <div class="row">
+      <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
+        <button class="btn btn-lg green-button w-100" @click="returnToListing()" id="return-button" tabindex="9">Return to Sale Listing</button>
+      </div>
+      </div>
 
       <!--profile header, contains user search bar-->
       <ProfileHeader id="profile-header"/>
@@ -126,26 +131,23 @@
           </div>
 
           <div class="row">
+
             <div class="col">
-              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="11">Listings</button>
+              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="0">Listings</button>
             </div>
+
             <div class="col">
-              <!--logout button-->
               <div style="text-align: right" id="adminButtonRow" v-if="isAdministrator">
+                <button class="btn green-button mt-4 mx-2" id="InventoryButton"
+                        @click="navigateTo('Inventory')" tabindex="0">Inventory
+                </button>
                 <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
-                        @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue
+                        @click="navigateTo('ProductCatalogue')" tabindex="0">Product Catalogue
 
                 </button>
-                <button class="btn green-button float-end mt-4 mx-2" id="InventoryButton"
-                        @click="navigateTo('Inventory')" tabindex="12">Inventory
-                </button>
-
               </div>
             </div>
           </div>
-
-
-
 
         </div>
       </div>
@@ -193,7 +195,9 @@ export default {
 
       nameOfAdministrators: [],
 
-      isAdministrator: false
+      isAdministrator: false,
+      // keep track of if user came from individual listing page so they can return.
+      fromListing: false
     }
   },
   methods: {
@@ -366,6 +370,12 @@ export default {
         }
       })
     },
+    /**
+     * Redirect the user back to the individual sale listings page.
+     */
+    returnToListing() {
+      this.$router.back();
+    }
   },
   mounted() {
     const currentID = Cookies.get('userID');
@@ -407,6 +417,16 @@ export default {
     this.retrieveBusiness(id);
     next();
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from a page which contains an individual listing then the return to listing button component
+      // should be rendered.
+      if (from.name === 'SaleListing') {
+        vm.fromListing = true;
+      }
+      next();
+    });
+  }
 }
 </script>
 

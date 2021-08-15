@@ -22,7 +22,7 @@ class SoldListingNotificationTests {
     private SoldListingNotification soldListingNotification;
 
     @BeforeEach
-    void before() throws IllegalUserArgumentException, IllegalAddressArgumentException, IllegalListingNotificationArgumentException, IllegalSoldListingNotificationArgumentException, IllegalBusinessArgumentException {
+    void before() throws IllegalUserArgumentException, IllegalAddressArgumentException, IllegalListingNotificationArgumentException, IllegalSoldListingNotificationArgumentException, IllegalBusinessArgumentException, IllegalSoldListingArgumentException {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -75,7 +75,7 @@ class SoldListingNotificationTests {
         soldListing = new SoldListing(business,
                 customer,
                 LocalDateTime.now().minusDays(1),
-                new ProductId("PROD", business.getId()),
+                "PROD",
                 4,
                 20.0,
                 5);

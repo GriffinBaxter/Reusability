@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,6 +92,10 @@ class NotificationResourceIntegrationTests {
                                                     "\"created\":\"%s\"," +
                                                     "\"keyword\":%s}]";
 
+    private final String listingNotificationPayloadJson = "[{\"id\":%d," +
+            "\"description\":\"%s\"," +
+            "\"created\":\"%s\"}]";
+
     private final String soldListingNotificationPayloadJson = "[{\"id\":%d,\"soldListing\":%s,\"description\":\"%s\",\"created\":\"%s\",\"notificationType\":\"SOLD_LISTING\"}]";
 
     private String payloadJson;
@@ -108,6 +113,8 @@ class NotificationResourceIntegrationTests {
     private KeywordNotification keywordNotification;
 
     private SoldListing soldListing;
+
+    private ListingNotification listingNotification;
 
     private SoldListingNotification soldListingNotification;
 
@@ -190,7 +197,7 @@ class NotificationResourceIntegrationTests {
         soldListing = new SoldListing(business,
                 anotherUser,
                 LocalDateTime.now().minusDays(1),
-                new ProductId("PROD", business.getId()),
+                "PROD",
                 4,
                 20.0,
                 5);
@@ -245,6 +252,11 @@ class NotificationResourceIntegrationTests {
                 keyword
         );
         keywordNotification.setId(1);
+
+        listingNotification = new ListingNotification(
+                "Listing for Pizza has sold."
+        );
+        listingNotification.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(
                 new NotificationResource(userRepository, businessRepository, marketCardNotificationRepository,
@@ -316,9 +328,10 @@ class NotificationResourceIntegrationTests {
         // Given
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         payloadJson = "[]";
+        List<MarketCardNotification> emptyMarketNotifications = new ArrayList<>();
 
         // When
-        //when(marketCardNotificationRepository.findAllByUserId(user.getId())).thenReturn(List.of(marketCardNotification));
+        when(marketCardNotificationRepository.findAllByUserId(user.getId())).thenReturn(emptyMarketNotifications);
         response = mvc.perform(get("/users/notifications")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn()
@@ -339,8 +352,12 @@ class NotificationResourceIntegrationTests {
         // Given
         given(userRepository.findBySessionUUID(admin.getSessionUUID())).willReturn(Optional.ofNullable(admin));
         payloadJson = "[]";
+        List<MarketCardNotification> emptyMarketNotifications = new ArrayList<>();
+        List<KeywordNotification> emptyKeywordNotifications = new ArrayList<>();
 
         // When
+        when(marketCardNotificationRepository.findAllByUserId(admin.getId())).thenReturn(emptyMarketNotifications);
+        when(keywordNotificationRepository.findAll()).thenReturn(emptyKeywordNotifications);
         response = mvc.perform(get("/users/notifications")
                 .cookie(new Cookie("JSESSIONID", admin.getSessionUUID())))
                 .andReturn()
@@ -370,6 +387,31 @@ class NotificationResourceIntegrationTests {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
+
+    /**
+     * Tests that an OK status and a list containing a listing notification is received when a user tries to retrieve notifications when logged in.
+     *
+     * @throws Exception thrown if there is an error with MockMvc
+     */
+    @Test
+    void canRetrieveListingNotificationsAsUser() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        payloadJson = String.format(listingNotificationPayloadJson, listingNotification.getId(),
+                listingNotification.getDescription(), listingNotification.getCreated());
+
+        // When
+        when(listingNotificationRepository.findAllByUsersId(user.getId())).thenReturn(List.of(listingNotification));
+        response = mvc.perform(get("/users/notifications")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(payloadJson);
+    }
+
 
     /**
      * Tests that an OK status and a list containing sold listing notifications is received when a business admin user tries to retrieve business notifications when logged in.

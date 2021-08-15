@@ -131,7 +131,7 @@ class SoldListingNotificationRepositoryTests {
         soldListing = new SoldListing(business,
                                     customer,
                                     LocalDateTime.now().minusDays(1),
-                                    new ProductId("PROD", business.getId()),
+                                    "PROD",
                                     4,
                                     20.0,
                                     5);
@@ -141,7 +141,7 @@ class SoldListingNotificationRepositoryTests {
         soldListing2 = new SoldListing(business,
                 customer,
                 LocalDateTime.now().minusDays(1),
-                new ProductId("PRODUCT", business.getId()),
+                "PROD2",
                 4,
                 20.0,
                 5);
@@ -151,7 +151,7 @@ class SoldListingNotificationRepositoryTests {
         anotherSoldListing = new SoldListing(anotherBusiness,
                 customer,
                 LocalDateTime.now().minusDays(1),
-                new ProductId("PRODUC", anotherBusiness.getId()),
+                "ANOTHER",
                 4,
                 20.0,
                 5);

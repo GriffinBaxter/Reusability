@@ -1,52 +1,67 @@
+/**
+ * Summary. This file contains the definition for the SoldListingPayload.
+ *
+ * Description. This file contains the definition for the SoldListingPayload.
+ *
+ * @link   team-400/src/main/java/org/seng302/view/outgoing/SoldListingPayload
+ * @file   This file contains the definition for SoldListingPayload.
+ * @author team-400.
+ * @since  7.8.2021
+ */
 package org.seng302.view.outgoing;
 
-import org.seng302.model.Product;
-import org.seng302.model.ProductId;
+import org.seng302.model.User;
 
 /**
- * Sold Listing Payload
- *
- * Sold listing payload to send to the API (outgoing).
+ * Payload for Sold Listings to send to the frontend
  */
 public class SoldListingPayload {
 
     private Integer id;
-    private UserPayloadSecure user;
-    private ProductId productId;
+    private String saleDate;
+    private String listingDate;
+    private String productId;
     private Integer quantity;
     private Double price;
-    private Integer totalBookmarks;
-    private String listingDate;
-    private String saleDate;
+    private Integer bookmarks;
+    private UserPayloadSecure customer;
 
-    public SoldListingPayload(Integer id,
-                              UserPayloadSecure user,
-                              ProductId productId,
-                              Integer quantity,
-                              Double price,
-                              Integer totalBookmarks,
-                              String listingDate,
-                              String saleDate
-    ) {
+    /**
+     * Creates a payload for SoldListings
+     * @param id Identifier number for Sold Listing
+     * @param saleDate Date of sale
+     * @param listingDate Date of Listing
+     * @param productId Products ID
+     * @param quantity Number of item brought
+     * @param price Price of item brought
+     * @param bookmarks Number of people that bookmarked the listing
+     * @param customer The UserPayloadSecure representation of the customer
+     */
+    public SoldListingPayload(Integer id, String saleDate, String listingDate, String productId, Integer quantity, Double price, Integer bookmarks, UserPayloadSecure customer) {
         this.id = id;
-        this.user = user;
+        this.saleDate = saleDate;
+        this.listingDate = listingDate;
         this.productId = productId;
         this.quantity = quantity;
         this.price = price;
-        this.totalBookmarks = totalBookmarks;
-        this.listingDate = listingDate;
-        this.saleDate = saleDate;
+        this.bookmarks = bookmarks;
+        this.customer = customer;
     }
 
+    // Getters
     public Integer getId() {
         return id;
     }
 
-    public UserPayloadSecure getUser() {
-        return user;
+    public String getSaleDate() {
+        return saleDate;
     }
 
-    public ProductId getProductId() {
+    public String getListingDate() {
+        return listingDate;
+    }
+
+    public String getProductId() {
         return productId;
     }
 
@@ -58,47 +73,23 @@ public class SoldListingPayload {
         return price;
     }
 
-    public Integer getTotalBookmarks() {
-        return totalBookmarks;
+    public Integer getBookmarks() {
+        return bookmarks;
     }
 
-    public String getListingDate() {
-        return listingDate;
+    public UserPayloadSecure getCustomer() {
+        return customer;
     }
 
-    public String getSaleDate() {
-        return saleDate;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setUser(UserPayloadSecure user) {
-        this.user = user;
-    }
-
-    public void setProductId(ProductId productId) {
-        this.productId = productId;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public void setTotalBookmarks(Integer totalBookmarks) {
-        this.totalBookmarks = totalBookmarks;
-    }
-
-    public void setListingDate(String listingDate) {
-        this.listingDate = listingDate;
-    }
-
-    public void setSaleDate(String saleDate) {
-        this.saleDate = saleDate;
+    @Override
+    public String toString() {
+        return "{\"id\":" + id + "," +
+                "\"saleDate\":\"" + saleDate + "\"," +
+                "\"listingDate\":\"" + listingDate + "\"," +
+                "\"productId\":\"" + productId + "\"," +
+                "\"quantity\":" + quantity + "," +
+                "\"price\":" + price + "," +
+                "\"bookmarks\":" + bookmarks +
+                ",\"customer\":" + customer + "}";
     }
 }
