@@ -744,14 +744,7 @@ public class ListingResource {
         List<BookmarkedListingMessagePayload> bookmarkedListingMessagePayloads = new ArrayList<>();
 
         for (BookmarkedListingMessage bookmarkedListingMessage : bookmarkedListingMessages) {
-            bookmarkedListingMessagePayloads.add(new BookmarkedListingMessagePayload(
-                    bookmarkedListingMessage.getId(),
-                    bookmarkedListingMessage.getDescription(),
-                    bookmarkedListingMessage.getCreated(),
-                    bookmarkedListingMessage.getListing().getCloses(),
-                    bookmarkedListingMessage.getListing().getId(),
-                    bookmarkedListingMessage.getListing().getBusinessId()
-            ));
+            bookmarkedListingMessagePayloads.add(bookmarkedListingMessage.toBookmarkedListingMessagePayload());
         }
 
         return bookmarkedListingMessagePayloads;

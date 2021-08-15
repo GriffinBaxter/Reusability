@@ -1,5 +1,7 @@
 package org.seng302.view.outgoing;
 
+import org.seng302.model.BookmarkedListingMessage;
+
 import java.time.LocalDateTime;
 
 /**
