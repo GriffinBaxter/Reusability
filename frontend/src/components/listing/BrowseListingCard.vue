@@ -9,6 +9,7 @@
       <div :id="'bookmark_'+id" v-if="isMarked">&#9829;</div>
     </div>
 
+    <div class="everything-but-bookmark" @click="routeToSaleListing(id, inventoryItem.product.business.id)">
     <div class="row">
       <div class="col">
         <img :src="getPrimaryImageSrc(inventoryItem.product.images)" class="card-img-top" alt="default-image">
@@ -41,7 +42,7 @@
         </ul>
       </div>
     </div>
-
+    </div>
   </div>
 </template>
 
@@ -194,7 +195,6 @@ export default {
 .green-button {
   white-space: pre-line;
 }
-
 
 /* vertical tag */
 .tag-vertical {
