@@ -343,8 +343,8 @@ export default {
     },
 
     // Sends a GET request to the backend asking for the sold listings of a business (paginated)
-    getSoldListings: (businessId, page) => {
-        return instance.get(`/businesses/${businessId}/soldListings?page=${page}`, {}, {
+    getSoldListings: (businessId) => {
+        return instance.get(`/businesses/${businessId}/soldListings`, {
             withCredentials: true
         })
     }
