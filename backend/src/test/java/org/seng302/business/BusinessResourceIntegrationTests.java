@@ -104,7 +104,7 @@ class BusinessResourceIntegrationTests {
             "\"businessesAdministered\":[null]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
-            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]";
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]";
     private User dGAA;
 
     @BeforeAll
@@ -673,11 +673,11 @@ class BusinessResourceIntegrationTests {
                     "\"homeAddress\":{" +
                         "\"streetNumber\":\"3/24\"," +
                         "\"streetName\":\"Ilam Road\"," +
+                        "\"suburb\":\"Ilam\"," +
                         "\"city\":\"Christchurch\"," +
                         "\"region\":\"Canterbury\"," +
                         "\"country\":\"New Zealand\"," +
-                        "\"postcode\":\"90210\"," +
-                        "\"suburb\":\"Ilam\"" +
+                        "\"postcode\":\"90210\"" +
                         "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
@@ -686,11 +686,11 @@ class BusinessResourceIntegrationTests {
                 "\"address\":{" +
                     "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
                     "\"streetName\":\"" + address.getStreetName() + "\"," +
+                    "\"suburb\":\"" + address.getSuburb() + "\"," +
                     "\"city\":\"" + address.getCity() + "\"," +
                     "\"region\":\"" + address.getRegion() + "\"," +
                     "\"country\":\"" + address.getCountry() + "\"," +
-                    "\"postcode\":\"" + address.getPostcode() + "\"," +
-                    "\"suburb\":\"" + address.getSuburb() + "\"" +
+                    "\"postcode\":\"" + address.getPostcode() + "\"" +
                     "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
@@ -700,7 +700,6 @@ class BusinessResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
-        //when(business.getAdministrators()).thenReturn(List.of(user));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         // then
@@ -735,11 +734,11 @@ class BusinessResourceIntegrationTests {
                 "\"homeAddress\":{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +
+                "\"suburb\":\"Ilam\"," +
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"," +
-                "\"suburb\":\"Ilam\"" +
+                "\"postcode\":\"90210\"" +
                 "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":null," +
@@ -748,11 +747,11 @@ class BusinessResourceIntegrationTests {
                 "\"address\":{" +
                 "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
                 "\"streetName\":\"" + address.getStreetName() + "\"," +
+                "\"suburb\":\"" + address.getSuburb() + "\"," +
                 "\"city\":\"" + address.getCity() + "\"," +
                 "\"region\":\"" + address.getRegion() + "\"," +
                 "\"country\":\"" + address.getCountry() + "\"," +
-                "\"postcode\":\"" + address.getPostcode() + "\"," +
-                "\"suburb\":\"" + address.getSuburb() + "\"" +
+                "\"postcode\":\"" + address.getPostcode() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
@@ -762,7 +761,6 @@ class BusinessResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
-        //when(business.getAdministrators()).thenReturn(List.of(user));
         response = mvc.perform(get(String.format("/businesses/%d", id)).cookie(cookie)).andReturn().getResponse();
 
         // then
@@ -813,11 +811,11 @@ class BusinessResourceIntegrationTests {
                 "\"homeAddress\":{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +
+                "\"suburb\":\"Ilam\"," +
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"," +
-                "\"suburb\":\"Ilam\"" +
+                "\"postcode\":\"90210\"" +
                 "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
@@ -826,11 +824,11 @@ class BusinessResourceIntegrationTests {
                 "\"address\":{" +
                 "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
                 "\"streetName\":\"" + address.getStreetName() + "\"," +
+                "\"suburb\":\"" + address.getSuburb() + "\"," +
                 "\"city\":\"" + address.getCity() + "\"," +
                 "\"region\":\"" + address.getRegion() + "\"," +
                 "\"country\":\"" + address.getCountry() + "\"," +
-                "\"postcode\":\"" + address.getPostcode() + "\"," +
-                "\"suburb\":\"" + address.getSuburb() + "\"" +
+                "\"postcode\":\"" + address.getPostcode() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"}";
@@ -2005,8 +2003,8 @@ class BusinessResourceIntegrationTests {
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
@@ -2040,8 +2038,8 @@ class BusinessResourceIntegrationTests {
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
@@ -2078,8 +2076,8 @@ class BusinessResourceIntegrationTests {
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
@@ -2227,8 +2225,8 @@ class BusinessResourceIntegrationTests {
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
@@ -2264,8 +2262,8 @@ class BusinessResourceIntegrationTests {
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode(), address.getSuburb());
+                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 

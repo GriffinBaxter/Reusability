@@ -354,11 +354,11 @@ public class Address {
         return "{" +
                 "\"streetNumber\":\"" + streetNumber + "\"," +
                 "\"streetName\":\""   + streetName   + "\"," +
+                "\"suburb\":\""       + suburb       + "\","  +
                 "\"city\":\""         + city         + "\"," +
                 "\"region\":\""       + region       + "\"," +
                 "\"country\":\""      + country      + "\"," +
-                "\"postcode\":\""     + postcode     + "\"," +
-                "\"suburb\":\""       + suburb       + "\""  +
+                "\"postcode\":\""     + postcode     + "\"" +
                 "}";
     }
 

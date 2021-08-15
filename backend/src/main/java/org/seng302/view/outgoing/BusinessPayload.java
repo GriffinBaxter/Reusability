@@ -106,4 +106,16 @@ public class BusinessPayload {
     public String getCreated() {
         return created;
     }
+
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+               ",\"administrators\":" + administrators +
+                ",\"primaryAdministratorId\":" + primaryAdministratorId +
+                ",\"name\":\"" + name + "\"," +
+                "\"description\":\"" + description + "\"," +
+                "\"address\":" + address +
+                ",\"businessType\":\"" + businessType + "\"," +
+                "\"created\":\"" + created +"\"}";
+    }
 }

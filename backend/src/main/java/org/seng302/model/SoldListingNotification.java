@@ -2,14 +2,13 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 import org.seng302.exceptions.IllegalSoldListingNotificationArgumentException;
 import org.seng302.model.enums.NotificationType;
-import org.seng302.view.outgoing.ListingNotificationPayload;
 import org.seng302.view.outgoing.SoldListingNotificationPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Class for sold listing notifications.
@@ -54,7 +53,7 @@ public class SoldListingNotification {
      * @param description the message of the notification
      */
     public SoldListingNotification(Integer businessId, SoldListing soldListing, String description) throws IllegalSoldListingNotificationArgumentException {
-        if (businessId != soldListing.getBusiness().getId()) {
+        if (!Objects.equals(businessId, soldListing.getBusiness().getId())) {
             throw new IllegalSoldListingNotificationArgumentException("Invalid business ID");
         }
         if (!(isValidDescription(description))) {
