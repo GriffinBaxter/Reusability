@@ -1,7 +1,7 @@
 <template>
 
   <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-    <div class="btn-group me-2" role="group" aria-label="First group" style="">
+    <div class="btn-group me-2" role="group" aria-label="First group">
       <!------------------------------------------ ordering by options menu ------------------------------------------->
       <div class="btn-group col" role="group">
         <button type="button" class="btn green-button dropdown-toggle order-by-options-btn"
@@ -11,14 +11,20 @@
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
           <!--order by title-->
           <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setOrderByOption(true, false)">
+                  @click="setOrderByOption(true, false, false)">
             Title
           </button>
 
           <!--order by location-->
           <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setOrderByOption(false, true)">
+                  @click="setOrderByOption(false, true, false)">
             Location
+          </button>
+
+          <!--order by created-->
+          <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  @click="setOrderByOption(false, false, true)">
+            Created
           </button>
         </ul>
       </div>
@@ -43,14 +49,6 @@
           </button>
         </ul>
       </div>
-
-      <!--------------------------------------------- order button ---------------------------------------------------->
-      <div id="order-by-btn" class="col">
-        <button type="button" class="btn green-button-transparent col-12 go-btn"
-                @click="orderCards()">
-          Order Cards
-        </button>
-      </div>
     </div>
 
     <!--------------------------------------- create card button ------------------------------------------------------>
@@ -63,7 +61,7 @@
 
 <script>
 
-import CreateCardModal from "../CreateCardModal";
+import CreateCardModal from "./CreateCardModal";
 
 export default {
   name: "OrderingOptionsMenu",
@@ -74,7 +72,7 @@ export default {
     return {
       orderByOption: "Select Order By",         // default
       orderDirectionOption: "Select Direction",  // default
-      orderBy: "dateDESC",
+      orderBy: this.$route.query["orderBy"] || "dateDESC" // gets orderBy from URL or (if not there) sets to default
     }
   },
   methods: {
@@ -82,12 +80,15 @@ export default {
     /**
      * Sets the order by option
      */
-    setOrderByOption(title, location) {
+    setOrderByOption(title, location, created) {
       if (title) {
         this.orderByOption = "Title"
       } else if (location) {
         this.orderByOption = "Location"
+      } else if (created) {
+        this.orderByOption = "Created"
       }
+      this.orderCards();
     },
     /**
      * Sets the order by direction
@@ -98,6 +99,7 @@ export default {
       } else {
         this.orderDirectionOption = "Descending"
       }
+      this.orderCards();
     },
 
     /**
@@ -111,16 +113,20 @@ export default {
         orderByOptionString = "created"
       }
 
-      this.orderBy = `${orderByOptionString}${direction}`
+      return `${orderByOptionString}${direction}`
     },
 
     /**
      * Order the cards
      */
     orderCards() {
-      this.createOrderByParams()
+      const order = this.createOrderByParams()
 
-      this.$parent.$emit("orderedCards", this.orderBy)
+      // Checks the orderBy has changed to prevent NavigationDuplicated Errors
+      if (order !== this.orderBy) {
+        this.orderBy = order;
+        this.$parent.$emit("orderedCards", this.orderBy)
+      }
 
       // now can use this.orderBy to request cards from backend
 
@@ -133,11 +139,6 @@ export default {
 
 .order-by-options-btn, .order-direction-options-btn {
   width: 150px;
-  margin-top: 6px;
-}
-
-.go-btn {
-  width: 115px;
   margin-top: 6px;
 }
 

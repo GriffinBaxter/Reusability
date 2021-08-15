@@ -18,6 +18,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -92,6 +93,20 @@ public class User {
             cascade = CascadeType.ALL)
     private List<MarketplaceCard> cards = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<HasKeywordNotification> readKeywordNotifications = new ArrayList<>();
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "bookmarkedListings", fetch = FetchType.LAZY)
+    private List<Listing> bookmarkedListings = new ArrayList<>();
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    private List<ListingNotification> listingNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<HasListingNotification> readListingNotifications = new ArrayList<>();
+
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
     private static final Integer FIRST_NAME_MAX_LENGTH = 255;
@@ -130,7 +145,7 @@ public class User {
      * @param dateOfBirth Date of birth
      * @param phoneNumber Phone number
      * @param homeAddress Home address
-     * @param password User's password (not stored in plaintext
+     * @param password User's password (not stored in plaintext)
      * @param created Date individual signed up
      * @param role Role determines admin privileges.
      * @throws IllegalUserArgumentException  Validation exception
@@ -247,6 +262,10 @@ public class User {
         return sessionUUID;
     }
 
+    public List<Listing> getBookmarkedListing() {
+        return bookmarkedListings;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -301,6 +320,18 @@ public class User {
 
     public void setSessionUUID(String sessionUUID) {
         this.sessionUUID = sessionUUID;
+    }
+
+    public List<HasKeywordNotification> getReadKeywordNotifications() {
+        return readKeywordNotifications;
+    }
+
+    public void setReadKeywordNotifications(List<HasKeywordNotification> readKeywordNotifications) {
+        this.readKeywordNotifications = readKeywordNotifications;
+    }
+
+    public void setBookmarkedListings(List<Listing> bookMarkedListings) {
+        this.bookmarkedListings = bookMarkedListings;
     }
 
     /**
@@ -359,13 +390,14 @@ public class User {
 
     /**
      * Removes the given business from the businessesAdministeredObjects
-     * @param business
+     * @param business a business to be removed.
      */
     public void removeABusinessesAdministeredObjects(Business business){
         int businessId = business.getId();
         for (int i = 0; i < businessesAdministeredObjects.size(); i++){
             if (businessesAdministeredObjects.get(i).getId() == businessId){
                 this.businessesAdministeredObjects.remove(i);
+                i--;
             }
         }
     }
@@ -379,6 +411,7 @@ public class User {
         for (int i = 0; i < this.cards.size(); i++){
             if (this.cards.get(i).getId() == cardId){
                 this.cards.remove(i);
+                i--;
             }
         }
     }
@@ -397,6 +430,73 @@ public class User {
     }
 
     /**
+     * Add a listing to user bookmark if that listing not in user's bookmark
+     * @param listing listing
+     */
+    public void addAListingToBookmark(Listing listing){
+        if (!this.bookmarkedListings.contains(listing)){
+            this.bookmarkedListings.add(listing);
+        }
+    }
+
+    /**
+     * Remove a listing from user bookmark if that listing not in user's bookmark
+     * @param givenListing given listing
+     */
+    public void removeAListingFromBookmark(Listing givenListing){
+        for (int i = 0; i < bookmarkedListings.size(); i++) {
+            if (bookmarkedListings.get(i) == givenListing) {
+                bookmarkedListings.remove(i);
+                i--;
+            }
+        }
+    }
+
+    /**
+     * Add a new listing notification to the list of listing notifications that contain this user.
+     * Also adds this user to the list of users for the corresponding listing notification.
+     *
+     * @param listingNotification a listing notification which contains this user.
+     */
+    public void addListingNotification(ListingNotification listingNotification) {
+        listingNotifications.add(listingNotification);
+        listingNotification.addUser(this);
+    }
+
+    /**
+     * Remove a listing notification from the list of listing notifications that contain this user.
+     * Also removes this user from the list of users for the corresponding listing notification.
+     *
+     * @param listingNotification a listing notification which contains this user.
+     */
+    public void removeListingNotification(ListingNotification listingNotification) {
+        int listingNotificationId = listingNotification.getId();
+        for (int i = 0; i < listingNotifications.size(); i++) {
+            if (listingNotifications.get(i).getId() == listingNotificationId) {
+                this.listingNotifications.remove(i);
+            }
+        }
+
+        listingNotification.removeUser(this);
+    }
+
+    public List<ListingNotification> getListingNotifications() {
+        return listingNotifications;
+    }
+
+    public void setListingNotifications(List<ListingNotification> listingNotifications) {
+        this.listingNotifications = listingNotifications;
+    }
+
+    public List<HasListingNotification> getReadListingNotifications() {
+        return readListingNotifications;
+    }
+
+    public void setReadListingNotifications(List<HasListingNotification> readListingNotifications) {
+        this.readListingNotifications = readListingNotifications;
+    }
+
+    /**
      * Generate a randomised UUID used for a session token.
      * @return UUID
      */
@@ -404,6 +504,10 @@ public class User {
         return UUID.randomUUID().toString();
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the User.
+     */
     @Override
     public String toString() {
         return "{\"id\":" + id +

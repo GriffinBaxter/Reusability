@@ -45,31 +45,9 @@ public class BusinessPayload {
      */
     public static List<BusinessPayload> toBusinessPayload (List<Business> businesses) throws Exception {
         List<BusinessPayload> businessPayloads = new ArrayList<>();
-        BusinessPayload businessPayload;
         for (Business business: businesses){
-            Address address = business.getAddress();
-            AddressPayload addressPayload = new AddressPayload(
-                    address.getStreetNumber(),
-                    address.getStreetName(),
-                    address.getCity(),
-                    address.getRegion(),
-                    address.getCountry(),
-                    address.getPostcode(),
-                    address.getSuburb()
-            );
-            businessPayload = new BusinessPayload(
-                    business.getId(),
-                    business.getAdministrators(),
-                    business.getPrimaryAdministratorId(),
-                    business.getName(),
-                    business.getDescription(),
-                    addressPayload,
-                    business.getBusinessType(),
-                    business.getCreated()
-            );
-            businessPayloads.add(businessPayload);
+            businessPayloads.add(business.toBusinessPayload());
         }
-
 
         return businessPayloads;
     }
@@ -85,7 +63,6 @@ public class BusinessPayload {
                            ) throws Exception {
         this.id = id;
         this.administrators = UserPayload.convertToPayloadWithoutBusiness(administrators);
-        //      TODO This might get changed in the future due to the recursive nature of the API seems wrong.
         if (this.administrators.isEmpty()){
             this.administrators.add(null);
         }

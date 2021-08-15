@@ -59,16 +59,7 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/Search.vue')
-        // redirect: () => {
-        //
-        //     return '/search?searchQuery=&orderBy=fullNameASC&page=1';
-        // }
     },
-    // {
-    //     path: '/search?searchQuery=&orderBy=fullNameASC&page=1',
-    //     name: 'FullSearchPath',
-    //
-    // },
     {
         path: '/noUser',
         name: 'NoUser',
@@ -109,6 +100,14 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/NoSuchCard.vue')
+    },
+    {
+        path: '/noListing',
+        name: 'NoListing',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/NoSuchListing.vue')
     },
     {
         path: '/forbidden',
@@ -200,6 +199,18 @@ const routes = [
         component: () => import('../views/Listings')
     },
     {
+        path: '/businessProfile/:businessId/listings/:listingId',
+        name: 'SaleListing',
+        props: true,
+        meta: {
+            title: 'SaleListing'
+        },
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/SaleListing')
+    },
+    {
         path: '/marketplace',
         name: 'Marketplace',
         meta: {
@@ -210,6 +221,18 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/Marketplace')
+    },
+    {
+        path: '/browseListings',
+        name: 'BrowseListings',
+        meta: {
+            title: 'BrowseListings'
+        },
+        props: true,
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/BrowseListings')
     },
     {
         path: '*',

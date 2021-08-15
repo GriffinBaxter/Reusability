@@ -33,10 +33,12 @@ public class Keyword {
     @ManyToMany(mappedBy = "keywords", fetch = FetchType.LAZY)
     private List<MarketplaceCard> cards = new ArrayList<>();
 
+    @OneToOne(mappedBy = "keyword")
+    private KeywordNotification keywordNotification;
+
     // Values need for validation.
     private static final Integer NAME_MIN_LENGTH = 2;
     private static final Integer NAME_MAX_LENGTH = 20;
-
 
     /**
      * Marketplace Keyword constructor.
@@ -51,9 +53,9 @@ public class Keyword {
         this.created = created;
     }
 
-    public Keyword(String name, LocalDateTime created) throws Exception {
+    public Keyword(String name, LocalDateTime created) throws IllegalKeywordArgumentException {
         if (!isValidName(name)) {
-            throw new Exception("Invalid name");
+            throw new IllegalKeywordArgumentException("Invalid name");
         }
         this.name = name;
         this.created = created;
@@ -133,6 +135,22 @@ public class Keyword {
     }
 
     /**
+     * Retrieve the notification for this keyword.
+     * @return a notification for this keyword.
+     */
+    public KeywordNotification getKeywordNotification() {
+        return keywordNotification;
+    }
+
+    /**
+     * Set the notification for this keyword to a new one.
+     * @param keywordNotification a notification for a keyword.
+     */
+    public void setKeywordNotification(KeywordNotification keywordNotification) {
+        this.keywordNotification = keywordNotification;
+    }
+
+    /**
      * Retrieve the list of cards that contain this keyword.
      * @return cards a list of cards that contain this keyword.
      */
@@ -148,6 +166,17 @@ public class Keyword {
      */
     private boolean isValidName(String name) {
         return (name.length() >= NAME_MIN_LENGTH) && (name.length() <= NAME_MAX_LENGTH);
+    }
+
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the Keyword.
+     */
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+                ",\"name\":\"" + name + "\"" +
+                ",\"created\":\"" + created + "\"}";
     }
 
 }

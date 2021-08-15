@@ -1,27 +1,51 @@
 <template>
     <div class="row">
       <div class="col-md-3">
-        <img class="card-img mt-4" :src="require('../../../public/apples.jpg')" id="product-image">
+        <div v-if="this.$props.images.length > 0" id="carousel-product-images" class="carousel slide" data-bs-ride="carousel">
+          <div v-if="this.$props.images.length > 1" class="carousel-indicators">
+            <button v-for="(image, index) of this.$props.images" v-bind:key="image.id" type="button" data-bs-target="#carousel-product-images" :data-bs-slide-to="index" :class="image.isPrimary ? 'active' : ''"></button>
+          </div>
+          <div class="carousel-inner">
+            <div v-for="image of this.$props.images" v-bind:key="image.id" :class="image.isPrimary ? 'carousel-item active' : 'carousel-item'">
+              <img :src="getImageSrc(image.thumbnailFilename)" class="d-block w-100" width="230px" height="230px" alt="product image">
+            </div>
+          </div>
+          <div v-if="this.$props.images.length > 1">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-product-images" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel-product-images" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+        <div v-else>
+          <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image" alt="product image">
+        </div>
       </div>
       <div class="col-md-9">
         <div class="card-body px-3">
           <h2 class="card-title">{{ productName }}</h2>
           <br>
           <p class="card-text">
-            <b>Product ID:</b> {{ productId }}
+            <strong>Product ID:</strong> {{ productId }}
             <br>
-            <b>Manufacturer:</b> {{ manufacturer }}
+            <strong>Barcode:</strong> {{ barcode }}
             <br>
-            <b>RRP:</b> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
+            <strong>Manufacturer:</strong> {{ manufacturer }}
             <br>
-            <b>Description:</b>
+            <strong>RRP:</strong> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
+            <br>
+            <strong>Description:</strong>
             <br>
             {{ description }}
           </p>
           <hr>
           <div class="row">
             <p class="card-text">
-              <b>Created:</b> {{ created }}
+              <strong>Created:</strong> {{ created }}
             </p>
           </div>
         </div>
@@ -32,11 +56,13 @@
 
 
 <script>
+import Api from "../../Api"
+
 export default {
   name: "ProductModal",
   props: {
-    image: {
-      type: String,
+    images: {
+      type: Array,
       default: null,
       required: false
     },
@@ -80,19 +106,33 @@ export default {
       type: String,
       default: "",
       required: false
+    },
+    barcode: {
+      type: String,
+      default: "N/A",
+      required: false
     }
   },
-
-  mounted() {
-    document.getElementById("product-image").src = this.image;
+  methods: {
+    getImageSrc(filename) {
+      return Api.getServerURL() + "/" + filename;
+    },
   }
 }
 </script>
 
 <style scoped>
-img {
+
+#carousel-product-images {
   object-fit: cover;
   width: 230px;
   height: 230px;
 }
+
+#product-image {
+  object-fit: cover;
+  width: 230px;
+  height: 230px;
+}
+
 </style>

@@ -64,14 +64,18 @@ public class AddressPayloadSecure {
         this.country = country;
     }
 
+    /**
+     * Override the toString method for debugging purposes.
+     * @return a string representing the AddressPayloadSecure.
+     */
     @Override
     public String toString() {
-        return "Address(" +
-                "suburb=" + suburb +
-                "city=" + city +
-                ", region=" + region +
-                ", country=" + country +
-                ')';
+        return "{" +
+                "\"suburb\":\"" + suburb + "\"," +
+                "\"city\":\"" + city + "\"," +
+                "\"region\":\"" + region + "\"," +
+                "\"country\":\"" + country + "\"" +
+                "}";
     }
 }
 

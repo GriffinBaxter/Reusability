@@ -98,9 +98,13 @@ input:focus, textarea:focus, button:focus, #create-product-button:focus, textare
   border: 1px solid #1EBABC;
 }
 
+input[type="file"] {
+  display: none;
+}
+
 /* Fix Footer */
 #main{
-  min-height: calc(100vh - 72px); /* 100px is the height of Footer */
+  min-height: calc(100vh - 71px); /* 100px is the height of Footer */
 }
 
 Footer{
@@ -160,9 +164,9 @@ input[type=number] {
   line-height: 50%;
   font-family: 'Rochester', cursive;
   font-size: 35px;
-  margin-top: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
   margin-left: auto;
   margin-right: auto;
 }
@@ -208,15 +212,6 @@ input[type=number] {
   border: 1px solid #1EBABC;
 }
 
-/****************************************
-              Search Bar
- ****************************************/
-
-#profile-header-div {
-  margin-left: 15%;
-  margin-right: 15%;
-}
-
 /*****************************************************************
                   Autocomplete Dropdown Styling
 
@@ -257,6 +252,6 @@ input[type=number] {
 
 /*****************************************************************/
 
-.text-font, p, h, label, textarea, select, button {
+.text-font, p, h, label, textarea, select, button, h4 {
   font-family: 'Roboto', sans-serif;
 }

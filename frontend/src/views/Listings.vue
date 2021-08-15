@@ -1,111 +1,111 @@
 <template>
   <div>
     <div id="main">
-
-      <SideNavBar></SideNavBar>
-      <!-- Navbar -->
-      <Navbar/>
-      <!-- Listing Creation -->
-      <create-listing @updateListings="afterCreation"
-                      v-bind:currency-code="currencyCode"
-                      v-bind:currency-symbol="currencySymbol"/>
-      <!-- Listing Container -->
-      <div class="container">
+    <!-- Navbar -->
+    <Navbar/>
+    <!-- Listing Creation -->
+    <create-listing @updateListings="afterCreation"
+                    v-bind:currency-code="currencyCode"
+                    v-bind:currency-symbol="currencySymbol"/>
+    <!-- Listing Container -->
+    <div class="container mt-4">
+      <div class="card p-3">
         <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
-        <div class="card p-1">
-          <!-- Order Buttons -->
-          <div class="row my-3" align="center">
-            <!--filter-->
-            <div class="btn-group col-3 py-1" role="group">
-              <button type="button" class="btn green-button dropdown-toggle col-4"
-                      data-bs-toggle="dropdown" aria-expanded="false">Filter Option
+        <hr>
+        <div class="row" role="group" aria-label="Button group with nested dropdown">
+          <!--filter-->
+          <div class="btn-group col-md-3 py-1" role="group">
+            <button type="button" class="btn green-button dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">Filter Option
+            </button>
+
+            <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+              <!--order by quantity-->
+              <button type="button" class="btn green-button-transparent col-12"
+                      @click="orderListings(true, false, false, false)">
+                Quantity
+                <i id="quantityIcon" aria-hidden="true"></i>
               </button>
 
-              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                <!--order by quantity-->
-                <button type="button" class="btn green-button-transparent col-12"
-                        @click="orderListings(true, false, false, false)">
-                  Quantity
-                  <i id="quantityIcon"></i>
-                </button>
+              <!--order by price-->
+              <button type="button" class="btn green-button-transparent col-12"
+                      @click="orderListings(false, true, false, false)">
+                Price
+                <i id="priceIcon" aria-hidden="true"></i>
+              </button>
 
-                <!--order by price-->
-                <button type="button" class="btn green-button-transparent col-12"
-                        @click="orderListings(false, true, false, false)">
-                  Price
-                  <i id="priceIcon"></i>
-                </button>
+              <!--order by closing date-->
+              <button type="button" class="btn green-button-transparent col-12"
+                      @click="orderListings(false, false, true, false)">
+                Closing Date
+                <i id="closesIcon" aria-hidden="true"></i>
+              </button>
 
-                <!--order by closing date-->
-                <button type="button" class="btn green-button-transparent col-12"
-                        @click="orderListings(false, false, true, false)">
-                  Closing Date
-                  <i id="closesIcon"></i>
-                </button>
-
-                <!--order by listing date-->
-                <button type="button" class="btn green-button-transparent col-12"
-                        @click="orderListings(false, false, false, true)">
-                  Listing Date
-                  <i id="createdIcon"></i>
-                </button>
-              </ul>
-            </div>
-
-            <!-- Add new Button -->
-            <div class="col-md" v-if="businessAdmin">
-              <button type="button" class="btn green-button w-75 my-1" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Add new</button>
-            </div>
-
-            <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
-
+              <!--order by listing date-->
+              <button type="button" class="btn green-button-transparent col-12"
+                      @click="orderListings(false, false, false, true)">
+                Listing Date
+                <i id="createdIcon" aria-hidden="true"></i>
+              </button>
+            </ul>
           </div>
 
-          <!--space-->
-          <br>
-
-          <!--creation success info-->
-          <div class="alert alert-success" role="alert" v-if="creationSuccess">
-            <div class="row">
-              <div class="col" align="center">New Listing Created</div>
-            </div>
+          <!-- Create New Button -->
+          <div class="col-md-3 py-1" v-if="businessAdmin">
+            <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Create New</button>
           </div>
 
-          <!-- Listings -->
-          <ListingItem
-              v-for="item in listings"
-              v-bind:key="item.index"
-              v-bind:product-name="item.productName"
-              v-bind:description="item.description"
-              v-bind:product-id="item.productId"
-              v-bind:quantity="item.quantity"
-              v-bind:price="item.price"
-              v-bind:listDate="item.listDate"
-              v-bind:close-date="item.closeDate"
-              v-bind:best-before="item.bestBefore"
-              v-bind:expires="item.expires"
-              v-bind:moreInfo="item.moreInfo"
-              v-bind:currency-code="currencyCode"
-              v-bind:currency-symbol="currencySymbol"
-          />
-
-          <!--space-->
-          <br>
-
-          <!---------------------------------------------- page buttons ------------------------------------------------>
-
-          <div id="page-button-container">
-            <PageButtons
-                v-bind:totalPages="totalPages"
-                v-bind:currentPage="currentPage"
-                @updatePage="updatePage"/>
-          </div>
+          <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
 
         </div>
+
+        <!--space-->
+        <br>
+
+        <!--creation success info-->
+        <div class="alert alert-success" role="alert" v-if="creationSuccess">
+          <div class="row">
+            <div class="col" style="text-align: center">New Listing Created</div>
+          </div>
+        </div>
+
+        <!-- Listings -->
+        <ListingItem
+            v-for="item in listings"
+            v-bind:key="item.index"
+            v-bind:product-name="item.productName"
+            v-bind:description="item.description"
+            v-bind:product-id="item.productId"
+            v-bind:quantity="item.quantity"
+            v-bind:price="item.price"
+            v-bind:listDate="item.listDate"
+            v-bind:close-date="item.closeDate"
+            v-bind:best-before="item.bestBefore"
+            v-bind:expires="item.expires"
+            v-bind:moreInfo="item.moreInfo"
+            v-bind:currency-code="currencyCode"
+            v-bind:currency-symbol="currencySymbol"
+            v-bind:images="item.images"
+            v-bind:barcode="item.barcode"
+        />
+
+        <!--space-->
+        <br>
+
+        <!---------------------------------------------- page buttons ------------------------------------------------>
+
+        <div id="page-button-container">
+          <PageButtons
+              v-bind:totalPages="totalPages"
+              v-bind:currentPage="currentPage"
+              @updatePage="updatePage"/>
+        </div>
+
       </div>
+    </div>
       <div class="noListings" v-if="noListings">
         <div class="card p-1">
-          <p class="h2 py-5" align="center">No Listings Found</p>
+          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
         </div>
       </div>
     </div>
@@ -124,11 +124,11 @@ import Footer from "../components/main/Footer";
 import CurrencyAPI from "../currencyInstance";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
-import SideNavBar from "../components/main/SideNavBar";
+
 
 export default {
 name: "Listings",
-  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons, SideNavBar},
+  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons},
   data() {
     return {
       allListings: [],
@@ -374,7 +374,9 @@ name: "Listings",
             listDate: formatDate(response.data[i].created, false),
             closeDate: formatDate(response.data[i].closes, false),
             moreInfo: response.data[i].moreInfo,
-            expires: formatDate(response.data[i].inventoryItem.expires, false)
+            expires: formatDate(response.data[i].inventoryItem.expires, false),
+            images: response.data[i].inventoryItem.product.images,
+            barcode: response.data[i].inventoryItem.product.barcode
           })
         }
       }

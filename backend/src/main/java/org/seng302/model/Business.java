@@ -17,6 +17,8 @@ import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.Validation;
+import org.seng302.view.outgoing.AddressPayload;
+import org.seng302.view.outgoing.BusinessPayload;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -76,10 +78,13 @@ public class Business {
 
     /**
      * Create new BusinessAccount object.
+     * @param primaryAdministratorId the id of the primary administrator of the business
      * @param name the name of the business (mandatory)
      * @param description the description of the business (optional)
      * @param address the address of the business (mandatory)
      * @param businessType the type of the business (mandatory)
+     * @param created the date the business was created
+     * @param administrator the user who created this business
      * @throws IllegalBusinessArgumentException thrown when parameter is not valid.
      */
     public Business(Integer primaryAdministratorId,
@@ -284,6 +289,25 @@ public class Business {
             }
         }
         return false;
+    }
+
+    /**
+     * Converts the business to payload form and returns it.
+     * @return A payload representation of the business
+     */
+    public BusinessPayload toBusinessPayload () throws Exception {
+        AddressPayload addressPayload = address.toAddressPayload();
+
+        return new BusinessPayload(
+                id,
+                administrators,
+                primaryAdministratorId,
+                name,
+                description,
+                addressPayload,
+                businessType,
+                created
+        );
     }
 
     /**

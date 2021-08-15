@@ -289,7 +289,7 @@ export default {
      * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
      */
     getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = ""; //TODO: remove after testing and just have ""
+      let errorMessage = "";
       if (inputVal === "" && minLength >= 1) {
         errorMessage = "Please enter input";
       } else if (!regex.test(inputVal)) {
@@ -336,7 +336,6 @@ export default {
         'NON PROFIT ORGANISATION']
       if (businessTypes.includes(this.businessType.toUpperCase())) {
         this.businessTypeErrorMsg = "";
-        requestIsInvalid = false
       } else {
         this.businessTypeErrorMsg = "This field is required!"
         requestIsInvalid = true
@@ -498,7 +497,7 @@ export default {
             if (res.status === 201) {
               const businessId = res.data.businessId;
               if (businessId) {
-                Cookies.set('actAs', businessId);
+                Cookies.set('actAs', businessId, { sameSite:'strict'});
                 this.$router.push('/businessProfile/' + businessId);
               }
             }

@@ -2,161 +2,156 @@
   <div>
 
     <div id="main">
+    <!--nav bar-->
+    <Navbar></Navbar>
 
-      <SideNavBar></SideNavBar>
-
-      <!--nav bar-->
-      <Navbar></Navbar>
+    <!--profile container-->
+    <div class="container p-5" id="profileContainer">
+      <div class="row">
+      <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
+        <button class="btn btn-lg green-button w-100" @click="returnToListing()" id="return-button" tabindex="9">Return to Sale Listing</button>
+      </div>
+      </div>
 
       <!--profile header, contains user search bar-->
-      <div id="profile-header-div">
-        <ProfileHeader/>
-      </div>
+      <ProfileHeader id="profile-header"/>
 
-      <!--profile container-->
-      <div class="container p-5 mt-3" id="profileContainer">
-        <div class="row">
-          <div class="col-xl-3 mb-3">
+      <div class="row">
+        <div class="col-xl-3 mb-3">
 
-            <div class="card text-center shadow-sm">
-              <div class="card-body">
+          <div class="card text-center shadow-sm">
+            <div class="card-body">
 
-                <!--business's profile image-->
-                <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
-                     alt="Profile Image"/>
+              <!--business's profile image-->
+              <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
+                   alt="Profile Image"/>
 
-                <!--business's name-->
-                <div class="mt-3">
-                  <h5>{{ name }}</h5>
-                  <div class="text-secondary">{{ description }}</div>
-                </div>
-              </div>
-
-              <!--       for later use     -->
-              <!--            <div class="card text-center shadow-sm-3">-->
-              <!--              <div class="card-body">-->
-              <!--                <button class="btn btn-lg text-secondary" id="editProfileButton">Edit Profile</button>-->
-              <!--              </div>-->
-              <!--            </div>-->
-            </div>
-
-          </div>
-
-          <div class="col">
-            <div class="card shadow-sm">
-              <div class="card-body">
-
-                <!--business's name-->
-                <div class="container">
-                  <div class="row justify-content-between">
-                    <div class="col-4 -align-left">
-                      <h6>Name:</h6>
-                    </div>
-                    <div class="col-8">
-                      <div class="text-secondary" align="right">{{ name }}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!--business's type-->
-                <hr>
-                <div class="container">
-                  <div class="row justify-content-between">
-                    <div class="col-4 -align-left">
-                      <h6>Business Type:</h6>
-                    </div>
-                    <div class="col-8">
-                      <div class="text-secondary" align="right">{{ businessType }}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!--business's created time-->
-                <hr>
-                <div class="container">
-                  <div class="row justify-content-between">
-                    <div class="col-4 -align-left">
-                      <h6>Created Time:</h6>
-                    </div>
-                    <div class="col-8">
-                      <div class="text-secondary" align="right">{{ created }}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!--business's address-->
-                <hr>
-                <div class="container">
-                  <div class="row justify-content-between">
-                    <div class="col-4 -align-left">
-                      <h6>Address:</h6>
-                    </div>
-                    <div class="col-8">
-                      <div class="row">
-                        <div class="text-secondary" v-for="lines in address" :key="lines.line" align="right">
-                          {{ lines.line }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!--business's primary administrator-->
-                <hr v-if="isAdministrator">
-                <div class="container" v-if="isAdministrator">
-                  <div class="row justify-content-between">
-                    <div class="col-4 -align-left">
-                      <h6>Primary Administrator:</h6>
-                    </div>
-                    <div class="col-8">
-                      <div class="text-secondary primary-administrator" align="right" @click="pushToUser(primaryAdministratorId)">
-                        {{ primaryAdministrator }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!--business's administrators-->
-                <hr>
-                <div class="container">
-                  <div class="row justify-content-between">
-                    <div class="col-4 -align-left">
-                      <h6>Administrators:</h6>
-                    </div>
-                    <div class="col-8">
-                      <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
-                           :key="nameOfAdministrator.name"
-                           align="right" @click="pushToUser(nameOfAdministrator.id)">
-                        {{ nameOfAdministrator.name }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col">
-                <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="11">Listings</button>
-              </div>
-              <div class="col">
-                <!--logout button-->
-                <div align="right" id="adminButtonRow" v-if="isAdministrator">
-                  <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
-                          @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue
-
-                  </button>
-                  <button class="btn green-button float-end mt-4 mx-2" id="InventoryButton"
-                          @click="navigateTo('Inventory')" tabindex="12">Inventory
-                  </button>
-
-                </div>
+              <!--business's name-->
+              <div class="mt-3">
+                <h5>{{ name }}</h5>
+                <div class="text-secondary">{{ description }}</div>
               </div>
             </div>
           </div>
+
+        </div>
+
+        <div class="col">
+          <div class="card shadow-sm">
+            <div class="card-body">
+
+              <!--business's name-->
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-4 -align-left">
+                    <h6>Name:</h6>
+                  </div>
+                  <div class="col-8">
+                    <div class="text-secondary" style="text-align: right">{{ name }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!--business's type-->
+              <hr>
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-4 -align-left">
+                    <h6>Business Type:</h6>
+                  </div>
+                  <div class="col-8">
+                    <div class="text-secondary" style="text-align: right">{{ businessType }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!--business's created time-->
+              <hr>
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-4 -align-left">
+                    <h6>Created Time:</h6>
+                  </div>
+                  <div class="col-8">
+                    <div class="text-secondary" style="text-align: right">{{ created }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!--business's address-->
+              <hr>
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-4 -align-left">
+                    <h6>Address:</h6>
+                  </div>
+                  <div class="col-8">
+                    <div class="row">
+                      <div class="text-secondary" v-for="(lines, i) in address" :key="'address-line-'+i" style="text-align: right">
+                        {{ lines.line }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!--business's primary administrator-->
+              <hr v-if="isAdministrator">
+              <div class="container" v-if="isAdministrator">
+                <div class="row justify-content-between">
+                  <div class="col-4 -align-left">
+                    <h6>Primary Administrator:</h6>
+                  </div>
+                  <div class="col-8">
+                    <div class="text-secondary primary-administrator" style="text-align: right" @click="pushToUser(primaryAdministratorId)">
+                      {{ primaryAdministrator }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!--business's administrators-->
+              <hr>
+              <div class="container">
+                <div class="row justify-content-between">
+                  <div class="col-4 -align-left">
+                    <h6>Administrators:</h6>
+                  </div>
+                  <div class="col-8">
+                    <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
+                         :key="nameOfAdministrator.name"
+                         style="text-align: right" @click="pushToUser(nameOfAdministrator.id)">
+                      {{ nameOfAdministrator.name }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row">
+
+            <div class="col">
+              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="0">Listings</button>
+            </div>
+
+            <div class="col">
+              <div style="text-align: right" id="adminButtonRow" v-if="isAdministrator">
+                <button class="btn green-button mt-4 mx-2" id="InventoryButton"
+                        @click="navigateTo('Inventory')" tabindex="0">Inventory
+                </button>
+                <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
+                        @click="navigateTo('ProductCatalogue')" tabindex="0">Product Catalogue
+
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
+    </div>
 
     </div>
     <!--footer-->
@@ -172,15 +167,13 @@ import Navbar from "@/components/main/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
 import {UserRole} from "@/configs/User";
-import SideNavBar from "../components/main/SideNavBar";
 
 export default {
   name: "BusinessProfile",
   components: {
     Footer,
     ProfileHeader,
-    Navbar,
-    SideNavBar
+    Navbar
   },
   data() {
     return {
@@ -202,7 +195,9 @@ export default {
 
       nameOfAdministrators: [],
 
-      isAdministrator: false
+      isAdministrator: false,
+      // keep track of if user came from individual listing page so they can return.
+      fromListing: false
     }
   },
   methods: {
@@ -375,6 +370,12 @@ export default {
         }
       })
     },
+    /**
+     * Redirect the user back to the individual sale listings page.
+     */
+    returnToListing() {
+      this.$router.back();
+    }
   },
   mounted() {
     const currentID = Cookies.get('userID');
@@ -416,6 +417,16 @@ export default {
     this.retrieveBusiness(id);
     next();
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from a page which contains an individual listing then the return to listing button component
+      // should be rendered.
+      if (from.name === 'SaleListing') {
+        vm.fromListing = true;
+      }
+      next();
+    });
+  }
 }
 </script>
 

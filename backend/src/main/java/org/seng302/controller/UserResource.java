@@ -14,6 +14,8 @@ import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
+import org.seng302.utils.PaginationUtils;
+import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.UserIdPayload;
 import org.seng302.view.incoming.UserLoginPayload;
 import org.seng302.view.incoming.UserRegistrationPayload;
@@ -33,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -101,21 +104,17 @@ public class UserResource {
 
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
-        if (user.isPresent()) {
-            if (user.get().verifyPassword(login.getPassword())) {
-                String sessionUUID = getUniqueSessionUUID();
+        if (user.isPresent() && (user.get().verifyPassword(login.getPassword()))) {
+            String sessionUUID = getUniqueSessionUUID();
 
-                user.get().setSessionUUID(sessionUUID);
-                userRepository.save(user.get());
+            user.get().setSessionUUID(sessionUUID);
+            userRepository.save(user.get());
 
-                Cookie cookie = new Cookie("JSESSIONID", sessionUUID);
-                cookie.setMaxAge(3600); // 1 hour in seconds
-                cookie.setHttpOnly(true);
-                response.addCookie(cookie);
+                ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionUUID).maxAge(28800).sameSite("strict").httpOnly(true).build();
+                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-                logger.info("Successful Login - User Id: {}", user.get().getId());
-                return new UserIdPayload(user.get().getId());
-            }
+            logger.info("Successful Login - User Id: {}", user.get().getId());
+            return new UserIdPayload(user.get().getId());
         }
         throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
@@ -132,10 +131,11 @@ public class UserResource {
     public void logoutUser(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                            HttpServletResponse response) {
         if (sessionToken != null) {
-            Cookie cookie = new Cookie("JSESSIONID", sessionToken);
-            cookie.setMaxAge(0); // 0 deletes the cookie
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+
+            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionToken).maxAge(0).sameSite("strict").httpOnly(true).build(); // maxAge 0 deletes the cookie
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+
         }
     }
 
@@ -208,9 +208,8 @@ public class UserResource {
             newUser.setSessionUUID(getUniqueSessionUUID());
             User createdUser = userRepository.save(newUser);
 
-            Cookie cookie = new Cookie("JSESSIONID", createdUser.getSessionUUID());
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", createdUser.getSessionUUID()).maxAge(3600).sameSite("strict").httpOnly(true).build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             logger.info("Successful Registration - User Id {}", createdUser.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
@@ -252,7 +251,7 @@ public class UserResource {
         Role role = null;
 
         //stop payload loop
-        List<Business> administrators = new ArrayList<>();
+        List<Business> administrators;
         administrators = selectUser.getBusinessesAdministeredObjects();
         for (Business administrator : administrators) {
             administrator.setAdministrators(new ArrayList<>());
@@ -321,65 +320,41 @@ public class UserResource {
     ) throws Exception {
         logger.debug("User search request received with search query {}, order by {}, page {}", searchQuery, orderBy, page);
 
-        //TODO check this
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
-        int pageNo;
-        try {
-            pageNo = Integer.parseInt(page);
-        } catch (final NumberFormatException e) {
-            logger.error("400 [BAD REQUEST] - {} is not a valid page number", page);
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Page parameter invalid"
-            );
-        }
+
+        int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Front-end displays 5 users per page
         int pageSize = 5;
 
-        Sort sortBy = null;
+        Sort sortBy;
+        Sort sortByEmailASC = Sort.by(Sort.Order.asc("email").ignoreCase());
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
         // Normally all upper case letters come before any lower case ones.
         switch (orderBy) {
             case "fullNameASC":
-
-                sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-
+                sortBy = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(sortByEmailASC);
                 break;
             case "fullNameDESC":
-
-                sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-
+                sortBy = Sort.by(Sort.Order.desc("firstName").ignoreCase()).and(Sort.by(Sort.Order.desc("middleName").ignoreCase())).and(Sort.by(Sort.Order.desc("lastName").ignoreCase())).and(sortByEmailASC);
                 break;
             case "nicknameASC":
-
-                sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-
+                sortBy = Sort.by(Sort.Order.asc("nickname").ignoreCase()).and(sortByEmailASC);
                 break;
             case "nicknameDESC":
-
-                sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-
+                sortBy = Sort.by(Sort.Order.desc("nickname").ignoreCase()).and(sortByEmailASC);
                 break;
             case "emailASC":
-
-                sortBy = Sort.by(Sort.Order.asc("email").ignoreCase());
-
+                sortBy = sortByEmailASC;
                 break;
             case "emailDESC":
-
                 sortBy = Sort.by(Sort.Order.desc("email").ignoreCase());
-
                 break;
             case "addressASC":
-
-                sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
-
+                sortBy = Sort.by(Sort.Order.asc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.asc("homeAddress.country").ignoreCase())).and(sortByEmailASC));
                 break;
             case "addressDESC":
-
-                sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase())));
-
+                sortBy = Sort.by(Sort.Order.desc("homeAddress.city").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.region").ignoreCase()).and(Sort.by(Sort.Order.desc("homeAddress.country").ignoreCase())).and(sortByEmailASC));
                 break;
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
@@ -391,7 +366,7 @@ public class UserResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<User> pagedResult = userRepository.findAllUsersByNames(searchQuery, paging);
+        Page<User> pagedResult = parseAndExecuteQuery(searchQuery, paging);
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
@@ -408,10 +383,34 @@ public class UserResource {
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
     }
 
-    //TODO write unit tests
-    //TODO write comment
+    /**
+     * This method parses the search criteria and then calls the needed methods to execute the "query".
+     *
+     * @param searchQuery criteria to search for users (user's nickname, first name, middle name, last name or full name).
+     * @param paging information used to paginate the retrieved users.
+     * @return Page<User> A page of users matching the search criteria.
+     *
+     * Preconditions:  A non-null string representing a search query that can contain several names to be searched for (can be empty string)
+     * Postconditions: A page containing the results of the user search is returned.
+     */
+    private Page<User> parseAndExecuteQuery(String searchQuery, Pageable paging) {
+        if (searchQuery.equals("")) return userRepository.findAll(paging); // All users should be returned.
+        List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
+        return userRepository.findAllUsersByNames(names, paging);
+    }
+
+    /**
+     * This method converts a list of users to "secure" payloads which omit user details due to privacy concerns.
+     *
+     * @param userList the list of users the current user is trying to view.
+     * @param user the user who is trying to access the details of other users. If they are not an admin then they
+     *             can not view extra details of other users.
+     * @return List<UserPayloadSecure> A list of users who have had some fields of their address removed due to privacy
+     * concerns.
+     * @throws Exception thrown if error occurs when converting to secure payload.
+     */
     public List<UserPayloadSecure> convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(List<User> userList, User user) throws Exception {
-        List<UserPayloadSecure> userPayloadList = new ArrayList<>();
+        List<UserPayloadSecure> userPayloadList;
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
 
         for (UserPayloadSecure userPayloadSecure: userPayloadList) {
@@ -461,7 +460,7 @@ public class UserResource {
 
 
     /**
-     * Get method for change the Role of a user account from USE to GLOBALAPPLICATIONADMIN by Email address
+     * Put method to change the Role of a user account from USER to GLOBALAPPLICATIONADMIN by Email address
      * @param id mail address (primary key)
      */
     @PutMapping("/users/{id}/revokeAdmin")

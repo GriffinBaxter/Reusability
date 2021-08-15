@@ -7,168 +7,132 @@
 <!--links to the business' listings, inventory and catalogue pages.-->
 <!--Bootstrap has been used to build these nav bars.-->
 
-
 <!-------------------------------------------- Navigation Bar --------------------------------------------------------->
 
 <template>
   <nav class="navbar sticky-top navbar-expand-xl shadow-sm text-font" style="background-color: white">
-    <div id="top-nav-bar-id" class="container">
-
-      <!-- Hamburger icon -->
-      <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <!-- Side nav hamburger open button -->
-      <button id="side-nav-bar-open-btn">
-          <span class="navbar-toggler-icon" style="font-size:30px;cursor:pointer" @click="toggleSideNav"></span>
-      </button>
+    <div class="container mt-2 my-xl-3 mx-auto">
 
       <!-- Logo image -->
       <div class="logo-container text-center">
         <router-link class="navbar-brand " to="/home" tabindex="-1">
           <img src="../../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
         </router-link>
-        <span class="company-name-main-position-nav company-name-main-font">REUSABILITY</span>
-
       </div>
 
-        <!-- Navbar links -->
-        <div class="navbar-collapse" id="navbar-id">
-          <!-- navbar inner is required for the animation -->
+      <!-- Hamburger icon -->
+      <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-          <!-- mobile version of nav bar -->
-          <div id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
-            <ul class="navbar-nav flex-column flex-xl-row">
+      <!-- Navbar links -->
+      <div class="navbar-collapse" id="navbar-id">
+        <!-- navbar inner is required for the animation -->
+        <div id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+          <ul class="navbar-nav flex-column flex-xl-row">
 
-                <!-- default page links -->
-                <li class="nav-item">
-                  <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">
+            <!-- default page links -->
+            <li class="nav-item">
+              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">
+                Home</router-link>
+            </li>
+            <li class="nav-item" v-if="actAsId === null">
+              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item" v-if=actAsId>
+              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
+                           :to="'/businessProfile/' + actAsId" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :class="['nav-link', isActivePath('/browseListings')]" to="/browseListings" tabindex="3">
+                Browse Listings
+              </router-link>
+            </li>
+            <li class="nav-item" v-if="!isActAsBusiness">
+              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="4">
+                Marketplace
+              </router-link>
+            </li>
 
-                    <div class="row">
-                      <div class="col-sm-5">
-                        <i class="side-nav-link-icon fas fa-home"></i>
-                      </div>
-                      <div class="col-sm-1 side-nav-link-text">
-                        Home
-                      </div>
-                    </div>
+            <!--- Business specific account links -->
+            <li class="nav-item dropdown" v-if="isActAsBusiness">
 
-                  </router-link>
-                </li>
-                <li class="nav-item" v-if="actAsId === null">
-                  <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+              <!-- Navbar toggle drop down -->
+              <a class="nav-link dropdown-toggle" role="button" tabindex="5"
+                 @click="() => {toggleBusinessDropdown()}"
+                 @keyup.enter="() => {toggleBusinessDropdown()}">
+                Business Pages
+              </a>
 
-                    <div class="row">
-                      <div class="col-sm-5">
-                        <i class="side-nav-link-icon fas fa-user-alt"></i>
-                      </div>
-                      <div class="col-sm-1 side-nav-link-text">
-                        Profile
-                      </div>
-                    </div>
+              <!-- Dropdown links-->
+              <div id="business-dropdown-links-wrapper">
+                <ul class="dropdown-menu show" id="business-dropdown-links">
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
+                      Listings
+                    </router-link>
+                  </li>
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
+                      Inventory
+                    </router-link>
+                  </li>
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
+                      Catalogue
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </li>
 
-                  </router-link>
-                </li>
-                <li class="nav-item" v-if=actAsId>
-                  <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
-                               :to="'/businessProfile/' + actAsId" tabindex="2">
+            <!--notification-->
+            <li class="nav-item" style="float: contour; text-align: center; vertical-align:middle">
+              <div style="margin-top: 10px"
+                   type="button"
+                   @click="switchNotificationBox()">
+                <img v-if="newNotification"
+                     alt="notification"
+                     src="../../../public/notification.png"
+                     height="43"
+                     width="43"/>
+                <img v-else type="button"
+                     alt="notification"
+                     src="../../../public/notification_new.png"
+                     height="43"
+                     width="43"/>
+              </div>
+              <Notification v-if="openNotificationBox" style="position: absolute; right: 50px"/>
+            </li>
+          </ul>
 
-                    <div class="row">
-                      <div class="col-sm-5">
-                        <i class="side-nav-link-icon fas fa-user-alt"></i>
-                      </div>
-                      <div class="col-sm-1 side-nav-link-text">
-                        Profile
-                      </div>
-                    </div>
 
-                  </router-link>
-                </li>
-                <li class="nav-item">
-                  <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="3">
+          <ul class="navbar-nav flex-column flex-xl-row">
+            <!-- Interact As -->
+            <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}"
+                @keyup.enter="() => {toggleInteractAs()}">
+              <a class="" role="button">
+                <img src="../../../public/profile_icon_default.png" width="27px"
+                     class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
+              </a>
+            </li>
 
-                    <div class="row">
-                      <div class="col-sm-5">
-                        <i class="side-nav-link-icon fas fa-store"></i>
-                      </div>
-                      <div class="col-sm-1 side-nav-link-text">
-                        Marketplace
-                      </div>
-                    </div>
+          </ul>
 
-                  </router-link>
-                </li>
-
-                <!--- Business specific account links -->
-                <li class="nav-item dropdown" v-if="isActAsBusiness">
-
-                  <!-- Navbar toggle drop down -->
-                  <a class="nav-link dropdown-toggle" role="button" tabindex="4"
-                  @click="() => {toggleBusinessDropdown()}"
-                  @keyup.enter="() => {toggleBusinessDropdown()}">
-                    Business Pages
-                  </a>
-
-                  <!-- Dropdown links-->
-                  <div id="business-dropdown-links-wrapper">
-                    <ul class="dropdown-menu show" id="business-dropdown-links">
-                      <li class="nav-item">
-                        <router-link
-                            :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
-                            :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
-                          Listings
-                        </router-link>
-                      </li>
-                      <li class="nav-item">
-                        <router-link
-                            :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
-                            :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
-                          Inventory
-                        </router-link>
-                      </li>
-                      <li class="nav-item">
-                        <router-link
-                            :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
-                            :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
-                          Catalogue
-                        </router-link>
-                      </li>
-                    </ul>
-                  </div>
-
-                </li>
-
-                <!-- Log out link-->
-                <li class="nav-item">
-                  <a class="nav-link" style="cursor: pointer" tabindex="5" @click="e =>logout(e)" @keyup.enter="e =>logout(e)">
-
-                    <div class="row">
-                      <div class="col-sm-5">
-                        <i class="side-nav-link-icon fas fa-sign-out-alt"></i>
-                      </div>
-                      <div class="col-sm-1 side-nav-link-text">
-                        Logout
-                      </div>
-                    </div>
-
-                  </a>
-                </li>
-
-            </ul>
-
-            <ul class="navbar-nav flex-column flex-xl-row">
-              <!-- Interact As -->
-              <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
-                <a class="" role="button">
-                  <img src="../../../public/profile_icon_default.png" width="27px"
-                       class="rounded-circle img-fluid act-as-image actAsImg" alt="Acting as image"/>
-                </a>
-              </li>
-            </ul>
-
-            <ul class="no-space">
-              <div class="center" role="button" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
+          <ul class="no-space">
+            <li>
+              <div class="center" role="button" @click="() => {toggleInteractAs()}"
+                   @keyup.enter="() => {toggleInteractAs()}">
                 <div v-if="showOmitName">{{ actAsOmit }}</div>
                 <div v-else>{{ actAs }}</div>
               </div>
@@ -182,7 +146,7 @@
                         @click="itemClicked(index)">
                       <h6 class="ms-3" v-if="index===0"><br>User</h6>
                       <div v-else-if="index===1">
-                        <hr>
+                        <hr style="height:2px">
                         <h6 class="ms-3">Businesses</h6>
                       </div>
                       <a class="nav-link">{{ act.name }}</a>
@@ -193,75 +157,38 @@
                         @click="itemClicked(index)">
                       <h6 class="ms-3" v-if="index===0"><br>User</h6>
                       <div v-else-if="index===1">
-                        <hr>
+                        <hr class="line-separator">
                         <h6 class="ms-3">Businesses</h6>
                       </div>
                       <a class="nav-link">{{ act.name }}</a>
                     </li>
                   </div>
-
-                </ul>
-              </div>
-            </ul>
-
-          </div>
-
-          <!-- desktop version of nav bar -->
-          <div id="desktop-top-nav-id" class="navbar-inner-id-desktop navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
-
-            <ul class="navbar-nav flex-column flex-xl-row">
-              <!-- Interact As -->
-              <li id="interactDrop-desktop" tabindex="5" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
-                <a class="" role="button">
-                  <img src="../../../public/profile_icon_default.png" width="27px"
-                       class="rounded-circle img-fluid act-as-image actAsImg" alt="Acting as image"/>
-                </a>
-              </li>
-            </ul>
-
-            <ul class="no-space">
-              <div class="center" role="button" @click="() => {toggleInteractAs()}" @keyup.enter="() => {toggleInteractAs()}">
-                <div v-if="showOmitName">{{ actAsOmit }}</div>
-                <div v-else>{{ actAs }}</div>
-              </div>
-              <div id="interact-dropdown-links-wrapper-desktop">
-                <ul class="dropdown-menu show mb-1" id="interact-dropdown-links-desktop">
-
+                  <hr class="line-separator">
+                  <!-- Log out link-->
                   <li class="nav-item">
+                    <a class="nav-link" id="logout-btn" style="cursor: pointer; background-color: #fd5050;" @click="e =>logout(e)"
+                       @keyup.enter="e =>logout(e)">Log out</a>
                   </li>
-                  <div v-if="showOmitName">
-                    <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
-                        @click="itemClicked(index)">
-                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
-                      <div v-else-if="index===1">
-                        <hr>
-                        <h6 class="ms-3">Businesses</h6>
-                      </div>
-                      <a class="nav-link">{{ act.name }}</a>
-                    </li>
-                  </div>
-                  <div v-else>
-                    <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
-                        @click="itemClicked(index)">
-                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
-                      <div v-else-if="index===1">
-                        <hr>
-                        <h6 class="ms-3">Businesses</h6>
-                      </div>
-                      <a class="nav-link">{{ act.name }}</a>
-                    </li>
-                  </div>
-
                 </ul>
               </div>
-            </ul>
+            </li>
+          </ul>
 
-
-
+          <!------------------------------------- Admin Label ------------------------------->
+          <div>
+            <!-- These messages will appear for GAA accounts -->
+            <div class="admin-label" v-if="isGAA(role)">
+              Admin (GAA)
+            </div>
+            <!-- These messages will appear for DGAA accounts -->
+            <div class="admin-label" v-if="isDGAA(role)">
+              Admin (DGAA)
+            </div>
           </div>
+          <!--------------------------------------------------------------------------------->
 
+        </div>
       </div>
-
     </div>
 
   </nav>
@@ -270,9 +197,16 @@
 <script>
 import Cookies from "js-cookie";
 import Api from "../../Api"
+import Notification from "../../components/main/Notification";
+import {UserRole} from "../../configs/User";
+
+
 
 export default {
   name: "Navbar",
+  components: {
+    Notification
+  },
   props: {
     // Dictates the transition animation time
     msTransitionDelay: {
@@ -321,29 +255,76 @@ export default {
       maxNameLength: 30,
       omitPoint: 10,
 
+      // notice for new notifications
+      newNotification: false,
+      openNotificationBox: false,
+
+      // Admin rights
+      role: null,
     }
   },
 
   methods: {
+    // ---------------------------------------- Admin Rights --------------------------------
 
-    /**
-     *  Open the side nav bar if it is closed by setting the width of the side navigation to 250px and the left margin of the page content to 250px.
-     *  Close the side nav bar if it is open.
+    /** Given a role we test it against two of the possible admin roles. To determine if the role is of type admin.
+     * @param role - A given role of some user.
+     * @return {boolean} Returns true if the role is of type admin. Otherwise false.
      */
-    toggleSideNav() {
-      if (document.getElementById("side-nav-bar").style.width === "0px") {
-        document.getElementById("side-nav-bar").style.width = "250px";
-        document.getElementById("main").style.marginLeft = "250px";
-      } else {
-        this.closeSideNav();
-      }
+    hasAdminRights(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || role === UserRole.GLOBALAPPLICATIONADMIN;
     },
     /**
-     *  Set the width of the side navigation to 0 and the left margin of the page content to 0
+     * Determines whether a role is DGAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a DGAA. Otherwise return false.
      */
-    closeSideNav() {
-      document.getElementById("side-nav-bar").style.width = "0";
-      document.getElementById("main").style.marginLeft = "0";
+    isDGAA(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * Determines whether a role is GAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a GAA. Otherwise return false.
+     */
+    isGAA(role) {
+      return role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * get role of given id
+     */
+    getLoginRole(id) {
+      Api.getUser(id).then(response => (this.role = response.data.role))
+    },
+
+// ------------------------------------------------------------------------------------
+    /**
+     * switch Notification Box
+     */
+    switchNotificationBox() {
+      if (!this.openNotificationBox){
+        this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links',
+            'interact-dropdown-links-wrapper', true);
+        this.showBusinessDropdown = this.toggleDropdownAnimated('business-dropdown-links',
+            'business-dropdown-links-wrapper', true);
+      }
+      this.openNotificationBox = ! this.openNotificationBox;
+    },
+
+    /**
+     * update image for bell
+     */
+    updateNotificationState() {
+      Api.getNotifications()
+          .then(response => this.newNotification = (response.data.length === 0))
+          .catch((error) => {
+            if (error.status === 401) {
+              // Missing or invalid token
+              this.$router.push({path: '/invalidtoken'});
+            } else {
+              console.log(error)
+            }
+          });
     },
     /**
      * Toggle the interactAs menu dropdown
@@ -405,7 +386,7 @@ export default {
      * Animates a slide up and down on the height of an element and it's wrapper. This is used to make the dropdown
      * appear more nicely.
      * @param dropdownId - The id of the dropdown element.
-     * @param dropdownWrapperId - The id of the dropdown wrapper element.
+     * @param dropdownWrapperId - The ide of the dropdown wrapper element.
      * @param toggleVariable - The variable that the dropdown depends on.
      * @param preventToggle - Gives the option to prevent the variable from being toggled. This defaults to false.
      * @param minHeight - Gives the option to give a custom minimum height. But zero if a good default.
@@ -439,6 +420,7 @@ export default {
 
       }
 
+
       // So the toggle variable can be updated
       return toggleVariable;
     },
@@ -451,6 +433,8 @@ export default {
      * @param extraMaxPixels - Determines additional pixels to add to the maximum height.
      */
     toggleNavbar(preventToggle = false, extraMaxPixels = 0) {
+      // close notification box
+      this.openNotificationBox = false;
 
       // Only if the element exists
       if (document.getElementById("navbar-id")) {
@@ -491,8 +475,8 @@ export default {
        */
       event.preventDefault();
 
-      Cookies.remove('userID');
-      Cookies.remove('actAs');
+      Cookies.remove('userID', {sameSite: 'strict'});
+      Cookies.remove('actAs', {sameSite: 'strict'});
 
       Api.signOut().then(() => {
         this.$router.push({name: 'Login'})
@@ -568,26 +552,18 @@ export default {
           'interact-dropdown-links-wrapper', this.showInteractMenu)
       if (index === 0) {
         // Delete Cookie
-        Cookies.remove('actAs');
-        this.isActAsBusiness = false;
-        //
-        this.actAsId = null;
-        if (this.currentUser.nickname) {
-          this.actAs = this.currentUser.nickname;
-        } else {
-          this.actAs = this.currentUser.firstName;
-        }
+        Cookies.remove('actAs', {sameSite: 'strict'});
+        this.$router.go();
       } else {
-        this.thumbnail = null;
-        Cookies.set('actAs', this.interactAs[index].id);
-        this.businessAccountId = this.interactAs[index].id;
-        this.isActAsBusiness = true;
-        this.actAsId = this.interactAs[index].id;
-        this.actAs = this.interactAs[index].name;
+        // Set Cookie
+        Cookies.set('actAs', this.interactAs[index].id, {sameSite: 'strict'});
+        // Checks if business is allowed on page
+        if (this.canGoToPage()) {
+          this.$router.go();
+        } else {
+          this.$router.push({name: "BusinessProfile", params: {id: this.interactAs[index].id}})
+        }
       }
-      this.actAs = this.omitName(this.actAs, this.maxNameLength)
-      this.actAsOmit = this.omitName(this.actAs, this.omitPoint)
-      this.$router.go();
     },
     setCurUser(response) {
       this.currentUser = response;
@@ -607,7 +583,7 @@ export default {
         }
         // If user not admin of business removes cookie
         if (check === false) {
-          Cookies.remove('actAs');
+          Cookies.remove('actAs', {sameSite: 'strict'});
           this.actAsId = null;
           if (response.nickname == null) {
             this.actAs = response.firstName;
@@ -634,6 +610,13 @@ export default {
     },
     onResize() {
       this.toggleNavbar(true);
+    },
+    /**
+     * T/F When user is acting as a business checks user is allowed on page
+     * NOTE: Currently just Marketplace
+     */
+    canGoToPage() {
+      return this.$route.name !== "Marketplace";
     }
   },
   beforeMount() {
@@ -643,9 +626,26 @@ export default {
     }
     this.businessAccountId = Cookies.get("actAs");
     this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
-    this.showOmitName = (this.screenWidth > 780);
+    this.showOmitName = (this.screenWidth > 1200);
+
+    // This is for using URL when acting as
+    if (this.isActAsBusiness) {
+      if (!this.canGoToPage()) {
+        this.$router.push({name: "BusinessProfile", params: {id: this.businessAccountId}})
+      }
+    }
+
+    // update notifications
+    this.updateNotificationState();
   },
   mounted() {
+
+    const currentID = Cookies.get('userID');
+
+    if (currentID) {
+      this.getLoginRole(currentID);
+    }
+
     this.getUserData();
 
     // Sample the navbar max height at mounting
@@ -687,8 +687,11 @@ export default {
         this.timer = true
         let that = this
         setTimeout(function () {
+          // close notification box
+          that.openNotificationBox = false;
+
           // change the display name
-          if (that.screenWidth >= 780) {
+          if (that.screenWidth >= 1200) {
             that.showOmitName = true;
           } else {
             that.showOmitName = false;
@@ -706,19 +709,24 @@ export default {
 <style scoped>
 
 .no-space {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
 /* Styling for smaller screen sizes begins */
 
-#top-nav-bar-id {
-  justify-content: end;
+#logout-btn {
+  background-color: #fd5050;
+}
+
+#logout-btn:hover, #logout-btn:focus {
+  background: #ef5e33;
+  outline: none;
+  cursor: pointer;
 }
 
 .logo-container {
   position: center;
-  margin-right: 0;
 }
 
 #logo-image-nav {
@@ -738,8 +746,8 @@ export default {
   align-items: center;
   max-width: 100%;
   height: auto;
-  margin-left: 0px;
-  padding-left: 0px;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 #interactDrop a {
@@ -768,13 +776,6 @@ export default {
   outline: none;
 }
 
-.company-name-main-position-nav {
-
-  /* centre text */
-  margin: 0;
-  position: absolute;
-}
-
 .nav-link {
   color: white;
   background: #19b092;
@@ -791,12 +792,11 @@ export default {
   cursor: pointer;
 }
 
-.navbar-toggler, #side-nav-bar-open-btn {
+.navbar-toggler {
   color: rgba(25, 176, 146, 0.55);
   border-color: rgba(0, 0, 0, 0.2);
   border-width: 2px;
   border-radius: 0.6rem;
-  background-color: white;
 }
 
 .navbar-toggler-icon {
@@ -817,80 +817,22 @@ export default {
 }
 
 .dropdown-menu {
-  position: static;
   border-right-width: 0;
   border-left-width: 0;
   padding: 0 5rem;
-  /* margin: 1.2rem 0; Margins cannot be calculated in pixels :( */
 }
 
-.company-name-main-font {
-  font-family: 'Merriweather Sans', sans-serif;
-  font-size: 26px;
-  position: absolute;
-  line-height: 40px;
+.admin-label {
+  background-color: #fd5050;
+  color: white;
+  border-radius: 6px;
+  padding: 6px;
+  max-width: 120px;
+  margin:12px auto
 }
 
-#side-nav-bar-open-btn {
-  display: none;
-}
-
-/*Hide desktop navigation since in mobile mode*/
-desktop-top-nav-id {
-  visibility: hidden;
-}
-
-/* Apply these styles once we increase window size to >= 780px i.e. change from mobile to desktop version*/
-@media (min-width: 780px) {
-
-  navbar-inner-id {
-    visibility: hidden;
-  }
-
-  desktop-top-nav-id {
-    visibility: unset;
-  }
-
-  .company-name-main-font {
-    font-family: 'Merriweather Sans', sans-serif;
-    font-size: 40px;
-    position: absolute;
-    line-height: 50px;
-  }
-
-  #side-nav-bar-open-btn {
-    display: unset;
-  }
-
-  .navbar-toggler {
-    display: none;
-  }
-
-  #interactDrop {
-    background-color: red;
-    display: flex;
-    flex-flow: column wrap;
-    align-items: center;
-    max-width: 100%;
-    height: auto;
-    margin-left: 0px;
-    padding-left: 0px;
-  }
-
-  #interactDrop a {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 40px;
-  }
-
-  .act-as-image {
-    height: 55px;
-    width: auto;
-    border: 1px lightgrey solid;
-  }
-
+.line-separator {
+  height:2px
 }
 
 @media (min-width: 250px) {
@@ -898,6 +840,7 @@ desktop-top-nav-id {
     padding-inline: 15px;
     text-align: center;
   }
+
 }
 
 @media (min-width: 350px) {
@@ -905,6 +848,7 @@ desktop-top-nav-id {
     padding-inline: 15px;
     text-align: center;
   }
+
 }
 
 @media (min-width: 400px) {
@@ -912,6 +856,7 @@ desktop-top-nav-id {
     padding-inline: 15px;
     text-align: center;
   }
+
 }
 
 @media (min-width: 450px) {
@@ -919,7 +864,93 @@ desktop-top-nav-id {
     padding-inline: 15px;
     text-align: center;
   }
+
 }
 
+/*-------------------------------------------- Large break point styling ------------------------------------------*/
+
+/* Styling for smaller screen sizes ends */
+
+/* Styling for larger screen sizes begins */
+/*xl Break point*/
+@media (min-width: 1200px) {
+
+  .center {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+  #logo-image-nav {
+    max-width: 120px;
+    margin-left: 28px;
+    margin-right: 10px;
+    width: 100%;
+  }
+
+  #navbar-id {
+    overflow: visible;
+  }
+
+  #actAsImg {
+    float: left;
+  }
+
+  #business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {
+    position: absolute;
+  }
+
+  .navbar-expand-xl .navbar-nav .dropdown-menu {
+    padding: 0;
+    margin: 0;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    position: unset;
+  }
+
+  .navbar-expand-xl .navbar-nav .nav-link {
+    margin: 10px;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  #interact-dropdown-links-wrapper {
+    width: auto;
+  }
+
+
+  #interactDrop {
+    max-width: 180px;
+    padding-left: 1em;
+  }
+
+  #interactDrop a {
+    padding: unset;
+    padding: 0.4rem 0rem
+  }
+
+
+}
+
+/*------------------------------------------ Extra Large break point styling -----------------------------------------*/
+
+@media (min-width: 1400px) {
+
+  .center {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+  #logo-image-nav {
+    max-width: 140px;
+    margin-left: -58px;
+    margin-right: 10px;
+    width: 100%;
+  }
+
+}
 
 </style>

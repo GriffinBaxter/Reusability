@@ -15,9 +15,11 @@ import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalProductArgumentException;
+import org.seng302.view.outgoing.ProductPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Class for products
@@ -38,6 +40,9 @@ public class Product {
     @JoinColumn(name = "business_id", insertable = false, updatable = false)
     private Business business;
 
+    @OneToMany(mappedBy = "product")
+    private List<Image> images;
+
     @Id
     @Column(name = "business_id")
     private Integer businessId;
@@ -56,6 +61,9 @@ public class Product {
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
+
+    @Column(name = "barcode")
+    private String barcode;
 
     private static final Logger logger = LogManager.getLogger(Product.class.getName());
 
@@ -84,7 +92,7 @@ public class Product {
      * @param description The description of the product (optional).
      * @param manufacturer The manufacturer of the product (optional).
      * @param recommendedRetailPrice The recommended retail price (RRP) of the product (optional).
-     * @param created The date and time the product was created.
+     * @param barcode The barcode of the product. It must be either EAN-13 or UPC.
      * @throws IllegalProductArgumentException Validation exception.
      */
     public Product(String id,
@@ -93,7 +101,7 @@ public class Product {
                    String description,
                    String manufacturer,
                    Double recommendedRetailPrice,
-                   LocalDateTime created
+                   String barcode
     ) throws IllegalProductArgumentException {
         if (!isValidProductId(id)) {
             logger.error("Product Creation Error - Product ID {} is not valid", id);
@@ -115,9 +123,13 @@ public class Product {
             logger.error("Product Creation Error - Manufacturer {} is not valid", manufacturer);
             throw new IllegalProductArgumentException("Invalid manufacturer");
         }
-        if (created == null) {
-            logger.error("Product Creation Error - Created (Date-Time) is null");
-            throw new IllegalProductArgumentException("Invalid date");
+        if (!isValidRecommendedRetailPrice(recommendedRetailPrice)) {
+            logger.error("Product Creation Error -  Recommended Retail Price {} is not valid", recommendedRetailPrice);
+            throw new IllegalProductArgumentException("Invalid recommended retail price");
+        }
+        if (!isValidBarcode(barcode)) {
+            logger.error("Product Creation Error - Barcode {} is not valid", barcode);
+            throw new IllegalProductArgumentException("Invalid barcode checksum");
         }
         this.id = id;
         this.business = business;
@@ -126,7 +138,8 @@ public class Product {
         this.description = (description.equals("")) ? null : description;
         this.manufacturer = (manufacturer.equals("")) ? null : manufacturer;
         this.recommendedRetailPrice = recommendedRetailPrice;
-        this.created = created;
+        this.created = LocalDateTime.now();
+        this.barcode = (barcode.equals("")) ? null : barcode;
     }
 
     // Getters
@@ -159,6 +172,12 @@ public class Product {
         return created;
     }
 
+    /**
+     * Get the barcode of the product.
+     * @return a string representation of an EAN-13 or UPC barcode.
+     */
+    public String getBarcode() { return barcode; }
+
     // Setters
 
     public void setProductId(String id) {
@@ -169,24 +188,96 @@ public class Product {
         this.businessId = businessId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Change the name of the product.
+     * Note: The name is a required field.
+     *       It is assumed name is not null.
+     * @param name a string representing the name of the product.
+     */
+    public void setName(String name) throws IllegalProductArgumentException {
+        if (isValidName(name)) {
+            this.name = name;
+        } else {
+            throw new IllegalProductArgumentException("Invalid product name");
+        }
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * Change the description of the product.
+     * Note: The description is an optional field.
+     *       It is assumed description is not null.
+     * @param description a string representing the description of the product
+     */
+    public void setDescription(String description) throws IllegalProductArgumentException {
+        if (isValidDescription(description)) {
+            this.description = description;
+        } else {
+            throw new IllegalProductArgumentException("Invalid product description");
+        }
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
+    /**
+     * Change the manufacturer of the product.
+     * Note: The manufacturer is an optional field, and can contain diacritics, symbols,
+     *       and a selected number of symbols.
+     *       It is assumed manufacturer is not null.
+     * @param manufacturer a string representing the name of the business which makes this product.
+     */
+    public void setManufacturer(String manufacturer) throws IllegalProductArgumentException {
+        if (isValidManufacturer(manufacturer)) {
+            this.manufacturer = manufacturer;
+        } else {
+            throw new IllegalProductArgumentException("Invalid manufacturer");
+        }
     }
 
-    public void setRecommendedRetailPrice(Double recommendedRetailPrice) {
-        this.recommendedRetailPrice = recommendedRetailPrice;
+    /**
+     * Change the RRP of the product.
+     * Note: The RRP must be a double >= 0 and <= Positive Infinity.
+     *       The units/currency of the RRP is based on the country the business is located in.
+     *       It is assumed RRP is not null.
+     * @param recommendedRetailPrice a double representing the price of the product.
+     */
+    public void setRecommendedRetailPrice(Double recommendedRetailPrice) throws IllegalProductArgumentException {
+        if (isValidRecommendedRetailPrice(recommendedRetailPrice)) {
+            this.recommendedRetailPrice = recommendedRetailPrice;
+        } else {
+            throw new IllegalProductArgumentException("Invalid recommended retail price");
+        }
     }
 
     public void setCreated(LocalDateTime created) {
         this.created = created;
+    }
+
+    /**
+     * Converts a Product to a ProductPayload
+     * @return ProductPayload of the product
+     */
+    public ProductPayload convertToPayload() throws Exception {
+        return new ProductPayload(id,
+                name,
+                description,
+                manufacturer,
+                recommendedRetailPrice,
+                created,
+                images,
+                business.toBusinessPayload(),
+                barcode);
+    }
+
+    /**
+     * Change the barcode of the product.
+     * Note: The barcode must be a valid EAN-13 or UPC barcode.
+     *       It is assumed that barcode is not null.
+     * @param barcode a string representation of the barcode.
+     */
+    public void setBarcode(String barcode) throws IllegalProductArgumentException {
+        if (isValidBarcode(barcode)) {
+            this.barcode = barcode;
+        } else {
+            throw new IllegalProductArgumentException("Invalid barcode checksum");
+        }
     }
 
     /* --------------------------------------------------Validation-------------------------------------------------- */
@@ -222,6 +313,7 @@ public class Product {
      * @return true when the description is valid
      */
     private boolean isValidDescription(String description) {
+        if (description == null) { return true; } // optional
         return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 
@@ -232,9 +324,71 @@ public class Product {
      * @return true when the manufacturer name is valid
      */
     private boolean isValidManufacturer(String manufacturer) {
+        if (manufacturer == null) { return true; } // optional
         return (manufacturer.length() >= MANUFACTURER_MIN_LENGTH) &&
                 (manufacturer.length() <= MANUFACTURER_MAX_LENGTH) &&
                 (manufacturer.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]*$"));
+    }
+
+    /**
+     * Checks to see whether a recommendedRetailPrice is valid based on its constraints.
+     * This method can be updated in the future if there is additional constraints.
+     * @param recommendedRetailPrice Recommended retail price to be checked.
+     * @return true when the recommendedRetailPrice is valid. Otherwise false.
+     */
+    private boolean isValidRecommendedRetailPrice(Double recommendedRetailPrice) {
+        if (recommendedRetailPrice == null) { return true; } // as RRP is optional
+        return RECOMMENDED_RETAIL_PRICE_MINIMUM <= recommendedRetailPrice &&
+                recommendedRetailPrice <= RECOMMENDED_RETAIL_PRICE_MAXIMUM;
+    }
+
+    /**
+     * Checks to see whether a barcode is valid using its check digit.
+     *
+     * A barcode is not a required field therefore it can be empty.
+     * A barcode string must only contain numbers.
+     * A barcode can only have a length of 12 or 13, since we only support
+     * UPC-A (12 digits) and EAN-13 (13 digits)
+     *
+     * This method can be updated in the future if there is additional constraints.
+     * @param barcode The barcode to be checked.
+     * @return true when the barcode is valid.
+     */
+    private boolean isValidBarcode(String barcode) {
+        // barcode is not a required field
+        if (barcode == null || barcode.length() == 0) { return true; }
+        // check barcode is numeric
+        if (!barcode.matches("[0-9]+")) {
+            return false;
+        }
+
+        // pad with zeros to lengthen to 14 digits, so check digit operation can be performed.
+        switch (barcode.length()) {
+            case 12:
+                // UPC-A barcode
+                barcode = "00" + barcode;
+                break;
+            case 13:
+                // EAN-13 barcode
+                barcode = "0" + barcode;
+                break;
+            default:
+                // Incorrect barcode, since it has the wrong amount of digits
+                return false;
+        }
+        // check digit operation
+        int sum = 0;
+        for (int i = 0; i < (barcode.length() - 1); i++) {
+            int charAsInt = Character.getNumericValue(barcode.charAt(i));
+            // even parity
+            if (i % 2 == 0) {
+                sum += charAsInt * 3;
+            } else
+                sum += charAsInt;
+        }
+        int check = (10 - (sum % 10)) % 10;
+        int checkDigit = Character.getNumericValue(barcode.charAt(barcode.length() - 1));
+        return check == checkDigit;
     }
 
 }

@@ -141,8 +141,8 @@
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
                         @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                         tabindex="8">
-                    <i v-if="!showPassword" class="fas fa-eye"></i>
-                    <i v-else class="fas fa-eye-slash"></i>
+                    <i v-if="!showPassword" class="fas fa-eye" aria-hidden="true"></i>
+                    <i v-else class="fas fa-eye-slash" aria-hidden="true"></i>
                     </span>
 
                   <div class="invalid-feedback">
@@ -580,7 +580,7 @@ export default {
      * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
      */
     getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = ""; //TODO: remove after testing and just have ""
+      let errorMessage = "";
       if (inputVal === "" && minLength >= 1) {
         errorMessage = "Please enter input";
       }
@@ -886,11 +886,11 @@ export default {
        */
       Api.addNewUser(user
       ).then( (res) => {
-            Cookies.remove('actAs');
+            Cookies.remove('actAs', { sameSite: 'strict' });
             if (res.status === 201) {
               const {userId} = res.data;
               if (userId) {
-                Cookies.set('userID', userId);
+                Cookies.set('userID', userId, { sameSite:'strict'});
                 this.$router.push('/profile');
               }
             }

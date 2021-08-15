@@ -7,13 +7,10 @@ import io.cucumber.java.en.When;
 import org.seng302.model.Address;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
-import org.seng302.model.repository.AddressRepository;
+import org.seng302.model.repository.*;
 import org.seng302.controller.MarketplaceCardResource;
 import org.seng302.model.*;
 import org.seng302.controller.UserResource;
-import org.seng302.model.repository.KeywordRepository;
-import org.seng302.model.repository.MarketplaceCardRepository;
-import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -36,6 +33,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+/**
+ * Card creation step definitions class
+ */
 public class CardCreationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
@@ -60,11 +60,17 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordRepository keywordRepository;
 
+    @Autowired
+    @MockBean
+    private MarketCardNotificationRepository marketCardNotificationRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
     private Address address;
     private MarketplaceCard card;
+    private Keyword keyword;
+    private Keyword anotherKeyword;
 
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
             "\"password\": \"%s\"}";
@@ -74,7 +80,7 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
             "\"section\":\"%s\"," +
             "\"title\":\"%s\"," +
             "\"description\":\"%s\"," +
-            "\"keywords\":%s}";
+            "\"keywordIds\":%s}";
 
     private String cardPayloadJson;
 
@@ -85,7 +91,11 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
         keywordRepository = mock(KeywordRepository.class);
 
         this.cardMVC = MockMvcBuilders.standaloneSetup(new MarketplaceCardResource(
-                marketplaceCardRepository, userRepository, keywordRepository)).build();
+                marketplaceCardRepository,
+                userRepository,
+                keywordRepository,
+                marketCardNotificationRepository
+        )).build();
         this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
@@ -115,6 +125,12 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
                 Role.GLOBALAPPLICATIONADMIN);
         user.setId(1);
 
+        keyword = new Keyword("First", LocalDateTime.now());
+        keyword.setId(1);
+
+        anotherKeyword = new Keyword("Second", LocalDateTime.now());
+        anotherKeyword.setId(2);
+
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         response = userMVC.perform(post("/login")
@@ -123,8 +139,6 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
                 .andReturn().getResponse();
 
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, user.getId()));
-        assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
-        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(3600);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -140,9 +154,10 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
         );
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findById(keyword.getId())).willReturn(Optional.ofNullable(keyword));
 
         cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
-                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+                card.getDescription(), "[" + keyword.getId() + "]");
 
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
@@ -167,9 +182,10 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
         );
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findById(keyword.getId())).willReturn(Optional.ofNullable(keyword));
 
         cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
-                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+                card.getDescription(), "[" + keyword.getId() + "]");
 
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
@@ -195,9 +211,10 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
         );
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findById(keyword.getId())).willReturn(Optional.ofNullable(keyword));
 
         cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
-                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+                card.getDescription(), "[" + keyword.getId() + "]");
 
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
@@ -222,10 +239,11 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
         );
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findById(keyword.getId())).willReturn(Optional.ofNullable(keyword));
 
         // Empty string for no title.
         cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), "",
-                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
+                card.getDescription(), "[" + keyword.getId() + "]");
 
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
@@ -251,37 +269,11 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
         );
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findById(keyword.getId())).willReturn(Optional.ofNullable(keyword));
+        given(keywordRepository.findById(anotherKeyword.getId())).willReturn(Optional.ofNullable(anotherKeyword));
 
         cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
-                card.getDescription(), "[\"Party\", \"Celebrate\", \"Happy\"]");
-
-        given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
-                card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());
-
-        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-        when(marketplaceCardRepository.save(any(MarketplaceCard.class))).thenReturn(card);
-        response = cardMVC.perform(post("/cards")
-                .contentType(MediaType.APPLICATION_JSON).content(cardPayloadJson)
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn().getResponse();
-    }
-
-    @When("I create a card with a keyword that is {int} characters long.")
-    public void iCreateACardWithAKeywordThatIs_CharactersLong(Integer lengthKeyword) throws Exception {
-        card = new MarketplaceCard(
-                user.getId(),
-                user,
-                Section.EXCHANGE,
-                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
-                "Hayley's Birthday",
-                "Come join Hayley and help her celebrate her birthday!"
-        );
-
-        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-
-        String keyword = "H".repeat(lengthKeyword);
-        cardPayloadJson = String.format(cardPayloadJsonFormat, card.getCreatorId(), card.getSection(), card.getTitle(),
-                card.getDescription(), "[\"Party\", \"Celebrate\", \"" + keyword + "\"]");
+                card.getDescription(), "[" + keyword.getId() + ", " + anotherKeyword.getId() + "]");
 
         given(marketplaceCardRepository.findMarketplaceCardByCreatorIdAndSectionAndTitleAndDescription(
                 card.getCreatorId(), card.getSection(), card.getTitle(), card.getDescription())).willReturn(Optional.empty());

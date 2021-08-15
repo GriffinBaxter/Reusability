@@ -9,12 +9,12 @@ public class KeywordPayload {
 
     private Integer id;
     private String name;
-    private LocalDateTime created;
+    private String created;
 
     public KeywordPayload (Integer id, String name, LocalDateTime created) {
         this.id = id;
         this.name = name;
-        this.created = created;
+        this.created = created.toString();
     }
 
     /**
@@ -37,7 +37,7 @@ public class KeywordPayload {
      * Retrieve the date and time the keyword was created.
      * @return the date and time the keyword was created.
      */
-    public LocalDateTime getCreated() {
+    public String getCreated() {
         return created;
     }
 
@@ -48,8 +48,8 @@ public class KeywordPayload {
     @Override
     public String toString() {
         return "{" +
-                "\"id\":\"" + id + "\"," +
-                "\"name\":\"" + name + "," +
+                "\"id\":" + id + "," +
+                "\"name\":\"" + name + "\"," +
                 "\"created\":\"" + created + "\"" +
                 "}";
     }

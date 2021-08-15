@@ -11,9 +11,3 @@ export default {
   name: "NoSuchUser"
 }
 </script>
-
-<!---------------------------------------- Non-existent User Page Styling --------------------------------------------->
-
-<style scoped>
-
-</style>

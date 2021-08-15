@@ -1,52 +1,60 @@
 <template>
-  <div class="container" :id="tableId">
-    <!-- Table data Headers-->
-    <div class="row mb-3">
-      <div :class="`col py-3 header-col col-hover rounded-3 text-center ${headerIndex > 0 ? 'ms-2' : ''}`"
-           :key="headerIndex" v-for="(header, headerIndex) in tableHeaders" :tabindex="tableTabIndex"
-           @click="() => handleHeaderClick(headerIndex)" @keydown="event => handleHeaderKeyDown(event, headerIndex)" style="cursor: pointer; user-select: none; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none;">
-        <!-- Header name -->
-        <div class="fw-bold" v-if="orderBy === headerIndex">
-          <span v-html="header"></span>
-          <!-- Header icon-->
+  <div class="container" :id="tableId" style="overflow-x: auto">
+    <!-- Table data wrapper-->
+    <div style="min-width: 45em">
+      <!-- Table data Headers-->
+      <div class="row mb-3 flex-nowrap">
+        <div :class="`col py-3 header-col col-hover rounded-3 text-center ${headerIndex > 0 ? 'ms-2' : ''}`"
+             :key="headerIndex" v-for="(header, headerIndex) in tableHeaders" :tabindex="tableTabIndex"
+             @click="() => handleHeaderClick(headerIndex)" @keydown="event => handleHeaderKeyDown(event, headerIndex)" style="cursor:
+             pointer; user-select: none; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none">
+          <!-- Header name -->
+          <div class="fw-bold d-inline-block" v-if="orderBy === headerIndex">
+            <span v-html="header"></span>
+            <!-- Header icon-->
 
-          <!-- Seems to be an issue with the icons from Font-Awesome and Boostrap with the shevron so I grabbed the direct SVG definition from Boostrap. -->
-          <svg :id="`${tableId}-header-${headerIndex}-icon`" v-if="isAscending"
-               xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
-          </svg>
+            <!-- Seems to be an issue with the icons from Font-Awesome and Boostrap with the shevron so I grabbed the direct SVG definition from Boostrap. -->
+            <svg :id="`${tableId}-header-${headerIndex}-icon`" v-if="isAscending"
+                 xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+            </svg>
 
-          <!-- Seems to be an issue with the icons from Font-Awesome and Boostrap with the shevron so I grabbed the direct SVG definition from Boostrap. -->
-          <svg :id="`${tableId}-header-${headerIndex}-icon`" v-else
-               xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-          </svg>
+            <!-- Seems to be an issue with the icons from Font-Awesome and Boostrap with the shevron so I grabbed the direct SVG definition from Boostrap. -->
+            <svg :id="`${tableId}-header-${headerIndex}-icon`" v-else
+                 xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+            </svg>
+          </div>
+          <div v-html="header" class="fw-bold" v-else></div>
         </div>
-        <div v-html="header" class="fw-bold" v-else></div>
       </div>
-    </div>
 
-    <!-- Table data rows -->
-    <div v-if="dataIsReady">
-        <!-- The @click and @keydown are used to trigger events for the parent to be informed that the element row was pressed.-->
-        <div :class="`row mb-3 py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex" style="cursor: pointer"
-             @click="() => handleRowClick(rowIndex)" @keydown="(event) => handleRowKeyDown(event, rowIndex)"
-             v-for="(row, rowIndex) in currentPageRows" :key="`${tableId}-row-${rowIndex}`">
+      <!-- Table data rows -->
+      <div v-if="dataIsReady && !loadingData">
+          <!-- The @click and @keydown are used to trigger events for the parent to be informed that the element row was pressed.-->
+          <div :class="`row py-4 shadow-sm productRows row-colour`" :tabindex="tableTabIndex" style="cursor: pointer; min-height: 7em; align-items: center; margin-bottom: 1em"
+               @click="() => handleRowClick(rowIndex)" @keydown="(event) => handleRowKeyDown(event, rowIndex)"
+               v-for="(row, rowIndex) in currentPageRows" :key="`${tableId}-row-${rowIndex}`">
 
-          <!-- Column-row data point -->
-          <div class="col text-center" v-for="(dataPoint, dataPointIndex) in row" :key="`${tableId}-data-point-${rowIndex}-${dataPointIndex}`">
-            {{dataPoint}}
+            <!-- Column-row data point -->
+            <div class="col text-center" v-for="(dataPoint, dataPointIndex) in row" :key="`${tableId}-data-point-${rowIndex}-${dataPointIndex}`">
+              {{dataPoint}}
+            </div>
           </div>
 
-        </div>
+          <!-- Adds extra rows to maintain table size -->
+          <div v-if="currentPageRows.length < maxRowsPerPage">
+            <!-- The index is equal to that because, we would have duplicates otherwise with the rows.-->
+            <div v-for="index in maxRowsPerPage - currentPageRows.length" :key="`${tableId}-row-${index + currentPageRows.length}`" :class="`row py-4 shadow-sm productRows row-colour`" style="min-height: 7em; margin-bottom: 1em"></div>
+          </div>
 
+      </div>
+
+      <!-- Show a loading icon when the data is not ready -->
+      <div v-else class="text-center d-flex justify-content-center align-items-center" :style="`min-height: ${maxRowsPerPage*8}em`">
+        <div class="spinner-grow mx-1" v-for="index in 3" :key="'spinner-'+index" />
+      </div>
     </div>
-
-    <!-- Show a loading icon when the data is not ready -->
-    <div v-else class="text-center">
-      <div class="spinner-border spinner-border-sm"></div>
-    </div>
-
 
     <!-- Table footer -->
     <div :id="`${tableId}-footer-row`" class="row flex-column-reverse flex-lg-row">
@@ -150,6 +158,13 @@ export default {
       type: Number,
       required: false,
       default() { return null; }
+    },
+
+    // loading icon override
+    loadingData: {
+      type: Boolean,
+      required: false,
+      default() { return null}
     },
 
     // Allows the parent class to override to update the orderBy.
@@ -332,7 +347,7 @@ export default {
         this.currentPage = this.currentPageOverride;
       }
 
-      if (this.totalPages > 0 && this.currentPage > this.totalPages){
+      if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
         this.$router.push({path: '/pageDoesNotExist'});
       }
 
@@ -363,7 +378,7 @@ export default {
       // Prases the raw stream of tabke data and converts it into lists of rows.
       for (let i = 0; i < numberOfDataPoints; i++) {
 
-        let dataPoint = this.nullStringValue ;
+        let dataPoint = this.nullStringValue;
 
         // If the value is accessable and not null we set the data point to the value. Otherwise to the nullTableValue.
         if (i < this.tableData.length) {

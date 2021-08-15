@@ -1,8 +1,6 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.enums.Section;
-import org.seng302.view.outgoing.KeywordPayload;
-import org.seng302.view.outgoing.UserPayloadSecure;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -73,13 +71,13 @@ public class MarketplaceCardPayload {
     @Override
     public String toString() {
         return "{\"id\":" + id +
-                ",\"creator\":\"" + creator.toString() + "\"" +
+                ",\"creator\":" + creator.toString() +
                 ",\"section\":\"" + section + "\"" +
                 ",\"created\":\"" + created + "\"" +
                 ",\"displayPeriodEnd\":\"" + displayPeriodEnd + "\"" +
                 ",\"title\":\"" + title + "\"" +
                 ",\"description\":\"" + description + "\"" +
-                ",\"keywords\":\"" + keywords + "\"" +
+                ",\"keywords\":" + keywords +
                 "}";
     }
 }

@@ -9,6 +9,13 @@ export default class Product {
             regex: /^[A-Z0-9-]+$/,
             regexMessage: "Must only contain uppercase alphanumeric characters, numbers, or -",
         },
+        barcode: {
+            name: "Product barcode",
+            minLength: 12,
+            maxLength: 13,
+            regex: /^[0-9-]+$/,
+            regexMessage: "Must only contain numbers"
+        },
         productName: {
             name: "Product name",
             minLength: 1,
@@ -35,16 +42,21 @@ export default class Product {
             regex: /^(?:[1-9]\d*|0)?(?:\.\d+)?$/,
             regexMessage: "Must be a positive double precision floating point number e.g 1.00"
         },
+        images: {
+            name: "Images"
+        }
     };
 
-    constructor({id, name, description, manufacturer, recommendedRetailPrice, created}) {
+    constructor({id, barcode, name, description, manufacturer, recommendedRetailPrice, created, images}) {
         this.data = {
             id,
+            barcode,
             name,
             description,
             manufacturer,
             recommendedRetailPrice,
-            created
+            created,
+            images
         }
 
     }

@@ -105,6 +105,7 @@ class FindProductsByBusinessIdTests {
         businessId = business.getId();
         entityManager.flush();
 
+
         product1 = new Product(
                 "APPLE",
                 business,
@@ -112,9 +113,10 @@ class FindProductsByBusinessIdTests {
                 "A Description",
                 "Manufacturer",
                 21.00,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
+        product1.setCreated((LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0, 0))));
+
         product2 = new Product(
                 "APP-LE",
                 business,
@@ -122,9 +124,10 @@ class FindProductsByBusinessIdTests {
                 "Description",
                 "A Manufacturer",
                 20.00,
-                LocalDateTime.of(LocalDate.of(2020, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
+        product2.setCreated((LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0, 0))));
+
         product3 = new Product(
                 "APP-LE3",
                 business,
@@ -132,9 +135,10 @@ class FindProductsByBusinessIdTests {
                 "Description",
                 "A Manufacturer",
                 null,
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
+        product3.setCreated((LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0, 0))));
+
         product4 = new Product(
                 "DUCT",
                 business,
@@ -142,9 +146,10 @@ class FindProductsByBusinessIdTests {
                 "Brand new Description",
                 "A New Manufacturer",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 1),
-                        LocalTime.of(0, 0))
+                ""
         );
+        product4.setCreated(LocalDateTime.of(LocalDate.of(2021, 2, 1), LocalTime.of(0, 0)));
+
         product5 = new Product(
                 "PROD",
                 business,
@@ -152,9 +157,10 @@ class FindProductsByBusinessIdTests {
                 "New Description",
                 "",
                 10.00,
-                LocalDateTime.of(LocalDate.of(2021, 2, 1),
-                        LocalTime.of(1, 0))
+                ""
         );
+        product5.setCreated(LocalDateTime.of(LocalDate.of(2021, 2, 1), LocalTime.of(1, 0)));
+
         searchProducts = List.of(product1, product2, product3, product4, product5);
         for (Product product: searchProducts) {
             entityManager.persist(product);
@@ -565,7 +571,7 @@ class FindProductsByBusinessIdTests {
     void whenFindAllProductsByBusinessId_thenReturnPageHalfFull() {
         // given
         int pageNo = 0;
-        // Page size 20 means page will be half full with the default 13 users inserted
+        // Page size 10 means page will be half full with the default 5 products inserted
         int pageSize = 10;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
