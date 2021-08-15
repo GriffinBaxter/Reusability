@@ -334,4 +334,11 @@ export default {
             withCredentials: true
         })
     },
+
+    // Retrieve the bookmarked messages
+    getBookmarkedMessage: () => {
+        return instance.get(`/home/bookmarkMessages`, {
+            withCredentials: true
+        })
+    },
 }
