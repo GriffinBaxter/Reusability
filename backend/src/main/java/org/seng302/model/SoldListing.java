@@ -2,6 +2,7 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.seng302.view.outgoing.SoldListingPayload;
 
 import javax.persistence.*;
@@ -69,5 +70,22 @@ public class SoldListing {
      */
     public SoldListingPayload toSoldListingPayload() throws Exception {
         return new SoldListingPayload(id, customer.toUserPayloadSecure(), productId, quantity, price, bookmarks, listingDate.toString(), saleDate.toString());
+    }
+
+    /**
+     * Overridden for debugging and testing purposes.
+     * @return The JSON format of the sold listing
+     */
+    @SneakyThrows
+    @Override
+    public String toString() {
+        return  "{\"id\":" + id +
+                ",\"user\":" + customer.toUserPayloadSecure() +
+                ",\"productId\":" + productId +
+                ",\"quantity\":" + quantity +
+                ",\"price\":" + price +
+                ",\"totalBookmarks\":" + bookmarks +
+                ",\"listingDate\":\"" + listingDate + "\"," +
+                "\"saleDate\":\"" + saleDate + "\"}";
     }
 }
