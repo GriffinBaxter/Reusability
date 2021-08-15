@@ -64,6 +64,9 @@ public class SoldListingResourceIntegrationTests {
     @MockBean
     private ListingNotificationRepository listingNotificationRepository;
 
+    @MockBean
+    private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+
     private MockHttpServletResponse response;
 
     private User dGAA;
@@ -247,7 +250,7 @@ public class SoldListingResourceIntegrationTests {
                 0);
         soldListing.setId(1);
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, bookmarkedListingMessageRepository))
                 .build();
     }
 

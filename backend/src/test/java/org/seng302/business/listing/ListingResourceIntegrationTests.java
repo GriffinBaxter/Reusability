@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
+import java.awt.print.Book;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -76,6 +77,8 @@ class ListingResourceIntegrationTests {
 
     @MockBean
     private ListingNotificationRepository listingNotificationRepository;
+
+    @MockBean BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
     private MockHttpServletResponse response;
 
@@ -406,7 +409,7 @@ class ListingResourceIntegrationTests {
         adminListing.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, bookmarkedListingMessageRepository))
                 .build();
     }
 
@@ -1883,4 +1886,78 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(response.getErrorMessage()).isEqualTo("Inventory item for listing does not exist");
     }
+
+    /**
+     * Test that when a user has already bookmarked and/or un-bookmarked a listing, they can retrieve
+     * all BookmarkedListingMessages.
+     * Tests specifically for when searching as a standard user (non-admin).
+     */
+    @Test
+    void canRetrieveBookmarkedListingMessagesWithMessages() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        LocalDateTime created = LocalDateTime.now();
+        BookmarkedListingMessage bookmarkedListingMessage1 = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage1.setId(1);
+        BookmarkedListingMessage bookmarkedListingMessage2 = new BookmarkedListingMessage(
+                String.format("Bookmark for product listing '%s' has been removed.",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage2.setId(2);
+        user.setBookmarkedListingMessages(List.of(bookmarkedListingMessage1, bookmarkedListingMessage2));
+
+        expectedJSON = "[{" +
+                "\"id\":" + bookmarkedListingMessage1.getId() + "," +
+                "\"description\":\"" + bookmarkedListingMessage1.getDescription() + "\"," +
+                "\"created\":\"" + bookmarkedListingMessage1.getCreated() + "\"," +
+                "\"listingId\":" + bookmarkedListingMessage1.getListing().getId() + "," +
+                "\"businessId\":" + bookmarkedListingMessage1.getListing().getBusinessId() + "," +
+                "\"closes\":\"" + bookmarkedListingMessage1.getListing().getCloses() + "\"" +
+                "}," + "{" +
+                "\"id\":" + bookmarkedListingMessage2.getId() + "," +
+                "\"description\":\"" + bookmarkedListingMessage2.getDescription() + "\"," +
+                "\"created\":\"" + bookmarkedListingMessage2.getCreated() + "\"," +
+                "\"listingId\":" + bookmarkedListingMessage1.getListing().getId() + "," +
+                "\"businessId\":" + bookmarkedListingMessage1.getListing().getBusinessId() + "," +
+                "\"closes\":\"" + bookmarkedListingMessage1.getListing().getCloses() + "\"" +
+                "}]";
+
+        // when
+        response = mvc.perform(get("/home/bookmarkMessages")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Test that when a user has not already bookmarked and/or un-bookmarked a listing, they can retrieve
+     * all BookmarkedListingMessages (resulting in an empty list returned)
+     * Tests specifically for when searching as a standard user (non-admin).
+     */
+    @Test
+    void canRetrieveBookmarkedListingMessagesWithNoMessages() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+
+        expectedJSON = "[]";
+
+        // when
+        response = mvc.perform(get("/home/bookmarkMessages")
+                        .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+
+    }
+
+
 }
