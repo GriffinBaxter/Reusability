@@ -846,7 +846,6 @@ describe("Testing the 'Go to Business Profile' button", () => {
 
 describe("Testing buy listing functionality", () => {
 
-    let saleListingWrapper;
     let $router;
     let $route;
 
@@ -860,7 +859,7 @@ describe("Testing buy listing functionality", () => {
                 listingId: 11
             }
         };
-        saleListingWrapper = shallowMount(listing, {
+        wrapper = shallowMount(listing, {
             mocks: {
                 $router,
                 $route
@@ -870,26 +869,26 @@ describe("Testing buy listing functionality", () => {
     });
 
     test("Test v-if button variable is set correctly when user isn't business admin", (() => {
-        saleListingWrapper.vm.$data.currentID = "2";
-        saleListingWrapper.vm.populateData(response.data);
+        wrapper.vm.$data.currentID = "2";
+        wrapper.vm.populateData(response.data);
 
-        saleListingWrapper.vm.$nextTick();
+        wrapper.vm.$nextTick();
 
-        expect(saleListingWrapper.vm.$data.canBuy).toBeTruthy();
+        expect(wrapper.vm.$data.canBuy).toBeTruthy();
     }));
 
     test("Test v-if button variable is set correctly when user is business admin", (() => {
-        saleListingWrapper.vm.$data.currentID = "1";
-        saleListingWrapper.vm.populateData(response.data);
+        wrapper.vm.$data.currentID = "1";
+        wrapper.vm.populateData(response.data);
 
-        saleListingWrapper.vm.$nextTick();
+        wrapper.vm.$nextTick();
 
-        expect(saleListingWrapper.vm.$data.canBuy).toBeFalsy();
+        expect(wrapper.vm.$data.canBuy).toBeFalsy();
     }));
 });
+
 describe("Testing the getBarcodeImage method", () => {
 
-    wrapper;
     let $router;
     let $route;
 
