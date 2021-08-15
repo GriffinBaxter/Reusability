@@ -197,7 +197,7 @@ public class BookmarkedListingMessage {
     }
 
     public BookmarkedListingMessagePayload toBookmarkedListingMessagePayload() {
-        return new BookmarkedListingMessagePayload(id, description, created);
+        return new BookmarkedListingMessagePayload(id, description, created, listing.getCloses(), listing.getId(), listing.getBusinessId());
     }
 
     /*---------------------------------------------------Validation---------------------------------------------------*/

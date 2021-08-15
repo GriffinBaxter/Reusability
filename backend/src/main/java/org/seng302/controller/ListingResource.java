@@ -697,7 +697,10 @@ public class ListingResource {
             bookmarkedListingMessagePayloads.add(new BookmarkedListingMessagePayload(
                     bookmarkedListingMessage.getId(),
                     bookmarkedListingMessage.getDescription(),
-                    bookmarkedListingMessage.getCreated()
+                    bookmarkedListingMessage.getCreated(),
+                    bookmarkedListingMessage.getListing().getCloses(),
+                    bookmarkedListingMessage.getListing().getId(),
+                    bookmarkedListingMessage.getListing().getBusinessId()
             ));
         }
 
