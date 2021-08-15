@@ -68,7 +68,10 @@
       </div>
 
       <!-- Links to other pages -->
-      <ul id="links-list" v-if="showNavbar">
+      <transition
+          name="expand"
+      >
+        <ul id="links-list" v-if="showNavbar">
         <li class="a-nav-item" >
           <router-link to="/home" class="router-nav-link" active-class="active-link">
             <i class="side-nav-link-icon fas fa-home"></i>Home
@@ -97,28 +100,32 @@
           <button class="router-nav-link add-dropdown-icon" @click="toggleBusinessDropdown">
             <i class="side-nav-link-icon fas fa-briefcase"></i>Business
           </button>
-          <ul id="business-dropdown" class="is-dropdown" v-if="showBusinessDropdown">
-            <li class="a-nav-item">
-              <router-link :to="'/businessProfile/' + businessAccountId + '/listings'" class="router-nav-link" active-class="active-link">
-                Listings
-              </router-link>
-            </li>
-            <li class="a-nav-item">
-              <router-link :to="'/businessProfile/' + businessAccountId + '/inventory'" class="router-nav-link" active-class="active-link">
-                Inventory
-              </router-link>
-            </li>
-            <li class="a-nav-item">
-              <router-link :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" class="router-nav-link" active-class="active-link">
-                Catalogue
-              </router-link>
-            </li>
-          </ul>
+          <transition name="expand" >
+            <ul class="is-dropdown" v-if="showBusinessDropdown">
+              <li class="a-nav-item">
+                <router-link :to="'/businessProfile/' + businessAccountId + '/listings'" class="router-nav-link" active-class="active-link">
+                  Listings
+                </router-link>
+              </li>
+              <li class="a-nav-item">
+                <router-link :to="'/businessProfile/' + businessAccountId + '/inventory'" class="router-nav-link" active-class="active-link">
+                  Inventory
+                </router-link>
+              </li>
+              <li class="a-nav-item">
+                <router-link :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" class="router-nav-link" active-class="active-link">
+                  Catalogue
+                </router-link>
+              </li>
+            </ul>
+          </transition>
         </li>
       </ul>
+      </transition>
 
       <!-- User information -->
-      <ul v-if="showInteractMenu" id="interact-as-menu">
+      <transition name="expand">
+        <ul v-if="showInteractMenu" id="interact-as-menu">
 
 
         <li class="a-nav-item mt-4 mb-0 mobile-only">
@@ -174,6 +181,7 @@
           <button class="router-nav-link" tabindex="0">{{ act.name }}</button>
         </li>
       </ul>
+      </transition>
 
     </nav>
   </div>
@@ -351,22 +359,37 @@ export default {
         await this.logout(new Event("Not logged in"));
       }
     },
+    /**
+     * Closes the interact as and its inner parts.
+     */
     closeInteractMenu() {
       this.openNotificationBox = false;
       this.showInteractMenu = false;
     },
+    /**
+     * Closes the navbar and its inner parts.
+     */
     closeNavbar() {
-      this.showNavbar = false;
       this.showBusinessDropdown = false;
+      this.showNavbar = false;
     },
+    /**
+     * Toggles the business dropdown
+     */
     toggleBusinessDropdown() {
       this.showBusinessDropdown = !this.showBusinessDropdown;
     },
+    /**
+     * Toggles the navbar menu
+     */
     toggleNavbar() {
       this.showBusinessDropdown = false;
       this.closeInteractMenu();
       this.showNavbar = !this.showNavbar;
     },
+    /**
+     * Toggles the interact as menu
+     */
     toggleInteractAs() {
       this.closeNavbar();
       this.openNotificationBox = false;
@@ -597,11 +620,12 @@ export default {
     margin: 0;
     list-style: none;
     padding: 0;
+    height: 100%;
 
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: width ease-in-out 150ms;
+    transition: height ease-in-out 150ms;
   }
 
 
@@ -617,7 +641,6 @@ export default {
     border: transparent ;
 
     width: 100%;
-    height: 100%;
 
     display: flex;
     justify-content: center;
@@ -780,6 +803,25 @@ export default {
     cursor: unset;
   }
 
+  .expand-enter-active {
+    animation: expandAnimation 250ms ease-in-out;
+    overflow: hidden;
+  }
+
+  .expand-leave-active {
+    animation: expandAnimation 250ms reverse ease-in-out;
+    overflow: hidden;
+  }
+
+  @keyframes expandAnimation {
+    0% {
+      height: 0;
+    }
+    100% {
+      height: 100%;
+    }
+  }
+
   @media screen and (min-width: 612px){
     #user-section-admin-label {
       display: block;
@@ -812,7 +854,7 @@ export default {
       box-shadow: 2px 10px 1rem #00000030;
       padding: 1rem 3rem 0 1.75rem;
 
-      height: 100vh;
+
       top: 8.5rem;
       left: 0;
     }
@@ -836,12 +878,9 @@ export default {
 
     .is-dropdown {
       max-width: 100%;
+      height: 100%;
       align-items: flex-end;
       margin-left: 0;
-    }
-
-    .is-dropdown .a-nav-item {
-      max-width: 85%;
     }
   }
 
