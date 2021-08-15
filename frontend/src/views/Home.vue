@@ -99,7 +99,7 @@
 
 <script>
 import Footer from '../components/main/Footer';
-import Navbar from '../components/main/Navbar';
+import Navbar from '../components/Navbar';
 
 export default {
   name: "Home",
@@ -195,7 +195,7 @@ div.post h2, div.post p {
  * Width is 524px since news feed item is 600px and then 12px margin each side.
  */
 div.container {
-  width: 424px;
+  max-width: 424px;
   margin: auto;
 }
 
