@@ -18,7 +18,7 @@
           <br>
           <h1 style="text-align: center">Home</h1>
 
-          <div v-if="bookmarkMessages.length == 0 && rendered">
+          <div v-if="bookmarkMessages.length === 0 && rendered">
             <br>
             <h2 style="text-align: center">(No Bookmarked Messages)</h2>
           </div>
@@ -30,12 +30,14 @@
               <p class="post-description">
                 {{message.description}}</p>
             </div>
-            <!--Post header-->
-            <div class="">
-              <p>
-                Message date: {{ formatDateVar(message.created) }}
-              </p>
-            </div>
+            <!--Listing close date-->
+            <p class="py-1">
+              Closes: {{ formatDateVar(message.closes, false) }}
+            </p>
+            <!--Date/time of message-->
+            <p class="py-1">
+              Notification date: {{ formatDateVar(message.created, true) }}
+            </p>
           </div>
 
         </div>
@@ -70,11 +72,23 @@ export default {
     Api.getBookmarkedMessage().then(res => {
       this.bookmarkMessages = res.data.reverse();
       this.rendered = true
+    }).catch((err) => {
+      if (err.response && err.response.status === 401) {
+        this.$router.push({path: '/invalidToken'})
+      } else {
+        console.log(err)
+      }
     })
   },
   methods: {
-    formatDateVar(date) {
-      return formatDate(date, true)
+    /**
+     * Formats date to String using formatDate method in dateUtils
+     * @param date Date to format
+     * @param tf Boolean True/False for if time should be included
+     * @return {string|null} Date string
+     */
+    formatDateVar(date, tf) {
+      return formatDate(date, tf)
     }
   }
 }
@@ -143,11 +157,6 @@ div.post h2, div.post p {
 div.container {
   width: 424px;
   margin: auto;
-}
-
-.account-name {
-  font-weight: bold;
-  margin-left: 10px;
 }
 
 .post-description {
