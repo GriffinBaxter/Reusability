@@ -341,4 +341,11 @@ export default {
             withCredentials: true
         })
     },
+
+    // Buy a listing
+    buyListing: (id) => {
+        return instance.put(`/listings/${id}/buy`, {}, {
+            withCredentials: true
+        })
+    }
 }

@@ -15,6 +15,10 @@
       </div>
       <div id="listing-content-wrapper">
         <div class="left-content">
+          <!-- Return to sales listings button-->
+          <div class="return-button-wrapper mb-3 w-100" v-if="fromListings">
+            <button class="btn btn-lg green-button w-100" @click="returnToSales()" id="return-button" tabindex="8">Return to Sale Listings</button>
+          </div>
           <!-- Image section -->
           <div class="listing-images-wrapper">
             <div id="main-image-wrapper">
@@ -63,6 +67,10 @@
                  v-if="businessAddressLine4 !== null && businessAddressLine4.length > 2">
               {{ businessAddressLine4 }}
             </div>
+            <!-- Go to business profile button -->
+            <div class="goto-button-wrapper w-100">
+              <button class="btn btn-lg green-button mt-2 w-100" @click="goToBusiness()" id="go-to-button">Go to Business Profile</button>
+            </div>
           </div>
         </div>
 
@@ -91,9 +99,12 @@
               </h6>
             </div>
             <div class="buy-button-wrapper">
-              <div class="buy-button merryweather">
+              <button v-if="canBuy" class="buy-button merryweather w-100" @click="buy">
                 Buy
-              </div>
+              </button>
+              <button v-else class="buy-button-disabled merryweather w-100" disabled>
+                Can't buy own listing
+              </button>
               <div class="barcode-wrapper">
                 <div id="barcode-number" v-if="barcode">Barcode: {{ barcode }}</div>
               </div>
@@ -130,6 +141,7 @@ import Footer from "../components/main/Footer"
 import DefaultImage from "../../public/default-product.jpg"
 import Api from "../Api"
 import {formatDate} from "../dateUtils";
+import Cookies from "js-cookie";
 
 export default {
   name: "SaleListing",
@@ -169,13 +181,42 @@ export default {
       businessAddressLine2: "",
       businessAddressLine3: "",
       businessAddressLine4: "",
+      businessAdmins: [],
 
       listingId: null,
       isBookmarked: null,
       totalBookmarks: 0,
+
+      currentID: null,
+      canBuy: true,
+
+      // keep track of if user came from full listings page so they can return.
+      fromListings: false,
     }
   },
   methods: {
+    /**
+     * Attempts to buy the viewed listing and if successful returns the user to their home page
+     */
+    buy() {
+      Api.buyListing(this.listingId).then(() => {
+        this.$router.push({name: 'Home'})
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$router.push({name: 'InvalidToken'})
+          } else if (err.response.status === 403) {
+            console.log(err.response.data.message)
+          } else if (err.response.status === 406) {
+            this.$router.push({path: '/noListing'});
+          } else {
+            console.log(err.response)
+          }
+        } else {
+          console.log(err)
+        }
+      })
+    },
     /**
      * change bookmark status
      */
@@ -283,6 +324,15 @@ export default {
       this.businessName = data.inventoryItem.product.business.name;
       this.businessAddress = data.inventoryItem.product.business.address;
 
+      // Administrators
+      this.businessAdmins = data.inventoryItem.product.business.administrators
+
+      for (let i=0; i < this.businessAdmins.length; i++) {
+        if (this.businessAdmins[i].id.toString() === this.currentID) {
+          this.canBuy = false
+        }
+      }
+
       // address population
       this.businessAddressLine1 = (this.businessAddress.streetNumber !== "" && this.businessAddress.streetName !== "")
           ? this.businessAddress.streetNumber + " " + this.businessAddress.streetName
@@ -299,20 +349,46 @@ export default {
       this.listingId = data.id;
       this.isBookmarked = data.isBookmarked;
       this.totalBookmarks = data.totalBookmarks;
+    },
+    /**
+     * Redirect the user to the page for the profile of the business who listed the current sale.
+     */
+    goToBusiness() {
+      const businessId = this.$route.params.businessId;
+      this.$router.push({
+        path: `/businessProfile/${businessId}`
+      });
+    },
+    /**
+     * Redirect the user back to the full sale listings page.
+     */
+    returnToSales() {
+      this.$router.back();
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from a page which contains listings then the return to listings button component
+      // should be rendered.
+      if (from.name === 'BrowseListings' || from.name === 'BusinessProfile') {
+        vm.fromListings = true;
+      }
+      next();
+    });
   },
   beforeMount() {
     const url = document.URL;
     const businessId = url.substring(url.lastIndexOf('/businessProfile/') + 17, url.lastIndexOf('/listings/'));
     const listingId = url.substring(url.lastIndexOf('/') + 1);
     const self = this;
+    this.currentID = Cookies.get('userID');
+
     Api.getDetailForAListing(businessId, listingId)
         .then(response => this.populateData(response.data))
         .catch(error => {
           self.$router.push({path: '/noListing'});
           console.log(error);
         });
-
   }
 }
 </script>
@@ -414,6 +490,25 @@ h6 {
   width: 100%;
 }
 
+.buy-button-disabled {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: lightgray;
+  border: 1px solid #19b092;
+  color: #19b092;
+
+  padding: 0.65em 0;
+  margin: 1.45em 0;
+  border-radius: 0.25em;
+
+  cursor: pointer;
+  transition: 150ms ease-in-out;
+
+  font-size: 1.5em;
+}
+
 .buy-button {
   display: flex;
   justify-content: center;
@@ -504,6 +599,10 @@ h6 {
 
   .listing-dates-wrapper {
     flex-direction: row;
+  }
+
+  .return-button-wrapper {
+    width: 50%;
   }
 
   .listing-dates-wrapper h6 {

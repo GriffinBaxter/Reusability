@@ -200,10 +200,10 @@ const routes = [
     },
     {
         path: '/businessProfile/:businessId/listings/:listingId',
-        name: 'Sale Listing',
+        name: 'SaleListing',
         props: true,
         meta: {
-            title: 'Sale Listing'
+            title: 'SaleListing'
         },
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route

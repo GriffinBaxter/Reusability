@@ -2,11 +2,12 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.seng302.exceptions.IllegalSoldListingArgumentException;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Class for Sold listings
@@ -39,7 +40,7 @@ public class SoldListing {
     private LocalDateTime listingDate;
 
     @JoinColumn(name = "productId", nullable = false)
-    private ProductId productId;
+    private String productId;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
@@ -50,14 +51,52 @@ public class SoldListing {
     @Column(name = "bookmarks", nullable = false)
     private Integer bookmarks;
 
-    public SoldListing(Business business, User customer, LocalDateTime listingDate, ProductId productId, Integer quantity, Double price, Integer bookmarks) {
-        this.business = business;
-        this.customer = customer;
+    private static final Logger logger = LogManager.getLogger(SoldListing.class.getName());
+
+    public SoldListing(Business business, User customer, LocalDateTime listingDate, String productId, Integer quantity, Double price, Integer bookmarks) throws IllegalSoldListingArgumentException {
+        if (business != null) {
+            this.business = business;
+        } else {
+            logger.error("Sold Listing Creation Error - Business is null");
+            throw new IllegalSoldListingArgumentException("Invalid business");
+        }
+        if (customer != null) {
+            this.customer = customer;
+        } else {
+            logger.error("Sold Listing Creation Error - Customer is null");
+            throw new IllegalSoldListingArgumentException("Invalid customer");
+        }
+        if (listingDate != null && listingDate.isBefore(LocalDateTime.now())) {
+            this.listingDate = listingDate;
+        } else {
+            logger.error("Sold Listing Creation Error - listingDate is null or after saleDate");
+            throw new IllegalSoldListingArgumentException("Invalid listingDate");
+        }
+        if (productId != null && !productId.equals("")) {
+            this.productId = productId;
+        } else {
+            logger.error("Sold Listing Creation Error - productId is null");
+            throw new IllegalSoldListingArgumentException("Invalid productId");
+        }
+        if (quantity != null && quantity >= 1) {
+            this.quantity = quantity;
+        } else {
+            logger.error("Sold Listing Creation Error - quantity is null or less than 1");
+            throw new IllegalSoldListingArgumentException("Invalid quantity");
+        }
+        if (price != null && price > 0) {
+            this.price = price;
+        } else {
+            logger.error("Sold Listing Creation Error - price is null or less than 0");
+            throw new IllegalSoldListingArgumentException("Invalid price");
+        }
+        if (bookmarks != null && bookmarks >= 0) {
+            this.bookmarks = bookmarks;
+        } else {
+            logger.error("Sold Listing Creation Error - bookmarks is null or less than 0");
+            throw new IllegalSoldListingArgumentException("Invalid bookmarks");
+        }
+
         this.saleDate = LocalDateTime.now();
-        this.listingDate = listingDate;
-        this.productId = productId;
-        this.quantity = quantity;
-        this.price = price;
-        this.bookmarks = bookmarks;
     }
 }
