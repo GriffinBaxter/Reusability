@@ -196,14 +196,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                             "\"businessesAdministered\":[null]," +
                             "\"dateOfBirth\":\"" + user.getDateOfBirth() + "\"," +
                             "\"phoneNumber\":\"" + user.getPhoneNumber() + "\"," +
-                            "\"homeAddress\":{" +
-                                "\"streetNumber\":\"" + user.getHomeAddress().getStreetNumber() + "\"," +
-                                "\"streetName\":\"" + user.getHomeAddress().getStreetName() + "\"," +
-                                "\"city\":\"" + user.getHomeAddress().getCity() + "\"," +
-                                "\"region\":\"" + user.getHomeAddress().getRegion() + "\"," +
-                                "\"country\":\"" + user.getHomeAddress().getCountry() + "\"," +
-                                "\"postcode\":\"" + user.getHomeAddress().getPostcode() + "\"," +
-                                "\"suburb\":\"" + user.getHomeAddress().getSuburb() + "\"}}]," +
+                            "\"homeAddress\":" + user.getHomeAddress() + "}]," +
                         "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
                         "\"name\":\"" + business.getName() + "\"," +
                         "\"description\":\"" + business.getDescription() + "\"," +
