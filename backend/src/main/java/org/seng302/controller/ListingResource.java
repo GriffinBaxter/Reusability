@@ -98,7 +98,7 @@ public class ListingResource {
                            UserRepository userRepository,
                            SoldListingRepository soldListingRepository,
                            ListingNotificationRepository listingNotificationRepository,
-                           SoldListingNotificationRepository soldListingNotificationRepository),
+                           SoldListingNotificationRepository soldListingNotificationRepository,
                            BookmarkedListingMessageRepository bookmarkedListingMessageRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
