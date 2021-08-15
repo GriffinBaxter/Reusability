@@ -24,7 +24,7 @@
           </div>
 
           <!--Post 1 for news feed-->
-          <div class="post shadow py-3 px-4" v-for="message in bookmarkMessages" v-bind:key="message.id">
+          <div class="post shadow py-3 px-4" type="button" v-for="message in bookmarkMessages" v-bind:key="message.id" @click="toListing(message.listingId, message.businessId)">
             <!--Post description-->
             <div>
               <p class="post-description">
@@ -71,6 +71,7 @@ export default {
   mounted() {
     Api.getBookmarkedMessage().then(res => {
       this.bookmarkMessages = res.data.reverse();
+      console.log(this.bookmarkMessages)
       this.rendered = true
     }).catch((err) => {
       if (err.response && err.response.status === 401) {
@@ -89,6 +90,16 @@ export default {
      */
     formatDateVar(date, tf) {
       return formatDate(date, tf)
+    },
+
+    /**
+     * Routes the user to the listing page associated with their bookmarked message with the given business id and
+     * listing id.
+     * @param listingId listing id of the bookmark message
+     * @param businessId business id associated with the listing id of the bookmark message
+     */
+    toListing(listingId, businessId) {
+      this.$router.push({path: `/businessProfile/${businessId}/listings/${listingId}`})
     }
   }
 }
