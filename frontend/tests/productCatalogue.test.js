@@ -1134,3 +1134,96 @@ describe('Testing autofill functionality', function () {
         expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");
     });
 });
+
+describe('Testing scanning UI functionality', function () {
+
+    let productCatalogueWrapper;
+
+    beforeAll(() => {
+        let $route = {
+            params: {
+                id: 1
+            },
+            query: {
+                orderBy: '', page: '0'
+            }
+        }
+
+        productCatalogueWrapper = shallowMount(ProductCatalogue, {
+            mocks: {
+                $route
+            }
+        });
+    });
+
+    test('Testing that the scanning buttons are not available when the "add barcode" checkbox is not selected.', () => {
+        productCatalogueWrapper.vm.addBarcode = false;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-by-uploading-image-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that the scan by uploading image button is available.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-by-uploading-image-button').exists()).toBeTruthy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that the scan using camera button is available when the browser supports scanning.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+        productCatalogueWrapper.vm.liveStreamAvailable = true;
+        productCatalogueWrapper.vm.liveStreaming = false;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeTruthy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that the scan using camera button is not available when the browser does not support scanning.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+        productCatalogueWrapper.vm.liveStreamAvailable = false;
+        productCatalogueWrapper.vm.liveStreaming = false;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that the clicking the scan using camera button brings up the stop scanning button.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+        productCatalogueWrapper.vm.liveStreamAvailable = true;
+        productCatalogueWrapper.vm.liveStreaming = true;
+        productCatalogueWrapper.vm.barcodeFound = false;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeTruthy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that once a barcode is scanned using the live camera feed, the save scanned barcode appears.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+        productCatalogueWrapper.vm.liveStreamAvailable = true;
+        productCatalogueWrapper.vm.liveStreaming = true;
+        productCatalogueWrapper.vm.barcodeFound = true;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeTruthy();
+        });
+    });
+});
