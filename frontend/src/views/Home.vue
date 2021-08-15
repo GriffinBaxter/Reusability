@@ -13,7 +13,7 @@
       <div id="home" class="container all-but-footer">
 
         <!--News feed-->
-        <div class="container-news text-font">
+        <div class="container-news mx-md-5 text-font">
 
           <br>
           <h1 style="text-align: center">Home</h1>
@@ -151,38 +151,40 @@ div.post h2, div.post p {
   padding: 10px;
 }
 
-/*
- * Width is 524px since news feed item is 600px and then 12px margin each side.
- */
-div.container {
-  width: 424px;
-  margin: auto;
-}
-
 .post-description {
   margin-bottom: 30px;
 }
 
 /*-------------------------------------------- Medium break point styling -------------------------------------------*/
 
-/*Medium break point*/
-@media (min-width: 692px) {
-
-  div.container {
-    width: 524px;
-    margin: auto;
-  }
-}
-
-
-/*-------------------------------------------- Large break point styling -------------------------------------------*/
-
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   /*
  * Width is 524px since news feed item is 600px and then 12px margin each side.
  */
   div.container {
-    width: 624px;
+    width: 80%;
+    margin: auto;
+  }
+}
+
+/*-------------------------------------------- Large break point styling -------------------------------------------*/
+
+@media (min-width: 992px) {
+  /*
+ * Width is 524px since news feed item is 600px and then 12px margin each side.
+ */
+  div.container {
+    width: 70%;
+    margin: auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  /*
+ * Width is 524px since news feed item is 600px and then 12px margin each side.
+ */
+  div.container {
+    width: 60%;
     margin: auto;
   }
 }
