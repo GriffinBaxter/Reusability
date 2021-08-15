@@ -22,7 +22,7 @@
           <!-- Image section -->
           <div class="listing-images-wrapper">
             <div id="main-image-wrapper">
-              <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image" class="no-highlight"/>
+              <img :src="getMainImage()" :alt="'Product ' + productName + ' Image'" id="listing-image" class="no-highlight"/>
             </div>
             <div class="images-carousel-wrapper" v-if="saleImages.length > 1">
               <div class="carousel-arrow clickable no-highlight" @click="nextImage">
@@ -103,7 +103,7 @@
                 Buy
               </div>
               <div class="barcode-wrapper" v-if="barcode">
-                <img :src="getBarcodeImage()" alt="Product [product - name ] barcode image" id="barcode-image" class="no-highlight"/>
+                <img :src="getBarcodeImage()" alt="Product Barcode Image" id="barcode-image" class="no-highlight"/>
                 <div id="barcode-number">Barcode: {{ barcode }}</div>
               </div>
             </div>
@@ -185,6 +185,12 @@ export default {
 
       // keep track of if user came from full listings page so they can return.
       fromListings: false,
+
+      // CONSTANTS
+      UPC_A: "upca",
+      UPC_A_LENGTH: 12,
+      EAN: "ean13",
+      EAN_LENGTH: 13
     }
   },
   methods: {
@@ -331,20 +337,22 @@ export default {
      * Retrieves the filename (url path) for the barcode image for the listing.
      * This is retrieved via an api bwip-js.
      *
-     * Preconditions:  this.barcode is not null (i.e. this function is only called when this.barcode exists.
+     * Preconditions:  this.barcode is not null (i.e. this method is only called when this.barcode exists).
+     *                 this.barcode represents a valid UPCA or EAN13 barcode.
      * Postconditions: a url which can be used to retrieve a barcode image.
      *
      * @return {string} Returns the URL to the image source.
      */
     getBarcodeImage() {
       let type;
-      if (this.barcode.length === 12) {
-        type = "upca";
-      } else if (this.barcode.length === 13) {
-        type = "ean13";
+      if (this.barcode.length === this.UPC_A_LENGTH) {
+        type = this.UPC_A;
+      } else if (this.barcode.length === this.EAN_LENGTH) {
+        type = this.EAN;
       } else {
-        return "";
+        return ""; // barcode is unsupported so we can't retrieve barcode image.
       }
+      // return the url which can be used to retrieve the barcode image.
       return "https://bwipjs-api.metafloor.com/?bcid=" + type + "&text=" + this.barcode;
     },
   },
