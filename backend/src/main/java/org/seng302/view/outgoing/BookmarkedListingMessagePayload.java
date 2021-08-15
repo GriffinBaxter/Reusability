@@ -10,18 +10,29 @@ public class BookmarkedListingMessagePayload {
     private Integer id;
     private String description;
     private String created;
+    private String listingCloses;
+    private Integer listingId;
+    private Integer businessId;
+
 
     /**
-     * @param id                     message id
-     * @param description            description
-     * @param created                time message was created
+     * Payload for sending a bookmarked message to the front-end when a user bookmarks or un-bookmarks a sale listing.
+     * @param id Message ID
+     * @param description Message Description
+     * @param created Time message was created
+     * @param listingCloses Listing closing date
+     * @param listingId Listing ID
+     * @param businessId Business ID for business who listed the listing
      */
     public BookmarkedListingMessagePayload(Integer id,
                                            String description,
-                                           LocalDateTime created) {
+                                           LocalDateTime created, LocalDateTime listingCloses, Integer listingId, Integer businessId) {
         this.id = id;
         this.description = description;
         this.created = created.toString();
+        this.listingCloses = listingCloses.toString();
+        this.listingId = listingId;
+        this.businessId = businessId;
     }
 
     public Integer getId() {
@@ -48,6 +59,31 @@ public class BookmarkedListingMessagePayload {
         this.created = created;
     }
 
+
+    public String getCloses() {
+        return listingCloses;
+    }
+
+    public void setCloses(String closes) {
+        this.listingCloses = closes;
+    }
+
+    public Integer getListingId() {
+        return listingId;
+    }
+
+    public void setListingId(Integer listingId) {
+        this.listingId = listingId;
+    }
+
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
     /**
      * Override the toString method for debugging purposes.
      * @return a string representing the BookmarkedListingMessagePayload.
@@ -57,6 +93,9 @@ public class BookmarkedListingMessagePayload {
         return "{\"id\":" + id +
                 ",\"description\":\"" + description + "\"" +
                 ",\"created\":\"" + created + "\"" +
+                ",\"listingCloses\":\"" + listingCloses + "\"" +
+                ",\"listingId\":\"" + listingId + "\"" +
+                ",\"businessId\":\"" + businessId + "\"" +
                 "}";
     }
 

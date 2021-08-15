@@ -1908,11 +1908,17 @@ class ListingResourceIntegrationTests {
         expectedJSON = "[{" +
                 "\"id\":" + bookmarkedListingMessage1.getId() + "," +
                 "\"description\":\"" + bookmarkedListingMessage1.getDescription() + "\"," +
-                "\"created\":\"" + bookmarkedListingMessage1.getCreated() + "\"" +
+                "\"created\":\"" + bookmarkedListingMessage1.getCreated() + "\"," +
+                "\"listingId\":" + bookmarkedListingMessage1.getListing().getId() + "," +
+                "\"businessId\":" + bookmarkedListingMessage1.getListing().getBusinessId() + "," +
+                "\"closes\":\"" + bookmarkedListingMessage1.getListing().getCloses() + "\"" +
                 "}," + "{" +
                 "\"id\":" + bookmarkedListingMessage2.getId() + "," +
                 "\"description\":\"" + bookmarkedListingMessage2.getDescription() + "\"," +
-                "\"created\":\"" + bookmarkedListingMessage2.getCreated() + "\"" +
+                "\"created\":\"" + bookmarkedListingMessage2.getCreated() + "\"," +
+                "\"listingId\":" + bookmarkedListingMessage1.getListing().getId() + "," +
+                "\"businessId\":" + bookmarkedListingMessage1.getListing().getBusinessId() + "," +
+                "\"closes\":\"" + bookmarkedListingMessage1.getListing().getCloses() + "\"" +
                 "}]";
 
         // when
