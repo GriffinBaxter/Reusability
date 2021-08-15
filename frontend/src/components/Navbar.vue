@@ -68,9 +68,7 @@
       </div>
 
       <!-- Links to other pages -->
-      <transition
-          name="expand"
-      >
+      <transition name="links" >
         <ul id="links-list" v-if="showNavbar">
         <li class="a-nav-item" >
           <router-link to="/home" class="router-nav-link" active-class="active-link">
@@ -804,16 +802,26 @@ export default {
   }
 
   .expand-enter-active {
-    animation: expandAnimation 250ms ease-in-out;
+    animation: dropAnimation 250ms;
     overflow: hidden;
   }
 
   .expand-leave-active {
-    animation: expandAnimation 250ms reverse ease-in-out;
+    animation: dropAnimation 250ms reverse;
     overflow: hidden;
   }
 
-  @keyframes expandAnimation {
+  .links-enter-active {
+    animation: dropAnimation 250ms;
+    overflow: hidden;
+  }
+
+  .links-leave-active {
+    animation: dropAnimation 250ms reverse;
+    overflow: hidden;
+  }
+
+  @keyframes dropAnimation {
     0% {
       height: 0;
     }
@@ -822,7 +830,28 @@ export default {
     }
   }
 
+  @keyframes sideWaysExpandAnimation {
+    0% {
+      width: 0;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+
   @media screen and (min-width: 612px){
+
+    .links-enter-active {
+      animation: sideWaysExpandAnimation 250ms ;
+      overflow: hidden;
+    }
+
+    .links-leave-active {
+      animation: sideWaysExpandAnimation 250ms reverse ;
+      overflow: hidden;
+    }
+
+
     #user-section-admin-label {
       display: block;
     }
@@ -853,8 +882,8 @@ export default {
       background-color: white;
       box-shadow: 2px 10px 1rem #00000030;
       padding: 1rem 3rem 0 1.75rem;
-
-
+      max-width: 13rem;
+      width: 100%;
       top: 8.5rem;
       left: 0;
     }
