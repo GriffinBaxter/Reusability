@@ -50,6 +50,7 @@
 import {Popover} from "bootstrap";
 import Api from "../../Api";
 import {formatDate} from "../../dateUtils";
+import {checkNullity} from "../../views/helpFunction";
 
 export default {
   name: "BrowseListingCard",
@@ -149,7 +150,7 @@ export default {
       if (address.streetNumber != null && address.streetName != null) {
         addressString += address.streetNumber + " " + address.streetName;
       } else {
-        addressString += address.streetNumber + address.streetName;
+        addressString += checkNullity(address.streetNumber) + checkNullity(address.streetName);
       }
       if (address.suburb != null) {
         addressString += "<br>" + address.suburb;
@@ -157,12 +158,12 @@ export default {
       if (address.city != null && address.postcode != null) {
         addressString += "<br>" + address.city + ", " + address.postcode;
       } else {
-        addressString += "<br>" + address.city + address.postcode;
+        addressString += "<br>" + checkNullity(address.city) + checkNullity(address.postcode);
       }
       if (address.region != null && address.country != null) {
         addressString += "<br>" + address.region + ", " + address.country;
       } else {
-        addressString += "<br>" + address.region + address.country;
+        addressString += "<br>" + checkNullity(address.region) + checkNullity(address.country);
       }
       return addressString
     }

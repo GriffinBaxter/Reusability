@@ -167,6 +167,7 @@ import Navbar from "@/components/main/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
 import {UserRole} from "@/configs/User";
+import {checkNullity, getFormattedAddress} from "@/views/helpFunction";
 
 export default {
   name: "BusinessProfile",
@@ -266,48 +267,16 @@ export default {
       this.businessType = businessTypeLowerCaseAndSplit.join(" ");
       this.getCreatedDate(data.created);
 
-      // address unpack
       //address unpack
-      if (data.address.streetNumber) {
-        this.streetNumber = data.address.streetNumber;
-      }
-      if (data.address.streetName) {
-        this.streetName = data.address.streetName;
-      }
-      if (data.address.suburb) {
-        this.suburb = data.address.suburb;
-      }
-      if (data.address.city) {
-        this.city = data.address.city;
-      }
-      if (data.address.region) {
-        this.region = data.address.region;
-      }
-      if (data.address.country) {
-        this.country = data.address.country;
-      }
-      if (data.address.postcode) {
-        this.postcode = data.address.postcode;
-      }
+      this.streetNumber = checkNullity(data.address.streetNumber);
+      this.streetName = checkNullity(data.address.streetName);
+      this.suburb = checkNullity(data.address.suburb);
+      this.city = checkNullity(data.address.city);
+      this.region = checkNullity(data.address.region);
+      this.country = checkNullity(data.address.country);
+      this.postcode = checkNullity(data.address.postcode);
 
-      if (this.streetNumber !== "" && this.streetName !== "") {
-        this.address.push({line: this.streetNumber + " " + this.streetName});
-      } else {
-        this.address.push({line: this.streetNumber + this.streetName});
-      }
-      if (this.suburb !== "") {
-        this.address.push({line: this.suburb});
-      }
-      if (this.city !== "" && this.postcode !== "") {
-        this.address.push({line: this.city + ", " + this.postcode});
-      } else {
-        this.address.push({line: this.city + this.postcode});
-      }
-      if (this.region !== "" && this.country !== "") {
-        this.address.push({line: this.region + ", " + this.country});
-      } else {
-        this.address.push({line: this.region + this.country});
-      }
+      this.address = getFormattedAddress(this.streetNumber, this.streetName, this.suburb, this.city, this.postcode, this.region, this.country);
 
       // administrators unpack
       this.primaryAdministratorId = data.primaryAdministratorId;
