@@ -74,6 +74,9 @@ public class ListingResource {
     @Autowired
     private SoldListingNotificationRepository soldListingNotificationRepository;
 
+    @Autowired
+    private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
     /**
@@ -95,7 +98,8 @@ public class ListingResource {
                            UserRepository userRepository,
                            SoldListingRepository soldListingRepository,
                            ListingNotificationRepository listingNotificationRepository,
-                           SoldListingNotificationRepository soldListingNotificationRepository) {
+                           SoldListingNotificationRepository soldListingNotificationRepository),
+                           BookmarkedListingMessageRepository bookmarkedListingMessageRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.productRepository = productRepository;
@@ -104,6 +108,7 @@ public class ListingResource {
         this.soldListingRepository = soldListingRepository;
         this.listingNotificationRepository = listingNotificationRepository;
         this.soldListingNotificationRepository = soldListingNotificationRepository;
+        this.bookmarkedListingMessageRepository = bookmarkedListingMessageRepository;
     }
 
     /**
@@ -515,17 +520,47 @@ public class ListingResource {
         String nameOfProduct = listing.getInventoryItem().getProduct().getName();
         logger.debug("Listing {} retrieved, ID: {}.", nameOfProduct, listing.getId());
 
+        LocalDateTime created = LocalDateTime.now();
+
         boolean currentStatus;
         if (Boolean.TRUE.equals(listing.isBookmarked(currentUser))) {
             // if marked before
             listing.removeUserFromABookmark(currentUser);
             currentStatus = false;
-            logger.info("Listing {} has been remove from current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
+
+            try {
+                BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                        String.format("Bookmark for product listing '%s' has been removed.", listing.getInventoryItem().getProduct().getName()),
+                        created,
+                        listing);
+                bookmarkedListingMessage.addUser(currentUser);
+                bookmarkedListingMessageRepository.save(bookmarkedListingMessage);
+
+                logger.info("Bookmarked listing message created successfully: {}", bookmarkedListingMessage);
+            } catch (Exception ex) {
+                logger.error("Bookmarked listing message creation failure - {}", ex, ex);
+            }
+
+            logger.info("Listing {} has been removed from current user's (Id: {}) bookmarks.", nameOfProduct, currentUser.getId());
         } else {
             // if not marked before
             listing.addUserToANewBookmark(currentUser);
             currentStatus = true;
-            logger.info("Listing {} has been add to current user's (Id: {}) bookmark.", nameOfProduct, currentUser.getId());
+
+            try {
+                BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                        String.format("Product listing '%s' has been bookmarked.", listing.getInventoryItem().getProduct().getName()),
+                        created,
+                        listing);
+                bookmarkedListingMessage.addUser(currentUser);
+                bookmarkedListingMessageRepository.save(bookmarkedListingMessage);
+
+                logger.info("Bookmarked listing message created successfully: {}", bookmarkedListingMessage);
+            } catch (Exception ex) {
+                logger.error("Bookmarked listing message creation failure - {}", ex, ex);
+            }
+
+            logger.info("Listing {} has been added to current user's (Id: {}) bookmarks.", nameOfProduct, currentUser.getId());
         }
 
         // Save status change
@@ -533,6 +568,29 @@ public class ListingResource {
         logger.debug("Status ({}) change saved!", currentStatus);
 
         return new BookmarkStatusPayload(currentStatus);
+    }
+
+    /**
+     * GET endpoint to retrieve the listing bookmark messages for a given user.
+     * A message is created when a listing is bookmarked or when a bookmark is removed.
+     *
+     * @param sessionToken The current user's session token
+     * @return A list of BookmarkedListingMessages.
+     */
+    @GetMapping("/home/bookmarkMessages")
+    public List<BookmarkedListingMessagePayload> getBookmarkMessages(@CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+        // 401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User retrieved, ID: {}.", currentUser.getId());
+
+        Integer currentUserId = currentUser.getId();
+
+        List<BookmarkedListingMessage> bookmarkedListingMessages = currentUser.getBookmarkedListingMessages();
+
+        logger.info("BookmarkedListingMessages Retrieval Success - " +
+                "All bookmarkedListingMessages entities retrieved from HasBookmarkedListingMessage entities for user with ID {}: {}", currentUserId, bookmarkedListingMessages);
+
+        return convertBookmarkedListingMessageListToPayload(bookmarkedListingMessages);
     }
 
     /**
@@ -611,7 +669,6 @@ public class ListingResource {
         } catch (IllegalSoldListingArgumentException e) {
             logger.error("Couldn't create sold listing - {}", e.getMessage());
         }
-
         try {
             String purchaserMessage = String.format("You have purchased %s x%d for $%.2f. Your purchase can be picked up from %s.",
                                                     listing.getInventoryItem().getProduct().getName(), listing.getQuantity(),
@@ -693,6 +750,21 @@ public class ListingResource {
                         "searchType Field invalid"
                 );
         }
+    }
+
+    /**
+     * Takes a list of BookmarkedListingMessages and returns a list of BookmarkedListingMessagePayloads
+     * @param bookmarkedListingMessages The given list of BookmarkedListingMessages.
+     * @return A list of BookmarkedListingMessagePayloads.
+     */
+    public List<BookmarkedListingMessagePayload> convertBookmarkedListingMessageListToPayload(List<BookmarkedListingMessage> bookmarkedListingMessages) {
+        List<BookmarkedListingMessagePayload> bookmarkedListingMessagePayloads = new ArrayList<>();
+
+        for (BookmarkedListingMessage bookmarkedListingMessage : bookmarkedListingMessages) {
+            bookmarkedListingMessagePayloads.add(bookmarkedListingMessage.toBookmarkedListingMessagePayload());
+        }
+
+        return bookmarkedListingMessagePayloads;
     }
 
     /**

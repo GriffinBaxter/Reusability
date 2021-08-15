@@ -6,6 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.controller.InventoryItemResource;
 import org.seng302.controller.ListingResource;
+import org.seng302.exceptions.IllegalBookmarkedListingMessageArgumentException;
 import org.seng302.exceptions.IllegalListingArgumentException;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
@@ -24,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,6 +71,10 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private SoldListingNotificationRepository soldListingNotificationRepository;
 
+    @Autowired
+    @MockBean
+    private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+
     private User user;
 
     private Business business;
@@ -83,6 +89,10 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
 
     private String listingPayloadJSON;
 
+    private BookmarkedListingMessage bookmarkedListingMessage1;
+
+    private BookmarkedListingMessage bookmarkedListingMessage2;
+
     @Before
     public void createMockMvc() {
         listingRepository = mock(ListingRepository.class);
@@ -91,7 +101,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
         businessRepository = mock(BusinessRepository.class);
         userRepository = mock(UserRepository.class);
         soldListingRepository = mock(SoldListingRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository)).build();
     }
 
     @Given("I am logged in as a business administrator.")
@@ -155,7 +165,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
         );
         user.setBusinessesAdministeredObjects(List.of(business));
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository,
-                    businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository)).build();
+                    businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository)).build();
     }
 
     @Given("I have a listing with quantity {int}, price {double}, closing date {string}, and {string} in the more-info section.")
@@ -243,6 +253,75 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
     public void my_listing_is_returned_with_all_fields_shown() throws UnsupportedEncodingException {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(listingPayloadJSON);
+    }
+
+    @Given("I have bookmarked the listing.")
+    public void i_have_bookmarked_the_listing() throws IllegalBookmarkedListingMessageArgumentException {
+        LocalDateTime created = LocalDateTime.now();
+        bookmarkedListingMessage1 = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked.",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage1.setId(1);
+        user.setBookmarkedListingMessages(List.of(bookmarkedListingMessage1));
+        listing.setBookmarkedListings(List.of(user));
+    }
+
+    @Given("I have un-bookmarked the listing.")
+    public void i_have_un_bookmarked_the_listing() throws IllegalBookmarkedListingMessageArgumentException {
+        LocalDateTime created = LocalDateTime.now();
+        bookmarkedListingMessage2 = new BookmarkedListingMessage(
+                String.format("Bookmark for product listing '%s' has been removed.",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage2.setId(1);
+        user.setBookmarkedListingMessages(List.of(bookmarkedListingMessage2));
+        listing.setBookmarkedListings(Collections.emptyList());
+    }
+
+    @When("I request to retrieve my list of bookmarked listing messages.")
+    public void i_request_to_retrieve_my_list_of_bookmarked_listing_messages() throws Exception {
+        response = mvc.perform(get("/home/bookmarkMessages")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+    }
+
+    @Then("A bookmark message for the listing is returned.")
+    public void a_bookmark_message_for_the_listing_is_returned() throws UnsupportedEncodingException {
+
+        String expectedJSON = "[{" +
+                "\"id\":" + bookmarkedListingMessage1.getId() + "," +
+                "\"description\":\"" + bookmarkedListingMessage1.getDescription() + "\"," +
+                "\"created\":\"" + bookmarkedListingMessage1.getCreated() + "\"," +
+                "\"listingId\":" + bookmarkedListingMessage1.getListing().getId() + "," +
+                "\"businessId\":" + bookmarkedListingMessage1.getListing().getBusinessId() + "," +
+                "\"closes\":\"" + bookmarkedListingMessage1.getListing().getCloses() + "\"" +
+                "}]";
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    @Then("An un-bookmark message for the listing is returned.")
+    public void an_un_bookmark_message_for_the_listing_is_returned() throws UnsupportedEncodingException {
+        String expectedJSON = "[{" +
+                "\"id\":" + bookmarkedListingMessage2.getId() + "," +
+                "\"description\":\"" + bookmarkedListingMessage2.getDescription() + "\"," +
+                "\"created\":\"" + bookmarkedListingMessage2.getCreated() + "\"," +
+                "\"listingId\":" + bookmarkedListingMessage2.getListing().getId() + "," +
+                "\"businessId\":" + bookmarkedListingMessage2.getListing().getBusinessId() + "," +
+                "\"closes\":\"" + bookmarkedListingMessage2.getListing().getCloses() + "\"" +
+                "}]";
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    @Then("The number of bookmarks the listing has is decremented.")
+    public void the_number_of_bookmarks_the_listing_has_is_decremented() {
+        assertThat(listing.getTotalBookmarks()).isZero();
     }
 
 }
