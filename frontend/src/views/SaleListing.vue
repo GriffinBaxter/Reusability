@@ -335,16 +335,24 @@ export default {
       }
 
       // address population
-      this.businessAddressLine1 = (this.businessAddress.streetNumber !== "" && this.businessAddress.streetName !== "")
-          ? this.businessAddress.streetNumber + " " + this.businessAddress.streetName
-          : checkNullity(this.businessAddress.streetNumber) + checkNullity(this.businessAddress.streetName);
-      this.businessAddressLine2 = (this.businessAddress.suburb !== "") ? this.businessAddress.suburb : "";
-      this.businessAddressLine3 = (this.businessAddress.city !== "" && this.businessAddress.postcode !== "")
-          ? this.businessAddress.city + ", " + this.businessAddress.postcode
-          : checkNullity(this.businessAddress.city) + checkNullity(this.businessAddress.postcode);
-      this.businessAddressLine4 = (this.businessAddress.region !== "" && this.businessAddress.country !== "")
-          ? this.businessAddress.region + ", " + this.businessAddress.country
-          : checkNullity(this.businessAddress.region) + checkNullity(this.businessAddress.country);
+      if (this.businessAddress.streetNumber !== null && this.businessAddress.streetName !== null) {
+        this.businessAddressLine1 = this.businessAddress.streetNumber + " " + this.businessAddress.streetName;
+      } else {
+        this.businessAddressLine1 = checkNullity(this.businessAddress.streetNumber) + checkNullity(this.businessAddress.streetName);
+      }
+      if (this.businessAddress.suburb !== "") {
+        this.businessAddressLine2 =  this.businessAddress.suburb;
+      }
+      if (this.businessAddress.city !== null && this.businessAddress.postcode !== null) {
+        this.businessAddressLine3 = this.businessAddress.city + ", " + this.businessAddress.postcode;
+      } else {
+        this.businessAddressLine3 = checkNullity(this.businessAddress.city) + checkNullity(this.businessAddress.postcode);
+      }
+      if (this.businessAddress.region !== null && this.businessAddress.country !== null) {
+        this.businessAddressLine4 = this.businessAddress.region + ", " + this.businessAddress.country;
+      } else {
+        this.businessAddressLine4 = checkNullity(this.businessAddress.region) + checkNullity(this.businessAddress.country);
+      }
 
       // bookmark info
       this.listingId = data.id;
