@@ -159,9 +159,9 @@ class SoldListingNotificationRepositoryTests {
         entityManager.flush();
 
         //Sold Listing Notifications
-        soldListingNotification = new SoldListingNotification(business.getId(), soldListing, "Purchased listing");
-        soldListingNotification2 = new SoldListingNotification(business.getId(), soldListing2, "Purchased listing 2");
-        anotherSoldListingNotification = new SoldListingNotification(anotherBusiness.getId(), anotherSoldListing, "Another listing purchased");
+        soldListingNotification = new SoldListingNotification(soldListing.getBusiness().getId(), soldListing, "Purchased listing");
+        soldListingNotification2 = new SoldListingNotification(soldListing2.getBusiness().getId(), soldListing2, "Purchased listing 2");
+        anotherSoldListingNotification = new SoldListingNotification(anotherSoldListing.getBusiness().getId(), anotherSoldListing, "Another listing purchased");
     }
 
     /**
