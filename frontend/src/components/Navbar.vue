@@ -438,6 +438,13 @@ export default {
       this.actAsOmit = this.omitName(this.actAs, this.omitPoint)
       this.$router.go();
     },
+    /**
+     * T/F When user is acting as a business checks user is allowed on page
+     * NOTE: Currently just Marketplace
+     */
+    canGoToPage() {
+      return this.$route.name !== "Marketplace";
+    },
     setCurUser(response) {
       this.currentUser = response;
       if (Cookies.get('actAs')) {
