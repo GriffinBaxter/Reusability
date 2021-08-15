@@ -36,7 +36,7 @@
                 <img
                     :class="`sale-carousel-image no-highlight clickable ` + (mainImageIndex === imageIndex ? 'main-carousel-image' : '')"
                     v-for="(imageIndex, index) in getVisibleImages()" @click="mainImageIndex=imageIndex" :key="index"
-                    :src="getCarouselImage(imageIndex)" alt="Product [product - name ] image 2">
+                    :src="getCarouselImage(imageIndex)" :alt="'Product ' + productName + ' Image 2'">
               </div>
               <div class="carousel-arrow clickable no-highlight" @click="previousImage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
