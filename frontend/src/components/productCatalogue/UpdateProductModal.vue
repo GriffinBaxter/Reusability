@@ -461,6 +461,7 @@ export default {
      * per each frame scan.
      */
     getBarcodeLiveStream() {
+      this.formErrorModalMessage = "";
       this.barcode = this.newProduct.data.barcode;
 
       let outerThis = this;

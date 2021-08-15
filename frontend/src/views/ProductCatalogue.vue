@@ -166,23 +166,24 @@
                         {{ barcodeErrorMsg }}
                       </div>
                       <br><br>
-                      <button class="btn green-button-transparent" @click="onUploadClick">Scan by uploading image</button>
+                      <button id="scan-by-uploading-image-button" class="btn green-button-transparent"
+                              @click="onUploadClick">
+                        Scan by uploading image
+                      </button>
                       <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
                                               name="img" accept="image/png, image/gif, image/jpeg">
                       <br><br>
-                      <button v-if="liveStreamAvailable && !liveStreaming" class="btn green-button-transparent"
-                              @click="getBarcodeLiveStream">
+                      <button id="scan-using-camera-button" v-if="liveStreamAvailable && !liveStreaming"
+                              class="btn green-button-transparent" @click="getBarcodeLiveStream">
                         Scan using camera
                       </button>
-                      <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent"
-                              @click="
-                              liveStreaming = false;
-                              removeCameraError();
-                              ">
+                      <button id="stop-scanning-button" v-if="liveStreaming && !barcodeFound"
+                              class="btn green-button-transparent"
+                              @click="liveStreaming = false; removeCameraError();">
                         Stop scanning (barcode not found)
                       </button>
-                      <button v-if="liveStreaming && barcodeFound" class="btn green-button"
-                              @click="liveStreaming = false">
+                      <button id="save-scanned-barcode-button" v-if="liveStreaming && barcodeFound"
+                              class="btn green-button" @click="liveStreaming = false">
                         Save Scanned Barcode
                       </button>
                       <br>
@@ -902,6 +903,7 @@ export default {
      * per each frame scan.
      */
     getBarcodeLiveStream() {
+      this.barcodeErrorMsg = "";
       getBarcodeLiveStream(this, 460, "#createLiveStreamCamera", function () {
         return undefined;
       });
