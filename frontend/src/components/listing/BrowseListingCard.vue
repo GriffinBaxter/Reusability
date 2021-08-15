@@ -1,25 +1,35 @@
 <template>
   <div class="card" style="width: 18rem;">
+    <!--Bookmark-->
+    <div class="tag-vertical discount"
+         :id="'bookmarkButton_'+id"
+         style="position:absolute; right: 5px"
+         type="button"
+         @click="changeBookmarkStatus">
+      <div :id="'bookmark_'+id" v-if="isMarked">&#9829;</div>
+    </div>
+
+    <div class="everything-but-bookmark" @click="routeToSaleListing(id, inventoryItem.product.business.id)">
     <div class="row">
       <div class="col">
         <img :src="getPrimaryImageSrc(inventoryItem.product.images)" class="card-img-top" alt="default-image">
       </div>
       <div class="col p-0">
-          <div class="row">
-            <div class="card-body" id="price-div">
-              <h3>{{ '$' + price }}</h3>
-            </div>
-          </div>
-          <div class="row">
-            <div class="card-body">
-              <a class="btn btn-primary green-button" id="seller-info-button"
-                 data-bs-toggle="popover" data-bs-trigger="hover focus"
-                 v-bind:title="inventoryItem.product.business.name"
-                 v-bind:data-bs-content="addressUnpack(inventoryItem.product.business.address)"
-                 data-bs-placement="top">Seller Info</a>
-            </div>
+        <div class="row">
+          <div class="card-body" id="price-div">
+            <h3>{{ '$' + price }}</h3>
           </div>
         </div>
+        <div class="row">
+          <div class="card-body">
+            <a class="btn btn-primary green-button" id="seller-info-button"
+               data-bs-toggle="popover" data-bs-trigger="hover focus"
+               v-bind:title="inventoryItem.product.business.name"
+               v-bind:data-bs-content="addressUnpack(inventoryItem.product.business.address)"
+               data-bs-placement="top">Seller Info</a>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="row">
       <div class="col">
@@ -32,7 +42,7 @@
         </ul>
       </div>
     </div>
-
+    </div>
   </div>
 </template>
 
@@ -51,7 +61,9 @@ export default {
     },
     inventoryItem: {
       type: Object,
-      default: function () {return {}},
+      default: function () {
+        return {}
+      },
       required: true
     },
     created: {
@@ -93,9 +105,16 @@ export default {
   data() {
     return {
       tooltipList: [],
+      isMarked: this.isBookmarked,
     }
   },
   methods: {
+    // change bookmark status
+    changeBookmarkStatus() {
+      this.isMarked = !this.isMarked
+      Api.changeStatusOfAListing(this.id)
+          .catch(error => console.log(error))
+    },
     routeToSaleListing(index, businessId) {
       this.$router.push({
         path: `/businessProfile/${businessId}/listings/${index}`
@@ -126,7 +145,7 @@ export default {
      */
     addressUnpack(address) {
       let addressString = "";
-      
+
       if (address.streetNumber != null && address.streetName != null) {
         addressString += address.streetNumber + " " + address.streetName;
       } else {
@@ -150,7 +169,7 @@ export default {
   },
   mounted() {
     const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    this.tooltipList = popoverTriggerList.map(function(popoverTriggerElement) {
+    this.tooltipList = popoverTriggerList.map(function (popoverTriggerElement) {
       return new Popover(popoverTriggerElement, {sanitize: false, html: true});
     })
   }
@@ -176,6 +195,32 @@ export default {
 
 .green-button {
   white-space: pre-line;
+}
+
+/* vertical tag */
+.tag-vertical {
+  position: relative;
+  padding: 5px 0;
+  width: 26px;
+  color: #fff;
+  text-align: center;
+}
+
+.tag-vertical::after {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 100%;
+  border-style: solid;
+  border-width: 0 13px 13px 13px;
+}
+
+.tag-vertical.discount::after {
+  border-color: #00d9a9 #00d9a9 transparent #00d9a9;
+}
+
+.tag-vertical.discount {
+  background: #00d9a9;
 }
 
 </style>

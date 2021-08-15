@@ -10,6 +10,7 @@
  */
 package org.seng302.model;
 
+import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -26,6 +27,7 @@ import java.util.List;
 /**
  * Class for sale listings
  */
+@Data
 @NoArgsConstructor
 @Entity
 public class Listing {
@@ -56,6 +58,11 @@ public class Listing {
 
     @Column(name = "closes")
     private LocalDateTime closes;
+
+    // BookmarkedListingMessage
+    @OneToMany(mappedBy = "listing", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<BookmarkedListingMessage> bookmarkedListingMessages = new ArrayList<>();
 
     @JsonManagedReference
     @ToString.Exclude
@@ -153,7 +160,6 @@ public class Listing {
     public void setInventoryItem(InventoryItem inventoryItem) {
         this.inventoryItem = inventoryItem;
     }
-
 
     /**
      * get quantity
