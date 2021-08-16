@@ -14,7 +14,7 @@
       
       <BrowseListingsSearch  @requestListings="requestListings"/>
       <br>
-      <div id="all-listings-cards-container" class="row pb-5 mb-4">
+      <div v-if="hasDataLoaded" id="all-listings-cards-container" class="row pb-5 mb-4">
         <div class="col-md-6 col-xxl-3 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center" v-for="listing in listingList" v-bind:key="listing.id">
           <BrowseListingCard
               v-bind:id="listing.id"
@@ -29,6 +29,10 @@
               v-bind:actingBusinessId="actingBusinessId"/>
         </div>
       </div>
+      <div v-else>
+        <LoadingDots></LoadingDots>
+      </div>
+
       <PageButtons
           v-bind:totalPages="totalPages"
           v-bind:currentPage="currentPage"
@@ -46,11 +50,12 @@ import BrowseListingCard from "../components/listing/BrowseListingCard";
 import Api from "../Api"
 import BrowseListingsSearch from '../components/listing/BrowseListingsSearch';
 import PageButtons from "../components/PageButtons";
+import LoadingDots from "../components/LoadingDots";
 import Cookies from "js-cookie";
 
 export default {
   name: "Listings",
-  components: {Footer, Navbar, BrowseListingCard, BrowseListingsSearch, PageButtons},
+  components: {LoadingDots, Footer, Navbar, BrowseListingCard, BrowseListingsSearch, PageButtons},
   data() {
     return {
       // Array that stores all retrieved listings
@@ -69,7 +74,9 @@ export default {
       currentPage: 0,
       totalPages: 0,
       totalRows: 0,
-      
+
+      hasDataLoaded: false,
+
       actingBusinessId: null,
     }
   },
@@ -100,12 +107,14 @@ export default {
         this.currentPage = 0
       }
 
+      this.hasDataLoaded = false;
       await Api.searchListings(
           this.searchQuery, this.searchType,
           this.orderBy, this.currentPage, this.businessType,
           this.minimumPrice, this.maximumPrice,
           this.fromDate, this.toDate
       ).then((response) => {
+
         this.totalPages = parseInt(response.headers["total-pages"]);
 
         if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
@@ -115,9 +124,10 @@ export default {
         this.notInitialLoad = true;
 
         this.listingList = [...response.data];
-
+        this.hasDataLoaded = true;
       }, (error) => {
         console.log(error)
+        this.hasDataLoaded = true;
       });
     },
     
@@ -151,8 +161,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 
 @media (min-width: 720px) {
   #all-listings-cards-container {
