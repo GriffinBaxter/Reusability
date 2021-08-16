@@ -70,7 +70,7 @@ import Navbar from '../components/main/Navbar';
 import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
-import LoadingDots from "@/components/LoadingDots";
+import LoadingDots from "../components/LoadingDots";
 
 export default {
   name: "Home",
