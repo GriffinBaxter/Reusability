@@ -191,12 +191,11 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
             Predicate predicateForMaximumPrice = criteriaBuilder.lessThanOrEqualTo(listing.get("price"), maximumPrice);
             predicateList.add(predicateForMaximumPrice);
         }
-        if (fromDate != null) {
-            Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
-                    listing.get("closes").as(LocalDateTime.class), fromDate
-            );
-            predicateList.add(predicateForFromDate);
-        }
+        fromDate = fromDate == null ? LocalDateTime.now() : fromDate;
+        Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
+                listing.get("closes").as(LocalDateTime.class), fromDate
+        );
+        predicateList.add(predicateForFromDate);
         if (toDate != null) {
             Predicate predicateForToDate = criteriaBuilder.lessThanOrEqualTo(
                     listing.get("closes").as(LocalDateTime.class), toDate
