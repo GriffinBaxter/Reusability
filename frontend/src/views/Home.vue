@@ -24,37 +24,40 @@
           </div>
 
           <!-- All Bookmarked Listings Messages-->
-          <div id="bookmark-messages-container" v-if="hasDataLoaded">
-            <div :id="'bookmark-message-container-' + message.id"
-                 class="post shadow py-3 px-4"
-                 type="button"
-                 v-for="message in bookmarkMessages" v-bind:key="message.id"
-                 @click="toListing(message.listingId, message.businessId)">
-              <!--Post description-->
-              <div>
-                <p class="post-description">
-                  {{message.description}}</p>
+          <div v-if="showBookmarkMessages">
+
+            <div id="bookmark-messages-container" v-if="hasDataLoaded">
+              <div :id="'bookmark-message-container-' + message.id"
+                   class="post shadow py-3 px-4"
+                   type="button"
+                   v-for="message in bookmarkMessages" v-bind:key="message.id"
+                   @click="toListing(message.listingId, message.businessId)">
+                <!--Post description-->
+                <div>
+                  <p class="post-description">
+                    {{message.description}}</p>
+                </div>
+                <!--Listing close date-->
+                <p class="py-1">
+                  <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
+                </p>
+                <!--Date/time of message-->
+                <p class="py-1">
+                  <label class="bookmark-message-title">Notification Date:</label> {{ formatDateVar(message.created, true) }}
+                </p>
               </div>
-              <!--Listing close date-->
-              <p class="py-1">
-                <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
-              </p>
-              <!--Date/time of message-->
-              <p class="py-1">
-                <label class="bookmark-message-title">Notification Date:</label> {{ formatDateVar(message.created, true) }}
-              </p>
             </div>
-          </div>
-          <!--     Loading Dotes     -->
-          <div v-else class="d-flex justify-content-center py-md-4 my-md-4">
-            <div class="spinner-grow" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow" role="status">
-              <span class="sr-only">Loading...</span>
+            <!--     Loading Dotes     -->
+            <div v-else class="d-flex justify-content-center py-md-4 my-md-4">
+              <div class="spinner-grow" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+              <div class="spinner-grow" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+              <div class="spinner-grow" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
             </div>
           </div>
 
@@ -73,6 +76,7 @@ import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import Api from "../Api";
 import {formatDate} from "../dateUtils";
+import Cookies from "js-cookie";
 
 export default {
   name: "Home",
@@ -84,23 +88,33 @@ export default {
     return {
       bookmarkMessages: [],
       rendered: false,
-      hasDataLoaded: false
+      hasDataLoaded: false,
+      showBookmarkMessages: false, // hide messages if acting as business
     }
   },
   mounted() {
     this.hasDataLoaded = false;
-    Api.getBookmarkedMessage().then(res => {
-      this.bookmarkMessages = res.data.reverse();
-      this.rendered = true
-      this.hasDataLoaded = true;
-    }).catch((err) => {
-      if (err.response && err.response.status === 401) {
-        this.$router.push({path: '/invalidToken'})
-      } else {
-        console.log(err)
-      }
-      this.hasDataLoaded = true;
-    })
+    this.showBookmarkMessages = true;
+
+    const actingAs = Cookies.get('actAs');
+
+    if (actingAs === undefined) {
+
+      Api.getBookmarkedMessage().then(res => {
+        this.bookmarkMessages = res.data.reverse();
+        this.rendered = true
+        this.hasDataLoaded = true;
+      }).catch((err) => {
+        if (err.response && err.response.status === 401) {
+          this.$router.push({path: '/invalidToken'})
+        } else {
+          console.log(err)
+        }
+        this.hasDataLoaded = true;
+      })
+    } else {
+      this.showBookmarkMessages = false;
+    }
   },
   methods: {
     /**
