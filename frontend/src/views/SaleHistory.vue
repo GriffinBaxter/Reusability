@@ -9,7 +9,7 @@
           <h1 id="page-title">{{ businessName }} Sale History</h1>
         </div>
         <div class="card p-3">
-        <table class="table table-borderless table-striped"  id="sale-table">
+        <table class="table table-borderless"  id="sale-table">
           <thead>
           <tr>
             <th id="columns" v-for="column in columns" :key="column.title">{{ column.title }}</th>
@@ -25,10 +25,24 @@
             <td>{{ listing.bookmarks }}</td>
           </tr>
           </tbody>
+          <tfoot>
+          <div v-if="noResults">
+            No listings sold
+          </div>
+          <div v-else>
+            Showing {{currentPage*maxSoldListings+1}}-{{numberListingsRetrieved+currentPage*maxSoldListings}} of {{totalListings}} listings sold
+          </div>
+          </tfoot>
         </table>
         </div>
+        <!---------------------------------------------- page buttons ------------------------------------------------>
+        <div class="page-buttons mt-4 mb-4" id="page-button-container">
+          <PageButtons
+              v-bind:totalPages="totalPages"
+              v-bind:currentPage="currentPage"
+              @updatePage="updatePage"/>
+        </div>
       </div>
-
     </div>
     <Footer/>
   </div>
@@ -42,12 +56,14 @@ import {checkAccessPermission} from "@/views/helpFunction";
 import Api from "@/Api";
 import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "@/dateUtils";
+import PageButtons from "../components/PageButtons";
 
 export default {
   name: "SaleHistory",
   components: {
     Footer,
-    Navbar
+    Navbar,
+    PageButtons
   },
   data() {
     return {
@@ -66,6 +82,15 @@ export default {
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
+
+      // Table
+      maxSoldListings: 10,
+      // Total number of pages is used to determine pagination
+      totalPages: 1,
+      currentPage: 0,
+      noResults: false,
+      numberListingsRetrieved: 0,
+      totalListings: 0
     }
   },
   methods: {
@@ -81,15 +106,38 @@ export default {
       })
     },
     /**
-     * Calls a GET request to the backend to retrieve the sold listings for the current business.
+     * Calls a GET request to the backend to retrieve the sold listings for the current business, and
+     * then formats the retrieved data to be displayed.
      */
     async retrieveSoldListings() {
-      await Api.getSoldListings(this.businessId).then(response => {
+      await Api.getSoldListings(this.businessId, this.currentPage).then(response => {
         this.soldListings = response.data;
+        this.numberListingsRetrieved = this.soldListings.length;
+        this.totalListings = parseInt(response.headers["total-rows"]);
+        this.totalPages = parseInt(response.headers["total-pages"]);
+        // format the dates and prices of the listings accordingly
         for (let i = 0; i < this.soldListings.length; i++) {
           this.soldListings[i].listingDate = formatDate(this.soldListings[i].listingDate);
           this.soldListings[i].saleDate = formatDate(this.soldListings[i].saleDate);
           this.soldListings[i].price = this.formatPrice(this.soldListings[i].price);
+        }
+        // no results have been received so the no results message should be displayed
+        if (this.soldListings.length === 0) {
+          this.noResults = true;
+        }
+        // fill the table with empty rows so that the table remains a constant size
+        if (this.soldListings.length < this.maxSoldListings) {
+          for (let j = this.soldListings.length; j < this.maxSoldListings; j++) {
+            this.soldListings.push({
+              bookmarks: "",
+              id: j,
+              listingDate: "",
+              price: "",
+              productId: "",
+              quantity: "",
+              saleDate: ""
+            });
+          }
         }
       }).catch((error) => {
         this.manageError(error);
@@ -116,10 +164,22 @@ export default {
       if (error.response.status === 406)    { await this.$router.push({path: '/noBusiness'});   }
       else { await this.$router.push({path: '/noBusiness'}); console.log(error.message); }
     },
+    /**
+     * This method adds a currency symbol and unit to a price, if the business has a valid currency.
+     * An example of the returned format is $24 USD
+     */
     formatPrice(price) {
       if (this.currencySymbol !=="" && this.currencyCode !== "") { return this.currencySymbol + price +  " " + this.currencyCode; }
       return price;
-    }
+    },
+    /**
+     * Given a new page number. The function will update the table to show the new page.
+     * @param newPageNumber The 0 origin page number.
+     */
+    updatePage(newPageNumber) {
+        this.currentPage = newPageNumber;
+        this.retrieveSoldListings();
+    },
   },
   /**
    * When mounted, initiate population of page.
@@ -147,6 +207,11 @@ export default {
 #page-title {
   padding: 10px;
   text-align: center;
+}
+
+#rows {
+  min-height: 40px;
+  height: 40px;
 }
 
 </style>

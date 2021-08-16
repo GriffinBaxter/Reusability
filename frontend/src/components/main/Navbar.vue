@@ -325,7 +325,7 @@ export default {
       Api.getNotifications()
           .then(response => this.newNotification = (response.data.length === 0))
           .catch((error) => {
-            if (error.status === 401) {
+            if (error.response.status === 401) {
               // Missing or invalid token
               this.$router.push({path: '/invalidtoken'});
             } else {
