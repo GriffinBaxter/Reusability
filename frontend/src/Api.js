@@ -341,6 +341,13 @@ export default {
         })
     },
 
+    // Retrieve the bookmarked messages
+    getBookmarkedMessage: () => {
+        return instance.get(`/home/bookmarkMessages`, {
+            withCredentials: true
+        })
+    },
+
     // Buy a listing
     buyListing: (id) => {
         return instance.put(`/listings/${id}/buy`, {}, {

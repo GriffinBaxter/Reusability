@@ -13,78 +13,31 @@
       <div id="home" class="container all-but-footer">
 
         <!--News feed-->
-        <div class="container-news text-font">
+        <div class="container-news mx-md-5 text-font">
+
+          <br>
+          <h1 style="text-align: center">Home</h1>
+
+          <div v-if="bookmarkMessages.length === 0 && rendered">
+            <br>
+            <h2 style="text-align: center">(No Bookmarked Messages)</h2>
+          </div>
 
           <!--Post 1 for news feed-->
-          <div class="post shadow py-5 px-4">
-            <!--Post header-->
-            <div class="post-header">
-              <div>
-                <img id="profile-image-1" src="../../public/profile_icon_1.jpg" alt="profile image">
-                <span class="account-name">Green Grocers </span>
-              </div>
-              <div>
-                <span>Apr 6</span>
-              </div>
-            </div>
+          <div class="post shadow py-3 px-4" v-for="message in bookmarkMessages" v-bind:key="message.id">
             <!--Post description-->
             <div>
-              <p class="post-description"> This is the first photo of the feed. This is a multi-lined comment for
-                testing purposes.</p>
+              <p class="post-description">
+                {{message.description}}</p>
             </div>
-            <p></p>
-            <!--Post image-->
-            <div>
-              <img class="post-image" src="../../public/apples.jpg" alt="image 2">
-            </div>
-          </div>
-
-          <!--Post 2 for news feed-->
-          <div class="post shadow py-5 px-4">
-            <!--Post header-->
-            <div class="post-header">
-              <div>
-                <img id="profile-image-2" src="../../public/profile_icon_2.jpg" alt="profile image">
-                <span class="account-name">Fast Frank's</span>
-              </div>
-              <div>
-                <span>Apr 4</span>
-              </div>
-            </div>
-            <!--Post description-->
-            <div>
-              <p class="post-description"> This is the second photo of the feed. This is a multi-lined comment for
-                testing purposes.</p>
-            </div>
-            <p></p>
-            <!--Post image-->
-            <div>
-              <img class="post-image" src="../../public/cans.jpg" alt="image 2">
-            </div>
-          </div>
-
-          <!--Post 3 for news feed-->
-          <div class="post shadow py-5 px-4">
-            <!--Post header-->
-            <div class="post-header">
-              <div>
-                <img id="profile-image-3" src="../../public/profile_icon_3.jpg" alt="profile image">
-                <span class="account-name">New Leaf Organics</span>
-              </div>
-              <div>
-                <span>Apr 3</span>
-              </div>
-            </div>
-            <!--Post description-->
-            <div>
-              <p class="post-description"> This is the third photo of the feed. This is a multi-lined comment for
-                testing purposes.</p>
-            </div>
-            <p></p>
-            <!--Post image-->
-            <div>
-              <img class="post-image" src="../../public/clothes.jpg" alt="image 2">
-            </div>
+            <!--Listing close date-->
+            <p class="py-1">
+              Closes: {{ formatDateVar(message.closes, false) }}
+            </p>
+            <!--Date/time of message-->
+            <p class="py-1">
+              Notification date: {{ formatDateVar(message.created, true) }}
+            </p>
           </div>
 
         </div>
@@ -100,6 +53,8 @@
 <script>
 import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
+import Api from "../Api";
+import {formatDate} from "../dateUtils";
 
 export default {
   name: "Home",
@@ -108,7 +63,33 @@ export default {
     Navbar
   },
   data() {
-    return {}
+    return {
+      bookmarkMessages: [],
+      rendered: false
+    }
+  },
+  mounted() {
+    Api.getBookmarkedMessage().then(res => {
+      this.bookmarkMessages = res.data.reverse();
+      this.rendered = true
+    }).catch((err) => {
+      if (err.response && err.response.status === 401) {
+        this.$router.push({path: '/invalidToken'})
+      } else {
+        console.log(err)
+      }
+    })
+  },
+  methods: {
+    /**
+     * Formats date to String using formatDate method in dateUtils
+     * @param date Date to format
+     * @param tf Boolean True/False for if time should be included
+     * @return {string|null} Date string
+     */
+    formatDateVar(date, tf) {
+      return formatDate(date, tf)
+    }
   }
 }
 </script>
@@ -170,56 +151,40 @@ div.post h2, div.post p {
   padding: 10px;
 }
 
-/*
- * Width is 524px since news feed item is 600px and then 12px margin each side.
- */
-div.container {
-  width: 424px;
-  margin: auto;
-}
-
-/**
- * Styling for profile images for each post. Makes image into circle.
- */
-#profile-image-1, #profile-image-2, #profile-image-3 {
-  height: 50px;
-  width: auto;
-  border-radius: 50px;
-}
-
-.post-image {
-  border-radius: 15px;
-}
-
-.account-name {
-  font-weight: bold;
-  margin-left: 10px;
-}
-
 .post-description {
   margin-bottom: 30px;
 }
 
 /*-------------------------------------------- Medium break point styling -------------------------------------------*/
 
-/*Medium break point*/
-@media (min-width: 692px) {
-
-  div.container {
-    width: 524px;
-    margin: auto;
-  }
-}
-
-
-/*-------------------------------------------- Large break point styling -------------------------------------------*/
-
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   /*
  * Width is 524px since news feed item is 600px and then 12px margin each side.
  */
   div.container {
-    width: 624px;
+    width: 80%;
+    margin: auto;
+  }
+}
+
+/*-------------------------------------------- Large break point styling -------------------------------------------*/
+
+@media (min-width: 992px) {
+  /*
+ * Width is 524px since news feed item is 600px and then 12px margin each side.
+ */
+  div.container {
+    width: 70%;
+    margin: auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  /*
+ * Width is 524px since news feed item is 600px and then 12px margin each side.
+ */
+  div.container {
+    width: 60%;
     margin: auto;
   }
 }
