@@ -78,7 +78,11 @@ class ListingResourceIntegrationTests {
     @MockBean
     private ListingNotificationRepository listingNotificationRepository;
 
-    @MockBean BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+    @MockBean
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
+    @MockBean
+    private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
     private MockHttpServletResponse response;
 
@@ -147,7 +151,7 @@ class ListingResourceIntegrationTests {
                                                         "\"businessesAdministered\":[null]," +
                                                         "\"dateOfBirth\":\"%s\"," +
                                                         "\"phoneNumber\":\"%s\"," +
-                                                        "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]," +
+                                                        "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +
                                                     "\"primaryAdministratorId\":%d," +
                                                     "\"name\":\"%s\"," +
                                                     "\"description\":\"%s\"," +
@@ -197,7 +201,7 @@ class ListingResourceIntegrationTests {
             "\"businessesAdministered\":[null]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
-            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]," +
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +
             "\"primaryAdministratorId\":%d," +
             "\"name\":\"%s\"," +
             "\"description\":\"%s\"," +
@@ -409,7 +413,7 @@ class ListingResourceIntegrationTests {
         adminListing.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, bookmarkedListingMessageRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository))
                 .build();
     }
 
@@ -749,9 +753,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -792,9 +796,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -912,9 +916,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1014,9 +1018,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1057,9 +1061,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1102,9 +1106,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1267,9 +1271,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1314,9 +1318,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1361,9 +1365,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1417,9 +1421,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1472,9 +1476,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1510,9 +1514,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),

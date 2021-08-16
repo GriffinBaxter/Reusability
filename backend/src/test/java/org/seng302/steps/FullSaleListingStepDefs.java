@@ -69,6 +69,10 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
     @MockBean
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
+    @Autowired
+    @MockBean
     private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
     private User user;
@@ -97,7 +101,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
         businessRepository = mock(BusinessRepository.class);
         userRepository = mock(UserRepository.class);
         soldListingRepository = mock(SoldListingRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, bookmarkedListingMessageRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository)).build();
     }
 
     @Given("I am logged in as a business administrator.")
@@ -161,7 +165,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
         );
         user.setBusinessesAdministeredObjects(List.of(business));
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryItemRepository, productRepository,
-                    businessRepository, userRepository, soldListingRepository, listingNotificationRepository, bookmarkedListingMessageRepository)).build();
+                    businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository)).build();
     }
 
     @Given("I have a listing with quantity {int}, price {double}, closing date {string}, and {string} in the more-info section.")
@@ -203,14 +207,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                             "\"businessesAdministered\":[null]," +
                             "\"dateOfBirth\":\"" + user.getDateOfBirth() + "\"," +
                             "\"phoneNumber\":\"" + user.getPhoneNumber() + "\"," +
-                            "\"homeAddress\":{" +
-                                "\"streetNumber\":\"" + user.getHomeAddress().getStreetNumber() + "\"," +
-                                "\"streetName\":\"" + user.getHomeAddress().getStreetName() + "\"," +
-                                "\"city\":\"" + user.getHomeAddress().getCity() + "\"," +
-                                "\"region\":\"" + user.getHomeAddress().getRegion() + "\"," +
-                                "\"country\":\"" + user.getHomeAddress().getCountry() + "\"," +
-                                "\"postcode\":\"" + user.getHomeAddress().getPostcode() + "\"," +
-                                "\"suburb\":\"" + user.getHomeAddress().getSuburb() + "\"}}]," +
+                            "\"homeAddress\":" + user.getHomeAddress() + "}]," +
                         "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
                         "\"name\":\"" + business.getName() + "\"," +
                         "\"description\":\"" + business.getDescription() + "\"," +

@@ -1,5 +1,7 @@
 package org.seng302.view.outgoing;
 
+import org.seng302.model.enums.NotificationType;
+
 import java.time.LocalDateTime;
 
 /**
@@ -11,19 +13,25 @@ public class ListingNotificationPayload {
     private Integer id;
     private String description;
     private String created;
+    private String notificationType;
 
     /**
+     * Constructor for the ListingNotificationPayload
+     *
      * @param id notification id
      * @param description description of notification
      * @param created the time the notification was created
+     * @param notificationType the type of the notification
      */
     public ListingNotificationPayload(Integer id,
                                       String description,
-                                      LocalDateTime created
+                                      LocalDateTime created,
+                                      NotificationType notificationType
     ) {
         this.id = id;
         this.description = description;
         this.created = created.toString();
+        this.notificationType = notificationType.toString();
     }
 
     /**
@@ -83,7 +91,8 @@ public class ListingNotificationPayload {
         return "{\"id\":" + id +
                 ",\"description\":\"" + description + "\"" +
                 ",\"created\":\"" + created + "\"" +
-                "}";
+                ",\"notificationType\":\"" + notificationType +
+                "\"}";
     }
 
 }
