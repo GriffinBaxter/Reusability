@@ -175,7 +175,6 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "created": "2020-07-14T14:52:00Z"
                 }
             };
-
             Api.getBusiness.mockImplementation(() => Promise.resolve(response));
 
             await wrapper.vm.retrieveBusinessInfo();
@@ -198,9 +197,7 @@ describe('Tests methods in the SaleHistory component.', () => {
                             symbol: "$"
                         }]
                 }]
-
             };
-
             CurrencyAPI.currencyQuery.mockImplementation(() => Promise.resolve(response));
 
             await wrapper.vm.retrieveCurrencyInfo();
@@ -212,11 +209,232 @@ describe('Tests methods in the SaleHistory component.', () => {
 
     })
 
+    describe("Test retrieveSoldListings method", () => {
 
+        test("Test that the table rows (soldListings) are filled when zero soldListings are received from the backend", async ()=> {
+            const response = {
+                status: 200,
+                data: [],
+                headers: {
+                    "total-rows": 0,
+                    "total-pages": 1
+                }
+            };
+            Api.getSoldListings.mockImplementation(() => Promise.resolve(response));
+
+            await wrapper.vm.retrieveSoldListings();
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.vm.$data.noResults).toBeTruthy(); // there is no results
+            expect(wrapper.vm.$data.soldListings.length).toEqual(10); // the max number of sold listings
+        })
+
+        test("Test that the data is correctly formatted when a 200 response is received from the backend with data", async ()=> {
+            const response = {
+                status: 200,
+                data: [
+                    {
+                        "id": 5,
+                        "saleDate": "2021-08-15 23:37:39",
+                        "listingDate": "2020-09-18 12:58:47",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 96,
+                        "price": 52.46,
+                        "bookmarks": 48
+                    },
+                    {
+                        "id": 119,
+                        "saleDate": "2021-08-15 23:30:09",
+                        "listingDate": "2021-04-16 08:29:00",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 80,
+                        "price": 2.97,
+                        "bookmarks": 95
+                    },
+                    {
+                        "id": 713,
+                        "saleDate": "2021-08-15 23:25:42",
+                        "listingDate": "2021-05-13 09:41:09",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 39,
+                        "price": 15.93,
+                        "bookmarks": 59
+                    },
+                    {
+                        "id": 770,
+                        "saleDate": "2021-08-15 23:22:05",
+                        "listingDate": "2020-11-25 11:21:00",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 71,
+                        "price": 12.49,
+                        "bookmarks": 56
+                    },
+                    {
+                        "id": 710,
+                        "saleDate": "2021-08-15 22:59:32",
+                        "listingDate": "2021-03-14 19:56:26",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 95,
+                        "price": 5.04,
+                        "bookmarks": 79
+                    },
+                    {
+                        "id": 753,
+                        "saleDate": "2021-08-15 22:51:42",
+                        "listingDate": "2020-09-30 04:07:59",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 90,
+                        "price": 8.87,
+                        "bookmarks": 91
+                    },
+                    {
+                        "id": 463,
+                        "saleDate": "2021-08-15 22:39:22",
+                        "listingDate": "2021-07-21 19:44:03",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 24,
+                        "price": 57.57,
+                        "bookmarks": 80
+                    },
+                    {
+                        "id": 469,
+                        "saleDate": "2021-08-15 22:35:38",
+                        "listingDate": "2021-05-31 19:35:20",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 25,
+                        "price": 8.67,
+                        "bookmarks": 75
+                    },
+                    {
+                        "id": 147,
+                        "saleDate": "2021-08-15 21:40:32",
+                        "listingDate": "2020-08-29 22:43:37",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 91,
+                        "price": 98.47,
+                        "bookmarks": 73
+                    },
+                    {
+                        "id": 131,
+                        "saleDate": "2021-08-15 21:00:26",
+                        "listingDate": "2021-06-09 20:21:05",
+                        "productId": "BLACK-FOREST",
+                        "quantity": 56,
+                        "price": 90.8,
+                        "bookmarks": 15
+                    }
+                ],
+                headers: {
+                    "total-rows": 10,
+                    "total-pages": 1
+                }
+            };
+            const formattedListings = [
+                {
+                    "id": 5,
+                    "saleDate": "15th Aug 2021 11:37 pm",
+                    "listingDate": "18th Sep 2020 12:58 pm",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 96,
+                    "price": "$52.46 USD",
+                    "bookmarks": 48
+                },
+                {
+                    "id": 119,
+                    "saleDate": "15th Aug 2021 11:30 pm",
+                    "listingDate": "16th Apr 2021 8:29 am",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 80,
+                    "price": "$2.97 USD",
+                    "bookmarks": 95
+                },
+                {
+                    "id": 713,
+                    "saleDate": "15th Aug 2021 11:25 pm",
+                    "listingDate": "13th May 2021 9:41 am",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 39,
+                    "price": "$15.93 USD",
+                    "bookmarks": 59
+                },
+                {
+                    "id": 770,
+                    "saleDate": "15th Aug 2021 11:22 pm",
+                    "listingDate": "25th Nov 2020 11:21 am",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 71,
+                    "price": "$12.49 USD",
+                    "bookmarks": 56
+                },
+                {
+                    "id": 710,
+                    "saleDate": "15th Aug 2021 10:59 pm",
+                    "listingDate": "14th Mar 2021 7:56 pm",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 95,
+                    "price": "$5.04 USD",
+                    "bookmarks": 79
+                },
+                {
+                    "id": 753,
+                    "saleDate": "15th Aug 2021 10:51 pm",
+                    "listingDate": "30th Sep 2020 4:07 am",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 90,
+                    "price": "$8.87 USD",
+                    "bookmarks": 91
+                },
+                {
+                    "id": 463,
+                    "saleDate": "15th Aug 2021 10:39 pm",
+                    "listingDate": "21st Jul 2021 7:44 pm",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 24,
+                    "price": "$57.57 USD",
+                    "bookmarks": 80
+                },
+                {
+                    "id": 469,
+                    "saleDate": "15th Aug 2021 10:35 pm",
+                    "listingDate": "31st May 2021 7:35 pm",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 25,
+                    "price": "$8.67 USD",
+                    "bookmarks": 75
+                },
+                {
+                    "id": 147,
+                    "saleDate": "15th Aug 2021 9:40 pm",
+                    "listingDate": "29th Aug 2020 10:43 pm",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 91,
+                    "price": "$98.47 USD",
+                    "bookmarks": 73
+                },
+                {
+                    "id": 131,
+                    "saleDate": "15th Aug 2021 9:00 pm",
+                    "listingDate": "9th Jun 2021 8:21 pm",
+                    "productId": "BLACK-FOREST",
+                    "quantity": 56,
+                    "price": "$90.8 USD",
+                    "bookmarks": 15
+                }
+            ];
+            Api.getSoldListings.mockImplementation(() => Promise.resolve(response));
+
+            // "mock" the currency request
+            wrapper.vm.$data.currencyCode = "USD";
+            wrapper.vm.$data.currencySymbol = "$";
+
+            await wrapper.vm.retrieveSoldListings();
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.vm.$data.noResults).toBeFalsy(); // there were results
+            expect(wrapper.vm.$data.soldListings.length).toEqual(response.data.length); // the max number of sold listings
+            expect(wrapper.vm.$data.soldListings).toEqual(formattedListings); // with the prices and dates formatted
+        })
+    })
 })
 
 
-// 200 retrieve sold listings
-// 200 empty sold listings
-// 200 < max
-// 200 = max
