@@ -18,6 +18,11 @@
           <router-link to="/home" tabindex="-1" style="justify-content: center; align-items: center; display: flex">
             <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
           </router-link>
+
+          <!-- Brand name-->
+          <div id="brand-name">
+            REUSEABILITY
+          </div>
         </div>
 
 
@@ -25,19 +30,19 @@
         <div id="user-section">
 
           <!-- Mid screen notification icon -->
-          <div
-              type="button"
-              @click="switchNotificationBox()">
-            <img v-if="newNotification"
-                 alt="notification"
-                 src="../../public/notification.png"
-                 height="43"
-                 width="43"/>
-            <img v-else type="button"
-                 alt="notification"
-                 src="../../public/notification_new.png"
-                 height="43"
-                 width="43"/>
+          <div>
+            <div
+                type="button"
+                @click="switchNotificationBox()">
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="43" height="43" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16" v-if="newNotification">
+                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+              </svg>
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="43" height="43" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16" v-else>
+                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+              </svg>
+            </div>
             <Notification v-if="openNotificationBox" style="position: absolute; right: 25px; z-index: 999"/>
           </div>
 
@@ -153,27 +158,21 @@
           </div>
         </li>
 
-        <li class="a-nav-item mt-4 mb-0">
-          <h6>Actions:</h6>
-          <hr class="mb-0">
-        </li>
-
         <!-- Logout button -->
-        <li class="a-nav-item" >
-          <button @click="logout" class="router-nav-link">Logout</button>
+        <li class="a-nav-item" style="margin-top: 2rem">
+          <button @click="logout" class="router-nav-link" id="logout-button">Logout</button>
         </li>
 
         <li class="a-nav-item mt-4 mb-0">
-          <h6>Choose who to act as:</h6>
+          <h6>Act as:</h6>
           <hr class="mb-0">
         </li>
 
         <!-- Options for replacing who you are acting as -->
         <li class="a-nav-item mt-0" v-for="(act, index) in showOmitName ? interactAsOmit : interactAs" :key="index" tabindex="-1"
-            @click="itemClicked(index)">
+            @click="() => itemClicked(index)">
           <h6 v-if="index===0"><br>User</h6>
           <div v-else-if="index===1">
-            <hr>
             <h6>Businesses</h6>
           </div>
           <button class="router-nav-link" tabindex="0">{{ act.name }}</button>
@@ -227,7 +226,7 @@ export default {
       showOmitName: null,
       interactAsOmit: [],
       actAsOmit: "",
-      maxNameLength: 30,
+      maxNameLength: 15,
       omitPoint: 10,
 
       // notice for new notifications
@@ -275,6 +274,7 @@ export default {
      * switch Notification Box
      */
     switchNotificationBox() {
+      this.newNotification = false;
       this.openNotificationBox = !this.openNotificationBox;
     },
     /**
@@ -331,7 +331,9 @@ export default {
      */
     updateNotificationState() {
       Api.getNotifications()
-          .then(response => this.newNotification = (response.data.length === 0))
+          .then(response => {
+            this.newNotification = (response.data.length > 0);
+          })
           .catch((error) => {
             if (error.status === 401) {
               // Missing or invalid token
@@ -614,6 +616,10 @@ export default {
     background-color: #2eda77;
   }
 
+  #brand-name {
+    display: none;
+  }
+
   #links-list {
     margin: 0;
     list-style: none;
@@ -654,6 +660,18 @@ export default {
     border: none;
     outline: none;
     box-shadow: none;
+  }
+
+  #logout-button {
+    color: #fff;
+    background-color: #ef5e33;
+    border: 1px solid #ef5e33;
+  }
+
+  #logout-button:hover {
+    color: #ef5e33;
+    background-color: #fff;
+    border: 1px solid #ef5e33;
   }
 
   .router-nav-link:hover {
@@ -876,6 +894,7 @@ export default {
       top: 8.5rem;
       right: 0;
       max-width: fit-content;
+      min-width: 7rem;
       box-shadow: -2px 10px 1rem #00000030;
     }
 
@@ -891,6 +910,20 @@ export default {
       align-items: flex-end;
       margin-left: 0;
     }
+  }
+
+  @media screen and (min-width: 900px){
+
+    #brand-name {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-family: 'Merriweather Sans', sans-serif;
+      margin: 0;
+      padding-left: 1rem;
+    }
+
   }
 
 </style>
