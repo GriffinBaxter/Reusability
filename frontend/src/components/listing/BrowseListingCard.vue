@@ -1,7 +1,7 @@
 <template>
   <div class="card" style="width: 18rem;">
     <!--Bookmark-->
-    <div class="tag-vertical discount"
+    <div v-if="actingBusinessId == null" class="tag-vertical discount"
          :id="'bookmarkButton_'+id"
          style="position:absolute; right: 5px"
          type="button"
@@ -101,6 +101,10 @@ export default {
       type: Number,
       default: 0,
       required: true
+    },
+    actingBusinessId: {
+      type: String,
+      default: null
     }
   },
   data() {

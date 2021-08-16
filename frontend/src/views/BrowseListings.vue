@@ -25,7 +25,8 @@
               v-bind:more-info="listing.moreInfo"
               v-bind:price="listing.price"
               v-bind:quantity="listing.quantity"
-              v-bind:total-bookmarks="listing.totalBookmarks"/>
+              v-bind:total-bookmarks="listing.totalBookmarks"
+              v-bind:actingBusinessId="actingBusinessId"/>
         </div>
       </div>
       <PageButtons
@@ -45,6 +46,7 @@ import BrowseListingCard from "../components/listing/BrowseListingCard";
 import Api from "../Api"
 import BrowseListingsSearch from '../components/listing/BrowseListingsSearch';
 import PageButtons from "../components/PageButtons";
+import Cookies from "js-cookie";
 
 export default {
   name: "Listings",
@@ -67,6 +69,8 @@ export default {
       currentPage: 0,
       totalPages: 0,
       totalRows: 0,
+      
+      actingBusinessId: null,
     }
   },
   computed: {
@@ -138,6 +142,7 @@ export default {
 
   async mounted() {
 
+    this.actingBusinessId = Cookies.get("actAs");
     await this.requestListings();
 
   }
