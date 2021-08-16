@@ -18,20 +18,20 @@
           <br>
           <h1 style="text-align: center">Home</h1>
 
-          <div v-if="bookmarkMessages.length === 0 && rendered">
-            <br>
-            <h2 style="text-align: center">(No Bookmarked Messages)</h2>
-          </div>
-
           <!-- All Bookmarked Listings Messages-->
           <div v-if="showBookmarkMessages">
 
             <div id="bookmark-messages-container" v-if="hasDataLoaded">
+              <div v-if="bookmarkMessages.length === 0 && rendered">
+                <h2 style="text-align: center">(No Bookmarked Messages)</h2>
+              </div>
+
               <div :id="'bookmark-message-container-' + message.id"
                    class="post shadow py-3 px-4"
                    type="button"
                    v-for="message in bookmarkMessages" v-bind:key="message.id"
                    @click="toListing(message.listingId, message.businessId)">
+
                 <!--Post description-->
                 <div>
                   <p class="post-description">
@@ -49,7 +49,7 @@
             </div>
             <!--     Loading Dotes     -->
             <div v-else>
-              <LoadingDots></LoadingDots>
+              <LoadingDots/>
             </div>
 
           </div>
@@ -59,7 +59,7 @@
 
     </div>
     <!--Footer contains links that are the same as those in the nav bar-->
-    <Footer></Footer>
+    <Footer/>
 
   </div>
 </template>
