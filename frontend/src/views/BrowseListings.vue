@@ -28,16 +28,8 @@
               v-bind:total-bookmarks="listing.totalBookmarks"/>
         </div>
       </div>
-      <div v-else class="d-flex justify-content-center py-md-4 my-md-4">
-        <div class="spinner-grow" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
+      <div v-else>
+        <LoadingDots></LoadingDots>
       </div>
 
       <PageButtons
@@ -57,10 +49,11 @@ import BrowseListingCard from "../components/listing/BrowseListingCard";
 import Api from "../Api"
 import BrowseListingsSearch from '../components/listing/BrowseListingsSearch';
 import PageButtons from "../components/PageButtons";
+import LoadingDots from "../components/LoadingDots";
 
 export default {
   name: "Listings",
-  components: {Footer, Navbar, BrowseListingCard, BrowseListingsSearch, PageButtons},
+  components: {LoadingDots, Footer, Navbar, BrowseListingCard, BrowseListingsSearch, PageButtons},
   data() {
     return {
       // Array that stores all retrieved listings
@@ -163,13 +156,6 @@ export default {
 </script>
 
 <style scoped>
-
-.spinner-grow {
-  height: 14px;
-  width: 14px;
-  margin-right: 4px;
-  margin-left: 4px;
-}
 
 @media (min-width: 720px) {
   #all-listings-cards-container {

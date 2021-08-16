@@ -33,16 +33,8 @@
           </div>
         </div>
       </div>
-      <div v-else class="d-flex justify-content-center py-md-4 my-md-4">
-        <div class="spinner-grow" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
+      <div v-else>
+        <LoadingDots></LoadingDots>
       </div>
 
       <!---------------------------------------------- page buttons ------------------------------------------------>
@@ -63,6 +55,7 @@ import Card from "./Card";
 import OrderingOptionsMenu from "./OrderingOptionsMenu";
 import PageButtons from "../PageButtons";
 import {formatDate} from "../../dateUtils";
+import LoadingDots from "../LoadingDots"
 
 export default {
   name: "MarketplaceTabSection",
@@ -102,6 +95,7 @@ export default {
     PageButtons,
     OrderingOptionsMenu,
     Card,
+    LoadingDots
   },
   methods: {
     selectACard(index) {

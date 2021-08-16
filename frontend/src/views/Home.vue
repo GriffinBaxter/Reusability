@@ -135,27 +135,6 @@ header h1 {
   margin: 0;
 }
 
-/* STYLING FOR CROPPING AND REDUCING IMAGES THAT ARE LARGE THAN 600PX WIDE -> could use elsewhere in project later */
-/*!**/
-/* * Margins for each news item are 12px wide and news item is 600px wide.*/
-/* * crop and crop img are used to crop the given image and keep the correct ratio and scale it to fit within*/
-/* * the news item.*/
-/* *!*/
-/*.crop {*/
-/*  width: 600px;*/
-/*  height: 450px;*/
-/*  overflow: hidden;*/
-/*}*/
-
-/*!**/
-/* * Used with .crop to obtain the effect explained in .crop's comment.*/
-/* *!*/
-/*.crop img {*/
-/*  width: 1500px;*/
-/*  height: 900px;*/
-/*  margin: -75px  0 -100px 0;*/
-/*}*/
-
 div.post {
   background: white;
   margin-top: 20px;
