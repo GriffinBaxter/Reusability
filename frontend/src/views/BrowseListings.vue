@@ -94,7 +94,6 @@ export default {
       this.orderBy = this.$route.query.orderBy || '';
       this.currentPage = parseInt(this.$route.query.page) - 1 || 0;
       this.businessTypes = this.$route.query.businessTypes || [];
-      console.log(this.businessTypes)
       this.minimumPrice = this.$route.query.minimumPrice || '';
       this.maximumPrice = this.$route.query.maximumPrice || '';
       this.fromDate = this.$route.query.fromDate || '';
@@ -111,8 +110,6 @@ export default {
           this.minimumPrice, this.maximumPrice,
           this.fromDate, this.toDate
       ).then((response) => {
-        console.log(response)
-
         this.totalPages = parseInt(response.headers["total-pages"]);
 
         if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {

@@ -29,7 +29,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             name: 'BrowseListing',
             query: {
                 searchQuery: null, searchType: null,
-                orderBy: null, page: null, businessType: null,
+                orderBy: null, page: null, businessTypes: [],
                 minimumPrice: null, maximumPrice: null,
                 fromDate: null, toDate: null
             }
@@ -208,7 +208,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
                 searchButton.trigger('click');
 
                 expect(router.currentRoute.name).toBe('BrowseListings')
-                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType&orderBy=priceASC&page=1&businessType&minimumPrice&maximumPrice&fromDate&toDate`)
+                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType&orderBy=priceASC&page=1&minimumPrice&maximumPrice&fromDate&toDate`)
             });
         });
     })
@@ -517,7 +517,7 @@ describe('Tests the getSelectedRadio method.', () => {
             name: 'BrowseListing',
             query: {
                 searchQuery: null, searchType: null,
-                orderBy: null, page: null, businessType: null,
+                orderBy: null, page: null, businessTypes: [],
                 minimumPrice: null, maximumPrice: null,
                 fromDate: null, toDate: null
             }
