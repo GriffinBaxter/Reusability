@@ -333,7 +333,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -417,7 +417,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing2, listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.desc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -475,7 +475,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing2);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, convertedBusinessType, null, null, null, null
@@ -496,7 +496,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -517,7 +517,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, minimum, maximum, null, null
@@ -539,7 +539,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing2);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByBusinessName(
                 names, paging, null, null, null, null, null
@@ -560,7 +560,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByLocation(
                 names, paging, null, null, null, null, null
@@ -582,7 +582,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null,

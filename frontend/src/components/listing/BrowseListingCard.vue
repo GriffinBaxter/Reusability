@@ -176,7 +176,8 @@ export default {
 }
 
 .card {
-  margin: 0.5em 0.5em 0.5em 0.5em;
+  margin-bottom: 1em;
+  margin-top: 1em;
 
 }
 
