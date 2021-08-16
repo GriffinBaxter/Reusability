@@ -191,11 +191,12 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
             Predicate predicateForMaximumPrice = criteriaBuilder.lessThanOrEqualTo(listing.get("price"), maximumPrice);
             predicateList.add(predicateForMaximumPrice);
         }
-        fromDate = fromDate == null || fromDate.isBefore(LocalDateTime.now()) ? LocalDateTime.now() : fromDate;
-        Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
-                listing.get("closes").as(LocalDateTime.class), fromDate
-        );
-        predicateList.add(predicateForFromDate);
+        if (fromDate != null) {
+            Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
+                    listing.get("closes").as(LocalDateTime.class), fromDate
+            );
+            predicateList.add(predicateForFromDate);
+        }
         if (toDate != null) {
             Predicate predicateForToDate = criteriaBuilder.lessThanOrEqualTo(
                     listing.get("closes").as(LocalDateTime.class), toDate
@@ -203,10 +204,16 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
             predicateList.add(predicateForToDate);
         }
 
-        Predicate predicateForToDate = criteriaBuilder.greaterThanOrEqualTo(
+        Predicate predicateExpireDate = criteriaBuilder.greaterThanOrEqualTo(
                 listing.get("inventoryItem").get("expires").as(LocalDateTime.class), LocalDateTime.now()
         );
-        predicateList.add(predicateForToDate);
+        predicateList.add(predicateExpireDate);
+
+        Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
+                listing.get("closes").as(LocalDateTime.class), LocalDateTime.now()
+        );
+        predicateList.add(predicateForFromDate);
+
 
         predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
