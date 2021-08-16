@@ -456,6 +456,10 @@ paths:
             * createdASC: created date from earliest to latest
 
             * createdDESC: created date from latest to earliest
+
+            * barcodeASC: ordered by barcode, ascending
+
+            * barcodeDESC: ordered by barcode, descending
         - in: query
           name: page
           schema:
