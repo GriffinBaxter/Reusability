@@ -21,6 +21,7 @@
           <!-- All Bookmarked Listings Messages-->
           <div v-if="showBookmarkMessages">
 
+            <!-- Bookmarked listing message -->
             <div id="bookmark-messages-container" v-if="hasDataLoaded">
               <div v-if="bookmarkMessages.length === 0 && rendered">
                 <h2 style="text-align: center">(No Bookmarked Messages)</h2>
@@ -32,7 +33,11 @@
                    v-for="message in bookmarkMessages" v-bind:key="message.id"
                    @click="toListing(message.listingId, message.businessId)">
 
-                <!--Post description-->
+                <!--Delete button for bookmarked listing message-->
+                <div id="delete-btn-container">
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="deleteMessage(message.id)"></button>
+                </div>
+                <!--Bookmarked listing message description-->
                 <div>
                   <p class="post-description">
                     {{message.description}}</p>
@@ -130,6 +135,14 @@ export default {
      */
     toListing(listingId, businessId) {
       this.$router.push({path: `/businessProfile/${businessId}/listings/${listingId}`})
+    },
+
+    /**
+     * Deletes the bookmarked listing message
+     * @param messageId the id of the bookmarked listing message to delete
+     */
+    deleteMessage(messageId) {
+      // TODO
     }
   }
 }
@@ -212,6 +225,11 @@ div.post h2, div.post p {
   width: 14px;
   margin-right: 4px;
   margin-left: 4px;
+}
+
+#delete-btn-container {
+  text-align: right;
+  right: 0px;
 }
 
 /*-------------------------------------------- Medium break point styling -------------------------------------------*/
