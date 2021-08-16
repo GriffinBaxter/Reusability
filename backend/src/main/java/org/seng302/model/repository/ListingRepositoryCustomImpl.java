@@ -204,6 +204,11 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
             predicateList.add(predicateForToDate);
         }
 
+        Predicate predicateForToDate = criteriaBuilder.greaterThanOrEqualTo(
+                listing.get("inventoryItem").get("expires").as(LocalDateTime.class), LocalDateTime.now()
+        );
+        predicateList.add(predicateForToDate);
+
         predicateList.add(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
         // the where clause of the query
