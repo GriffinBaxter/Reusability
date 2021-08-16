@@ -12,7 +12,7 @@
 
       <div id="home" class="container all-but-footer">
 
-        <!--News feed-->
+        <!--Home feed-->
         <div class="container-news mx-md-5 text-font">
 
           <br>
@@ -24,7 +24,7 @@
           </div>
 
           <!-- All Bookmarked Listings Messages-->
-          <div id="bookmark-messages-container">
+          <div id="bookmark-messages-container" v-if="hasDataLoaded">
             <div :id="'bookmark-message-container-' + message.id"
                  class="post shadow py-3 px-4"
                  type="button"
@@ -43,6 +43,18 @@
               <p class="py-1">
                 <label class="bookmark-message-title">Notification Date:</label> {{ formatDateVar(message.created, true) }}
               </p>
+            </div>
+          </div>
+          <!--     Loading Dotes     -->
+          <div v-else class="d-flex justify-content-center py-md-4 my-md-4">
+            <div class="spinner-grow" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow" role="status">
+              <span class="sr-only">Loading...</span>
             </div>
           </div>
 
@@ -71,19 +83,23 @@ export default {
   data() {
     return {
       bookmarkMessages: [],
-      rendered: false
+      rendered: false,
+      hasDataLoaded: false
     }
   },
   mounted() {
+    this.hasDataLoaded = false;
     Api.getBookmarkedMessage().then(res => {
       this.bookmarkMessages = res.data.reverse();
       this.rendered = true
+      this.hasDataLoaded = true;
     }).catch((err) => {
       if (err.response && err.response.status === 401) {
         this.$router.push({path: '/invalidToken'})
       } else {
         console.log(err)
       }
+      this.hasDataLoaded = true;
     })
   },
   methods: {
@@ -180,6 +196,13 @@ div.post h2, div.post p {
   padding: 20px;
   border-radius: 20px;
   margin-bottom: 80px;
+}
+
+.spinner-grow {
+  height: 14px;
+  width: 14px;
+  margin-right: 4px;
+  margin-left: 4px;
 }
 
 /*-------------------------------------------- Medium break point styling -------------------------------------------*/
