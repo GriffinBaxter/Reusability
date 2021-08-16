@@ -734,8 +734,16 @@ public class ListingResource {
         }
 
         // 200
-        bookmarkedListingMessageRepository.delete(message.get());
-        logger.info("200 [SUCCESS] - Bookmark message at ID {} successfully deleted", id);
+        try {
+            bookmarkedListingMessageRepository.delete(message.get());
+            logger.info("200 [SUCCESS] - Bookmark message at ID {} successfully deleted", id);
+        } catch (Exception e) {
+            logger.debug("500 [INTERNAL SERVER ERROR] - Could not delete bookmarkedListingMessage at ID {}: {}", id, e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Could not delete Bookmark Message"
+            );
+        }
     }
 
 
