@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.3.2
+  version: 5.4.0
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1765,6 +1765,35 @@ paths:
                   $ref: '#/components/schemas/BookmarkMessage'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+
+  '/home/bookmarkMessages/{id}':
+    delete:
+      tags:
+        - 'U30: Individual Full Sale Listing'
+        - 'Bookmark messages'
+      summary: 'Delete bookmark message for user'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          description: The id of the bookmark message
+          required: true
+          schema:
+            type: integer
+            example: 120
+      responses:
+        '200':
+          description: 'Successfully deleted bookmark message'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Cannot delete another users bookmark message'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
 
   '/businesses/{id}/notifications':
     get:
