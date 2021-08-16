@@ -1963,5 +1963,132 @@ class ListingResourceIntegrationTests {
 
     }
 
+    /**
+     * Tests that a 200 is returned when the user tries to delete their own message
+     * @throws Exception
+     */
+    @Test
+    void canDeleteBookmarkMessageWithExistingMessage() throws Exception {
+        // given
+        LocalDateTime created = LocalDateTime.now();
+
+        BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage.setId(1);
+        bookmarkedListingMessage.addUser(user);
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.of(user));
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.of(bookmarkedListingMessage));
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that a 200 is returned when a GAA tries to delete another users message
+     * @throws Exception exception
+     */
+    @Test
+    void canDeleteBookmarkMessageWithExistingMessageWhenGAA() throws Exception {
+        // given
+        LocalDateTime created = LocalDateTime.now();
+
+        BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage.setId(1);
+        bookmarkedListingMessage.addUser(user);
+
+        given(userRepository.findBySessionUUID(gAA.getSessionUUID())).willReturn(Optional.of(gAA));
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.of(bookmarkedListingMessage));
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1))
+                .cookie(new Cookie("JSESSIONID", gAA.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that a 406 is returned when the user tries to delete a non-existing message
+     * @throws Exception exception
+     */
+    @Test
+    void cantDeleteBookmarkMessageThatDoesntExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.of(user));
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a 403 is returned when the user tries to delete another users message
+     * @throws Exception exception
+     */
+    @Test
+    void cantDeleteOtherUsersBookmarkMessageWithExistingMessage() throws Exception {
+        // given
+        LocalDateTime created = LocalDateTime.now();
+
+        BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage.setId(1);
+        bookmarkedListingMessage.addUser(anotherUser);
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.of(user));
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.of(bookmarkedListingMessage));
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that a 401 is returned when the user is not logged in
+     * @throws Exception exception
+     */
+    @Test
+    void cantDeleteBookmarkMessageWithExistingMessageWhenNotLoggedIn() throws Exception {
+        // given
+        LocalDateTime created = LocalDateTime.now();
+
+        BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage.setId(1);
+        bookmarkedListingMessage.addUser(user);
+
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.of(bookmarkedListingMessage));
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1)))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
 
 }
