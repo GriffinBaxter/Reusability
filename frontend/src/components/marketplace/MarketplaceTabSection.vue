@@ -13,7 +13,7 @@
 
       <!------------------------------------------------ cards ------------------------------------------------------>
 
-      <div class="row pb-5 mb-4">
+      <div class="row pb-5 mb-4" v-if="hasDataLoaded">
         <!-- Card-->
         <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
              style="padding: 12px"
@@ -32,6 +32,9 @@
             />
           </div>
         </div>
+      </div>
+      <div v-else>
+        <LoadingDots></LoadingDots>
       </div>
 
       <!---------------------------------------------- page buttons ------------------------------------------------>
@@ -52,6 +55,7 @@ import Card from "./Card";
 import OrderingOptionsMenu from "./OrderingOptionsMenu";
 import PageButtons from "../PageButtons";
 import {formatDate} from "../../dateUtils";
+import LoadingDots from "../LoadingDots"
 
 export default {
   name: "MarketplaceTabSection",
@@ -62,6 +66,10 @@ export default {
     }
   },
   props: {
+    hasDataLoaded: {
+      type: Boolean,
+      required: true
+    },
     section: {
       type: String,
       default: "For Sale",
@@ -87,6 +95,7 @@ export default {
     PageButtons,
     OrderingOptionsMenu,
     Card,
+    LoadingDots
   },
   methods: {
     selectACard(index) {
@@ -104,6 +113,13 @@ export default {
 </script>
 
 <style scoped>
+
+.spinner-grow {
+  height: 14px;
+  width: 14px;
+  margin-right: 4px;
+  margin-left: 4px;
+}
 
 #ordering-options-menu-container {
   margin-top: 4%;
