@@ -82,7 +82,7 @@
               $ {{ price }}
             </h6>
             <div style="width: fit-content">
-              <h6 id="bookmarks" class="merryweather" @click="changeBookmarkStatus">
+              <h6 id="bookmarks" class="merryweather" @click="changeBookmarkStatus" v-if="actingBusinessId == null">
                 <svg id="marked" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                      class="bi bi-bookmark-heart-fill" viewBox="0 0 16 16" v-if="isBookmarked">
                   <path
@@ -96,6 +96,18 @@
                       d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
                 </svg>
                 {{ totalBookmarks }}
+              </h6>
+              <h6 v-else id="bookmarksAsBusiness" class="merryweather">
+                <svg id="un-marked" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                     class="bi bi-bookmark-heart" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd"
+                        d="M8 4.41c1.387-1.425 4.854 1.07 0 4.277C3.146 5.48 6.613 2.986 8 4.412z"/>
+                  <path
+                      d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+                </svg>
+                {{ totalBookmarks }}
+                <br>
+                (Cannot bookmark as a business)
               </h6>
             </div>
             <div class="buy-button-wrapper">
@@ -143,6 +155,7 @@ import DefaultImage from "../../public/default-product.jpg"
 import Api from "../Api"
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
+import {checkNullity} from "../views/helpFunction";
 
 export default {
   name: "SaleListing",
@@ -198,7 +211,9 @@ export default {
       UPC_A: "upca",
       UPC_A_LENGTH: 12,
       EAN: "ean13",
-      EAN_LENGTH: 13
+      EAN_LENGTH: 13,
+
+      actingBusinessId: null,
     }
   },
   methods: {
@@ -341,16 +356,24 @@ export default {
       }
 
       // address population
-      this.businessAddressLine1 = (this.businessAddress.streetNumber !== "" && this.businessAddress.streetName !== "")
-          ? this.businessAddress.streetNumber + " " + this.businessAddress.streetName
-          : this.businessAddress.streetNumber + this.businessAddress.streetName;
-      this.businessAddressLine2 = (this.businessAddress.suburb !== "") ? this.businessAddress.suburb : "";
-      this.businessAddressLine3 = (this.businessAddress.city !== "" && this.businessAddress.postcode !== "")
-          ? this.businessAddress.city + ", " + this.businessAddress.postcode
-          : this.businessAddress.city + this.businessAddress.postcode;
-      this.businessAddressLine4 = (this.businessAddress.region !== "" && this.businessAddress.country !== "")
-          ? this.businessAddress.region + ", " + this.businessAddress.country
-          : this.businessAddress.region + this.businessAddress.country;
+      if (this.businessAddress.streetNumber !== null && this.businessAddress.streetName !== null) {
+        this.businessAddressLine1 = this.businessAddress.streetNumber + " " + this.businessAddress.streetName;
+      } else {
+        this.businessAddressLine1 = checkNullity(this.businessAddress.streetNumber) + checkNullity(this.businessAddress.streetName);
+      }
+      if (this.businessAddress.suburb !== "") {
+        this.businessAddressLine2 =  this.businessAddress.suburb;
+      }
+      if (this.businessAddress.city !== null && this.businessAddress.postcode !== null) {
+        this.businessAddressLine3 = this.businessAddress.city + ", " + this.businessAddress.postcode;
+      } else {
+        this.businessAddressLine3 = checkNullity(this.businessAddress.city) + checkNullity(this.businessAddress.postcode);
+      }
+      if (this.businessAddress.region !== null && this.businessAddress.country !== null) {
+        this.businessAddressLine4 = this.businessAddress.region + ", " + this.businessAddress.country;
+      } else {
+        this.businessAddressLine4 = checkNullity(this.businessAddress.region) + checkNullity(this.businessAddress.country);
+      }
 
       // bookmark info
       this.listingId = data.id;
@@ -411,6 +434,7 @@ export default {
     const listingId = url.substring(url.lastIndexOf('/') + 1);
     const self = this;
     this.currentID = Cookies.get('userID');
+    this.actingBusinessId = Cookies.get("actAs");
 
     Api.getDetailForAListing(businessId, listingId)
         .then(response => this.populateData(response.data))
@@ -501,6 +525,12 @@ h6 {
 #bookmarks {
   font-weight: bold;
   cursor: pointer;
+  font-size: 1.5rem;
+  margin-top: 0.4em;
+}
+
+#bookmarksAsBusiness {
+  font-weight: bold;
   font-size: 1.5rem;
   margin-top: 0.4em;
 }

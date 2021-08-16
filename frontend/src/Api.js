@@ -255,6 +255,12 @@ export default {
         })
     },
 
+    getBusinessNotifications: (businessId) => {
+        return instance.get(`/businesses/${businessId}/notifications`, {
+            withCredentials: true
+        })
+    },
+
 
     editCard: (cardId, updatedCard) => {
         return instance.put(`/cards/${cardId}`, {...updatedCard}, {

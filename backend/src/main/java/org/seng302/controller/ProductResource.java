@@ -197,6 +197,12 @@ public class ProductResource {
             case "createdDESC":
                 sortBy = Sort.by(Sort.Order.desc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
                 break;
+            case "barcodeASC":
+                sortBy = Sort.by(Sort.Order.asc("barcode").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
+            case "barcodeDESC":
+                sortBy = Sort.by(Sort.Order.desc("barcode").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+                break;
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid order by parameter", orderBy);
                 throw new ResponseStatusException(

@@ -18,16 +18,15 @@
           <br>
           <h1 style="text-align: center">Home</h1>
 
-          <div v-if="bookmarkMessages.length === 0 && rendered">
-            <br>
-            <h2 style="text-align: center">(No Bookmarked Messages)</h2>
-          </div>
-
           <!-- All Bookmarked Listings Messages-->
           <div v-if="showBookmarkMessages">
 
             <!-- Bookmarked listing message -->
             <div id="bookmark-messages-container" v-if="hasDataLoaded">
+              <div v-if="bookmarkMessages.length === 0 && rendered">
+                <h2 style="text-align: center">(No Bookmarked Messages)</h2>
+              </div>
+
               <div :id="'bookmark-message-container-' + message.id"
                    class="post shadow py-3 px-4"
                    type="button"
@@ -54,17 +53,10 @@
               </div>
             </div>
             <!--     Loading Dotes     -->
-            <div v-else class="d-flex justify-content-center py-md-4 my-md-4">
-              <div class="spinner-grow" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
-              <div class="spinner-grow" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
-              <div class="spinner-grow" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
+            <div v-else>
+              <LoadingDots/>
             </div>
+
           </div>
 
         </div>
@@ -72,7 +64,7 @@
 
     </div>
     <!--Footer contains links that are the same as those in the nav bar-->
-    <Footer></Footer>
+    <Footer/>
 
   </div>
 </template>
@@ -83,10 +75,12 @@ import Navbar from '../components/main/Navbar';
 import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
+import LoadingDots from "../components/LoadingDots";
 
 export default {
   name: "Home",
   components: {
+    LoadingDots,
     Footer,
     Navbar
   },

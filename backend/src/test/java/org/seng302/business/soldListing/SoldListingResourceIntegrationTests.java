@@ -65,6 +65,9 @@ public class SoldListingResourceIntegrationTests {
     private ListingNotificationRepository listingNotificationRepository;
 
     @MockBean
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
+    @MockBean
     private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
     private MockHttpServletResponse response;
@@ -104,8 +107,8 @@ public class SoldListingResourceIntegrationTests {
             "\"productId\":\"%s\"," +
             "\"quantity\":%d," +
             "\"price\":%.1f," +
-            "\"bookmarks\":%d}" +
-            "]";
+            "\"bookmarks\":%d," +
+            "\"customer\":%s}]";
 
 
     @BeforeAll
@@ -250,7 +253,7 @@ public class SoldListingResourceIntegrationTests {
                 0);
         soldListing.setId(1);
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, bookmarkedListingMessageRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository))
                 .build();
     }
 
@@ -266,7 +269,7 @@ public class SoldListingResourceIntegrationTests {
         expectedJSON = String.format(expectedSoldListingsJSON, soldListing.getId(),
                 soldListing.getSaleDate(), soldListing.getListingDate(),
                 soldListing.getProductId(), soldListing.getQuantity(),
-                soldListing.getPrice(), soldListing.getBookmarks());
+                soldListing.getPrice(), soldListing.getBookmarks(), soldListing.getCustomer().toUserPayloadSecure());
 
         // when
         List<SoldListing> list = List.of(soldListing);
@@ -384,7 +387,7 @@ public class SoldListingResourceIntegrationTests {
         expectedJSON = String.format(expectedSoldListingsJSON, soldListing.getId(),
                 soldListing.getSaleDate(), soldListing.getListingDate(),
                 soldListing.getProductId(), soldListing.getQuantity(),
-                soldListing.getPrice(), soldListing.getBookmarks());
+                soldListing.getPrice(), soldListing.getBookmarks(), soldListing.getCustomer().toUserPayloadSecure());
 
         // when
         List<SoldListing> list = List.of(soldListing);
@@ -416,7 +419,7 @@ public class SoldListingResourceIntegrationTests {
         expectedJSON = String.format(expectedSoldListingsJSON, soldListing.getId(),
                 soldListing.getSaleDate(), soldListing.getListingDate(),
                 soldListing.getProductId(), soldListing.getQuantity(),
-                soldListing.getPrice(), soldListing.getBookmarks());
+                soldListing.getPrice(), soldListing.getBookmarks(), soldListing.getCustomer().toUserPayloadSecure());
 
         // when
         List<SoldListing> list = List.of(soldListing);

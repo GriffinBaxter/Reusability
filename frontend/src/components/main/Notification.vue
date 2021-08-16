@@ -41,7 +41,7 @@
           <div class="accordion-body">
 
             <!-- marketplace card notifications -->
-            <div class="row" v-if="notification.keywordId === undefined">
+            <div class="row" v-if="notification.marketCardId !== undefined">
               <div class="col" style="float: contour; text-align: center">
                 <button :id="'delete_button_card_' + notification.id"
                         class="btn btn-outline-danger"
@@ -59,13 +59,19 @@
             </div>
 
             <!-- keyword notification -->
-            <div class="row" v-else>
+            <div class="row" v-else-if="notification.keywordId !== undefined">
               <div class="col" style="float: contour; text-align: center">
                 <button :id="'delete_button_keyword_' + notification.id"
                         class="btn btn-outline-danger"
                         @click="deleteKeyword(notification.keywordId)">
                   Delete Keyword
                 </button>
+              </div>
+            </div>
+
+            <!-- listing notification -->
+            <div class="row" v-else>
+              <div class="col" style="float: contour; text-align: center">
               </div>
             </div>
 
@@ -79,6 +85,7 @@
 <script>
 
 import Api from "../../Api";
+import Cookies from "js-cookie";
 
 export default {
   name: "Notification",
@@ -122,10 +129,16 @@ export default {
             description: notification.description,
             date: notification.created
           })
-        } else { // marketplace notification
+        } else if (notification.marketplaceCardPayload !== undefined) { // marketplace notification
           notifications.push({
             id: index,
             marketCardId: notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
+            description: notification.description,
+            date: notification.created
+          })
+        } else {
+          notifications.push({
+            id: index,
             description: notification.description,
             date: notification.created
           })
@@ -135,12 +148,19 @@ export default {
       this.allNoticeCards = notifications;
     },
     /**
-     * this function will reload all notifications for current user.
+     * this function will reload all notifications for current user or selected business.
      */
     loadNotifications() {
-      Api.getNotifications()
-          .then(response => this.populateNotification(response.data))
-          .catch((error) => this.errorCatcher(error));
+      if (Cookies.get('actAs') !== undefined) {
+        console.log(Cookies.get('actAs'))
+        Api.getBusinessNotifications(Cookies.get('actAs'))
+            .then(response => this.populateNotification(response.data))
+            .catch((error) => this.errorCatcher(error));
+      } else {
+        Api.getNotifications()
+            .then(response => this.populateNotification(response.data))
+            .catch((error) => this.errorCatcher(error));
+      }
     },
     /**
      * delete a market card
