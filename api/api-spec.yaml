@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.3.2
+  version: 5.3.3
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -869,7 +869,7 @@ paths:
           description: "Criteria to search for, e.g: full listing name"
         - in: query
           name: searchType
-          schema: 
+          schema:
             type: string
           required: false
           description: >-
@@ -878,7 +878,7 @@ paths:
             * listingName: the listing name (default)
 
             * businessName: the business name
-            
+
             * location: the location
         - in: query
           name: orderBy
@@ -1773,6 +1773,14 @@ paths:
             - user
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          description: The id of the given business for which to retrieve the notifications
+          required: true
+          schema:
+            type: integer
+            example: 118
       responses:
         '200':
           description: Notifications for all sold listings of a business
@@ -2318,6 +2326,7 @@ components:
         - quantity
         - price
         - bookmarks
+        - customer
       properties:
         id:
           type: integer
@@ -2357,6 +2366,8 @@ components:
           example: 10
           readOnly: true
           description: The amount of bookmarks the listing had before being sold.
+        customer:
+          $ref: '#/components/schemas/User'
 
     SoldListingNotification:
       type: object

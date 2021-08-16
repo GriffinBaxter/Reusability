@@ -23,6 +23,9 @@
             <td>{{ listing.quantity }}</td>
             <td>{{ listing.price }}</td>
             <td>{{ listing.bookmarks }}</td>
+            <td @click="goToCustomerProfile(listing.customer.id)" id="buyer-cell">
+              {{ listing.customer.firstName }} {{ listing.customer.lastName }}
+            </td>
           </tr>
           </tbody>
           <tfoot>
@@ -77,7 +80,8 @@ export default {
         {title: "Sale Date"},
         {title: "Quantity"},
         {title: "Price"},
-        {title: "Bookmarks"}
+        {title: "Bookmarks"},
+        {title: "Buyer"}
       ],
       // Currency related variables
       currencyCode: "",
@@ -180,6 +184,12 @@ export default {
         this.currentPage = newPageNumber;
         this.retrieveSoldListings();
     },
+    /**
+     * Redirects the business administrator to the profile page of the buyer of a listing based on their id.
+     */
+    goToCustomerProfile(userId) {
+      this.$router.push({path: `/profile/${userId}`});
+    }
   },
   /**
    * When mounted, initiate population of page.
@@ -212,6 +222,15 @@ export default {
 #rows {
   min-height: 40px;
   height: 40px;
+}
+
+#buyer-cell:hover {
+  color: #1EBA8C !important;
+  cursor: pointer;
+}
+
+table td:hover {
+  cursor: default;
 }
 
 </style>
