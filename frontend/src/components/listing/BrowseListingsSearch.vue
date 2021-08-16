@@ -282,7 +282,6 @@ export default {
       const orderBy = this.orderByOption;
       const page = 1;
       const businessTypes = this.getSelectedRadio('business');
-      console.log(businessTypes);
       const minimumPrice = this.lowestPrice;
       const maximumPrice = this.highestPrice;
       let fromDate = this.startDate;
