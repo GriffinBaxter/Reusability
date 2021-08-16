@@ -830,27 +830,7 @@ export default {
     }
   }
 
-  @keyframes sideWaysExpandAnimation {
-    0% {
-      max-width: 0;
-    }
-    100% {
-      max-width: 100%;
-    }
-  }
-
   @media screen and (min-width: 612px){
-
-    .links-enter-active {
-      animation: sideWaysExpandAnimation 250ms ;
-      overflow: hidden;
-    }
-
-    .links-leave-active {
-      animation: sideWaysExpandAnimation 250ms reverse ;
-      overflow: hidden;
-    }
-
 
     #user-section-admin-label {
       display: block;
@@ -883,7 +863,7 @@ export default {
       box-shadow: 2px 10px 1rem #00000030;
       padding: 1rem 3rem 0 1.75rem;
       width: 13rem;
-      min-height: 100vh;
+      height: 100vh;
       top: 8.5rem;
       left: 0;
     }
