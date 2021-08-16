@@ -85,7 +85,14 @@
 
     </div>
     <div v-else>
-      <LoadingDots></LoadingDots>
+      <div class="accordion">
+        <div class="card border-dark text-white bg-secondary"
+             style="width: 300px; max-height: 67px">
+          <h4 class="card-body" style="margin: 3px; float: contour; text-align: center">
+            <LoadingDots style="margin: 0 !important; padding: 0 !important;"></LoadingDots>
+          </h4>
+        </div>
+      </div>
     </div>
 
   </div>
