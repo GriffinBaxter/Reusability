@@ -52,25 +52,25 @@
             <!--  match seller type -->
             <div class="business-radio-container my-3 py-2">
               <div class="form-check radio-padding-left">
-                <input class="form-check-input" type="radio" name="business-type-radios" value="ACCOMMODATION_AND_FOOD_SERVICES" id="radio-accommodation">
+                <input class="form-check-input" type="checkbox" name="business-type-radios" value="ACCOMMODATION_AND_FOOD_SERVICES" id="radio-accommodation">
                 <label class="form-check-label" for="radio-accommodation">
                   Accommodation and Food Services
                 </label>
               </div>
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="business-type-radios" value="RETAIL_TRADE" id="radio-retail">
+                <input class="form-check-input " type="checkbox" name="business-type-radios" value="RETAIL_TRADE" id="radio-retail">
                 <label class="form-check-label" for="radio-retail">
                   Retail Trade
                 </label>
               </div>
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="business-type-radios" value="CHARITABLE_ORGANISATION" id="radio-charitable">
+                <input class="form-check-input " type="checkbox" name="business-type-radios" value="CHARITABLE_ORGANISATION" id="radio-charitable">
                 <label class="form-check-label" for="radio-charitable">
                   Charitable Organisation
                 </label>
               </div>
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="business-type-radios" value="NON_PROFIT_ORGANISATION" id="radio-non-profit">
+                <input class="form-check-input " type="checkbox" name="business-type-radios" value="NON_PROFIT_ORGANISATION" id="radio-non-profit">
                 <label class="form-check-label" for="radio-non-profit">
                   Non-profit Organisation
                 </label>
@@ -235,16 +235,24 @@ export default {
      */
     getSelectedRadio(type) {
       let radios;
-      if (type === 'match') {
-        radios = document.querySelectorAll("input[name='match-radios']");
-      } else if (type === 'business') {
-        radios = document.querySelectorAll("input[name='business-type-radios']");
-      }
       let value;
 
-      for (const radio of radios) {
-        if (radio.checked) {
-          value = radio.value;
+      if (type === 'match') {
+        radios = document.querySelectorAll("input[name='match-radios']");
+
+        for (const radio of radios) {
+          if (radio.checked) {
+            value = radio.value;
+          }
+        }
+      } else if (type === 'business') {
+        radios = document.querySelectorAll("input[name='business-type-radios']");
+        value = [];
+
+        for (const radio of radios) {
+          if (radio.checked) {
+            value.push(radio.value);
+          }
         }
       }
 
@@ -273,7 +281,8 @@ export default {
       const searchType = this.getSelectedRadio('match');
       const orderBy = this.orderByOption;
       const page = 1;
-      const businessType = this.getSelectedRadio('business');
+      const businessTypes = this.getSelectedRadio('business');
+      console.log(businessTypes);
       const minimumPrice = this.lowestPrice;
       const maximumPrice = this.highestPrice;
       let fromDate = this.startDate;
@@ -290,7 +299,7 @@ export default {
           searchType !== this.$route.query.searchType ||
           orderBy !== this.$route.query.orderBy ||
           String(page) !== this.$route.query.page ||
-          businessType !== this.$route.query.businessType ||
+          businessTypes !== this.$route.query.businessTypes ||
           minimumPrice !== this.$route.query.minimumPrice ||
           maximumPrice !== this.$route.query.maximumPrice ||
           fromDate !== this.$route.query.fromDate ||
@@ -299,7 +308,7 @@ export default {
         this.$router.push({
           path: '/browseListings', query: {
             searchQuery: searchQuery, searchType: searchType,
-            orderBy: orderBy, page: page, businessType: businessType,
+            orderBy: orderBy, page: page, businessTypes: businessTypes,
             minimumPrice: minimumPrice, maximumPrice: maximumPrice,
             fromDate: fromDate, toDate: toDate
           }

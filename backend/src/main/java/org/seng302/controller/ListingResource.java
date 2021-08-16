@@ -266,7 +266,7 @@ public class ListingResource {
      * @param searchType Search type.
      * @param orderBy Column to order the results by.
      * @param page Page number to return results from.
-     * @param businessType Business type to search by.
+     * @param businessTypes Business types to search by.
      * @param minimumPrice Minimum price.
      * @param maximumPrice Maximum price.
      * @param fromDate From date (closing).
@@ -280,7 +280,7 @@ public class ListingResource {
             @RequestParam(defaultValue = "listingName") String searchType,
             @RequestParam(defaultValue = "productNameASC") String orderBy,
             @RequestParam(defaultValue = "0") String page,
-            @RequestParam(defaultValue = "") String businessType,
+            @RequestParam(required = false) List<String> businessTypes,
             @RequestParam(required = false) Double minimumPrice,
             @RequestParam(required = false) Double maximumPrice,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
@@ -288,7 +288,7 @@ public class ListingResource {
     ) throws Exception {
         logger.debug(
                 "Listing search request received with search query {}, business type {}, order by {}, page {}",
-                searchQuery, businessType, orderBy, page
+                searchQuery, businessTypes, orderBy, page
         );
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -352,7 +352,7 @@ public class ListingResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
         Page<Listing> pagedResult = parseAndExecuteQuery(
-                searchQuery, paging, searchType, businessType, minimumPrice, maximumPrice, fromDate, toDate
+                searchQuery, paging, searchType, businessTypes, minimumPrice, maximumPrice, fromDate, toDate
         );
 
         int totalPages = pagedResult.getTotalPages();
@@ -364,7 +364,7 @@ public class ListingResource {
 
         logger.info(
                 "Search Success - 200 [OK] - Listings retrieved for search query {}, business type {}, order by {}, page {}",
-                searchQuery, businessType, orderBy, pageNo
+                searchQuery, businessTypes, orderBy, pageNo
         );
 
         logger.debug("Listings Found");
@@ -714,7 +714,7 @@ public class ListingResource {
      * @param searchQuery Criteria to search for listings.
      * @param paging Information used to paginate the retrieved listings.
      * @param searchType Search type.
-     * @param businessType Criteria to search for listings using business type.
+     * @param businessTypes Criteria to search for listings using business type.
      * @param minimumPrice Minimum price.
      * @param maximumPrice Maximum price.
      * @param fromDate From date (closing).
@@ -724,24 +724,30 @@ public class ListingResource {
     private Page<Listing> parseAndExecuteQuery(
             String searchQuery, Pageable paging,
             String searchType,
-            String businessType,
+            List<String> businessTypes,
             Double minimumPrice, Double maximumPrice,
             LocalDateTime fromDate, LocalDateTime toDate
     ) {
-        BusinessType convertedBusinessType = toBusinessType(businessType);
+        List<BusinessType> convertedBusinessTypes = new ArrayList<>();
+        if (businessTypes != null) {
+            for (String businessType : businessTypes) {
+                convertedBusinessTypes.add(toBusinessType(businessType));
+            }
+        }
+
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
         switch (searchType) {
             case "listingName":
                 return listingRepository.findAllListingsByProductName(
-                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
                 );
             case "businessName":
                 return listingRepository.findAllListingsByBusinessName(
-                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
                 );
             case "location":
                 return listingRepository.findAllListingsByLocation(
-                        names, paging, convertedBusinessType, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
                 );
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid search type parameter", searchType);
