@@ -48,17 +48,10 @@
               </div>
             </div>
             <!--     Loading Dotes     -->
-            <div v-else class="d-flex justify-content-center py-md-4 my-md-4">
-              <div class="spinner-grow" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
-              <div class="spinner-grow" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
-              <div class="spinner-grow" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
+            <div v-else>
+              <LoadingDots></LoadingDots>
             </div>
+
           </div>
 
         </div>
@@ -77,10 +70,12 @@ import Navbar from '../components/main/Navbar';
 import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
+import LoadingDots from "@/components/LoadingDots";
 
 export default {
   name: "Home",
   components: {
+    LoadingDots,
     Footer,
     Navbar
   },
