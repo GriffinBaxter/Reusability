@@ -75,7 +75,6 @@ export default {
   mounted() {
     Api.getBookmarkedMessage().then(res => {
       this.bookmarkMessages = res.data.reverse();
-      console.log(this.bookmarkMessages)
       this.rendered = true
     }).catch((err) => {
       if (err.response && err.response.status === 401) {
