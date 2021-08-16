@@ -255,6 +255,12 @@ export default {
         })
     },
 
+    getBusinessNotifications: (businessId) => {
+        return instance.get(`/businesses/${businessId}/notifications`, {
+            withCredentials: true
+        })
+    },
+
 
     editCard: (cardId, updatedCard) => {
         return instance.put(`/cards/${cardId}`, {...updatedCard}, {
@@ -334,4 +340,11 @@ export default {
             withCredentials: true
         })
     },
+
+    // Buy a listing
+    buyListing: (id) => {
+        return instance.put(`/listings/${id}/buy`, {}, {
+            withCredentials: true
+        })
+    }
 }

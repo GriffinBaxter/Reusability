@@ -100,7 +100,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
             "\"businessesAdministered\":[null]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
-            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]";
+            "\"homeAddress\":%s}]";
 
     private String expectedUserJson;
     private String expectedJson;
@@ -275,8 +275,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
     public void i_receive_the_business_with_name(String name) throws UnsupportedEncodingException {
         expectedUserJson = String.format(expectedAdministratorJson, user1.getId(), user1.getFirstName(), user1.getLastName(),
                 user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
-                user1.getDateOfBirth(), user1.getPhoneNumber(), address1.getStreetNumber(), address1.getStreetName(), address1.getCity(),
-                address1.getRegion(), address1.getCountry(), address1.getPostcode(), address1.getSuburb());
+                user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 name, business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
 
@@ -288,12 +287,10 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
     public void i_receive_the_businesses_with_names_and(String name1, String name2) throws UnsupportedEncodingException {
         String expectedUserJson1 = String.format(expectedAdministratorJson, user1.getId(), user1.getFirstName(), user1.getLastName(),
                 user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
-                user1.getDateOfBirth(), user1.getPhoneNumber(), address1.getStreetNumber(), address1.getStreetName(), address1.getCity(),
-                address1.getRegion(), address1.getCountry(), address1.getPostcode(), address1.getSuburb());
+                user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         String expectedUserJson2 = String.format(expectedAdministratorJson, user2.getId(), user2.getFirstName(), user2.getLastName(),
                 user2.getMiddleName(), user2.getNickname(), user2.getBio(), user2.getEmail(), user2.getCreated(), user2.getRole(),
-                user2.getDateOfBirth(), user2.getPhoneNumber(), address2.getStreetNumber(), address2.getStreetName(), address2.getCity(),
-                address2.getRegion(), address2.getCountry(), address2.getPostcode(), address2.getSuburb());
+                user2.getDateOfBirth(), user2.getPhoneNumber(), address2);
 
         String expectedBusinessJson1 = String.format(expectedBusinessJson, business1.getId(), expectedUserJson1, business1.getPrimaryAdministratorId(),
                 name1, business1.getDescription(), business1.getAddress(), business1.getBusinessType(), business1.getCreated());
@@ -389,8 +386,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
     public void i_receive_the_business_with_business_type(String type) throws UnsupportedEncodingException {
         expectedUserJson = String.format(expectedAdministratorJson, user1.getId(), user1.getFirstName(), user1.getLastName(),
                 user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
-                user1.getDateOfBirth(), user1.getPhoneNumber(), address1.getStreetNumber(), address1.getStreetName(), address1.getCity(),
-                address1.getRegion(), address1.getCountry(), address1.getPostcode(), address1.getSuburb());
+                user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated()) + "]";
 
@@ -402,8 +398,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
     public void i_receive_the_business_with_name_and_business_type(String name, String type) throws UnsupportedEncodingException {
         expectedUserJson = String.format(expectedAdministratorJson, user1.getId(), user1.getFirstName(), user1.getLastName(),
                 user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
-                user1.getDateOfBirth(), user1.getPhoneNumber(), address1.getStreetNumber(), address1.getStreetName(), address1.getCity(),
-                address1.getRegion(), address1.getCountry(), address1.getPostcode(), address1.getSuburb());
+                user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 name, business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated()) + "]";
 

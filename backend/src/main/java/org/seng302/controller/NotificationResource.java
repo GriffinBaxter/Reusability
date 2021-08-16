@@ -3,18 +3,13 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
-import org.seng302.model.KeywordNotification;
-import org.seng302.model.MarketCardNotification;
-import org.seng302.model.User;
-import org.seng302.model.repository.KeywordNotificationRepository;
-import org.seng302.model.repository.MarketCardNotificationRepository;
-import org.seng302.model.repository.UserRepository;
-import org.seng302.view.outgoing.MarketCardNotificationPayload;
+import org.seng302.model.*;
+import org.seng302.model.repository.*;
+import org.seng302.view.outgoing.SoldListingNotificationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -28,18 +23,35 @@ public class NotificationResource {
     private UserRepository userRepository;
 
     @Autowired
+    private BusinessRepository businessRepository;
+
+    @Autowired
     private MarketCardNotificationRepository marketCardNotificationRepository;
 
     @Autowired
     private KeywordNotificationRepository keywordNotificationRepository;
 
-    public NotificationResource(UserRepository userRepository, MarketCardNotificationRepository marketCardNotificationRepository, KeywordNotificationRepository keywordNotificationRepository) {
+    @Autowired
+    private ListingNotificationRepository listingNotificationRepository;
+
+    @Autowired
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
+    public NotificationResource(UserRepository userRepository,
+                                BusinessRepository businessRepository,
+                                MarketCardNotificationRepository marketCardNotificationRepository,
+                                KeywordNotificationRepository keywordNotificationRepository,
+                                ListingNotificationRepository listingNotificationRepository,
+                                SoldListingNotificationRepository soldListingNotificationRepository) {
         this.userRepository = userRepository;
+        this.businessRepository = businessRepository;
         this.marketCardNotificationRepository = marketCardNotificationRepository;
         this.keywordNotificationRepository = keywordNotificationRepository;
+        this.listingNotificationRepository = listingNotificationRepository;
+        this.soldListingNotificationRepository = soldListingNotificationRepository;
     }
 
-    private static final Logger logger = LogManager.getLogger(MarketplaceCardResource.class.getName());
+    private static final Logger logger = LogManager.getLogger(NotificationResource.class.getName());
 
     /**
      * Retrieve all notifications for the current user.
@@ -59,6 +71,7 @@ public class NotificationResource {
         List<Object> notificationPayloads = new ArrayList<>();
         List<MarketCardNotification> marketCardNotifications = marketCardNotificationRepository.findAllByUserId(currentUser.getId());
         List<KeywordNotification> keywordNotifications = new ArrayList<>();
+        List<ListingNotification> listingNotifications = listingNotificationRepository.findAllByUsersId(currentUser.getId());
         if (Authorization.isGAAorDGAA(currentUser)) {
             keywordNotifications = keywordNotificationRepository.findAll();
         }
@@ -71,6 +84,42 @@ public class NotificationResource {
             logger.debug("Keyword Notification (Id: {}) received.", keywordNotification.getId());
             notificationPayloads.add(keywordNotification.toKeywordNotificationPayload());
         }
+        for (ListingNotification listingNotification : listingNotifications) {
+            logger.debug("Listing Notification (Id: {}) received.", listingNotification.getId());
+            notificationPayloads.add(listingNotification.toListingNotificationPayload());
+        }
+
         return notificationPayloads;
+    }
+
+    /**
+     * Retrieve all notifications for a business.
+     *
+     * @param id The ID of the business you'd like to retrieve the notifications for.
+     * @param sessionToken The token used to identify the user.
+     * @return List<SoldListingNotificationPayloads> The list of sold listing notifications for the business.
+     * @throws Exception Exception
+     */
+    @GetMapping("/businesses/{id}/notifications")
+    public List<SoldListingNotificationPayload> retrieveAllBusinessNotifications(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
+    ) throws Exception {
+        //401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User (Id: {}) received.", currentUser.getId());
+
+        Authorization.verifyBusinessExists(id, businessRepository);
+
+        Authorization.verifyBusinessAdmin(currentUser, id);
+
+        List<SoldListingNotification> soldListingNotifications = soldListingNotificationRepository.findAllByBusinessId(id);
+        List<SoldListingNotificationPayload> soldListingNotificationPayloads = new ArrayList<>();
+
+        for (SoldListingNotification soldListingNotification : soldListingNotifications) {
+            logger.debug("Sold Listing Notification received: {}", soldListingNotification);
+            soldListingNotificationPayloads.add(soldListingNotification.toSoldListingNotificationPayload());
+        }
+
+        return soldListingNotificationPayloads;
     }
 }

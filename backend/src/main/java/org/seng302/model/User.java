@@ -107,6 +107,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<HasListingNotification> readListingNotifications = new ArrayList<>();
 
+    @JsonBackReference
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    private List<BookmarkedListingMessage> bookmarkedListingMessages = new ArrayList<>();
+
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
     private static final Integer FIRST_NAME_MAX_LENGTH = 255;
@@ -145,7 +149,7 @@ public class User {
      * @param dateOfBirth Date of birth
      * @param phoneNumber Phone number
      * @param homeAddress Home address
-     * @param password User's password (not stored in plaintext
+     * @param password User's password (not stored in plaintext)
      * @param created Date individual signed up
      * @param role Role determines admin privileges.
      * @throws IllegalUserArgumentException  Validation exception
@@ -332,6 +336,14 @@ public class User {
 
     public void setBookmarkedListings(List<Listing> bookMarkedListings) {
         this.bookmarkedListings = bookMarkedListings;
+    }
+
+    public List<BookmarkedListingMessage> getBookmarkedListingMessages() {
+        return bookmarkedListingMessages;
+    }
+
+    public void setBookmarkedListingMessages(List<BookmarkedListingMessage> bookmarkedListingMessages) {
+        this.bookmarkedListingMessages = bookmarkedListingMessages;
     }
 
     /**
