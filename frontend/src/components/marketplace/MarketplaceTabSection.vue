@@ -13,7 +13,7 @@
 
       <!------------------------------------------------ cards ------------------------------------------------------>
 
-      <div class="row pb-5 mb-4">
+      <div class="row pb-5 mb-4" v-if="hasDataLoaded">
         <!-- Card-->
         <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
              style="padding: 12px"
@@ -31,6 +31,17 @@
                   v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
             />
           </div>
+        </div>
+      </div>
+      <div v-else class="d-flex justify-content-center py-md-4 my-md-4">
+        <div class="spinner-grow" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow" role="status">
+          <span class="sr-only">Loading...</span>
         </div>
       </div>
 
@@ -62,6 +73,10 @@ export default {
     }
   },
   props: {
+    hasDataLoaded: {
+      type: Boolean,
+      required: true
+    },
     section: {
       type: String,
       default: "For Sale",
@@ -104,6 +119,13 @@ export default {
 </script>
 
 <style scoped>
+
+.spinner-grow {
+  height: 14px;
+  width: 14px;
+  margin-right: 4px;
+  margin-left: 4px;
+}
 
 #ordering-options-menu-container {
   margin-top: 4%;
