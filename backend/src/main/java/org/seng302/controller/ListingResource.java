@@ -709,7 +709,7 @@ public class ListingResource {
     }
 
     @DeleteMapping("/home/bookmarkMessages/{id}")
-    @ResponseStatus(value = HttpStatus.OK, reason = "Listing bought successfully")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Bookmark message successfully deleted")
     public void deleteBookmarkMessage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable String id) {
         // 401
         User user = Authorization.getUserVerifySession(sessionToken, userRepository);
