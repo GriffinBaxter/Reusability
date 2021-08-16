@@ -168,7 +168,7 @@
           <hr class="mb-0">
         </li>
 
-        <!-- Options for replacing who you are acting as -->
+        <!-- Options for replacing who you are acting as (business or user) -->
         <li class="a-nav-item mt-0" v-for="(act, index) in showOmitName ? interactAsOmit : interactAs" :key="index" tabindex="-1"
             @click="() => itemClicked(index)">
           <h6 v-if="index===0"><br>User</h6>
