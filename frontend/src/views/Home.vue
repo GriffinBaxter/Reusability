@@ -24,7 +24,11 @@
           </div>
 
           <!--Post 1 for news feed-->
-          <div class="post shadow py-3 px-4" type="button" v-for="message in bookmarkMessages" v-bind:key="message.id" @click="toListing(message.listingId, message.businessId)">
+          <div :id="'bookmark-message-container-' + message.id"
+               class="post shadow py-3 px-4"
+               type="button"
+               v-for="message in bookmarkMessages" v-bind:key="message.id"
+               @click="toListing(message.listingId, message.businessId)">
             <!--Post description-->
             <div>
               <p class="post-description">
