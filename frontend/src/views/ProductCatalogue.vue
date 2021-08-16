@@ -532,9 +532,6 @@ export default {
             newtableData.push(this.productList[i].data.manufacturer);
             newtableData.push(this.productList[i].data.recommendedRetailPrice);
             newtableData.push(formatDate(this.productList[i].data.created));
-            
-            // console.log(this.productList[i])
-            
             newtableData.push(this.productList[i].data.barcode);
           }
 
