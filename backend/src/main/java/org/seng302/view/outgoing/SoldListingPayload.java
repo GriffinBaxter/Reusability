@@ -10,10 +10,13 @@
  */
 package org.seng302.view.outgoing;
 
+import org.seng302.model.User;
+
 /**
  * Payload for Sold Listings to send to the frontend
  */
 public class SoldListingPayload {
+
     private Integer id;
     private String saleDate;
     private String listingDate;
@@ -21,6 +24,7 @@ public class SoldListingPayload {
     private Integer quantity;
     private Double price;
     private Integer bookmarks;
+    private UserPayloadSecure customer;
 
     /**
      * Creates a payload for SoldListings
@@ -31,8 +35,9 @@ public class SoldListingPayload {
      * @param quantity Number of item brought
      * @param price Price of item brought
      * @param bookmarks Number of people that bookmarked the listing
+     * @param customer The UserPayloadSecure representation of the customer
      */
-    public SoldListingPayload(Integer id, String saleDate, String listingDate, String productId, Integer quantity, Double price, Integer bookmarks) {
+    public SoldListingPayload(Integer id, String saleDate, String listingDate, String productId, Integer quantity, Double price, Integer bookmarks, UserPayloadSecure customer) {
         this.id = id;
         this.saleDate = saleDate;
         this.listingDate = listingDate;
@@ -40,16 +45,41 @@ public class SoldListingPayload {
         this.quantity = quantity;
         this.price = price;
         this.bookmarks = bookmarks;
+        this.customer = customer;
     }
 
     // Getters
-    public Integer getId() {return id;}
-    public String getSaleDate() {return saleDate;}
-    public String getListingDate() {return listingDate;}
-    public String getProductId() {return productId;}
-    public Integer getQuantity() {return quantity;}
-    public Double getPrice() {return price;}
-    public Integer getBookmarks() {return bookmarks;}
+    public Integer getId() {
+        return id;
+    }
+
+    public String getSaleDate() {
+        return saleDate;
+    }
+
+    public String getListingDate() {
+        return listingDate;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public Integer getBookmarks() {
+        return bookmarks;
+    }
+
+    public UserPayloadSecure getCustomer() {
+        return customer;
+    }
 
     @Override
     public String toString() {
@@ -59,6 +89,7 @@ public class SoldListingPayload {
                 "\"productId\":\"" + productId + "\"," +
                 "\"quantity\":" + quantity + "," +
                 "\"price\":" + price + "," +
-                "\"bookmarks\":" + bookmarks + "}";
+                "\"bookmarks\":" + bookmarks +
+                ",\"customer\":" + customer + "}";
     }
 }

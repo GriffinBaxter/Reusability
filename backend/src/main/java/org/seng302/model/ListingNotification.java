@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
+import org.seng302.model.enums.NotificationType;
 import org.seng302.view.outgoing.ListingNotificationPayload;
 
 import javax.persistence.*;
@@ -184,7 +185,7 @@ public class ListingNotification {
      * @return a payload representing the listing notification
      */
     public ListingNotificationPayload toListingNotificationPayload() {
-        return new ListingNotificationPayload(id, description, created);
+        return new ListingNotificationPayload(id, description, created, NotificationType.LISTING);
     }
 
     /*---------------------------------------------------Validation---------------------------------------------------*/

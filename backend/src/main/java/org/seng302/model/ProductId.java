@@ -36,4 +36,22 @@ public class ProductId implements Serializable {
         this.businessId = businessId;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    /**
+     * Overridden for debugging and testing purposes.
+     * @return The JSON format of the product ID
+     */
+    @Override
+    public String toString() {
+        return  "{\"id\":\"" + id + "\"," +
+                "\"businessId\":" + businessId + "}";
+    }
+
 }

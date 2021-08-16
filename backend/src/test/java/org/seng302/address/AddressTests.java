@@ -19,11 +19,11 @@ class AddressTests {
         String expected = "{" +
                 "\"streetNumber\":\"3/24\"," +
                 "\"streetName\":\"Ilam Road\"," +
+                "\"suburb\":\"Ilam\"," +
                 "\"city\":\"Christchurch\"," +
                 "\"region\":\"Canterbury\"," +
                 "\"country\":\"New Zealand\"," +
-                "\"postcode\":\"90210\"," +
-                "\"suburb\":\"Ilam\"" +
+                "\"postcode\":\"90210\"" +
                 "}";
         Address address = new Address(
                 "3/24",
