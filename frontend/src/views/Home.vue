@@ -12,32 +12,46 @@
 
       <div id="home" class="container all-but-footer">
 
-        <!--News feed-->
+        <!--Home feed-->
         <div class="container-news mx-md-5 text-font">
 
           <br>
           <h1 style="text-align: center">Home</h1>
 
-          <div v-if="bookmarkMessages.length === 0 && rendered">
-            <br>
-            <h2 style="text-align: center">(No Bookmarked Messages)</h2>
-          </div>
+          <!-- All Bookmarked Listings Messages-->
+          <div v-if="showBookmarkMessages">
 
-          <!--Post 1 for news feed-->
-          <div class="post shadow py-3 px-4" v-for="message in bookmarkMessages" v-bind:key="message.id">
-            <!--Post description-->
-            <div>
-              <p class="post-description">
-                {{message.description}}</p>
+            <div id="bookmark-messages-container" v-if="hasDataLoaded">
+              <div v-if="bookmarkMessages.length === 0 && rendered">
+                <h2 style="text-align: center">(No Bookmarked Messages)</h2>
+              </div>
+
+              <div :id="'bookmark-message-container-' + message.id"
+                   class="post shadow py-3 px-4"
+                   type="button"
+                   v-for="message in bookmarkMessages" v-bind:key="message.id"
+                   @click="toListing(message.listingId, message.businessId)">
+
+                <!--Post description-->
+                <div>
+                  <p class="post-description">
+                    {{message.description}}</p>
+                </div>
+                <!--Listing close date-->
+                <p class="py-1">
+                  <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
+                </p>
+                <!--Date/time of message-->
+                <p class="py-1">
+                  <label class="bookmark-message-title">Notification Date:</label> {{ formatDateVar(message.created, true) }}
+                </p>
+              </div>
             </div>
-            <!--Listing close date-->
-            <p class="py-1">
-              Closes: {{ formatDateVar(message.closes, false) }}
-            </p>
-            <!--Date/time of message-->
-            <p class="py-1">
-              Notification date: {{ formatDateVar(message.created, true) }}
-            </p>
+            <!--     Loading Dotes     -->
+            <div v-else>
+              <LoadingDots/>
+            </div>
+
           </div>
 
         </div>
@@ -45,7 +59,7 @@
 
     </div>
     <!--Footer contains links that are the same as those in the nav bar-->
-    <Footer></Footer>
+    <Footer/>
 
   </div>
 </template>
@@ -55,30 +69,47 @@ import Footer from '../components/main/Footer';
 import Navbar from '../components/main/Navbar';
 import Api from "../Api";
 import {formatDate} from "../dateUtils";
+import Cookies from "js-cookie";
+import LoadingDots from "../components/LoadingDots";
 
 export default {
   name: "Home",
   components: {
+    LoadingDots,
     Footer,
     Navbar
   },
   data() {
     return {
       bookmarkMessages: [],
-      rendered: false
+      rendered: false,
+      hasDataLoaded: false,
+      showBookmarkMessages: false, // hide messages if acting as business
     }
   },
   mounted() {
-    Api.getBookmarkedMessage().then(res => {
-      this.bookmarkMessages = res.data.reverse();
-      this.rendered = true
-    }).catch((err) => {
-      if (err.response && err.response.status === 401) {
-        this.$router.push({path: '/invalidToken'})
-      } else {
-        console.log(err)
-      }
-    })
+    this.hasDataLoaded = false;
+    this.showBookmarkMessages = true;
+
+    const actingAs = Cookies.get('actAs');
+
+    if (actingAs === undefined) {
+
+      Api.getBookmarkedMessage().then(res => {
+        this.bookmarkMessages = res.data.reverse();
+        this.rendered = true
+        this.hasDataLoaded = true;
+      }).catch((err) => {
+        if (err.response && err.response.status === 401) {
+          this.$router.push({path: '/invalidToken'})
+        } else {
+          console.log(err)
+        }
+        this.hasDataLoaded = true;
+      })
+    } else {
+      this.showBookmarkMessages = false;
+    }
   },
   methods: {
     /**
@@ -89,6 +120,16 @@ export default {
      */
     formatDateVar(date, tf) {
       return formatDate(date, tf)
+    },
+
+    /**
+     * Routes the user to the listing page associated with their bookmarked message with the given business id and
+     * listing id.
+     * @param listingId listing id of the bookmark message
+     * @param businessId business id associated with the listing id of the bookmark message
+     */
+    toListing(listingId, businessId) {
+      this.$router.push({path: `/businessProfile/${businessId}/listings/${listingId}`})
     }
   }
 }
@@ -153,6 +194,24 @@ div.post h2, div.post p {
 
 .post-description {
   margin-bottom: 30px;
+}
+
+.bookmark-message-title {
+  font-weight: bold;
+}
+
+#bookmark-messages-container {
+  background-color: #1EBA8C;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 80px;
+}
+
+.spinner-grow {
+  height: 14px;
+  width: 14px;
+  margin-right: 4px;
+  margin-left: 4px;
 }
 
 /*-------------------------------------------- Medium break point styling -------------------------------------------*/

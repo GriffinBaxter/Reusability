@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class CustomListingRepositoryTests {
+class CustomListingRepositoryTests {
     @Autowired
     private TestEntityManager entityManager;
 
