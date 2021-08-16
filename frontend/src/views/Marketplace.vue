@@ -39,6 +39,7 @@
           </button>
         </li>
       </ul>
+
       <div class="tab-content" id="marketplace-tabs-content">
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
@@ -50,6 +51,7 @@
                                  @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
+                                 v-bind:hasDataLoaded="hasDataLoaded"
           />
         </div>
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
@@ -62,6 +64,7 @@
                                  @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
+                                 v-bind:hasDataLoaded="hasDataLoaded"
           />
         </div>
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
@@ -74,6 +77,7 @@
                                  @new-card-created="retrieveAllCardsForSection(this.selectSection)"
                                  v-bind:totalPages="totalPages"
                                  v-bind:page="page"
+                                 v-bind:hasDataLoaded="hasDataLoaded"
           />
         </div>
       </div>
@@ -115,7 +119,8 @@ export default {
       forSalePage: 0,
       wantedPage: 0,
       exchangePage: 0,
-      totalPages: 1
+      totalPages: 1,
+      hasDataLoaded: false
     }
   },
   components: {
@@ -191,7 +196,8 @@ export default {
       if (this.page < 0) {
         this.$router.push({path: '/pageDoesNotExist'});
       }
-      
+
+      this.hasDataLoaded = false;
       Api.getAllCards(section, this.sortBy, this.page).then(response => {
         this.allCards[section] = response.data;
         this.totalPages = parseInt(response.headers["total-pages"]);
@@ -199,11 +205,13 @@ export default {
         if (this.totalPages > 0 && this.page > this.totalPages) {
           this.$router.push({path: '/pageDoesNotExist'});
         }
+        this.hasDataLoaded = true;
       }).catch((error) => {
         if (error.response.status === 400) {
           this.$router.push({path: '/pageDoesNotExist'});
         }
         console.log(error.message)
+        this.hasDataLoaded = true;
       })
     },
     /**

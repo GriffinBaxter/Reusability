@@ -2,6 +2,8 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.seng302.view.outgoing.SoldListingPayload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.exceptions.IllegalSoldListingArgumentException;
@@ -98,5 +100,31 @@ public class SoldListing {
         }
 
         this.saleDate = LocalDateTime.now();
+    }
+
+    /**
+     * Converts a SoldListing into its payload representation
+     * @return SoldListingPayload
+     * @throws Exception an exception potentially thrown by the conversion of the user to a payload
+     */
+    public SoldListingPayload toSoldListingPayload() throws Exception {
+        return new SoldListingPayload(id, saleDate.toString(), listingDate.toString(), productId, quantity, price, bookmarks, customer.toUserPayloadSecure());
+    }
+
+    /**
+     * Overridden for debugging and testing purposes.
+     * @return The JSON format of the sold listing
+     */
+    @SneakyThrows
+    @Override
+    public String toString() {
+        return "{\"id\":" + id + "," +
+                "\"saleDate\":\"" + saleDate + "\"," +
+                "\"listingDate\":\"" + listingDate + "\"," +
+                "\"productId\":\"" + productId + "\"," +
+                "\"quantity\":" + quantity + "," +
+                "\"price\":" + price + "," +
+                "\"bookmarks\":" + bookmarks +
+                ",\"customer\":" + customer.toUserPayloadSecure() + "}";
     }
 }
