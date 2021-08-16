@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.3.1
+  version: 5.3.2
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1761,9 +1761,34 @@ paths:
                   $ref: '#/components/schemas/BookmarkMessage'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+
+  '/businesses/{id}/notifications':
+    get:
+      tags:
+        - 'U31: Purchases'
+        - 'Notifications'
+      summary: 'Retrieve all notifications for a business'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      responses:
+        '200':
+          description: Notifications for all sold listings of a business
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/SoldListingNotification'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an administrator of the business.'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
-
 
 components:
   securitySchemes:
@@ -2333,6 +2358,46 @@ components:
           readOnly: true
           description: The amount of bookmarks the listing had before being sold.
 
+    SoldListingNotification:
+      type: object
+      description: Notification for Sold Listing
+      required:
+        - id
+        - businessId
+        - soldListing
+        - description
+        - created
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Automatically generated and assigned by the server
+        businessId:
+          type: integer
+          example: 1
+          readOnly: true
+          description: Must match the ID of the business contained within the sold listing details
+        soldListing:
+          readOnly: true
+          description: The sold listing the notification refers to
+          allOf:
+            - $ref: '#/components/schemas/SoldListing'
+        soldListingId:
+          type: integer
+          example: 1
+          readOnly: true
+          description: The ID of the sold listing, automatically generated from the provided sold listing
+        description:
+          type: string
+          example: Your listing, Apple x23, has been purchased.
+        created:
+          type: string
+          format: date-time
+          example: '2020-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time when the notification was created, automatically generated
+
     BookmarkMessage:
       type: object
       description: Message/notification for bookmarked individual full sale listing
@@ -2340,7 +2405,9 @@ components:
         - id
         - description
         - created
-        - userIds
+        - listingId
+        - businessId
+        - closes
       properties:
         id:
           type: integer
@@ -2357,3 +2424,19 @@ components:
           example: '2020-07-14T14:32:00Z'
           readOnly: true
           description: Date and time when the notification was created
+        listingId:
+          type: integer
+          example: 2
+          description: Id of related listing
+          readOnly: true
+        businessId:
+          type: integer
+          example: 3
+          readOnly: true
+          description: Id of business listing is from
+        closes:
+          type: string
+          format: date-time
+          example: '2021-07-14T14:32:00Z'
+          readOnly: true
+          description: Date and time that listing will close

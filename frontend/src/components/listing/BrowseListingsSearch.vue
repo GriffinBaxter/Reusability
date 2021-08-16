@@ -17,7 +17,7 @@
         <div class="row collapse" id="filter-ordering-options-container">
 
           <!-- Match Fields -->
-          <div class="col-4 my-3 p-2" id="match-fields">
+          <div class="col-xl-4 col-md-6 mt-3 p-2" id="match-fields">
 
             <div class="row">
               <label class="d-inline-block fs-5 my-2 text-center">Match Fields</label>
@@ -26,7 +26,7 @@
             <div class="match-radio-container py-2">
               <!--  match product name -->
               <div class="form-check radio-padding-left">
-                <input class="form-check-input" type="radio" name="match-radios" value="listingName" id="radio-product-name" checked>
+                <input class="form-check-input" type="radio" name="match-radios" value="listingName" id="radio-product-name">
                 <label class="form-check-label" for="radio-product-name">
                   Product Name
                 </label>
@@ -34,7 +34,7 @@
 
               <!--  match seller location -->
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="match-radios" value="location" id="radio-seller-location">
+                <input class="form-check-input" type="radio" name="match-radios" value="location" id="radio-seller-location">
                 <label class="form-check-label" for="radio-seller-location">
                   Business Location
                 </label>
@@ -42,7 +42,7 @@
 
               <!--  match seller name -->
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="match-radios" value="businessName" id="radio-seller-name">
+                <input class="form-check-input" type="radio" name="match-radios" value="businessName" id="radio-seller-name">
                 <label class="form-check-label" for="radio-seller-name">
                   Business Name
                 </label>
@@ -80,7 +80,6 @@
             <div class="text-center" id="match-fields-clear-btn-container">
 
               <!--------------------------------------- clear field match button -------------------------------------------->
-              <!--   TODO: add @click event               -->
               <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50" @click="clearRadios('business')">
                 Clear Field
               </button>
@@ -90,7 +89,7 @@
 
           </div>
 
-          <div class="col-2 my-4" id="order-menu">
+          <div class="col-xl-4 col-md-6 mt-4" id="order-menu">
 
             <!------------------------------------------ ordering by options menu ------------------------------------------->
 
@@ -156,7 +155,7 @@
             <!--------------------------------------------------------------------------------------------------------->
 
           </div>
-          <div class="col-5 text-center my-4" id="price-and-date-filters">
+          <div class="col-xl-4 text-center mt-4" id="price-and-date-filters">
 
             <label class="d-inline-block fs-5 my-2 text-center">Filters</label>
 
@@ -242,6 +241,7 @@ export default {
         radios = document.querySelectorAll("input[name='business-type-radios']");
       }
       let value;
+
       for (const radio of radios) {
         if (radio.checked) {
           value = radio.value;
@@ -272,7 +272,7 @@ export default {
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
       const orderBy = this.orderByOption;
-      const page = 0;
+      const page = 1;
       const businessType = this.getSelectedRadio('business');
       const minimumPrice = this.lowestPrice;
       const maximumPrice = this.highestPrice;
@@ -402,6 +402,7 @@ export default {
   border-radius: 20px;
   margin-right: 10%;
   margin-left: 10%;
+  padding-bottom: 30px;
 }
 
 .match-radio-container, .business-radio-container {

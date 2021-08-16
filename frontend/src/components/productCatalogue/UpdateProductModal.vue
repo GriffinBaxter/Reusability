@@ -97,10 +97,29 @@
                     {{ errorsMessages.barcode }}
                   </div>
                   <br><br>
-                  <button class="btn green-button-transparent" @click="onUploadClick">Scan from image</button>
+                  <button class="btn green-button-transparent" @click="onUploadClick">Scan by uploading image</button>
                   <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
                                           name="img" accept="image/png, image/gif, image/jpeg">
                   <br><br>
+                  <button v-if="liveStreamAvailable && !liveStreaming" class="btn green-button-transparent"
+                          @click="getBarcodeLiveStream">
+                    Scan using camera
+                  </button>
+                  <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent"
+                          @click="
+                              liveStreaming = false;
+                              removeCameraError();
+                              ">
+                    Stop scanning  (barcode not found)
+                  </button>
+                  <button v-if="liveStreaming && barcodeFound" class="btn green-button"
+                          @click="liveStreaming = false">
+                    Save Scanned Barcode
+                  </button>
+                  <br>
+                  <div v-if="liveStreaming"><br></div>
+                  <div id="editLiveStreamCamera"></div>
+                  <br>
                   <button id="autofill-button" type="button"
                           :class="`btn green-button ${getErrorMessage(
                               config.barcode.name,
@@ -129,8 +148,7 @@
 import { Modal } from 'bootstrap'
 import Product from "../../configs/Product"
 import Api from "../../Api";
-import Quagga from "quagga";
-import OpenFoodFacts from '../../openFoodFactsInstance';
+import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../../barcodeUtils";
 
 
 export default {
@@ -177,6 +195,15 @@ export default {
       inputError: false,
       
       editBarcode: false,
+      liveStreamAvailable: false,
+      liveStreaming: false,
+      barcodeFound: false,
+      
+      barcode: "",
+      barcodeErrorMsg: "",
+      productName: "",
+      manufacturer: "",
+      description: "",
 
     }
   },
@@ -231,6 +258,9 @@ export default {
       }
       
       this.editBarcode = this.newProduct.data.barcode !== null;
+      this.barcode = ""
+      this.liveStreaming = false;
+      this.barcodeFound = false;
       
       // Show the modal
       this.modal.show();
@@ -416,65 +446,60 @@ export default {
      * Retrieves the barcode number (EAN or UPC) from an uploaded image.
      */
     getBarcodeStatic() {
-      let outerThis = this;
-      let file = this.$refs.image.files[0];
       this.formErrorModalMessage = "";
+      this.barcode = this.newProduct.data.barcode;
 
-      Quagga.decodeSingle({
-        decoder: {
-          readers: ["upc_reader", "ean_reader"]
-        },
-        locate: true,
-        src: URL.createObjectURL(file)
-      }, function (result) {
-        if (result && result.codeResult) {
-          outerThis.newProduct.data.barcode = result.codeResult.code;
-        } else {
-          outerThis.formErrorModalMessage = "Barcode not found in image";
-        }
+      let outerThis = this;
+      getBarcodeStatic(this, function () {
+        outerThis.newProduct.data.barcode = outerThis.barcode;
+        outerThis.formErrorModalMessage = outerThis.barcodeErrorMsg;
       });
+    },
+
+    /**
+     * Retrieves the barcode number (EAN or UPC) from a live camera feed, based on the most commonly occurring barcode
+     * per each frame scan.
+     */
+    getBarcodeLiveStream() {
+      this.formErrorModalMessage = "";
+      this.barcode = this.newProduct.data.barcode;
+
+      let outerThis = this;
+      getBarcodeLiveStream(this, 375, "#editLiveStreamCamera", function() {
+        outerThis.newProduct.data.barcode = outerThis.barcode;
+      });
+    },
+
+    /**
+     * Removes the camera error message after stopping the scanning.
+     */
+    removeCameraError() {
+      document.querySelector('#editLiveStreamCamera').innerHTML = ""
     },
 
     /**
      * Autofills data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
-      let outerThis = this;
       this.formErrorModalMessage = "";
+      this.barcode = this.newProduct.data.barcode;
+      this.productName = this.newProduct.data.name;
+      this.manufacturer = this.newProduct.data.manufacturer;
+      this.description = this.newProduct.data.description;
 
-      OpenFoodFacts.retrieveProductByBarcode(this.newProduct.data.barcode).then((result) => {
-        if (result.data.status === 1) {
-          let quantity = ""
-          if (result.data.product.quantity !== undefined) {
-            quantity = " " + result.data.product.quantity;
-          }
-          if (
-              (outerThis.newProduct.data.name === "" || outerThis.newProduct.data.name == null) &&
-              result.data.product.product_name !== undefined && result.data.product.product_name !== ""
-          ) {
-            outerThis.productName = result.data.product.product_name + quantity;
-          }
-          if (
-              (outerThis.newProduct.data.manufacturer === "" || outerThis.newProduct.data.manufacturer == null) &&
-              result.data.product.brands !== undefined
-          ) {
-            outerThis.newProduct.data.manufacturer = result.data.product.brands;
-          }
-          if (
-              (outerThis.newProduct.data.description === "" || outerThis.newProduct.data.description == null) &&
-              result.data.product.generic_name !== undefined
-          ) {
-            outerThis.newProduct.data.description = result.data.product.generic_name;
-          }
-        } else {
-          outerThis.formErrorModalMessage = "Could not autofill, product may not exist in database";
-        }
+      let outerThis = this;
+      autofillProductFromBarcode(outerThis, function () {
+        outerThis.newProduct.data.name = outerThis.productName;
+        outerThis.newProduct.data.manufacturer = outerThis.manufacturer;
+        outerThis.newProduct.data.description = outerThis.description;
       });
     }
   },
   mounted() {
     // Create a modal and attach it to the updateProductModel reference.
     this.modal = new Modal(this.$refs._updateProductModel);
+
+    this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
   }
 }
 </script>

@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
+import java.awt.print.Book;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -76,6 +77,12 @@ class ListingResourceIntegrationTests {
 
     @MockBean
     private ListingNotificationRepository listingNotificationRepository;
+
+    @MockBean
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
+    @MockBean
+    private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
     private MockHttpServletResponse response;
 
@@ -144,7 +151,7 @@ class ListingResourceIntegrationTests {
                                                         "\"businessesAdministered\":[null]," +
                                                         "\"dateOfBirth\":\"%s\"," +
                                                         "\"phoneNumber\":\"%s\"," +
-                                                        "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]," +
+                                                        "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +
                                                     "\"primaryAdministratorId\":%d," +
                                                     "\"name\":\"%s\"," +
                                                     "\"description\":\"%s\"," +
@@ -194,7 +201,7 @@ class ListingResourceIntegrationTests {
             "\"businessesAdministered\":[null]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
-            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\",\"suburb\":\"%s\"}}]," +
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +
             "\"primaryAdministratorId\":%d," +
             "\"name\":\"%s\"," +
             "\"description\":\"%s\"," +
@@ -406,7 +413,7 @@ class ListingResourceIntegrationTests {
         adminListing.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ListingResource(
-                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository))
+                listingRepository, inventoryItemRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository))
                 .build();
     }
 
@@ -746,9 +753,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -789,9 +796,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -909,9 +916,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1011,9 +1018,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1024,7 +1031,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1054,9 +1061,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1067,7 +1074,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1099,9 +1106,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1112,7 +1119,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1143,7 +1150,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of();
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null
@@ -1264,9 +1271,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1277,7 +1284,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, convertedBusinessType, null, null, null, null
@@ -1311,9 +1318,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1324,7 +1331,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, convertedBusinessType, null, null, null, null
@@ -1358,9 +1365,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1371,7 +1378,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.business.address.country").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByBusinessName(
                 names, paging, convertedBusinessType,
@@ -1414,9 +1421,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1427,7 +1434,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.expires").ignoreCase());
-        Pageable paging = PageRequest.of(0, 9, sort);
+        Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByLocation(
                 names, paging, convertedBusinessType,
@@ -1469,9 +1476,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1507,9 +1514,9 @@ class ListingResourceIntegrationTests {
                 product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
-                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getCity(),
-                user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(), user.getHomeAddress().getPostcode(),
-                user.getHomeAddress().getSuburb(), business.getPrimaryAdministratorId(), business.getName(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
@@ -1883,4 +1890,78 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(response.getErrorMessage()).isEqualTo("Inventory item for listing does not exist");
     }
+
+    /**
+     * Test that when a user has already bookmarked and/or un-bookmarked a listing, they can retrieve
+     * all BookmarkedListingMessages.
+     * Tests specifically for when searching as a standard user (non-admin).
+     */
+    @Test
+    void canRetrieveBookmarkedListingMessagesWithMessages() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        LocalDateTime created = LocalDateTime.now();
+        BookmarkedListingMessage bookmarkedListingMessage1 = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage1.setId(1);
+        BookmarkedListingMessage bookmarkedListingMessage2 = new BookmarkedListingMessage(
+                String.format("Bookmark for product listing '%s' has been removed.",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage2.setId(2);
+        user.setBookmarkedListingMessages(List.of(bookmarkedListingMessage1, bookmarkedListingMessage2));
+
+        expectedJSON = "[{" +
+                "\"id\":" + bookmarkedListingMessage1.getId() + "," +
+                "\"description\":\"" + bookmarkedListingMessage1.getDescription() + "\"," +
+                "\"created\":\"" + bookmarkedListingMessage1.getCreated() + "\"," +
+                "\"listingId\":" + bookmarkedListingMessage1.getListing().getId() + "," +
+                "\"businessId\":" + bookmarkedListingMessage1.getListing().getBusinessId() + "," +
+                "\"closes\":\"" + bookmarkedListingMessage1.getListing().getCloses() + "\"" +
+                "}," + "{" +
+                "\"id\":" + bookmarkedListingMessage2.getId() + "," +
+                "\"description\":\"" + bookmarkedListingMessage2.getDescription() + "\"," +
+                "\"created\":\"" + bookmarkedListingMessage2.getCreated() + "\"," +
+                "\"listingId\":" + bookmarkedListingMessage1.getListing().getId() + "," +
+                "\"businessId\":" + bookmarkedListingMessage1.getListing().getBusinessId() + "," +
+                "\"closes\":\"" + bookmarkedListingMessage1.getListing().getCloses() + "\"" +
+                "}]";
+
+        // when
+        response = mvc.perform(get("/home/bookmarkMessages")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Test that when a user has not already bookmarked and/or un-bookmarked a listing, they can retrieve
+     * all BookmarkedListingMessages (resulting in an empty list returned)
+     * Tests specifically for when searching as a standard user (non-admin).
+     */
+    @Test
+    void canRetrieveBookmarkedListingMessagesWithNoMessages() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+
+        expectedJSON = "[]";
+
+        // when
+        response = mvc.perform(get("/home/bookmarkMessages")
+                        .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+
+    }
+
+
 }

@@ -50,6 +50,7 @@
 import {Popover} from "bootstrap";
 import Api from "../../Api";
 import {formatDate} from "../../dateUtils";
+import {checkNullity, getFormattedAddress} from "../../views/helpFunction";
 
 export default {
   name: "BrowseListingCard",
@@ -146,23 +147,15 @@ export default {
     addressUnpack(address) {
       let addressString = "";
 
-      if (address.streetNumber != null && address.streetName != null) {
-        addressString += address.streetNumber + " " + address.streetName;
-      } else {
-        addressString += address.streetNumber + address.streetName;
-      }
-      if (address.suburb != null) {
-        addressString += "<br>" + address.suburb;
-      }
-      if (address.city != null && address.postcode != null) {
-        addressString += "<br>" + address.city + ", " + address.postcode;
-      } else {
-        addressString += "<br>" + address.city + address.postcode;
-      }
-      if (address.region != null && address.country != null) {
-        addressString += "<br>" + address.region + ", " + address.country;
-      } else {
-        addressString += "<br>" + address.region + address.country;
+      let formattedAddress = getFormattedAddress(checkNullity(address.streetNumber), checkNullity(address.streetName),
+                                                checkNullity(address.suburb),
+                                                checkNullity(address.city), checkNullity(address.postcode),
+                                                checkNullity(address.region), checkNullity(address.country))
+
+      for (let i=0; i < formattedAddress.length; i++) {
+        if (formattedAddress[i].line !== "") {
+          addressString += formattedAddress[i].line + "<br>";
+        }
       }
       return addressString
     }
@@ -183,7 +176,8 @@ export default {
 }
 
 .card {
-  margin: 0.5em 0.5em 0.5em 0.5em;
+  margin-bottom: 1em;
+  margin-top: 1em;
 
 }
 

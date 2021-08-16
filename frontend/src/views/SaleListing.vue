@@ -22,7 +22,7 @@
           <!-- Image section -->
           <div class="listing-images-wrapper">
             <div id="main-image-wrapper">
-              <img :src="getMainImage()" alt="Product [product - name ] image" id="listing-image" class="no-highlight"/>
+              <img :src="getMainImage()" :alt="'Product ' + productName + ' Image'" id="listing-image" class="no-highlight"/>
             </div>
             <div class="images-carousel-wrapper" v-if="saleImages.length > 1">
               <div class="carousel-arrow clickable no-highlight" @click="nextImage">
@@ -36,7 +36,7 @@
                 <img
                     :class="`sale-carousel-image no-highlight clickable ` + (mainImageIndex === imageIndex ? 'main-carousel-image' : '')"
                     v-for="(imageIndex, index) in getVisibleImages()" @click="mainImageIndex=imageIndex" :key="index"
-                    :src="getCarouselImage(imageIndex)" alt="Product [product - name ] image 2">
+                    :src="getCarouselImage(imageIndex)" :alt="'Product ' + productName + ' Image 2'">
               </div>
               <div class="carousel-arrow clickable no-highlight" @click="previousImage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -105,10 +105,11 @@
               <button v-else class="buy-button-disabled merryweather w-100" disabled>
                 Can't buy own listing
               </button>
-              <div class="barcode-wrapper">
-                <div id="barcode-number" v-if="barcode">Barcode: {{ barcode }}</div>
-              </div>
             </div>
+              <div class="barcode-wrapper" v-if="barcode">
+                <img :src="getBarcodeImage()" alt="Product Barcode Image" id="barcode-image" class="no-highlight"/>
+                <div id="barcode-number">Barcode: {{ barcode }}</div>
+              </div>
           </div>
 
           <!-- Product information -->
@@ -142,6 +143,7 @@ import DefaultImage from "../../public/default-product.jpg"
 import Api from "../Api"
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
+import {checkNullity} from "../views/helpFunction";
 
 export default {
   name: "SaleListing",
@@ -192,6 +194,12 @@ export default {
 
       // keep track of if user came from full listings page so they can return.
       fromListings: false,
+
+      // CONSTANTS
+      UPC_A: "upca",
+      UPC_A_LENGTH: 12,
+      EAN: "ean13",
+      EAN_LENGTH: 13
     }
   },
   methods: {
@@ -334,16 +342,24 @@ export default {
       }
 
       // address population
-      this.businessAddressLine1 = (this.businessAddress.streetNumber !== "" && this.businessAddress.streetName !== "")
-          ? this.businessAddress.streetNumber + " " + this.businessAddress.streetName
-          : this.businessAddress.streetNumber + this.businessAddress.streetName;
-      this.businessAddressLine2 = (this.businessAddress.suburb !== "") ? this.businessAddress.suburb : "";
-      this.businessAddressLine3 = (this.businessAddress.city !== "" && this.businessAddress.postcode !== "")
-          ? this.businessAddress.city + ", " + this.businessAddress.postcode
-          : this.businessAddress.city + this.businessAddress.postcode;
-      this.businessAddressLine4 = (this.businessAddress.region !== "" && this.businessAddress.country !== "")
-          ? this.businessAddress.region + ", " + this.businessAddress.country
-          : this.businessAddress.region + this.businessAddress.country;
+      if (this.businessAddress.streetNumber !== null && this.businessAddress.streetName !== null) {
+        this.businessAddressLine1 = this.businessAddress.streetNumber + " " + this.businessAddress.streetName;
+      } else {
+        this.businessAddressLine1 = checkNullity(this.businessAddress.streetNumber) + checkNullity(this.businessAddress.streetName);
+      }
+      if (this.businessAddress.suburb !== "") {
+        this.businessAddressLine2 =  this.businessAddress.suburb;
+      }
+      if (this.businessAddress.city !== null && this.businessAddress.postcode !== null) {
+        this.businessAddressLine3 = this.businessAddress.city + ", " + this.businessAddress.postcode;
+      } else {
+        this.businessAddressLine3 = checkNullity(this.businessAddress.city) + checkNullity(this.businessAddress.postcode);
+      }
+      if (this.businessAddress.region !== null && this.businessAddress.country !== null) {
+        this.businessAddressLine4 = this.businessAddress.region + ", " + this.businessAddress.country;
+      } else {
+        this.businessAddressLine4 = checkNullity(this.businessAddress.region) + checkNullity(this.businessAddress.country);
+      }
 
       // bookmark info
       this.listingId = data.id;
@@ -364,7 +380,29 @@ export default {
      */
     returnToSales() {
       this.$router.back();
-    }
+    },
+    /**
+     * Retrieves the filename (url path) for the barcode image for the listing.
+     * This is retrieved via an api bwip-js.
+     *
+     * Preconditions:  this.barcode is not null (i.e. this method is only called when this.barcode exists).
+     *                 this.barcode represents a valid UPCA or EAN13 barcode.
+     * Postconditions: a url which can be used to retrieve a barcode image.
+     *
+     * @return {string} Returns the URL to the image source.
+     */
+    getBarcodeImage() {
+      let type;
+      if (this.barcode.length === this.UPC_A_LENGTH) {
+        type = this.UPC_A;
+      } else if (this.barcode.length === this.EAN_LENGTH) {
+        type = this.EAN;
+      } else {
+        return ""; // barcode is unsupported so we can't retrieve barcode image.
+      }
+      // return the url which can be used to retrieve the barcode image.
+      return "https://bwipjs-api.metafloor.com/?bcid=" + type + "&text=" + this.barcode;
+    },
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {

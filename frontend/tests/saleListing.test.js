@@ -812,7 +812,6 @@ describe("Test bookmark display counter and icon", () => {
 
 describe("Testing the 'Go to Business Profile' button", () => {
 
-    let saleListingWrapper;
     let $router;
     let $route;
     let goToButton;
@@ -827,13 +826,13 @@ describe("Testing the 'Go to Business Profile' button", () => {
                 listingId: 11
             }
         };
-        saleListingWrapper = shallowMount(listing, {
+        wrapper = shallowMount(listing, {
             mocks: {
                 $router,
                 $route
             }
         });
-        goToButton = saleListingWrapper.find("#go-to-button");
+        goToButton = wrapper.find("#go-to-button");
     });
 
     test("Test that user is redirected to the business profile page when the 'Go to Business Profile' button is clicked.", async () => {
@@ -847,7 +846,6 @@ describe("Testing the 'Go to Business Profile' button", () => {
 
 describe("Testing buy listing functionality", () => {
 
-    let saleListingWrapper;
     let $router;
     let $route;
 
@@ -861,7 +859,7 @@ describe("Testing buy listing functionality", () => {
                 listingId: 11
             }
         };
-        saleListingWrapper = shallowMount(listing, {
+        wrapper = shallowMount(listing, {
             mocks: {
                 $router,
                 $route
@@ -871,20 +869,65 @@ describe("Testing buy listing functionality", () => {
     });
 
     test("Test v-if button variable is set correctly when user isn't business admin", (() => {
-        saleListingWrapper.vm.$data.currentID = "2";
-        saleListingWrapper.vm.populateData(response.data);
+        wrapper.vm.$data.currentID = "2";
+        wrapper.vm.populateData(response.data);
 
-        saleListingWrapper.vm.$nextTick();
+        wrapper.vm.$nextTick();
 
-        expect(saleListingWrapper.vm.$data.canBuy).toBeTruthy();
+        expect(wrapper.vm.$data.canBuy).toBeTruthy();
     }));
 
     test("Test v-if button variable is set correctly when user is business admin", (() => {
-        saleListingWrapper.vm.$data.currentID = "1";
-        saleListingWrapper.vm.populateData(response.data);
+        wrapper.vm.$data.currentID = "1";
+        wrapper.vm.populateData(response.data);
 
-        saleListingWrapper.vm.$nextTick();
+        wrapper.vm.$nextTick();
 
-        expect(saleListingWrapper.vm.$data.canBuy).toBeFalsy();
+        expect(wrapper.vm.$data.canBuy).toBeFalsy();
     }));
+});
+
+describe("Testing the getBarcodeImage method", () => {
+
+    let $router;
+    let $route;
+
+    beforeEach(() => {
+        $router = {
+            push: jest.fn()
+        };
+        $route = {
+            params: {
+                businessId: 2,
+                listingId: 11
+            }
+        };
+        wrapper = shallowMount(listing, {
+            mocks: {
+                $router,
+                $route
+            }
+        });
+    });
+
+    test("Test correct url is returned when this.barcode is UPC-A", () => {
+        const upca = "036000291452";
+        const expected_url = "https://bwipjs-api.metafloor.com/?bcid=upca&text=" + upca;
+        wrapper.vm.$data.barcode = upca;
+        expect(wrapper.vm.getBarcodeImage()).toEqual(expected_url);
+    });
+
+    test("Test correct url is returned when this.barcode is EAN13", () => {
+        const ean13 = "9400547002634";
+        const expected_url = "https://bwipjs-api.metafloor.com/?bcid=ean13&text=" + ean13;
+        wrapper.vm.$data.barcode = ean13;
+        expect(wrapper.vm.getBarcodeImage()).toEqual(expected_url);
+    });
+
+    test("Test correct empty url is returned when this.barcode is not UPC-A or EAN13", () => {
+        const invalid_barcode = "123456";
+        const expected_url = "";
+        wrapper.vm.$data.barcode = invalid_barcode;
+        expect(wrapper.vm.getBarcodeImage()).toEqual(expected_url);
+    });
 });
