@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import BrowseListingCard from "../components/listing/BrowseListingCard";
 import Api from "../Api"

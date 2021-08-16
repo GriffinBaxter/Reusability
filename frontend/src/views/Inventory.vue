@@ -179,7 +179,7 @@
 <script>
 import Footer from "../components/main/Footer";
 import InventoryItem from "../components/inventory/InventoryItem";
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
 import Api from "../Api";
 import Cookies from "js-cookie";

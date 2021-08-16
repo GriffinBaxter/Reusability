@@ -238,7 +238,7 @@ import {Modal} from 'bootstrap'
 import Api from '../Api';
 import Product from "../configs/Product";
 import Cookies from 'js-cookie';
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";

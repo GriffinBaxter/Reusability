@@ -91,7 +91,7 @@
 
 import CardDetail from "../components/marketplace/CardDetailPopup";
 import Footer from '../components/main/Footer';
-import Navbar from '../components/main/Navbar';
+import Navbar from '../components/Navbar';
 import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
 import Api from "../Api";
 import EditCardModal from "../components/marketplace/EditCardModal";

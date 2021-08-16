@@ -544,7 +544,6 @@ export default {
 
   #navbar-wrapper {
     height: 10rem;
-
   }
 
   #navbar {
@@ -558,6 +557,7 @@ export default {
     box-shadow: 0.4rem 0 1.75rem #00000030;
     display: flex;
     flex-direction: column;
+    z-index: 999;
   }
 
   #navbar-content {
@@ -618,8 +618,7 @@ export default {
     margin: 0;
     list-style: none;
     padding: 0;
-    height: 100%;
-
+    max-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -767,6 +766,7 @@ export default {
   #interact-as-menu {
     list-style: none;
     padding: 0;
+    max-height: 100vh;
   }
 
   .admin-label {
@@ -802,40 +802,40 @@ export default {
   }
 
   .expand-enter-active {
-    animation: dropAnimation 250ms;
+    animation: dropAnimation 250ms ease-in-out;
     overflow: hidden;
   }
 
   .expand-leave-active {
-    animation: dropAnimation 250ms reverse;
+    animation: dropAnimation 250ms reverse ease-in-out;
     overflow: hidden;
   }
 
   .links-enter-active {
-    animation: dropAnimation 250ms;
+    animation: dropAnimation 250ms ease-in-out;
     overflow: hidden;
   }
 
   .links-leave-active {
-    animation: dropAnimation 250ms reverse;
+    animation: dropAnimation 250ms reverse ease-in-out;
     overflow: hidden;
   }
 
   @keyframes dropAnimation {
     0% {
-      height: 0;
+      max-height: 0;
     }
     100% {
-      height: 100%;
+      max-height: 100vh;
     }
   }
 
   @keyframes sideWaysExpandAnimation {
     0% {
-      width: 0;
+      max-width: 0;
     }
     100% {
-      width: 100%;
+      max-width: 100%;
     }
   }
 
@@ -882,8 +882,8 @@ export default {
       background-color: white;
       box-shadow: 2px 10px 1rem #00000030;
       padding: 1rem 3rem 0 1.75rem;
-      max-width: 13rem;
-      width: 100%;
+      width: 13rem;
+      min-height: 100vh;
       top: 8.5rem;
       left: 0;
     }
