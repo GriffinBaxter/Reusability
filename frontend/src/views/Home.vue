@@ -23,25 +23,27 @@
             <h2 style="text-align: center">(No Bookmarked Messages)</h2>
           </div>
 
-          <!--Post 1 for news feed-->
-          <div :id="'bookmark-message-container-' + message.id"
-               class="post shadow py-3 px-4"
-               type="button"
-               v-for="message in bookmarkMessages" v-bind:key="message.id"
-               @click="toListing(message.listingId, message.businessId)">
-            <!--Post description-->
-            <div>
-              <p class="post-description">
-                {{message.description}}</p>
+          <!-- All Bookmarked Listings Messages-->
+          <div id="bookmark-messages-container">
+            <div :id="'bookmark-message-container-' + message.id"
+                 class="post shadow py-3 px-4"
+                 type="button"
+                 v-for="message in bookmarkMessages" v-bind:key="message.id"
+                 @click="toListing(message.listingId, message.businessId)">
+              <!--Post description-->
+              <div>
+                <p class="post-description">
+                  {{message.description}}</p>
+              </div>
+              <!--Listing close date-->
+              <p class="py-1">
+                <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
+              </p>
+              <!--Date/time of message-->
+              <p class="py-1">
+                <label class="bookmark-message-title">Notification Date:</label> {{ formatDateVar(message.created, true) }}
+              </p>
             </div>
-            <!--Listing close date-->
-            <p class="py-1">
-              Closes: {{ formatDateVar(message.closes, false) }}
-            </p>
-            <!--Date/time of message-->
-            <p class="py-1">
-              Notification date: {{ formatDateVar(message.created, true) }}
-            </p>
           </div>
 
         </div>
@@ -167,6 +169,17 @@ div.post h2, div.post p {
 
 .post-description {
   margin-bottom: 30px;
+}
+
+.bookmark-message-title {
+  font-weight: bold;
+}
+
+#bookmark-messages-container {
+  background-color: #1EBA8C;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 80px;
 }
 
 /*-------------------------------------------- Medium break point styling -------------------------------------------*/
