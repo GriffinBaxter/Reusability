@@ -894,7 +894,7 @@ export default {
       top: 8.5rem;
       right: 0;
       max-width: fit-content;
-      min-width: 7rem;
+      min-width: 16rem;
       box-shadow: -2px 10px 1rem #00000030;
     }
 
