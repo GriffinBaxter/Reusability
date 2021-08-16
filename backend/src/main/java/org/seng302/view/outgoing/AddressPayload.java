@@ -17,11 +17,11 @@ package org.seng302.view.outgoing;
 public class AddressPayload {
     private String streetNumber;
     private String streetName;
+    private String suburb;
     private String city;
     private String region;
     private String country;
     private String postcode;
-    private String suburb;
 
 
     public AddressPayload(
@@ -115,15 +115,13 @@ public class AddressPayload {
      */
     @Override
     public String toString() {
-        return "Address(" +
-                "streetNumber=" + streetNumber +
-                ", streetName=" + streetName +
-                ", suburb=" + suburb +
-                ", city=" + city +
-                ", postcode=" + postcode +
-                ", region=" + region +
-                ", country=" + country +
-                ')';
+        return  "{\"streetNumber\":\"" + streetNumber + "\"," +
+                "\"streetName\":\"" + streetName + "\"," +
+                "\"suburb\":\"" + suburb + "\"," +
+                "\"city\":\"" + city + "\"," +
+                "\"region\":\"" + region + "\"," +
+                "\"country\":\"" + country + "\"," +
+                "\"postcode\":\"" + postcode + "\"}";
     }
 }
 

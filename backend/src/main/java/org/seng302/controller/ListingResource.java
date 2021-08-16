@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.seng302.exceptions.IllegalListingArgumentException;
 import org.seng302.exceptions.IllegalSoldListingArgumentException;
+import org.seng302.exceptions.IllegalSoldListingNotificationArgumentException;
 import org.seng302.model.*;
 import org.seng302.model.repository.*;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
@@ -71,6 +72,9 @@ public class ListingResource {
     private ListingNotificationRepository listingNotificationRepository;
 
     @Autowired
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
+    @Autowired
     private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
@@ -85,6 +89,7 @@ public class ListingResource {
      * @param userRepository UserRepository
      * @param soldListingRepository SoldListingRepository
      * @param listingNotificationRepository ListingNotificationRepository
+     * @param soldListingNotificationRepository SoldListingNotificationRepository
      */
     public ListingResource(ListingRepository listingRepository,
                            InventoryItemRepository inventoryItemRepository,
@@ -93,6 +98,7 @@ public class ListingResource {
                            UserRepository userRepository,
                            SoldListingRepository soldListingRepository,
                            ListingNotificationRepository listingNotificationRepository,
+                           SoldListingNotificationRepository soldListingNotificationRepository,
                            BookmarkedListingMessageRepository bookmarkedListingMessageRepository) {
         this.listingRepository = listingRepository;
         this.inventoryItemRepository = inventoryItemRepository;
@@ -101,6 +107,7 @@ public class ListingResource {
         this.userRepository = userRepository;
         this.soldListingRepository = soldListingRepository;
         this.listingNotificationRepository = listingNotificationRepository;
+        this.soldListingNotificationRepository = soldListingNotificationRepository;
         this.bookmarkedListingMessageRepository = bookmarkedListingMessageRepository;
     }
 
@@ -288,8 +295,8 @@ public class ListingResource {
 
         int pageNo = PaginationUtils.parsePageNumber(page);
 
-        // Front-end displays 9 listings per page
-        int pageSize = 9;
+        // Front-end displays 12 listings per page
+        int pageSize = 12;
 
         Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
@@ -413,7 +420,7 @@ public class ListingResource {
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer businessId,
             @RequestParam(defaultValue = "0") String page
-    ) {
+    ) throws Exception {
         // Checks user logged in - 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         // Checks business at ID exists - 406
@@ -647,8 +654,18 @@ public class ListingResource {
                     listing.getInventoryItem().getProduct().getProductId(),
                     listing.getQuantity(), listing.getPrice(),
                     listing.getTotalBookmarks());
-            soldListingRepository.save(soldListing);
+            soldListing = soldListingRepository.save(soldListing);
             logger.info("Sold Listing Creation Success - Sold listing created for business with ID {}", listing.getBusinessId());
+
+            try {
+                String soldListingMessage = String.format("A listing of yours, %s x%d, has been sold.", listing.getInventoryItem().getProduct().getName(), listing.getQuantity());
+                SoldListingNotification soldListingNotification = new SoldListingNotification(business.getId(), soldListing, soldListingMessage);
+                soldListingNotificationRepository.save(soldListingNotification);
+
+                logger.info("Sold Listing Notification Creation Success - Sold listing notification created for business with ID {}", business.getId());
+            } catch (IllegalSoldListingNotificationArgumentException e) {
+                logger.error("Couldn't create sold listing notification - {}", e.getMessage());
+            }
         } catch (IllegalSoldListingArgumentException e) {
             logger.error("Couldn't create sold listing - {}", e.getMessage());
         }
@@ -778,18 +795,10 @@ public class ListingResource {
      * @param soldListings The given list of sold listings
      * @return A list of Sold Listings in payload form.
      */
-    public List<SoldListingPayload> convertToSoldPayload(List<SoldListing> soldListings) {
+    public List<SoldListingPayload> convertToSoldPayload(List<SoldListing> soldListings) throws Exception {
         List<SoldListingPayload> payloads = new ArrayList<>();
         for (SoldListing soldListing : soldListings) {
-            SoldListingPayload newPayload = new SoldListingPayload(
-                    soldListing.getId(),
-                    soldListing.getSaleDate().toString(),
-                    soldListing.getListingDate().toString(),
-                    soldListing.getProductId(),
-                    soldListing.getQuantity(),
-                    soldListing.getPrice(),
-                    soldListing.getBookmarks()
-            );
+            SoldListingPayload newPayload = soldListing.toSoldListingPayload();
             logger.debug("Sold Listing payload created: {}", newPayload);
             payloads.add(newPayload);
         }
