@@ -315,16 +315,29 @@ export default {
      * update image for bell
      */
     updateNotificationState() {
-      Api.getNotifications()
-          .then(response => this.newNotification = (response.data.length === 0))
-          .catch((error) => {
-            if (error.status === 401) {
-              // Missing or invalid token
-              this.$router.push({path: '/invalidtoken'});
-            } else {
-              console.log(error)
-            }
-          });
+      if (Cookies.get('actAs') === undefined) {
+        Api.getNotifications()
+            .then(response => this.newNotification = (response.data.length === 0))
+            .catch((error) => {
+              if (error.status === 401) {
+                // Missing or invalid token
+                this.$router.push({path: '/invalidtoken'});
+              } else {
+                console.log(error)
+              }
+            });
+      } else {
+        Api.getBusinessNotifications(Cookies.get('actAs'))
+            .then(response => this.newNotification = (response.data.length === 0))
+            .catch((error) => {
+              if (error.status === 401) {
+                // Missing or invalid token
+                this.$router.push({path: '/invalidtoken'});
+              } else {
+                console.log(error)
+              }
+            });
+      }
     },
     /**
      * Toggle the interactAs menu dropdown
