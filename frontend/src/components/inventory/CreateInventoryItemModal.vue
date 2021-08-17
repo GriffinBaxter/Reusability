@@ -501,6 +501,9 @@ export default {
       // Autofill related variables
       this.autofillInput = '';
       this.autofillState = 'initial'
+
+      // Remove toast error message
+      this.toastErrorMessage = "";
     },
 
     /**

@@ -247,6 +247,7 @@ export default {
         this.sellByErrorMsg = "";
         this.bestBeforeErrorMsg = "";
         this.expiresErrorMsg = "";
+        this.formErrorModalMessage = "";
       }
 
       // Get all products to display in autofill
