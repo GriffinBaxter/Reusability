@@ -187,7 +187,7 @@
 <script>
 import Cookies from "js-cookie";
 import Api from "../Api";
-import {UserRole} from "@/configs/User";
+import {UserRole} from "../configs/User";
 import Notification from "./main/Notification";
 
 export default {
@@ -329,7 +329,7 @@ export default {
     /**
      * update image for bell
      */
-    updateNotificationState() {
+    updateNotificationState() {console.log('ASDAS')
       Api.getNotifications()
           .then(response => {
             this.newNotification = (response.data.length > 0);
