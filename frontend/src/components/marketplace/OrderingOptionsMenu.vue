@@ -10,22 +10,22 @@
 
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
           <!--order by title-->
-          <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+          <li class="btn green-button-transparent col-12 order-by-options-btn"
                   @click="setOrderByOption(true, false, false)">
             Title
-          </button>
+          </li>
 
           <!--order by location-->
-          <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+          <li class="btn green-button-transparent col-12 order-by-options-btn"
                   @click="setOrderByOption(false, true, false)">
             Location
-          </button>
+          </li>
 
           <!--order by created-->
-          <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+          <li class="btn green-button-transparent col-12 order-by-options-btn"
                   @click="setOrderByOption(false, false, true)">
             Created
-          </button>
+          </li>
         </ul>
       </div>
 
@@ -37,16 +37,16 @@
 
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
           <!--order by ascending direction -->
-          <button type="button" class="btn green-button-transparent col-12 order-direction-options-btn"
+          <li class="btn green-button-transparent col-12 order-direction-options-btn"
                   @click="setOrderDirectionOption(true)">
             Ascending
-          </button>
+          </li>
 
           <!--order by descending direction -->
-          <button type="button" class="btn green-button-transparent col-12 order-direction-options-btn"
+          <li class="btn green-button-transparent col-12 order-direction-options-btn"
                   @click="setOrderDirectionOption(false)">
             Descending
-          </button>
+          </li>
         </ul>
       </div>
     </div>
