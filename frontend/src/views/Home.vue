@@ -52,7 +52,8 @@
 
                 <!--Delete button for bookmarked listing message-->
                 <div class="col-1" id="delete-btn-container" style="position: relative;">
-                  <button type="button"
+                  <button :id="'delete-bookmark-message-button-' + message.id"
+                          type="button"
                           class="btn-close"
                           @click="deleteMessage(message.id)"/>
                 </div>

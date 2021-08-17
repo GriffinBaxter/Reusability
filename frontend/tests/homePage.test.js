@@ -42,6 +42,38 @@ describe("Tests for toListing function", () => {
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/listings/1`});
     });
+})
 
+describe("Tests for bookmark message deletion", () => {
+    test("Test the bookmark message will been delete when user click on the delete button", async () => {
+        const response = {
+            data: [
+                {
+                    id: 1,
+                    description: "Product listing 'Mandarins' has been bookmarked.",
+                    created: "2021-08-16T11:34:13.889807",
+                    listingId: 1,
+                    businessId: 1,
+                    closes: "2021-09-12T00:00"
+                }
+            ]
+        }
 
+        Api.getBookmarkedMessage.mockImplementation(() => Promise.resolve(response));
+        Api.deleteBookmarkMessage.mockResolvedValue();
+
+        wrapper = await shallowMount(Home, {
+            localVue,
+            mocks: {
+                $router
+            }
+        });
+        await wrapper.vm.$nextTick();
+        expect(wrapper.find('#delete-bookmark-message-button-1').exists()).toBeTruthy();
+
+        await wrapper.find('#delete-bookmark-message-button-1').trigger("click");
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find('#delete-bookmark-message-button-1').exists()).toBeFalsy();
+    });
 })
