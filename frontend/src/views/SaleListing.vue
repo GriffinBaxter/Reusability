@@ -115,7 +115,7 @@
                 Buy
               </button>
               <button v-else class="buy-button-disabled merryweather w-100" disabled>
-                Can't buy own listing
+                Business cannot purchase listings.
               </button>
             </div>
               <div class="barcode-wrapper" v-if="barcode">
@@ -349,11 +349,8 @@ export default {
       // Administrators
       this.businessAdmins = data.inventoryItem.product.business.administrators
 
-      for (let i=0; i < this.businessAdmins.length; i++) {
-        if (this.businessAdmins[i].id.toString() === this.currentID) {
-          this.canBuy = false
-        }
-      }
+      // Testing that we are acting as a user.
+      this.canBuy = this.actingBusinessId === undefined || this.actingBusinessId === null;
 
       // address population
       if (this.businessAddress.streetNumber !== null && this.businessAddress.streetName !== null) {

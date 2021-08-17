@@ -431,7 +431,7 @@ public class ListingResource {
         int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Paging
-        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+        Sort sortBy = Sort.by(Sort.Order.desc("saleDate"));
         Pageable pageable = PageRequest.of(pageNo, 10, sortBy);
 
         Page<SoldListing> pagedResult = soldListingRepository.findAllByBusinessId(businessId, pageable);
@@ -621,14 +621,6 @@ public class ListingResource {
         Listing listing = optionalListing.get();
         String nameOfProduct = listing.getInventoryItem().getProduct().getName();
         logger.debug("Listing {} retrieved, ID: {}.", nameOfProduct, listing.getId());
-
-        if (currentUser.getBusinessesAdministered().contains(listing.getBusinessId())) {
-            logger.error("403 [FORBIDDEN] - Cannot purchase your own listing");
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Cannot purchase your own listing"
-            );
-        }
 
         Optional<Business> optionalBusiness = businessRepository.findBusinessById(listing.getBusinessId());
         if (optionalBusiness.isEmpty()) {

@@ -1806,6 +1806,14 @@ paths:
             - user
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          description: The id of the given business for which to retrieve the notifications
+          required: true
+          schema:
+            type: integer
+            example: 118
       responses:
         '200':
           description: Notifications for all sold listings of a business
@@ -2351,6 +2359,7 @@ components:
         - quantity
         - price
         - bookmarks
+        - customer
       properties:
         id:
           type: integer
@@ -2390,6 +2399,8 @@ components:
           example: 10
           readOnly: true
           description: The amount of bookmarks the listing had before being sold.
+        customer:
+          $ref: '#/components/schemas/User'
 
     SoldListingNotification:
       type: object

@@ -501,6 +501,9 @@ export default {
       // Autofill related variables
       this.autofillInput = '';
       this.autofillState = 'initial'
+
+      // Remove toast error message
+      this.toastErrorMessage = "";
     },
 
     /**
@@ -525,6 +528,20 @@ export default {
       )
       if (this.productIdErrorMsg) {
         requestIsInvalid = true
+      } else {
+        // Check if product ID exists
+        let found = false
+        for (let i=0 ; i < this.allProducts.length; i++) {
+          if (this.autofillInput === this.allProducts[i].id) {
+            found = true
+          }
+        }
+        if (found === false) {
+          this.productIdErrorMsg = "Product Id does not exist for business"
+          requestIsInvalid = true;
+        } else {
+          this.productIdErrorMsg = "";
+        }
       }
 
       // Quantity error checking

@@ -353,5 +353,18 @@ export default {
         return instance.put(`/listings/${id}/buy`, {}, {
             withCredentials: true
         })
+    },
+
+    deleteBookmarkMessage: (id) => {
+        return instance.delete(`/home/bookmarkMessages/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    // Sends a GET request to the backend asking for the sold listings of a business (paginated)
+    getSoldListings: (businessId, page) => {
+        return instance.get(`/businesses/${businessId}/soldListings?page=${page}`, {
+            withCredentials: true
+        })
     }
 }
