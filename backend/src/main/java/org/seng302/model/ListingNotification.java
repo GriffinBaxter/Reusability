@@ -185,7 +185,7 @@ public class ListingNotification {
      * @return a payload representing the listing notification
      */
     public ListingNotificationPayload toListingNotificationPayload() {
-        return new ListingNotificationPayload(id, description, created, NotificationType.LISTING);
+        return new ListingNotificationPayload(id, description, created);
     }
 
     /*---------------------------------------------------Validation---------------------------------------------------*/

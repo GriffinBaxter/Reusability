@@ -3,7 +3,6 @@ package org.seng302.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalSoldListingNotificationArgumentException;
-import org.seng302.model.enums.NotificationType;
 import org.seng302.view.outgoing.SoldListingNotificationPayload;
 
 import javax.persistence.*;
@@ -85,7 +84,7 @@ public class SoldListingNotification {
      * @return a payload representing the sold listing notification
      */
     public SoldListingNotificationPayload toSoldListingNotificationPayload() throws Exception {
-        return new SoldListingNotificationPayload(id, soldListing.toSoldListingPayload(), description, created, NotificationType.SOLD_LISTING);
+        return new SoldListingNotificationPayload(id, soldListing.toSoldListingPayload(), description, created);
     }
 
     /*---------------------------------------------------Validation---------------------------------------------------*/
