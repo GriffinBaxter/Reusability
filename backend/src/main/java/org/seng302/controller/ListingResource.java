@@ -431,7 +431,7 @@ public class ListingResource {
         int pageNo = PaginationUtils.parsePageNumber(page);
 
         // Paging
-        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+        Sort sortBy = Sort.by(Sort.Order.desc("saleDate"));
         Pageable pageable = PageRequest.of(pageNo, 10, sortBy);
 
         Page<SoldListing> pagedResult = soldListingRepository.findAllByBusinessId(businessId, pageable);

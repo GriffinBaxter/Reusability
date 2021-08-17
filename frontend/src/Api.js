@@ -360,4 +360,11 @@ export default {
             withCredentials: true
         })
     },
+
+    // Sends a GET request to the backend asking for the sold listings of a business (paginated)
+    getSoldListings: (businessId, page) => {
+        return instance.get(`/businesses/${businessId}/soldListings?page=${page}`, {
+            withCredentials: true
+        })
+    }
 }

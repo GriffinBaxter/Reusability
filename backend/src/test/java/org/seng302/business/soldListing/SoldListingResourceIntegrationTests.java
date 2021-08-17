@@ -274,7 +274,7 @@ public class SoldListingResourceIntegrationTests {
         // when
         List<SoldListing> list = List.of(soldListing);
         Page<SoldListing> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("id"));
+        Sort sort = Sort.by(Sort.Order.desc("saleDate"));
         Pageable paging = PageRequest.of(0, 10, sort);
 
         when(soldListingRepository.findAllByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
@@ -302,7 +302,7 @@ public class SoldListingResourceIntegrationTests {
         // when
         List<SoldListing> list = List.of();
         Page<SoldListing> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("id"));
+        Sort sort = Sort.by(Sort.Order.desc("saleDate"));
         Pageable paging = PageRequest.of(0, 10, sort);
 
         when(soldListingRepository.findAllByBusinessId(anotherBusiness.getId(), paging)).thenReturn(pagedResponse);
@@ -392,7 +392,7 @@ public class SoldListingResourceIntegrationTests {
         // when
         List<SoldListing> list = List.of(soldListing);
         Page<SoldListing> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("id"));
+        Sort sort = Sort.by(Sort.Order.desc("saleDate"));
         Pageable paging = PageRequest.of(0, 10, sort);
 
         when(soldListingRepository.findAllByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
@@ -424,7 +424,7 @@ public class SoldListingResourceIntegrationTests {
         // when
         List<SoldListing> list = List.of(soldListing);
         Page<SoldListing> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("id"));
+        Sort sort = Sort.by(Sort.Order.desc("saleDate"));
         Pageable paging = PageRequest.of(0, 10, sort);
 
         when(soldListingRepository.findAllByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
