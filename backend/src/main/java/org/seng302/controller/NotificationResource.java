@@ -134,7 +134,7 @@ public class NotificationResource {
      */
     @DeleteMapping("/users/notifications/{id}")
     @Transactional
-    @ResponseStatus(code = HttpStatus.OK, reason = "Keyword Successfully deleted")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Notifications Successfully deleted")
     public void deleteNotification(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer id,
@@ -155,7 +155,7 @@ public class NotificationResource {
 
         logger.debug("Notification Deletion Update - User has permissions to delete notifications");
 
-        if (type == "KEYWORD") {
+        if (type.equals("KEYWORD")) {
             //406
             Optional<KeywordNotification> notification = keywordNotificationRepository.findById(id);
             if (notification.isEmpty()) {
@@ -165,7 +165,7 @@ public class NotificationResource {
             keywordNotificationRepository.deleteById(id);
             logger.debug("Keyword Notification Deletion Update - Notification found");
 
-        } else if (type == "LISTING") {
+        } else if (type.equals("LISTING")) {
             //406
             Optional<ListingNotification> optionalListingNotification = listingNotificationRepository.findById(id);
             if (optionalListingNotification.isEmpty()) {
@@ -194,7 +194,7 @@ public class NotificationResource {
 
             logger.debug("Listing Notification Deletion Update - Notification found");
 
-        } else if (type == "SOLD_LISTING") {
+        } else if (type.equals("SOLD_LISTING")) {
             //406
             Optional<SoldListingNotification> notification = soldListingNotificationRepository.findById(id);
             if (notification.isEmpty()) {
@@ -204,7 +204,7 @@ public class NotificationResource {
             soldListingNotificationRepository.deleteById(id);
             logger.debug("Sold Listing Notification Deletion Update - Notification found");
 
-        } else if (type == "MARKETPLACE") {
+        } else if (type.equals("MARKETPLACE")) {
             //406
             Optional<MarketCardNotification> notification = marketCardNotificationRepository.findById(id);
             if (notification.isEmpty()) {
