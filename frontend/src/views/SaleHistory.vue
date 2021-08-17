@@ -139,7 +139,11 @@ export default {
               price: "",
               productId: "",
               quantity: "",
-              saleDate: ""
+              saleDate: "",
+              customer: {
+                firstName: "",
+                lastName: ""
+              }
             });
           }
         }

@@ -240,7 +240,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 96,
                         "price": 52.46,
-                        "bookmarks": 48
+                        "bookmarks": 48,
+                        "customer": {
+                            "id": 7,
+                            "firstName": "Francisca",
+                            "lastName": "Bznitez",
+                            "middleName": "Tessa",
+                            "nickname": "Fran",
+                            "bio": "Biography",
+                            "email": "francisca.bznitez@example.com",
+                            "created": "2021-01-01T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Bernhard Run",
+                                "region": "Southland",
+                                "country": "New Zealand"
+                            }
+                        }
                     },
                     {
                         "id": 119,
@@ -249,7 +269,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 80,
                         "price": 2.97,
-                        "bookmarks": 95
+                        "bookmarks": 95,
+                        "customer": {
+                            "id": 9,
+                            "firstName": "Lina",
+                            "lastName": "Patterson",
+                            "middleName": "Jose Mari",
+                            "nickname": "Lina",
+                            "bio": "Da",
+                            "email": "linap@email.com",
+                            "created": "2010-05-14T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Funes",
+                                "region": "Santa Fe",
+                                "country": "Argentina"
+                            }
+                        }
                     },
                     {
                         "id": 713,
@@ -258,7 +298,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 39,
                         "price": 15.93,
-                        "bookmarks": 59
+                        "bookmarks": 59,
+                        "customer": {
+                            "id": 14,
+                            "firstName": "Pia",
+                            "lastName": "Kemp",
+                            "middleName": "Alex",
+                            "nickname": "Hemp",
+                            "bio": "My cool bio.",
+                            "email": "piakemp13@email.com",
+                            "created": "2020-01-12T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Scarborough",
+                                "region": "England",
+                                "country": "United Kingdom"
+                            }
+                        }
                     },
                     {
                         "id": 770,
@@ -267,7 +327,46 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 71,
                         "price": 12.49,
-                        "bookmarks": 56
+                        "bookmarks": 56,
+                        "customer": {
+                            "id": 13,
+                            "firstName": "Ife",
+                            "lastName": "Weston",
+                            "middleName": "Missie",
+                            "nickname": "Missie",
+                            "bio": "Miss me.",
+                            "email": "missie@gmail.com",
+                            "created": "2014-02-14T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                {
+                                    "id": 2,
+                                    "administrators": [
+                                        null
+                                    ],
+                                    "primaryAdministratorId": 10,
+                                    "name": "Sunburst Waste",
+                                    "description": "Description",
+                                    "address": {
+                                        "streetNumber": "1849",
+                                        "streetName": "C Street Northwest",
+                                        "suburb": null,
+                                        "city": "Washington",
+                                        "region": "District of Columbia",
+                                        "country": "United States",
+                                        "postcode": "20240"
+                                    },
+                                    "businessType": "CHARITABLE_ORGANISATION",
+                                    "created": "2021-02-14T00:00"
+                                }
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Detroit",
+                                "region": "Michigan",
+                                "country": "United States"
+                            }
+                        }
                     },
                     {
                         "id": 710,
@@ -276,7 +375,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 95,
                         "price": 5.04,
-                        "bookmarks": 79
+                        "bookmarks": 79,
+                        "customer": {
+                            "id": 7,
+                            "firstName": "Francisca",
+                            "lastName": "Bznitez",
+                            "middleName": "Tessa",
+                            "nickname": "Fran",
+                            "bio": "Biography",
+                            "email": "francisca.bznitez@example.com",
+                            "created": "2021-01-01T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Bernhard Run",
+                                "region": "Southland",
+                                "country": "New Zealand"
+                            }
+                        }
                     },
                     {
                         "id": 753,
@@ -285,7 +404,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 90,
                         "price": 8.87,
-                        "bookmarks": 91
+                        "bookmarks": 91,
+                        "customer": {
+                            "id": 14,
+                            "firstName": "Pia",
+                            "lastName": "Kemp",
+                            "middleName": "Alex",
+                            "nickname": "Hemp",
+                            "bio": "My cool bio.",
+                            "email": "piakemp13@email.com",
+                            "created": "2020-01-12T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Scarborough",
+                                "region": "England",
+                                "country": "United Kingdom"
+                            }
+                        }
                     },
                     {
                         "id": 463,
@@ -294,7 +433,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 24,
                         "price": 57.57,
-                        "bookmarks": 80
+                        "bookmarks": 80,
+                        "customer": {
+                            "id": 9,
+                            "firstName": "Lina",
+                            "lastName": "Patterson",
+                            "middleName": "Jose Mari",
+                            "nickname": "Lina",
+                            "bio": "Da",
+                            "email": "linap@email.com",
+                            "created": "2010-05-14T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Funes",
+                                "region": "Santa Fe",
+                                "country": "Argentina"
+                            }
+                        }
                     },
                     {
                         "id": 469,
@@ -303,7 +462,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 25,
                         "price": 8.67,
-                        "bookmarks": 75
+                        "bookmarks": 75,
+                        "customer": {
+                            "id": 7,
+                            "firstName": "Francisca",
+                            "lastName": "Bznitez",
+                            "middleName": "Tessa",
+                            "nickname": "Fran",
+                            "bio": "Biography",
+                            "email": "francisca.bznitez@example.com",
+                            "created": "2021-01-01T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Bernhard Run",
+                                "region": "Southland",
+                                "country": "New Zealand"
+                            }
+                        }
                     },
                     {
                         "id": 147,
@@ -312,7 +491,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 91,
                         "price": 98.47,
-                        "bookmarks": 73
+                        "bookmarks": 73,
+                        "customer": {
+                            "id": 15,
+                            "firstName": "Alyce",
+                            "lastName": "Gibbs",
+                            "middleName": "Teddie",
+                            "nickname": "Teddie",
+                            "bio": "Looking for cheap teddies.",
+                            "email": "alycegibbs@gmail.com",
+                            "created": "2019-03-28T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Dar es Salaam",
+                                "region": "Coastal Zone",
+                                "country": "Tanzania"
+                            }
+                        }
                     },
                     {
                         "id": 131,
@@ -321,7 +520,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "productId": "BLACK-FOREST",
                         "quantity": 56,
                         "price": 90.8,
-                        "bookmarks": 15
+                        "bookmarks": 15,
+                        "customer": {
+                            "id": 14,
+                            "firstName": "Pia",
+                            "lastName": "Kemp",
+                            "middleName": "Alex",
+                            "nickname": "Hemp",
+                            "bio": "My cool bio.",
+                            "email": "piakemp13@email.com",
+                            "created": "2020-01-12T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [
+                                null
+                            ],
+                            "homeAddress": {
+                                "suburb": null,
+                                "city": "Scarborough",
+                                "region": "England",
+                                "country": "United Kingdom"
+                            }
+                        }
                     }
                 ],
                 headers: {
@@ -337,7 +556,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 96,
                     "price": "$52.46 USD",
-                    "bookmarks": 48
+                    "bookmarks": 48,
+                    "customer": {
+                        "id": 7,
+                        "firstName": "Francisca",
+                        "lastName": "Bznitez",
+                        "middleName": "Tessa",
+                        "nickname": "Fran",
+                        "bio": "Biography",
+                        "email": "francisca.bznitez@example.com",
+                        "created": "2021-01-01T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Bernhard Run",
+                            "region": "Southland",
+                            "country": "New Zealand"
+                        }
+                    }
                 },
                 {
                     "id": 119,
@@ -346,7 +585,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 80,
                     "price": "$2.97 USD",
-                    "bookmarks": 95
+                    "bookmarks": 95,
+                    "customer": {
+                        "id": 9,
+                        "firstName": "Lina",
+                        "lastName": "Patterson",
+                        "middleName": "Jose Mari",
+                        "nickname": "Lina",
+                        "bio": "Da",
+                        "email": "linap@email.com",
+                        "created": "2010-05-14T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Funes",
+                            "region": "Santa Fe",
+                            "country": "Argentina"
+                        }
+                    }
                 },
                 {
                     "id": 713,
@@ -355,7 +614,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 39,
                     "price": "$15.93 USD",
-                    "bookmarks": 59
+                    "bookmarks": 59,
+                    "customer": {
+                        "id": 14,
+                        "firstName": "Pia",
+                        "lastName": "Kemp",
+                        "middleName": "Alex",
+                        "nickname": "Hemp",
+                        "bio": "My cool bio.",
+                        "email": "piakemp13@email.com",
+                        "created": "2020-01-12T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Scarborough",
+                            "region": "England",
+                            "country": "United Kingdom"
+                        }
+                    }
                 },
                 {
                     "id": 770,
@@ -364,7 +643,46 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 71,
                     "price": "$12.49 USD",
-                    "bookmarks": 56
+                    "bookmarks": 56,
+                    "customer": {
+                        "id": 13,
+                        "firstName": "Ife",
+                        "lastName": "Weston",
+                        "middleName": "Missie",
+                        "nickname": "Missie",
+                        "bio": "Miss me.",
+                        "email": "missie@gmail.com",
+                        "created": "2014-02-14T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            {
+                                "id": 2,
+                                "administrators": [
+                                    null
+                                ],
+                                "primaryAdministratorId": 10,
+                                "name": "Sunburst Waste",
+                                "description": "Description",
+                                "address": {
+                                    "streetNumber": "1849",
+                                    "streetName": "C Street Northwest",
+                                    "suburb": null,
+                                    "city": "Washington",
+                                    "region": "District of Columbia",
+                                    "country": "United States",
+                                    "postcode": "20240"
+                                },
+                                "businessType": "CHARITABLE_ORGANISATION",
+                                "created": "2021-02-14T00:00"
+                            }
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Detroit",
+                            "region": "Michigan",
+                            "country": "United States"
+                        }
+                    }
                 },
                 {
                     "id": 710,
@@ -373,7 +691,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 95,
                     "price": "$5.04 USD",
-                    "bookmarks": 79
+                    "bookmarks": 79,
+                    "customer": {
+                        "id": 7,
+                        "firstName": "Francisca",
+                        "lastName": "Bznitez",
+                        "middleName": "Tessa",
+                        "nickname": "Fran",
+                        "bio": "Biography",
+                        "email": "francisca.bznitez@example.com",
+                        "created": "2021-01-01T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Bernhard Run",
+                            "region": "Southland",
+                            "country": "New Zealand"
+                        }
+                    }
                 },
                 {
                     "id": 753,
@@ -382,7 +720,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 90,
                     "price": "$8.87 USD",
-                    "bookmarks": 91
+                    "bookmarks": 91,
+                    "customer": {
+                        "id": 14,
+                        "firstName": "Pia",
+                        "lastName": "Kemp",
+                        "middleName": "Alex",
+                        "nickname": "Hemp",
+                        "bio": "My cool bio.",
+                        "email": "piakemp13@email.com",
+                        "created": "2020-01-12T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Scarborough",
+                            "region": "England",
+                            "country": "United Kingdom"
+                        }
+                    }
                 },
                 {
                     "id": 463,
@@ -391,7 +749,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 24,
                     "price": "$57.57 USD",
-                    "bookmarks": 80
+                    "bookmarks": 80,
+                    "customer": {
+                        "id": 9,
+                        "firstName": "Lina",
+                        "lastName": "Patterson",
+                        "middleName": "Jose Mari",
+                        "nickname": "Lina",
+                        "bio": "Da",
+                        "email": "linap@email.com",
+                        "created": "2010-05-14T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Funes",
+                            "region": "Santa Fe",
+                            "country": "Argentina"
+                        }
+                    }
                 },
                 {
                     "id": 469,
@@ -400,7 +778,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 25,
                     "price": "$8.67 USD",
-                    "bookmarks": 75
+                    "bookmarks": 75,
+                    "customer": {
+                        "id": 7,
+                        "firstName": "Francisca",
+                        "lastName": "Bznitez",
+                        "middleName": "Tessa",
+                        "nickname": "Fran",
+                        "bio": "Biography",
+                        "email": "francisca.bznitez@example.com",
+                        "created": "2021-01-01T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Bernhard Run",
+                            "region": "Southland",
+                            "country": "New Zealand"
+                        }
+                    }
                 },
                 {
                     "id": 147,
@@ -409,7 +807,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 91,
                     "price": "$98.47 USD",
-                    "bookmarks": 73
+                    "bookmarks": 73,
+                    "customer": {
+                        "id": 15,
+                        "firstName": "Alyce",
+                        "lastName": "Gibbs",
+                        "middleName": "Teddie",
+                        "nickname": "Teddie",
+                        "bio": "Looking for cheap teddies.",
+                        "email": "alycegibbs@gmail.com",
+                        "created": "2019-03-28T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Dar es Salaam",
+                            "region": "Coastal Zone",
+                            "country": "Tanzania"
+                        }
+                    }
                 },
                 {
                     "id": 131,
@@ -418,7 +836,27 @@ describe('Tests methods in the SaleHistory component.', () => {
                     "productId": "BLACK-FOREST",
                     "quantity": 56,
                     "price": "$90.8 USD",
-                    "bookmarks": 15
+                    "bookmarks": 15,
+                    "customer": {
+                        "id": 14,
+                        "firstName": "Pia",
+                        "lastName": "Kemp",
+                        "middleName": "Alex",
+                        "nickname": "Hemp",
+                        "bio": "My cool bio.",
+                        "email": "piakemp13@email.com",
+                        "created": "2020-01-12T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [
+                            null
+                        ],
+                        "homeAddress": {
+                            "suburb": null,
+                            "city": "Scarborough",
+                            "region": "England",
+                            "country": "United Kingdom"
+                        }
+                    }
                 }
             ];
             Api.getSoldListings.mockImplementation(() => Promise.resolve(response));
@@ -434,6 +872,18 @@ describe('Tests methods in the SaleHistory component.', () => {
             expect(wrapper.vm.$data.soldListings.length).toEqual(response.data.length); // the max number of sold listings
             expect(wrapper.vm.$data.soldListings).toEqual(formattedListings); // with the prices and dates formatted
         })
+    })
+
+    describe("Test goToCustomerProfile method", () => {
+
+        test("Test the goToCustomerProfile method.", async () => {
+            const userId = 2;
+
+            wrapper.vm.goToCustomerProfile(userId);
+
+            expect($router.push).toHaveBeenCalledWith({ path: `/profile/${userId}`});
+        })
+
     })
 })
 
