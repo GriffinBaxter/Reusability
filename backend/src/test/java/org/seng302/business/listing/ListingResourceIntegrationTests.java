@@ -1849,6 +1849,7 @@ class ListingResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
         given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+        given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId())).willReturn(Optional.ofNullable(inventoryItem));
 
         // when
         response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
