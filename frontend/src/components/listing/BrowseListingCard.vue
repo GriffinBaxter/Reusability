@@ -121,6 +121,13 @@ export default {
           .catch(error => console.log(error))
     },
     routeToSaleListing(index, businessId) {
+      // Dispose all popover
+      const lists = Array.from(document.getElementsByClassName("popover fade show bs-popover-top"))
+      lists.forEach((popover) => {
+        popover.remove()
+      })
+
+      // Push to listing page
       this.$router.push({
         path: `/businessProfile/${businessId}/listings/${index}`
       });
@@ -156,11 +163,11 @@ export default {
                                                 checkNullity(address.city), checkNullity(address.postcode),
                                                 checkNullity(address.region), checkNullity(address.country))
 
-      for (let i=0; i < formattedAddress.length; i++) {
-        if (formattedAddress[i].line !== "") {
-          addressString += formattedAddress[i].line + "<br>";
+      formattedAddress.forEach((fullAddress) => {
+        if (fullAddress.line !== "") {
+          addressString += fullAddress.line + "<br>";
         }
-      }
+      })
       return addressString
     }
   },
