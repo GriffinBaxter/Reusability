@@ -708,6 +708,45 @@ public class ListingResource {
         inventoryItemRepository.save(inventoryItem);
     }
 
+    @DeleteMapping("/home/bookmarkMessages/{id}")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Bookmark message successfully deleted")
+    public void deleteBookmarkMessage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable String id) {
+        // 401
+        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // 406
+        Optional<BookmarkedListingMessage> message = bookmarkedListingMessageRepository.findById(Integer.valueOf(id));
+        if (message.isEmpty()) {
+            logger.error("406 [NOT_ACCEPTABLE] - Bookmark message with ID {} does not exist", id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Bookmark message does not exist"
+            );
+        }
+
+        // 403
+        if (!message.get().getUsers().contains(user) && !Authorization.isGAAorDGAA(user)) {
+            logger.error("403 [FORBIDDEN] - User is not authorized to delete bookmark message with ID {}", id);
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "User cannot delete another users bookmark message"
+            );
+        }
+
+        // 200
+        try {
+            bookmarkedListingMessageRepository.delete(message.get());
+            logger.info("200 [SUCCESS] - Bookmark message at ID {} successfully deleted", id);
+        } catch (Exception e) {
+            logger.debug("500 [INTERNAL SERVER ERROR] - Could not delete bookmarkedListingMessage at ID {}: {}", id, e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Could not delete Bookmark Message"
+            );
+        }
+    }
+
+
     /**
      * This method parses the search criteria and then calls the needed methods to execute the "query".
      *
