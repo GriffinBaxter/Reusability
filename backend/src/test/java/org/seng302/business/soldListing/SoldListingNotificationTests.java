@@ -1,4 +1,4 @@
-package org.seng302.business.listing;
+package org.seng302.business.soldListing;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -6,7 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.seng302.exceptions.*;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
+import org.seng302.model.enums.NotificationType;
 import org.seng302.model.enums.Role;
+import org.seng302.view.outgoing.ListingNotificationPayload;
+import org.seng302.view.outgoing.SoldListingNotificationPayload;
+import org.seng302.view.outgoing.SoldListingPayload;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -171,6 +175,31 @@ class SoldListingNotificationTests {
         } catch (IllegalSoldListingNotificationArgumentException e) {
             Assertions.assertEquals("Invalid business ID", e.getMessage());
         }
+    }
+
+    /**
+     * Test to see whether SoldListingNotification is correctly converted to a SoldListingNotificationPayload
+     */
+    @Test
+    void isSoldListingNotificationConvertedToPayloadCorrectlyTest() throws Exception {
+        SoldListingNotificationPayload soldListingNotificationPayload  = soldListingNotification.toSoldListingNotificationPayload();
+        SoldListingPayload soldListingPayload = soldListingNotification.getSoldListing().toSoldListingPayload();
+
+        Assertions.assertEquals(soldListingNotification.getId(), soldListingNotificationPayload.getId());
+        Assertions.assertEquals(soldListingNotification.getDescription(), soldListingNotificationPayload.getDescription());
+        Assertions.assertEquals(soldListingNotification.getCreated().toString(), soldListingNotificationPayload.getCreated());
+        Assertions.assertEquals(NotificationType.SOLD_LISTING.toString(), soldListingNotificationPayload.getNotificationType());
+
+        Assertions.assertEquals(soldListingPayload.getId(), soldListingNotificationPayload.getSoldListing().getId());
+        Assertions.assertEquals(soldListingPayload.getListingDate(), soldListingNotificationPayload.getSoldListing().getListingDate());
+        Assertions.assertEquals(soldListingPayload.getSaleDate(), soldListingNotificationPayload.getSoldListing().getSaleDate());
+        Assertions.assertEquals(soldListingPayload.getQuantity(), soldListingNotificationPayload.getSoldListing().getQuantity());
+        Assertions.assertEquals(soldListingPayload.getPrice(), soldListingNotificationPayload.getSoldListing().getPrice());
+        Assertions.assertEquals(soldListingPayload.getBookmarks(), soldListingNotificationPayload.getSoldListing().getBookmarks());
+        Assertions.assertEquals(soldListingPayload.getProductId(), soldListingNotificationPayload.getSoldListing().getProductId());
+
+        Assertions.assertEquals(soldListingPayload.getCustomer().getId(), soldListingNotificationPayload.getSoldListing().getCustomer().getId());
+        Assertions.assertEquals(soldListingPayload.getCustomer().getEmail(), soldListingNotificationPayload.getSoldListing().getCustomer().getEmail());
     }
 
 }

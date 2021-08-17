@@ -9,6 +9,10 @@ import org.seng302.exceptions.IllegalKeywordArgumentException;
 import org.seng302.exceptions.IllegalKeywordNotificationArgumentException;
 import org.seng302.model.Keyword;
 import org.seng302.model.KeywordNotification;
+import org.seng302.model.enums.NotificationType;
+import org.seng302.view.outgoing.KeywordNotificationPayload;
+import org.seng302.view.outgoing.KeywordPayload;
+
 import java.time.LocalDateTime;
 
 
@@ -96,5 +100,26 @@ class KeywordNotificationTests {
         Assertions.assertEquals("Description", keywordNotification.getDescription());
         Assertions.assertEquals(created, keywordNotification.getCreated());
         Assertions.assertEquals(keyword, keywordNotification.getKeyword());
+    }
+
+    /**
+     * Test to see whether KeywordNotification is correctly converted to a KeywordNotificationPayload
+     */
+    @Test
+    void isKeywordNotificationConvertedToPayloadCorrectlyTest() throws IllegalKeywordNotificationArgumentException {
+        LocalDateTime created = LocalDateTime.of(2000, 6, 21, 0, 0, 0);
+
+        KeywordNotification keywordNotification = new KeywordNotification("Description", created, keyword);
+        KeywordNotificationPayload keywordNotificationPayload = keywordNotification.toKeywordNotificationPayload();
+        KeywordPayload keywordPayload = new KeywordPayload(keyword.getId(), keyword.getName(), keyword.getCreated());
+
+
+        Assertions.assertEquals(keywordNotification.getId(), keywordNotificationPayload.getId());
+        Assertions.assertEquals(keywordNotification.getDescription(), keywordNotificationPayload.getDescription());
+        Assertions.assertEquals(created.toString(), keywordNotificationPayload.getCreated());
+        Assertions.assertEquals(keywordPayload.getId(), keywordNotificationPayload.getKeyword().getId());
+        Assertions.assertEquals(keywordPayload.getName(), keywordNotificationPayload.getKeyword().getName());
+        Assertions.assertEquals(keywordPayload.getCreated(), keywordNotificationPayload.getKeyword().getCreated());
+        Assertions.assertEquals(NotificationType.KEYWORD.toString(), keywordNotificationPayload.getNotificationType());
     }
 }
