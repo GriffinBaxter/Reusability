@@ -1839,47 +1839,28 @@ class ListingResourceIntegrationTests {
     }
 
     /**
-     * Test that when buying a listing as a DGAA and an administrator of the business, a FORBIDDEN status is received.
+     * Test that when buying a listing as a User and an administrator of the business, a OK status is received.
      *
      * @throws Exception Exception error
      */
     @Test
-    void cannotBuyListing_WhenDgaaAndBusinessAdministrator() throws Exception {
-        // given
-        given(userRepository.findBySessionUUID(dGAA.getSessionUUID())).willReturn(Optional.ofNullable(dGAA));
-        given(businessRepository.findBusinessById(adminBusiness.getId())).willReturn(Optional.ofNullable(adminBusiness));
-        given(listingRepository.findById(adminListing.getId())).willReturn(Optional.ofNullable(adminListing));
-
-        // when
-        response = mvc.perform(put(String.format("/listings/%d/buy", adminListing.getId()))
-                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
-                .andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Cannot purchase your own listing");
-    }
-
-    /**
-     * Test that when buying a listing as a User and an administrator of the business, a FORBIDDEN status is received.
-     *
-     * @throws Exception Exception error
-     */
-    @Test
-    void cannotBuyListing_WhenUserAndBusinessAdministrator() throws Exception {
+    void canBuyListing_WhenBusinessAdministrator() throws Exception {
         // given
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
         given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+        given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId())).willReturn(Optional.ofNullable(inventoryItem));
 
         // when
+        when(soldListingRepository.save(any(SoldListing.class))).thenReturn(soldListing);
+        when(listingNotificationRepository.save(any(ListingNotification.class))).thenReturn(listingNotification);
+        when(inventoryItemRepository.save(inventoryItem)).thenReturn(inventoryItem);
         response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Cannot purchase your own listing");
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
