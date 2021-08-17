@@ -1,0 +1,963 @@
+<!--This file creates the navigation (nav) bar. It is used on all pages, excluding the login page and registration
+    page.-->
+<!--There is a navigation bar specific for an individual and a business.-->
+<!--The individual nav bar contains links to the Home, Profile, and Logout pages.-->
+<!--The business nav bar contains the same links as the individual page with the addition of a drop down menu which
+    contains-->
+<!--links to the business' listings, inventory and catalogue pages.-->
+<!--Bootstrap has been used to build these nav bars.-->
+
+<!-------------------------------------------- Navigation Bar --------------------------------------------------------->
+
+<template>
+  <nav class="navbar sticky-top navbar-expand-xl shadow-sm text-font" style="background-color: white">
+    <div class="container mt-2 my-xl-3 mx-auto">
+
+      <!-- Logo image -->
+      <div class="logo-container text-center">
+        <router-link class="navbar-brand " to="/home" tabindex="-1">
+          <img src="../../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
+        </router-link>
+      </div>
+
+      <!-- Hamburger icon -->
+      <button class="navbar-toggler" type="button" @click="() => toggleNavbar()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navbar links -->
+      <div class="navbar-collapse" id="navbar-id">
+        <!-- navbar inner is required for the animation -->
+        <div id="navbar-inner-id" class="navbar-nav mb-xl-0 mx-auto me-xl-0 ms-xl-auto">
+          <ul class="navbar-nav flex-column flex-xl-row">
+
+            <!-- default page links -->
+            <li class="nav-item">
+              <router-link :class="['nav-link ', isActivePath('/home')]" to="/home" tabindex="1">
+                Home</router-link>
+            </li>
+            <li class="nav-item" v-if="actAsId === null">
+              <router-link :class="['nav-link', isActivePath('/profile')]" to="/profile" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item" v-if=actAsId>
+              <router-link :class="['nav-link', isActivePath('/businessProfile/' + actAsId)]"
+                           :to="'/businessProfile/' + actAsId" tabindex="2">
+                Profile
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :class="['nav-link', isActivePath('/browseListings')]" to="/browseListings" tabindex="3">
+                Browse Listings
+              </router-link>
+            </li>
+            <li class="nav-item" v-if="!isActAsBusiness">
+              <router-link :class="['nav-link', isActivePath('/marketplace')]" to="/marketplace" tabindex="4">
+                Marketplace
+              </router-link>
+            </li>
+
+            <!--- Business specific account links -->
+            <li class="nav-item dropdown" v-if="isActAsBusiness">
+
+              <!-- Navbar toggle drop down -->
+              <a class="nav-link dropdown-toggle" role="button" tabindex="5"
+                 @click="() => {toggleBusinessDropdown()}"
+                 @keyup.enter="() => {toggleBusinessDropdown()}">
+                Business Pages
+              </a>
+
+              <!-- Dropdown links-->
+              <div id="business-dropdown-links-wrapper">
+                <ul class="dropdown-menu show" id="business-dropdown-links">
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link ', isActivePath('/businessProfile/' + businessAccountId + '/listings')]"
+                        :to="'/businessProfile/' + businessAccountId + '/listings'" tabindex="-1">
+                      Listings
+                    </router-link>
+                  </li>
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/inventory')]"
+                        :to="'/businessProfile/' + businessAccountId + '/inventory'" tabindex="-1">
+                      Inventory
+                    </router-link>
+                  </li>
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/productCatalogue')]"
+                        :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" tabindex="-1">
+                      Catalogue
+                    </router-link>
+                  </li>
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/saleHistory')]"
+                        :to="'/businessProfile/' + businessAccountId + '/saleHistory'" tabindex="-1">
+                      Sale History
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
+            <!--notification-->
+            <li class="nav-item" style="float: contour; text-align: center; vertical-align:middle">
+              <div style="margin-top: 10px"
+                   type="button"
+                   @click="switchNotificationBox()">
+                <img v-if="newNotification"
+                     alt="notification"
+                     src="../../../public/notification.png"
+                     height="43"
+                     width="43"/>
+                <img v-else type="button"
+                     alt="notification"
+                     src="../../../public/notification_new.png"
+                     height="43"
+                     width="43"/>
+              </div>
+              <Notification v-if="openNotificationBox" style="position: absolute; right: 50px"/>
+            </li>
+          </ul>
+
+
+          <ul class="navbar-nav flex-column flex-xl-row">
+            <!-- Interact As -->
+            <li id="interactDrop" tabindex="5" @click="() => {toggleInteractAs()}"
+                @keyup.enter="() => {toggleInteractAs()}">
+              <a class="" role="button">
+                <img src="../../../public/profile_icon_default.png" width="27px"
+                     class="rounded-circle img-fluid act-as-image" alt="Acting as image" id="actAsImg"/>
+              </a>
+            </li>
+
+          </ul>
+
+          <ul class="no-space">
+            <li>
+              <div class="center" role="button" @click="() => {toggleInteractAs()}"
+                   @keyup.enter="() => {toggleInteractAs()}">
+                <div v-if="showOmitName">{{ actAsOmit }}</div>
+                <div v-else>{{ actAs }}</div>
+              </div>
+              <div id="interact-dropdown-links-wrapper">
+                <ul class="dropdown-menu show mb-1" id="interact-dropdown-links">
+
+                  <li class="nav-item">
+                  </li>
+                  <div v-if="showOmitName">
+                    <li class="nav-item mb-2" v-for="(act, index) in interactAsOmit" :key="index" tabindex="-1"
+                        @click="itemClicked(index)">
+                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                      <div v-else-if="index===1">
+                        <hr style="height:2px">
+                        <h6 class="ms-3">Businesses</h6>
+                      </div>
+                      <a class="nav-link">{{ act.name }}</a>
+                    </li>
+                  </div>
+                  <div v-else>
+                    <li class="nav-item mb-2" v-for="(act, index) in interactAs" :key="index" tabindex="-1"
+                        @click="itemClicked(index)">
+                      <h6 class="ms-3" v-if="index===0"><br>User</h6>
+                      <div v-else-if="index===1">
+                        <hr class="line-separator">
+                        <h6 class="ms-3">Businesses</h6>
+                      </div>
+                      <a class="nav-link">{{ act.name }}</a>
+                    </li>
+                  </div>
+                  <hr class="line-separator">
+                  <!-- Log out link-->
+                  <li class="nav-item">
+                    <a class="nav-link" id="logout-btn" style="cursor: pointer; background-color: #fd5050;" @click="e =>logout(e)"
+                       @keyup.enter="e =>logout(e)">Log out</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+
+          <!------------------------------------- Admin Label ------------------------------->
+          <div>
+            <!-- These messages will appear for GAA accounts -->
+            <div class="admin-label" v-if="isGAA(role)">
+              Admin (GAA)
+            </div>
+            <!-- These messages will appear for DGAA accounts -->
+            <div class="admin-label" v-if="isDGAA(role)">
+              Admin (DGAA)
+            </div>
+          </div>
+          <!--------------------------------------------------------------------------------->
+
+        </div>
+      </div>
+    </div>
+
+  </nav>
+</template>
+
+<script>
+import Cookies from "js-cookie";
+import Api from "../../Api"
+import Notification from "../../components/main/Notification";
+import {UserRole} from "../../configs/User";
+
+
+
+export default {
+  name: "Navbar",
+  components: {
+    Notification
+  },
+  props: {
+    // Dictates the transition animation time
+    msTransitionDelay: {
+      type: Number,
+      default: 100,
+      required: false
+    },
+
+    // Determines if you are required to be logged in to view the current page.
+    loginRequired: {
+      type: Boolean,
+      default: true,
+      required: false
+    }
+  },
+
+  data() {
+    return {
+      // business dropdown variables
+      showBusinessDropdown: false,
+
+      // Interact as Menu
+      showInteractMenu: false,
+
+      businesses: [],
+      interactAs: [],
+      actAsId: null,
+      actAs: "",
+      currentUser: null,
+      // navbar required variables
+      showNavbar: false,
+      navbarMaxHeight: null,                                     // max height of the navbar pixels
+      navbarMinHeight: 0,                                     // min height of the navbar pixels
+      STYLE_DEFAULT: `transition: max-height ease-in-out ${this.msTransitionDelay}ms;`,
+      // Default styling for the navbar, which allows the transition to occur. NO CHANGES HERE PLEASE!
+      isActAsBusiness: false,
+      businessAccountId: null,
+
+      // omit part of name
+      showOmitName: null,
+      interactAsOmit: [],
+      actAsOmit: "",
+
+      // Watch window width
+      screenWidth: document.body.clientWidth,
+      maxNameLength: 30,
+      omitPoint: 10,
+
+      // notice for new notifications
+      newNotification: false,
+      openNotificationBox: false,
+
+      // Admin rights
+      role: null,
+    }
+  },
+
+  methods: {
+    // ---------------------------------------- Admin Rights --------------------------------
+
+    /** Given a role we test it against two of the possible admin roles. To determine if the role is of type admin.
+     * @param role - A given role of some user.
+     * @return {boolean} Returns true if the role is of type admin. Otherwise false.
+     */
+    hasAdminRights(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * Determines whether a role is DGAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a DGAA. Otherwise return false.
+     */
+    isDGAA(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * Determines whether a role is GAA or not
+     * @param role - A given role.
+     * @return {boolean} Returns true if you are a GAA. Otherwise return false.
+     */
+    isGAA(role) {
+      return role === UserRole.GLOBALAPPLICATIONADMIN;
+    },
+    /**
+     * get role of given id
+     */
+    getLoginRole(id) {
+      Api.getUser(id).then(response => (this.role = response.data.role))
+    },
+
+// ------------------------------------------------------------------------------------
+    /**
+     * switch Notification Box
+     */
+    switchNotificationBox() {
+      if (!this.openNotificationBox){
+        this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links',
+            'interact-dropdown-links-wrapper', true);
+        this.showBusinessDropdown = this.toggleDropdownAnimated('business-dropdown-links',
+            'business-dropdown-links-wrapper', true);
+      }
+      this.openNotificationBox = ! this.openNotificationBox;
+    },
+
+    /**
+     * update image for bell
+     */
+    updateNotificationState() {
+      Api.getNotifications()
+          .then(response => this.newNotification = (response.data.length === 0))
+          .catch((error) => {
+            if (error.response.status === 401) {
+              // Missing or invalid token
+              this.$router.push({path: '/invalidtoken'});
+            } else {
+              console.log(error)
+            }
+          });
+    },
+    /**
+     * Toggle the interactAs menu dropdown
+     */
+    toggleInteractAs() {
+      this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links',
+          'interact-dropdown-links-wrapper', this.showInteractMenu);
+    },
+    /**
+     * Toggle the business menu dropdown
+     */
+    toggleBusinessDropdown() {
+      this.showBusinessDropdown = this.toggleDropdownAnimated('business-dropdown-links',
+          'business-dropdown-links-wrapper', this.showBusinessDropdown);
+    },
+    /**
+     * omit name which length longer than max.
+     */
+    omitName(name, max) {
+      if (name.length > max) {
+        name = name.slice(0, max) + '...';
+      }
+      return name
+    },
+    /**
+     * Gets information about the current logged in user
+     */
+    getUserData() {
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
+          if (error.request && !error.response) {
+            this.$router.push({path: '/timeout'});
+          } else if (error.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
+          } else {
+            this.$router.push({path: '/noUser'});
+            console.log(error.message);
+          }
+        })
+      }
+    },
+    /**
+     * Calculates the target maximum height for the navbar once it needs to open.
+     * @return Returns the max-height in pixels that is required for the links to appear on the screen.
+     * */
+    getNavbarMaxHeight() {
+      let result = null;
+
+      // Only runs if there is a navbar item existing. Otherwise we return null to avoid accessing
+      // a non-existent attribute
+      if (document.getElementById("navbar-inner-id")) {
+        result = document.getElementById("navbar-inner-id").offsetHeight
+      }
+      return result
+    },
+
+    /**
+     * Animates a slide up and down on the height of an element and it's wrapper. This is used to make the dropdown
+     * appear more nicely.
+     * @param dropdownId - The id of the dropdown element.
+     * @param dropdownWrapperId - The ide of the dropdown wrapper element.
+     * @param toggleVariable - The variable that the dropdown depends on.
+     * @param preventToggle - Gives the option to prevent the variable from being toggled. This defaults to false.
+     * @param minHeight - Gives the option to give a custom minimum height. But zero if a good default.
+     *
+     * @return - Returns the new value for the toggle variable so it can be updated (cannot update directly as far as I know).
+     */
+    toggleDropdownAnimated(dropdownId, dropdownWrapperId, toggleVariable, preventToggle = false, minHeight = 0) {
+      // To save accessing time
+      let dropdownElement = document.getElementById(dropdownId);
+      let wrapperElement = document.getElementById(dropdownWrapperId);
+
+      // Only toggle it if you can find it!
+      if (dropdownElement && wrapperElement) {
+        // Gets the maximum height from the offset!
+        const maxHeight = dropdownElement.offsetHeight
+
+        // Toggle the variable unless not instructed to!
+        if (!preventToggle) {
+          toggleVariable = !toggleVariable;
+        }
+
+        // Determining the height we want to reach
+        let targetHeight = minHeight;
+        if (toggleVariable) targetHeight = maxHeight;
+
+        // Update the target height for the component
+        wrapperElement.setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
+
+        // Update the navbar to accommodate the changes
+        this.toggleNavbar(true, targetHeight);
+
+      }
+
+
+      // So the toggle variable can be updated
+      return toggleVariable;
+    },
+
+    /**
+     * Toggles the navbar in mobile form which shows the links to the user. This targets "navbarId".
+     * The function also controls the animation for showing and hiding the links in the navbar.
+     *
+     * @param preventToggle - Determines if to prevent the toggling action. This is useful in some cases.
+     * @param extraMaxPixels - Determines additional pixels to add to the maximum height.
+     */
+    toggleNavbar(preventToggle = false, extraMaxPixels = 0) {
+      // close notification box
+      this.openNotificationBox = false;
+
+      // Only if the element exists
+      if (document.getElementById("navbar-id")) {
+
+        // Update the max height before applying any transitions
+        this.navbarMaxHeight = this.getNavbarMaxHeight() + extraMaxPixels;
+
+        // If init call don't toggle the height
+        if (!preventToggle) {
+          this.showNavbar = !this.showNavbar
+        }
+
+        // Determine the target height
+        let targetHeight = this.navbarMinHeight
+        if (this.showNavbar) targetHeight = this.navbarMaxHeight
+
+        // Assign the target height to the navbar
+        document.getElementById("navbar-id")
+            .setAttribute("style", `max-height: ${targetHeight}px; ${this.STYLE_DEFAULT}`)
+      }
+    },
+    /**
+     * Determines if the current route path matches the path given.
+     * @param path - the path you want to test against the route path.
+     * @return Returns "active" class keyword if the paths match. Otherwise "" for an empty class.
+     */
+    isActivePath(path) {
+      return this.$route.path === path ? "active" : ""
+    },
+    /**
+     * Logs the user out of the their account by deleting the cookies of the user, and sending them to
+     * the login page.
+     * @param event - The button event when it is called from the button press.
+     */
+    async logout(event) {
+      /*
+      Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
+       */
+      event.preventDefault();
+
+      Cookies.remove('userID', {sameSite: 'strict'});
+      Cookies.remove('actAs', {sameSite: 'strict'});
+
+      Api.signOut().then(() => {
+        this.$router.push({name: 'Login'})
+      })
+    },
+    /**
+     * The function when called ensure the user is logged in. Otherwise takes you to the login page.
+     */
+    async ensureLoggedIn() {
+      const userIdCookie = await Cookies.get('userID');
+      // There is no way to check the JSESSIONID cookie without having an API call. This is because this is
+      // a HttpOnly cookie, which means we cannot do anything with it on the client side via Javascript.
+      //const jSessionIdCookie = await Cookies.get('JSESSIONID');
+
+      // If either of the cookies are missing this means that the user is not logged in.
+      // Then we logout the user, which takes them to the login page and deletes their cookies.
+      if (userIdCookie === undefined) {
+        await this.logout(new Event("Not logged in"));
+      }
+    },
+    /**
+     * Shows Interact As Dropdown menu
+     */
+    showInteract() {
+      this.showInteractMenu = !this.showInteractMenu;
+    },
+    /**
+     * Refreshes dropdown list for interact as
+     */
+    refreshDropdown() {
+      if (this.currentUser.nickname == null) {
+        this.interactAs = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.firstName, this.maxNameLength)
+        }];
+
+        // store a list of name with an max length
+        this.interactAsOmit = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.firstName, this.omitPoint)
+        }];
+      } else {
+        this.interactAs = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.nickname, this.maxNameLength)
+        }];
+
+        // store a list of name with an max length
+        this.interactAsOmit = [{
+          id: this.currentUser.id,
+          name: this.omitName(this.currentUser.nickname, this.omitPoint)
+        }];
+      }
+
+      for (let i = 0; i < this.businesses.length; i++) {
+        this.interactAs.push({
+          id: this.businesses[i].id,
+          name: this.omitName(this.businesses[i].name, this.maxNameLength)
+        });
+        this.interactAsOmit.push({
+          id: this.businesses[i].id,
+          name: this.omitName(this.businesses[i].name, this.omitPoint)
+        });
+      }
+      this.$emit('getLinkBusinessAccount', this.businesses);
+    },
+    /**
+     * Sets who the user is interacting as
+     * @param index of dropdown clicked
+     */
+    itemClicked(index) {
+      this.showInteractMenu = this.toggleDropdownAnimated('interact-dropdown-links',
+          'interact-dropdown-links-wrapper', this.showInteractMenu)
+      if (index === 0) {
+        // Delete Cookie
+        Cookies.remove('actAs', {sameSite: 'strict'});
+        this.$router.go();
+      } else {
+        // Set Cookie
+        Cookies.set('actAs', this.interactAs[index].id, {sameSite: 'strict'});
+        // Checks if business is allowed on page
+        if (this.canGoToPage()) {
+          this.$router.go();
+        } else {
+          this.$router.push({name: "BusinessProfile", params: {id: this.interactAs[index].id}})
+        }
+      }
+    },
+    setCurUser(response) {
+      this.currentUser = response;
+      if (Cookies.get('actAs')) {
+        this.actAsId = Cookies.get('actAs');
+        // Checks if user is admin of business at id actAs
+        let check = false;
+        for (let i = 0; i < response.businessesAdministered.length; i++) {
+          if (response.businessesAdministered[i] === null) {
+            return
+          }
+          if (String(response.businessesAdministered[i].id) === this.actAsId) {
+            this.actAs = response.businessesAdministered[i].name;
+            check = true;
+            i = response.businessesAdministered.length; // Ends for loop
+          }
+        }
+        // If user not admin of business removes cookie
+        if (check === false) {
+          Cookies.remove('actAs', {sameSite: 'strict'});
+          this.actAsId = null;
+          if (response.nickname == null) {
+            this.actAs = response.firstName;
+          } else {
+            this.actAs = response.nickname;
+          }
+        }
+      } else {
+        if (response.nickname == null) {
+          this.actAs = response.firstName;
+        } else {
+          this.actAs = response.nickname;
+        }
+      }
+      this.actAs = this.omitName(this.actAs, this.maxNameLength)
+      this.actAsOmit = this.omitName(this.actAs, this.omitPoint);
+
+      // Filters out the null businesses
+      this.businesses = response.businessesAdministered.filter(
+          (business) => business !== null
+      )
+
+      this.refreshDropdown();
+    },
+    onResize() {
+      this.toggleNavbar(true);
+    },
+    /**
+     * T/F When user is acting as a business checks user is allowed on page
+     * NOTE: Currently just Marketplace
+     */
+    canGoToPage() {
+      return this.$route.name !== "Marketplace";
+    }
+  },
+  beforeMount() {
+    // If it is required to be logged in. The user will be checked.
+    if (this.loginRequired) {
+      this.ensureLoggedIn();
+    }
+    this.businessAccountId = Cookies.get("actAs");
+    this.isActAsBusiness = (this.businessAccountId !== null && this.businessAccountId !== undefined);
+    this.showOmitName = (this.screenWidth > 1200);
+
+    // This is for using URL when acting as
+    if (this.isActAsBusiness) {
+      if (!this.canGoToPage()) {
+        this.$router.push({name: "BusinessProfile", params: {id: this.businessAccountId}})
+      }
+    }
+
+    // update notifications
+    this.updateNotificationState();
+  },
+  mounted() {
+
+    const currentID = Cookies.get('userID');
+
+    if (currentID) {
+      this.getLoginRole(currentID);
+    }
+
+    this.getUserData();
+
+    // Sample the navbar max height at mounting
+    this.navbarMaxHeight = this.getNavbarMaxHeight();
+
+    // Otherwise keep sampling until you get a valid result (i.e. not null)
+    if (this.navbarMaxHeight == null) {
+      while (this.navbarMaxHeight == null) this.navbarMaxHeight = this.getNavbarMaxHeight();
+    }
+
+    // Set the initial height for the navbar and the dropdown
+    this.toggleDropdownAnimated('business-dropdown-links', 'business-dropdown-links-wrapper',
+        this.showBusinessDropdown, true);
+    this.toggleDropdownAnimated('interact-dropdown-links', 'interact-dropdown-links-wrapper',
+        this.showInteractMenu, true);
+    this.toggleNavbar(true)
+
+    // Adding an event listener for resizing
+    window.addEventListener("resize", this.onResize);
+
+    // Watch window width
+    const that = this
+    window.onresize = () => {
+      return (() => {
+        window.screenWidth = document.body.clientWidth
+        that.screenWidth = window.screenWidth
+      })()
+    }
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize)
+  },
+  watch: {
+    screenWidth(val) {
+
+      // use timer to reduce page freezes
+      if (!this.timer) {
+        this.screenWidth = val
+        this.timer = true
+        let that = this
+        setTimeout(function () {
+          // close notification box
+          that.openNotificationBox = false;
+
+          // change the display name
+          if (that.screenWidth >= 1200) {
+            that.showOmitName = true;
+          } else {
+            that.showOmitName = false;
+          }
+          that.timer = false
+        }, 400)
+      }
+    }
+  }
+}
+</script>
+
+<!-------------------------------------------- Navigation Bar Styling ------------------------------------------------->
+
+<style scoped>
+
+.no-space {
+  padding: 0;
+  margin: 0;
+}
+
+/* Styling for smaller screen sizes begins */
+
+#logout-btn {
+  background-color: #fd5050;
+}
+
+#logout-btn:hover, #logout-btn:focus {
+  background: #ef5e33;
+  outline: none;
+  cursor: pointer;
+}
+
+.logo-container {
+  position: center;
+}
+
+#logo-image-nav {
+  max-width: 90px;
+  margin-left: 28px;
+  margin-right: 10px;
+  width: 100%;
+}
+
+#interact-dropdown-links-wrapper {
+  width: unset;
+}
+
+#interactDrop {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  max-width: 100%;
+  height: auto;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+#interactDrop a {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 40px;
+}
+
+.act-as-image {
+  height: 55px;
+  width: auto;
+  border: 1px lightgrey solid;
+}
+
+#actAsImg {
+  float: none;
+}
+
+#logoImage {
+  max-width: 200px;
+}
+
+.navbar-brand {
+  outline: none;
+}
+
+.nav-link {
+  color: white;
+  background: #19b092;
+  margin: 10px 0;
+  border-radius: 15px;
+  text-align: center;
+  font-size: large;
+  width: auto;
+}
+
+.nav-link:hover, .nav-link:focus {
+  background: #ef5e33;
+  outline: none;
+  cursor: pointer;
+}
+
+.navbar-toggler {
+  color: rgba(25, 176, 146, 0.55);
+  border-color: rgba(0, 0, 0, 0.2);
+  border-width: 2px;
+  border-radius: 0.6rem;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2825,176,146, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+#navbar-id {
+  overflow: hidden;
+}
+
+#business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.active {
+  background-color: #2eda77;
+}
+
+.dropdown-menu {
+  border-right-width: 0;
+  border-left-width: 0;
+  padding: 0 5rem;
+}
+
+.admin-label {
+  background-color: #fd5050;
+  color: white;
+  border-radius: 6px;
+  padding: 6px;
+  max-width: 120px;
+  margin:12px auto
+}
+
+.line-separator {
+  height:2px
+}
+
+@media (min-width: 250px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+}
+
+@media (min-width: 350px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+}
+
+@media (min-width: 400px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+}
+
+@media (min-width: 450px) {
+  .center {
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+}
+
+/*-------------------------------------------- Large break point styling ------------------------------------------*/
+
+/* Styling for smaller screen sizes ends */
+
+/* Styling for larger screen sizes begins */
+/*xl Break point*/
+@media (min-width: 1200px) {
+
+  .center {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+  #logo-image-nav {
+    max-width: 120px;
+    margin-left: 28px;
+    margin-right: 10px;
+    width: 100%;
+  }
+
+  #navbar-id {
+    overflow: visible;
+  }
+
+  #actAsImg {
+    float: left;
+  }
+
+  #business-dropdown-links-wrapper, #interact-dropdown-links-wrapper {
+    position: absolute;
+  }
+
+  .navbar-expand-xl .navbar-nav .dropdown-menu {
+    padding: 0;
+    margin: 0;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    position: unset;
+  }
+
+  .navbar-expand-xl .navbar-nav .nav-link {
+    margin: 10px;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  #interact-dropdown-links-wrapper {
+    width: auto;
+  }
+
+
+  #interactDrop {
+    max-width: 180px;
+    padding-left: 1em;
+  }
+
+  #interactDrop a {
+    padding: unset;
+    padding: 0.4rem 0rem
+  }
+
+
+}
+
+/*------------------------------------------ Extra Large break point styling -----------------------------------------*/
+
+@media (min-width: 1400px) {
+
+  .center {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-inline: 15px;
+    text-align: center;
+  }
+
+  #logo-image-nav {
+    max-width: 140px;
+    margin-left: -58px;
+    margin-right: 10px;
+    width: 100%;
+  }
+
+}
+
+</style>

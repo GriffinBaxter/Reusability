@@ -4,6 +4,7 @@ import defaultImage from "./../public/default-product.jpg"
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import VueLogger from "vuejs-logger";
 import Api from "./../src/Api";
+import Cookies from "js-cookie"
 
 const localVue = createLocalVue();
 const resourcePath = "some.test.url.com/";
@@ -691,6 +692,7 @@ describe("Tests for previousImage function", () => {
     })
 })
 
+
 describe("Test data population", () =>{
     beforeEach(() => {
         // given
@@ -868,8 +870,8 @@ describe("Testing buy listing functionality", () => {
 
     });
 
-    test("Test v-if button variable is set correctly when user isn't business admin", (() => {
-        wrapper.vm.$data.currentID = "2";
+    test("Test v-if button variable is set correctly when acting as a user", (() => {
+        wrapper.vm.$data.actingBusinessId = undefined;
         wrapper.vm.populateData(response.data);
 
         wrapper.vm.$nextTick();
@@ -877,8 +879,8 @@ describe("Testing buy listing functionality", () => {
         expect(wrapper.vm.$data.canBuy).toBeTruthy();
     }));
 
-    test("Test v-if button variable is set correctly when user is business admin", (() => {
-        wrapper.vm.$data.currentID = "1";
+    test("Test v-if button variable is set correctly when acting as business", (() => {
+        wrapper.vm.$data.actingBusinessId = 25;
         wrapper.vm.populateData(response.data);
 
         wrapper.vm.$nextTick();

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * BookmarkedListingMessageRepository test class
@@ -302,5 +303,24 @@ class BookmarkedListingMessageRepositoryIntegrationTests {
         Assertions.assertEquals(expected_number_notifications, bookmarkedListingMessages.size());
     }
 
+    /**
+     * Test that BookmarkedListingMessageRepository.findByMessageId() returns the correct message when message exists
+     */
+    @Test
+    void testFindByIdReturnsOptionalListingMessageWhenMessageExists() {
+        Optional<BookmarkedListingMessage> message = bookmarkedListingMessageRepository.findById(bookmarkedListingMessage1.getId());
 
+        Assertions.assertTrue(message.isPresent());
+        Assertions.assertEquals(message.get(), bookmarkedListingMessage1);
+    }
+
+    /**
+     * Test that BookmarkedListingMessageRepository.findByMessageId() returns an empty optional when message doesn't exist
+     */
+    @Test
+    void testFindByIdReturnsEmptyOptionalWhenMessageDoesntExist() {
+        Optional<BookmarkedListingMessage> message = bookmarkedListingMessageRepository.findById(100000);
+
+        Assertions.assertTrue(message.isEmpty());
+    }
 }

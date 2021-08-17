@@ -30,7 +30,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
-import java.awt.print.Book;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -372,7 +371,7 @@ class ListingResourceIntegrationTests {
                 "name",
                 "some text",
                 address,
-                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
                 dGAA
         );
@@ -1287,12 +1286,12 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, convertedBusinessType, null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
-                .param("businessType", businessType)
+                .param("businessTypes", businessType)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1334,12 +1333,72 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, convertedBusinessType, null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
-                .param("businessType", businessType)
+                .param("businessTypes", businessType)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that an OK status is received when searching for a listing using the /listings API endpoint
+     * and that the JSON response is equal to the listing searched for. The listing is searched for using multiple business
+     * types and listing name.
+     * Test specifically for when searching by business type and listing name.
+     */
+    @Test
+    void canSearchListingsByNameAndMultipleTypesWhenListingExistsTest() throws Exception {
+        // given
+        String searchQuery = "Beans";
+        List<String> names = Arrays.asList(searchQuery);
+
+        String businessType1 = "ACCOMMODATION_AND_FOOD_SERVICES";
+        String businessType2 = "RETAIL_TRADE";
+        BusinessType convertedBusinessType1 = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+        BusinessType convertedBusinessType2 = BusinessType.RETAIL_TRADE;
+
+        expectedJSON = "[" + String.format(expectedListingJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
+                listing.isBookmarked(user), listing.getTotalBookmarks()) + "," + String.format(expectedListingJSON, adminListing.getId(),
+                adminInventoryItem.getId(), adminProduct.getProductId(), adminProduct.getName(), adminProduct.getDescription(), adminProduct.getManufacturer(),
+                adminProduct.getRecommendedRetailPrice(), adminProduct.getCreated(), adminBusiness.getId(), dGAA.getId(), dGAA.getFirstName(),
+                dGAA.getLastName(), dGAA.getMiddleName(), dGAA.getNickname(), dGAA.getBio(), dGAA.getEmail(), dGAA.getCreated(), dGAA.getRole(),
+                dGAA.getDateOfBirth(), dGAA.getPhoneNumber(), dGAA.getHomeAddress().getStreetNumber(), dGAA.getHomeAddress().getStreetName(),
+                dGAA.getHomeAddress().getSuburb(), dGAA.getHomeAddress().getCity(), dGAA.getHomeAddress().getRegion(), dGAA.getHomeAddress().getCountry(),
+                dGAA.getHomeAddress().getPostcode(), adminBusiness.getPrimaryAdministratorId(), adminBusiness.getName(),
+                adminBusiness.getDescription(), adminBusiness.getAddress(), adminBusiness.getBusinessType(), adminBusiness.getCreated(),
+                adminProduct.getBarcode(), adminInventoryItem.getQuantity(), adminInventoryItem.getPricePerItem(), adminInventoryItem.getTotalPrice(),
+                adminInventoryItem.getManufactured(), adminInventoryItem.getSellBy(), adminInventoryItem.getBestBefore(), adminInventoryItem.getExpires(),
+                adminListing.getQuantity(), adminListing.getPrice(), adminListing.getMoreInfo(), adminListing.getCreated().toString(), adminListing.getCloses().toString(),
+                adminListing.isBookmarked(user), adminListing.getTotalBookmarks()) + "]";
+
+        // when
+        List<Listing> list = List.of(listing, adminListing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 12, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, List.of(convertedBusinessType1, convertedBusinessType2), null, null, null, null
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("businessTypes", businessType1, businessType2)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1381,7 +1440,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByBusinessName(
-                names, paging, convertedBusinessType,
+                names, paging, List.of(convertedBusinessType),
                 10.0, 11.0,
                 LocalDateTime.of(2021, 1, 1, 0, 0),
                 LocalDateTime.of(2022, 1, 1, 0, 0)
@@ -1391,7 +1450,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("searchType", "businessName")
                 .param("orderBy", "countryASC")
-                .param("businessType", businessType)
+                .param("businessTypes", businessType)
                 .param("minimumPrice", "10.0")
                 .param("maximumPrice", "11.0")
                 .param("fromDate", "2021-01-01T00:00")
@@ -1437,7 +1496,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByLocation(
-                names, paging, convertedBusinessType,
+                names, paging, List.of(convertedBusinessType),
                 9.0, 12.0,
                 LocalDateTime.of(2020, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0)
@@ -1447,7 +1506,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("searchType", "location")
                 .param("orderBy", "expiryDateASC")
-                .param("businessType", businessType)
+                .param("businessTypes", businessType)
                 .param("minimumPrice", "9.0")
                 .param("maximumPrice", "12.0")
                 .param("fromDate", "2020-01-01T00:00")
@@ -1780,47 +1839,28 @@ class ListingResourceIntegrationTests {
     }
 
     /**
-     * Test that when buying a listing as a DGAA and an administrator of the business, a FORBIDDEN status is received.
+     * Test that when buying a listing as a User and an administrator of the business, a OK status is received.
      *
      * @throws Exception Exception error
      */
     @Test
-    void cannotBuyListing_WhenDgaaAndBusinessAdministrator() throws Exception {
-        // given
-        given(userRepository.findBySessionUUID(dGAA.getSessionUUID())).willReturn(Optional.ofNullable(dGAA));
-        given(businessRepository.findBusinessById(adminBusiness.getId())).willReturn(Optional.ofNullable(adminBusiness));
-        given(listingRepository.findById(adminListing.getId())).willReturn(Optional.ofNullable(adminListing));
-
-        // when
-        response = mvc.perform(put(String.format("/listings/%d/buy", adminListing.getId()))
-                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
-                .andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Cannot purchase your own listing");
-    }
-
-    /**
-     * Test that when buying a listing as a User and an administrator of the business, a FORBIDDEN status is received.
-     *
-     * @throws Exception Exception error
-     */
-    @Test
-    void cannotBuyListing_WhenUserAndBusinessAdministrator() throws Exception {
+    void canBuyListing_WhenBusinessAdministrator() throws Exception {
         // given
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
         given(listingRepository.findById(listing.getId())).willReturn(Optional.ofNullable(listing));
+        given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId())).willReturn(Optional.ofNullable(inventoryItem));
 
         // when
+        when(soldListingRepository.save(any(SoldListing.class))).thenReturn(soldListing);
+        when(listingNotificationRepository.save(any(ListingNotification.class))).thenReturn(listingNotification);
+        when(inventoryItemRepository.save(inventoryItem)).thenReturn(inventoryItem);
         response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Cannot purchase your own listing");
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
@@ -1963,5 +2003,132 @@ class ListingResourceIntegrationTests {
 
     }
 
+    /**
+     * Tests that a 200 is returned when the user tries to delete their own message
+     * @throws Exception
+     */
+    @Test
+    void canDeleteBookmarkMessageWithExistingMessage() throws Exception {
+        // given
+        LocalDateTime created = LocalDateTime.now();
+
+        BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage.setId(1);
+        bookmarkedListingMessage.addUser(user);
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.of(user));
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.of(bookmarkedListingMessage));
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that a 200 is returned when a GAA tries to delete another users message
+     * @throws Exception exception
+     */
+    @Test
+    void canDeleteBookmarkMessageWithExistingMessageWhenGAA() throws Exception {
+        // given
+        LocalDateTime created = LocalDateTime.now();
+
+        BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage.setId(1);
+        bookmarkedListingMessage.addUser(user);
+
+        given(userRepository.findBySessionUUID(gAA.getSessionUUID())).willReturn(Optional.of(gAA));
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.of(bookmarkedListingMessage));
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1))
+                .cookie(new Cookie("JSESSIONID", gAA.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that a 406 is returned when the user tries to delete a non-existing message
+     * @throws Exception exception
+     */
+    @Test
+    void cantDeleteBookmarkMessageThatDoesntExist() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.of(user));
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a 403 is returned when the user tries to delete another users message
+     * @throws Exception exception
+     */
+    @Test
+    void cantDeleteOtherUsersBookmarkMessageWithExistingMessage() throws Exception {
+        // given
+        LocalDateTime created = LocalDateTime.now();
+
+        BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage.setId(1);
+        bookmarkedListingMessage.addUser(anotherUser);
+
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.of(user));
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.of(bookmarkedListingMessage));
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that a 401 is returned when the user is not logged in
+     * @throws Exception exception
+     */
+    @Test
+    void cantDeleteBookmarkMessageWithExistingMessageWhenNotLoggedIn() throws Exception {
+        // given
+        LocalDateTime created = LocalDateTime.now();
+
+        BookmarkedListingMessage bookmarkedListingMessage = new BookmarkedListingMessage(
+                String.format("Product listing '%s' has been bookmarked. ",
+                        listing.getInventoryItem().getProduct().getName()),
+                created,
+                listing);
+        bookmarkedListingMessage.setId(1);
+        bookmarkedListingMessage.addUser(user);
+
+        given(bookmarkedListingMessageRepository.findById(1)).willReturn(Optional.of(bookmarkedListingMessage));
+
+        // when
+        response = mvc.perform(delete(String.format("/home/bookmarkMessages/%d", 1)))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
 
 }

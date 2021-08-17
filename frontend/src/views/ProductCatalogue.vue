@@ -457,8 +457,6 @@ export default {
      * Parses the orderByString and returns the resulted Objects.
      * @return {{orderBy: null | String, isAscending: boolean}} This contains the {orderBy, isAscending} properties of the this.orderByString .
      * Emulates a click when the product presses enter on a column header.
-     *
-     * @param event The keydown event
      */
     parseOrderBy() {
       let orderBy = null;
@@ -938,7 +936,7 @@ export default {
     this.modal = new Modal(this.$refs.CreateProductModal);
     const actAs = Cookies.get('actAs');
     if (checkAccessPermission(this.$route.params.id, actAs)) {
-      this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
+      await this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
     } else {
       /**
        * When mounted, initiate population of page.

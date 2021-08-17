@@ -12,79 +12,58 @@
 
       <div id="home" class="container all-but-footer">
 
-        <!--News feed-->
-        <div class="container-news text-font">
+        <!--Home feed-->
+        <div class="container-news mx-md-5 text-font">
 
-          <!--Post 1 for news feed-->
-          <div class="post shadow py-5 px-4">
-            <!--Post header-->
-            <div class="post-header">
-              <div>
-                <img id="profile-image-1" src="../../public/profile_icon_1.jpg" alt="profile image">
-                <span class="account-name">Green Grocers </span>
-              </div>
-              <div>
-                <span>Apr 6</span>
-              </div>
-            </div>
-            <!--Post description-->
-            <div>
-              <p class="post-description"> This is the first photo of the feed. This is a multi-lined comment for
-                testing purposes.</p>
-            </div>
-            <p></p>
-            <!--Post image-->
-            <div>
-              <img class="post-image" src="../../public/apples.jpg" alt="image 2">
-            </div>
-          </div>
+          <br>
+          <h1 style="text-align: center">Home</h1>
 
-          <!--Post 2 for news feed-->
-          <div class="post shadow py-5 px-4">
-            <!--Post header-->
-            <div class="post-header">
-              <div>
-                <img id="profile-image-2" src="../../public/profile_icon_2.jpg" alt="profile image">
-                <span class="account-name">Fast Frank's</span>
-              </div>
-              <div>
-                <span>Apr 4</span>
-              </div>
-            </div>
-            <!--Post description-->
-            <div>
-              <p class="post-description"> This is the second photo of the feed. This is a multi-lined comment for
-                testing purposes.</p>
-            </div>
-            <p></p>
-            <!--Post image-->
-            <div>
-              <img class="post-image" src="../../public/cans.jpg" alt="image 2">
-            </div>
-          </div>
+          <!-- All Bookmarked Listings Messages-->
+          <div v-if="showBookmarkMessages">
 
-          <!--Post 3 for news feed-->
-          <div class="post shadow py-5 px-4">
-            <!--Post header-->
-            <div class="post-header">
-              <div>
-                <img id="profile-image-3" src="../../public/profile_icon_3.jpg" alt="profile image">
-                <span class="account-name">New Leaf Organics</span>
+            <!-- Bookmarked listing message -->
+            <div id="bookmark-messages-container" v-if="hasDataLoaded">
+              <div v-if="bookmarkMessages.length === 0 && rendered">
+                <h2 id="no-bookmark-message" style="text-align: center">(No Bookmarked Messages)</h2>
               </div>
-              <div>
-                <span>Apr 3</span>
+
+              <div :id="'bookmark-message-container-' + message.id"
+                   class="row post shadow py-3 px-4"
+                   type="button"
+                   style="margin-left: 0; margin-right: 0"
+                   v-for="message in bookmarkMessages" v-bind:key="message.id">
+
+                <div :id="'bookmark-message-link-' + message.id" class="col-11" @click="toListing(message.listingId, message.businessId)">
+                  <!--Bookmarked listing message description-->
+                  <div>
+                    <p class="post-description">
+                      {{ message.description }}</p>
+                  </div>
+                  <!--Listing close date-->
+                  <p class="py-1">
+                    <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
+                  </p>
+                  <!--Date/time of message-->
+                  <p class="py-1">
+                    <label class="bookmark-message-title">Notification Date:</label>
+                    {{ formatDateVar(message.created, true) }}
+                  </p>
+                </div>
+
+                <!--Delete button for bookmarked listing message-->
+                <div class="col-1" id="delete-btn-container" style="position: relative;">
+                  <button :id="'delete-bookmark-message-button-' + message.id"
+                          type="button"
+                          class="btn-close"
+                          @click="deleteMessage(message.id)"/>
+                </div>
               </div>
             </div>
-            <!--Post description-->
-            <div>
-              <p class="post-description"> This is the third photo of the feed. This is a multi-lined comment for
-                testing purposes.</p>
+            <!--     Loading Dotes     -->
+            <div v-else>
+              <LoadingDots/>
             </div>
-            <p></p>
-            <!--Post image-->
-            <div>
-              <img class="post-image" src="../../public/clothes.jpg" alt="image 2">
-            </div>
+
           </div>
 
         </div>
@@ -92,7 +71,7 @@
 
     </div>
     <!--Footer contains links that are the same as those in the nav bar-->
-    <Footer></Footer>
+    <Footer/>
 
   </div>
 </template>
@@ -100,15 +79,90 @@
 <script>
 import Footer from '../components/main/Footer';
 import Navbar from '../components/Navbar';
+import Api from "../Api";
+import {formatDate} from "../dateUtils";
+import Cookies from "js-cookie";
+import LoadingDots from "../components/LoadingDots";
 
 export default {
   name: "Home",
   components: {
+    LoadingDots,
     Footer,
     Navbar
   },
   data() {
-    return {}
+    return {
+      bookmarkMessages: [],
+      rendered: false,
+      hasDataLoaded: false,
+      showBookmarkMessages: false, // hide messages if acting as business
+    }
+  },
+  mounted() {
+    this.hasDataLoaded = false;
+    this.showBookmarkMessages = true;
+
+    const actingAs = Cookies.get('actAs');
+
+    if (actingAs === undefined) {
+
+      Api.getBookmarkedMessage().then(res => {
+        this.bookmarkMessages = res.data.reverse();
+        this.rendered = true
+        this.hasDataLoaded = true;
+      }).catch((err) => {
+        if (err.response && err.response.status === 401) {
+          this.$router.push({path: '/invalidToken'})
+        } else {
+          console.log(err)
+        }
+        this.hasDataLoaded = true;
+      })
+    } else {
+      this.showBookmarkMessages = false;
+    }
+  },
+  methods: {
+    /**
+     * Formats date to String using formatDate method in dateUtils
+     * @param date Date to format
+     * @param tf Boolean True/False for if time should be included
+     * @return {string|null} Date string
+     */
+    formatDateVar(date, tf) {
+      return formatDate(date, tf)
+    },
+
+    /**
+     * Routes the user to the listing page associated with their bookmarked message with the given business id and
+     * listing id.
+     * @param listingId listing id of the bookmark message
+     * @param businessId business id associated with the listing id of the bookmark message
+     */
+    toListing(listingId, businessId) {
+      this.$router.push({path: `/businessProfile/${businessId}/listings/${listingId}`})
+    },
+
+    /**
+     * Deletes the bookmarked listing message
+     * @param messageId the id of the bookmarked listing message to delete
+     */
+    deleteMessage(messageId) {
+      Api.deleteBookmarkMessage(messageId)
+          .then(() => {
+            let newBookmarkList = [];
+            this.bookmarkMessages.forEach((message) => {
+              if (message.id !== messageId) {
+                newBookmarkList.push(message);
+              }
+            })
+            this.bookmarkMessages = newBookmarkList;
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+    }
   }
 }
 </script>
@@ -170,56 +224,63 @@ div.post h2, div.post p {
   padding: 10px;
 }
 
-/*
- * Width is 524px since news feed item is 600px and then 12px margin each side.
- */
-div.container {
-  max-width: 424px;
-  margin: auto;
-}
-
-/**
- * Styling for profile images for each post. Makes image into circle.
- */
-#profile-image-1, #profile-image-2, #profile-image-3 {
-  height: 50px;
-  width: auto;
-  border-radius: 50px;
-}
-
-.post-image {
-  border-radius: 15px;
-}
-
-.account-name {
-  font-weight: bold;
-  margin-left: 10px;
-}
-
 .post-description {
   margin-bottom: 30px;
 }
 
-/*-------------------------------------------- Medium break point styling -------------------------------------------*/
-
-/*Medium break point*/
-@media (min-width: 692px) {
-
-  div.container {
-    width: 524px;
-    margin: auto;
-  }
+.bookmark-message-title {
+  font-weight: bold;
 }
 
+#bookmark-messages-container {
+  background-color: #1EBA8C;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 80px;
+}
 
-/*-------------------------------------------- Large break point styling -------------------------------------------*/
+.spinner-grow {
+  height: 14px;
+  width: 14px;
+  margin-right: 4px;
+  margin-left: 4px;
+}
 
-@media (min-width: 800px) {
+#delete-btn-container {
+  text-align: right;
+  right: 0px;
+}
+
+/*-------------------------------------------- Medium break point styling -------------------------------------------*/
+
+@media (min-width: 768px) {
   /*
  * Width is 524px since news feed item is 600px and then 12px margin each side.
  */
   div.container {
-    width: 624px;
+    width: 80%;
+    margin: auto;
+  }
+}
+
+/*-------------------------------------------- Large break point styling -------------------------------------------*/
+
+@media (min-width: 992px) {
+  /*
+ * Width is 524px since news feed item is 600px and then 12px margin each side.
+ */
+  div.container {
+    width: 70%;
+    margin: auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  /*
+ * Width is 524px since news feed item is 600px and then 12px margin each side.
+ */
+  div.container {
+    width: 60%;
     margin: auto;
   }
 }

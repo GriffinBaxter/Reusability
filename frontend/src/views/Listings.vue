@@ -153,6 +153,8 @@ name: "Listings",
       closesAscending: false,
       createdAscending: false,
 
+      // currency related variables
+      businessCountry: "", // used to retrieve the currency code and symbol
       currencyCode: "",
       currencySymbol: "",
 
@@ -320,8 +322,8 @@ name: "Listings",
         }
       })
     },
-    getBusiness(id) {
-      Api.getBusiness(id).then(response => (this.getBusinessData(response.data))).catch((error) => {
+    async getBusiness(id) {
+      await Api.getBusiness(id).then(response => (this.getBusinessData(response.data))).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 401) {
@@ -336,6 +338,7 @@ name: "Listings",
     },
     getBusinessData(data) {
       this.businessName = data.name;
+      this.businessCountry = data.address.country;
       // Checks if user is acting as business
       const actAs = Cookies.get('actAs');
       this.businessAdmin = actAs === String(data.id);
@@ -388,20 +391,9 @@ name: "Listings",
      * Upon success, the filterResponse function is called with the response data.
      */
     async currencyRequest() {
-      /*
-        Request business from backend. If received assign the country of the business
-        to a variable.
-        */
-      let country = "";
-      await Api.getBusiness(this.businessId).then((response) => {
-        country = response.data.address.country;
-      })
-          .catch((error) => console.log(error))
-
-      await CurrencyAPI.currencyQuery(country).then((response) => {
+      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
         this.filterResponse(response.data);
-      })
-          .catch((error) => console.log(error))
+      }).catch((error) => console.log(error))
     },
 
     /**
@@ -444,7 +436,6 @@ name: "Listings",
       this.getListings().catch(
           (e) => console.log(e)
       );
-
       await this.currencyRequest();
     }
   }
