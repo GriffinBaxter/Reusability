@@ -319,20 +319,28 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
     describe('Tests the validatePriceInput method.', () => {
 
-        test('Testing that when one of the input prices is null, then true is returned', () => {
-            expect(browseListingsSearchWrapper.vm.validatePriceInput(null, 20)).toBeTruthy();
+        test('Testing when one of the input prices is null', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput(null, "20")).toStrictEqual(["0", "20"]);
         });
 
-        test('Testing that when neither of the input prices are null and firstPrice is less than secondPrice then true is returned', () => {
-            expect(browseListingsSearchWrapper.vm.validatePriceInput(10, 20)).toBeTruthy();
+        test('Testing when neither of the input prices are null and firstPrice is less than secondPrice', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput("10", "20")).toStrictEqual(["10", "20"]);
         });
 
-        test('Testing that when neither of the input prices are null and firstPrice is equal to secondPrice then true is returned', () => {
-            expect(browseListingsSearchWrapper.vm.validatePriceInput(20, 20)).toBeTruthy();
+        test('Testing when neither of the input prices are null and firstPrice is equal to secondPrice', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput("20", "20")).toStrictEqual(["20", "20"]);
         });
 
-        test('Testing that when neither of the input prices are null and firstPrice is greater than secondPrice then false is returned', () => {
-            expect(browseListingsSearchWrapper.vm.validatePriceInput(20, 10)).toBeFalsy();
+        test('Testing when neither of the input prices are null and firstPrice is greater than secondPrice', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput("20", "10")).toStrictEqual(["10", "20"]);
+        });
+
+        test('Testing when the lowest price is negative', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput("-20", "10")).toStrictEqual(["0", "10"]);
+        });
+
+        test('Testing when the highest price is negative', () => {
+            expect(browseListingsSearchWrapper.vm.validatePriceInput("20", "-10")).toStrictEqual(["0", "20"]);
         });
     })
 

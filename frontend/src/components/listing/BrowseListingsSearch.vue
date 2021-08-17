@@ -163,10 +163,10 @@
               <form>
                 <div class="form-group" id="price-filtering-container">
                   <label for="lowest-price-input" class="d-inline-block p-2">Price Range $ </label>
-                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00" v-model="lowestPrice" oninput="this.value = Math.abs(this.value)">
+                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00" v-model="lowestPrice">
 
                   <label for="highest-price-input" class="d-inline-block p-2"> to $ </label>
-                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00" v-model="highestPrice" oninput="this.value = Math.abs(this.value)">
+                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00" v-model="highestPrice">
                 </div>
               </form>
             </div>
@@ -271,11 +271,8 @@ export default {
         this.startDate = this.endDate
         this.endDate = temp
       }
-      if (!this.validatePriceInput(this.lowestPrice, this.highestPrice)) {
-        const temp = this.lowestPrice
-        this.lowestPrice = this.highestPrice
-        this.highestPrice = temp
-      }
+      
+      [this.lowestPrice, this.highestPrice] = this.validatePriceInput(this.lowestPrice, this.highestPrice)
 
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
@@ -354,19 +351,44 @@ export default {
     },
 
     /**
-     * Checks that the price entered is a positive number.
-     * If both prices are provided, then the first must be smaller than the second and non-negative
-     * Returns true if condition met
-     * @param firstPrice first price
-     * @param secondPrice second price
-     * @return {boolean}
+     * Checks that the price entered is a positive number and that the first number is smaller than the second, and
+     * fixes the price input if required, and then returns the new lowest and highest prices.
+     * @param lowestPrice lowest price
+     * @param highestPrice highest price
      */
-    validatePriceInput(firstPrice, secondPrice) {
-      if (firstPrice != null && secondPrice != null) {
-        return parseFloat(firstPrice) <= parseFloat(secondPrice)
-      } else {
-        return true
+    validatePriceInput(lowestPrice, highestPrice) {
+      // sets prices to 0 if they are negative
+      if (!(lowestPrice == null || lowestPrice === "")) {
+        if (parseFloat(lowestPrice) < 0) {
+          lowestPrice = "0"
+        }
       }
+      if (!(highestPrice == null || highestPrice === "")) {
+        if (parseFloat(highestPrice) < 0) {
+          highestPrice = "0"
+        }
+      }
+      
+      // sets lowest price to 0 if there is a highest price and no lowest price
+      if (
+          (lowestPrice == null || lowestPrice === "") &&
+          !(highestPrice == null || highestPrice === "")
+      ) {
+        lowestPrice = "0"
+      }
+      
+      // swaps the highest and lowest prices if the lowest price is higher than the highest price
+      if (
+          (lowestPrice != null && lowestPrice !== "") &&
+          (highestPrice != null && highestPrice !== "") &&
+          (parseFloat(lowestPrice) > parseFloat(highestPrice))
+      ) {
+        const temp = lowestPrice
+        lowestPrice = highestPrice
+        highestPrice = temp
+      }
+      
+      return [lowestPrice, highestPrice]
     },
 
     /**
