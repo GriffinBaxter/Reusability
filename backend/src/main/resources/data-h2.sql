@@ -92,67 +92,67 @@ INSERT INTO `product` (business_id, id, created, description, manufacturer, name
 INSERT INTO `product` (business_id, id, created, description, manufacturer, name, recommended_retail_price) VALUES (3, 'COFFEE-MOCHA', DATE'2021-05-12', 'Made in Australia from at least 50% Australian ingredients.', 'Nescafe', 'Nescafe Coffee Mix Mocha 468G', 9.00);
 
 /* Inventory for Business 1 (9) */
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2021-11-12', DATE'2021-01-12', 4.50, 'MANDARIN', 99, DATE'2021-09-10', 445.50);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 1, DATE'2021-09-12', DATE'2021-01-12', 4.20, 'MANDARIN', 40, DATE'2021-06-10', 168.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-05-16', 1, DATE'2021-05-30', DATE'2021-05-10', 10.00, 'BEEF-MINCE', 68, DATE'2021-05-14', 680.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 1, DATE'2022-11-12', DATE'2020-06-29', 3.70, 'KERI-OJ', 244, DATE'2021-11-10', 900.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2021-11-12', DATE'2021-01-12', 2.99, 'ARNOTTS-CSCOTCH', 13, DATE'2021-09-10', 38.87);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 1, DATE'2021-06-12', DATE'2021-05-12', 5.69, 'BACON', 44, DATE'2021-06-10', 250.36);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2021-11-12', DATE'2021-05-12', 3.49, 'CARAMILK', 100, DATE'2021-09-10', 349.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 1, DATE'2021-08-12', DATE'2021-05-12', 2.99, 'SNIFTER', 40, DATE'2021-07-10', 120.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 1, DATE'2021-08-12', DATE'2021-05-12', 3.99, 'SNIFTER', 60, DATE'2021-07-10', 240.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2023-11-12', DATE'2021-01-12', 4.50, 'MANDARIN', 99, DATE'2021-09-10', 445.50);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 1, DATE'2023-09-12', DATE'2021-01-12', 4.20, 'MANDARIN', 40, DATE'2021-06-10', 168.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-05-16', 1, DATE'2023-05-30', DATE'2021-05-10', 10.00, 'BEEF-MINCE', 68, DATE'2021-05-14', 680.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 1, DATE'2023-11-12', DATE'2020-06-29', 3.70, 'KERI-OJ', 244, DATE'2021-11-10', 900.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2023-11-12', DATE'2021-01-12', 2.99, 'ARNOTTS-CSCOTCH', 13, DATE'2021-09-10', 38.87);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 1, DATE'2023-06-12', DATE'2021-05-12', 5.69, 'BACON', 44, DATE'2021-06-10', 250.36);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 1, DATE'2023-11-12', DATE'2021-05-12', 3.49, 'CARAMILK', 100, DATE'2021-09-10', 349.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 1, DATE'2023-08-12', DATE'2021-05-12', 2.99, 'SNIFTER', 40, DATE'2021-07-10', 120.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 1, DATE'2023-08-12', DATE'2021-05-12', 3.99, 'SNIFTER', 60, DATE'2021-07-10', 240.00);
 
 /* Inventory for Business 2 (9) */
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2021-11-12', DATE'2021-01-12', 3.99, 'CHOCOLATE', 99, DATE'2021-09-10', 395.01);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 2, DATE'2021-09-12', DATE'2021-01-12', 3.29, 'CHOCOLATE', 40, DATE'2021-06-10', 131.60);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2023-11-12', DATE'2021-01-12', 3.99, 'CHOCOLATE', 99, DATE'2021-09-10', 395.01);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 2, DATE'2023-09-12', DATE'2021-01-12', 3.29, 'CHOCOLATE', 40, DATE'2021-06-10', 131.60);
 INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2023-05-16', 2, DATE'2023-05-30', DATE'2021-05-10', 4.00, 'BLACK-FOREST', 68, DATE'2023-05-14', 250.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 2, DATE'2022-11-12', DATE'2020-06-29', 10.00, 'CHICKEN-NUGGETS', 244, DATE'2021-11-10', 2440.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2021-11-12', DATE'2021-01-12', 2.99, 'KERI-APPLE', 13, DATE'2021-09-10', 38.87);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 2, DATE'2021-06-12', DATE'2021-05-12', 9.99, 'CHICKEN-TENDERS', 44, DATE'2021-06-10', 439.56);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2021-11-12', DATE'2021-05-12', 3.49, 'CARAMELLO', 100, DATE'2021-09-10', 349.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 2, DATE'2021-08-12', DATE'2021-05-12', 2.20, 'POTATO-CHIPS', 40, DATE'2021-07-10', 88.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 2, DATE'2021-08-12', DATE'2021-05-12', 2.19, 'POTATO-CHIPS', 60, DATE'2021-07-10', 131.40);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 2, DATE'2023-11-12', DATE'2020-06-29', 10.00, 'CHICKEN-NUGGETS', 244, DATE'2021-11-10', 2440.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2023-11-12', DATE'2021-01-12', 2.99, 'KERI-APPLE', 13, DATE'2021-09-10', 38.87);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 2, DATE'2023-06-12', DATE'2021-05-12', 9.99, 'CHICKEN-TENDERS', 44, DATE'2021-06-10', 439.56);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 2, DATE'2023-11-12', DATE'2021-05-12', 3.49, 'CARAMELLO', 100, DATE'2021-09-10', 349.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 2, DATE'2023-08-12', DATE'2021-05-12', 2.20, 'POTATO-CHIPS', 40, DATE'2021-07-10', 88.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 2, DATE'2023-08-12', DATE'2021-05-12', 2.19, 'POTATO-CHIPS', 60, DATE'2021-07-10', 131.40);
 
 /* Inventory for Business 3 (9) */
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2021-11-12', DATE'2021-01-12', 2.20, 'POTATO-CHIPS', 99, DATE'2021-09-10', 215.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 3, DATE'2021-09-12', DATE'2021-01-12', 1.99, 'POTATO-CHIPS', 40, DATE'2021-06-10', 79.60);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2023-11-12', DATE'2021-01-12', 2.20, 'POTATO-CHIPS', 99, DATE'2021-09-10', 215.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 3, DATE'2023-09-12', DATE'2021-01-12', 1.99, 'POTATO-CHIPS', 40, DATE'2021-06-10', 79.60);
 INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2023-05-16', 3, DATE'2023-05-30', DATE'2021-05-10', 12.00, 'FR-CHICKEN-TEND', 68, DATE'2023-05-14', 816.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 3, DATE'2022-11-12', DATE'2020-06-29', 3.70, 'KERI-OJ-W-APPLE', 244, DATE'2021-11-10', 902.80);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2021-11-12', DATE'2021-01-12', 9.00, 'COFFEE-CARAMEL', 13, DATE'2021-09-10', 115.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 3, DATE'2021-06-12', DATE'2021-05-12', 2.99, 'ARNOTTS-CSNAP', 44, DATE'2021-06-10', 131.56);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2021-11-12', DATE'2021-05-12', 2.49, 'PC-SALTED', 100, DATE'2021-09-10', 249.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 3, DATE'2021-08-12', DATE'2021-05-12', 9.00, 'COFFEE-MOCHA', 40, DATE'2021-07-10', 360.00);
-INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 3, DATE'2021-08-12', DATE'2021-05-12', 9.00, 'COFFEE-MOCHA', 60, DATE'2021-07-10', 500.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-11-12', 3, DATE'2023-11-12', DATE'2020-06-29', 3.70, 'KERI-OJ-W-APPLE', 244, DATE'2021-11-10', 902.80);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2023-11-12', DATE'2021-01-12', 9.00, 'COFFEE-CARAMEL', 13, DATE'2021-09-10', 115.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-06-12', 3, DATE'2023-06-12', DATE'2021-05-12', 2.99, 'ARNOTTS-CSNAP', 44, DATE'2021-06-10', 131.56);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-09-12', 3, DATE'2023-11-12', DATE'2021-05-12', 2.49, 'PC-SALTED', 100, DATE'2021-09-10', 249.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 3, DATE'2023-08-12', DATE'2021-05-12', 9.00, 'COFFEE-MOCHA', 40, DATE'2021-07-10', 360.00);
+INSERT INTO `inventory_item` (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (DATE'2021-07-12', 3, DATE'2023-08-12', DATE'2021-05-12', 9.00, 'COFFEE-MOCHA', 60, DATE'2021-07-10', 500.00);
 
 /* Listings for Business 1 (8) */
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 180.00, 40, 1, 1);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 250.00, 59, 1, 1);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 168.00, 40, 2, 1);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-05-14', DATE'2021-05-12', 'No low ballers.', 600.00, 60, 3, 1);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Fresh', 800.00, 200, 4, 1);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-10', DATE'2021-05-12', 'Limited Stock.', 38.87, 13, 5, 1);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Selling quick.', 20.00, 4, 6, 1);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 349.00, 100, 7, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 180.00, 40, 1, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 250.00, 59, 1, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 168.00, 40, 2, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-05-14', DATE'2021-05-12', 'No low ballers.', 600.00, 60, 3, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Fresh', 800.00, 200, 4, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-10', DATE'2021-05-12', 'Limited Stock.', 38.87, 13, 5, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-06-10', DATE'2021-05-12', 'Selling quick.', 20.00, 4, 6, 1);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-07-10', DATE'2021-05-12', 'Limited Edition', 349.00, 100, 7, 1);
 
 /* Listings for Business 2 (8) */
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 140.00, 40, 10, 2);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 206.00, 59, 10, 2);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 139.60, 40, 11, 2);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-05-14', DATE'2021-05-12', 'No low ballers.', 32.00, 8, 12, 2);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Fresh', 2000.00, 200, 13, 2);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-10', DATE'2021-05-12', 'Limited Stock.', 38.87, 13, 14, 2);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Selling quick.', 40.00, 4, 15, 2);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 349.00, 100, 16, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 140.00, 40, 10, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 206.00, 59, 10, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 139.60, 40, 11, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-05-14', DATE'2021-05-12', 'No low ballers.', 32.00, 8, 12, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Fresh', 2000.00, 200, 13, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-10', DATE'2021-05-12', 'Limited Stock.', 38.87, 13, 14, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-06-10', DATE'2021-05-12', 'Selling quick.', 40.00, 4, 15, 2);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-07-10', DATE'2021-05-12', 'Limited Edition', 349.00, 100, 16, 2);
 
 /* Listings for Business 3 (8) */
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 88.00, 40, 19, 3);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 130.00, 59, 19, 3);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 130.00, 40, 20, 3);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-05-14', DATE'2021-05-12', 'No low ballers.', 69.69, 8, 21, 3);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-12', DATE'2021-05-12', 'Fresh', 740.00, 200, 22, 3);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-09-10', DATE'2021-05-12', 'Limited Stock.', 120.00, 13, 23, 3);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-06-10', DATE'2021-05-12', 'Selling quick.', 11.96, 4, 24, 3);
-INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2021-07-10', DATE'2021-05-12', 'Limited Edition', 249.00, 100, 25, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 88.00, 40, 19, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Willing to accept lower offers.', 130.00, 59, 19, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-06-10', DATE'2021-05-12', 'Willing to accept lower offers.', 130.00, 40, 20, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-05-14', DATE'2021-05-12', 'No low ballers.', 69.69, 8, 21, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-12', DATE'2021-05-12', 'Fresh', 740.00, 200, 22, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-09-10', DATE'2021-05-12', 'Limited Stock.', 120.00, 13, 23, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-06-10', DATE'2021-05-12', 'Selling quick.', 11.96, 4, 24, 3);
+INSERT INTO `listing` (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (DATE'2022-07-10', DATE'2021-05-12', 'Limited Edition', 249.00, 100, 25, 3);
 
 /* Keywords (15) */
 INSERT INTO `keyword` (`id`, `created`, `name`) VALUES (1, '2021-04-22 11:28:29', 'Coffee');
