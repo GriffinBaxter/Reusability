@@ -158,7 +158,7 @@ describe("Tests for toListing function", () => {
             }
         });
         await wrapper.vm.$nextTick();
-        await wrapper.find('#bookmark-message-container-1').trigger("click");
+        await wrapper.find('#bookmark-message-link-1').trigger("click");
         await wrapper.vm.$nextTick();
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/listings/1`});

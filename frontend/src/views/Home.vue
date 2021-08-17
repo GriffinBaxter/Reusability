@@ -33,7 +33,7 @@
                    style="margin-left: 0; margin-right: 0"
                    v-for="message in bookmarkMessages" v-bind:key="message.id">
 
-                <div class="col-11" @click="toListing(message.listingId, message.businessId)">
+                <div :id="'bookmark-message-link-' + message.id" class="col-11" @click="toListing(message.listingId, message.businessId)">
                   <!--Bookmarked listing message description-->
                   <div>
                     <p class="post-description">
