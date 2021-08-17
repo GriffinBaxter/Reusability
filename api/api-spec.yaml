@@ -1909,7 +1909,7 @@ components:
           description: The IDs of keywords that will be associated with a card once it is created. These keywords are created through the POST /keywords endpoints (UCM6).
           items:
             type: integer
-            example: [ 20, 15, 600 ]
+            example: 20, 15, 600
 
     Listing:
       type: object
