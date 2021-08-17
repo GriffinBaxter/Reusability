@@ -1852,6 +1852,9 @@ class ListingResourceIntegrationTests {
         given(inventoryItemRepository.findInventoryItemById(inventoryItem.getId())).willReturn(Optional.ofNullable(inventoryItem));
 
         // when
+        when(soldListingRepository.save(any(SoldListing.class))).thenReturn(soldListing);
+        when(listingNotificationRepository.save(any(ListingNotification.class))).thenReturn(listingNotification);
+        when(inventoryItemRepository.save(inventoryItem)).thenReturn(inventoryItem);
         response = mvc.perform(put(String.format("/listings/%d/buy", listing.getId()))
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
