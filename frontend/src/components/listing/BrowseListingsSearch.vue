@@ -264,7 +264,7 @@ export default {
         this.endDate = temp
       }
       
-      this.fixPriceInput()
+      [this.lowestPrice, this.highestPrice] = this.validatePriceInput(this.lowestPrice, this.highestPrice)
 
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
@@ -344,39 +344,43 @@ export default {
 
     /**
      * Checks that the price entered is a positive number and that the first number is smaller than the second, and
-     * fixes the price input if required.
+     * fixes the price input if required, and then returns the new lowest and highest prices.
+     * @param lowestPrice lowest price
+     * @param highestPrice highest price
      */
-    fixPriceInput() {
+    validatePriceInput(lowestPrice, highestPrice) {
       // sets prices to 0 if they are negative
-      if (!(this.lowestPrice == null || this.lowestPrice === "")) {
-        if (parseFloat(this.lowestPrice) < 0) {
-          this.lowestPrice = "0"
+      if (!(lowestPrice == null || lowestPrice === "")) {
+        if (parseFloat(lowestPrice) < 0) {
+          lowestPrice = "0"
         }
       }
-      if (!(this.highestPrice == null || this.highestPrice === "")) {
-        if (parseFloat(this.highestPrice) < 0) {
-          this.highestPrice = "0"
+      if (!(highestPrice == null || highestPrice === "")) {
+        if (parseFloat(highestPrice) < 0) {
+          highestPrice = "0"
         }
       }
       
       // sets lowest price to 0 if there is a highest price and no lowest price
       if (
-          (this.lowestPrice == null || this.lowestPrice === "") &&
-          !(this.highestPrice == null || this.highestPrice === "")
+          (lowestPrice == null || lowestPrice === "") &&
+          !(highestPrice == null || highestPrice === "")
       ) {
-        this.lowestPrice = "0"
+        lowestPrice = "0"
       }
       
       // swaps the highest and lowest prices if the lowest price is higher than the highest price
       if (
-          (this.lowestPrice != null && this.lowestPrice !== "") &&
-          (this.highestPrice != null && this.highestPrice !== "") &&
-          (parseFloat(this.lowestPrice) > parseFloat(this.highestPrice))
+          (lowestPrice != null && lowestPrice !== "") &&
+          (highestPrice != null && highestPrice !== "") &&
+          (parseFloat(lowestPrice) > parseFloat(highestPrice))
       ) {
-        const temp = this.lowestPrice
-        this.lowestPrice = this.highestPrice
-        this.highestPrice = temp
+        const temp = lowestPrice
+        lowestPrice = highestPrice
+        highestPrice = temp
       }
+      
+      return [lowestPrice, highestPrice]
     },
 
     /**
