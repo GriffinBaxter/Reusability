@@ -24,32 +24,39 @@
             <!-- Bookmarked listing message -->
             <div id="bookmark-messages-container" v-if="hasDataLoaded">
               <div v-if="bookmarkMessages.length === 0 && rendered">
-                <h2 style="text-align: center">(No Bookmarked Messages)</h2>
+                <h2 id="no-bookmark-message" style="text-align: center">(No Bookmarked Messages)</h2>
               </div>
 
               <div :id="'bookmark-message-container-' + message.id"
-                   class="post shadow py-3 px-4"
+                   class="row post shadow py-3 px-4"
                    type="button"
-                   v-for="message in bookmarkMessages" v-bind:key="message.id"
-                   @click="toListing(message.listingId, message.businessId)">
+                   style="margin-left: 0; margin-right: 0"
+                   v-for="message in bookmarkMessages" v-bind:key="message.id">
+
+                <div :id="'bookmark-message-link-' + message.id" class="col-11" @click="toListing(message.listingId, message.businessId)">
+                  <!--Bookmarked listing message description-->
+                  <div>
+                    <p class="post-description">
+                      {{ message.description }}</p>
+                  </div>
+                  <!--Listing close date-->
+                  <p class="py-1">
+                    <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
+                  </p>
+                  <!--Date/time of message-->
+                  <p class="py-1">
+                    <label class="bookmark-message-title">Notification Date:</label>
+                    {{ formatDateVar(message.created, true) }}
+                  </p>
+                </div>
 
                 <!--Delete button for bookmarked listing message-->
-                <div id="delete-btn-container">
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="deleteMessage(message.id)"></button>
+                <div class="col-1" id="delete-btn-container" style="position: relative;">
+                  <button :id="'delete-bookmark-message-button-' + message.id"
+                          type="button"
+                          class="btn-close"
+                          @click="deleteMessage(message.id)"/>
                 </div>
-                <!--Bookmarked listing message description-->
-                <div>
-                  <p class="post-description">
-                    {{message.description}}</p>
-                </div>
-                <!--Listing close date-->
-                <p class="py-1">
-                  <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
-                </p>
-                <!--Date/time of message-->
-                <p class="py-1">
-                  <label class="bookmark-message-title">Notification Date:</label> {{ formatDateVar(message.created, true) }}
-                </p>
               </div>
             </div>
             <!--     Loading Dotes     -->
@@ -142,7 +149,19 @@ export default {
      * @param messageId the id of the bookmarked listing message to delete
      */
     deleteMessage(messageId) {
-      // TODO
+      Api.deleteBookmarkMessage(messageId)
+          .then(() => {
+            let newBookmarkList = [];
+            this.bookmarkMessages.forEach((message) => {
+              if (message.id !== messageId) {
+                newBookmarkList.push(message);
+              }
+            })
+            this.bookmarkMessages = newBookmarkList;
+          })
+          .catch((error) => {
+            console.log(error);
+          })
     }
   }
 }

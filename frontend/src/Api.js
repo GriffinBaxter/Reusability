@@ -353,5 +353,11 @@ export default {
         return instance.put(`/listings/${id}/buy`, {}, {
             withCredentials: true
         })
-    }
+    },
+
+    deleteBookmarkMessage: (id) => {
+        return instance.delete(`/home/bookmarkMessages/${id}`, {
+            withCredentials: true
+        })
+    },
 }
