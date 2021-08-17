@@ -165,6 +165,7 @@ describe("Testing the update inventory item functionality", () => {
                 },
             });
 
+        updateInventoryItemWrapper.vm.$data.allProducts = [{name: "NAME"}]
         updateInventoryItemWrapper.vm.newInventoryItem = new InventoryItem(inventoryItem);
         const returnData = await updateInventoryItemWrapper.vm.validateFields();
 
@@ -270,6 +271,7 @@ describe("Testing the update inventory item functionality", () => {
             });
 
         updateInventoryItemWrapper.vm.newInventoryItem = new InventoryItem(inventoryItem);
+        updateInventoryItemWrapper.vm.$data.allProducts = [{name: "NAME"}]
 
         const data = {
             response: {
@@ -333,6 +335,7 @@ describe("Testing the update inventory item functionality", () => {
                 },
             });
 
+        updateInventoryItemWrapper.vm.$data.allProducts = [{name: "NAME"}]
         updateInventoryItemWrapper.vm.newInventoryItem = new InventoryItem(inventoryItem);
 
         const data = {
@@ -395,6 +398,7 @@ describe("Testing the update inventory item functionality", () => {
             });
 
         updateInventoryItemWrapper.vm.newInventoryItem = new InventoryItem(inventoryItem);
+        updateInventoryItemWrapper.vm.$data.allProducts = [{name: "NAME"}]
 
         const data = {
             response: {
@@ -456,6 +460,7 @@ describe("Testing the update inventory item functionality", () => {
             });
 
         updateInventoryItemWrapper.vm.newInventoryItem = new InventoryItem(inventoryItem);
+        updateInventoryItemWrapper.vm.$data.allProducts = [{name: "NAME"}]
 
         const data = {
             response: {
