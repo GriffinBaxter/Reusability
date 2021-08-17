@@ -93,6 +93,12 @@
           </router-link>
         </li>
 
+        <li class="a-nav-item">
+          <router-link to="/browseListings" class="router-nav-link" active-class="active-link">
+            <i class="side-nav-link-icon fas fa-user-alt"></i>Browse Listings
+          </router-link>
+        </li>
+
         <li class="a-nav-item" v-if="!isActAsBusiness">
           <router-link to="/marketplace" class="router-nav-link" active-class="active-link">
             <i class="side-nav-link-icon fas fa-store"></i>Marketplace
@@ -118,6 +124,11 @@
               <li class="a-nav-item">
                 <router-link :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" class="router-nav-link" active-class="active-link">
                   Catalogue
+                </router-link>
+              </li>
+              <li class="a-nav-item">
+                <router-link :to="'/businessProfile/' + businessAccountId + '/saleHistory'" class="router-nav-link" active-class="active-link">
+                  Sale History
                 </router-link>
               </li>
             </ul>
@@ -880,7 +891,6 @@ export default {
       background-color: white;
       box-shadow: 2px 10px 1rem #00000030;
       padding: 1rem 3rem 0 1.75rem;
-      width: 13rem;
       height: 100vh;
       top: 8.5rem;
       left: 0;
