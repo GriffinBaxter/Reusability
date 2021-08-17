@@ -34,45 +34,40 @@
         </h2>
 
         <div :id="'collapse_' + notification.id"
-             v-if="notification.marketCardId !== null"
              class="accordion-collapse collapse"
              :aria-labelledby="'heading_' + notification.id"
              data-bs-parent="#notificationAccordion">
-          <div class="accordion-body">
+          <div class="row accordion-body">
 
             <!-- marketplace card notifications -->
-            <div class="row" v-if="notification.notificationType === 'MARKETPLACE'">
-              <div class="col" style="float: contour; text-align: center">
-                <button :id="'delete_button_card_' + notification.id"
-                        class="btn btn-outline-danger"
-                        @click="deleteCard(notification.marketCardId)">
-                  Delete Card
-                </button>
-              </div>
-              <div class="col">
-                <button :id="'extend_button_card_' + notification.id"
-                        class="btn btn-outline-success"
-                        @click="extendCardForDisplayPeriod(notification.marketCardId)">
-                  Extend Card for 2 Weeks
-                </button>
-              </div>
+            <div class="col-4" style="float: contour; text-align: center" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
+              <button :id="'delete_button_card_' + notification.id"
+                      class="btn btn-outline-danger"
+                      @click="deleteCard(notification.marketCardId)">
+                Delete Card
+              </button>
+            </div>
+            <div class="col-5" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
+              <button :id="'extend_button_card_' + notification.id"
+                      class="btn btn-outline-success"
+                      @click="extendCardForDisplayPeriod(notification.marketCardId)">
+                Extend Card for 2 Weeks
+              </button>
             </div>
 
             <!-- keyword notification -->
-            <div class="row" v-else-if="notification.notificationType === 'KEYWORD'">
-              <div class="col" style="float: contour; text-align: center">
-                <button :id="'delete_button_keyword_' + notification.id"
-                        class="btn btn-outline-danger"
-                        @click="deleteKeyword(notification.keywordId)">
-                  Delete Keyword
-                </button>
-              </div>
+            <div class="col" style="float: contour; text-align: center" v-else-if="notification.notificationType === 'KEYWORD'">
+              <button :id="'delete_button_keyword_' + notification.id"
+                      class="btn btn-outline-danger"
+                      @click="deleteKeyword(notification.keywordId)">
+                Delete Keyword
+              </button>
             </div>
 
-            <!-- listing notification -->
-            <div class="row" v-else>
-              <div class="col" style="float: contour; text-align: center">
-              </div>
+            <div class="col">
+              <button class="btn btn-outline-dark" :id="'delete_notification' + notification.id" @click="deleteNotification(notification)">
+                Delete notification
+              </button>
             </div>
 
           </div>
@@ -190,6 +185,17 @@ export default {
       Api.deleteExistingKeyword(id)
           .then(() => this.loadNotifications())
           .catch((error) => this.errorCatcher(error));
+    },
+    /**
+     * Deletes a notification for the user then re-calls loadNotifications().
+     * @param notification notification to delete
+     */
+    deleteNotification(notification) {
+      Api.deleteNotification(notification.id, notification.notificationType).then(()=> {
+          this.loadNotifications();
+      }).catch( err => {
+          console.log(err)
+      })
     }
   },
   beforeMount() {

@@ -366,5 +366,11 @@ export default {
         return instance.get(`/businesses/${businessId}/soldListings?page=${page}`, {
             withCredentials: true
         })
-    }
+    },
+
+    deleteNotification: (id, notificationType) => {
+        return instance.delete(`/notifications/${id}?notificationType=${notificationType}`, {
+            withCredentials: true
+        })
+    },
 }
