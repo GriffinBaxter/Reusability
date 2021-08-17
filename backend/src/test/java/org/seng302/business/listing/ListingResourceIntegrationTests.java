@@ -1839,7 +1839,7 @@ class ListingResourceIntegrationTests {
     }
 
     /**
-     * Test that when buying a listing as a User and an administrator of the business, a FORBIDDEN status is received.
+     * Test that when buying a listing as a User and an administrator of the business, a OK status is received.
      *
      * @throws Exception Exception error
      */
