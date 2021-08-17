@@ -52,25 +52,25 @@
             <!--  match seller type -->
             <div class="business-radio-container my-3 py-2">
               <div class="form-check radio-padding-left">
-                <input class="form-check-input" type="radio" name="business-type-radios" value="ACCOMMODATION_AND_FOOD_SERVICES" id="radio-accommodation">
+                <input class="form-check-input" type="checkbox" name="business-type-radios" value="ACCOMMODATION_AND_FOOD_SERVICES" id="radio-accommodation">
                 <label class="form-check-label" for="radio-accommodation">
                   Accommodation and Food Services
                 </label>
               </div>
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="business-type-radios" value="RETAIL_TRADE" id="radio-retail">
+                <input class="form-check-input " type="checkbox" name="business-type-radios" value="RETAIL_TRADE" id="radio-retail">
                 <label class="form-check-label" for="radio-retail">
                   Retail Trade
                 </label>
               </div>
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="business-type-radios" value="CHARITABLE_ORGANISATION" id="radio-charitable">
+                <input class="form-check-input " type="checkbox" name="business-type-radios" value="CHARITABLE_ORGANISATION" id="radio-charitable">
                 <label class="form-check-label" for="radio-charitable">
                   Charitable Organisation
                 </label>
               </div>
               <div class="form-check radio-padding-left">
-                <input class="form-check-input " type="radio" name="business-type-radios" value="NON_PROFIT_ORGANISATION" id="radio-non-profit">
+                <input class="form-check-input " type="checkbox" name="business-type-radios" value="NON_PROFIT_ORGANISATION" id="radio-non-profit">
                 <label class="form-check-label" for="radio-non-profit">
                   Non-profit Organisation
                 </label>
@@ -163,10 +163,10 @@
               <form>
                 <div class="form-group" id="price-filtering-container">
                   <label for="lowest-price-input" class="d-inline-block p-2">Price Range $ </label>
-                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00" v-model="lowestPrice" oninput="this.value = Math.abs(this.value)">
+                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="lowest-price-input" placeholder="0.00" v-model="lowestPrice">
 
                   <label for="highest-price-input" class="d-inline-block p-2"> to $ </label>
-                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00" v-model="highestPrice" oninput="this.value = Math.abs(this.value)">
+                  <input type="number" min="0" class="form-control filter-input d-inline-block" id="highest-price-input" placeholder="0.00" v-model="highestPrice">
                 </div>
               </form>
             </div>
@@ -235,16 +235,24 @@ export default {
      */
     getSelectedRadio(type) {
       let radios;
-      if (type === 'match') {
-        radios = document.querySelectorAll("input[name='match-radios']");
-      } else if (type === 'business') {
-        radios = document.querySelectorAll("input[name='business-type-radios']");
-      }
       let value;
 
-      for (const radio of radios) {
-        if (radio.checked) {
-          value = radio.value;
+      if (type === 'match') {
+        radios = document.querySelectorAll("input[name='match-radios']");
+
+        for (const radio of radios) {
+          if (radio.checked) {
+            value = radio.value;
+          }
+        }
+      } else if (type === 'business') {
+        radios = document.querySelectorAll("input[name='business-type-radios']");
+        value = [];
+
+        for (const radio of radios) {
+          if (radio.checked) {
+            value.push(radio.value);
+          }
         }
       }
 
@@ -263,17 +271,14 @@ export default {
         this.startDate = this.endDate
         this.endDate = temp
       }
-      if (!this.validatePriceInput(this.lowestPrice, this.highestPrice)) {
-        const temp = this.lowestPrice
-        this.lowestPrice = this.highestPrice
-        this.highestPrice = temp
-      }
+      
+      [this.lowestPrice, this.highestPrice] = this.validatePriceInput(this.lowestPrice, this.highestPrice)
 
       const searchQuery = this.$refs.searchInput.value;
       const searchType = this.getSelectedRadio('match');
       const orderBy = this.orderByOption;
       const page = 1;
-      const businessType = this.getSelectedRadio('business');
+      const businessTypes = this.getSelectedRadio('business');
       const minimumPrice = this.lowestPrice;
       const maximumPrice = this.highestPrice;
       let fromDate = this.startDate;
@@ -290,7 +295,7 @@ export default {
           searchType !== this.$route.query.searchType ||
           orderBy !== this.$route.query.orderBy ||
           String(page) !== this.$route.query.page ||
-          businessType !== this.$route.query.businessType ||
+          businessTypes !== this.$route.query.businessTypes ||
           minimumPrice !== this.$route.query.minimumPrice ||
           maximumPrice !== this.$route.query.maximumPrice ||
           fromDate !== this.$route.query.fromDate ||
@@ -299,7 +304,7 @@ export default {
         this.$router.push({
           path: '/browseListings', query: {
             searchQuery: searchQuery, searchType: searchType,
-            orderBy: orderBy, page: page, businessType: businessType,
+            orderBy: orderBy, page: page, businessTypes: businessTypes,
             minimumPrice: minimumPrice, maximumPrice: maximumPrice,
             fromDate: fromDate, toDate: toDate
           }
@@ -346,19 +351,44 @@ export default {
     },
 
     /**
-     * Checks that the price entered is a positive number.
-     * If both prices are provided, then the first must be smaller than the second and non-negative
-     * Returns true if condition met
-     * @param firstPrice first price
-     * @param secondPrice second price
-     * @return {boolean}
+     * Checks that the price entered is a positive number and that the first number is smaller than the second, and
+     * fixes the price input if required, and then returns the new lowest and highest prices.
+     * @param lowestPrice lowest price
+     * @param highestPrice highest price
      */
-    validatePriceInput(firstPrice, secondPrice) {
-      if (firstPrice != null && secondPrice != null) {
-        return parseFloat(firstPrice) <= parseFloat(secondPrice)
-      } else {
-        return true
+    validatePriceInput(lowestPrice, highestPrice) {
+      // sets prices to 0 if they are negative
+      if (!(lowestPrice == null || lowestPrice === "")) {
+        if (parseFloat(lowestPrice) < 0) {
+          lowestPrice = "0"
+        }
       }
+      if (!(highestPrice == null || highestPrice === "")) {
+        if (parseFloat(highestPrice) < 0) {
+          highestPrice = "0"
+        }
+      }
+      
+      // sets lowest price to 0 if there is a highest price and no lowest price
+      if (
+          (lowestPrice == null || lowestPrice === "") &&
+          !(highestPrice == null || highestPrice === "")
+      ) {
+        lowestPrice = "0"
+      }
+      
+      // swaps the highest and lowest prices if the lowest price is higher than the highest price
+      if (
+          (lowestPrice != null && lowestPrice !== "") &&
+          (highestPrice != null && highestPrice !== "") &&
+          (parseFloat(lowestPrice) > parseFloat(highestPrice))
+      ) {
+        const temp = lowestPrice
+        lowestPrice = highestPrice
+        highestPrice = temp
+      }
+      
+      return [lowestPrice, highestPrice]
     },
 
     /**
