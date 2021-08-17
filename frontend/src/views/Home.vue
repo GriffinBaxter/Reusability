@@ -24,7 +24,7 @@
             <!-- Bookmarked listing message -->
             <div id="bookmark-messages-container" v-if="hasDataLoaded">
               <div v-if="bookmarkMessages.length === 0 && rendered">
-                <h2 style="text-align: center">(No Bookmarked Messages)</h2>
+                <h2 id="no-bookmark-message" style="text-align: center">(No Bookmarked Messages)</h2>
               </div>
 
               <div :id="'bookmark-message-container-' + message.id"
