@@ -7,13 +7,15 @@ import org.seng302.model.*;
 import org.seng302.model.repository.*;
 import org.seng302.view.outgoing.SoldListingNotificationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.management.Notification;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -121,5 +123,48 @@ public class NotificationResource {
         }
 
         return soldListingNotificationPayloads;
+    }
+
+    /**
+     * DELETE endpoint for deleting a notification, given the notification id.
+     *
+     * @param id The ID of the notification you'd like to delete.
+     * @param sessionToken The token used to identify the user.
+     * @throws Exception Exception
+     */
+    @DeleteMapping("/users/notifications/{id}")
+    @Transactional
+    @ResponseStatus(code = HttpStatus.OK, reason = "Keyword Successfully deleted")
+    public void deleteNotification(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
+    ) throws Exception {
+        //401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User (Id: {}) received.", currentUser.getId());
+
+        //403
+        // Checks user is GAA/DGAA if notification is only for GAA/DGAA
+        if (!Authorization.isGAAorDGAA(currentUser)) {
+            logger.error("Notification Deletion Error - 403 [FORBIDDEN] - User doesn't have permissions to delete notification");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid permissions to delete notifications");
+        }
+        // Check user is user for other notifications
+        // TODO
+
+        logger.debug("Notification Deletion Update - User has permissions to delete notifications");
+
+        Optional<Notification> notification = notificationRepository.findById(id);
+
+        //406
+        if (notification.isEmpty()) {
+            logger.error("Notification Deletion Error - 400 [BAD_REQUEST] - Notification at ID {} not found", id);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Notification not found");
+        }
+
+        logger.debug("Notification Deletion Update - Notification found");
+
+        // TODO: delete Notification
+
+
     }
 }
