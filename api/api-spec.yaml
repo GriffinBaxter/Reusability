@@ -1462,6 +1462,9 @@ paths:
             * KEYWORD
 
             * LISTING
+
+            * SOLD_LISTING
+
       responses:
         '200':
           description: Notification successfully deleted
