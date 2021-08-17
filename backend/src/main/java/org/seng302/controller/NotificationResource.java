@@ -136,35 +136,85 @@ public class NotificationResource {
     @Transactional
     @ResponseStatus(code = HttpStatus.OK, reason = "Keyword Successfully deleted")
     public void deleteNotification(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer id,
+            @RequestParam String type
     ) throws Exception {
         //401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         logger.debug("User (Id: {}) received.", currentUser.getId());
 
-        //403
-        // Checks user is GAA/DGAA if notification is only for GAA/DGAA
-        if (!Authorization.isGAAorDGAA(currentUser)) {
-            logger.error("Notification Deletion Error - 403 [FORBIDDEN] - User doesn't have permissions to delete notification");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid permissions to delete notifications");
+        if (type == "KEYWORD") {
+            //403
+            // Checks user is GAA/DGAA if notification is only for GAA/DGAA
+            if (!Authorization.isGAAorDGAA(currentUser)) {
+                logger.error("Notification Deletion Error - 403 [FORBIDDEN] - User doesn't have permissions to delete notification");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid permissions to delete notifications");
+            }
         }
-        // Check user is user for other notifications
-        // TODO
 
         logger.debug("Notification Deletion Update - User has permissions to delete notifications");
 
-        Optional<Notification> notification = notificationRepository.findById(id);
+        if (type == "KEYWORD") {
+            //406
+            Optional<KeywordNotification> notification = keywordNotificationRepository.findById(id);
+            if (notification.isEmpty()) {
+                logger.error("Keyword Notification Deletion Error - 400 [BAD_REQUEST] - Keyword Notification at ID {} not found", id);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keyword Notification not found");
+            }
+            keywordNotificationRepository.deleteById(id);
+            logger.debug("Keyword Notification Deletion Update - Notification found");
 
-        //406
-        if (notification.isEmpty()) {
-            logger.error("Notification Deletion Error - 400 [BAD_REQUEST] - Notification at ID {} not found", id);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Notification not found");
+        } else if (type == "LISTING") {
+            //406
+            Optional<ListingNotification> optionalListingNotification = listingNotificationRepository.findById(id);
+            if (optionalListingNotification.isEmpty()) {
+                logger.error("Listing Notification Deletion Error - 400 [BAD_REQUEST] - Listing Notification at ID {} not found", id);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Listing Notification not found");
+            }
+
+            //remove user from notification subscription list
+            ListingNotification listingNotification = optionalListingNotification.get();
+            List<User> users = listingNotification.getUsers();
+
+            if (users.contains(currentUser)) {
+                users.remove(currentUser);
+                listingNotification.setUsers(users);
+                listingNotificationRepository.save(listingNotification);
+            } else {
+                //406
+                logger.error("Listing Notification Deletion Error - 400 [BAD_REQUEST] - User at ID {} not subscribed to listing notification", currentUser.getId());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not subscribed to listing notification");
+            }
+
+            //list is empty, so delete notification
+            if (users.isEmpty()) {
+                listingNotificationRepository.deleteById(id);
+            }
+
+            logger.debug("Listing Notification Deletion Update - Notification found");
+
+        } else if (type == "SOLD_LISTING") {
+            //406
+            Optional<SoldListingNotification> notification = soldListingNotificationRepository.findById(id);
+            if (notification.isEmpty()) {
+                logger.error("Sold Listing Notification Deletion Error - 400 [BAD_REQUEST] - Sold Listing Notification at ID {} not found", id);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sold Listing Notification not found");
+            }
+            soldListingNotificationRepository.deleteById(id);
+            logger.debug("Sold Listing Notification Deletion Update - Notification found");
+
+        } else if (type == "MARKETPLACE") {
+            //406
+            Optional<MarketCardNotification> notification = marketCardNotificationRepository.findById(id);
+            if (notification.isEmpty()) {
+                logger.error("Marketplace Card Notification Deletion Error - 400 [BAD_REQUEST] - Marketplace Card Notification at ID {} not found", id);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Marketplace Card Notification not found");
+            }
+            marketCardNotificationRepository.deleteById(id);
+            logger.debug("Marketplace Card Notification Deletion Update - Notification found");
+
         }
-
-        logger.debug("Notification Deletion Update - Notification found");
-
-        // TODO: delete Notification
-
 
     }
 }
