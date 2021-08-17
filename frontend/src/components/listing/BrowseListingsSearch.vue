@@ -104,49 +104,64 @@
 
                 <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                   <!--order by price-->
-                  <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
                           @click="setOrderByOption('priceASC')">
                     Price Low
-                  </button>
-                  <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  </li>
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
                           @click="setOrderByOption('priceDESC')">
                     Price High
-                  </button>
+                  </li>
 
                   <!--order by product name-->
-                  <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
                           @click="setOrderByOption('productNameASC')">
-                    Product Name
-                  </button>
+                    Product Name A-Z
+                  </li>
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
+                          @click="setOrderByOption('productNameDESC')">
+                    Product Name Z-A
+                  </li>
 
                   <!--order by country-->
-                  <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
                           @click="setOrderByOption('countryASC')">
-                    Country
-                  </button>
+                    Country A-Z
+                  </li>
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
+                          @click="setOrderByOption('countryDESC')">
+                    Country Z-A
+                  </li>
 
                   <!--order by city-->
-                  <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
                           @click="setOrderByOption('cityASC')">
-                    City
-                  </button>
+                    City A-Z
+                  </li>
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
+                          @click="setOrderByOption('cityDESC')">
+                    City Z-A
+                  </li>
 
                   <!--order by expiry date-->
-                  <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
                           @click="setOrderByOption('expiryDateASC')">
                     Expiry Date Earliest
-                  </button>
-                  <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  </li>
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
                           @click="setOrderByOption('expiryDateDESC')">
                     Expiry Date Latest
-                  </button>
+                  </li>
 
                   <!--order by seller name-->
-                  <button type="button" class="btn green-button-transparent col-12 order-by-options-btn"
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
                           @click="setOrderByOption('sellerNameASC')">
-                    Seller Name
-                  </button>
-
+                    Seller Name A-Z
+                  </li>
+                  <li class="btn green-button-transparent col-12 order-by-options-btn"
+                          @click="setOrderByOption('sellerNameDESC')">
+                    Seller Name Z-A
+                  </li>
                 </ul>
               </div>
 
