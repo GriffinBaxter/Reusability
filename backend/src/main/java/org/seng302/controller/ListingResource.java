@@ -622,14 +622,6 @@ public class ListingResource {
         String nameOfProduct = listing.getInventoryItem().getProduct().getName();
         logger.debug("Listing {} retrieved, ID: {}.", nameOfProduct, listing.getId());
 
-        if (currentUser.getBusinessesAdministered().contains(listing.getBusinessId())) {
-            logger.error("403 [FORBIDDEN] - Cannot purchase your own listing");
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Cannot purchase your own listing"
-            );
-        }
-
         Optional<Business> optionalBusiness = businessRepository.findBusinessById(listing.getBusinessId());
         if (optionalBusiness.isEmpty()) {
             logger.error("500 [INTERNAL SERVER ERROR] - Business with ID {} for listing with ID {} does not exist", listing.getBusinessId(), id);
