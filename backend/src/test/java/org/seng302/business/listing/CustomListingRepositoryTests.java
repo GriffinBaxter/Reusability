@@ -393,7 +393,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, BusinessType.RETAIL_TRADE, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -593,7 +593,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, BusinessType.RETAIL_TRADE, 5.0, 50.0, fromDate, toDate);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), 5.0, 50.0, fromDate, toDate);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -624,7 +624,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, BusinessType.RETAIL_TRADE, 5.0, 50.0, fromDate, toDate);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), 5.0, 50.0, fromDate, toDate);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();

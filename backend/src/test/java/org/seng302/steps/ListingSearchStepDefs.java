@@ -474,12 +474,12 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, convertedBusinessType, null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
-                .param("businessType", businessType)
+                .param("businessTypes", businessType)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
     }
 

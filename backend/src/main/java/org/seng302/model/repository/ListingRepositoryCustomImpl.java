@@ -27,7 +27,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      *
      * @param names        A list of product names.
      * @param pageable     A pageable object containing the requested page number, the number of results in a page and a sort object.
-     * @param businessType The type of a business to search for. (Optional)
+     * @param businessTypes The types of businesses to search for. (Optional)
      * @param minimumPrice Lower end of prices to include in search. (Optional)
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
@@ -41,7 +41,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
     @Override
     public Page<Listing> findAllListingsByProductName(
             List<String> names, Pageable pageable,
-            BusinessType businessType,
+            List<BusinessType> businessTypes,
             Double minimumPrice, Double maximumPrice,
             LocalDateTime fromDate, LocalDateTime toDate
     ) {
@@ -53,7 +53,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         ArrayList<Predicate> predicates = getNamePredicates(names, namePath, criteriaBuilder);
 
-        return getListings(pageable, businessType, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -61,7 +61,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      *
      * @param locations    A list of locations
      * @param pageable     A pageable object containing the requested page number, the number of results in a page and a sort object.
-     * @param businessType The type of a business to search for. (Optional)
+     * @param businessTypes The types of businesses to search for. (Optional)
      * @param minimumPrice Lower end of prices to include in search. (Optional)
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
@@ -73,7 +73,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * Postconditions: A page object containing all matching listing results.
      */
     @Override
-    public Page<Listing> findAllListingsByLocation(List<String> locations, Pageable pageable, BusinessType businessType, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
+    public Page<Listing> findAllListingsByLocation(List<String> locations, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
 
@@ -96,7 +96,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(addressPath.get("country")), "%" + location.toUpperCase() + "%"));
             }
         }
-        return getListings(pageable, businessType, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -104,7 +104,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      *
      * @param names        A list of business names.
      * @param pageable     A pageable object containing the requested page number, the number of results in a page and a sort object.
-     * @param businessType The type of a business to search for. (Optional)
+     * @param businessTypes The types of businesses to search for. (Optional)
      * @param minimumPrice Lower end of prices to include in search. (Optional)
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
@@ -116,7 +116,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * Postconditions: A page object containing all matching listing results.
      */
     @Override
-    public Page<Listing> findAllListingsByBusinessName(List<String> names, Pageable pageable, BusinessType businessType, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
+    public Page<Listing> findAllListingsByBusinessName(List<String> names, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
 
@@ -126,7 +126,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         ArrayList<Predicate> predicates = getNamePredicates(names, businessNamePath, criteriaBuilder);
 
-        return getListings(pageable, businessType, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -158,7 +158,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * Gets the page of Listings from predicates and applies the optional filters.
      *
      * @param pageable Pageable for Pagination/Sorting
-     * @param businessType Type of Business
+     * @param businessTypes Type of Businesses
      * @param minimumPrice Lower end of price range
      * @param maximumPrice Higher end of price range
      * @param fromDate Earlier date of close date range
@@ -174,13 +174,13 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      *                 query and listing are for the same place
      * Postconditions: A matching Page of Listings
      */
-    private Page<Listing> getListings(Pageable pageable, BusinessType businessType, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, CriteriaBuilder criteriaBuilder, CriteriaQuery<Listing> query, Root<Listing> listing, ArrayList<Predicate> predicates) {
+    private Page<Listing> getListings(Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, CriteriaBuilder criteriaBuilder, CriteriaQuery<Listing> query, Root<Listing> listing, ArrayList<Predicate> predicates) {
 
         // Optional filters
         ArrayList<Predicate> predicateList = new ArrayList<>();
-        if (businessType != null) {
+        if (businessTypes != null) {
             // where businessType = type
-            Predicate predicateForBusinessType = criteriaBuilder.equal(listing.get("inventoryItem").get("product").get("business").get("businessType"), businessType);
+            Predicate predicateForBusinessType = criteriaBuilder.isTrue(listing.get("inventoryItem").get("product").get("business").get("businessType").in(businessTypes));
             predicateList.add(predicateForBusinessType);
         }
         if (minimumPrice != null) {
