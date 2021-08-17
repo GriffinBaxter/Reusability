@@ -92,6 +92,13 @@
                       Catalogue
                     </router-link>
                   </li>
+                  <li class="nav-item">
+                    <router-link
+                        :class="['nav-link', isActivePath('/businessProfile/' + businessAccountId + '/saleHistory')]"
+                        :to="'/businessProfile/' + businessAccountId + '/saleHistory'" tabindex="-1">
+                      Sale History
+                    </router-link>
+                  </li>
                 </ul>
               </div>
             </li>
@@ -319,7 +326,7 @@ export default {
         Api.getNotifications()
             .then(response => this.newNotification = (response.data.length === 0))
             .catch((error) => {
-              if (error.status === 401) {
+            if (error.response.status === 401) {
                 // Missing or invalid token
                 this.$router.push({path: '/invalidtoken'});
               } else {
@@ -330,7 +337,7 @@ export default {
         Api.getBusinessNotifications(Cookies.get('actAs'))
             .then(response => this.newNotification = (response.data.length === 0))
             .catch((error) => {
-              if (error.status === 401) {
+              if (error.response.status === 401) {
                 // Missing or invalid token
                 this.$router.push({path: '/invalidtoken'});
               } else {
