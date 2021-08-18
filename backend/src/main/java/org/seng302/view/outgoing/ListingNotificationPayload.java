@@ -21,17 +21,15 @@ public class ListingNotificationPayload {
      * @param id notification id
      * @param description description of notification
      * @param created the time the notification was created
-     * @param notificationType the type of the notification
      */
     public ListingNotificationPayload(Integer id,
                                       String description,
-                                      LocalDateTime created,
-                                      NotificationType notificationType
+                                      LocalDateTime created
     ) {
         this.id = id;
         this.description = description;
         this.created = created.toString();
-        this.notificationType = notificationType.toString();
+        this.notificationType = NotificationType.LISTING.toString();
     }
 
     /**
@@ -56,6 +54,14 @@ public class ListingNotificationPayload {
      */
     public String getCreated() {
         return created;
+    }
+
+    /**
+     * Get the string representation of the notification type
+     * @return a string representing the notification type.
+     */
+    public String getNotificationType() {
+        return notificationType;
     }
 
     /**

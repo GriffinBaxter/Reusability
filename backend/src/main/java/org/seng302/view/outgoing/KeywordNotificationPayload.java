@@ -1,5 +1,7 @@
 package org.seng302.view.outgoing;
 
+import org.seng302.model.enums.NotificationType;
+
 import java.time.LocalDateTime;
 
 /**
@@ -11,6 +13,7 @@ public class KeywordNotificationPayload {
     private String description;
     private String created;
     private KeywordPayload keyword;
+    private String notificationType;
 
     /**
      * @param id                     notification id
@@ -19,13 +22,14 @@ public class KeywordNotificationPayload {
      * @param keyword                payload representation of the keyword the notification is for
      */
     public KeywordNotificationPayload(Integer id,
-                                     String description,
-                                     LocalDateTime created,
-                                     KeywordPayload keyword) {
+                                      String description,
+                                      LocalDateTime created,
+                                      KeywordPayload keyword) {
         this.id = id;
         this.description = description;
         this.created = created.toString();
         this.keyword = keyword;
+        this.notificationType = NotificationType.KEYWORD.toString();
     }
 
     public Integer getId() {
@@ -42,6 +46,10 @@ public class KeywordNotificationPayload {
 
     public KeywordPayload getKeyword() {
         return keyword;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
     }
 
     public void setId(Integer id) {
@@ -70,7 +78,8 @@ public class KeywordNotificationPayload {
                 ",\"description\":\"" + description + "\"" +
                 ",\"created\":\"" + created + "\"" +
                 ",\"keyword\":" + keyword +
-                "}";
+                ",\"notificationType\":\"" + notificationType +
+                "\"}";
     }
 
 }
