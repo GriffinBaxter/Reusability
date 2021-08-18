@@ -70,7 +70,7 @@ The backend can be tested by using the examples from the API specification (foun
 Additionally, Postman tests are provided as collections, also found within the /api directory.
 
 The steps for adding the images for using the product image Postman tests are accessed via:
-https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/Postman-Testing
+https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/Testing/Postman-Testing
 
 ## Demo User Accounts
 - Note: These demo user accounts are only available on our production server. All demo user accounts (aside from the DGAA) have the same password: Qwerty123!

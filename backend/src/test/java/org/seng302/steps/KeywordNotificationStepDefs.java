@@ -83,7 +83,8 @@ public class KeywordNotificationStepDefs extends CucumberSpringConfiguration {
     private String expectedNotificationJson = "[{\"id\":%d," +
                                                 "\"description\":\"%s\"," +
                                                 "\"created\":\"%s\"," +
-                                                "\"keyword\":%s}]";
+                                                "\"keyword\":%s," +
+                                                "\"notificationType\":\"KEYWORD\"}]";
 
     @Before
     public void createMockMvc() {
@@ -161,6 +162,6 @@ public class KeywordNotificationStepDefs extends CucumberSpringConfiguration {
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedNotificationJson, keywordNotification.getId(),
                                                                           keywordNotification.getDescription(),
                                                                           keywordNotification.getCreated(),
-                                                                          (new KeywordPayload(keyword.getId(), keyword.getName(), keyword.getCreated())).toString()));
+                                                                          (new KeywordPayload(keyword.getId(), keyword.getName(), keyword.getCreated()))));
     }
 }

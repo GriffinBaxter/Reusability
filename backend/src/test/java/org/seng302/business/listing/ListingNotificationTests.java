@@ -5,7 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.exceptions.*;
 import org.seng302.model.*;
+import org.seng302.model.enums.NotificationType;
 import org.seng302.model.enums.Role;
+import org.seng302.view.outgoing.ListingNotificationPayload;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -162,5 +164,18 @@ class ListingNotificationTests {
         user.removeListingNotification(listingNotification);
         Assertions.assertFalse(user.getListingNotifications().contains(listingNotification));
         Assertions.assertFalse(listingNotification.getUsers().contains(user));
+    }
+
+    /**
+     * Test to see whether ListingNotification is correctly converted to a ListingNotificationPayload
+     */
+    @Test
+    void isListingNotificationConvertedToPayloadCorrectlyTest() {
+        ListingNotificationPayload listingNotificationPayload  = listingNotification.toListingNotificationPayload();
+
+        Assertions.assertEquals(listingNotification.getId(), listingNotificationPayload.getId());
+        Assertions.assertEquals(listingNotification.getDescription(), listingNotificationPayload.getDescription());
+        Assertions.assertEquals(listingNotification.getCreated().toString(), listingNotificationPayload.getCreated());
+        Assertions.assertEquals(NotificationType.LISTING.toString(), listingNotificationPayload.getNotificationType());
     }
 }

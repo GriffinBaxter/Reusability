@@ -1,5 +1,7 @@
 package org.seng302.view.outgoing;
 
+import org.seng302.model.enums.NotificationType;
+
 import java.time.LocalDateTime;
 
 /**
@@ -11,6 +13,7 @@ public class MarketCardNotificationPayload {
     private String description;
     private String created;
     private MarketplaceCardPayload marketplaceCardPayload;
+    private String notificationType;
 
     /**
      * @param id                     notification id
@@ -26,6 +29,7 @@ public class MarketCardNotificationPayload {
         this.description = description;
         this.created = created.toString();
         this.marketplaceCardPayload = marketplaceCardPayload;
+        this.notificationType = NotificationType.MARKETPLACE.toString();
     }
 
     public Integer getId() {
@@ -42,6 +46,10 @@ public class MarketCardNotificationPayload {
 
     public MarketplaceCardPayload getMarketplaceCardPayload() {
         return marketplaceCardPayload;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
     }
 
     public void setId(Integer id) {
@@ -70,6 +78,7 @@ public class MarketCardNotificationPayload {
                 ",\"description\":\"" + description + "\"" +
                 ",\"created\":\"" + created + "\"" +
                 ",\"marketplaceCardPayload\":" + marketplaceCardPayload.toString() +
-                "}";
+                ",\"notificationType\":\"" + notificationType +
+                "\"}";
     }
 }
