@@ -568,7 +568,31 @@ class NotificationResourceIntegrationTests {
         assertThat(response.getErrorMessage()).isEqualTo("Access token is missing or invalid");
     }
 
-//    ----------------------------------------Notification Deletion For Keyword----------------------------------------
+    /**
+     * Test that an NOT_ACCEPTABLE status is received when a logged-in user tries to delete a notification and the type
+     * is incorrect.
+     * @throws Exception thrown if there is an error when deleting a notification.
+     */
+    @Test
+    void canNotDeleteNotificationWhenLoggedInButTypeDoesNotExist() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(keywordNotificationRepository.findById(keywordNotification.getId()))
+                .willReturn(Optional.ofNullable(keywordNotification));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/notifications/%d", keywordNotification.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+                .param("type", "INCORRECT"))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid notification type has been given.");
+    }
+
+//    ---------------------------------------- Deletion of Keyword Notifications ----------------------------------
 
     /**
      * Test that an FORBIDDEN status is received when a logged-in User try to delete a notification.
@@ -639,7 +663,7 @@ class NotificationResourceIntegrationTests {
         assertThat(response.getErrorMessage()).isEqualTo("Notifications Successfully deleted");
     }
 
-//    ----------------------------------------Notification Deletion For Listing----------------------------------------
+//    ---------------------------------------- Deletion of Listings Notifications ----------------------------------
 
     /**
      * Test that an BAD_REQUEST status is received when the notification not exist.
@@ -703,6 +727,102 @@ class NotificationResourceIntegrationTests {
         response = mvc.perform(delete(String.format("/users/notifications/%d", listingNotification.getId()))
                         .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
                         .param("type", "LISTING"))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Notifications Successfully deleted");
+    }
+
+//    ---------------------------------------- Deletion of Sold Listings Notifications ----------------------------------
+
+    /**
+     * Test that an BAD_REQUEST status is received when the notification does not exist.
+     * @throws Exception thrown if there is an error when deleting a notification.
+     */
+    @Test
+    void canNotDeleteSoldListingNotificationWhenItDoesNotExist() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(soldListingNotificationRepository.findById(soldListing.getId()))
+                .willReturn(Optional.empty());
+
+        // When
+        response = mvc.perform(delete(String.format("/users/notifications/%d", soldListingNotification.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+                .param("type", "SOLD_LISTING"))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Sold Listing Notification not found");
+    }
+
+    /**
+     * Test that an OK status is received when the user is in the subscribed list.
+     * @throws Exception thrown if there is an error when deleting a notification.
+     */
+    @Test
+    void canDeleteSoldListingNotificationWhenUserInTheList() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(soldListingNotificationRepository.findById(soldListingNotification.getId()))
+                .willReturn(Optional.ofNullable(soldListingNotification));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/notifications/%d", soldListingNotification.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+                .param("type", "SOLD_LISTING"))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Notifications Successfully deleted");
+    }
+
+//    ---------------------------------------- Deletion of Marketplace Card Notifications ------------------------------
+
+    /**
+     * Test that an BAD_REQUEST status is received when the notification does not exist.
+     * @throws Exception thrown if there is an error when deleting a notification.
+     */
+    @Test
+    void canNotDeleteMarketplaceCardNotificationWhenItDoesNotExist() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketCardNotificationRepository.findById(marketCardNotification.getId()))
+                .willReturn(Optional.empty());
+
+        // When
+        response = mvc.perform(delete(String.format("/users/notifications/%d", marketCardNotification.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+                .param("type", "MARKETPLACE"))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Marketplace Card Notification not found");
+    }
+
+    /**
+     * Test that an OK status is received when the user is in the subscribed list.
+     * @throws Exception thrown if there is an error when deleting a notification.
+     */
+    @Test
+    void canDeleteMarketplaceCardNotificationWhenUserInTheList() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(marketCardNotificationRepository.findById(marketCardNotification.getId()))
+                .willReturn(Optional.ofNullable(marketCardNotification));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/notifications/%d", marketCardNotification.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+                .param("type", "MARKETPLACE"))
                 .andReturn()
                 .getResponse();
 
