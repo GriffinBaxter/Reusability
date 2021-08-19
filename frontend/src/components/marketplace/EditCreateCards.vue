@@ -212,6 +212,9 @@ export default {
         creatorIdError: ""
       },
 
+      /** Contains the latest keyword search used to call the keyword searching API endpoint */
+      latestApiCallSearch: null,
+
       /** Contains the list of current autocompletion keywords (based on currently selected keyword) */
       autocompleteKeywords: [],
 
@@ -663,7 +666,6 @@ export default {
       const elementID = 'card-keywords-' + this.$props.currentModal;
       this.textCursorPosition = document.getElementById(elementID).selectionStart;
       this.currentKeyword = "";
-      this.autocompleteKeywords = [];
 
       let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
 
@@ -675,23 +677,29 @@ export default {
         keywordSearch = "";
       }
 
-      if (
-          currentKeywordStartEnd !== false ||
-          this.keywordsInput === "" ||
-          (this.keywordsInput.length === this.textCursorPosition &&
-          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
-      ) {
-        Api.searchKeywords(keywordSearch).then(response => {
-          let autocompleteKeywords = [];
+      if (this.latestApiCallSearch !== keywordSearch) {
+        this.autocompleteKeywords = [];
+        if (
+            currentKeywordStartEnd !== false ||
+            this.keywordsInput === "" ||
+            (this.keywordsInput.length === this.textCursorPosition &&
+            this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+        ) {
+          this.autocompleteKeywords = [];
+          Api.searchKeywords(keywordSearch).then(response => {
+            this.latestApiCallSearch = keywordSearch;
 
-          for (const keyword of response.data) {
-            if (keywordSearch !== keyword) {
-              autocompleteKeywords.push(keyword);
+            let autocompleteKeywords = [];
+
+            for (const keyword of response.data) {
+              if (keywordSearch !== keyword.name) {
+                autocompleteKeywords.push(keyword);
+              }
             }
-          }
 
-          this.autocompleteKeywords = autocompleteKeywords;
-        })
+            this.autocompleteKeywords = autocompleteKeywords;
+          })
+        }
       }
     },
     /**
