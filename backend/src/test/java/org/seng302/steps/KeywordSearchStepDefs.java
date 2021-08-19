@@ -115,7 +115,7 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
     @When("The user tries to get all keywords")
     public void userTriesToGetAllKeywords() throws Exception {
 
-        when(keywordRepository.findAllByNameIgnoreCaseContaining("")).thenReturn(List.of(keyword, keyword2, keyword3));
+        when(keywordRepository.findTop6ByNameIgnoreCaseContaining("")).thenReturn(List.of(keyword, keyword2, keyword3));
 
         response = mvc.perform(get("/keywords/search?searchQuery=")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -170,7 +170,7 @@ public class KeywordSearchStepDefs extends CucumberSpringConfiguration {
     @When("The user searches for {string}")
     public void userSearchesForX(String search) throws Exception {
 
-        when(keywordRepository.findAllByNameIgnoreCaseContaining(search)).thenReturn(List.of(keyword4, keyword5));
+        when(keywordRepository.findTop6ByNameIgnoreCaseContaining(search)).thenReturn(List.of(keyword4, keyword5));
 
         response = mvc.perform(get(String.format("/keywords/search?searchQuery=%s", search))
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))

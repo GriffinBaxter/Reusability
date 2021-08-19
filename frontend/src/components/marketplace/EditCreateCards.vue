@@ -684,9 +684,9 @@ export default {
         Api.searchKeywords(keywordSearch).then(response => {
           let autocompleteKeywords = [];
 
-          for (let i = 0; i < response.data.length && i < 5; i++) {
-            if (keywordSearch !== response.data[i].name) {
-              autocompleteKeywords.push(response.data[i]);
+          for (const keyword of response.data) {
+            if (keywordSearch !== keyword) {
+              autocompleteKeywords.push(keyword);
             }
           }
 

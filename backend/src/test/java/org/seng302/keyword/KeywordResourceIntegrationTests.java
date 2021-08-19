@@ -336,7 +336,7 @@ class KeywordResourceIntegrationTests {
                 "{\"id\":0,\"name\":\"Out\",\"created\":\"2021-01-01T01:01\"}]";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(keywords);
+        given(keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery)).willReturn(keywords);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get("/keywords/search")
@@ -358,7 +358,7 @@ class KeywordResourceIntegrationTests {
         String expectedJson = "[]";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
+        given(keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get("/keywords/search")
@@ -378,7 +378,7 @@ class KeywordResourceIntegrationTests {
         String searchQuery = "qwerty";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
+        given(keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.empty());
         response = mvc.perform(get("/keywords/search")

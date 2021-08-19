@@ -140,7 +140,7 @@ public class KeywordResource {
         // 401
         Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        List<Keyword> result = keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery);
+        List<Keyword> result = keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery);
 
         logger.info("Search Success - 200 [OK] -  Keywords retrieved for search query {}", searchQuery);
         logger.debug("Keywords Found: {}", result);

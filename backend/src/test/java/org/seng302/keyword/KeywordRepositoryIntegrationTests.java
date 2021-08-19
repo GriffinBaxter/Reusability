@@ -91,7 +91,7 @@ class KeywordRepositoryIntegrationTests {
         // given
         String substring = "ca";
         // when
-        foundKeywords = keywordRepository.findAllByNameIgnoreCaseContaining(substring);
+        foundKeywords = keywordRepository.findTop6ByNameIgnoreCaseContaining(substring);
         // then
         assertThat(foundKeywords.size()).isEqualTo(2);
         assertThat(foundKeywords.get(0)).isEqualTo(keyword1);
@@ -106,7 +106,7 @@ class KeywordRepositoryIntegrationTests {
         // given
         String substring = "xax";
         // when
-        foundKeywords = keywordRepository.findAllByNameIgnoreCaseContaining(substring);
+        foundKeywords = keywordRepository.findTop6ByNameIgnoreCaseContaining(substring);
         // then
         assertThat(foundKeywords.size()).isZero();
     }
@@ -119,7 +119,7 @@ class KeywordRepositoryIntegrationTests {
         // given
         String substring = "oO";
         // when
-        foundKeywords = keywordRepository.findAllByNameIgnoreCaseContaining(substring);
+        foundKeywords = keywordRepository.findTop6ByNameIgnoreCaseContaining(substring);
         // then
         assertThat(foundKeywords.size()).isEqualTo(2);
         assertThat(foundKeywords.get(0)).isEqualTo(keyword4);
