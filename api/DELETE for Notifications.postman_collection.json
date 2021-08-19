@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "35e134f1-c587-41b9-afc9-9f71c2c6b314",
+		"_postman_id": "cf16de4a-3ef8-4673-997c-226b8e518f2e",
 		"name": "DELETE for Notifications",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -165,6 +165,47 @@
 			]
 		},
 		{
+			"name": "SOLD LISTING 401",
+			"item": [
+				{
+					"name": "delete listing notification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"creatorId\": 21,\n  \"section\": \"ForSale\",\n  \"title\": \"1900 Lada Samara\",\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.\",\n  \"keywordIds\": [\n      14\n      ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/users/notifications/1?type=SOLD_LISTING",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"users",
+								"notifications",
+								"1"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "SOLD_LISTING"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "MARKET PLACE CARD 200",
 			"item": [
 				{
@@ -266,7 +307,48 @@
 			]
 		},
 		{
-			"name": "LISTING 200 Copy",
+			"name": "MARKET PLACE CARD 401",
+			"item": [
+				{
+					"name": "delete listing notification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"creatorId\": 21,\n  \"section\": \"ForSale\",\n  \"title\": \"1900 Lada Samara\",\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.\",\n  \"keywordIds\": [\n      14\n      ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/users/notifications/1?type=MARKETPLACE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"users",
+								"notifications",
+								"1"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "MARKETPLACE"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "LISTING 200",
 			"item": [
 				{
 					"name": "/login",
@@ -358,6 +440,47 @@
 					},
 					"response": []
 				},
+				{
+					"name": "delete listing notification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"creatorId\": 21,\n  \"section\": \"ForSale\",\n  \"title\": \"1900 Lada Samara\",\n  \"description\": \"Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar.\",\n  \"keywordIds\": [\n      14\n      ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/users/notifications/1?type=LISTING",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"users",
+								"notifications",
+								"1"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "LISTING"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "LISTING 401",
+			"item": [
 				{
 					"name": "delete listing notification",
 					"request": {
@@ -515,6 +638,38 @@
 					},
 					"response": []
 				},
+				{
+					"name": "delete keyword notification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9499/users/notifications/1?type=KEYWORD",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"users",
+								"notifications",
+								"1"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "KEYWORD"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "KEYWORD 401",
+			"item": [
 				{
 					"name": "delete keyword notification",
 					"request": {
