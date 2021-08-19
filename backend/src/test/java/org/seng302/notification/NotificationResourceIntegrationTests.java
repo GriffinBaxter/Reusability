@@ -623,7 +623,7 @@ class NotificationResourceIntegrationTests {
     }
 
     /**
-     * Test that an BAD_REQUEST status is received when the notification not exist.
+     * Test that an NOT_ACCEPTABLE status is received when the notification not exist.
      * @throws Exception thrown if there is an error when deleting a notification.
      */
     @Test
@@ -641,7 +641,7 @@ class NotificationResourceIntegrationTests {
                 .getResponse();
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getErrorMessage()).isEqualTo("Keyword Notification not found");
     }
 
@@ -671,7 +671,7 @@ class NotificationResourceIntegrationTests {
 //    ---------------------------------------- Deletion of Listings Notifications ----------------------------------
 
     /**
-     * Test that an BAD_REQUEST status is received when the notification not exist.
+     * Test that an NOT_ACCEPTABLE status is received when the notification not exist.
      * @throws Exception thrown if there is an error when deleting a notification.
      */
     @Test
@@ -689,12 +689,12 @@ class NotificationResourceIntegrationTests {
                 .getResponse();
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getErrorMessage()).isEqualTo("Listing Notification not found");
     }
 
     /**
-     * Test that an BAD_REQUEST status is received when the User not in the subscribed list.
+     * Test that an NOT_ACCEPTABLE status is received when the User not in the subscribed list.
      * @throws Exception thrown if there is an error when deleting a notification.
      */
     @Test
@@ -712,7 +712,7 @@ class NotificationResourceIntegrationTests {
                 .getResponse();
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getErrorMessage()).isEqualTo("User not subscribed to listing notification");
     }
 
@@ -743,7 +743,7 @@ class NotificationResourceIntegrationTests {
 //    ---------------------------------------- Deletion of Sold Listings Notifications ----------------------------------
 
     /**
-     * Test that an BAD_REQUEST status is received when the notification does not exist.
+     * Test that an NOT_ACCEPTABLE status is received when the notification does not exist.
      * @throws Exception thrown if there is an error when deleting a notification.
      */
     @Test
@@ -761,7 +761,7 @@ class NotificationResourceIntegrationTests {
                 .getResponse();
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getErrorMessage()).isEqualTo("Sold Listing Notification not found");
     }
 
@@ -791,7 +791,7 @@ class NotificationResourceIntegrationTests {
 //    ---------------------------------------- Deletion of Marketplace Card Notifications ------------------------------
 
     /**
-     * Test that an BAD_REQUEST status is received when the notification does not exist.
+     * Test that an NOT_ACCEPTABLE status is received when the notification does not exist.
      * @throws Exception thrown if there is an error when deleting a notification.
      */
     @Test
@@ -809,7 +809,7 @@ class NotificationResourceIntegrationTests {
                 .getResponse();
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
         assertThat(response.getErrorMessage()).isEqualTo("Marketplace Card Notification not found");
     }
 

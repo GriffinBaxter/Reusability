@@ -171,8 +171,8 @@ public class NotificationResource {
         //406
         Optional<KeywordNotification> notification = keywordNotificationRepository.findById(id);
         if (notification.isEmpty()) {
-            logger.error("Keyword Notification Deletion Error - 400 [BAD_REQUEST] - Keyword Notification at ID {} not found", id);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keyword Notification not found");
+            logger.error("Keyword Notification Deletion Error - 406 [NOT_ACCEPTABLE] - Keyword Notification at ID {} not found", id);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Keyword Notification not found");
         }
         logger.debug("Keyword Notification Deletion Update - Notification found");
 
@@ -184,8 +184,8 @@ public class NotificationResource {
         //406
         Optional<ListingNotification> optionalListingNotification = listingNotificationRepository.findById(id);
         if (optionalListingNotification.isEmpty()) {
-            logger.error("Listing Notification Deletion Error - 400 [BAD_REQUEST] - Listing Notification at ID {} not found", id);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Listing Notification not found");
+            logger.error("Listing Notification Deletion Error - 406 [NOT_ACCEPTABLE] - Listing Notification at ID {} not found", id);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Listing Notification not found");
         }
 
         logger.debug("Listing Notification Deletion Update - Notification found");
@@ -204,8 +204,8 @@ public class NotificationResource {
             listingNotificationRepository.save(listingNotification);
         } else {
             //406
-            logger.error("Listing Notification Deletion Error - 400 [BAD_REQUEST] - User at ID {} not subscribed to listing notification", user.getId());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not subscribed to listing notification");
+            logger.error("Listing Notification Deletion Error - 406 [NOT_ACCEPTABLE] - User at ID {} not subscribed to listing notification", user.getId());
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "User not subscribed to listing notification");
         }
 
         logger.debug("Listing Notification Deletion Update - User have been remove from notice list");
@@ -220,8 +220,8 @@ public class NotificationResource {
     private void deleteSoldListingNotification(Integer id) {
         //406
         if (soldListingNotificationRepository.findById(id).isEmpty()) {
-            logger.error("Sold Listing Notification Deletion Error - 400 [BAD_REQUEST] - Sold Listing Notification at ID {} not found", id);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sold Listing Notification not found");
+            logger.error("Sold Listing Notification Deletion Error - 406 [NOT_ACCEPTABLE] - Sold Listing Notification at ID {} not found", id);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Sold Listing Notification not found");
         }
         logger.debug("Sold Listing Notification Deletion Update - Notification found");
 
@@ -232,8 +232,8 @@ public class NotificationResource {
     private void deleteMarketPlaceCardNotification(Integer id) {
         //406
         if (marketCardNotificationRepository.findById(id).isEmpty()) {
-            logger.error("Marketplace Card Notification Deletion Error - 400 [BAD_REQUEST] - Marketplace Card Notification at ID {} not found", id);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Marketplace Card Notification not found");
+            logger.error("Marketplace Card Notification Deletion Error - 406 [NOT_ACCEPTABLE] - Marketplace Card Notification at ID {} not found", id);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Marketplace Card Notification not found");
         }
         logger.debug("Marketplace Card Notification Deletion Update - Notification found");
 
