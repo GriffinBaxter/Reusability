@@ -264,9 +264,9 @@ export default {
     return {
       // Table variables
       // A list of the table headers
-      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price", "Created"],
+      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price", "Created", "Barcode"],
       // A list of the ordering by headers, which is used with talking to the backend
-      tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created"],
+      tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created", "barcode"],
       // A list of all the data points belonging to the table
       tableData: [],
       // Used to tell the table what is the current ordering (for visual purposes).
@@ -457,8 +457,6 @@ export default {
      * Parses the orderByString and returns the resulted Objects.
      * @return {{orderBy: null | String, isAscending: boolean}} This contains the {orderBy, isAscending} properties of the this.orderByString .
      * Emulates a click when the product presses enter on a column header.
-     *
-     * @param event The keydown event
      */
     parseOrderBy() {
       let orderBy = null;
@@ -532,6 +530,7 @@ export default {
             newtableData.push(this.productList[i].data.manufacturer);
             newtableData.push(this.productList[i].data.recommendedRetailPrice);
             newtableData.push(formatDate(this.productList[i].data.created));
+            newtableData.push(this.productList[i].data.barcode);
           }
 
           this.tableData = newtableData;
@@ -937,7 +936,7 @@ export default {
     this.modal = new Modal(this.$refs.CreateProductModal);
     const actAs = Cookies.get('actAs');
     if (checkAccessPermission(this.$route.params.id, actAs)) {
-      this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
+      await this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
     } else {
       /**
        * When mounted, initiate population of page.

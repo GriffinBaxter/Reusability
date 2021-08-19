@@ -41,7 +41,7 @@
           <div class="accordion-body">
 
             <!-- marketplace card notifications -->
-            <div class="row" v-if="notification.marketCardId !== undefined">
+            <div class="row" v-if="notification.notificationType === 'MARKETPLACE'">
               <div class="col" style="float: contour; text-align: center">
                 <button :id="'delete_button_card_' + notification.id"
                         class="btn btn-outline-danger"
@@ -59,7 +59,7 @@
             </div>
 
             <!-- keyword notification -->
-            <div class="row" v-else-if="notification.keywordId !== undefined">
+            <div class="row" v-else-if="notification.notificationType === 'KEYWORD'">
               <div class="col" style="float: contour; text-align: center">
                 <button :id="'delete_button_keyword_' + notification.id"
                         class="btn btn-outline-danger"
@@ -122,25 +122,28 @@ export default {
       data.forEach(notification => {
 
         // keyword notification
-        if (notification.keyword !== undefined) {
+        if (notification.notificationType === 'KEYWORD') {
           notifications.push({
             id: index,
             keywordId: notification.keyword.id,
             description: notification.description,
-            date: notification.created
+            date: notification.created,
+            notificationType: notification.notificationType
           })
-        } else if (notification.marketplaceCardPayload !== undefined) { // marketplace notification
+        } else if (notification.notificationType === 'MARKETPLACE') { // marketplace notification
           notifications.push({
             id: index,
             marketCardId: notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
             description: notification.description,
-            date: notification.created
+            date: notification.created,
+            notificationType: notification.notificationType
           })
         } else {
           notifications.push({
             id: index,
             description: notification.description,
-            date: notification.created
+            date: notification.created,
+            notificationType: notification.notificationType
           })
         }
         index += 1;
@@ -152,7 +155,6 @@ export default {
      */
     loadNotifications() {
       if (Cookies.get('actAs') !== undefined) {
-        console.log(Cookies.get('actAs'))
         Api.getBusinessNotifications(Cookies.get('actAs'))
             .then(response => this.populateNotification(response.data))
             .catch((error) => this.errorCatcher(error));

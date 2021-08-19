@@ -247,6 +247,7 @@ export default {
         this.sellByErrorMsg = "";
         this.bestBeforeErrorMsg = "";
         this.expiresErrorMsg = "";
+        this.formErrorModalMessage = "";
       }
 
       // Get all products to display in autofill
@@ -296,6 +297,20 @@ export default {
       )
       if (this.productIdErrorMsg) {
         requestIsInvalid = true
+      } else {
+        // Check if product ID exists
+        let found = false
+        for (let i = 0; i < this.allProducts.length; i++) {
+          if (this.newInventoryItem.data.productId === this.allProducts[i].id) {
+            found = true
+          }
+        }
+        if (found === false) {
+          this.productIdErrorMsg = "Product Id does not exist for business"
+          requestIsInvalid = true;
+        } else {
+          this.productIdErrorMsg = "";
+        }
       }
 
       // Quantity error checking

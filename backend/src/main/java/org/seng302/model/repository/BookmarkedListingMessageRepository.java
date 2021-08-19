@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * BookmarkedListingMessageRepository interface.
@@ -22,4 +23,10 @@ public interface BookmarkedListingMessageRepository extends JpaRepository<Bookma
      */
     List<BookmarkedListingMessage> findAllByUsersId(Integer id);
 
+    /**
+     * Search for a single bookmarked listing message from the messages ID
+     * @param id The Id of the message
+     * @return An Optional single BookmarkedListingMessage
+     */
+    Optional<BookmarkedListingMessage> findById(Integer id);
 }

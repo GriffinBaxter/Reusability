@@ -321,8 +321,8 @@ export default {
     },
 
     // Sends a GET request to the backend asking for any listings matching the given criteria (paginated)
-    searchListings: (searchQuery, searchType, orderBy, page, businessType, minimumPrice, maximumPrice, fromDate, toDate) => {
-        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessType=${businessType}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
+    searchListings: (searchQuery, searchType, orderBy, page, businessTypes, minimumPrice, maximumPrice, fromDate, toDate) => {
+        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessTypes=${businessTypes}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
             withCredentials: true
         })
     },
@@ -341,9 +341,29 @@ export default {
         })
     },
 
+    // Retrieve the bookmarked messages
+    getBookmarkedMessage: () => {
+        return instance.get(`/home/bookmarkMessages`, {
+            withCredentials: true
+        })
+    },
+
     // Buy a listing
     buyListing: (id) => {
         return instance.put(`/listings/${id}/buy`, {}, {
+            withCredentials: true
+        })
+    },
+
+    deleteBookmarkMessage: (id) => {
+        return instance.delete(`/home/bookmarkMessages/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    // Sends a GET request to the backend asking for the sold listings of a business (paginated)
+    getSoldListings: (businessId, page) => {
+        return instance.get(`/businesses/${businessId}/soldListings?page=${page}`, {
             withCredentials: true
         })
     }

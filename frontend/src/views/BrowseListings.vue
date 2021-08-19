@@ -14,7 +14,7 @@
       
       <BrowseListingsSearch  @requestListings="requestListings"/>
       <br>
-      <div id="all-listings-cards-container" class="row pb-5 mb-4">
+      <div v-if="hasDataLoaded" id="all-listings-cards-container" class="row pb-5 mb-4">
         <div class="col-md-6 col-xxl-3 col-xl-4 mb-4 mb-lg-0 d-flex justify-content-center" v-for="listing in listingList" v-bind:key="listing.id">
           <BrowseListingCard
               v-bind:id="listing.id"
@@ -25,9 +25,14 @@
               v-bind:more-info="listing.moreInfo"
               v-bind:price="listing.price"
               v-bind:quantity="listing.quantity"
-              v-bind:total-bookmarks="listing.totalBookmarks"/>
+              v-bind:total-bookmarks="listing.totalBookmarks"
+              v-bind:actingBusinessId="actingBusinessId"/>
         </div>
       </div>
+      <div v-else>
+        <LoadingDots></LoadingDots>
+      </div>
+
       <PageButtons
           v-bind:totalPages="totalPages"
           v-bind:currentPage="currentPage"
@@ -45,10 +50,12 @@ import BrowseListingCard from "../components/listing/BrowseListingCard";
 import Api from "../Api"
 import BrowseListingsSearch from '../components/listing/BrowseListingsSearch';
 import PageButtons from "../components/PageButtons";
+import LoadingDots from "../components/LoadingDots";
+import Cookies from "js-cookie";
 
 export default {
   name: "Listings",
-  components: {Footer, Navbar, BrowseListingCard, BrowseListingsSearch, PageButtons},
+  components: {LoadingDots, Footer, Navbar, BrowseListingCard, BrowseListingsSearch, PageButtons},
   data() {
     return {
       // Array that stores all retrieved listings
@@ -58,7 +65,7 @@ export default {
       searchQuery: "",
       searchType: "",
       orderBy: "",
-      businessType: "",
+      businessTypes: [],
       minimumPrice: "",
       maximumPrice: "",
       fromDate: "",
@@ -67,6 +74,10 @@ export default {
       currentPage: 0,
       totalPages: 0,
       totalRows: 0,
+
+      hasDataLoaded: false,
+
+      actingBusinessId: null,
     }
   },
   computed: {
@@ -86,7 +97,7 @@ export default {
       this.searchType = this.$route.query.searchType || '';
       this.orderBy = this.$route.query.orderBy || '';
       this.currentPage = parseInt(this.$route.query.page) - 1 || 0;
-      this.businessType = this.$route.query.businessType || '';
+      this.businessTypes = this.$route.query.businessTypes || [];
       this.minimumPrice = this.$route.query.minimumPrice || '';
       this.maximumPrice = this.$route.query.maximumPrice || '';
       this.fromDate = this.$route.query.fromDate || '';
@@ -96,9 +107,10 @@ export default {
         this.currentPage = 0
       }
 
+      this.hasDataLoaded = false;
       await Api.searchListings(
           this.searchQuery, this.searchType,
-          this.orderBy, this.currentPage, this.businessType,
+          this.orderBy, this.currentPage, this.businessTypes,
           this.minimumPrice, this.maximumPrice,
           this.fromDate, this.toDate
       ).then((response) => {
@@ -111,9 +123,10 @@ export default {
         this.notInitialLoad = true;
 
         this.listingList = [...response.data];
-
+        this.hasDataLoaded = true;
       }, (error) => {
         console.log(error)
+        this.hasDataLoaded = true;
       });
     },
     
@@ -127,7 +140,7 @@ export default {
       await this.$router.push({
         path: '/browseListings', query: {
           searchQuery: this.searchQuery, searchType: this.searchType,
-          orderBy: this.orderBy, page: (this.currentPage + 1).toString(), businessType: this.businessType,
+          orderBy: this.orderBy, page: (this.currentPage + 1).toString(), businessTypes: this.businessTypes,
           minimumPrice: this.minimumPrice, maximumPrice: this.maximumPrice,
           fromDate: this.fromDate, toDate: this.toDate
         }
@@ -138,6 +151,7 @@ export default {
 
   async mounted() {
 
+    this.actingBusinessId = Cookies.get("actAs");
     await this.requestListings();
 
   }
@@ -146,8 +160,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 
 @media (min-width: 720px) {
   #all-listings-cards-container {
