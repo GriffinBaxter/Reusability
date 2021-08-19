@@ -126,7 +126,7 @@ public class KeywordResource {
      * GET /keywords/search endpoint for searching keywords
      *
      * Preconditions: Valid JSESSIONID
-     * Postconditions: Returns a list of Keywords matching searchQuery
+     * Postconditions: Returns a list of Keywords matching searchQuery (up to 6 matches)
      *
      * @param sessionToken JSESSIONID for verifying the user is logged in
      * @param searchQuery Query for searching keyword names

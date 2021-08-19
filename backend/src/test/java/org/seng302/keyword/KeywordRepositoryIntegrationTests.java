@@ -84,7 +84,7 @@ class KeywordRepositoryIntegrationTests {
     }
 
     /**
-     * Tests findAllByNameIgnoreCaseContaining method returns a valid list of keywords with an existing substring
+     * Tests findTop6ByNameIgnoreCaseContaining method returns a valid list of keywords with an existing substring
      */
     @Test
     void whenFindAllContaining_returnsValidList() {
@@ -99,7 +99,7 @@ class KeywordRepositoryIntegrationTests {
     }
 
     /**
-     * Tests findAllByNameIgnoreCaseContaining method returns an empty list when a non-existing substring is used
+     * Tests findTop6ByNameIgnoreCaseContaining method returns an empty list when a non-existing substring is used
      */
     @Test
     void whenFindAllByUnknownQuery_returnsEmptyList() {
@@ -112,7 +112,7 @@ class KeywordRepositoryIntegrationTests {
     }
 
     /**
-     * Tests findAllByNameIgnoreCaseContaining method returns a valid list of keywords when wrong capitalization is used
+     * Tests findTop6ByNameIgnoreCaseContaining method returns a valid list of keywords when wrong capitalization is used
      */
     @Test
     void whenFindAllByRandomCase_returnValidList() {

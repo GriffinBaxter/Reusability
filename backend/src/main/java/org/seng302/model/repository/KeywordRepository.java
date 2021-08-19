@@ -22,7 +22,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Integer> {
     Optional<Keyword> findByName(String name);
 
     /**
-     * Search by partial keyword name ignoring case
+     * Search by partial keyword name ignoring case, including only up to 6 results
      * @param name Keyword name
      * @return List of keywords that fit the criteria
      */
