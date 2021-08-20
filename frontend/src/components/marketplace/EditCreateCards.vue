@@ -126,6 +126,11 @@
       </div>
 
     </form>
+
+    <div v-if="waitingForResponse">
+      <LoadingDots></LoadingDots>
+    </div>
+
   </div>
 </template>
 
@@ -135,9 +140,11 @@ import cardConfig from "../../configs/MarketplaceCard"
 import Cookies from "js-cookie";
 import User, { UserRole} from "../../configs/User"
 import Autofill from "../autofill";
+import LoadingDots from "../LoadingDots";
 
 export default {
   name: "EditCreateCardModal",
+  components: {LoadingDots},
   props: [
       'currentModal'
   ],
@@ -222,6 +229,8 @@ export default {
       newKeywordIDs: [],
 
       autofillState: 'initial',
+
+      waitingForResponse: false,
     }
   },
   methods: {
@@ -437,6 +446,8 @@ export default {
         return;
       }
 
+      this.waitingForResponse = true;
+
       // If we are not an admin then we need to update the creatorId.
       if (!this.user.isAdministrator(this.userRole)) {
         this.creatorId = Cookies.get("userID")
@@ -459,6 +470,7 @@ export default {
 
       Api.addNewCard(newCard).then(
           (res) => {
+            this.waitingForResponse = false;
             if (res.status === 201) {
               this.$emit("new-card-created");
               this.$parent.hideModal()
@@ -467,6 +479,7 @@ export default {
           }
       ).catch(
           (error) => {
+            this.waitingForResponse = false;
             if (error.response) {
               if (error.response.status === 400) {
                 this.modalError = `Error: ` + error.response.data.message;
@@ -504,6 +517,7 @@ export default {
           }
       ).catch(
           (error) => {
+            this.waitingForResponse = false;
             if (error.response) {
               if (error.response.status === 400) {
                 this.modalError = `Error: ` + error.response.data.message;
@@ -531,6 +545,8 @@ export default {
       if (!this.isCardDataValid()) {
         return;
       }
+
+      this.waitingForResponse = true;
 
       // If we are not an admin then we need to update the creatorId.
       if (!this.user.isAdministrator(this.userRole)) {
@@ -562,6 +578,7 @@ export default {
 
       Api.editCard(this.id, updatedCard).then(
           (res) => {
+            this.waitingForResponse = false;
             if (res.status === 200) {
               this.$emit("new-card-created");
               this.$parent.hideModal()
@@ -570,6 +587,7 @@ export default {
           }
       ).catch(
           (error) => {
+            this.waitingForResponse = false;
             if (error.response) {
               if (error.response.status === 400) {
                 this.modalError = `Error: ` + error.response.data.message;
