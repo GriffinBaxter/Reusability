@@ -1,12 +1,11 @@
 <template>
-  <div class="card border-dark">
+  <div class="card border-dark" id="wrapper">
 
     <div v-if="hasDataLoaded">
 
     <div class="accordion" v-if="allNoticeCards.length === 0">
       <div class="card border-dark text-white bg-secondary"
-           id="emptyMessage"
-           style="width: 300px">
+           id="emptyMessage">
         <h4 class="card-body" style="margin: 3px; float: contour; text-align: center">
           No Notifications!
         </h4>
@@ -16,7 +15,7 @@
     <div v-else
          class="accordion"
          id="notificationAccordion"
-         style="height:400px; width: 500px; overflow:auto">
+         style="height:400px; overflow:auto">
 
         <div :id="'notification_box' + notification.id"
              class="accordion-item"
@@ -228,3 +227,23 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+  #wrapper {
+    max-width: 300px;
+    width: 100%;
+    position: absolute;
+    right: 25px;
+    z-index: 999
+  }
+
+  @media screen and (max-width: 359px){
+    #wrapper {
+      width: 80vw;
+      margin: 0 auto;
+      left: 25px;
+    }
+  }
+
+</style>

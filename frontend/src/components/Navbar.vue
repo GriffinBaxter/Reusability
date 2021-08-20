@@ -13,15 +13,15 @@
             </button>
           </div>
 
-          <!-- Logo -->
-          <router-link to="/home" tabindex="-1" style="justify-content: center; align-items: center; display: flex">
+          <router-link to="/home" tabindex="-1" style="justify-content: center; align-items: center; display: flex; text-decoration: none; color: black">
+            <!-- Logo -->
             <img src="../../public/logo_only_med.png" alt="Logo" id="logo-image-nav">
-          </router-link>
 
-          <!-- Brand name-->
-          <div id="brand-name">
-            REUSEABILITY
-          </div>
+            <!-- Brand name-->
+            <div id="brand-name">
+              REUSEABILITY
+            </div>
+          </router-link>
         </div>
 
 
@@ -42,8 +42,7 @@
                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
               </svg>
             </div>
-            <Notification v-if="openNotificationBox"
-                          style="position: absolute; right: 25px; z-index: 999"/>
+            <Notification v-if="openNotificationBox" />
           </div>
 
           <!-- Act as section -->
@@ -95,7 +94,10 @@
 
         <li class="a-nav-item">
           <router-link to="/browseListings" class="router-nav-link" active-class="active-link">
-            <i class="side-nav-link-icon fas fa-user-alt"></i>Browse Listings
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket3-fill side-nav-link-icon" viewBox="0 0 16 16">
+              <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-1A.5.5 0 0 1 .5 6h1.717L5.07 1.243a.5.5 0 0 1 .686-.172zM2.468 15.426.943 9h14.114l-1.525 6.426a.75.75 0 0 1-.729.574H3.197a.75.75 0 0 1-.73-.574z"/>
+            </svg>
+            Browse Listings
           </router-link>
         </li>
 
@@ -113,21 +115,33 @@
             <ul class="is-dropdown" v-if="showBusinessDropdown">
               <li class="a-nav-item">
                 <router-link :to="'/businessProfile/' + businessAccountId + '/listings'" class="router-nav-link" active-class="active-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill side-nav-link-icon" viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                  </svg>
                   Listings
                 </router-link>
               </li>
               <li class="a-nav-item">
                 <router-link :to="'/businessProfile/' + businessAccountId + '/inventory'" class="router-nav-link" active-class="active-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-archive-fill side-nav-link-icon" viewBox="0 0 16 16">
+                    <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15h9.286zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zM.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8H.8z"/>
+                  </svg>
                   Inventory
                 </router-link>
               </li>
               <li class="a-nav-item">
                 <router-link :to="'/businessProfile/' + businessAccountId + '/productCatalogue'" class="router-nav-link" active-class="active-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-phone-landscape-fill side-nav-link-icon" viewBox="0 0 16 16">
+                    <path d="M2 12.5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H2zm11-6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                  </svg>
                   Catalogue
                 </router-link>
               </li>
               <li class="a-nav-item">
                 <router-link :to="'/businessProfile/' + businessAccountId + '/saleHistory'" class="router-nav-link" active-class="active-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-line-fill side-nav-link-icon" viewBox="0 0 16 16">
+                    <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2z"/>
+                  </svg>
                   Sale History
                 </router-link>
               </li>
@@ -678,7 +692,7 @@ export default {
 
   .active-link {
     color: #fff;
-    background-color: #ef5e33;
+    background-color: #2eda77;
     border: none;
     outline: none;
     box-shadow: none;
