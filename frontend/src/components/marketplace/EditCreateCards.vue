@@ -753,7 +753,6 @@ export default {
      */
     async getCurrentData() {
       await Api.getDetailForACard(this.id).then(response => (this.populateData(response.data))).catch((error) => {
-        console.log(error.message);
         if (error.response) {
           if (error.response.status === 400) {
             this.$router.push({path: '/pageDoesNotExist'});

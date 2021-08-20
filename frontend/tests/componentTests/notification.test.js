@@ -248,7 +248,6 @@ describe("Tests delete buttons in accordion", () => {
         await mountPage();
 
         // Then
-        console.log(wrapper.html())
         expect(wrapper.find("#delete_button_keyword_0").exists()).toBeTruthy()
     });
 

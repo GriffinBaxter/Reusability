@@ -8,8 +8,8 @@
       <div class="row" id="search-bar-container">
         <div class="input-group" id="search-inputs" style="alignment: center">
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
-          <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search"
-                                                                                                 aria-hidden="true"></i>
+          <button class="btn green-search-button" id="search-button" @click="searchClicked()">
+            <i class="fas fa-search" aria-hidden="true"/>
           </button>
           <a class="btn green-button" data-bs-toggle="collapse" href="#filter-ordering-options-container" role="button"><i
               class="fas fa-angle-double-down" aria-hidden="true"></i></a>
@@ -50,7 +50,7 @@
                 <input class="form-check-input" type="radio" name="match-radios" value="businessName"
                        id="radio-seller-name">
                 <label class="form-check-label" for="radio-seller-name">
-                  Business Name
+                  Seller Name
                 </label>
               </div>
             </div>
@@ -239,17 +239,18 @@ export default {
       orderByOption: "price",         // default
       orderBySequence: "ASC",         // default
       isASC: true,                    // default
-      ascName: "From Low Price",      // default
-      descName: "From Height Price",  // default
+      ascName: "From Lowest Price",      // default
+      descName: "From Highest Price",  // default
       orderBy: this.$route.query["orderBy"] || "priceASC", // gets orderBy from URL or (if not there) sets to default
       orderByOptionText: "Price",
-      orderBySequenceText: "From Low Price",
+      orderBySequenceText: "From Lowest Price",
       businessTypeOption: null,
       businessTypeOptionText: 'Business Type',
       lowestPrice: null,
       highestPrice: null,
       startDate: null,
-      endDate: null
+      endDate: null,
+      isTypeSame: true,
     }
   },
   methods: {
@@ -323,12 +324,23 @@ export default {
         toDate += "T00:00";
       }
 
+      // To check is business type same with last time
+      this.isTypeSame = true;
+      if (this.$route.query.businessTypes !== undefined &&
+          this.$route.query.businessTypes.length === businessTypes.length) {
+        this.$route.query.businessTypes.forEach((businessType) => {
+          if (!businessType.contains(businessType)) {
+            this.isTypeSame = false;
+          }
+        })
+      }
+
       if (
           searchQuery !== this.$route.query.searchQuery ||
           searchType !== this.$route.query.searchType ||
           orderBy !== this.$route.query.orderBy ||
           String(page) !== this.$route.query.page ||
-          businessTypes !== this.$route.query.businessTypes ||
+          !this.isTypeSame ||
           minimumPrice !== this.$route.query.minimumPrice ||
           maximumPrice !== this.$route.query.maximumPrice ||
           fromDate !== this.$route.query.fromDate ||
@@ -366,8 +378,8 @@ export default {
       this.orderByOption = orderBy
       if (this.orderByOption === "price") {
         this.orderByOptionText = "Price";
-        this.ascName = "From Low Price";
-        this.descName = "From Height Price";
+        this.ascName = "From Lowest Price";
+        this.descName = "From Highest Price";
       } else if (this.orderByOption === "productName") {
         this.orderByOptionText = "Product Name";
         this.ascName = "From A To Z";
@@ -385,7 +397,7 @@ export default {
         this.ascName = "From Earliest";
         this.descName = "From Latest";
       } else if (this.orderByOption === "sellerName") {
-        this.orderByOptionText = "Business Name";
+        this.orderByOptionText = "Seller Name";
         this.ascName = "From A To Z";
         this.descName = "From Z To A";
       }

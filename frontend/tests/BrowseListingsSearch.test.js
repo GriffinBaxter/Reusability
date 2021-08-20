@@ -252,7 +252,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             browseListingsSearchWrapper.vm.setOrderByOption("price");
             expect(browseListingsSearchWrapper.vm.orderByOption).toBe("price");
             expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Price");
-            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Low Price");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Lowest Price");
         });
 
         test('Testing that when orderBy is productNameASC, orderByOptionText is Product Name', () => {
@@ -305,7 +305,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
             browseListingsSearchWrapper.vm.setOrderByOption("sellerName");
             expect(browseListingsSearchWrapper.vm.orderByOption).toBe("sellerName");
-            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Business Name");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Seller Name");
             expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
         });
     })
@@ -319,7 +319,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             browseListingsSearchWrapper.vm.setOrderByOption("price");
             browseListingsSearchWrapper.vm.setOrderBySequence("ASC");
             expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("ASC");
-            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Low Price");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Lowest Price");
         });
 
         test('Testing that when orderBy is price DESC, orderBySequenceText is From Height Price', () => {
@@ -329,7 +329,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             browseListingsSearchWrapper.vm.setOrderByOption("price");
             browseListingsSearchWrapper.vm.setOrderBySequence("DESC");
             expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("DESC");
-            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Height Price");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Highest Price");
         });
 
         test('Testing that when orderBy is productName ASC, orderBySequenceText is From A To Z', () => {
