@@ -32,8 +32,10 @@
       </div>
 
       <div v-else>
-        <p><b>Section:</b> {{sectionSelected}}</p>
+        <label for="section-display" class="fw-bold">Section:</label>
+        <p id="section-display">{{sectionSelected}}</p>
       </div>
+
       <hr v-if="currentModal === 'create'">
 
       <!-- Creator id input -->
