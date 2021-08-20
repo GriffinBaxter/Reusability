@@ -13,7 +13,7 @@
       </div>
 
       <!-- Select a section  -->
-      <div class="row my-lg-2">
+      <div class="row my-lg-2" v-if="currentModal === 'create'">
         <div class="col-md-6 my-2 my-lg-0">
           <label for="section-selection" class="form-label">What section would you like to post your card?*</label>
         </div>
@@ -31,10 +31,13 @@
         </div>
       </div>
 
-      <hr>
+      <div v-else>
+        <p><b>Section:</b> {{sectionSelected}}</p>
+      </div>
+      <hr v-if="currentModal === 'create'">
 
       <!-- Creator id input -->
-      <div class="row my-lg-2 my-4" v-if="user.isAdministrator(userRole)">
+      <div class="row my-lg-2 my-4" v-if="user.isAdministrator(userRole) && currentModal === 'create'">
 
         <div class="col-md-3 ">
           <label for="card-creator" class="fw-bold">Select creator:</label>
@@ -529,11 +532,6 @@ export default {
         return;
       }
 
-      // If we are not an admin then we need to update the creatorId.
-      if (!this.user.isAdministrator(this.userRole)) {
-        this.creatorId = Cookies.get("userID")
-      }
-
       // Clear the list of keyword IDs
       this.newKeywordIDs = []
 
@@ -550,8 +548,6 @@ export default {
 
       // Object to hold the updated fields
       const updatedCard = {
-        creatorId: this.creatorId,
-        section: this.sectionSelected,
         title: this.title,
         description: this.description,
         keywordIds: keywordIds
