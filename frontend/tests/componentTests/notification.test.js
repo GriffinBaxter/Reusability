@@ -39,18 +39,21 @@ describe("Tests for notification's accordion", () => {
                     id: 1,
                     description: "Your card (Nescafe Cafe Menu Coffee Mix Caramel Latte 170G) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
-                    marketplaceCardPayload: null
+                    marketplaceCardPayload: null,
+                    notificationType: "MARKETPLACE"
                 }, {
                     id: 2,
                     description: "Your card (Red Bull Energy Drink Sugar Free) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
-                    marketplaceCardPayload: null
+                    marketplaceCardPayload: null,
+                    notificationType: "MARKETPLACE"
                 },
                 {
                     id: 3,
                     description: "Your card (PS5) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
-                    marketplaceCardPayload: null
+                    marketplaceCardPayload: null,
+                    notificationType: "MARKETPLACE"
                 }]
         };
 
@@ -73,7 +76,8 @@ describe("Tests for notification's accordion", () => {
                     id: 1,
                     description: "Your card (Nescafe Cafe Menu Coffee Mix Caramel Latte 170G) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
-                    marketplaceCardPayload: null
+                    marketplaceCardPayload: null,
+                    notificationType: "MARKETPLACE"
                 }]
         };
 
@@ -124,12 +128,14 @@ describe("Tests for notification's accordion", () => {
                     id: 1,
                     description: "Your card (Nescafe Cafe Menu Coffee Mix Caramel Latte 170G) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
-                    marketplaceCardPayload: null
+                    marketplaceCardPayload: null,
+                    notificationType: "MARKETPLACE"
                 }, {
                     id: 2,
                     description: "Your card (Red Bull Energy Drink Sugar Free) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
-                    marketplaceCardPayload: null
+                    marketplaceCardPayload: null,
+                    notificationType: "MARKETPLACE"
                 }]
         };
 
@@ -152,7 +158,8 @@ describe("Tests for notification's accordion", () => {
                     created: "2021-07-21T22:05:55.449072",
                     marketplaceCardPayload: {
                         id: 1,
-                    }
+                    },
+                    notificationType: "MARKETPLACE"
                 }]
         };
 
@@ -173,7 +180,8 @@ describe("Tests for notification's accordion", () => {
                     id: 1,
                     description: "Your card (Nescafe Cafe Menu Coffee Mix Caramel Latte 170G) has been deleted.",
                     created: "2021-07-21T22:05:55.449072",
-                    marketplaceCardPayload: null
+                    marketplaceCardPayload: null,
+                    notificationType: "MARKETPLACE"
                 }]
         };
 
@@ -197,7 +205,8 @@ describe("Tests delete buttons in accordion", () => {
                 created: "2020-07-14T14:32:00Z",
                 marketplaceCardPayload: {
                     id: 1,
-                }
+                },
+                notificationType: "MARKETPLACE"
             }]
         };
 
@@ -217,7 +226,8 @@ describe("Tests delete buttons in accordion", () => {
                 id: 1,
                 description: "Your card (Beef) will be expired in 2h.",
                 created: "2020-07-14T14:32:00Z",
-                marketplaceCardPayload: null
+                marketplaceCardPayload: null,
+                notificationType: "MARKETPLACE"
             }]
         };
 
@@ -239,7 +249,8 @@ describe("Tests delete buttons in accordion", () => {
                 created: "2020-08-16T14:32:00Z",
                 keyword: {
                     id: 10,
-                }
+                },
+                notificationType: "KEYWORD"
             }]
         };
 
@@ -264,7 +275,8 @@ describe("Tests extend buttons in accordion", () => {
                 created: "2020-07-14T14:32:00Z",
                 marketplaceCardPayload: {
                     id: 1,
-                }
+                },
+                notificationType: "MARKETPLACE"
             }]
         };
 
@@ -284,7 +296,8 @@ describe("Tests extend buttons in accordion", () => {
                 id: 1,
                 description: "Your card (Beef) will be expired in 2h.",
                 created: "2020-07-14T14:32:00Z",
-                marketplaceCardPayload: null
+                marketplaceCardPayload: null,
+                notificationType: "MARKETPLACE"
             }]
         };
 

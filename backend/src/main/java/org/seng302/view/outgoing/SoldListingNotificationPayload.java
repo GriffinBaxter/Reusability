@@ -23,19 +23,17 @@ public class SoldListingNotificationPayload {
      * @param soldListing the payload representation of the sold listing associated with the notification
      * @param description description of notification
      * @param created the time the notification was created
-     * @param notificationType the type of the notification
      */
     public SoldListingNotificationPayload(Integer id,
                                       SoldListingPayload soldListing,
                                       String description,
-                                      LocalDateTime created,
-                                      NotificationType notificationType
+                                      LocalDateTime created
     ) {
         this.id = id;
         this.soldListing = soldListing;
         this.description = description;
         this.created = created.toString();
-        this.notificationType = notificationType.toString();
+        this.notificationType = NotificationType.SOLD_LISTING.toString();
     }
 
     public Integer getId() {

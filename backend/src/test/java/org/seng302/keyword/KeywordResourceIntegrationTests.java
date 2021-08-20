@@ -65,8 +65,10 @@ class KeywordResourceIntegrationTests {
     private static Keyword keyword;
     private static Keyword keyword2;
     private static Keyword keyword3;
-
-    private static List<Keyword> keywords = new ArrayList<>();
+    private static Keyword keyword4;
+    private static Keyword keyword5;
+    private static Keyword keyword6;
+    private static Keyword keyword7;
 
     @BeforeAll
     static void before() throws Exception {
@@ -133,9 +135,10 @@ class KeywordResourceIntegrationTests {
         keyword = new Keyword("Resource", LocalDateTime.of(2021, 1, 1, 1, 1));
         keyword2 = new Keyword("Our", LocalDateTime.of(2021, 1, 1, 1, 1));
         keyword3 = new Keyword("Out", LocalDateTime.of(2021, 1, 1, 1, 1));
-        keywords.add(keyword);
-        keywords.add(keyword2);
-        keywords.add(keyword3);
+        keyword4 = new Keyword("Fourth", LocalDateTime.of(2021, 1, 1, 1, 1));
+        keyword5 = new Keyword("Fifth", LocalDateTime.of(2021, 1, 1, 1, 1));
+        keyword6 = new Keyword("Sixth", LocalDateTime.of(2021, 1, 1, 1, 1));
+        keyword7 = new Keyword("Seventh", LocalDateTime.of(2021, 1, 1, 1, 1));
     }
 
     // -------- POST ENDPOINT TESTS ----------------------------
@@ -333,15 +336,47 @@ class KeywordResourceIntegrationTests {
 
         String expectedJson = "[{\"id\":0,\"name\":\"Resource\",\"created\":\"2021-01-01T01:01\"}," +
                 "{\"id\":0,\"name\":\"Our\",\"created\":\"2021-01-01T01:01\"}," +
-                "{\"id\":0,\"name\":\"Out\",\"created\":\"2021-01-01T01:01\"}]";
+                "{\"id\":0,\"name\":\"Out\",\"created\":\"2021-01-01T01:01\"}," +
+                "{\"id\":0,\"name\":\"Fourth\",\"created\":\"2021-01-01T01:01\"}]";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(keywords);
+        given(keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery)).willReturn(
+                List.of(keyword, keyword2, keyword3, keyword4)
+        );
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get("/keywords/search")
                 .param("searchQuery", searchQuery)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Checks Json of first six expected values is returned with a 200 status if substring exists
+     */
+    @Test
+    void returnsFirstSixListOfKeywordsWhenQuerySubstringExists() throws Exception {
+        String searchQuery = "";
+
+        String expectedJson = "[{\"id\":0,\"name\":\"Resource\",\"created\":\"2021-01-01T01:01\"}," +
+                "{\"id\":0,\"name\":\"Our\",\"created\":\"2021-01-01T01:01\"}," +
+                "{\"id\":0,\"name\":\"Out\",\"created\":\"2021-01-01T01:01\"}," +
+                "{\"id\":0,\"name\":\"Fourth\",\"created\":\"2021-01-01T01:01\"}," +
+                "{\"id\":0,\"name\":\"Fifth\",\"created\":\"2021-01-01T01:01\"}," +
+                "{\"id\":0,\"name\":\"Sixth\",\"created\":\"2021-01-01T01:01\"}]";
+
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery)).willReturn(
+                List.of(keyword, keyword2, keyword3, keyword4, keyword5, keyword6)
+        );
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(get("/keywords/search")
+                        .param("searchQuery", searchQuery)
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -358,7 +393,7 @@ class KeywordResourceIntegrationTests {
         String expectedJson = "[]";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
+        given(keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get("/keywords/search")
@@ -378,7 +413,7 @@ class KeywordResourceIntegrationTests {
         String searchQuery = "qwerty";
 
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
-        given(keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
+        given(keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery)).willReturn(new ArrayList<>());
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.empty());
         response = mvc.perform(get("/keywords/search")

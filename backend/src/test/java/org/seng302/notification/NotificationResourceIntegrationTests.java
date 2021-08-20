@@ -7,6 +7,7 @@ import org.seng302.Main;
 import org.seng302.controller.NotificationResource;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
+import org.seng302.model.enums.NotificationType;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.*;
@@ -81,20 +82,24 @@ class NotificationResourceIntegrationTests {
     private final String userNotificationPayloadJson = "[{\"id\":%d," +
                                                 "\"description\":\"%s\"," +
                                                 "\"created\":\"%s\"," +
-                                                "\"marketplaceCardPayload\":%s}]";
+                                                "\"marketplaceCardPayload\":%s," +
+                                                "\"notificationType\":\"%s\"}]";
 
     private final String adminNotificationPayloadJson = "[{\"id\":%d," +
                                                     "\"description\":\"%s\"," +
                                                     "\"created\":\"%s\"," +
-                                                    "\"marketplaceCardPayload\":%s}," +
+                                                    "\"marketplaceCardPayload\":%s," +
+                                                    "\"notificationType\":\"%s\"}," +
                                                     "{\"id\":%d," +
                                                     "\"description\":\"%s\"," +
                                                     "\"created\":\"%s\"," +
-                                                    "\"keyword\":%s}]";
+                                                    "\"keyword\":%s," +
+                                                    "\"notificationType\":\"%s\"}]";
 
     private final String listingNotificationPayloadJson = "[{\"id\":%d," +
             "\"description\":\"%s\"," +
-            "\"created\":\"%s\"}]";
+            "\"created\":\"%s\"," +
+            "\"notificationType\":\"LISTING\"}]";
 
     private final String soldListingNotificationPayloadJson = "[{\"id\":%d,\"soldListing\":%s,\"description\":\"%s\",\"created\":\"%s\",\"notificationType\":\"SOLD_LISTING\"}]";
 
@@ -276,7 +281,7 @@ class NotificationResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
         payloadJson = String.format(userNotificationPayloadJson, marketCardNotification.getId(),
                                     marketCardNotification.getDescription(), marketCardNotification.getCreated(),
-                                    marketplaceCard.toMarketplaceCardPayload().toString());
+                                    marketplaceCard.toMarketplaceCardPayload().toString(), NotificationType.MARKETPLACE);
 
         // When
         when(marketCardNotificationRepository.findAllByUserId(user.getId())).thenReturn(List.of(marketCardNotification));
@@ -301,9 +306,9 @@ class NotificationResourceIntegrationTests {
         given(userRepository.findBySessionUUID(admin.getSessionUUID())).willReturn(Optional.ofNullable(admin));
         payloadJson = String.format(adminNotificationPayloadJson, anotherMarketplaceCardNotification.getId(),
                                     anotherMarketplaceCardNotification.getDescription(), anotherMarketplaceCardNotification.getCreated(),
-                                    anotherMarketplaceCard.toMarketplaceCardPayload().toString(),
+                                    anotherMarketplaceCard.toMarketplaceCardPayload().toString(), NotificationType.MARKETPLACE,
                                     keywordNotification.getId(), keywordNotification.getDescription(), keywordNotification.getCreated(),
-                                    (new KeywordPayload(keyword.getId(),keyword.getName(),keyword.getCreated())));
+                                    (new KeywordPayload(keyword.getId(),keyword.getName(),keyword.getCreated())), NotificationType.KEYWORD);
 
         // When
         when(marketCardNotificationRepository.findAllByUserId(admin.getId())).thenReturn(List.of(anotherMarketplaceCardNotification));
