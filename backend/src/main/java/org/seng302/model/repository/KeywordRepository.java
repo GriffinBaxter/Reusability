@@ -22,11 +22,11 @@ public interface KeywordRepository extends JpaRepository<Keyword, Integer> {
     Optional<Keyword> findByName(String name);
 
     /**
-     * Search by partial keyword name ignoring case
+     * Search by partial keyword name ignoring case, including only up to 6 results
      * @param name Keyword name
      * @return List of keywords that fit the criteria
      */
-    List<Keyword> findAllByNameIgnoreCaseContaining(String name);
+    List<Keyword> findTop6ByNameIgnoreCaseContaining(String name);
 
     /**
      * Get Keyword from repository by ID

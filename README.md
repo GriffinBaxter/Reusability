@@ -65,12 +65,14 @@ To run it on port 8999 (as it is in production), the following commands should b
 
 Running on: http://localhost:8999/ by default
 
-The backend can be tested by using the examples from the API specification (found within the /api directory) in the [Swagger Editor](https://editor.swagger.io/).
+The backend can be tested by using the examples from the API specification (found within the `/api` directory) in the [Swagger Editor](https://editor.swagger.io/).
 
-Additionally, Postman tests are provided as collections, also found within the /api directory.
+Additionally, Postman tests are provided as collections, also found within the `/api` directory.
 
 The steps for adding the images for using the product image Postman tests are accessed via:
 https://eng-git.canterbury.ac.nz/seng302-2021/team-400/-/wikis/Testing/Postman-Testing
+
+Sample data can be added from the `/backend/src/main/resources/Example Data (Full Dataset)/SQL Files` directory, which includes its own README with instructions for importing.
 
 ## Demo User Accounts
 - Note: These demo user accounts are only available on our production server. All demo user accounts (aside from the DGAA) have the same password: Qwerty123!

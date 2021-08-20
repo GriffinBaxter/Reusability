@@ -131,6 +131,11 @@
       </div>
 
     </form>
+
+    <div v-if="waitingForResponse">
+      <LoadingDots></LoadingDots>
+    </div>
+
   </div>
 </template>
 
@@ -140,9 +145,11 @@ import cardConfig from "../../configs/MarketplaceCard"
 import Cookies from "js-cookie";
 import User, { UserRole} from "../../configs/User"
 import Autofill from "../autofill";
+import LoadingDots from "../LoadingDots";
 
 export default {
   name: "EditCreateCardModal",
+  components: {LoadingDots},
   props: [
       'currentModal'
   ],
@@ -217,6 +224,9 @@ export default {
         creatorIdError: ""
       },
 
+      /** Contains the latest keyword search used to call the keyword searching API endpoint */
+      latestApiCallSearch: null,
+
       /** Contains the list of current autocompletion keywords (based on currently selected keyword) */
       autocompleteKeywords: [],
 
@@ -224,6 +234,8 @@ export default {
       newKeywordIDs: [],
 
       autofillState: 'initial',
+
+      waitingForResponse: false,
     }
   },
   methods: {
@@ -439,6 +451,8 @@ export default {
         return;
       }
 
+      this.waitingForResponse = true;
+
       // If we are not an admin then we need to update the creatorId.
       if (!this.user.isAdministrator(this.userRole)) {
         this.creatorId = Cookies.get("userID")
@@ -461,6 +475,7 @@ export default {
 
       Api.addNewCard(newCard).then(
           (res) => {
+            this.waitingForResponse = false;
             if (res.status === 201) {
               this.$emit("new-card-created");
               this.$parent.hideModal()
@@ -469,6 +484,7 @@ export default {
           }
       ).catch(
           (error) => {
+            this.waitingForResponse = false;
             if (error.response) {
               if (error.response.status === 400) {
                 this.modalError = `Error: ` + error.response.data.message;
@@ -506,6 +522,7 @@ export default {
           }
       ).catch(
           (error) => {
+            this.waitingForResponse = false;
             if (error.response) {
               if (error.response.status === 400) {
                 this.modalError = `Error: ` + error.response.data.message;
@@ -534,6 +551,8 @@ export default {
         return;
       }
 
+      this.waitingForResponse = true;
+
       // Clear the list of keyword IDs
       this.newKeywordIDs = []
 
@@ -557,6 +576,7 @@ export default {
 
       Api.editCard(this.id, updatedCard).then(
           (res) => {
+            this.waitingForResponse = false;
             if (res.status === 200) {
               this.$emit("new-card-created");
               this.$parent.hideModal()
@@ -565,6 +585,7 @@ export default {
           }
       ).catch(
           (error) => {
+            this.waitingForResponse = false;
             if (error.response) {
               if (error.response.status === 400) {
                 this.modalError = `Error: ` + error.response.data.message;
@@ -661,7 +682,6 @@ export default {
       const elementID = 'card-keywords-' + this.$props.currentModal;
       this.textCursorPosition = document.getElementById(elementID).selectionStart;
       this.currentKeyword = "";
-      this.autocompleteKeywords = [];
 
       let currentKeywordStartEnd = this.getCurrentKeywordStartEnd();
 
@@ -673,23 +693,29 @@ export default {
         keywordSearch = "";
       }
 
-      if (
-          currentKeywordStartEnd !== false ||
-          this.keywordsInput === "" ||
-          (this.keywordsInput.length === this.textCursorPosition &&
-          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
-      ) {
-        Api.searchKeywords(keywordSearch).then(response => {
-          let autocompleteKeywords = [];
+      if (this.latestApiCallSearch !== keywordSearch) {
+        this.autocompleteKeywords = [];
+        if (
+            currentKeywordStartEnd !== false ||
+            this.keywordsInput === "" ||
+            (this.keywordsInput.length === this.textCursorPosition &&
+            this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+        ) {
+          this.autocompleteKeywords = [];
+          Api.searchKeywords(keywordSearch).then(response => {
+            this.latestApiCallSearch = keywordSearch;
 
-          for (let i = 0; i < response.data.length && i < 5; i++) {
-            if (keywordSearch !== response.data[i].name) {
-              autocompleteKeywords.push(response.data[i]);
+            let autocompleteKeywords = [];
+
+            for (const keyword of response.data) {
+              if (keywordSearch !== keyword.name) {
+                autocompleteKeywords.push(keyword);
+              }
             }
-          }
 
-          this.autocompleteKeywords = autocompleteKeywords;
-        })
+            this.autocompleteKeywords = autocompleteKeywords;
+          })
+        }
       }
     },
     /**
