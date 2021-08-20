@@ -247,73 +247,189 @@ describe("Testing the BrowseListingsSearch methods", () => {
         test('Testing that when orderBy is priceASC, orderByOptionText is Price Low', () => {
             browseListingsSearchWrapper.vm.orderByOption = "None";
             browseListingsSearchWrapper.vm.orderByOptionText = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
 
-            browseListingsSearchWrapper.vm.setOrderByOption("priceASC");
-            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("priceASC");
-            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Price Low");
-        });
-
-        test('Testing that when orderBy is priceDESC, orderByOptionText is Price High', () => {
-            browseListingsSearchWrapper.vm.orderByOption = "None";
-            browseListingsSearchWrapper.vm.orderByOptionText = "None";
-
-            browseListingsSearchWrapper.vm.setOrderByOption("priceDESC");
-            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("priceDESC");
-            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Price High");
+            browseListingsSearchWrapper.vm.setOrderByOption("price");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("price");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Price");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Lowest Price");
         });
 
         test('Testing that when orderBy is productNameASC, orderByOptionText is Product Name', () => {
             browseListingsSearchWrapper.vm.orderByOption = "None";
             browseListingsSearchWrapper.vm.orderByOptionText = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
 
-            browseListingsSearchWrapper.vm.setOrderByOption("productNameASC");
-            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("productNameASC");
+            browseListingsSearchWrapper.vm.setOrderByOption("productName");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("productName");
             expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Product Name");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
         });
 
         test('Testing that when orderBy is countryASC, orderByOptionText is Country', () => {
             browseListingsSearchWrapper.vm.orderByOption = "None";
             browseListingsSearchWrapper.vm.orderByOptionText = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
 
-            browseListingsSearchWrapper.vm.setOrderByOption("countryASC");
-            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("countryASC");
+            browseListingsSearchWrapper.vm.setOrderByOption("country");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("country");
             expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Country");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
         });
 
         test('Testing that when orderBy is cityASC, orderByOptionText is City', () => {
             browseListingsSearchWrapper.vm.orderByOption = "None";
             browseListingsSearchWrapper.vm.orderByOptionText = "None";
 
-            browseListingsSearchWrapper.vm.setOrderByOption("cityASC");
-            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("cityASC");
+            browseListingsSearchWrapper.vm.setOrderByOption("city");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("city");
             expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("City");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
         });
 
         test('Testing that when orderBy is expiryDateASC, orderByOptionText is Expiry Date Earliest', () => {
             browseListingsSearchWrapper.vm.orderByOption = "None";
             browseListingsSearchWrapper.vm.orderByOptionText = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
 
-            browseListingsSearchWrapper.vm.setOrderByOption("expiryDateASC");
-            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("expiryDateASC");
-            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Expiry Date Earliest");
-        });
-
-        test('Testing that when orderBy is expiryDateDESC, orderByOptionText is Expiry Date Latest', () => {
-            browseListingsSearchWrapper.vm.orderByOption = "None";
-            browseListingsSearchWrapper.vm.orderByOptionText = "None";
-
-            browseListingsSearchWrapper.vm.setOrderByOption("expiryDateDESC");
-            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("expiryDateDESC");
-            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Expiry Date Latest");
+            browseListingsSearchWrapper.vm.setOrderByOption("expiryDate");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("expiryDate");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Expiry Date");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Earliest");
         });
 
         test('Testing that when orderBy is sellerNameASC, orderByOptionText is Expiry Date Latest', () => {
             browseListingsSearchWrapper.vm.orderByOption = "None";
             browseListingsSearchWrapper.vm.orderByOptionText = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
 
-            browseListingsSearchWrapper.vm.setOrderByOption("sellerNameASC");
-            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("sellerNameASC");
-            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Business Name");
+            browseListingsSearchWrapper.vm.setOrderByOption("sellerName");
+            expect(browseListingsSearchWrapper.vm.orderByOption).toBe("sellerName");
+            expect(browseListingsSearchWrapper.vm.orderByOptionText).toBe("Seller Name");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
+        });
+    })
+
+    describe('Tests the setOrderBySequence method.', () => {
+
+        test('Testing that when orderBy is price ASC, orderBySequenceText is From Low Price', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("price");
+            browseListingsSearchWrapper.vm.setOrderBySequence("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Lowest Price");
+        });
+
+        test('Testing that when orderBy is price DESC, orderBySequenceText is From Height Price', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("price");
+            browseListingsSearchWrapper.vm.setOrderBySequence("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Highest Price");
+        });
+
+        test('Testing that when orderBy is productName ASC, orderBySequenceText is From A To Z', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("productName");
+            browseListingsSearchWrapper.vm.setOrderBySequence("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
+        });
+
+        test('Testing that when orderBy is productName DESC, orderBySequenceText is From Z To A', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("productName");
+            browseListingsSearchWrapper.vm.setOrderBySequence("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Z To A");
+        });
+
+        test('Testing that when orderBy is country ASC, orderBySequenceText is From A To Z', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("country");
+            browseListingsSearchWrapper.vm.setOrderBySequence("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
+        });
+
+        test('Testing that when orderBy is country DESC, orderBySequenceText is From Z To A', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("country");
+            browseListingsSearchWrapper.vm.setOrderBySequence("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Z To A");
+        });
+
+        test('Testing that when orderBy is city ASC, orderBySequenceText is From A To Z', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("city");
+            browseListingsSearchWrapper.vm.setOrderBySequence("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
+        });
+
+        test('Testing that when orderBy is city DESC, orderBySequenceText is From Z To A', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("city");
+            browseListingsSearchWrapper.vm.setOrderBySequence("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Z To A");
+        });
+
+        test('Testing that when orderBy is expiryDate ASC, orderBySequenceText is From Earliest', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("expiryDate");
+            browseListingsSearchWrapper.vm.setOrderBySequence("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Earliest");
+        });
+
+        test('Testing that when orderBy is expiryDate DESC, orderBySequenceText is From Latest', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("expiryDate");
+            browseListingsSearchWrapper.vm.setOrderBySequence("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Latest");
+        });
+
+        test('Testing that when orderBy is sellerName ASC, orderBySequenceText is From A To Z', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("sellerName");
+            browseListingsSearchWrapper.vm.setOrderBySequence("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("ASC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From A To Z");
+        });
+
+        test('Testing that when orderBy is sellerName DESC, orderBySequenceText is From Z To A', () => {
+            browseListingsSearchWrapper.vm.orderBySequence = "None";
+            browseListingsSearchWrapper.vm.orderBySequenceText = "None";
+
+            browseListingsSearchWrapper.vm.setOrderByOption("sellerName");
+            browseListingsSearchWrapper.vm.setOrderBySequence("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequence).toBe("DESC");
+            expect(browseListingsSearchWrapper.vm.orderBySequenceText).toBe("From Z To A");
         });
     })
 
