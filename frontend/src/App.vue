@@ -4,16 +4,11 @@
 
 <template>
   <div id="app">
-    <transition :name="transitionName" mode="out-in">
-      <router-view :key="$route.path"></router-view>
-    </transition>
-
+    <router-view :key="$route.path"></router-view>
   </div>
 </template>
 
 <script>
-
-
 // Vue app instance
 // it is declared as a reusable component in this case.
 // For global instance https://vuejs.org/v2/guide/instance.html
@@ -29,13 +24,11 @@ const app = {
   // https://vuejs.org/v2/guide/instance.html#Data-and-Methods
   data: () => {
     return {
-      transitionName: "slide"
     };
   },
   watch: {
     '$route'(to) {
       document.title = to.meta.title ? `Reusability · ${to.meta.title}` : "Reusability";
-      if (to.name === 'NoUser' || to.name === 'ServerTimeout' || to.name === 'InvalidToken') this.transitionName = "";
       const event = new CustomEvent('page-routing', {detail: ""})
       document.dispatchEvent(event);
     },
