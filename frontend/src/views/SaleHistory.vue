@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import Cookies from "js-cookie";
 import {checkAccessPermission} from "../views/helpFunction";

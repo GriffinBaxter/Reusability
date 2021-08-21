@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import ListingItem from "../components/listing/ListingItem";
 import Api from "../Api";
 import Cookies from "js-cookie";

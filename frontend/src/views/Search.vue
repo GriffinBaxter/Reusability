@@ -39,7 +39,7 @@
 
 <script>
 import Api from '../Api';
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import ProfileHeader from "../components/ProfileHeader";
 import User from "../configs/User";

@@ -149,7 +149,7 @@
 </template>
 
 <script>
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer"
 import DefaultImage from "../../public/default-product.jpg"
 import Api from "../Api"
