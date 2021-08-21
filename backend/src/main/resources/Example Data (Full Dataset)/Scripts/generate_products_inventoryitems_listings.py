@@ -50,7 +50,7 @@ with open('product_data.csv') as input_file:
             sql.append("INSERT INTO inventory_item (best_before, business_id, expires, manufactured, price_per_item, product_id, quantity, sell_by, total_price) VALUES (" + "DATE'2022-05-12', " + str(i) + ", DATE'2023-05-12', " + "DATE'2020-05-12', " + str("%.2f" % round(recommended_price ,2)) + ", '" +
                        prod_id + "', " + str(quantity) + ", DATE'2022-10-12', " + str("%.2f" % round(total_price ,2)) + ");")
             
-            sql.append("INSERT INTO listing (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (" + "DATE'2022-05-12', " + "DATE'2022-05-12', '" + more_info + "', " + str("%.2f" % round(listing_price ,2)) + ", " + str(listing_quantity) + ", " + str(inventory_id) + ", " + str(i) + ");")
+            sql.append("INSERT INTO listing (closes, created, more_info, price, quantity, inventory_item_id, business_id) VALUES (" + "DATE'2022-05-12', " + "DATE'2020-05-12', '" + more_info + "', " + str("%.2f" % round(listing_price ,2)) + ", " + str(listing_quantity) + ", " + str(inventory_id) + ", " + str(i) + ");")
             
             j += 1
             inventory_id += 1
