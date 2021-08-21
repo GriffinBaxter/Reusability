@@ -16,6 +16,10 @@ import java.util.Optional;
  */
 public class Authorization {
 
+    Authorization() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final Logger logger = LogManager.getLogger(Authorization.class.getName());
 
     /**

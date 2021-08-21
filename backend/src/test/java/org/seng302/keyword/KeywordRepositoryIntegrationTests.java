@@ -84,14 +84,14 @@ class KeywordRepositoryIntegrationTests {
     }
 
     /**
-     * Tests findAllByNameIgnoreCaseContaining method returns a valid list of keywords with an existing substring
+     * Tests findTop6ByNameIgnoreCaseContaining method returns a valid list of keywords with an existing substring
      */
     @Test
     void whenFindAllContaining_returnsValidList() {
         // given
         String substring = "ca";
         // when
-        foundKeywords = keywordRepository.findAllByNameIgnoreCaseContaining(substring);
+        foundKeywords = keywordRepository.findTop6ByNameIgnoreCaseContaining(substring);
         // then
         assertThat(foundKeywords.size()).isEqualTo(2);
         assertThat(foundKeywords.get(0)).isEqualTo(keyword1);
@@ -99,27 +99,27 @@ class KeywordRepositoryIntegrationTests {
     }
 
     /**
-     * Tests findAllByNameIgnoreCaseContaining method returns an empty list when a non-existing substring is used
+     * Tests findTop6ByNameIgnoreCaseContaining method returns an empty list when a non-existing substring is used
      */
     @Test
     void whenFindAllByUnknownQuery_returnsEmptyList() {
         // given
         String substring = "xax";
         // when
-        foundKeywords = keywordRepository.findAllByNameIgnoreCaseContaining(substring);
+        foundKeywords = keywordRepository.findTop6ByNameIgnoreCaseContaining(substring);
         // then
         assertThat(foundKeywords.size()).isZero();
     }
 
     /**
-     * Tests findAllByNameIgnoreCaseContaining method returns a valid list of keywords when wrong capitalization is used
+     * Tests findTop6ByNameIgnoreCaseContaining method returns a valid list of keywords when wrong capitalization is used
      */
     @Test
     void whenFindAllByRandomCase_returnValidList() {
         // given
         String substring = "oO";
         // when
-        foundKeywords = keywordRepository.findAllByNameIgnoreCaseContaining(substring);
+        foundKeywords = keywordRepository.findTop6ByNameIgnoreCaseContaining(substring);
         // then
         assertThat(foundKeywords.size()).isEqualTo(2);
         assertThat(foundKeywords.get(0)).isEqualTo(keyword4);
