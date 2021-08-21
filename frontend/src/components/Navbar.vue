@@ -81,7 +81,7 @@
         </li>
 
         <li class="a-nav-item" v-if="actAsId">
-          <router-link :to="'/businessProfile/' + actAsId" class="router-nav-link" active-class="active-link">
+          <router-link :to="'/businessProfile/' + actAsId" class="router-nav-link" exact-active-class="active-link">
             <i class="side-nav-link-icon fas fa-user-alt"></i>Profile
           </router-link>
         </li>
