@@ -1,10 +1,11 @@
 <template>
-  <div class="card border-dark">
+  <div class="card border-dark" id="wrapper">
+
+    <div v-if="hasDataLoaded">
 
     <div class="accordion" v-if="allNoticeCards.length === 0">
       <div class="card border-dark text-white bg-secondary"
-           id="emptyMessage"
-           style="width: 300px">
+           id="emptyMessage">
         <h4 class="card-body" style="margin: 3px; float: contour; text-align: center">
           No Notifications!
         </h4>
@@ -14,24 +15,24 @@
     <div v-else
          class="accordion"
          id="notificationAccordion"
-         style="height:400px; width: 500px; overflow:auto">
+         style="height:400px; overflow:auto">
 
-      <div :id="'notification_box' + notification.id"
-           class="accordion-item"
-           v-for="notification in allNoticeCards"
-           v-bind:key="notification.id"
-           style="background-color: #ededed">
+        <div :id="'notification_box' + notification.id"
+             class="accordion-item"
+             v-for="notification in allNoticeCards"
+             v-bind:key="notification.id"
+             style="background-color: #ededed">
 
-        <h2 class="accordion-header" :id="'heading_' + notification.id">
-          <button class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  :data-bs-target="'#collapse_' + notification.id"
-                  aria-expanded="false"
-                  :aria-controls="'collapse_' + notification.id">
-            <h6>{{ notification.description }}</h6>
-          </button>
-        </h2>
+          <h2 class="accordion-header" :id="'heading_' + notification.id">
+            <button class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    :data-bs-target="'#collapse_' + notification.id"
+                    aria-expanded="false"
+                    :aria-controls="'collapse_' + notification.id">
+              <h6>{{ notification.description }}</h6>
+            </button>
+          </h2>
 
         <div :id="'collapse_' + notification.id"
              class="accordion-collapse collapse"
@@ -64,16 +65,33 @@
               </button>
             </div>
 
+            <!-- listing notification -->
+            <div class="row" v-else>
+              <div class="col" style="float: contour; text-align: center">
+              </div>
+            </div>
             <div class="col">
               <button class="btn btn-outline-dark" :id="'delete_notification' + notification.id" @click="deleteNotification(notification)">
                 Delete notification
               </button>
             </div>
 
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <div v-else>
+      <div class="accordion">
+        <div class="card border-dark text-white bg-secondary"
+             style="width: 300px; max-height: 67px">
+          <h4 class="card-body" style="margin: 3px; float: contour; text-align: center">
+            <LoadingDots style="margin: 0 !important; padding: 0 !important;"></LoadingDots>
+          </h4>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -81,15 +99,17 @@
 
 import Api from "../../Api";
 import Cookies from "js-cookie";
+import LoadingDots from "../LoadingDots";
 
 export default {
   name: "Notification",
+  components: {LoadingDots},
   data() {
     return {
-      allNoticeCards: []
+      allNoticeCards: [],
+      hasDataLoaded: false
     }
   },
-  props: {},
   methods: {
     /**
      * catch errors.
@@ -152,14 +172,27 @@ export default {
      * this function will reload all notifications for current user or selected business.
      */
     loadNotifications() {
+      this.hasDataLoaded = false;
       if (Cookies.get('actAs') !== undefined) {
         Api.getBusinessNotifications(Cookies.get('actAs'))
-            .then(response => this.populateNotification(response.data))
-            .catch((error) => this.errorCatcher(error));
+            .then(response => {
+              this.populateNotification(response.data);
+              this.hasDataLoaded = true;
+            })
+            .catch((error) => {
+              this.errorCatcher(error);
+              this.hasDataLoaded = true;
+            });
       } else {
         Api.getNotifications()
-            .then(response => this.populateNotification(response.data))
-            .catch((error) => this.errorCatcher(error));
+            .then(response => {
+              this.populateNotification(response.data);
+              this.hasDataLoaded = true;
+            })
+            .catch((error) => {
+              this.errorCatcher(error)
+              this.hasDataLoaded = true;
+            });
       }
     },
     /**
@@ -207,3 +240,23 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+  #wrapper {
+    max-width: 300px;
+    width: 100%;
+    position: absolute;
+    right: 25px;
+    z-index: 999
+  }
+
+  @media screen and (max-width: 359px){
+    #wrapper {
+      width: 80vw;
+      margin: 0 auto;
+      left: 25px;
+    }
+  }
+
+</style>

@@ -35,6 +35,8 @@ describe("Testing the selection behaviour of the select section.", () => {
 
         createCardModalWrapper = await shallowMount(EditCreateCardModal, {localVue});
         await createCardModalWrapper.vm.$nextTick();
+        await createCardModalWrapper.setProps({currentModal: "create"});
+        await createCardModalWrapper.vm.$nextTick();
 
     })
 
@@ -812,6 +814,8 @@ describe("Testing required fields", () => {
 
         // Shallow mount the component
         createCardWrapper = await shallowMount(EditCreateCardModal, {localVue});
+        await createCardWrapper.vm.$nextTick();
+        await createCardWrapper.setProps({currentModal: "create"});
         await createCardWrapper.vm.$nextTick();
 
     } )

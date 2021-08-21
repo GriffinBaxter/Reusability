@@ -82,8 +82,8 @@ describe("Testing the behaviour of prefilled input fields", () => {
 
     test("Test that the section returned from the Api is stored in the input by default.", async () => {
         // Checking the section has been set correctly
-        expect(editCreateCardModal.find("#section-selection").exists()).toBe(true);
-        expect(editCreateCardModal.find("#section-selection").element.value).toBe("ForSale");
+        expect(editCreateCardModal.find("#section-display").exists()).toBe(true);
+        expect(editCreateCardModal.find("#section-display").text()).toBe("ForSale");
     })
 
     test("Test that the keywords returned from the Api is stored in the input by default.", async () => {

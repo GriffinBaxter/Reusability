@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.4.2
+  version: 5.4.3
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -873,7 +873,7 @@ paths:
           description: "Criteria to search for, e.g: full listing name"
         - in: query
           name: searchType
-          schema: 
+          schema:
             type: string
           required: false
           description: >-
@@ -882,7 +882,7 @@ paths:
             * listingName: the listing name (default)
 
             * businessName: the business name
-            
+
             * location: the location
         - in: query
           name: orderBy
@@ -1368,7 +1368,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Card'
+              $ref: '#/components/schemas/EditCard'
       responses:
         '200':
           description: 'Marketplace card updated successfully'
@@ -1951,6 +1951,30 @@ components:
           items:
             type: integer
             example: 20, 15, 600
+
+    EditCard:
+      type: object
+      description: Represents editing an item in the Community Marketplace
+      required:
+        - title
+        - description
+        - keywordIds
+      properties:
+        title:
+          type: string
+          description: Title of the card.
+          example: "1982 Lada Samara"
+        description:
+          type: string
+          description:  A more detailed description of the card.
+          example: "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar."
+        keywordIds:
+          type: array
+          writeOnly: true
+          description: The IDs of keywords that will be associated with a card once it is created. These keywords are created through the POST /keywords endpoints (UCM6).
+          items:
+            type: integer
+            example: 20
 
     Listing:
       type: object

@@ -71,14 +71,7 @@ public class CardEditStepDefs extends CucumberSpringConfiguration {
     private Keyword keyword;
     private Keyword keyword2;
 
-    private final String creatorCardEditPayloadJson = "{\"creatorId\":\"%d\"," +
-            "\"section\":\"%s\"," +
-            "\"title\":\"%s\"," +
-            "\"description\":\"%s\"," +
-            "\"keywordIds\":%s}";
-
     private final String cardEditPayloadJson = "{" +
-            "\"section\":\"%s\"," +
             "\"title\":\"%s\"," +
             "\"description\":\"%s\"," +
             "\"keywordIds\":%s}";
@@ -217,16 +210,7 @@ public class CardEditStepDefs extends CucumberSpringConfiguration {
         when(keywordRepository.findById(2)).thenReturn(Optional.ofNullable(keyword2));
 
         String keywordsPayload = "[1,2]";
-        String payload = String.format(cardEditPayloadJson, "Exchange" , "New Title", "New Description", keywordsPayload);
-        response = mvc.perform(put(String.format("/cards/%d", id))
-                .contentType(MediaType.APPLICATION_JSON).content(payload)
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn().getResponse();
-    }
-
-    @When("I try to change the creator for card at id {int}")
-    public void iTryToChangeTheCreator(Integer id) throws Exception {
-        String payload = String.format(creatorCardEditPayloadJson, 2, "FORSALE" , "Hayley's Birthday", "Come join Hayley and help her celebrate her birthday!", "[]");
+        String payload = String.format(cardEditPayloadJson , "New Title", "New Description", keywordsPayload);
         response = mvc.perform(put(String.format("/cards/%d", id))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
@@ -244,7 +228,7 @@ public class CardEditStepDefs extends CucumberSpringConfiguration {
         when(keywordRepository.findById(2)).thenReturn(Optional.ofNullable(keyword2));
 
         String keywordsPayload = "[1,2]";
-        String payload = String.format(cardEditPayloadJson, "Exchange" , "New Title", "New Description", keywordsPayload);
+        String payload = String.format(cardEditPayloadJson , "New Title", "New Description", keywordsPayload);
         response = mvc.perform(put(String.format("/cards/%d", id))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(new Cookie("JSESSIONID", gaa.getSessionUUID())))
@@ -254,7 +238,6 @@ public class CardEditStepDefs extends CucumberSpringConfiguration {
     @Then("It doesn't let me edit")
     public void itDoesntLetMeEdit() {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(card.getSection()).isNotEqualTo(Section.EXCHANGE);
         assertThat(card.getTitle()).isNotEqualTo("New Title");
         assertThat(card.getDescription()).isNotEqualTo("New Description");
         assertThat(card.getKeywords()).isEmpty();
@@ -263,7 +246,6 @@ public class CardEditStepDefs extends CucumberSpringConfiguration {
     @Then("The card is updated")
     public void theCardIsUpdated() {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(card.getSection()).isEqualTo(Section.EXCHANGE);
         assertThat(card.getTitle()).isEqualTo("New Title");
         assertThat(card.getDescription()).isEqualTo("New Description");
         assertThat(card.getKeywords()).isNotEmpty();
