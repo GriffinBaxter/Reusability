@@ -10,9 +10,10 @@
 
     <div class="col" v-if="userHasCards()">
       <div class="row" id="user-cards">
-        <h4 v-if="otherUser">User's Cards</h4>
-        <h4 v-else>My Cards</h4>
-
+        <div v-if="showTitle">
+          <h4 v-if="otherUser">User's Cards</h4>
+          <h4 v-else>My Cards</h4>
+        </div>
         <!-- Card-->
         <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
              style="padding: 12px"
@@ -51,7 +52,13 @@ export default {
     },
     otherUser: {
       type: Boolean,
-      required: false
+      required: false,
+      default: false
+    },
+    showTitle: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   components: {
