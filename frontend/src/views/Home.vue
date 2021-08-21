@@ -78,7 +78,7 @@
 
 <script>
 import Footer from '../components/main/Footer';
-import Navbar from '../components/main/Navbar';
+import Navbar from '../components/Navbar';
 import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";

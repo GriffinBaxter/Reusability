@@ -274,7 +274,7 @@ import ProfileHeader from "../components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "../components/main/Footer";
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import {UserRole} from '../configs/User'
 import {formatDate} from "../dateUtils";
 import Card from "../components/marketplace/Card";
