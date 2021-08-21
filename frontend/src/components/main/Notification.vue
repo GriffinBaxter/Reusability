@@ -120,6 +120,7 @@ export default {
         if (notification.notificationType === 'KEYWORD') {
           notifications.push({
             id: index,
+            notificationId: notification.id,
             keywordId: notification.keyword.id,
             description: notification.description,
             date: notification.created,
@@ -128,6 +129,7 @@ export default {
         } else if (notification.notificationType === 'MARKETPLACE') { // marketplace notification
           notifications.push({
             id: index,
+            notificationId: notification.id,
             marketCardId: notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
             description: notification.description,
             date: notification.created,
@@ -136,6 +138,7 @@ export default {
         } else {
           notifications.push({
             id: index,
+            notificationId: notification.id,
             description: notification.description,
             date: notification.created,
             notificationType: notification.notificationType
@@ -191,7 +194,8 @@ export default {
      * @param notification notification to delete
      */
     deleteNotification(notification) {
-      Api.deleteNotification(notification.id, notification.notificationType).then(()=> {
+      console.log(notification)
+      Api.deleteNotification(notification.notificationId, notification.notificationType).then(()=> {
           this.loadNotifications();
       }).catch( err => {
           console.log(err)

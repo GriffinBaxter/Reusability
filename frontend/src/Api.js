@@ -369,7 +369,7 @@ export default {
     },
 
     deleteNotification: (id, notificationType) => {
-        return instance.delete(`/notifications/${id}?notificationType=${notificationType}`, {
+        return instance.delete(`/users/notifications/${id}?type=${notificationType}`, {
             withCredentials: true
         })
     },

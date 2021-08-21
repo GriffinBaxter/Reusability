@@ -178,6 +178,8 @@ public class NotificationResource {
 
         keywordNotificationRepository.deleteById(id);
         logger.debug("Keyword Notification Deletion Update - Notification Deleted");
+
+        System.out.println(keywordNotificationRepository.findById(id));
     }
 
     private void deleteListingNotification(User user, Integer id) {
