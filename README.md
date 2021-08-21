@@ -104,7 +104,10 @@ Sample data can be added from the `/backend/src/main/resources/Example Data (Ful
 - Email: DGAA_EMAIL (environment variable)
 - Password: DGAA_PASSWORD (environment variable)
 
+## Demo Barcode Scanning Examples
 
+Images to demo barcode scanning using both the `Scan by uploading image` and then `Autofill Empty Fields` options are available in the following directory:
+`/backend/src/main/resources/Example Data (Full Dataset)/Barcodes`.
 
 ## Contributors
 
