@@ -227,7 +227,7 @@
           </div>
 
           <!--user's cards-->
-          <UserCardsComp :users-cards="usersCards" :other-user="otherUser" />
+          <UserCardsComp class="mt-3" :users-cards="usersCards" :other-user="otherUser" />
         </div>
       </div>
     </div>
