@@ -11,12 +11,12 @@ import java.util.Optional;
 @RepositoryRestResource
 public interface ImageRepository extends JpaRepository<Image, String> {
 
-    List<Image> findImageByBussinesIdAndProductId(Integer businessId, String productId);
+    List<Image> findImageByBusinessIdAndProductId(Integer businessId, String productId);
 
-    Optional<Image> findImageByIdAndBussinesIdAndProductId(Integer imageId, Integer businessId, String productId);
+    Optional<Image> findImageByIdAndBusinessIdAndProductId(Integer imageId, Integer businessId, String productId);
 
-    void deleteByIdAndBussinesIdAndProductId(int id, int bussinesId, String productId);
+    void deleteByIdAndBusinessIdAndProductId(int id, int businessId, String productId);
 
-    List<Image> findImageByBussinesIdAndProductIdAndIsPrimary(Integer businessId, String productId, Boolean isPrimary);
+    List<Image> findImageByBusinessIdAndProductIdAndIsPrimary(Integer businessId, String productId, Boolean isPrimary);
 
 }

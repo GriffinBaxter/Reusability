@@ -623,17 +623,17 @@ class SearchUserByNameTests {
         names.add("a"); // searchQuery is "a"
 
         ArrayList<String> orderedAddress = new ArrayList<>();
-        orderedAddress.add("186, Simpsons Road, Ashburton, Canterbury, New Zealand, 2828, Ilam");
-        orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839, Ilam");
-        orderedAddress.add("9205, Monique Vista, Bururi, Bigomogomo, Africa, 1000, Buri");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
-        orderedAddress.add("80416, Rodney Street, Jon Loop, Shaanxi, China, 2113, Barryville");
-        orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428, Norwood");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
+        orderedAddress.add("186, Simpsons Road, Ilam, Ashburton, Canterbury, New Zealand, 2828");
+        orderedAddress.add("240, Newson Street, Ilam, Bernhard Run, Southland, New Zealand, 2839");
+        orderedAddress.add("9205, Monique Vista, Buri, Bururi, Bigomogomo, Africa, 1000");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("129, Mastic Trail, Pirate Cove, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Pirate Cove, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Pirate Cove, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Pirate Cove, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("80416, Rodney Street, Barryville, Jon Loop, Shaanxi, China, 2113");
+        orderedAddress.add("47993, Norwood Garden, Norwood, Mambere-Kadei, Central African Republic, Africa, 3428");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);
@@ -659,17 +659,17 @@ class SearchUserByNameTests {
         names.add("a"); // searchQuery is "a"
 
         ArrayList<String> orderedAddress = new ArrayList<>();
-        orderedAddress.add("14798, Terry Highway, Queenstown-Lakes, District, New Zealand, 2982, Frankton");
-        orderedAddress.add("325, Citlalli Track, New Lois, Heard Island and McDonald Islands, HM, Antarctica, Pingu");
-        orderedAddress.add("47993, Norwood Garden, Mambere-Kadei, Central African Republic, Africa, 3428, Norwood");
-        orderedAddress.add("80416, Rodney Street, Jon Loop, Shaanxi, China, 2113, Barryville");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
-        orderedAddress.add("129, Mastic Trail, Frank Sound Cayman Islands, Caribbean, North America, 3442, Pirate Cove");
-        orderedAddress.add("3396, Bertram Parkway, Central, Central Otago, New Zealand, 1111, Wanaka");
-        orderedAddress.add("9205, Monique Vista, Bururi, Bigomogomo, Africa, 1000, Buri");
-        orderedAddress.add("240, Newson Street, Bernhard Run, Southland, New Zealand, 2839, Ilam");
+        orderedAddress.add("14798, Terry Highway, Frankton, Queenstown-Lakes, District, New Zealand, 2982");
+        orderedAddress.add("325, Citlalli Track, Pingu, New Lois, Heard Island and McDonald Islands, HM, Antarctica");
+        orderedAddress.add("47993, Norwood Garden, Norwood, Mambere-Kadei, Central African Republic, Africa, 3428");
+        orderedAddress.add("80416, Rodney Street, Barryville, Jon Loop, Shaanxi, China, 2113");
+        orderedAddress.add("129, Mastic Trail, Pirate Cove, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Pirate Cove, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Pirate Cove, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("129, Mastic Trail, Pirate Cove, Frank Sound Cayman Islands, Caribbean, North America, 3442");
+        orderedAddress.add("3396, Bertram Parkway, Wanaka, Central, Central Otago, New Zealand, 1111");
+        orderedAddress.add("9205, Monique Vista, Buri, Bururi, Bigomogomo, Africa, 1000");
+        orderedAddress.add("240, Newson Street, Ilam, Bernhard Run, Southland, New Zealand, 2839");
 
         // when
         Page<User> userPage = userRepository.findAllUsersByNames(names, pageable);

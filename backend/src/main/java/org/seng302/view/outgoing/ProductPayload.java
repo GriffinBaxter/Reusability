@@ -11,14 +11,12 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.Image;
-import org.seng302.model.Product;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ProductPayload class
+ * ProductPayload class, used to send product data to the frontend.
  */
 public class ProductPayload {
 
@@ -29,6 +27,8 @@ public class ProductPayload {
     private Double recommendedRetailPrice;
     private String created;
     private List<ImagePayload> images;
+    private BusinessPayload business;
+    private String barcode;
 
     /**
      * Constructor for product payloads.
@@ -39,6 +39,9 @@ public class ProductPayload {
      * @param manufacturer Product manufacturer
      * @param recommendedRetailPrice The recommended retail price (RRP) of the product, a double
      * @param created The date and time the product was created
+     * @param images The images for the product
+     * @param barcode The barcode of the product. Must be UPC or EAN-13.
+     * @param business The payload representation of the business the product belongs to
      */
     public ProductPayload(
             String id,
@@ -47,7 +50,9 @@ public class ProductPayload {
             String manufacturer,
             Double recommendedRetailPrice,
             LocalDateTime created,
-            List<Image> images
+            List<Image> images,
+            BusinessPayload business,
+            String barcode
     ) {
         this.id = id;
         this.name = name;
@@ -56,22 +61,8 @@ public class ProductPayload {
         this.recommendedRetailPrice = recommendedRetailPrice;
         this.created = created.toString();
         this.images = ImagePayload.convertToImagePayload(images);
-    }
-
-    /**
-     * Converts a Product to a ProductPayload
-     * @param product The product that will be converted
-     * @return ProductPayload of the product
-     */
-    public static ProductPayload convertProductToProductPayload(Product product) {
-
-        return new ProductPayload(product.getProductId(),
-                                    product.getName(),
-                                    product.getDescription(),
-                                    product.getManufacturer(),
-                                    product.getRecommendedRetailPrice(),
-                                    product.getCreated(),
-                                    product.getImages());
+        this.business = business;
+        this.barcode = barcode;
     }
 
     public String getId() {
@@ -98,7 +89,17 @@ public class ProductPayload {
         return created;
     }
 
-    public List<ImagePayload> getImages() {return images;}
+    public List<ImagePayload> getImages() {
+        return images;
+    }
+
+    public BusinessPayload getBusiness() {
+        return business;
+    }
+
+    public String getBarcode() {
+        return barcode;
+    }
 
     @Override
     public String toString() {
@@ -109,7 +110,9 @@ public class ProductPayload {
                 "\"manufacturer\":\"" + manufacturer + "\"," +
                 "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
                 "\"created\":\"" + created + "," +
-                "\"images\":" + images + "," + "\"}";
+                "\"images\":" + images + "," +
+                "\"business\":" + business +
+                "\"barcode\":\"" + barcode + "\"}";
     }
 
 }

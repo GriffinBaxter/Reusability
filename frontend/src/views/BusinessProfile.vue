@@ -6,7 +6,12 @@
     <Navbar></Navbar>
 
     <!--profile container-->
-    <div class="container p-5 mt-3" id="profileContainer">
+    <div class="container p-5" id="profileContainer">
+      <div class="row">
+      <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
+        <button class="btn btn-lg green-button w-100" @click="returnToListing()" id="return-button" tabindex="9">Return to Sale Listing</button>
+      </div>
+      </div>
 
       <!--profile header, contains user search bar-->
       <ProfileHeader id="profile-header"/>
@@ -126,26 +131,23 @@
           </div>
 
           <div class="row">
+
             <div class="col">
-              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="11">Listings</button>
+              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="0">Listings</button>
             </div>
+
             <div class="col">
-              <!--logout button-->
               <div style="text-align: right" id="adminButtonRow" v-if="isAdministrator">
+                <button class="btn green-button mt-4 mx-2" id="InventoryButton"
+                        @click="navigateTo('Inventory')" tabindex="0">Inventory
+                </button>
                 <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
-                        @click="navigateTo('ProductCatalogue')" tabindex="13">Product Catalogue
+                        @click="navigateTo('ProductCatalogue')" tabindex="0">Product Catalogue
 
                 </button>
-                <button class="btn green-button float-end mt-4 mx-2" id="InventoryButton"
-                        @click="navigateTo('Inventory')" tabindex="12">Inventory
-                </button>
-
               </div>
             </div>
           </div>
-
-
-
 
         </div>
       </div>
@@ -161,10 +163,11 @@
 <script>
 import ProfileHeader from "@/components/ProfileHeader";
 import Footer from "@/components/main/Footer";
-import Navbar from "@/components/main/Navbar";
+import Navbar from "@/components/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
 import {UserRole} from "@/configs/User";
+import {checkNullity, getFormattedAddress} from "@/views/helpFunction";
 
 export default {
   name: "BusinessProfile",
@@ -193,7 +196,9 @@ export default {
 
       nameOfAdministrators: [],
 
-      isAdministrator: false
+      isAdministrator: false,
+      // keep track of if user came from individual listing page so they can return.
+      fromListing: false
     }
   },
   methods: {
@@ -262,48 +267,16 @@ export default {
       this.businessType = businessTypeLowerCaseAndSplit.join(" ");
       this.getCreatedDate(data.created);
 
-      // address unpack
       //address unpack
-      if (data.address.streetNumber) {
-        this.streetNumber = data.address.streetNumber;
-      }
-      if (data.address.streetName) {
-        this.streetName = data.address.streetName;
-      }
-      if (data.address.suburb) {
-        this.suburb = data.address.suburb;
-      }
-      if (data.address.city) {
-        this.city = data.address.city;
-      }
-      if (data.address.region) {
-        this.region = data.address.region;
-      }
-      if (data.address.country) {
-        this.country = data.address.country;
-      }
-      if (data.address.postcode) {
-        this.postcode = data.address.postcode;
-      }
+      this.streetNumber = checkNullity(data.address.streetNumber);
+      this.streetName = checkNullity(data.address.streetName);
+      this.suburb = checkNullity(data.address.suburb);
+      this.city = checkNullity(data.address.city);
+      this.region = checkNullity(data.address.region);
+      this.country = checkNullity(data.address.country);
+      this.postcode = checkNullity(data.address.postcode);
 
-      if (this.streetNumber !== "" && this.streetName !== "") {
-        this.address.push({line: this.streetNumber + " " + this.streetName});
-      } else {
-        this.address.push({line: this.streetNumber + this.streetName});
-      }
-      if (this.suburb !== "") {
-        this.address.push({line: this.suburb});
-      }
-      if (this.city !== "" && this.postcode !== "") {
-        this.address.push({line: this.city + ", " + this.postcode});
-      } else {
-        this.address.push({line: this.city + this.postcode});
-      }
-      if (this.region !== "" && this.country !== "") {
-        this.address.push({line: this.region + ", " + this.country});
-      } else {
-        this.address.push({line: this.region + this.country});
-      }
+      this.address = getFormattedAddress(this.streetNumber, this.streetName, this.suburb, this.city, this.postcode, this.region, this.country);
 
       // administrators unpack
       this.primaryAdministratorId = data.primaryAdministratorId;
@@ -366,6 +339,12 @@ export default {
         }
       })
     },
+    /**
+     * Redirect the user back to the individual sale listings page.
+     */
+    returnToListing() {
+      this.$router.back();
+    }
   },
   mounted() {
     const currentID = Cookies.get('userID');
@@ -407,6 +386,16 @@ export default {
     this.retrieveBusiness(id);
     next();
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from a page which contains an individual listing then the return to listing button component
+      // should be rendered.
+      if (from.name === 'SaleListing') {
+        vm.fromListing = true;
+      }
+      next();
+    });
+  }
 }
 </script>
 

@@ -45,31 +45,9 @@ public class BusinessPayload {
      */
     public static List<BusinessPayload> toBusinessPayload (List<Business> businesses) throws Exception {
         List<BusinessPayload> businessPayloads = new ArrayList<>();
-        BusinessPayload businessPayload;
         for (Business business: businesses){
-            Address address = business.getAddress();
-            AddressPayload addressPayload = new AddressPayload(
-                    address.getStreetNumber(),
-                    address.getStreetName(),
-                    address.getCity(),
-                    address.getRegion(),
-                    address.getCountry(),
-                    address.getPostcode(),
-                    address.getSuburb()
-            );
-            businessPayload = new BusinessPayload(
-                    business.getId(),
-                    business.getAdministrators(),
-                    business.getPrimaryAdministratorId(),
-                    business.getName(),
-                    business.getDescription(),
-                    addressPayload,
-                    business.getBusinessType(),
-                    business.getCreated()
-            );
-            businessPayloads.add(businessPayload);
+            businessPayloads.add(business.toBusinessPayload());
         }
-
 
         return businessPayloads;
     }
@@ -127,5 +105,17 @@ public class BusinessPayload {
 
     public String getCreated() {
         return created;
+    }
+
+    @Override
+    public String toString() {
+        return "{\"id\":" + id +
+               ",\"administrators\":" + administrators +
+                ",\"primaryAdministratorId\":" + primaryAdministratorId +
+                ",\"name\":\"" + name + "\"," +
+                "\"description\":\"" + description + "\"," +
+                "\"address\":" + address +
+                ",\"businessType\":\"" + businessType + "\"," +
+                "\"created\":\"" + created +"\"}";
     }
 }

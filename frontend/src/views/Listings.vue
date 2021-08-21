@@ -8,9 +8,10 @@
                     v-bind:currency-code="currencyCode"
                     v-bind:currency-symbol="currencySymbol"/>
     <!-- Listing Container -->
-    <div class="container">
-      <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
-      <div class="card p-1">
+    <div class="container mt-4">
+      <div class="card p-3">
+        <h1 id="pageTitle">{{ businessName }}'s Listings</h1>
+        <hr>
         <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
           <div class="btn-group col-md-3 py-1" role="group">
@@ -85,6 +86,7 @@
             v-bind:currency-code="currencyCode"
             v-bind:currency-symbol="currencySymbol"
             v-bind:images="item.images"
+            v-bind:barcode="item.barcode"
         />
 
         <!--space-->
@@ -113,7 +115,7 @@
 </template>
 
 <script>
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import ListingItem from "../components/listing/ListingItem";
 import Api from "../Api";
 import Cookies from "js-cookie";
@@ -151,6 +153,8 @@ name: "Listings",
       closesAscending: false,
       createdAscending: false,
 
+      // currency related variables
+      businessCountry: "", // used to retrieve the currency code and symbol
       currencyCode: "",
       currencySymbol: "",
 
@@ -318,8 +322,8 @@ name: "Listings",
         }
       })
     },
-    getBusiness(id) {
-      Api.getBusiness(id).then(response => (this.getBusinessData(response.data))).catch((error) => {
+    async getBusiness(id) {
+      await Api.getBusiness(id).then(response => (this.getBusinessData(response.data))).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
         } else if (error.response.status === 401) {
@@ -334,6 +338,7 @@ name: "Listings",
     },
     getBusinessData(data) {
       this.businessName = data.name;
+      this.businessCountry = data.address.country;
       // Checks if user is acting as business
       const actAs = Cookies.get('actAs');
       this.businessAdmin = actAs === String(data.id);
@@ -374,6 +379,7 @@ name: "Listings",
             moreInfo: response.data[i].moreInfo,
             expires: formatDate(response.data[i].inventoryItem.expires, false),
             images: response.data[i].inventoryItem.product.images,
+            barcode: response.data[i].inventoryItem.product.barcode
           })
         }
       }
@@ -385,20 +391,9 @@ name: "Listings",
      * Upon success, the filterResponse function is called with the response data.
      */
     async currencyRequest() {
-      /*
-        Request business from backend. If received assign the country of the business
-        to a variable.
-        */
-      let country = "";
-      await Api.getBusiness(this.businessId).then((response) => {
-        country = response.data.address.country;
-      })
-          .catch((error) => console.log(error))
-
-      await CurrencyAPI.currencyQuery(country).then((response) => {
+      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
         this.filterResponse(response.data);
-      })
-          .catch((error) => console.log(error))
+      }).catch((error) => console.log(error))
     },
 
     /**
@@ -441,7 +436,6 @@ name: "Listings",
       this.getListings().catch(
           (e) => console.log(e)
       );
-
       await this.currencyRequest();
     }
   }

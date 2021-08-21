@@ -126,7 +126,7 @@ public class KeywordResource {
      * GET /keywords/search endpoint for searching keywords
      *
      * Preconditions: Valid JSESSIONID
-     * Postconditions: Returns a list of Keywords matching searchQuery
+     * Postconditions: Returns a list of Keywords matching searchQuery (up to 6 matches)
      *
      * @param sessionToken JSESSIONID for verifying the user is logged in
      * @param searchQuery Query for searching keyword names
@@ -140,7 +140,7 @@ public class KeywordResource {
         // 401
         Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        List<Keyword> result = keywordRepository.findAllByNameIgnoreCaseContaining(searchQuery);
+        List<Keyword> result = keywordRepository.findTop6ByNameIgnoreCaseContaining(searchQuery);
 
         logger.info("Search Success - 200 [OK] -  Keywords retrieved for search query {}", searchQuery);
         logger.debug("Keywords Found: {}", result);

@@ -354,11 +354,11 @@ public class Address {
         return "{" +
                 "\"streetNumber\":\"" + streetNumber + "\"," +
                 "\"streetName\":\""   + streetName   + "\"," +
+                "\"suburb\":\""       + suburb       + "\","  +
                 "\"city\":\""         + city         + "\"," +
                 "\"region\":\""       + region       + "\"," +
                 "\"country\":\""      + country      + "\"," +
-                "\"postcode\":\""     + postcode     + "\"," +
-                "\"suburb\":\""       + suburb       + "\""  +
+                "\"postcode\":\""     + postcode     + "\"" +
                 "}";
     }
 
@@ -381,13 +381,14 @@ public class Address {
      * @return a string containing address info in string form
      */
     public String toOneLineString() {
-        return streetNumber + ", "
-                + streetName + ", "
-                + city + ", "
-                + region + ", "
-                + country + ", "
-                + postcode + ", "
-                + suburb;
+        String address = (streetNumber != null ? streetNumber : "")
+                        + (streetName != null ? ", " + streetName : "")
+                        + (suburb != null ? ", " + suburb : "")
+                        + (city != null ? ", " + city : "")
+                        + (region != null ? ", " + region : "")
+                        + (country != null ? ", " + country : "")
+                        + (postcode != null ? ", " + postcode : "");
+        return (address.startsWith(", ") ? address.substring(2) : address);
     }
 
     /* --------------------------------Validation-------------------------------- */

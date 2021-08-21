@@ -81,6 +81,57 @@
                   </div>
                 </div>
               </div>
+
+              <!--product barcode-->
+              <div class="form-group">
+                <br>
+                <label for="barcode-checkbox">Edit Barcode?&nbsp;</label>
+                <input type="checkbox" id="barcode-checkbox" name="barcode-checkbox" v-model="editBarcode">
+                <br>
+                <div v-if="editBarcode">
+                  <br>
+                  <label for="product-barcode">Barcode (EAN or UPC)</label>
+                  <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="newProduct.data.barcode"
+                         :class="toggleInvalidClass(errorsMessages.barcode)" :maxlength="config.barcode.maxLength">
+                  <div class="invalid-feedback">
+                    {{ errorsMessages.barcode }}
+                  </div>
+                  <br><br>
+                  <button class="btn green-button-transparent" @click="onUploadClick">Scan by uploading image</button>
+                  <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
+                                          name="img" accept="image/png, image/gif, image/jpeg">
+                  <br><br>
+                  <button v-if="liveStreamAvailable && !liveStreaming" class="btn green-button-transparent"
+                          @click="getBarcodeLiveStream">
+                    Scan using camera
+                  </button>
+                  <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent"
+                          @click="
+                              liveStreaming = false;
+                              removeCameraError();
+                              ">
+                    Stop scanning  (barcode not found)
+                  </button>
+                  <button v-if="liveStreaming && barcodeFound" class="btn green-button"
+                          @click="liveStreaming = false">
+                    Save Scanned Barcode
+                  </button>
+                  <br>
+                  <div v-if="liveStreaming"><br></div>
+                  <div id="editLiveStreamCamera"></div>
+                  <br>
+                  <button id="autofill-button" type="button"
+                          :class="`btn green-button ${getErrorMessage(
+                              config.barcode.name,
+                              newProduct.data.barcode,
+                              config.barcode.minLength,
+                              config.barcode.maxLength,
+                              config.barcode.regexMessage,
+                              config.barcode.regex) === '' ? '': 'disabled'}`"
+                          @click="autofillProductFromBarcode()">Autofill Empty Fields
+                  </button>
+                </div>
+              </div>
             </form>
           </div>
           <div class="modal-footer">
@@ -97,6 +148,7 @@
 import { Modal } from 'bootstrap'
 import Product from "../../configs/Product"
 import Api from "../../Api";
+import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../../barcodeUtils";
 
 
 export default {
@@ -135,11 +187,23 @@ export default {
         name: "",
         description: "",
         manufacturer: "",
-        recommendedRetailPrice: ""
+        recommendedRetailPrice: "",
+        barcode: ""
       },
 
       // Keeps track if there is an error or not in the form
-      inputError: false
+      inputError: false,
+      
+      editBarcode: false,
+      liveStreamAvailable: false,
+      liveStreaming: false,
+      barcodeFound: false,
+      
+      barcode: "",
+      barcodeErrorMsg: "",
+      productName: "",
+      manufacturer: "",
+      description: "",
 
     }
   },
@@ -182,6 +246,7 @@ export default {
         this.newProduct.data.description = this.value.data.description;
         this.newProduct.data.manufacturer = this.value.data.manufacturer;
         this.newProduct.data.recommendedRetailPrice = this.value.data.recommendedRetailPrice;
+        this.newProduct.data.barcode = this.value.data.barcode;
 
         // Reset all the error messages
         this.errorsMessages.id = "";
@@ -189,8 +254,14 @@ export default {
         this.errorsMessages.manufacturer = "";
         this.errorsMessages.recommendedRetailPrice = "";
         this.errorsMessages.description = "";
-
+        this.errorsMessages.barcode = "";
       }
+      
+      this.editBarcode = this.newProduct.data.barcode !== null;
+      this.barcode = ""
+      this.liveStreaming = false;
+      this.barcodeFound = false;
+      
       // Show the modal
       this.modal.show();
     },
@@ -296,6 +367,21 @@ export default {
         this.inputError = true;
       }
 
+      // Process new barcode
+      if (this.editBarcode) {
+        this.errorsMessages.barcode = this.getErrorMessage(
+            this.config.barcode.name,
+            this.newProduct.data.barcode,
+            this.config.barcode.minLength,
+            this.config.barcode.maxLength,
+            this.config.barcode.regexMessage,
+            this.config.barcode.regex)
+      } else {
+        this.newProduct.data.barcode = this.value.data.barcode;
+      }
+      if (this.errorsMessages.barcode) {
+        this.inputError = true;
+      }
 
       // If there is an input don't bother making the request to the backend
       if (this.inputError) {
@@ -324,7 +410,7 @@ export default {
                   // There was something wrong with the user data!
                   if (error.response.status === 400) {
                     if (error.response.data.message !== "") {
-                      this.formErrorModalMessage = error.response.data.message;
+                      this.formErrorModalMessage = "Error: " + error.response.data.message;
                     } else {
                       this.formErrorModalMessage = "Some of the information you have entered is invalid.";
                     }
@@ -351,10 +437,69 @@ export default {
               }
           )
     },
+    
+    onUploadClick() {
+      this.$refs.image.click();
+    },
+
+    /**
+     * Retrieves the barcode number (EAN or UPC) from an uploaded image.
+     */
+    getBarcodeStatic() {
+      this.formErrorModalMessage = "";
+      this.barcode = this.newProduct.data.barcode;
+
+      let outerThis = this;
+      getBarcodeStatic(this, function () {
+        outerThis.newProduct.data.barcode = outerThis.barcode;
+        outerThis.formErrorModalMessage = outerThis.barcodeErrorMsg;
+      });
+    },
+
+    /**
+     * Retrieves the barcode number (EAN or UPC) from a live camera feed, based on the most commonly occurring barcode
+     * per each frame scan.
+     */
+    getBarcodeLiveStream() {
+      this.formErrorModalMessage = "";
+      this.barcode = this.newProduct.data.barcode;
+
+      let outerThis = this;
+      getBarcodeLiveStream(this, 375, "#editLiveStreamCamera", function() {
+        outerThis.newProduct.data.barcode = outerThis.barcode;
+      });
+    },
+
+    /**
+     * Removes the camera error message after stopping the scanning.
+     */
+    removeCameraError() {
+      document.querySelector('#editLiveStreamCamera').innerHTML = ""
+    },
+
+    /**
+     * Autofills data from the barcode, using the OpenFoodFacts API.
+     */
+    autofillProductFromBarcode() {
+      this.formErrorModalMessage = "";
+      this.barcode = this.newProduct.data.barcode;
+      this.productName = this.newProduct.data.name;
+      this.manufacturer = this.newProduct.data.manufacturer;
+      this.description = this.newProduct.data.description;
+
+      let outerThis = this;
+      autofillProductFromBarcode(outerThis, function () {
+        outerThis.newProduct.data.name = outerThis.productName;
+        outerThis.newProduct.data.manufacturer = outerThis.manufacturer;
+        outerThis.newProduct.data.description = outerThis.description;
+      });
+    }
   },
   mounted() {
     // Create a modal and attach it to the updateProductModel reference.
     this.modal = new Modal(this.$refs._updateProductModel);
+
+    this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
   }
 }
 </script>
@@ -367,4 +512,10 @@ input:focus, textarea:focus, button:focus{
   box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
 }
+
+label, input {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 </style>

@@ -274,12 +274,13 @@ import ProfileHeader from "../components/ProfileHeader";
 import Api from '../Api';
 import Cookies from 'js-cookie';
 import Footer from "../components/main/Footer";
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import {UserRole} from '../configs/User'
 import {formatDate} from "../dateUtils";
 import Card from "../components/marketplace/Card";
 import CardDetail from "../components/marketplace/CardDetailPopup";
 import EditCardModal from "../components/marketplace/EditCardModal";
+import {getFormattedAddress, checkNullity} from "../views/helpFunction"
 
 export default {
   name: "Profile",
@@ -555,46 +556,15 @@ export default {
       this.phoneNumber = data.phoneNumber;
 
       //address unpack
-      if (data.homeAddress.streetNumber) {
-        this.streetNumber = data.homeAddress.streetNumber;
-      }
-      if (data.homeAddress.streetName) {
-        this.streetName = data.homeAddress.streetName;
-      }
-      if (data.homeAddress.suburb) {
-        this.suburb = data.homeAddress.suburb;
-      }
-      if (data.homeAddress.city) {
-        this.city = data.homeAddress.city;
-      }
-      if (data.homeAddress.region) {
-        this.region = data.homeAddress.region;
-      }
-      if (data.homeAddress.country) {
-        this.country = data.homeAddress.country;
-      }
-      if (data.homeAddress.postcode) {
-        this.postcode = data.homeAddress.postcode;
-      }
+      this.streetNumber = checkNullity(data.homeAddress.streetNumber);
+      this.streetName = checkNullity(data.homeAddress.streetName);
+      this.suburb = checkNullity(data.homeAddress.suburb);
+      this.city = checkNullity(data.homeAddress.city);
+      this.region = checkNullity(data.homeAddress.region);
+      this.country = checkNullity(data.homeAddress.country);
+      this.postcode = checkNullity(data.homeAddress.postcode);
 
-      if (this.streetNumber !== "" && this.streetName !== "") {
-        this.address.push({line: this.streetNumber + " " + this.streetName});
-      } else {
-        this.address.push({line: this.streetNumber + this.streetName});
-      }
-      if (this.suburb !== "") {
-        this.address.push({line: this.suburb});
-      }
-      if (this.city !== "" && this.postcode !== "") {
-        this.address.push({line: this.city + ", " + this.postcode});
-      } else {
-        this.address.push({line: this.city + this.postcode});
-      }
-      if (this.region !== "" && this.country !== "") {
-        this.address.push({line: this.region + ", " + this.country});
-      } else {
-        this.address.push({line: this.region + this.country});
-      }
+      this.address = getFormattedAddress(this.streetNumber, this.streetName, this.suburb, this.city, this.postcode, this.region, this.country);
 
       // businesses administered unpack
       this.actingBusinessId = Cookies.get("actAs");

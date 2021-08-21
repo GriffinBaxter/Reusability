@@ -9,7 +9,7 @@
                              v-bind:currency-symbol="currencySymbol"/>
 
     <!--inventory container-->
-    <div class="container p-5 mt-3" id="profileContainer">
+    <div class="container p-4 mt-3" id="profileContainer">
       <div class="row">
 
         <div class="col-xl-2 mb-2">
@@ -124,7 +124,7 @@
             </div>
 
             <UpdateInventoryItemModal ref="updateInventoryItemModal"
-                                      :business-id="businessId"
+                                      :business-id=businessId
                                       :currency-code="currencyCode"
                                       :currency-symbol="currencySymbol"
                                       v-model="currentInventoryItem"/>
@@ -146,6 +146,7 @@
                 v-bind:expires="inventory.expires"
                 v-bind:currency-code="currencyCode"
                 v-bind:currency-symbol="currencySymbol"
+                v-bind:barcode="inventory.barcode"
                 v-on:click="triggerUpdateInventoryItemModal(inventory)"
             />
 
@@ -178,7 +179,7 @@
 <script>
 import Footer from "../components/main/Footer";
 import InventoryItem from "../components/inventory/InventoryItem";
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
 import Api from "../Api";
 import Cookies from "js-cookie";
@@ -232,7 +233,8 @@ export default {
       inventories: null,
       currentInventoryItem: null,
 
-      // Currency related variables
+      // currency related variables
+      businessCountry: "", // used to retrieve the currency code and symbol
       currencyCode: "",
       currencySymbol: "",
 
@@ -326,10 +328,11 @@ export default {
       return 0 <= pageNumber && pageNumber < this.totalPages;
     },
 
-    retrieveBusinessInfo() {
-      Api.getBusiness(this.businessId).then(response => {
+    async retrieveBusinessInfo() {
+      await Api.getBusiness(this.businessId).then(response => {
         this.businessName = response.data.name;
         this.businessDescription = response.data.description;
+        this.businessCountry = response.data.address.country;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -567,6 +570,10 @@ export default {
             if (i === this.InventoryItemList.length) {
               return
             }
+            // to use default prop
+            let barcode = this.InventoryItemList[i].product.barcode;
+            if (!(barcode)) { barcode = undefined; }
+
             this.inventories.push({
               index: i,
               id: this.InventoryItemList[i].id,
@@ -583,7 +590,8 @@ export default {
               bestBeforeUnformatted: this.InventoryItemList[i].bestBefore,
               expires: formatDate(this.InventoryItemList[i].expires, false),
               expiresUnformatted: this.InventoryItemList[i].expires,
-              images: this.InventoryItemList[i].product.images
+              images: this.InventoryItemList[i].product.images,
+              barcode: barcode
             })
           }
         }
@@ -633,22 +641,9 @@ export default {
      * Upon success, the filterResponse function is called with the response data.
      */
     async currencyRequest() {
-      this.businessId = parseInt(this.$route.params.id);
-
-      /*
-        Request business from backend. If received assign the country of the business
-        to a variable.
-        */
-      let country = "";
-      await Api.getBusiness(this.businessId).then((response) => {
-        country = response.data.address.country;
-      })
-          .catch((error) => console.log(error))
-
-      await CurrencyAPI.currencyQuery(country).then((response) => {
+      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
         this.filterResponse(response.data);
-      })
-          .catch((error) => console.log(error))
+      }).catch((error) => console.log(error))
     },
     filterResponse(response) {
       this.currencyCode = response[0].currencies[0].code;
@@ -659,7 +654,7 @@ export default {
   async mounted() {
     const actAs = Cookies.get('actAs');
     if (checkAccessPermission(this.$route.params.id, actAs)) {
-      this.$router.push({path: `/businessProfile/${actAs}/inventory`});
+      await this.$router.push({path: `/businessProfile/${actAs}/inventory`});
     } else {
       /**
        * When mounted, initiate population of page.
@@ -671,13 +666,12 @@ export default {
         // This code notices the emit and will alert the user that the edit was successful by calling the afterEdit function.
         this.$root.$on('editedInventory', this.afterEdit);
 
-        this.businessId = this.$route.params.id;
+        this.businessId = parseInt(this.$route.params.id);
 
-        this.retrieveBusinessInfo();
+        await this.retrieveBusinessInfo();
         this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
-
         await this.currencyRequest();
       }
     }

@@ -57,7 +57,8 @@
                           v-bind:created="created"
                           v-bind:currencyCode="currencyCode"
                           v-bind:currencySymbol="currencySymbol"
-                          v-bind:images="images"/>
+                          v-bind:images="images"
+                          v-bind:barcode="barcode"/>
                     </div>
                     <div class="modal-footer">
                       <button class="btn btn-primary" @click="(event) => {
@@ -150,6 +151,57 @@
                       {{ descriptionErrorMsg }}
                     </div>
                   </div>
+                  <!--product barcode-->
+                  <div class="form-group">
+                    <br>
+                    <label for="barcode-checkbox">Add Barcode?&nbsp;</label>
+                    <input type="checkbox" id="barcode-checkbox" name="barcode-checkbox" v-model="addBarcode">
+                    <br>
+                    <div v-if="addBarcode">
+                      <br>
+                      <label for="product-barcode">Barcode (EAN or UPC)</label>
+                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="barcode"
+                             :class="toggleInvalidClass(barcodeErrorMsg)" :maxlength="config.barcode.maxLength">
+                      <div class="invalid-feedback">
+                        {{ barcodeErrorMsg }}
+                      </div>
+                      <br><br>
+                      <button id="scan-by-uploading-image-button" class="btn green-button-transparent"
+                              @click="onUploadClick">
+                        Scan by uploading image
+                      </button>
+                      <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
+                                              name="img" accept="image/png, image/gif, image/jpeg">
+                      <br><br>
+                      <button id="scan-using-camera-button" v-if="liveStreamAvailable && !liveStreaming"
+                              class="btn green-button-transparent" @click="getBarcodeLiveStream">
+                        Scan using camera
+                      </button>
+                      <button id="stop-scanning-button" v-if="liveStreaming && !barcodeFound"
+                              class="btn green-button-transparent"
+                              @click="liveStreaming = false; removeCameraError();">
+                        Stop scanning (barcode not found)
+                      </button>
+                      <button id="save-scanned-barcode-button" v-if="liveStreaming && barcodeFound"
+                              class="btn green-button" @click="liveStreaming = false">
+                        Save Scanned Barcode
+                      </button>
+                      <br>
+                      <div v-if="liveStreaming"><br></div>
+                      <div id="createLiveStreamCamera"></div>
+                      <br>
+                      <button id="autofill-button" type="button"
+                              :class="`btn green-button ${getErrorMessage(
+                              config.barcode.name,
+                              barcode,
+                              config.barcode.minLength,
+                              config.barcode.maxLength,
+                              config.barcode.regexMessage,
+                              config.barcode.regex) === '' ? '': 'disabled'}`"
+                              @click="autofillProductFromBarcode()">Autofill Empty Fields
+                      </button>
+                    </div>
+                  </div>
                   <!--toast error-->
                   <div class="form-group">
                     <div id="registration-error" ref="registration-error" v-if="toastErrorMessage"
@@ -186,7 +238,7 @@ import {Modal} from 'bootstrap'
 import Api from '../Api';
 import Product from "../configs/Product";
 import Cookies from 'js-cookie';
-import Navbar from "../components/main/Navbar";
+import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
@@ -195,6 +247,7 @@ import UpdateProductModal from "../components/productCatalogue/UpdateProductModa
 import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
+import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
 
 export default {
   name: "ProductCatalogue",
@@ -211,9 +264,9 @@ export default {
     return {
       // Table variables
       // A list of the table headers
-      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price", "Created"],
+      tableHeaders: ["Product ID", "Name", "Manufacturer", "Recommended Retail Price", "Created", "Barcode"],
       // A list of the ordering by headers, which is used with talking to the backend
-      tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created"],
+      tableOrderByHeaders: ["productId", "name", "manufacturer", "recommendedRetailPrice", "created", "barcode"],
       // A list of all the data points belonging to the table
       tableData: [],
       // Used to tell the table what is the current ordering (for visual purposes).
@@ -236,6 +289,7 @@ export default {
       currentProduct: new Product(
           {
             id: 'temp-id',
+            barcode: 'temp-barcode',
             name: 'temp-name',
             description: 'temp-desc',
             manufacturer: 'temp-man',
@@ -255,6 +309,14 @@ export default {
       // Product id related variables
       productID: "",
       productIDErrorMsg: "",
+      
+      // Product barcode related variables
+      barcode: "",
+      barcodeErrorMsg: "",
+      addBarcode: false,
+      liveStreamAvailable: false,
+      liveStreaming: false,
+      barcodeFound: false,
 
       // Product name related variables
       productName: "",
@@ -316,6 +378,11 @@ export default {
       this.currentProduct = product;
       this.currentProductIndex = productIndex;
       this.images = product.data.images;
+      this.barcode = product.data.barcode;
+      // these checks are needed so that the default prop is used if there is no data (is null)
+      if (!(this.description)) { this.description = undefined; }
+      if (!(this.manufacturer)) { this.manufacturer = undefined; }
+      if (!(this.barcode)) { this.barcode = undefined; }
       this.showModal = true;
     },
 
@@ -326,6 +393,11 @@ export default {
       // Reset product id related variables
       this.productID = "";
       this.productIDErrorMsg = "";
+
+      // Reset product barcode related variables
+      this.barcode = "";
+      this.barcodeErrorMsg = "";
+      this.addBarcode = false;
 
       // Reset product name related variables
       this.productName = "";
@@ -346,6 +418,9 @@ export default {
       // Reset toast related variables
       this.toastErrorMessage = "";
       this.cannotProceed = false;
+
+      this.liveStreaming = false;
+      this.barcodeFound = false;
 
       this.modal.show();
     },
@@ -382,8 +457,6 @@ export default {
      * Parses the orderByString and returns the resulted Objects.
      * @return {{orderBy: null | String, isAscending: boolean}} This contains the {orderBy, isAscending} properties of the this.orderByString .
      * Emulates a click when the product presses enter on a column header.
-     *
-     * @param event The keydown event
      */
     parseOrderBy() {
       let orderBy = null;
@@ -439,6 +512,7 @@ export default {
         this.productList = response.data.map((product) => {
           return new Product(product);
         });
+
         let newtableData = [];
 
         // No results
@@ -456,6 +530,7 @@ export default {
             newtableData.push(this.productList[i].data.manufacturer);
             newtableData.push(this.productList[i].data.recommendedRetailPrice);
             newtableData.push(formatDate(this.productList[i].data.created));
+            newtableData.push(this.productList[i].data.barcode);
           }
 
           this.tableData = newtableData;
@@ -535,6 +610,7 @@ export default {
      */
     trimTextInputFields() {
       this.productID = this.productID.trim();
+      this.barcode = this.barcode.trim();
       this.productName = this.productName.trim();
       this.recommendedRetailPrice = this.recommendedRetailPrice.trim();
       this.manufacturer = this.manufacturer.trim();
@@ -563,6 +639,24 @@ export default {
           this.config.productID.regex
       )
       if (this.productIDErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Product barcode error checking
+      if (this.addBarcode) {
+        this.barcodeErrorMsg = this.getErrorMessage(
+            this.config.barcode.name,
+            this.barcode,
+            this.config.barcode.minLength,
+            this.config.barcode.maxLength,
+            this.config.barcode.regexMessage,
+            this.config.barcode.regex
+        )
+      } else {
+        this.barcodeErrorMsg = ""
+        this.barcode = ""
+      }
+      if (this.barcodeErrorMsg) {
         requestIsInvalid = true
       }
 
@@ -624,6 +718,7 @@ export default {
       // Wrapping up the product submitted fields into a class object (Product).
       const productData = {
         id: this.productID,
+        barcode: this.barcode,
         name: this.productName,
         description: this.description,
         manufacturer: this.manufacturer,
@@ -646,6 +741,10 @@ export default {
               // Reset product id related variables
               this.productID = "";
               this.productIDErrorMsg = "";
+
+              // Reset product barcode related variables
+              this.barcode = "";
+              this.barcodeErrorMsg = "";
 
               // Reset product name related variables
               this.productName = "";
@@ -680,7 +779,7 @@ export default {
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
-            this.toastErrorMessage = '400 Bad request; invalid product data';
+            this.toastErrorMessage = `Error: ` + error.response.data.message;
           } else if (error.response.status === 403) {
             this.toastErrorMessage = 'User is not an administer of this business.';
           } else {
@@ -727,6 +826,10 @@ export default {
       // Reset product id related variables
       this.productID = "";
       this.productIDErrorMsg = "";
+
+      // Reset product barcode related variables
+      this.barcode = "";
+      this.barcodeErrorMsg = "";
 
       // Reset product name related variables
       this.productName = "";
@@ -780,6 +883,47 @@ export default {
       this.currencySymbol = response[0].currencies[0].symbol;
     },
 
+    onUploadClick() {
+      this.$refs.image.click();
+    },
+
+    /**
+     * Retrieves the barcode number (EAN or UPC) from an uploaded image.
+     */
+    getBarcodeStatic() {
+      this.toastErrorMessage = "";
+      getBarcodeStatic(this, function () {
+        return undefined;
+      });
+    },
+
+    /**
+     * Retrieves the barcode number (EAN or UPC) from a live camera feed, based on the most commonly occurring barcode
+     * per each frame scan.
+     */
+    getBarcodeLiveStream() {
+      this.barcodeErrorMsg = "";
+      getBarcodeLiveStream(this, 460, "#createLiveStreamCamera", function () {
+        return undefined;
+      });
+    },
+
+    /**
+     * Removes the camera error message after stopping the scanning.
+     */
+    removeCameraError() {
+      document.querySelector('#createLiveStreamCamera').innerHTML = ""
+    },
+
+    /**
+     * Autofills data from the barcode, using the OpenFoodFacts API.
+     */
+    autofillProductFromBarcode() {
+      this.toastErrorMessage = "";
+      autofillProductFromBarcode(this, function () {
+        return undefined;
+      });
+    }
   },
 
   async mounted() {
@@ -792,7 +936,7 @@ export default {
     this.modal = new Modal(this.$refs.CreateProductModal);
     const actAs = Cookies.get('actAs');
     if (checkAccessPermission(this.$route.params.id, actAs)) {
-      this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
+      await this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
     } else {
       /**
        * When mounted, initiate population of page.
@@ -812,12 +956,14 @@ export default {
         this.$router.push({name: 'Login'});
       }
     }
+
+    this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
   },
   watch: {
     // If the current Product was updated we update the table.
     currentProduct: function () {
       this.requestProducts();
-    }
+    },
   }
 }
 </script>
@@ -897,6 +1043,11 @@ input:focus, textarea:focus, button:focus, #create-product-button:focus {
   outline: none;
   box-shadow: 0 0 2px 2px #1EBA8C;
   border: 1px solid #1EBABC;
+}
+
+label, input {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /*------------------------------------------------------------------------*/

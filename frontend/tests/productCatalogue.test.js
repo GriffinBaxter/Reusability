@@ -2,10 +2,21 @@
  * @jest-environment jsdom
  */
 
-import {test, expect} from "@jest/globals"
+import {test, expect, describe, jest, beforeAll} from "@jest/globals"
 import reg from '../src/views/ProductCatalogue'
 // noinspection DuplicatedCode
 import Product from '../src/configs/Product'
+import {shallowMount} from "@vue/test-utils";
+import ProductCatalogue from "../src/views/ProductCatalogue";
+import Cookies from "js-cookie";
+import Api from "../src/Api";
+import CurrencyApi from "../src/currencyInstance";
+import OpenFoodFactsApi from "../src/openFoodFactsInstance";
+
+jest.mock("../src/Api");
+jest.mock("../src/currencyInstance");
+jest.mock("../src/openFoodFactsInstance");
+jest.mock("js-cookie");
 
 // ***************************************** getErrorMessage() Tests ***************************************************
 
@@ -931,3 +942,288 @@ test('RRP contains invalid symbols.', () => {
         )
     ).toBe(expectedMessage);
 })
+
+describe('Testing autofill functionality', function () {
+
+    let productCatalogueWrapper;
+
+    beforeAll(() => {
+        Api.getBusiness.mockImplementation(() => Promise.resolve({data: {address: {country: ''}}}));
+        CurrencyApi.currencyQuery.mockImplementation(() => Promise.resolve({data: [{currencies: [{code: '', symbol: ''}]}]}));
+        Api.sortProducts.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: [],
+            headers: {
+                "total-rows": 1,
+                "total-pages": 1
+            }}));
+
+        let $route = {
+            params: {
+                id: 1
+            },
+            query: {
+                orderBy: '', page: '0'
+            }
+        }
+
+        Cookies.get.mockReturnValue(1);
+
+        productCatalogueWrapper = shallowMount(ProductCatalogue, {
+            mocks: {
+                $route
+            }
+        });
+
+        productCatalogueWrapper.vm.addBarcode = true;
+    });
+
+    test('Testing that the autofill button is enabled when getErrorMessage returns an empty string', () => {
+        productCatalogueWrapper.vm.barcode = "111111111111";
+
+        expect(
+            reg.methods.getErrorMessage(
+                Product.config.barcode.name,
+                productCatalogueWrapper.vm.barcode,
+                Product.config.barcode.minLength,
+                Product.config.barcode.maxLength,
+                Product.config.barcode.regexMessage,
+                Product.config.barcode.regex,
+            )
+        ).toBe('');
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            const autofillButton = productCatalogueWrapper.find('#autofill-button');
+            expect(autofillButton.classes().includes('disabled')).toBeFalsy();
+        });
+    });
+
+    test('Testing that the autofill button is disabled when getErrorMessage returns a string', () => {
+        productCatalogueWrapper.vm.barcode = "11111111111";
+
+        expect(
+            reg.methods.getErrorMessage(
+                Product.config.barcode.name,
+                productCatalogueWrapper.vm.barcode,
+                Product.config.barcode.minLength,
+                Product.config.barcode.maxLength,
+                Product.config.barcode.regexMessage,
+                Product.config.barcode.regex,
+            )
+        ).toBe('Input must be between 12 and 13 characters long.');
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            const autofillButton = productCatalogueWrapper.find('#autofill-button');
+            expect(autofillButton.classes().includes('disabled')).toBeTruthy();
+        });
+    });
+
+    test("Testing that if result.data.status isn't 1, then the toast error message is set", async () => {
+        productCatalogueWrapper.vm.barcode = "111111111111";
+
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({data: {status: 0}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("Could not autofill, product may not exist in database");
+    });
+
+    test("Testing that when product name is empty, then it is autofilled", async () => {
+        productCatalogueWrapper.vm.barcode = "111111111111";
+        productCatalogueWrapper.vm.productName = "";
+        productCatalogueWrapper.vm.manufacturer = "Manufacturer";
+        productCatalogueWrapper.vm.description = "Description";
+
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({
+            data: {
+                status: 1,
+                product: {
+                    product_name: "Barcode Product Name",
+                    quantity: "Quantity",
+                    brands: "Barcode Manufacturer",
+                    generic_name: "Barcode Description"
+                }}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.vm.productName).toBe("Barcode Product Name Quantity");
+        expect(productCatalogueWrapper.vm.manufacturer).toBe("Manufacturer");
+        expect(productCatalogueWrapper.vm.description).toBe("Description");
+    });
+
+    test("Testing that when manufacturer is empty, then it is autofilled", async () => {
+        productCatalogueWrapper.vm.barcode = "111111111111";
+        productCatalogueWrapper.vm.productName = "Product Name";
+        productCatalogueWrapper.vm.manufacturer = "";
+        productCatalogueWrapper.vm.description = "Description";
+
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({
+            data: {
+                status: 1,
+                product: {
+                    product_name: "Barcode Product Name",
+                    quantity: "Quantity",
+                    brands: "Barcode Manufacturer",
+                    generic_name: "Barcode Description"
+                }}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.vm.productName).toBe("Product Name");
+        expect(productCatalogueWrapper.vm.manufacturer).toBe("Barcode Manufacturer");
+        expect(productCatalogueWrapper.vm.description).toBe("Description");
+    });
+
+    test("Testing that when description is empty, then it is autofilled", async () => {
+        productCatalogueWrapper.vm.barcode = "111111111111";
+        productCatalogueWrapper.vm.productName = "Product Name";
+        productCatalogueWrapper.vm.manufacturer = "Manufacturer";
+        productCatalogueWrapper.vm.description = "";
+
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({
+            data: {
+                status: 1,
+                product: {
+                    product_name: "Barcode Product Name",
+                    quantity: "Quantity",
+                    brands: "Barcode Manufacturer",
+                    generic_name: "Barcode Description"
+                }}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.vm.productName).toBe("Product Name");
+        expect(productCatalogueWrapper.vm.manufacturer).toBe("Manufacturer");
+        expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");
+    });
+
+    test("Testing that when product name, manufacturer, and description are empty, then they are autofilled", async () => {
+        productCatalogueWrapper.vm.barcode = "111111111111";
+        productCatalogueWrapper.vm.productName = "";
+        productCatalogueWrapper.vm.manufacturer = "";
+        productCatalogueWrapper.vm.description = "";
+
+        OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({
+            data: {
+                status: 1,
+                product: {
+                    product_name: "Barcode Product Name",
+                    quantity: "Quantity",
+                    brands: "Barcode Manufacturer",
+                    generic_name: "Barcode Description"
+                }}}));
+
+        productCatalogueWrapper.vm.autofillProductFromBarcode();
+
+        await Promise.resolve();
+
+        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.vm.productName).toBe("Barcode Product Name Quantity");
+        expect(productCatalogueWrapper.vm.manufacturer).toBe("Barcode Manufacturer");
+        expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");
+    });
+});
+
+describe('Testing scanning UI functionality', function () {
+
+    let productCatalogueWrapper;
+
+    beforeAll(() => {
+        let $route = {
+            params: {
+                id: 1
+            },
+            query: {
+                orderBy: '', page: '0'
+            }
+        }
+
+        productCatalogueWrapper = shallowMount(ProductCatalogue, {
+            mocks: {
+                $route
+            }
+        });
+    });
+
+    test('Testing that the scanning buttons are not available when the "add barcode" checkbox is not selected.', () => {
+        productCatalogueWrapper.vm.addBarcode = false;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-by-uploading-image-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that the scan by uploading image button is available.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-by-uploading-image-button').exists()).toBeTruthy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that the scan using camera button is available when the browser supports scanning.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+        productCatalogueWrapper.vm.liveStreamAvailable = true;
+        productCatalogueWrapper.vm.liveStreaming = false;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeTruthy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that the scan using camera button is not available when the browser does not support scanning.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+        productCatalogueWrapper.vm.liveStreamAvailable = false;
+        productCatalogueWrapper.vm.liveStreaming = false;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that the clicking the scan using camera button brings up the stop scanning button.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+        productCatalogueWrapper.vm.liveStreamAvailable = true;
+        productCatalogueWrapper.vm.liveStreaming = true;
+        productCatalogueWrapper.vm.barcodeFound = false;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeTruthy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeFalsy();
+        });
+    });
+
+    test('Testing that once a barcode is scanned using the live camera feed, the save scanned barcode appears.', () => {
+        productCatalogueWrapper.vm.addBarcode = true;
+        productCatalogueWrapper.vm.liveStreamAvailable = true;
+        productCatalogueWrapper.vm.liveStreaming = true;
+        productCatalogueWrapper.vm.barcodeFound = true;
+
+        productCatalogueWrapper.vm.$nextTick().then(() => {
+            expect(productCatalogueWrapper.find('#scan-using-camera-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#stop-scanning-button').exists()).toBeFalsy();
+            expect(productCatalogueWrapper.find('#save-scanned-barcode-button').exists()).toBeTruthy();
+        });
+    });
+});

@@ -13,11 +13,6 @@ Feature: UCM9 - Edit Card
     When I try to edit a card with id 2
     Then The card is updated
 
-  Scenario: AC2 - I can't change the creator
-    Given A card with id 2 exists with me as the creator
-    When I try to change the creator for card at id 2
-    Then It doesn't let me change the creator
-
   Scenario: AC4 - A system admin can edit my card
     Given I am a system admin and a card exists with a different owner at id 3
     When I try to edit a card with id 3 as system admin
