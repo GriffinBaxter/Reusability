@@ -11,6 +11,7 @@
       <Navbar></Navbar>
 
       <div id="home" class="container all-but-footer">
+        <h1 style="text-align: center">Home</h1>
 
         <ul class="nav nav-tabs" id="homepage-tabs" role="tablist">
           <li class="nav-item " role="presentation">
@@ -33,7 +34,6 @@
             <div class="container-news mx-md-5 text-font">
 
             <br>
-            <h1 style="text-align: center">Home</h1>
 
             <!-- All Bookmarked Listings Messages-->
             <div v-if="showBookmarkMessages">
