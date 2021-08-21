@@ -40,7 +40,7 @@
              data-bs-parent="#notificationAccordion">
           <div class="row accordion-body">
 
-            <!-- marketplace card notifications -->
+            <!-- marketplace card notification options -->
             <div class="col-4" style="float: contour; text-align: center" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
               <button :id="'delete_button_card_' + notification.id"
                       class="btn btn-outline-danger"
@@ -56,7 +56,7 @@
               </button>
             </div>
 
-            <!-- keyword notification -->
+            <!-- keyword notification options -->
             <div class="col" style="float: contour; text-align: center" v-else-if="notification.notificationType === 'KEYWORD'">
               <button :id="'delete_button_keyword_' + notification.id"
                       class="btn btn-outline-danger"
@@ -65,12 +65,8 @@
               </button>
             </div>
 
-            <!-- listing notification -->
-            <div class="row" v-else>
-              <div class="col" style="float: contour; text-align: center">
-              </div>
-            </div>
-            <div class="col">
+            <!-- delete notification button -->
+            <div class="col" style="text-align: center">
               <button class="btn btn-outline-dark" :id="'delete_notification' + notification.id" @click="deleteNotification(notification)">
                 Delete notification
               </button>
@@ -227,7 +223,6 @@ export default {
      * @param notification notification to delete
      */
     deleteNotification(notification) {
-      console.log(notification)
       Api.deleteNotification(notification.notificationId, notification.notificationType).then(()=> {
           this.loadNotifications();
       }).catch( err => {
@@ -244,14 +239,14 @@ export default {
 <style scoped>
 
   #wrapper {
-    max-width: 300px;
+    max-width: 400px;
     width: 100%;
     position: absolute;
     right: 25px;
     z-index: 999
   }
 
-  @media screen and (max-width: 359px){
+  @media screen and (max-width: 470px){
     #wrapper {
       width: 80vw;
       margin: 0 auto;
