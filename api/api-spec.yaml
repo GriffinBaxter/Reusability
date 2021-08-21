@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.4.1
+  version: 5.4.2
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1466,6 +1466,9 @@ paths:
             * KEYWORD
 
             * LISTING
+
+            * SOLD_LISTING
+
       responses:
         '200':
           description: Notification successfully deleted
@@ -1572,7 +1575,7 @@ paths:
           schema:
             type: string
           required: true
-          description: 'Criteria to search keywords for, all partial and complete matches are returned'
+          description: 'Criteria to search keywords for, up to six partial and complete matches are returned'
       responses:
         '200':
           description: Request successful, a (possibly empty) list of keywords is returned
@@ -1947,7 +1950,7 @@ components:
           description: The IDs of keywords that will be associated with a card once it is created. These keywords are created through the POST /keywords endpoints (UCM6).
           items:
             type: integer
-            example: [ 20, 15, 600 ]
+            example: 20, 15, 600
 
     Listing:
       type: object

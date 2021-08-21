@@ -16,10 +16,15 @@ import java.util.Optional;
  */
 public class Authorization {
 
+    Authorization() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final Logger logger = LogManager.getLogger(Authorization.class.getName());
 
     /**
      * Verifies the session token, throws an error if it does not exist, and if it does, returns the User object.
+     *
      * @param sessionToken Session token
      * @return User object
      */
@@ -35,6 +40,7 @@ public class Authorization {
                     "Access token is missing or invalid"
             );
         } else {
+            logger.debug("User (Id: {}) received.", user.get().getId());
             return user.get();
         }
     }
@@ -42,8 +48,9 @@ public class Authorization {
     /**
      * Checks if the current user's role matches the role parameter.
      * This method is useful for user authentication/identification.
+     *
      * @param currentUser current user
-     * @param role Role being matched
+     * @param role        Role being matched
      * @return boolean Returns true if the current user's role matches the role parameter, otherwise false.
      */
     public static boolean verifyRole(User currentUser, Role role) {
@@ -53,7 +60,7 @@ public class Authorization {
     /**
      * Checks if a business exists with the given ID in the given business repository.
      *
-     * @param businessId An integer that may be the ID of a business.
+     * @param businessId         An integer that may be the ID of a business.
      * @param businessRepository A business repository.
      */
     public static void verifyBusinessExists(Integer businessId, BusinessRepository businessRepository) {
@@ -73,6 +80,7 @@ public class Authorization {
      * Checks to see whether the current user is a GAA or DGAA.
      * This is important because GAA and DGAA users have additional
      * permissions.
+     *
      * @param currentUser The user who is being checked to see if they are a GAA or DGAA.
      * @return boolean Returns true if a user is a GAA or DGAA.
      */
@@ -86,7 +94,7 @@ public class Authorization {
      * Throws a 403 FORBIDDEN error if they are not.
      *
      * @param currentUser The current user.
-     * @param businessId The ID of the business you want to check if the user is administrator for.
+     * @param businessId  The ID of the business you want to check if the user is administrator for.
      */
     public static void verifyBusinessAdmin(User currentUser, Integer businessId) {
         if (currentUser.getRole() == Role.USER && !currentUser.getBusinessesAdministered().contains(businessId)) {
