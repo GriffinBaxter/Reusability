@@ -127,7 +127,7 @@ public class MarketplaceCardResource {
                                 Keyword existingKeywordPresent = existingKeyword.get();
                                 card.addKeyword(existingKeywordPresent);
                             } else {
-                                throw new IllegalKeywordArgumentException(String.format("Keyword with ID {} not found", keywordId));
+                                throw new IllegalKeywordArgumentException(String.format("Keyword with ID %d not found", keywordId));
                             }
                         }
                         MarketplaceCard createdCard = marketplaceCardRepository.save(card);
@@ -170,7 +170,6 @@ public class MarketplaceCardResource {
      * @param sessionToken Session token of user
      * @param updatedCardPayload Payload for the edited card
      * @param id id of the card to be edited
-     * @return ResponseEntity with the corresponding status code and message
      *
      * Preconditions:  id is a positive integer that represents the id of an existing marketplace card.
      *                 updatedCardPayload is a non-null JSON representation of a marketplace card.
@@ -218,23 +217,6 @@ public class MarketplaceCardResource {
                 }
             }
 
-            // Checks ID was sent
-            if (updatedCardPayload.getCreatorId() != null) {
-                // Checks if the ID's match
-                if (updatedCardPayload.getCreatorId() != storedCard.get().getCreatorId()) {
-                    if (!Authorization.isGAAorDGAA(currentUser)) {
-                        logger.error("User doesn't have permission to set creator to a different user");
-                        throw new ResponseStatusException(
-                                HttpStatus.FORBIDDEN,
-                                "User doesn't have permission to set creator to a different user"
-                        );
-                    }
-                }
-            } else {
-                // sets Id to stored Id
-                updatedCardPayload.setCreatorId(storedCard.get().getCreatorId());
-            }
-
             // Checks if title was sent
             if (updatedCardPayload.getTitle() == null) {
                 logger.error("Card Update Failure - 400 [BAD_REQUEST] - Title was not included");
@@ -247,18 +229,10 @@ public class MarketplaceCardResource {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description was not included");
             }
 
-            // Checks if section was sent and is valid
-            if (updatedCardPayload.getSection() == null) {
-                logger.error("Card Update Failure - 400 [BAD_REQUEST] - Section was not included or invalid");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Section was not included or invalid");
-            }
-
             try {
                 // Set changes
-                storedCard.get().setCreatorId(updatedCardPayload.getCreatorId());
                 storedCard.get().setTitle(updatedCardPayload.getTitle());
                 storedCard.get().setDescription(updatedCardPayload.getDescription());
-                storedCard.get().setSection(updatedCardPayload.getSection());
                 storedCard.get().removeAllKeywords();
                 for (Integer keyword : updatedCardPayload.getKeywordIds()) {
                     Optional<Keyword> optionalKeyword = keywordRepository.findById(keyword);
@@ -424,9 +398,7 @@ public class MarketplaceCardResource {
 
         // Delete all relate notifications
         Optional<MarketCardNotification> optionalMarketCardNotification = marketCardNotificationRepository.findByUserIdAndMarketCardId(currentUser.getId(), id);
-        if (optionalMarketCardNotification.isPresent()){
-            marketCardNotificationRepository.delete(optionalMarketCardNotification.get());
-        }
+        optionalMarketCardNotification.ifPresent(marketCardNotification -> marketCardNotificationRepository.delete(marketCardNotification));
 
         marketplaceCardRepository.save(marketplaceCard);
         logger.info("Marketplace Card Modification Success - 200 [OK] - Marketplace card with ID {} has had its display period extended to {}.", id, marketplaceCard.getDisplayPeriodEnd());
