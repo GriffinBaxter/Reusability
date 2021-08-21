@@ -5,7 +5,8 @@
 
       <div class="row">
         <div class="col">
-          <p class="col text-secondary">{{ created }}</p>
+          <p class="col text-secondary">Created: {{ created }}</p>
+          <p class="col text-secondary">Expires: {{ expires }}</p>
         </div>
       </div>
 
@@ -39,6 +40,11 @@ export default {
       required: true
     },
     created: {
+      type: String,
+      default: "",
+      required: true
+    },
+    expires: {
       type: String,
       default: "",
       required: true
