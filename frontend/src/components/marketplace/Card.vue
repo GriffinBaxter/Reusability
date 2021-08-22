@@ -5,7 +5,7 @@
 
       <div class="row">
         <div class="col">
-          <p class="col text-secondary">Created: {{ created }} <br> Expires: {{ expires }}</p>
+          <p class="col text-secondary">Created: {{ created }} <br> Expires:&nbsp; {{ expires }}</p>
         </div>
       </div>
 
