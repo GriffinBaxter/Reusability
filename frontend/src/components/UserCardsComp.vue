@@ -27,6 +27,7 @@
                   v-bind:title="card.title"
                   v-bind:description="card.description"
                   v-bind:created="styleDate(card.created)"
+                  v-bind:expires="styleDate(card.displayPeriodEnd)"
                   v-bind:creator="card.creator"
                   v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
             />
