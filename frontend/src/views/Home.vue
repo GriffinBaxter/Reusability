@@ -86,12 +86,15 @@
           </div>
           </div>
           <div class="tab-pane fade" id="my-cards" role="tabpanel" aria-labelledby="my-feed-tab">
-            <div v-if="loadingCards">
+            <div id="loading-cards-dots" v-if="loadingCards">
               <loading-dots />
             </div>
+            <div id="cards-error-message" class="error-message" v-else-if="cardsError">
+              {{cardsError}}
+            </div>
             <div v-else>
-              <UserCardsComp v-if="usersCards.length > 0" :users-cards="usersCards" :show-title="false"/>
-              <div class="mt-2" v-else>No cards to show</div>
+              <UserCardsComp id="cards-container" v-if="usersCards.length > 0" :users-cards="usersCards" :show-title="false"/>
+              <div id="no-cards-message" class="mt-2" v-else>No cards to show</div>
             </div>
           </div>
         </div>
@@ -127,6 +130,7 @@ export default {
       rendered: false,
       hasDataLoaded: false,
       showBookmarkMessages: false, // hide messages if acting as business
+      cardsError: "",
 
       usersCards: [],
       userId: null,
@@ -211,6 +215,7 @@ export default {
      */
     async retrieveUsersCards(userId) {
       this.loadingCards = true;
+      this.cardsError = "";
       await Api.getUsersCards(userId).then(response => {
         this.usersCards = response.data;
         this.usersCards.sort(this.compareCards);
@@ -245,14 +250,14 @@ export default {
      */
     processUserInfoError(error) {
       if (error.request && !error.response) {
-        this.$router.push({path: '/timeout'});
+        this.cardsError = "Unable to retrieve cards at this time, please try again later."
       } else if (error.response.status === 406) {
-        this.$router.push({path: '/noUser'});
+        this.cardsError = "No user id found."
       } else if (error.response.status === 401) {
         this.$router.push({path: '/invalidtoken'});
+        this.cardsError = "Unauthorized to see the cards."
       } else {
-        this.$router.push({path: '/noUser'});
-        console.log(error.message);
+        this.cardsError = "Something went wrong..."
       }
     },
   }
@@ -351,6 +356,14 @@ div.post h2, div.post p {
   width: 14px;
   margin-right: 4px;
   margin-left: 4px;
+}
+
+.error-message {
+  background-color: #ff000030;
+  border: 3px #ff000060 solid;
+  border-radius: 0.3rem;
+  padding: 1em 1em;
+  margin-top: 2em;
 }
 
 #delete-btn-container {
