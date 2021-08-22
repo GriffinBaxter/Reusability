@@ -30,7 +30,7 @@ public class KeywordNotification {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "keyword_id", referencedColumnName = "id")
     private Keyword keyword;
 

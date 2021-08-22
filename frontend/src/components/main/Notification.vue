@@ -66,9 +66,9 @@
             </div>
 
             <!-- delete notification button -->
-            <div class="col" style="text-align: center">
+            <div class="col" style="text-align: center" v-if="!notification.marketCardId">
               <button class="btn btn-outline-dark" :id="'delete_notification' + notification.id" @click="deleteNotification(notification)">
-                Delete notification
+                Delete Notification
               </button>
             </div>
 
