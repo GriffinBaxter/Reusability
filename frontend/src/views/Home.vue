@@ -268,6 +268,21 @@ body {
   margin: 0;
 }
 
+.nav-link {
+  font-family: 'Roboto', sans-serif !important;
+  color: black !important;
+}
+
+.nav-link:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.nav-link:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 div {
   box-sizing: border-box;
 }
