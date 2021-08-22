@@ -275,8 +275,8 @@ export default {
     checkProductIdValid() {
       // Check if product ID exists
       let found = false
-      for (let i=0 ; i < this.allProducts.length; i++) {
-        if (this.newInventoryItem.data.productId === this.allProducts[i].id) {
+      for (let product of this.allProducts) {
+        if (this.newInventoryItem.data.productId === product.id) {
           found = true
         }
       }

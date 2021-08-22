@@ -461,8 +461,8 @@ export default {
     checkProductIdValid() {
       // Check if product ID exists
       let found = false
-      for (let i=0 ; i < this.allProducts.length; i++) {
-        if (this.autofillInput === this.allProducts[i].id) {
+      for (let product of this.allProducts) {
+        if (this.autofillInput === product.id) {
           found = true
         }
       }
