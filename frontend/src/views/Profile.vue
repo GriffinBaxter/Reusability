@@ -11,13 +11,6 @@
     <!--nav bar-->
     <Navbar></Navbar>
 
-      <!-- a placeholder so that when you click on a user's card on their profile it will open the more detailed display -->
-      <CardDetail v-bind:id="selectedCard"
-                  v-bind:section="cardSection"/>
-
-      <!-- Edit Modal for editing your own cards -->
-      <EditCardModal ref="editCardModal"></EditCardModal>
-
     <!--profile container-->
     <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
@@ -234,31 +227,7 @@
           </div>
 
           <!--user's cards-->
-          <div class="col" v-if="userHasCards()">
-            <div class="row" id="user-cards">
-              <h4 v-if="otherUser">User's Cards</h4>
-              <h4 v-else>My Cards</h4>
-
-              <!-- Card-->
-              <div class="col-md-6 col-xl-4 mb-4 mb-lg-0"
-                   style="padding: 12px"
-                   v-for="card in usersCards"
-                   v-bind:key="card.index">
-                <div type="button"
-                     @click="selectACard(card.id, card.section)"
-                     data-bs-toggle="modal"
-                     data-bs-target="#cardDetailPopUp">
-                  <Card v-bind:index="card.index"
-                        v-bind:title="card.title"
-                        v-bind:description="card.description"
-                        v-bind:created="styleDate(card.created)"
-                        v-bind:creator="card.creator"
-                        v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <UserCardsComp class="mt-3" :users-cards="usersCards" :other-user="otherUser" />
         </div>
       </div>
     </div>
@@ -276,21 +245,16 @@ import Cookies from 'js-cookie';
 import Footer from "../components/main/Footer";
 import Navbar from "../components/Navbar";
 import {UserRole} from '../configs/User'
-import {formatDate} from "../dateUtils";
-import Card from "../components/marketplace/Card";
-import CardDetail from "../components/marketplace/CardDetailPopup";
-import EditCardModal from "../components/marketplace/EditCardModal";
 import {getFormattedAddress, checkNullity} from "../views/helpFunction"
+import UserCardsComp from "../components/UserCardsComp";
 
 export default {
   name: "Profile",
   components: {
-    EditCardModal,
+    UserCardsComp,
     Footer,
     ProfileHeader,
     Navbar,
-    Card,
-    CardDetail
   },
 
   data() {
@@ -327,8 +291,6 @@ export default {
 
       // User card variables
       usersCards: [],
-      selectedCard: 0,
-      cardSection: "For Sale",
     }
   },
   methods: {
@@ -370,13 +332,6 @@ export default {
      */
     businessesAdministeredExist() {
       return this.businessesAdministered.length !== 0;
-    },
-    /**
-     * If a user has cards then they will need to be displayed.
-     * @return boolean true if the user has cards (i.e the length of usersCards !== 0), otherwise false.
-     */
-    userHasCards() {
-      return this.usersCards.length !== 0;
     },
 
     // --------------------------------------------------------------------------------------------------------------------
@@ -721,34 +676,6 @@ export default {
         this.actionErrorMessage = "Sorry, but something went wrong..."
       }
       return success;
-    },
-    /**
-     * If a card is selected then a custom event is emitted so the CardDetailPopup knows to open and display the
-     * information for the selected card.
-     * @param index the index of the selected card.
-     * @param section the section the selected card appears in.
-     */
-    selectACard(index, section) {
-      this.$emit('openCardDetail', index);
-      this.selectedCard = index;
-      this.cardSection = section;
-    },
-    /**
-     * Format the date of a card using the date-fns library.
-     * @param date the date the card was created
-     * @return date a date formatted using the date-fns library.
-     */
-    styleDate(date) {
-      return formatDate(date, false);
-    },
-    /**
-     * Concat the suburb and city together to then be displayed on a user's card.
-     * @param suburb the suburb the creator of the card lives in.
-     * @param city the city the creator of the card lives in.
-     * @return String a concatenation of the suburb and city.
-     */
-    combineSuburbAndCity(suburb, city) {
-      return (suburb === null) ? city : suburb + ", " + city;
     },
     /**
      * Sends a get request to the backend to retrieve the cards belonging to the current user's profile you are viewing.
