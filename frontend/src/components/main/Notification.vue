@@ -41,14 +41,14 @@
           <div class="row accordion-body">
 
             <!-- marketplace card notification options -->
-            <div class="col-4" style="float: contour; text-align: center" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
+            <div class="col-6" style="float: contour; text-align: center" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
               <button :id="'delete_button_card_' + notification.id"
                       class="btn btn-outline-danger"
                       @click="deleteCard(notification.marketCardId)">
                 Delete Card
               </button>
             </div>
-            <div class="col-5" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
+            <div class="col-6" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
               <button :id="'extend_button_card_' + notification.id"
                       class="btn btn-outline-success"
                       @click="extendCardForDisplayPeriod(notification.marketCardId)">
