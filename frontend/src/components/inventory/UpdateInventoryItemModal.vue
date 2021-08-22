@@ -270,6 +270,23 @@ export default {
       }
     },
     /**
+     * Checks if the current input is an existing ProductId
+     */
+    checkProductIdValid() {
+      // Check if product ID exists
+      let found = false
+      for (let product of this.allProducts) {
+        if (this.newInventoryItem.data.productId === product.id) {
+          found = true
+        }
+      }
+      if (found === false) {
+        this.productIdErrorMsg = "Product Id does not exist for business"
+      } else {
+        this.productIdErrorMsg = "";
+      }
+    },
+    /**
      * This function validates all of the inventory item fields and sets requestIsInvalid to true if any errors
      * are found in the values. This also sets the error messages based on the value, minimum and maximum length,
      * regex message, and regex.
@@ -298,18 +315,9 @@ export default {
       if (this.productIdErrorMsg) {
         requestIsInvalid = true
       } else {
-        // Check if product ID exists
-        let found = false
-        for (let i = 0; i < this.allProducts.length; i++) {
-          if (this.newInventoryItem.data.productId === this.allProducts[i].id) {
-            found = true
-          }
-        }
-        if (found === false) {
-          this.productIdErrorMsg = "Product Id does not exist for business"
-          requestIsInvalid = true;
-        } else {
-          this.productIdErrorMsg = "";
+        this.checkProductIdValid()
+        if (this.productIdErrorMsg) {
+          requestIsInvalid = true
         }
       }
 
@@ -412,6 +420,7 @@ export default {
             this.fillData(currentFocus);
             Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'closed';
+            this.checkProductIdValid()
           }
           break;
         case 'filtered':
@@ -419,6 +428,7 @@ export default {
             this.fillData(currentFocus);
             Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'closed';
+            this.checkProductIdValid()
           }
           break;
         case 'closed':
@@ -468,6 +478,7 @@ export default {
             this.fillData(currentFocus)
             Autofill.toggleList('closed', this.$refs["autofill-list"])
             this.autofillState = 'closed';
+            this.checkProductIdValid()
           } else if (this.autofillState === 'opened' && currentFocus === input) {
             // If state = opened and focus on input, close it
             Autofill.toggleList('closed', this.$refs["autofill-list"])
@@ -477,6 +488,7 @@ export default {
             this.fillData(currentFocus)
             Autofill.toggleList('closed', this.$refs["autofill-list"])
             this.autofillState = 'closed';
+            this.checkProductIdValid()
           } else if (this.autofillState === 'filtered' && currentFocus === input) {
             // If state = filtered and focus on input, set state to opened
             Autofill.toggleList('open', this.$refs["autofill-list"])
@@ -535,6 +547,7 @@ export default {
           } else { // Already filtered
             Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
           }
+          this.checkProductIdValid()
           break;
       }
     },

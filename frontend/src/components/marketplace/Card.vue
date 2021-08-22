@@ -5,7 +5,7 @@
 
       <div class="row">
         <div class="col">
-          <p class="col text-secondary">{{ created }}</p>
+          <p class="col text-secondary">Created: {{ created }} <br> Expires:&nbsp; {{ expires }}</p>
         </div>
       </div>
 
@@ -43,6 +43,11 @@ export default {
       default: "",
       required: true
     },
+    expires: {
+      type: String,
+      default: "",
+      required: true
+    },
     creator: {
       type: Object,
       default: function () {return {}},
@@ -69,10 +74,6 @@ export default {
 
 <style scoped>
 
-#card-container {
-  /*padding-bottom: 10px;*/
-}
-
 #avatar-image {
   width: 30px;
   border-radius: 50px;
@@ -95,7 +96,4 @@ export default {
   margin-top: 14px;
 }
 
-/*.card-body.p-4 {*/
-/*  padding-bottom: 0px;*/
-/*}*/
 </style>

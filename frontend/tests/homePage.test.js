@@ -1,17 +1,21 @@
-import {test, expect, describe, jest} from "@jest/globals";
+import {test, expect, describe, jest, beforeEach} from "@jest/globals";
 import Home from '../src/views/Home'
 import Api from "../src/Api";
+import Cookies from "js-cookie"
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import VueLogger from "vuejs-logger";
 
 const localVue = createLocalVue();
 jest.mock("../src/Api");
+jest.mock("js-cookie")
 localVue.use(VueLogger, {isEnabled: false})
 let wrapper;
 
 const $router = {
     push: jest.fn()
 };
+
+const card1 = {"id":34,"creator":{"id":21,"firstName":"John","lastName":"Doe","middleName":"S","nickname":"Johnny","bio":"Biography","email":"email@email.com","created":"2021-02-02T00:00","role":"DEFAULTGLOBALAPPLICATIONADMIN","businessesAdministered":[null],"homeAddress":{"suburb":"Ilam","city":"Christchurch","region":"Canterbury","country":"New Zealand"}},"section":"EXCHANGE","created":"2021-08-22T14:37:25.767435","displayPeriodEnd":"2021-09-05T14:37:25.767435","title":"asdasd","description":"asd","keywords":[{"id":19,"name":"asd","created":"2021-08-22T14:37:25.745069"}]};
 
 describe("Tests for bookmark message display", () => {
     test("Test (No Bookmarked Messages) display when no bookmark message.", async () => {
@@ -197,4 +201,191 @@ describe("Tests for bookmark message deletion", () => {
 
         expect(wrapper.find('#delete-bookmark-message-button-1').exists()).toBeFalsy();
     });
+})
+
+
+describe("Tests for my cards section", () => {
+
+    beforeEach( () => {
+        Cookies.get.mockImplementation(
+            (name) => {
+                if (name === "actAs") {
+                    return undefined;
+                } else {
+                    return 15;
+                }
+            }
+        );
+    })
+
+    const createWrapperAndClick = async (response, success) => {
+        if (success) {
+            Api.getUsersCards.mockImplementation(() => Promise.resolve(response));
+        } else {
+            Api.getUsersCards.mockImplementation(() => Promise.reject(response));
+        }
+        wrapper = shallowMount(
+            Home,
+            {
+                localVue,
+                mocks: {
+                    $router
+                }
+            }
+        )
+
+        await wrapper.vm.$nextTick();
+        await wrapper.find("#my-cards-tab").trigger("click");
+        await wrapper.vm.$nextTick();
+    }
+
+    test("Testing that no cards to show message appears when the user has no cards", async () => {
+        const response = {
+            status: 200,
+            data: []
+        }
+
+        await createWrapperAndClick(response, true);
+
+        expect(wrapper.find("#no-cards-message").exists()).toBeTruthy();
+        expect(wrapper.find("#cards-container").exists()).toBeFalsy();
+        expect(wrapper.find("#cards-error-message").exists()).toBeFalsy();
+        expect(wrapper.find("#loading-cards-dots").exists()).toBeFalsy();
+    })
+
+    test("Testing that the cards appear on the page when user has cards", async () => {
+        const response = {
+        status: 200,
+        data: [card1]
+        }
+
+        await createWrapperAndClick(response, true);
+
+        expect(wrapper.find("#no-cards-message").exists()).toBeFalsy();
+        expect(wrapper.find("#cards-container").exists()).toBeTruthy();
+        expect(wrapper.find("#cards-error-message").exists()).toBeFalsy();
+        expect(wrapper.find("#loading-cards-dots").exists()).toBeFalsy();
+    })
+
+    test("Testing that an error message appears for a 406", async () => {
+        const response = {
+            response: {
+                status: 406,
+            }
+        }
+
+        await createWrapperAndClick(response, false);
+
+        expect(wrapper.find("#no-cards-message").exists()).toBeFalsy();
+        expect(wrapper.find("#cards-container").exists()).toBeFalsy();
+        expect(wrapper.find("#cards-error-message").exists()).toBeTruthy();
+        expect(wrapper.find("#cards-error-message").text()).toStrictEqual("No user id found.")
+    })
+
+    test("Testing that an error message appears for a unknown code", async () => {
+        const response = {
+            response: {
+                status: 500,
+            }
+        }
+
+        await createWrapperAndClick(response, false);
+
+        expect(wrapper.find("#no-cards-message").exists()).toBeFalsy();
+        expect(wrapper.find("#cards-container").exists()).toBeFalsy();
+        expect(wrapper.find("#cards-error-message").exists()).toBeTruthy();
+        expect(wrapper.find("#cards-error-message").text()).toStrictEqual("Something went wrong...")
+    })
+
+    test("Testing that user is redirected on a 401", async () => {
+        const response = {
+            response: {
+                status: 401,
+            }
+        }
+
+        await createWrapperAndClick(response, false);
+
+        expect(wrapper.find("#no-cards-message").exists()).toBeFalsy();
+        expect(wrapper.find("#cards-container").exists()).toBeFalsy();
+        expect(wrapper.find("#cards-error-message").exists()).toBeTruthy();
+        expect(wrapper.find("#cards-error-message").text()).toStrictEqual("Unauthorized to see the cards.")
+        expect($router.push).toHaveBeenCalledWith({path: '/invalidtoken'})
+    })
+
+})
+
+describe("Tests for tab being available depending ", () => {
+
+    const createWrapperAndMockApi = async () => {
+        const response = {
+            status: 200,
+            data: [card1]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(response));
+        Api.getBookmarkedMessage.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: []
+        }));
+
+        wrapper = shallowMount(
+            Home,
+            {
+                localVue,
+                mocks: {
+                    $router
+                }
+            }
+        )
+        await wrapper.vm.$nextTick();
+    }
+
+    test("Testing for actAs returning a value", async () => {
+        Cookies.get.mockImplementation(
+            (name) => {
+                if (name === "actAs") {
+                    return 15;
+                } else {
+                    return 15;
+                }
+            }
+        );
+        await createWrapperAndMockApi();
+
+        expect(wrapper.find("#my-cards-tab").exists()).toBeFalsy();
+        expect(wrapper.find("#my-cards").exists()).toBeFalsy();
+    })
+
+    test("Testing the actAs value being equal to undefined", async () => {
+        Cookies.get.mockImplementation(
+            (name) => {
+                if (name === "actAs") {
+                    return undefined;
+                } else {
+                    return 15;
+                }
+            }
+        );
+        await createWrapperAndMockApi();
+
+        expect(wrapper.find("#my-cards-tab").exists()).toBeTruthy();
+        expect(wrapper.find("#my-cards").exists()).toBeTruthy();
+    })
+
+    test("Testing the actAs value being equal to null", async () => {
+        Cookies.get.mockImplementation(
+            (name) => {
+                if (name === "actAs") {
+                    return null;
+                } else {
+                    return 15;
+                }
+            }
+        );
+        await createWrapperAndMockApi();
+
+        expect(wrapper.find("#my-cards-tab").exists()).toBeTruthy();
+        expect(wrapper.find("#my-cards").exists()).toBeTruthy();
+    })
+
 })

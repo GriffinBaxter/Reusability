@@ -11,61 +11,92 @@
       <Navbar></Navbar>
 
       <div id="home" class="container all-but-footer">
+        <h1 style="text-align: center">Home</h1>
 
-        <!--Home feed-->
-        <div class="container-news mx-md-5 text-font">
+        <ul class="nav nav-tabs" id="homepage-tabs" role="tablist">
+          <li class="nav-item " role="presentation">
+            <button class="nav-link active" id="my-feed-tab" data-bs-toggle="tab" data-bs-target="#my-feed" type="button"
+            role="tab" aria-controls="my-feed" aria-selected="true">
+              My Feed
+            </button>
+          </li>
+          <li class="nav-item " role="presentation" v-if="isActingAsUser()">
+            <button class="nav-link" id="my-cards-tab" data-bs-toggle="tab" data-bs-target="#my-cards" type="button"
+                    role="tab" aria-controls="my-cards" aria-selected="false">
+              My Cards
+            </button>
+          </li>
+        </ul>
 
-          <br>
-          <h1 style="text-align: center">Home</h1>
+        <div class="tab-content">
+          <!--Home feed-->
+          <div class="tab-pane fade show active" id="my-feed" role="tabpanel" aria-labelledby="my-feed-tab">
+            <div class="container-news mx-md-5 text-font">
 
-          <!-- All Bookmarked Listings Messages-->
-          <div v-if="showBookmarkMessages">
+            <br>
 
-            <!-- Bookmarked listing message -->
-            <div id="bookmark-messages-container" v-if="hasDataLoaded">
-              <div v-if="bookmarkMessages.length === 0 && rendered">
-                <h2 id="no-bookmark-message" style="text-align: center">(No Bookmarked Messages)</h2>
-              </div>
+            <!-- All Bookmarked Listings Messages-->
+            <div v-if="showBookmarkMessages">
 
-              <div :id="'bookmark-message-container-' + message.id"
-                   class="row post shadow py-3 px-4"
-                   type="button"
-                   style="margin-left: 0; margin-right: 0"
-                   v-for="message in bookmarkMessages" v-bind:key="message.id">
+              <!-- Bookmarked listing message -->
+              <div id="bookmark-messages-container" v-if="hasDataLoaded">
+                <div v-if="bookmarkMessages.length === 0 && rendered">
+                  <h2 id="no-bookmark-message" style="text-align: center">(No Bookmarked Messages)</h2>
+                </div>
 
-                <div :id="'bookmark-message-link-' + message.id" class="col-11" @click="toListing(message.listingId, message.businessId)">
-                  <!--Bookmarked listing message description-->
-                  <div>
-                    <p class="post-description">
-                      {{ message.description }}</p>
+                <div :id="'bookmark-message-container-' + message.id"
+                     class="row post shadow py-3 px-4"
+                     type="button"
+                     style="margin-left: 0; margin-right: 0"
+                     v-for="message in bookmarkMessages" v-bind:key="message.id">
+
+                  <div :id="'bookmark-message-link-' + message.id" class="col-11" @click="toListing(message.listingId, message.businessId)">
+                    <!--Bookmarked listing message description-->
+                    <div>
+                      <p class="post-description">
+                        {{ message.description }}</p>
+                    </div>
+                    <!--Listing close date-->
+                    <p class="py-1">
+                      <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
+                    </p>
+                    <!--Date/time of message-->
+                    <p class="py-1">
+                      <label class="bookmark-message-title">Notification Date:</label>
+                      {{ formatDateVar(message.created, true) }}
+                    </p>
                   </div>
-                  <!--Listing close date-->
-                  <p class="py-1">
-                    <label class="bookmark-message-title">Closes:</label> {{ formatDateVar(message.closes, false) }}
-                  </p>
-                  <!--Date/time of message-->
-                  <p class="py-1">
-                    <label class="bookmark-message-title">Notification Date:</label>
-                    {{ formatDateVar(message.created, true) }}
-                  </p>
-                </div>
 
-                <!--Delete button for bookmarked listing message-->
-                <div class="col-1" id="delete-btn-container" style="position: relative;">
-                  <button :id="'delete-bookmark-message-button-' + message.id"
-                          type="button"
-                          class="btn-close"
-                          @click="deleteMessage(message.id)"/>
+                  <!--Delete button for bookmarked listing message-->
+                  <div class="col-1" id="delete-btn-container" style="position: relative;">
+                    <button :id="'delete-bookmark-message-button-' + message.id"
+                            type="button"
+                            class="btn-close"
+                            @click="deleteMessage(message.id)"/>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--     Loading Dotes     -->
-            <div v-else>
-              <LoadingDots/>
+              <!--     Loading Dotes     -->
+              <div v-else>
+                <LoadingDots/>
+              </div>
+
             </div>
 
           </div>
-
+          </div>
+          <div class="tab-pane fade" id="my-cards" role="tabpanel" aria-labelledby="my-feed-tab" v-if="isActingAsUser()">
+            <div id="loading-cards-dots" v-if="loadingCards">
+              <loading-dots />
+            </div>
+            <div id="cards-error-message" class="error-message" v-else-if="cardsError">
+              {{cardsError}}
+            </div>
+            <div v-else>
+              <UserCardsComp id="cards-container" v-if="usersCards.length > 0" :users-cards="usersCards" :show-title="false"/>
+              <div id="no-cards-message" class="mt-2" v-else>No cards to show</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -79,6 +110,7 @@
 <script>
 import Footer from '../components/main/Footer';
 import Navbar from '../components/Navbar';
+import UserCardsComp from "../components/UserCardsComp"
 import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
@@ -89,7 +121,8 @@ export default {
   components: {
     LoadingDots,
     Footer,
-    Navbar
+    Navbar,
+    UserCardsComp
   },
   data() {
     return {
@@ -97,6 +130,11 @@ export default {
       rendered: false,
       hasDataLoaded: false,
       showBookmarkMessages: false, // hide messages if acting as business
+      cardsError: "",
+
+      usersCards: [],
+      userId: null,
+      loadingCards: false
     }
   },
   mounted() {
@@ -121,6 +159,13 @@ export default {
       })
     } else {
       this.showBookmarkMessages = false;
+    }
+
+    this.userId = Cookies.get("userID");
+    if (this.userId !== null && this.userId !== undefined) {
+      this.retrieveUsersCards(this.userId);
+    } else {
+      this.$router.push({path: '/login'});
     }
   },
   methods: {
@@ -162,6 +207,68 @@ export default {
           .catch((error) => {
             console.log(error);
           })
+    },
+    /**
+     * Sends a get request to the backend to retrieve the cards belonging to the current user's profile you are viewing.
+     * If the request was unsuccessful, the cards are not populated on the page and appropriate error messages logged.
+     * @param userId the id of the user's profile you are viewing.
+     */
+    async retrieveUsersCards(userId) {
+      this.loadingCards = true;
+      this.cardsError = "";
+      await Api.getUsersCards(userId).then(response => {
+        this.usersCards = response.data;
+        this.usersCards.sort(this.compareCards);
+      }).catch((error) => this.processUserInfoError(error));
+      this.loadingCards = false;
+    },
+    /**
+     * This method is used to compare two cards' sections when sorting a user's cards by section.
+     * @param card1 the user's first card used for comparison.
+     * @param card2 the user's second card used for comparison.
+     *
+     * Preconditions:  card1 is a non-null JSON representing a MarketplaceCard.
+     *                 card2 is a non-null JSON representing a MarketplaceCard.
+     * Postconditions: an integer value representing the comparison outcome:
+     *                 1. -1 if the section of card1 is "less" than the section of card2.
+     *                 2. 1 if the section of card1 is "greater" than the section of card2.
+     *                 3. 0 if the card sections are equal.
+     */
+    compareCards(card1, card2) {
+      if (card1.section < card2.section) {
+        return -1;
+      }
+      if (card1.section > card2.section) {
+        return 1;
+      }
+      return 0;
+    },
+    /**
+     * If a request is made to the backend for user info (profile information or cards) and an error occurs
+     * then the appropriate error message will need to be displayed.
+     * @param error an error which includes an error message.
+     */
+    processUserInfoError(error) {
+      if (error.request && !error.response) {
+        this.cardsError = "Unable to retrieve cards at this time, please try again later."
+      } else if (error.response.status === 406) {
+        this.cardsError = "No user id found."
+      } else if (error.response.status === 401) {
+        this.$router.push({path: '/invalidtoken'});
+        this.cardsError = "Unauthorized to see the cards."
+      } else {
+        this.cardsError = "Something went wrong..."
+      }
+    },
+    /**
+     * Determines if a user is acting as a user.
+     * [Note this uses the actAs cookie]
+     *
+     * @return {boolean} True if the user is acting as a user. Otherwise false.
+     */
+    isActingAsUser() {
+      const value = Cookies.get("actAs")
+      return value === undefined || value === null;
     }
   }
 }
@@ -174,6 +281,21 @@ export default {
 body {
   background: #f1f1f1;
   margin: 0;
+}
+
+.nav-link {
+  font-family: 'Roboto', sans-serif !important;
+  color: black !important;
+}
+
+.nav-link:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.nav-link:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 div {
@@ -244,6 +366,14 @@ div.post h2, div.post p {
   width: 14px;
   margin-right: 4px;
   margin-left: 4px;
+}
+
+.error-message {
+  background-color: #ff000030;
+  border: 3px #ff000060 solid;
+  border-radius: 0.3rem;
+  padding: 1em 1em;
+  margin-top: 2em;
 }
 
 #delete-btn-container {

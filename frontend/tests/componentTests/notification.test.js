@@ -147,7 +147,7 @@ describe("Tests for notification's accordion", () => {
         expect(wrapper.find("#emptyMessage").exists()).toBeFalsy()
     });
 
-    test("Tests accordion allow to open if it is not a 'deleted' notification.", async function () {
+    test("Tests accordion opens", async function () {
         // Given
         const notificationsData = {
             status: 200,
@@ -169,28 +169,6 @@ describe("Tests for notification's accordion", () => {
 
         // Then
         expect(wrapper.find("#collapse_0").exists()).toBeTruthy()
-    });
-
-    test("Tests accordion not allow to open if it is a 'deleted' notification.", async function () {
-        // Given
-        const notificationsData = {
-            status: 200,
-            data: [
-                {
-                    id: 1,
-                    description: "Your card (Nescafe Cafe Menu Coffee Mix Caramel Latte 170G) has been deleted.",
-                    created: "2021-07-21T22:05:55.449072",
-                    marketplaceCardPayload: null,
-                    notificationType: "MARKETPLACE"
-                }]
-        };
-
-        // When
-        Api.getNotifications.mockImplementation(() => Promise.resolve(notificationsData));
-        await mountPage();
-
-        // Then
-        expect(wrapper.find("#collapse_0").exists()).toBeFalsy()
     });
 })
 
