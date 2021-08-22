@@ -5,8 +5,7 @@
 
       <div class="row">
         <div class="col">
-          <p class="col text-secondary">Created: {{ created }}</p>
-          <p class="col text-secondary">Expires: {{ expires }}</p>
+          <p class="col text-secondary">Created: {{ created }} <br> Expires: {{ expires }}</p>
         </div>
       </div>
 
@@ -75,10 +74,6 @@ export default {
 
 <style scoped>
 
-#card-container {
-  /*padding-bottom: 10px;*/
-}
-
 #avatar-image {
   width: 30px;
   border-radius: 50px;
@@ -101,7 +96,4 @@ export default {
   margin-top: 14px;
 }
 
-/*.card-body.p-4 {*/
-/*  padding-bottom: 0px;*/
-/*}*/
 </style>
