@@ -20,7 +20,7 @@
               My Feed
             </button>
           </li>
-          <li class="nav-item" role="presentation">
+          <li class="nav-item " role="presentation" v-if="isActingAsUser()">
             <button class="nav-link" id="my-cards-tab" data-bs-toggle="tab" data-bs-target="#my-cards" type="button"
                     role="tab" aria-controls="my-cards" aria-selected="false">
               My Cards
@@ -85,7 +85,7 @@
 
           </div>
           </div>
-          <div class="tab-pane fade" id="my-cards" role="tabpanel" aria-labelledby="my-feed-tab">
+          <div class="tab-pane fade" id="my-cards" role="tabpanel" aria-labelledby="my-feed-tab" v-if="isActingAsUser()">
             <div id="loading-cards-dots" v-if="loadingCards">
               <loading-dots />
             </div>
@@ -260,6 +260,16 @@ export default {
         this.cardsError = "Something went wrong..."
       }
     },
+    /**
+     * Determines if a user is acting as a user.
+     * [Note this uses the actAs cookie]
+     *
+     * @return {boolean} True if the user is acting as a user. Otherwise false.
+     */
+    isActingAsUser() {
+      const value = Cookies.get("actAs")
+      return value === undefined || value === null;
+    }
   }
 }
 </script>
