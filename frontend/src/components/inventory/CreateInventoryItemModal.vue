@@ -323,6 +323,7 @@ export default {
             this.fillData(currentFocus);
             Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'closed';
+            this.checkProductIdValid()
           }
           break;
         case 'filtered':
@@ -330,6 +331,7 @@ export default {
             this.fillData(currentFocus);
             Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'closed';
+            this.checkProductIdValid()
           }
           break;
         case 'closed':
@@ -379,6 +381,7 @@ export default {
             this.fillData(currentFocus)
             Autofill.toggleList('closed', this.$refs["autofill-list"])
             this.autofillState = 'closed';
+            this.checkProductIdValid()
           } else if (this.autofillState === 'opened' && currentFocus === input) {
             // If state = opened and focus on input, close it
             Autofill.toggleList('closed', this.$refs["autofill-list"])
@@ -388,6 +391,7 @@ export default {
             this.fillData(currentFocus)
             Autofill.toggleList('closed', this.$refs["autofill-list"])
             this.autofillState = 'closed';
+            this.checkProductIdValid()
           } else if (this.autofillState === 'filtered' && currentFocus === input) {
             // If state = filtered and focus on input, set state to opened
             Autofill.toggleList('open', this.$refs["autofill-list"])
@@ -404,6 +408,7 @@ export default {
             Autofill.toggleList('closed', this.$refs["autofill-list"]);
             this.autofillState = 'initial';
           }
+          this.checkProductIdValid()
           break;
         case 'ArrowDown':
           if (this.autofillState === 'initial' || this.autofillState === 'closed') {
@@ -446,7 +451,25 @@ export default {
           } else { // Already filtered
             Autofill.filterOptions(this.$refs["autofill-input"].value, this.$refs["autofill-list"].children, this.autofillState);
           }
+          this.checkProductIdValid()
           break;
+      }
+    },
+    /**
+     * Checks if the current input is an existing ProductId
+     */
+    checkProductIdValid() {
+      // Check if product ID exists
+      let found = false
+      for (let i=0 ; i < this.allProducts.length; i++) {
+        if (this.autofillInput === this.allProducts[i].id) {
+          found = true
+        }
+      }
+      if (found === false) {
+        this.productIdErrorMsg = "Product Id does not exist for business"
+      } else {
+        this.productIdErrorMsg = "";
       }
     },
     /**
@@ -527,20 +550,11 @@ export default {
           this.config.productId.regex
       )
       if (this.productIdErrorMsg) {
-        requestIsInvalid = true
+        requestIsInvalid = true;
       } else {
-        // Check if product ID exists
-        let found = false
-        for (let i=0 ; i < this.allProducts.length; i++) {
-          if (this.autofillInput === this.allProducts[i].id) {
-            found = true
-          }
-        }
-        if (found === false) {
-          this.productIdErrorMsg = "Product Id does not exist for business"
+        this.checkProductIdValid();
+        if (this.productIdErrorMsg) {
           requestIsInvalid = true;
-        } else {
-          this.productIdErrorMsg = "";
         }
       }
 
