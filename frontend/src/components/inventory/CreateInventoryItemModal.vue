@@ -356,8 +356,14 @@ export default {
       this.currentProduct = finalProduct;
       this.autofillInput = finalProduct.id;
       this.quantity = 1;
-      this.pricePerItem = finalProduct.recommendedRetailPrice;
-      this.totalPrice = finalProduct.recommendedRetailPrice * this.quantity;
+
+      if (finalProduct.recommendedRetailPrice == null) {
+        this.pricePerItem = "";
+        this.totalPrice = "";
+      } else {
+        this.pricePerItem = finalProduct.recommendedRetailPrice;
+        this.totalPrice = finalProduct.recommendedRetailPrice * this.quantity;
+      }
     },
     /**
      * Handles keyboard input when navigating autofill dropdown menu
@@ -473,11 +479,11 @@ export default {
       }
     },
     /**
-     * Updates the total price when the quantity input or price per item are modified.
-     * */
+     * Updates the total price when the quantity input or price per item are modified, to 2 decimal places.
+     */
     updatePriceFromQuantity() {
       if (!isNaN(this.quantity) && !isNaN(this.pricePerItem)) {
-        this.totalPrice = this.quantity * this.pricePerItem;
+        this.totalPrice = (this.quantity * this.pricePerItem).toFixed(2);
       }
     },
     /**

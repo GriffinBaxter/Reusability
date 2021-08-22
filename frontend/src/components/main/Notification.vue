@@ -34,54 +34,48 @@
             </button>
           </h2>
 
-          <div :id="'collapse_' + notification.id"
-               v-if="notification.marketCardId !== null"
-               class="accordion-collapse collapse"
-               :aria-labelledby="'heading_' + notification.id"
-               data-bs-parent="#notificationAccordion">
-            <div class="accordion-body">
+        <div :id="'collapse_' + notification.id"
+             class="accordion-collapse collapse"
+             :aria-labelledby="'heading_' + notification.id"
+             data-bs-parent="#notificationAccordion">
+          <div class="row accordion-body">
 
-            <!-- marketplace card notifications -->
-            <div class="row" v-if="notification.notificationType === 'MARKETPLACE'">
-              <div class="col" style="float: contour; text-align: center">
-                <button :id="'delete_button_card_' + notification.id"
-                        class="btn btn-outline-danger"
-                        @click="deleteCard(notification.marketCardId)">
-                  Delete Card
-                </button>
-              </div>
-              <div class="col">
-                <button :id="'extend_button_card_' + notification.id"
-                        class="btn btn-outline-success"
-                        @click="extendCardForDisplayPeriod(notification.marketCardId)">
-                  Extend Card for 2 Weeks
-                </button>
-              </div>
+            <!-- marketplace card notification options -->
+            <div class="col-6" style="float: contour; text-align: center" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
+              <button :id="'delete_button_card_' + notification.id"
+                      class="btn btn-outline-danger"
+                      @click="deleteCard(notification.marketCardId)">
+                Delete Card
+              </button>
+            </div>
+            <div class="col-6" v-if="notification.notificationType === 'MARKETPLACE' && notification.marketCardId != null">
+              <button :id="'extend_button_card_' + notification.id"
+                      class="btn btn-outline-success"
+                      @click="extendCardForDisplayPeriod(notification.marketCardId)">
+                Extend Card for 2 Weeks
+              </button>
             </div>
 
-            <!-- keyword notification -->
-            <div class="row" v-else-if="notification.notificationType === 'KEYWORD'">
-              <div class="col" style="float: contour; text-align: center">
-                <button :id="'delete_button_keyword_' + notification.id"
-                        class="btn btn-outline-danger"
-                        @click="deleteKeyword(notification.keywordId)">
-                  Delete Keyword
-                </button>
-              </div>
+            <!-- keyword notification options -->
+            <div class="col" style="float: contour; text-align: center" v-else-if="notification.notificationType === 'KEYWORD'">
+              <button :id="'delete_button_keyword_' + notification.id"
+                      class="btn btn-outline-danger"
+                      @click="deleteKeyword(notification.keywordId)">
+                Delete Keyword
+              </button>
             </div>
 
-              <!-- listing notification -->
-              <div class="row" v-else>
-                <div class="col" style="float: contour; text-align: center">
-                </div>
-              </div>
+            <!-- delete notification button -->
+            <div class="col" style="text-align: center" v-if="!notification.marketCardId">
+              <button class="btn btn-outline-dark" :id="'delete_notification' + notification.id" @click="deleteNotification(notification)">
+                Delete Notification
+              </button>
+            </div>
 
             </div>
           </div>
         </div>
-
       </div>
-
     </div>
     <div v-else>
       <div class="accordion">
@@ -142,6 +136,7 @@ export default {
         if (notification.notificationType === 'KEYWORD') {
           notifications.push({
             id: index,
+            notificationId: notification.id,
             keywordId: notification.keyword.id,
             description: notification.description,
             date: notification.created,
@@ -150,6 +145,7 @@ export default {
         } else if (notification.notificationType === 'MARKETPLACE') { // marketplace notification
           notifications.push({
             id: index,
+            notificationId: notification.id,
             marketCardId: notification.marketplaceCardPayload !== null ? notification.marketplaceCardPayload.id : null,
             description: notification.description,
             date: notification.created,
@@ -158,6 +154,7 @@ export default {
         } else {
           notifications.push({
             id: index,
+            notificationId: notification.id,
             description: notification.description,
             date: notification.created,
             notificationType: notification.notificationType
@@ -220,6 +217,17 @@ export default {
       Api.deleteExistingKeyword(id)
           .then(() => this.loadNotifications())
           .catch((error) => this.errorCatcher(error));
+    },
+    /**
+     * Deletes a notification for the user then re-calls loadNotifications().
+     * @param notification notification to delete
+     */
+    deleteNotification(notification) {
+      Api.deleteNotification(notification.notificationId, notification.notificationType).then(()=> {
+          this.loadNotifications();
+      }).catch( err => {
+          console.log(err)
+      })
     }
   },
   beforeMount() {
@@ -231,14 +239,14 @@ export default {
 <style scoped>
 
   #wrapper {
-    max-width: 300px;
+    max-width: 400px;
     width: 100%;
     position: absolute;
     right: 25px;
     z-index: 999
   }
 
-  @media screen and (max-width: 359px){
+  @media screen and (max-width: 470px){
     #wrapper {
       width: 80vw;
       margin: 0 auto;

@@ -42,6 +42,8 @@
                   <div class="col">
                     <h6 class="text-muted">
                       Created: {{ created }}
+                      <br>
+                      Expires: {{ expires }}
                     </h6>
                   </div>
                   <div class="col" style="float:right; text-align: right">
@@ -96,6 +98,7 @@ export default {
       description: "",
       keywords: [],
       created: "",
+      expires: "",
       creator: "",
       displayCreator: "",
       address: "",
@@ -132,6 +135,7 @@ export default {
       this.title = data.title;
       this.description = data.description;
       this.created = formatDate(data.created);
+      this.expires = formatDate(data.displayPeriodEnd);
       this.address = [data.creator.homeAddress.suburb, data.creator.homeAddress.city].join(" ");
       this.creator = [data.creator.firstName, data.creator.middleName, data.creator.lastName].join(" ");
       this.creatorId = data.creator.id;
