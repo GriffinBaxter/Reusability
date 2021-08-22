@@ -85,7 +85,7 @@
 
           </div>
           </div>
-          <div class="tab-pane fade" id="my-cards" role="tabpanel" aria-labelledby="my-feed-tab">
+          <div class="tab-pane fade" id="my-cards" role="tabpanel" aria-labelledby="my-feed-tab" v-if="isActingAsUser()">
             <div id="loading-cards-dots" v-if="loadingCards">
               <loading-dots />
             </div>

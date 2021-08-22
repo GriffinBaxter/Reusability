@@ -207,7 +207,15 @@ describe("Tests for bookmark message deletion", () => {
 describe("Tests for my cards section", () => {
 
     beforeEach( () => {
-        Cookies.get.mockReturnValue(15);
+        Cookies.get.mockImplementation(
+            (name) => {
+                if (name === "actAs") {
+                    return undefined;
+                } else {
+                    return 15;
+                }
+            }
+        );
     })
 
     const createWrapperAndClick = async (response, success) => {
@@ -303,6 +311,81 @@ describe("Tests for my cards section", () => {
         expect(wrapper.find("#cards-error-message").exists()).toBeTruthy();
         expect(wrapper.find("#cards-error-message").text()).toStrictEqual("Unauthorized to see the cards.")
         expect($router.push).toHaveBeenCalledWith({path: '/invalidtoken'})
+    })
+
+})
+
+describe("Tests for tab being available depending ", () => {
+
+    const createWrapperAndMockApi = async () => {
+        const response = {
+            status: 200,
+            data: [card1]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(response));
+        Api.getBookmarkedMessage.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: []
+        }));
+
+        wrapper = shallowMount(
+            Home,
+            {
+                localVue,
+                mocks: {
+                    $router
+                }
+            }
+        )
+        await wrapper.vm.$nextTick();
+    }
+
+    test("Testing for actAs returning a value", async () => {
+        Cookies.get.mockImplementation(
+            (name) => {
+                if (name === "actAs") {
+                    return 15;
+                } else {
+                    return 15;
+                }
+            }
+        );
+        await createWrapperAndMockApi();
+
+        expect(wrapper.find("#my-cards-tab").exists()).toBeFalsy();
+        expect(wrapper.find("#my-cards").exists()).toBeFalsy();
+    })
+
+    test("Testing the actAs value being equal to undefined", async () => {
+        Cookies.get.mockImplementation(
+            (name) => {
+                if (name === "actAs") {
+                    return undefined;
+                } else {
+                    return 15;
+                }
+            }
+        );
+        await createWrapperAndMockApi();
+
+        expect(wrapper.find("#my-cards-tab").exists()).toBeTruthy();
+        expect(wrapper.find("#my-cards").exists()).toBeTruthy();
+    })
+
+    test("Testing the actAs value being equal to null", async () => {
+        Cookies.get.mockImplementation(
+            (name) => {
+                if (name === "actAs") {
+                    return null;
+                } else {
+                    return 15;
+                }
+            }
+        );
+        await createWrapperAndMockApi();
+
+        expect(wrapper.find("#my-cards-tab").exists()).toBeTruthy();
+        expect(wrapper.find("#my-cards").exists()).toBeTruthy();
     })
 
 })
