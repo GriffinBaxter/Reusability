@@ -176,7 +176,7 @@ public class NotificationResource {
         }
         logger.debug("Keyword Notification Deletion Update - Notification found");
 
-        keywordNotificationRepository.deleteById(id);
+        keywordNotificationRepository.delete(notification.get());
         logger.debug("Keyword Notification Deletion Update - Notification Deleted");
     }
 
