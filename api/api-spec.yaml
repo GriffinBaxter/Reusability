@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.0.1
+  version: 6.1.0
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -26,6 +26,7 @@ tags:
   - name: 'U6: Acting as Individual or Business'
     description: 'All necessary API endpoints are found in prior stories'
   - name: 'U10 Modifying Individuals'
+  - name: 'U11 Modifying Businesses'
   - name: 'U13: Home page'
     description: 'No endpoints required for this story specifically, but several will likely be used from prior and latter stories'
   - name: 'U15: Product Catalogue'
@@ -1864,6 +1865,37 @@ paths:
           description: There was some error with the data supplied by the user, appropriate error message(s) should be shown to user
         '403':
           description: 'Forbidden: Returned when a user tries to update other users info'
+
+  '/business/{id}/profile':
+    put:
+      tags:
+        - 'U11 Modifying Businesses'
+        - 'Business Accounts'
+      summary: Modify an existing business
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Business'
+      responses:
+        '200':
+          description: Business updated successfully
+        '400':
+          description: There was some error with the data supplied by the user, appropriate error message(s) should be shown to user
+        '403':
+          description: 'Forbidden: Returned when a user tries to update the business info for a business they do not administer AND the user is not a global application admin'
+
 
 components:
   securitySchemes:
