@@ -59,6 +59,10 @@
                 <div style="vertical-align:middle; font-size:15px;">
                   <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
                   <a v-bind:title="creator" style="font-size: 17px"> {{ displayCreator }} </a>
+                  <button v-if="!checkCurrentUserIsCreator()" class="btn btn-outline-success"
+                          style="float:right"
+                          data-bs-toggle="modal"
+                          data-bs-target="#messageModal">Send Message</button>
                   <button v-if="deletePermissionCheck()" class="btn btn-outline-success"
                           style="float:right"
                           @click="openEdit"
@@ -70,7 +74,7 @@
                           style="float:right"
                           @click="removeCurrentCard()"
                           data-bs-dismiss="modal"
-                          aria-label="Close" >Remove</button>
+                          aria-label="Close">Remove</button>
                 </div>
 
               </div>
@@ -79,6 +83,7 @@
 
         </div>
       </div>
+      <MessageModal v-bind:creator="creator" v-bind:creator-id="creatorId" v-bind:card="title" v-bind:card-id="id" ref="messageModal" id="messageModal"/>
     </div>
   </div>
 </template>
@@ -87,9 +92,13 @@
 import Api from "../../Api";
 import {formatDate} from "../../dateUtils";
 import Cookies from 'js-cookie';
+import MessageModal from "../../components/marketplace/MessageModal";
 
 export default {
   name: "CardDetail",
+  components: {
+    MessageModal
+  },
   data() {
     return {
       avatar: require("../../../public/sample_profile_image.jpg"),
@@ -209,6 +218,14 @@ export default {
         flag = (this.currentUserRole !== "USER")
       }
       return flag;
+    },
+    /**
+     * Checks if the current user is the creator of the card
+     * @return {boolean} Whether the current user is the creator or not
+     */
+    checkCurrentUserIsCreator() {
+      let currentUserId = Cookies.get('userID');
+      return currentUserId == this.creatorId;
     },
     /**
      * Opens the edit modal
