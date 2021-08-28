@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.1.0
+  version: 6.1.1
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1865,6 +1865,8 @@ paths:
           description: There was some error with the data supplied by the user, appropriate error message(s) should be shown to user
         '403':
           description: 'Forbidden: Returned when a user tries to update other users info'
+        '406':
+          description: 'Select User not exist'
 
   '/business/{id}/profile':
     put:
@@ -1895,6 +1897,8 @@ paths:
           description: There was some error with the data supplied by the user, appropriate error message(s) should be shown to user
         '403':
           description: 'Forbidden: Returned when a user tries to update the business info for a business they do not administer AND the user is not a global application admin'
+        '406':
+          description: 'Select Business not exist'
 
 
 components:
