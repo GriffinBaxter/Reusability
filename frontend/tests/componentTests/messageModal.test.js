@@ -180,4 +180,17 @@ describe("Testing the message modal functionality", () => {
         expect($router.push).toHaveBeenCalledWith({ path: `/timeout`});
     });
 
+    test('Testing that the reset method resets the modal error and message', () => {
+        messageModalWrapper.vm.message = "a";
+        messageModalWrapper.vm.modalError = "error"
+
+        expect(messageModalWrapper.vm.modalError).toBe("error");
+        expect(messageModalWrapper.vm.message).toBe("a");
+
+        messageModalWrapper.vm.reset();
+
+        expect(messageModalWrapper.vm.modalError).toBe("");
+        expect(messageModalWrapper.vm.message).toBe("");
+    });
+
 })

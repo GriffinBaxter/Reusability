@@ -27,6 +27,7 @@
                   type="button"
                   class="btn btn-outline-danger"
                   style="float:left"
+                  @click="reset"
                   data-bs-dismiss="modal"
                   aria-label="Cancel">Cancel</button>
           <button id="send-button"
@@ -73,7 +74,7 @@ export default {
       } else {
         Api.sendMessage(this.$props.cardId, this.$props.creatorId, this.message).then(() => {
           this.modal.hide();
-          this.message = "";
+          this.reset();
         }).catch((error) => {
           if (error.require && !error.response) {
             this.$router.push({path: '/timeout'});
@@ -89,7 +90,14 @@ export default {
           }
         });
       }
-    }
+    },
+    /**
+     * Resets all the fields of the modal - triggered by clicking the "Cancel" button or when the API call is successful
+     */
+    reset() {
+      this.modalError = "";
+      this.message = "";
+    },
   },
   mounted() {
     this.modal = new Modal(this.$refs.messageModal);
