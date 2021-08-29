@@ -61,8 +61,8 @@
                   <a v-bind:title="creator" style="font-size: 17px"> {{ displayCreator }} </a>
                   <button v-if="!checkCurrentUserIsCreator()" class="btn btn-outline-success"
                           style="float:right"
-                          data-bs-toggle="modal"
-                          data-bs-target="#messageModal">Send Message</button>
+                          data-bs-dismiss="modal"
+                          @click="openMessage">Send Message</button>
                   <button v-if="deletePermissionCheck()" class="btn btn-outline-success"
                           style="float:right"
                           @click="openEdit"
@@ -83,7 +83,6 @@
 
         </div>
       </div>
-      <MessageModal v-bind:creator="creator" v-bind:creator-id="creatorId" v-bind:card="title" v-bind:card-id="id" ref="messageModal" id="messageModal"/>
     </div>
   </div>
 </template>
@@ -92,13 +91,9 @@
 import Api from "../../Api";
 import {formatDate} from "../../dateUtils";
 import Cookies from 'js-cookie';
-import MessageModal from "../../components/marketplace/MessageModal";
 
 export default {
   name: "CardDetail",
-  components: {
-    MessageModal
-  },
   data() {
     return {
       avatar: require("../../../public/sample_profile_image.jpg"),
@@ -232,6 +227,12 @@ export default {
      */
     openEdit() {
       this.$parent.$refs.editCardModal.showModal(this.id)
+    },
+    /**
+     * Opens the message modal
+     */
+    openMessage() {
+      this.$parent.$refs.messageModal.showModal(this.creator, this.creatorId, this.title, this.id);
     }
   },
   /**

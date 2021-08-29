@@ -9,8 +9,8 @@
         </div>
 
         <div class="modal-body">
-          <h6>Card: {{this.$props.card}}</h6>
-          <h6>Recipient: {{this.$props.creator}}</h6>
+          <h6>Card: {{this.card}}</h6>
+          <h6>Recipient: {{this.creator}}</h6>
           <textarea v-model="message" style="min-width: 100%" :maxlength="300" id="message-body"></textarea>
           <!-- Modal error message -->
           <div class="row my-lg-2" v-if="modalError">
@@ -49,17 +49,15 @@ import Api from "../../Api";
 
 export default {
   name: "MessageModal",
-  props: [
-    'creator',
-    'creatorId',
-    'card',
-    'cardId'
-  ],
   data() {
     return {
       modal: null,
       message: "",
-      modalError: ""
+      modalError: "",
+      creator: "",
+      creatorId: "",
+      card: "",
+      cardId: ""
     }
   },
   methods: {
@@ -72,7 +70,7 @@ export default {
       if (this.message.length < 1 || this.message.length > 300) {
         this.modalError = "Message length must be between 1 and 300 characters long"
       } else {
-        Api.sendMessage(this.$props.cardId, this.$props.creatorId, this.message).then(() => {
+        Api.sendMessage(this.cardId, this.creatorId, this.message).then(() => {
           this.modal.hide();
           this.reset();
         }).catch((error) => {
@@ -97,6 +95,13 @@ export default {
     reset() {
       this.modalError = "";
       this.message = "";
+    },
+    showModal(creator, creatorId, card, cardId) {
+      this.creator = creator;
+      this.creatorId = creatorId;
+      this.card = card;
+      this.cardId = cardId;
+      this.modal.show();
     },
   },
   mounted() {
