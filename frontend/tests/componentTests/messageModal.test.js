@@ -193,4 +193,18 @@ describe("Testing the message modal functionality", () => {
         expect(messageModalWrapper.vm.message).toBe("");
     });
 
+    test('Testing that the showModal method sets the variables correctly', () => {
+        messageModalWrapper.vm.creator = "";
+        messageModalWrapper.vm.creatorId = "";
+        messageModalWrapper.vm.card = "";
+        messageModalWrapper.vm.cardId = "";
+
+        messageModalWrapper.vm.showModal("Creator", 1, "Card title", 2);
+
+        expect(messageModalWrapper.vm.creator).toBe("Creator");
+        expect(messageModalWrapper.vm.creatorId).toBe(1);
+        expect(messageModalWrapper.vm.card).toBe("Card title");
+        expect(messageModalWrapper.vm.cardId).toBe(2);
+    });
+
 })
