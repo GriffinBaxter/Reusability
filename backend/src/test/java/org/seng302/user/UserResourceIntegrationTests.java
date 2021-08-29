@@ -1490,6 +1490,7 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
         when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(registerJson)
                 .cookie(cookie)).andReturn().getResponse();
@@ -1521,6 +1522,7 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(registerJson)
                 .cookie(cookie)).andReturn().getResponse();
@@ -1552,6 +1554,7 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(registerJson)
                 .cookie(cookie)).andReturn().getResponse();
@@ -1583,6 +1586,7 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(registerJson)
                 .cookie(cookie)).andReturn().getResponse();
@@ -1614,6 +1618,7 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(registerJson)
                 .cookie(cookie)).andReturn().getResponse();
@@ -1642,6 +1647,7 @@ class UserResourceIntegrationTests {
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(registerJson))
                 .andReturn().getResponse();
@@ -1673,6 +1679,7 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
         when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
                         .contentType(MediaType.APPLICATION_JSON).content(registerJson)
                         .cookie(cookie))
@@ -1706,6 +1713,7 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
         when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
         response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
                         .contentType(MediaType.APPLICATION_JSON).content(registerJson)
                         .cookie(cookie))
@@ -1716,16 +1724,36 @@ class UserResourceIntegrationTests {
         assertThat(response.getErrorMessage()).isEqualTo("Invalid country");
     }
 
+    /**
+     * Test A BAD_REQUEST stats return when user is try to modified profile by invalid address, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanUserEmailAddressAlreadyExist() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
 
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
 
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
 
-
-
-
-
-
-
-
-
-
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
 }

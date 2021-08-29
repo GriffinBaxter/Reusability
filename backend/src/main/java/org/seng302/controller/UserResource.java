@@ -505,6 +505,14 @@ public class UserResource {
      * @return updated User
      */
     private User updateUserInfo(User user, UserRegistrationPayload userRegistrationPayloads) {
+        String newEmailAddress = userRegistrationPayloads.getEmail();
+        if (userRepository.findByEmail(newEmailAddress).isPresent() && user.getEmail().equals(newEmailAddress)){
+            logger.error("Registration Failure - {}", "Email address used");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "The Email already been used."
+            );
+        }
         try {
             Address address = extractAddress(userRegistrationPayloads.getHomeAddress());
             user.setHomeAddress(address);
