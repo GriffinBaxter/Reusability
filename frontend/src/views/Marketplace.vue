@@ -9,6 +9,8 @@
     <CardDetail v-bind:id="selectedCard"
                 v-bind:section="selectSection"/>
 
+    <MessageModal ref="messageModal"/>
+
     <!-- Edit Modal -->
     <EditCardModal ref="editCardModal"></EditCardModal>
 
@@ -99,6 +101,7 @@ import Navbar from '../components/Navbar';
 import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
 import Api from "../Api";
 import EditCardModal from "../components/marketplace/EditCardModal";
+import MessageModal from "../components/marketplace/MessageModal";
 
 export default {
   name: "Marketplace",
@@ -129,6 +132,7 @@ export default {
     Footer,
     Navbar,
     EditCardModal,
+    MessageModal
   },
   methods: {
 
