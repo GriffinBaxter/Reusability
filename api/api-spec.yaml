@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.1.1
+  version: 6.1.2
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -967,6 +967,12 @@ paths:
             format: date-time
           required: false
           description: "Criteria to search listings for dates before this date"
+        - in: query
+          name: barcode
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for, a barcode"
       responses:
         '200':
           description: Request successful, a (possibly empty) list of listing is returned
