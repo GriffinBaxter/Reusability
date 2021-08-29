@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Conversation Entity (contains messages)
+ * Conversation Entity (for marketplace messages)
  */
 @Data
 @NoArgsConstructor
