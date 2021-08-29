@@ -1,6 +1,7 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
+import org.seng302.Validation;
 import org.seng302.model.Address;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.controller.UserResource;
@@ -85,6 +86,27 @@ class UserResourceIntegrationTests {
             "}";
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
+
+    private final String modifiedUserPayload = "{\n" +
+            "\"firstName\": \"%S\",\n" +
+            "\"lastName\": \"%S\",\n" +
+            "\"middleName\": \"%S\",\n" +
+            "\"nickname\": \"%S\",\n" +
+            "\"bio\": \"%S\",\n" +
+            "\"email\": \"%S\",\n" +
+            "\"dateOfBirth\": \"%S\",\n" +
+            "\"phoneNumber\": \"%S\",\n" +
+            "\"homeAddress\": {\n" +
+            "\"streetNumber\": \"%s\",\n" +
+            "\"streetName\": \"%S\",\n" +
+            "\"suburb\": \"%S\",\n" +
+            "\"city\": \"%S\",\n" +
+            "\"region\": \"%S\",\n" +
+            "\"country\": \"%s\",\n" +
+            "\"postcode\": \"%s\"\n" +
+            "},\n" +
+            "\"password\": \"%s\"\n" +
+            "}";
 
     private MockHttpServletResponse response;
 
@@ -1443,4 +1465,267 @@ class UserResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(userRepository.findById(dGAA.getId()).get().getRole()).isEqualTo(Role.DEFAULTGLOBALAPPLICATIONADMIN);
     }
+
+/* ------------------------------------------ Modified User Profile Tests ------------------------------------------- */
+
+    /**
+     * Test An OK stats return when user modified his profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanChangeProfileForHisSelf() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK stats return when DGAA modified other user's profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testDGAACanChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK stats return when GAA modified other user's profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test A FORBIDDEN stats return when user try to modify other user's profile.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(LocalDate.of(2000, 5, 10));
+    }
+
+    /**
+     * Test A NOT_ACCEPTABLE stats return when user try to modify not exist user's profile.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangeProfileForNotExistUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Test A UNAUTHORIZED stats return when user is not login.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testNotLoginUserCanNotChangeProfile() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Test A BAD_REQUEST stats return when user is try to modified profile by invalid info, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testValidationStillWorkForModifiedUserProfile() throws Exception {
+        // given
+        String newName = "";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, newName, "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", LocalDate.of(1990, 9, 10).toString(), "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                        .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                        .cookie(cookie))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid first name");
+    }
+
+    /**
+     * Test A BAD_REQUEST stats return when user is try to modified profile by invalid address, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testValidationStillWorkForModifiedAddress() throws Exception {
+        // given
+        String newCountry = "";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", LocalDate.of(1990, 9, 10).toString(), "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", newCountry, "90210", "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                        .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                        .cookie(cookie))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid country");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
