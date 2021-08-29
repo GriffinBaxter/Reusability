@@ -271,6 +271,7 @@ public class ListingResource {
      * @param maximumPrice Maximum price.
      * @param fromDate From date (closing).
      * @param toDate To date (closing).
+     * @param barcode A barcode to match listings to.
      * @return A list of ListingPayload objects matching the search query
      */
     @GetMapping("/listings")
@@ -284,7 +285,8 @@ public class ListingResource {
             @RequestParam(required = false) Double minimumPrice,
             @RequestParam(required = false) Double maximumPrice,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+            @RequestParam(required = false) String barcode
     ) throws Exception {
         logger.debug(
                 "Listing search request received with search query {}, business type {}, order by {}, page {}",
@@ -352,7 +354,7 @@ public class ListingResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
         Page<Listing> pagedResult = parseAndExecuteQuery(
-                searchQuery, paging, searchType, businessTypes, minimumPrice, maximumPrice, fromDate, toDate
+                searchQuery, paging, searchType, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
         );
 
         int totalPages = pagedResult.getTotalPages();
@@ -750,6 +752,7 @@ public class ListingResource {
      * @param maximumPrice Maximum price.
      * @param fromDate From date (closing).
      * @param toDate To date (closing).
+     * @param barcode A barcode to check for matching listings.
      * @return Page<Listing> A page of listings matching the search criteria.
      */
     private Page<Listing> parseAndExecuteQuery(
@@ -757,7 +760,8 @@ public class ListingResource {
             String searchType,
             List<String> businessTypes,
             Double minimumPrice, Double maximumPrice,
-            LocalDateTime fromDate, LocalDateTime toDate
+            LocalDateTime fromDate, LocalDateTime toDate,
+            String barcode
     ) {
         List<BusinessType> convertedBusinessTypes = new ArrayList<>();
         if (businessTypes != null) {
@@ -770,15 +774,15 @@ public class ListingResource {
         switch (searchType) {
             case "listingName":
                 return listingRepository.findAllListingsByProductName(
-                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
                 );
             case "businessName":
                 return listingRepository.findAllListingsByBusinessName(
-                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
                 );
             case "location":
                 return listingRepository.findAllListingsByLocation(
-                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
                 );
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid search type parameter", searchType);

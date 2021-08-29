@@ -32,6 +32,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
      * @param toDate       Later end of close dates to include in search. (Optional)
+     * @param barcode      The barcode to match to listings (Optional)
      * @return A Page object containing all matching listing results.
      *
      * Preconditions:  A non-null list of names to search for product names.
@@ -43,7 +44,8 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
             List<String> names, Pageable pageable,
             List<BusinessType> businessTypes,
             Double minimumPrice, Double maximumPrice,
-            LocalDateTime fromDate, LocalDateTime toDate
+            LocalDateTime fromDate, LocalDateTime toDate,
+            String barcode
     ) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
@@ -53,7 +55,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         ArrayList<Predicate> predicates = getNamePredicates(names, namePath, criteriaBuilder);
 
-        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -66,6 +68,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
      * @param toDate       Later end of close dates to include in search. (Optional)
+     * @param barcode      The barcode to match to listings (Optional)
      * @return A Page object containing all matching listing results.
      *
      * Preconditions:  A non-null list of locations to search for.
@@ -73,7 +76,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * Postconditions: A page object containing all matching listing results.
      */
     @Override
-    public Page<Listing> findAllListingsByLocation(List<String> locations, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
+    public Page<Listing> findAllListingsByLocation(List<String> locations, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
 
@@ -96,7 +99,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(addressPath.get("country")), "%" + location.toUpperCase() + "%"));
             }
         }
-        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -109,6 +112,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
      * @param toDate       Later end of close dates to include in search. (Optional)
+     * @param barcode      The barcode to match to listings (Optional)
      * @return A Page object containing all matching listing results.
      *
      * Preconditions:  A non-null list of names to search for businesses.
@@ -116,7 +120,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * Postconditions: A page object containing all matching listing results.
      */
     @Override
-    public Page<Listing> findAllListingsByBusinessName(List<String> names, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
+    public Page<Listing> findAllListingsByBusinessName(List<String> names, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
 
@@ -126,7 +130,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         ArrayList<Predicate> predicates = getNamePredicates(names, businessNamePath, criteriaBuilder);
 
-        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -163,6 +167,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param maximumPrice Higher end of price range
      * @param fromDate Earlier date of close date range
      * @param toDate Later date of close date range
+     * @param barcode A barcode to match the listings to
      * @param criteriaBuilder Criteria builder
      * @param query Query for Listings location
      * @param listing Root for listing location
@@ -174,7 +179,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      *                 query and listing are for the same place
      * Postconditions: A matching Page of Listings
      */
-    private Page<Listing> getListings(Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, CriteriaBuilder criteriaBuilder, CriteriaQuery<Listing> query, Root<Listing> listing, ArrayList<Predicate> predicates) {
+    private Page<Listing> getListings(Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode, CriteriaBuilder criteriaBuilder, CriteriaQuery<Listing> query, Root<Listing> listing, ArrayList<Predicate> predicates) {
 
         // Optional filters
         ArrayList<Predicate> predicateList = new ArrayList<>();
@@ -202,6 +207,11 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
                     listing.get("closes").as(LocalDateTime.class), toDate
             );
             predicateList.add(predicateForToDate);
+        }
+        if (barcode != null) {
+            // where businessType = type
+            Predicate predicateForBarcode = criteriaBuilder.equal(listing.get("inventoryItem").get("product").get("barcode"), barcode);
+            predicateList.add(predicateForBarcode);
         }
 
         Predicate predicateExpireDate = criteriaBuilder.greaterThanOrEqualTo(
