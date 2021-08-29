@@ -2,6 +2,7 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.exceptions.IllegalMessageContentException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -48,4 +49,19 @@ public class Message {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
+    /**
+     * Constructor for Message
+     * @param conversation Conversation
+     * @param sender Sender User
+     * @param content Content of Message
+     */
+    public Message(Conversation conversation, User sender, String content) throws IllegalMessageContentException {
+        this.conversation = conversation;
+        this.sender = sender;
+        if (content.length() < 1 || content.length() > 300) {
+            throw new IllegalMessageContentException("Invalid message length, must be between 1 and 300 characters");
+        }
+        this.content = content;
+        this.created = LocalDateTime.now();
+    }
 }

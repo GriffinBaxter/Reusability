@@ -49,4 +49,16 @@ public class Conversation {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
+    /**
+     * Constructor for Conversation
+     * @param instigator Instigator User
+     * @param receiver Receiver User
+     * @param marketplaceCard Marketplace Card
+     */
+    public Conversation(User instigator, User receiver, MarketplaceCard marketplaceCard) {
+        this.instigator = instigator;
+        this.receiver = receiver;
+        this.marketplaceCard = marketplaceCard;
+        this.created = LocalDateTime.now();
+    }
 }
