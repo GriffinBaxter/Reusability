@@ -174,6 +174,18 @@
 
             </div>
 
+            <!---------------------------------------- barcode filtering menu ----------------------------------------->
+
+            <div class="row">
+              <label class="d-inline-block p-2 fs-5 text-center">Barcode</label>
+              <div class="d-inline-block p-2 text-center">
+                <input type="number" class="form-control filter-input d-inline-block">
+                <button type="button" class="btn green-button" style="margin-top: -5px">
+                  <i class="fas fa-camera" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+
             <!--------------------------------------------------------------------------------------------------------->
 
           </div>
@@ -199,10 +211,12 @@
               <form>
                 <div class="form-group" id="date-filtering-container">
                   <label for="start-date-input" class="d-inline-block p-2">Closing Date </label>
+                  <br>
                   <input type="date" class="form-control filter-input d-inline-block" id="start-date-input"
                          v-model="startDate">
-
+                  <br>
                   <label for="end-date-input" class="d-inline-block p-2"> to </label>
+                  <br>
                   <input type="date" class="form-control filter-input d-inline-block" id="end-date-input"
                          v-model="endDate">
                 </div>
@@ -490,9 +504,13 @@ export default {
 
 <style scoped>
 
-/* styling for price and date range input fields */
+/* styling for price range input field */
+#price-filtering-container .form-control {
+  width: 20%;
+}
+
 .form-control {
-  width: 34%;
+  width: 70%;
 }
 
 #search-filter-ordering-options-container {
