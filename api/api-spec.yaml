@@ -1866,7 +1866,7 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user tries to update other users info'
         '406':
-          description: 'Select User not exist'
+          description: 'Selected User not exist'
 
   '/business/{id}/profile':
     put:
@@ -1898,7 +1898,7 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user tries to update the business info for a business they do not administer AND the user is not a global application admin'
         '406':
-          description: 'Select Business not exist'
+          description: 'Selected Business not exist'
 
 
 components:
