@@ -88,20 +88,20 @@ class UserResourceIntegrationTests {
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
     private final String modifiedUserPayload = "{\n" +
-            "\"firstName\": \"%S\",\n" +
-            "\"lastName\": \"%S\",\n" +
-            "\"middleName\": \"%S\",\n" +
-            "\"nickname\": \"%S\",\n" +
-            "\"bio\": \"%S\",\n" +
-            "\"email\": \"%S\",\n" +
-            "\"dateOfBirth\": \"%S\",\n" +
-            "\"phoneNumber\": \"%S\",\n" +
+            "\"firstName\": \"%s\",\n" +
+            "\"lastName\": \"%s\",\n" +
+            "\"middleName\": \"%s\",\n" +
+            "\"nickname\": \"%s\",\n" +
+            "\"bio\": \"%s\",\n" +
+            "\"email\": \"%s\",\n" +
+            "\"dateOfBirth\": \"%s\",\n" +
+            "\"phoneNumber\": \"%s\",\n" +
             "\"homeAddress\": {\n" +
             "\"streetNumber\": \"%s\",\n" +
-            "\"streetName\": \"%S\",\n" +
-            "\"suburb\": \"%S\",\n" +
-            "\"city\": \"%S\",\n" +
-            "\"region\": \"%S\",\n" +
+            "\"streetName\": \"%s\",\n" +
+            "\"suburb\": \"%s\",\n" +
+            "\"city\": \"%s\",\n" +
+            "\"region\": \"%s\",\n" +
             "\"country\": \"%s\",\n" +
             "\"postcode\": \"%s\"\n" +
             "},\n" +
@@ -189,7 +189,6 @@ class UserResourceIntegrationTests {
                                 Role.USER);
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
-       // this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
 
         //test users for searching for user by name
 

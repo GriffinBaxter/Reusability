@@ -506,7 +506,7 @@ public class UserResource {
      */
     private User updateUserInfo(User user, UserRegistrationPayload userRegistrationPayloads) {
         String newEmailAddress = userRegistrationPayloads.getEmail();
-        if (userRepository.findByEmail(newEmailAddress).isPresent() && user.getEmail().equals(newEmailAddress)){
+        if (userRepository.findByEmail(newEmailAddress).isPresent() && !user.getEmail().equals(newEmailAddress)){
             logger.error("Registration Failure - {}", "Email address used");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,

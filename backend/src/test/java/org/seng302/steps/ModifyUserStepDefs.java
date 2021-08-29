@@ -28,9 +28,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
+/**
+ * Modify user profile step definitions class
+ */
 public class ModifyUserStepDefs {
     private MockMvc mvc;
 
