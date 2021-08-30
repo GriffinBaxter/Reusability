@@ -222,7 +222,7 @@ import Cookies from "js-cookie";
 import Api from "../Api";
 import {UserRole} from "../configs/User";
 import Notification from "./main/Notification";
-import Messages from "@/components/Messages";
+import Messages from "./messages/Messages";
 
 export default {
 
