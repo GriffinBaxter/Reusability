@@ -696,7 +696,7 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user tries to update a product for a business they do not administer AND the user is not a global application admin'
 
-  '/businesses/{id}/inventory/':
+  '/businesses/{id}/inventory':
     get:
       tags:
         - 'U19: Create inventory'
@@ -766,7 +766,7 @@ paths:
           schema:
             type: string
           required: false
-          description: 'Product barcode number for quicker search'
+          description: 'Product barcode number for barcode search'
       responses:
         '200':
           description: 'Inventory retrieved successfully. This could be an empty array.'
@@ -1046,7 +1046,7 @@ paths:
           schema:
             type: string
           required: false
-          description: 'Product barcode number for quicker search'
+          description: 'Product barcode number for barcode search'
       responses:
         '200':
           description: 'Listings retrieved successfully. This could be an empty array.'
