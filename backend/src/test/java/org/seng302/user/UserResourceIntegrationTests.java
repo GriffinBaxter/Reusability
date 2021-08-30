@@ -105,7 +105,8 @@ class UserResourceIntegrationTests {
             "\"country\": \"%s\",\n" +
             "\"postcode\": \"%s\"\n" +
             "},\n" +
-            "\"password\": \"%s\"\n" +
+            "\"currentPassword\": \"%s\",\n" +
+            "\"newPassword\": \"%s\"\n" +
             "}";
 
     private MockHttpServletResponse response;
@@ -1482,8 +1483,8 @@ class UserResourceIntegrationTests {
         selectedUser.setSessionUUID(User.generateSessionUUID());
 
         String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
-                "bob@email.com", newDateOfBirth, "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
         Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
 
         // when
@@ -1514,8 +1515,8 @@ class UserResourceIntegrationTests {
         selectedUser.setSessionUUID(User.generateSessionUUID());
 
         String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
-                "bob@email.com", newDateOfBirth, "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
         Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
 
         // when
@@ -1527,6 +1528,7 @@ class UserResourceIntegrationTests {
                 .cookie(cookie)).andReturn().getResponse();
 
         // then
+        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
     }
@@ -1546,8 +1548,8 @@ class UserResourceIntegrationTests {
         selectedUser.setSessionUUID(User.generateSessionUUID());
 
         String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
-                "bob@email.com", newDateOfBirth, "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
         Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
 
         // when
@@ -1578,8 +1580,8 @@ class UserResourceIntegrationTests {
         selectedUser.setSessionUUID(User.generateSessionUUID());
 
         String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
-                "bob@email.com", newDateOfBirth, "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
         Cookie cookie = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
 
         // when
@@ -1610,8 +1612,8 @@ class UserResourceIntegrationTests {
         selectedUser.setSessionUUID(User.generateSessionUUID());
 
         String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
-                "bob@email.com", newDateOfBirth, "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
         Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
 
         // when
@@ -1641,8 +1643,8 @@ class UserResourceIntegrationTests {
         selectedUser.setSessionUUID(User.generateSessionUUID());
 
         String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
-                "bob@email.com", newDateOfBirth, "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1673,7 +1675,8 @@ class UserResourceIntegrationTests {
 
         String registerJson = String.format(modifiedUserPayload, newName, "Boberson", "Robert", "Bobert", "Bobsbio",
                 "bob@email.com", LocalDate.of(1990, 9, 10).toString(), "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!",
+                "Testpassword123!");
 
         // when
         when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
@@ -1707,7 +1710,8 @@ class UserResourceIntegrationTests {
 
         String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
                 "bob@email.com", LocalDate.of(1990, 9, 10).toString(), "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", newCountry, "90210", "Testpassword123!");
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", newCountry, "90210", "Testpassword123!",
+                "Testpassword123!");
 
         // when
         when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
@@ -1740,7 +1744,8 @@ class UserResourceIntegrationTests {
 
         String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
                 "bob@email.com", newDateOfBirth, "01234567", "3/24",
-                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!");
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!",
+                "Testpassword123!");
         Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
 
         // when
@@ -1754,5 +1759,69 @@ class UserResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK stats return when user modified his password with a correct current password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanChangePasswordWhenTheyGivenCorrectCurrentPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    /**
+     * Test An BAD_REQUEST stats return when user modified his password with an incorrect current password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangePasswordWhenTheyGivenIncorrectCurrentPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/user/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Wrong Password");
     }
 }

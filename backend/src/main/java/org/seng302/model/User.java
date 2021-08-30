@@ -452,7 +452,7 @@ public class User {
         if (!isValidPassword(password)) {
             throw new IllegalUserArgumentException("Invalid password");
         }
-        setPassword(password);
+        setPassword(encode(password));
     }
 
     /**

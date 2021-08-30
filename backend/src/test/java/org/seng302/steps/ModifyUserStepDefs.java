@@ -60,7 +60,8 @@ public class ModifyUserStepDefs {
             "\"country\": \"%s\",\n" +
             "\"postcode\": \"%s\"\n" +
             "},\n" +
-            "\"password\": \"%s\"\n" +
+            "\"currentPassword\": \"%s\",\n" +
+            "\"newPassword\": \"%s\"\n" +
             "}";
 
     private MockHttpServletResponse response;
@@ -156,7 +157,7 @@ public class ModifyUserStepDefs {
         given(userRepository.findByEmail("bob@email.com")).willReturn(Optional.empty());
     }
 
-    @When("I try to change my profile as firstname {string}, lastname {string}, middle name {string}, nickname {string}, bio {string},email {string}, date of birth {string}, phone number {string}, password {string}.")
+    @When("I try to change my profile as firstname {string}, lastname {string}, middle name {string}, nickname {string}, bio {string},email {string}, date of birth {string}, phone number {string}, current password {string}, new password {string}.")
     public void i_try_to_change_my_profile_as_firstname_lastname_middle_name_nickname_bio_email_date_of_birth_phone_number_password(String firstName,
                                                                                                                                     String lastName,
                                                                                                                                     String middleName,
@@ -165,10 +166,11 @@ public class ModifyUserStepDefs {
                                                                                                                                     String email,
                                                                                                                                     String dateOfBirth,
                                                                                                                                     String phoneNumber,
-                                                                                                                                    String password) throws Exception {
+                                                                                                                                    String currentPassword,
+                                                                                                                                    String newPassword) throws Exception {
         String payload = String.format(modifiedUserPayload, firstName, lastName, middleName, nickName, bio, email,
                 dateOfBirth, phoneNumber, address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
-                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password);
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), currentPassword, newPassword);
 
         response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
@@ -194,7 +196,7 @@ public class ModifyUserStepDefs {
         assertThat(user.getEmail()).isEqualTo(email);
         assertThat(user.getDateOfBirth()).isEqualTo(dateOfBirth);
         assertThat(user.getPhoneNumber()).isEqualTo(phoneNumber);
-        assertThat(user.getPassword()).isEqualTo(password);
+        assertThat(user.verifyPassword(password)).isTrue();
     }
 
     @Given("My address is {string} {string}, {string} {string}, {string}, my region is {string} and my post code is {string}.")
@@ -228,7 +230,8 @@ public class ModifyUserStepDefs {
                                                                              String postcode) throws Exception {
         String payload = String.format(modifiedUserPayload, user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
-                user.getPhoneNumber(), streetNumber, streetName, suburb, city, region, country, postcode, password);
+                user.getPhoneNumber(), streetNumber, streetName, suburb, city, region, country, postcode, password,
+                password);
 
         response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
@@ -266,7 +269,7 @@ public class ModifyUserStepDefs {
         String payload = String.format(modifiedUserPayload, user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), email, user.getDateOfBirth(),
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
-                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password);
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
         response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
@@ -300,7 +303,7 @@ public class ModifyUserStepDefs {
         String payload = String.format(modifiedUserPayload, user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), bio.repeat(30), user.getEmail(), user.getDateOfBirth(),
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
-                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password);
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
         response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
@@ -320,7 +323,7 @@ public class ModifyUserStepDefs {
         String payload = String.format(modifiedUserPayload, user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), dateOfBirth,
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
-                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password);
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
         response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
@@ -340,7 +343,7 @@ public class ModifyUserStepDefs {
         String payload = String.format(modifiedUserPayload, "", user.getLastName(), user.getMiddleName(),
                 user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(), user.getPhoneNumber(),
                 address.getStreetNumber(), address.getStreetName(), address.getSuburb(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode(), password);
+                address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
         response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
@@ -352,7 +355,7 @@ public class ModifyUserStepDefs {
         String payload = String.format(modifiedUserPayload, user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), "", user.getDateOfBirth(),
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
-                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password);
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
         response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
@@ -372,7 +375,7 @@ public class ModifyUserStepDefs {
         String payload = String.format(modifiedUserPayload, user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getDateOfBirth(),
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
-                address.getCity(), address.getRegion(), "", address.getPostcode(), password);
+                address.getCity(), address.getRegion(), "", address.getPostcode(), password, password);
 
         response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)

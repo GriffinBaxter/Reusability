@@ -5,7 +5,7 @@ Feature: U10 Modifying Individuals
 
   Scenario: AC1 - As a registered individual, I can update all of my attributes.
     Given I have firstname "John", lastname "Doe", middle name "S", nickname "Generic", bio "Biography",email "email@email.com", date of birth "2000-02-02", phone number "0271316", password "Password123!".
-    When I try to change my profile as firstname "John", lastname "Smith", middle name "H", nickname "Jeff", bio "Likes long walks on the beach",email "johnsmith99@email.com", date of birth "1998-03-11", phone number "201038", password "New123456!".
+    When I try to change my profile as firstname "John", lastname "Smith", middle name "H", nickname "Jeff", bio "Likes long walks on the beach",email "johnsmith99@email.com", date of birth "1998-03-11", phone number "201038", current password "Password123!", new password "New123456!".
     Then My profile been successfully modified as firstname "John", lastname "Smith", middle name "H", nickname "Jeff", bio "Likes long walks on the beach",email "johnsmith99@email.com", date of birth "1998-03-11", phone number "201038", password "New123456!".
 
   Scenario: AC1 - As a registered individual, I can update all of my address.

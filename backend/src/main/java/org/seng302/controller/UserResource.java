@@ -18,6 +18,7 @@ import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.UserIdPayload;
 import org.seng302.view.incoming.UserLoginPayload;
+import org.seng302.view.incoming.UserProfileModifyPayload;
 import org.seng302.view.incoming.UserRegistrationPayload;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.model.repository.AddressRepository;
@@ -501,11 +502,11 @@ public class UserResource {
     /**
      * Update given user by given user payload
      * @param user user
-     * @param userRegistrationPayloads user payload
+     * @param userProfileModifyPayload user payload
      * @return updated User
      */
-    private User updateUserInfo(User user, UserRegistrationPayload userRegistrationPayloads) {
-        String newEmailAddress = userRegistrationPayloads.getEmail();
+    private User updateUserInfo(User user, UserProfileModifyPayload userProfileModifyPayload) {
+        String newEmailAddress = userProfileModifyPayload.getEmail();
         if (userRepository.findByEmail(newEmailAddress).isPresent() && !user.getEmail().equals(newEmailAddress)){
             logger.error("Registration Failure - {}", "Email address used");
             throw new ResponseStatusException(
@@ -514,17 +515,26 @@ public class UserResource {
             );
         }
         try {
-            Address address = extractAddress(userRegistrationPayloads.getHomeAddress());
+            Address address = extractAddress(userProfileModifyPayload.getHomeAddress());
             user.setHomeAddress(address);
-            user.updateFirstName(userRegistrationPayloads.getFirstName());
-            user.updateLastName(userRegistrationPayloads.getLastName());
-            user.updateMiddleName(userRegistrationPayloads.getMiddleName());
-            user.updateNickname(userRegistrationPayloads.getNickname());
-            user.updateBio(userRegistrationPayloads.getBio());
-            user.updateEmail(userRegistrationPayloads.getEmail());
-            user.updateDateOfBirth(userRegistrationPayloads.getDateOfBirth());
-            user.updatePhoneNumber(userRegistrationPayloads.getPhoneNumber());
-            user.updatePassword(userRegistrationPayloads.getPassword());
+            user.updateFirstName(userProfileModifyPayload.getFirstName());
+            user.updateLastName(userProfileModifyPayload.getLastName());
+            user.updateMiddleName(userProfileModifyPayload.getMiddleName());
+            user.updateNickname(userProfileModifyPayload.getNickname());
+            user.updateBio(userProfileModifyPayload.getBio());
+            user.updateEmail(userProfileModifyPayload.getEmail());
+            user.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
+            user.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
+            if (user.verifyPassword(userProfileModifyPayload.getCurrentPassword())) {
+                user.updatePassword(userProfileModifyPayload.getNewPassword());
+            } else if (userProfileModifyPayload.getCurrentPassword() != null
+                    && !userProfileModifyPayload.getCurrentPassword().isEmpty()){
+                logger.error("Registration Failure - {}", "current password error");
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Wrong Password"
+                );
+            }
         } catch (IllegalUserArgumentException e) {
             logger.error("Registration Failure - {}", e.getMessage());
             throw new ResponseStatusException(
@@ -540,13 +550,13 @@ public class UserResource {
      * Put method to modify user profile.
      * @param id current user id
      * @param sessionToken sessionToken for current user
-     * @param userRegistrationPayload new profile info
+     * @param userProfileModifyPayload new profile info
      */
     @PutMapping("/user/{id}/profile")
-    @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Account updated successfully")
     public void modifiedUserProfile(@PathVariable int id,
                                     @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                    @RequestBody(required = false) UserRegistrationPayload userRegistrationPayload){
+                                    @RequestBody(required = false) UserProfileModifyPayload userProfileModifyPayload){
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
@@ -570,7 +580,7 @@ public class UserResource {
             );
         }
 
-        userRepository.save(updateUserInfo(selectedUser, userRegistrationPayload));
+        userRepository.save(updateUserInfo(selectedUser, userProfileModifyPayload));
         logger.info("Selected user (ID: {}) profile update saved.", selectedUser.getId());
     }
 }
