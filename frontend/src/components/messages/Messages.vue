@@ -1,7 +1,7 @@
 <template>
   <div id="messages-wrapper">
     <div id="content-wrapper">
-      <MessageOption v-for="(msg, i) in messages" :key="i" :username="msg.username" :new-message="msg.newMessage"></MessageOption>
+      <MessageOption v-for="(msg, i) in messages" :key="i" :username="msg.username" :new-message="msg.newMessage" :card-name="msg.cardName"></MessageOption>
     </div>
   </div>
 </template>
@@ -16,42 +16,52 @@ export default {
       messages: [
         {
           username: "Pontiff Sulyvahn",
+          cardName: "Card name Example",
           newMessage: true,
         },
         {
           username: "Yhorm the Giant",
+          cardName: "Card name Example",
           newMessage: false,
         },
         {
           username: "Aldrich Devourer of Gods",
+          cardName: "Card name Example",
           newMessage: false,
         },
         {
           username: "Chapion Gundyr",
+          cardName: "Card name Example",
           newMessage: true,
         },
         {
           username: "Nameless King",
+          cardName: "Card name Example",
           newMessage: false,
         },
         {
           username: "Darkeater Midir",
+          cardName: "Card name Example",
           newMessage: true,
         },
         {
           username: "Lothric",
+          cardName: "Card name Example",
           newMessage: false,
         },
         {
           username: "Oceiros",
+          cardName: "Card name Example",
           newMessage: true,
         },
         {
           username: "Dancer",
+          cardName: "Card name Example",
           newMessage: true,
         },
         {
           username: "Wolnir",
+          cardName: "Card name Example",
           newMessage: false,
         }
       ]
