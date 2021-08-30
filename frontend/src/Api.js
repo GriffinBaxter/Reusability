@@ -373,4 +373,13 @@ export default {
             withCredentials: true
         })
     },
+
+    // Sends a message to the backend with a card ID and user ID of the intended recipient
+    sendMessage: (cardId, recipient, message) => {
+        return instance.post(`/cards/${cardId}/message`, {
+            recipient, message
+        }, {
+            withCredentials: true
+        })
+    }
 }

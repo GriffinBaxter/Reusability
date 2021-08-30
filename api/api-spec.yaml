@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 5.4.3
+  version: 6.1.3
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -25,6 +25,8 @@ tags:
   - name: 'U5: Creating Business Accounts'
   - name: 'U6: Acting as Individual or Business'
     description: 'All necessary API endpoints are found in prior stories'
+  - name: 'U10 Modifying Individuals'
+  - name: 'U11 Modifying Businesses'
   - name: 'U13: Home page'
     description: 'No endpoints required for this story specifically, but several will likely be used from prior and latter stories'
   - name: 'U15: Product Catalogue'
@@ -694,7 +696,7 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user tries to update a product for a business they do not administer AND the user is not a global application admin'
 
-  '/businesses/{id}/inventory/':
+  '/businesses/{id}/inventory':
     get:
       tags:
         - 'U19: Create inventory'
@@ -759,6 +761,12 @@ paths:
             type: string
           required: false
           description: 'The page of inventory items to display.'
+        - in: query
+          name: barcode
+          schema:
+            type: string
+          required: false
+          description: 'Product barcode number for barcode search'
       responses:
         '200':
           description: 'Inventory retrieved successfully. This could be an empty array.'
@@ -965,6 +973,12 @@ paths:
             format: date-time
           required: false
           description: "Criteria to search listings for dates before this date"
+        - in: query
+          name: barcode
+          schema:
+            type: string
+          required: false
+          description: "Criteria to search listings for, a barcode"
       responses:
         '200':
           description: Request successful, a (possibly empty) list of listing is returned
@@ -1027,6 +1041,12 @@ paths:
             type: string
           required: false
           description: 'The page of listings to display.'
+        - in: query
+          name: barcode
+          schema:
+            type: string
+          required: false
+          description: 'Product barcode number for barcode search'
       responses:
         '200':
           description: 'Listings retrieved successfully. This could be an empty array.'
@@ -1833,6 +1853,71 @@ paths:
           description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an administrator of the business.'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
+
+  '/user/{id}/profile':
+    put:
+      tags:
+        - 'U10 Modifying Individuals'
+        - 'Users'
+      summary: Modify an existing user
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated successfully
+        '400':
+          description: There was some error with the data supplied by the user, appropriate error message(s) should be shown to user
+        '403':
+          description: 'Forbidden: Returned when a user tries to update other users info'
+        '406':
+          description: 'Selected User not exist'
+
+  '/business/{id}/profile':
+    put:
+      tags:
+        - 'U11 Modifying Businesses'
+        - 'Business Accounts'
+      summary: Modify an existing business
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Business'
+      responses:
+        '200':
+          description: Business updated successfully
+        '400':
+          description: There was some error with the data supplied by the user, appropriate error message(s) should be shown to user
+        '403':
+          description: 'Forbidden: Returned when a user tries to update the business info for a business they do not administer AND the user is not a global application admin'
+        '406':
+          description: 'Selected Business not exist'
+
 
 components:
   securitySchemes:
