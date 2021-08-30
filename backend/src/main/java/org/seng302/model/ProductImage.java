@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @Entity
-public class Image {
+public class ProductImage {
     // Id field for an Image entity
     @Id
     @GeneratedValue
@@ -42,7 +42,7 @@ public class Image {
 
 
 
-    public Image(int id, String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
+    public ProductImage(int id, String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
         this.id = id;
         this.productId = productId;
         this.businessId = businessId;
@@ -51,7 +51,7 @@ public class Image {
         this.isPrimary = isPrimary;
     }
 
-    public Image(String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
+    public ProductImage(String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
         this.productId = productId;
         this.businessId = businessId;
         this.filename = filename;

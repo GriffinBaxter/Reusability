@@ -1,6 +1,6 @@
 package org.seng302.model.repository;
 
-import org.seng302.model.Image;
+import org.seng302.model.ProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -9,14 +9,14 @@ import java.util.Optional;
 
 
 @RepositoryRestResource
-public interface ImageRepository extends JpaRepository<Image, String> {
+public interface ImageRepository extends JpaRepository<ProductImage, String> {
 
-    List<Image> findImageByBusinessIdAndProductId(Integer businessId, String productId);
+    List<ProductImage> findImageByBusinessIdAndProductId(Integer businessId, String productId);
 
-    Optional<Image> findImageByIdAndBusinessIdAndProductId(Integer imageId, Integer businessId, String productId);
+    Optional<ProductImage> findImageByIdAndBusinessIdAndProductId(Integer imageId, Integer businessId, String productId);
 
     void deleteByIdAndBusinessIdAndProductId(int id, int businessId, String productId);
 
-    List<Image> findImageByBusinessIdAndProductIdAndIsPrimary(Integer businessId, String productId, Boolean isPrimary);
+    List<ProductImage> findImageByBusinessIdAndProductIdAndIsPrimary(Integer businessId, String productId, Boolean isPrimary);
 
 }
