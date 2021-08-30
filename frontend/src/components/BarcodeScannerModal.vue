@@ -6,7 +6,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="updateProductImagesModalTitle">Barcode Scanner</h5>
+          <h5 class="modal-title" id="barcodeScannerModalTitle">Barcode Scanner</h5>
         </div>
         <div class="modal-body">
 
@@ -14,23 +14,23 @@
             {{ barcodeErrorMsg }}
           </p>
           
-          <button id="scan-by-uploading-image-button" class="btn green-button-transparent"
+          <button id="modal-scan-by-uploading-image-button" class="btn green-button-transparent"
                   @click="onUploadClick">
             Scan by uploading image
           </button>
           <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
                  name="img" accept="image/png, image/gif, image/jpeg">
           <br><br>
-          <button id="scan-using-camera-button" v-if="liveStreamAvailable && !liveStreaming"
+          <button id="modal-scan-using-camera-button" v-if="liveStreamAvailable && !liveStreaming"
                   class="btn green-button-transparent" @click="getBarcodeLiveStream">
             Scan using camera
           </button>
-          <button id="stop-scanning-button" v-if="liveStreaming && !barcodeFound"
+          <button id="modal-stop-scanning-button" v-if="liveStreaming && !barcodeFound"
                   class="btn green-button-transparent"
                   @click="liveStreaming = false; removeCameraError();">
             Stop scanning (barcode not found)
           </button>
-          <button id="save-scanned-barcode-button" v-if="liveStreaming && barcodeFound"
+          <button id="modal-save-scanned-barcode-button" v-if="liveStreaming && barcodeFound"
                   class="btn green-button" @click="liveStreaming = false">
             Save Scanned Barcode
           </button>
@@ -62,7 +62,6 @@ export default {
 
       barcode: "",
       barcodeErrorMsg: "",
-      addBarcode: false,
       liveStreamAvailable: false,
       liveStreaming: false,
       barcodeFound: false,
