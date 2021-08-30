@@ -1,19 +1,13 @@
 <template>
-  <div>
-    <div class="input-group" id="search-inputs" style="alignment: center">
-      <input type="text" id="product-search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
-      <button class="btn green-search-button" id="search-button" @click="searchClicked()">
-        <i class="fas fa-search" aria-hidden="true"/>
-      </button>
-    </div>
-
-    <div class="form-check form-check-inline" id="search-by-product-name">
+  <div style="margin-bottom: 20px">
+    <div class="form-check form-check-inline">
       <input class="form-check-input" type="radio" name="search-type-radio" id="radio-product-name"
              value="PRODUCT_NAME" checked>
       <label class="form-check-label" for="radio-product-name">Product Name</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-product-id" value="PRODUCT_ID">
+      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-product-id"
+             value="PRODUCT_ID">
       <label class="form-check-label" for="radio-product-id">Product ID</label>
     </div>
     <div class="form-check form-check-inline">
@@ -27,10 +21,17 @@
       <label class="form-check-label" for="radio-description">Description</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-all" value="ALL">
+      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-all"
+             value="ALL">
       <label class="form-check-label" for="radio-all">ALL</label>
     </div>
 
+    <div class="input-group" id="search-inputs" style="alignment: center">
+      <input type="text" id="product-search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
+      <button class="btn green-search-button" id="search-button" @click="searchClicked()">
+        <i class="fas fa-search" aria-hidden="true"/>
+      </button>
+    </div>
   </div>
 
 </template>
