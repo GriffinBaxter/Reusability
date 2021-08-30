@@ -7,8 +7,9 @@
       <div class="user-icon-wrap">
         <img src="../../../public/profile_icon_default.png" alt="Seller image" class="user-icon">
       </div>
-      <div class="user-name">
-        {{limitUsernameLength(username)}}
+      <div class="conversation-details">
+        <div class="card-name">{{limitStringLength(cardName, MAX_CARD_LENGTH)}}</div>
+        <div class="user-name">{{limitStringLength(username, MAX_USERNAME_LENGTH)}}</div>
       </div>
     </div>
     <div class="delete-icon-wrap">
@@ -31,25 +32,31 @@ export default {
     newMessage: {
       type: Boolean,
       required: true
+    },
+    cardName: {
+      type: String,
+      required: true
     }
   },
   data() {
     return {
-      MAX_USERNAME_LENGTH: 17
+      MAX_USERNAME_LENGTH: 19,
+      MAX_CARD_LENGTH: 14
     }
   },
   methods: {
     /**
-     * Takes a username and shortens it if necessary.
+     * Takes a string and shortens it if necessary.
      *
-     * @param username message title.
-     * @return {string} Name of the user shortened if its longer then the max length. Otherwise the same value.
+     * @param str {string} the string to be limited.
+     * @param maxLength {number} the string limit.
+     * @return {string} String shortened if its longer then the max length. Otherwise the same value.
      */
-    limitUsernameLength(username) {
-      if (username.length >= this.MAX_USERNAME_LENGTH) {
-        return username.substr(0, this.MAX_USERNAME_LENGTH) + "...";
+    limitStringLength(str, maxLength) {
+      if (str.length >= maxLength) {
+        return str.substr(0, maxLength) + "...";
       }
-      return username;
+      return str;
     }
   }
 }
@@ -106,7 +113,7 @@ export default {
     height: 40px;
   }
 
-  .user-name {
+  .conversation-details {
     flex-grow: 100;
     max-width: 150px;
     height: 100%;
@@ -114,8 +121,18 @@ export default {
     display: flex;
     justify-content: left;
     align-items: center;
+    flex-direction: column;
 
     padding: 0 0.5em;
+  }
+
+  .user-name {
+    margin-right: auto;
+    font-size: 0.8em;
+  }
+
+  .card-name {
+    margin-right: auto;
   }
 
   .delete-icon-wrap {
