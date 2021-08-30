@@ -90,7 +90,7 @@
             <div class="text-center" id="match-fields-clear-btn-container">
 
               <!--------------------------------------- clear field match button -------------------------------------------->
-              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50"
+              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
                       @click="clearRadios('business')">
                 Clear Field
               </button>
@@ -176,6 +176,7 @@
 
             <!---------------------------------------- barcode filtering menu ----------------------------------------->
 
+            <br>
             <div class="row">
               <label class="d-inline-block p-2 fs-5 text-center">Barcode (EAN or UPC)</label>
               <div class="d-inline-block p-2 text-center">
@@ -188,7 +189,7 @@
               </div>
 
               <div class="text-center">
-                <button type="button" class="btn green-button m-2 w-50 text-center"
+                <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
                         @click="barcode = ''">
                   Clear Barcode
                 </button>
@@ -235,7 +236,7 @@
             <div class="text-center" id="filter-buttons-container">
 
               <!--------------------------------------- clear filters button -------------------------------------------->
-              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25"
+              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
                       @click="clearFilters()">
                 Clear Filters
               </button>
@@ -531,6 +532,11 @@ export default {
 /* styling for price range input field */
 #price-filtering-container .form-control {
   width: 20%;
+}
+
+/* styling for date range input field */
+#date-filtering-container .form-control {
+  width: 100%;
 }
 
 .form-control {
