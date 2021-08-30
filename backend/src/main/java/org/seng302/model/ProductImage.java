@@ -1,20 +1,11 @@
 package org.seng302.model;
 
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Data
-@NoArgsConstructor
 @Entity
-public class ProductImage {
-    // Id field for an Image entity
-    @Id
-    @GeneratedValue
-    @Column(name = "image_id", nullable = false)
-    private Integer id;
-
+public class ProductImage extends Image{
     // Association many images can have the same one product id.
     @ManyToOne(targetEntity = Product.class, fetch = FetchType.LAZY)
     @JoinColumns({
@@ -29,43 +20,43 @@ public class ProductImage {
     @Column(name = "business_id", nullable = false)
     private int businessId;
 
-    // The file name in case we need to resolve it.
-    @Column(name = "filename", nullable = false)
-    private String filename;
-
-    @Column(name = "thumbnailFilename")
-    private String thumbnailFilename;
-
-    // Extension type of the file
-    @Column(name = "is_primary", nullable = false)
-    private Boolean isPrimary;
-
-
-
     public ProductImage(int id, String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
-        this.id = id;
+        super(id, filename, thumbnailFilename, isPrimary);
         this.productId = productId;
         this.businessId = businessId;
-        this.filename = filename;
-        this.thumbnailFilename = thumbnailFilename;
-        this.isPrimary = isPrimary;
     }
 
     public ProductImage(String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
+        super(filename, thumbnailFilename, isPrimary);
         this.productId = productId;
         this.businessId = businessId;
-        this.filename = filename;
-        this.thumbnailFilename = thumbnailFilename;
-        this.isPrimary = isPrimary;
     }
 
-    public String toString() {
-        return "{" +
-                "\"id\":\"" + id + "\"," +
-                "\"filename\":\"" + filename + "\"," +
-                "\"thumbnailFilename\":\"" + thumbnailFilename + "\"" +
-                "\"isPrimary\":\"" + isPrimary + "\"," +
-                "}";
+    public ProductImage() {
+        super();
     }
 
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public int getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(int businessId) {
+        this.businessId = businessId;
+    }
 }

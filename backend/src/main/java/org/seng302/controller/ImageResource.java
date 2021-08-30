@@ -74,7 +74,7 @@ public class ImageResource {
             @PathVariable Integer businessId,
             @PathVariable String productId
     ) {
-
+        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         // Verify token access
         User user = Authorization.getUserVerifySession(sessionToken, userRepository);
 
