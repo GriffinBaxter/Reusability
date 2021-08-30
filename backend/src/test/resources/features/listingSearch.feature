@@ -42,3 +42,8 @@ Feature: U29 Browse/Search Sale listings
     Given there exists listings with names "Beans" and "Cookies"
     When I limit the closing date range to from "2021-01-01T00:00" to "2022-01-01T00:00"
     Then I receive the listing with name "Beans"
+
+  Scenario: BS2 - Sale listings are searched for by barcode.
+    Given there exists listings with names "Beans" and "Cookies"
+    When I search using the barcode "9400547002634"
+    Then I receive the listing with name "Beans"
