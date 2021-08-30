@@ -1041,6 +1041,12 @@ paths:
             type: string
           required: false
           description: 'The page of listings to display.'
+        - in: query
+          name: barcode
+          schema:
+            type: string
+          required: false
+          description: 'Product barcode number for quicker search'
       responses:
         '200':
           description: 'Listings retrieved successfully. This could be an empty array.'
