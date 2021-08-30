@@ -23,12 +23,12 @@
           <br><br>
           <button id="modal-scan-using-camera-button" v-if="liveStreamAvailable && !liveStreaming"
                   class="btn green-button-transparent" @click="getBarcodeLiveStream">
-            Scan using camera
+            Scan Using Camera
           </button>
           <button id="modal-stop-scanning-button" v-if="liveStreaming && !barcodeFound"
                   class="btn green-button-transparent"
                   @click="liveStreaming = false; removeCameraError();">
-            Stop scanning (barcode not found)
+            Stop Scanning (Barcode Not Found)
           </button>
           <button id="modal-save-scanned-barcode-button" v-if="liveStreaming && barcodeFound"
                   class="btn green-button" @click="liveStreaming = false">
