@@ -118,3 +118,28 @@ describe("Tests for search type radio", () => {
     });
 
 })
+
+describe('Tests fot enterPressed.', () => {
+    let searchClickedSpy;
+
+    beforeEach(() => {
+        wrapper = shallowMount(ProductSearchBar, {
+            localVue,
+        });
+
+        searchClickedSpy = jest.spyOn(ProductSearchBar.methods, 'searchClicked')
+    })
+
+    test("Testing that when a button other than the enter button is pressed the search is not executed", async () => {
+        wrapper.find('#product-search-bar').trigger('keydown.space');
+
+        const event = new Event("keydown.space", undefined)
+        wrapper.vm.enterPressed(event)
+
+        await Promise.resolve();
+
+        expect(searchClickedSpy).toHaveBeenCalledTimes(0);
+
+    })
+
+})

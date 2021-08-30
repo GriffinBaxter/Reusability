@@ -28,7 +28,7 @@
 
     <div class="input-group" id="search-inputs" style="alignment: center">
       <input type="text" id="product-search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
-      <button class="btn green-search-button" id="search-button" @click="searchClicked()">
+      <button class="btn green-search-button" id="product-search-button" @click="searchClicked()">
         <i class="fas fa-search" aria-hidden="true"/>
       </button>
     </div>
