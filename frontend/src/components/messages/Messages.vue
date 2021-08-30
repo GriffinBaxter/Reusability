@@ -1,12 +1,14 @@
 <template>
   <div id="messages-wrapper">
-
+    <MessageOption></MessageOption>
   </div>
 </template>
 
 <script>
+import MessageOption from "@/components/messages/MessageOption";
 export default {
-  name: "Messages"
+  name: "Messages",
+  components: {MessageOption}
 }
 </script>
 
@@ -23,8 +25,11 @@ export default {
 
     max-width: 80%;
 
-
     background-color: black;
+    border: 1px black solid;
+
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
   }
 
 
