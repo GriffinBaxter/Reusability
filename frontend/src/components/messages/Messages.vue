@@ -1,6 +1,8 @@
 <template>
   <div id="messages-wrapper">
-    <MessageOption></MessageOption>
+    <div id="content-wrapper">
+      <MessageOption v-for="(msg, i) in messages" :key="i" :username="msg.username" :new-message="msg.newMessage"></MessageOption>
+    </div>
   </div>
 </template>
 
@@ -8,7 +10,54 @@
 import MessageOption from "@/components/messages/MessageOption";
 export default {
   name: "Messages",
-  components: {MessageOption}
+  components: {MessageOption},
+  data() {
+    return {
+      messages: [
+        {
+          username: "Pontiff Sulyvahn",
+          newMessage: true,
+        },
+        {
+          username: "Yhorm the Giant",
+          newMessage: false,
+        },
+        {
+          username: "Aldrich Devourer of Gods",
+          newMessage: false,
+        },
+        {
+          username: "Chapion Gundyr",
+          newMessage: true,
+        },
+        {
+          username: "Nameless King",
+          newMessage: false,
+        },
+        {
+          username: "Darkeater Midir",
+          newMessage: true,
+        },
+        {
+          username: "Lothric",
+          newMessage: false,
+        },
+        {
+          username: "Oceiros",
+          newMessage: true,
+        },
+        {
+          username: "Dancer",
+          newMessage: true,
+        },
+        {
+          username: "Wolnir",
+          newMessage: false,
+        }
+      ]
+    }
+  }
+
 }
 </script>
 
@@ -17,19 +66,25 @@ export default {
   #messages-wrapper {
     position: absolute;
     top: 100%;
-    right: 10%;
+    right: 15px;
     z-index: 999;
 
     width: 100%;
     height: max(400px, 100%);
 
-    max-width: 80%;
+    max-width: 274px;
 
-    background-color: black;
     border: 1px black solid;
+    overflow: auto;
+    background-color: white;
+  }
+
+  #content-wrapper {
+    max-width: 270px;
+    height: fit-content;
 
     display: grid;
-    grid-template-rows: repeat(7, 1fr);
+    grid-template-columns: 1fr;
   }
 
 
