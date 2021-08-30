@@ -186,6 +186,13 @@
                   <i class="fas fa-camera" aria-hidden="true"></i>
                 </button>
               </div>
+
+              <div class="text-center">
+                <button type="button" class="btn green-button m-2 w-50 text-center"
+                        @click="barcode = ''">
+                  Clear Barcode
+                </button>
+              </div>
             </div>
 
             <!--------------------------------------------------------------------------------------------------------->
@@ -337,6 +344,7 @@ export default {
       const orderBy = this.orderByOption + this.orderBySequence;
       const page = 1;
       const businessTypes = this.getSelectedRadio('business');
+      const barcode = this.barcode;
       const minimumPrice = this.lowestPrice;
       const maximumPrice = this.highestPrice;
       let fromDate = this.startDate;
@@ -365,6 +373,7 @@ export default {
           orderBy !== this.$route.query.orderBy ||
           String(page) !== this.$route.query.page ||
           !this.isTypeSame ||
+          barcode !== this.$route.query.barcode ||
           minimumPrice !== this.$route.query.minimumPrice ||
           maximumPrice !== this.$route.query.maximumPrice ||
           fromDate !== this.$route.query.fromDate ||
@@ -374,6 +383,7 @@ export default {
           path: '/browseListings', query: {
             searchQuery: searchQuery, searchType: searchType,
             orderBy: orderBy, page: page, businessTypes: businessTypes,
+            barcode: barcode,
             minimumPrice: minimumPrice, maximumPrice: maximumPrice,
             fromDate: fromDate, toDate: toDate
           }
