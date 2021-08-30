@@ -286,7 +286,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 "Description",
                 "Manufacturer",
                 20.00,
-                "9400547002634"
+                "9400547002627"
         );
 
         inventoryItem2 = new InventoryItem(
@@ -340,7 +340,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -420,7 +420,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -474,7 +474,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, List.of(convertedBusinessType), null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -495,7 +495,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -516,7 +516,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, minimum, maximum, null, null
+                names, paging, null, minimum, maximum, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -538,7 +538,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByBusinessName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -559,7 +559,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByLocation(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -583,13 +583,36 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null,
                 LocalDateTime.of(2021,1,1,0,0),
-                LocalDateTime.of(2022,1,1,0,0)
+                LocalDateTime.of(2022,1,1,0,0),
+                null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("fromDate", fromDate)
                 .param("toDate", toDate)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+    }
+
+    /* ------------------------------------------BS2------------------------------------------ */
+
+    @When("I search using the barcode {string}")
+    public void iLimitTheClosingDateRangeToFromTo(String barcode) throws Exception {
+        String searchQuery = "";
+        List<String> names = Arrays.asList(searchQuery);
+
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 12, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, null, null, null, null, null, barcode
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("barcode", barcode)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
     }
 }

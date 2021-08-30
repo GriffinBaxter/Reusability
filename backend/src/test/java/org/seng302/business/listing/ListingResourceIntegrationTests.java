@@ -1033,7 +1033,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
@@ -1076,7 +1076,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
@@ -1121,7 +1121,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1152,7 +1152,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1286,7 +1286,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, List.of(convertedBusinessType), null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1333,7 +1333,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, List.of(convertedBusinessType), null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1393,7 +1393,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, List.of(convertedBusinessType1, convertedBusinessType2), null, null, null, null
+                names, paging, List.of(convertedBusinessType1, convertedBusinessType2), null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1443,7 +1443,8 @@ class ListingResourceIntegrationTests {
                 names, paging, List.of(convertedBusinessType),
                 10.0, 11.0,
                 LocalDateTime.of(2021, 1, 1, 0, 0),
-                LocalDateTime.of(2022, 1, 1, 0, 0)
+                LocalDateTime.of(2022, 1, 1, 0, 0),
+                "9400547002634"
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1455,6 +1456,7 @@ class ListingResourceIntegrationTests {
                 .param("maximumPrice", "11.0")
                 .param("fromDate", "2021-01-01T00:00")
                 .param("toDate", "2022-01-01T00:00")
+                .param("barcode", "9400547002634")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1499,7 +1501,8 @@ class ListingResourceIntegrationTests {
                 names, paging, List.of(convertedBusinessType),
                 9.0, 12.0,
                 LocalDateTime.of(2020, 1, 1, 0, 0),
-                LocalDateTime.of(2023, 1, 1, 0, 0)
+                LocalDateTime.of(2023, 1, 1, 0, 0),
+                "9400547002634"
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1511,6 +1514,7 @@ class ListingResourceIntegrationTests {
                 .param("maximumPrice", "12.0")
                 .param("fromDate", "2020-01-01T00:00")
                 .param("toDate", "2023-01-01T00:00")
+                .param("barcode", "9400547002634")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());

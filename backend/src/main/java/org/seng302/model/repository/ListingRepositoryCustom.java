@@ -20,11 +20,12 @@ public interface ListingRepositoryCustom {
      * @param maximumPrice maximum price for price range
      * @param fromDate from date for close date range
      * @param toDate to date for close date range
+     * @param barcode a barcode to match listings to
      * @return returns a Page of listings
      */
     Page<Listing> findAllListingsByProductName(
             List<String> names, Pageable pageable,
-            List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate
+            List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode
     );
 
     /**
@@ -36,11 +37,12 @@ public interface ListingRepositoryCustom {
      * @param maximumPrice maximum price for price range
      * @param fromDate from date for close date range
      * @param toDate to date for close date range
+     * @param barcode a barcode to match listings to
      * @return returns a Page of listings
      */
     Page<Listing> findAllListingsByLocation(
             List<String> locations, Pageable pageable,
-            List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate
+            List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode
     );
 
     /**
@@ -52,10 +54,11 @@ public interface ListingRepositoryCustom {
      * @param maximumPrice maximum price for price range
      * @param fromDate from date for close date range
      * @param toDate to date for close date range
+     * @param barcode a barcode to match listings to
      * @return returns a Page of listings
      */
     Page<Listing> findAllListingsByBusinessName(
             List<String> names, Pageable pageable,
-            List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate
+            List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode
     );
 }
