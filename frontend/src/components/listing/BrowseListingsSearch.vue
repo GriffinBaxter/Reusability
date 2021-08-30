@@ -177,10 +177,12 @@
             <!---------------------------------------- barcode filtering menu ----------------------------------------->
 
             <div class="row">
-              <label class="d-inline-block p-2 fs-5 text-center">Barcode</label>
+              <label class="d-inline-block p-2 fs-5 text-center">Barcode (EAN or UPC)</label>
               <div class="d-inline-block p-2 text-center">
-                <input type="number" class="form-control filter-input d-inline-block">
-                <button type="button" class="btn green-button" style="margin-top: -5px">
+                <input type="number" class="form-control filter-input d-inline-block" v-model="barcode">
+                <button type="button" class="btn green-button" style="margin-top: -5px" @click="(event) => {
+                  this.$refs.barcodeScannerModal.showModel(event);
+                }">
                   <i class="fas fa-camera" aria-hidden="true"></i>
                 </button>
               </div>
@@ -196,11 +198,11 @@
             <div class="row">
               <form>
                 <div class="form-group" id="price-filtering-container">
-                  <label for="lowest-price-input" class="d-inline-block p-2">Price Range $ </label>
+                  <label for="lowest-price-input" class="d-inline-block p-2">Price Range</label><br>
                   <input type="number" min="0" class="form-control filter-input d-inline-block" id="lowest-price-input"
                          placeholder="0.00" v-model="lowestPrice">
 
-                  <label for="highest-price-input" class="d-inline-block p-2"> to $ </label>
+                  <label for="highest-price-input" class="d-inline-block p-2"> to </label>
                   <input type="number" min="0" class="form-control filter-input d-inline-block" id="highest-price-input"
                          placeholder="0.00" v-model="highestPrice">
                 </div>
@@ -235,6 +237,9 @@
 
           </div>
         </div>
+
+        <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode"/>
+
       </div>
     </div>
 
@@ -245,9 +250,13 @@
 <script>
 import compareAsc from 'date-fns/compareAsc'
 import {parseISO} from "date-fns";
+import BarcodeScannerModal from "../productCatalogue/BarcodeScannerModal";
 
 export default {
   name: "BrowseListingsSearch",
+  components: {
+    BarcodeScannerModal
+  },
   data() {
     return {
       orderByOption: "price",         // default
@@ -260,6 +269,7 @@ export default {
       orderBySequenceText: "From Lowest Price",
       businessTypeOption: null,
       businessTypeOptionText: 'Business Type',
+      barcode: null,
       lowestPrice: null,
       highestPrice: null,
       startDate: null,
@@ -496,6 +506,10 @@ export default {
       this.highestPrice = null
       this.startDate = null
       this.endDate = null
+    },
+    
+    updateBarcode(barcode) {
+      this.barcode = barcode;
     }
 
   }
