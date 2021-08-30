@@ -52,7 +52,7 @@
 
 <script>
 import {Modal} from "bootstrap";
-import {getBarcodeLiveStream, getBarcodeStatic} from "@/barcodeUtils";
+import {getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
 
 export default {
   name: "BarcodeScannerModal",

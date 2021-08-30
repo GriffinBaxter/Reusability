@@ -257,7 +257,7 @@
 <script>
 import compareAsc from 'date-fns/compareAsc'
 import {parseISO} from "date-fns";
-import BarcodeScannerModal from "../productCatalogue/BarcodeScannerModal";
+import BarcodeScannerModal from "../BarcodeScannerModal";
 
 export default {
   name: "BrowseListingsSearch",
