@@ -1553,9 +1553,96 @@ class UserResourceIntegrationTests {
         assertThat(response.getErrorMessage()).isEqualTo("Invalid permissions to delete conversation");
     }
 
-    // 200 current user insigator
-    // 200 current user reciever
-    // 200 DGAA (admin)
-    // 200 both null
+    /**
+     * Test that an OK status is received when the conversation exists and a DGAA tries to
+     * delete a conversation for other users.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canDeleteConversationWhenItExistsAndCurrentUserIsADGAA() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(dGAA.getSessionUUID())).willReturn(Optional.ofNullable(dGAA));
+        given(conversationRepository.findById(conversation.getId()))
+                .willReturn(Optional.ofNullable(conversation));
 
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that an OK status is received when the conversation exists and the instigator tries to
+     * delete a conversation when the receiver has already removed themself from the conversation.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canDeleteConversationWhenReceiverHasAlreadyRemovedThemself() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        Conversation conversationWithReceiverRemoved = new Conversation(
+                conversation.getInstigator(),
+                null,
+                conversation.getMarketplaceCard());
+        conversationWithReceiverRemoved.setId(2);
+        given(conversationRepository.findById(conversationWithReceiverRemoved.getId()))
+                .willReturn(Optional.ofNullable(conversationWithReceiverRemoved));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationWithReceiverRemoved.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that an OK status is received when the conversation exists and the instigator tries to
+     * remove themself from the conversation.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canRemoveInstigatorFromConversation() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(conversationRepository.findById(conversation.getId()))
+                .willReturn(Optional.ofNullable(conversation));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that an OK status is received when the conversation exists and the receiver tries to
+     * remove themself from the conversation.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canRemoveReceiverFromConversation() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+        given(conversationRepository.findById(conversation.getId()))
+                .willReturn(Optional.ofNullable(conversation));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
 }
