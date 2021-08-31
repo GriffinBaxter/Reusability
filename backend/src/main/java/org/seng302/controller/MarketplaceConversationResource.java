@@ -70,7 +70,7 @@ public class MarketplaceConversationResource {
     public ResponseEntity<MarketplaceConversationIdPayload> createMarketplaceConversationMessage(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestBody MarketplaceConversationMessagePayload marketplaceConversationMessagePayload,
-            @PathVariable String conversationId
+            @PathVariable Integer conversationId
     ) throws Exception {
 
         //401
@@ -107,11 +107,12 @@ public class MarketplaceConversationResource {
             return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(conversation.getId()));
 
         } else {
-            //400
+
             // check if conversation exists if conversationId is not null
-            Optional<Conversation> storedConversation = marketplaceConversationRepository.findConversationById(Integer.parseInt(conversationId));
+            Optional<Conversation> storedConversation = marketplaceConversationRepository.findConversationById(conversationId);
 
             if (storedConversation.isEmpty()) {
+                //400
                 logger.error("Invalid Conversation");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid conversation"
                 );
