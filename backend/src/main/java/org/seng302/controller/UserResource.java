@@ -42,7 +42,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,6 +60,7 @@ import static org.seng302.model.enums.Role.*;
  * GET "/users/search" endpoint used to retrieve user accounts based on search criteria.
  * PUT "/users/{id}/makeAdmin" endpoint used to make a user account a GAA.
  * PUT "/users/{id}/revokeAdmin" endpoint used to revoke admin perms from user account (GAA -> normal user account)
+ * DELETE "/users/conversation/{conversationId} endpoint used to delete a marketplace conversation.
  */
 @RestController
 public class UserResource {
@@ -73,9 +73,17 @@ public class UserResource {
 
     private Address address;
 
-    private List<Business> businesses;
-
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
+
+    // the name of the cookie used for authentication.
+    private static final String COOKIE_AUTH = "JSESSIONID";
+    // the value of same site attribute.
+    private static final String SAME_SITE_STRICT = "strict";
+    // the error message to be logged when requested route does not exist.
+    private static final String LOGGER_ERROR_REQUESTED_ROUTE = "Requested route does exist, but some part of the request is not acceptable";
+    // the message to be returned when there is a 406 error.
+    private static final String HTTP_NOT_ACCEPTABLE_MESSAGE = "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+            "for example trying to access a resource by an ID that does not exist.";
 
     public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
@@ -110,7 +118,7 @@ public class UserResource {
             user.get().setSessionUUID(sessionUUID);
             userRepository.save(user.get());
 
-                ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionUUID).maxAge(28800).sameSite("strict").httpOnly(true).build();
+                ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             logger.info("Successful Login - User Id: {}", user.get().getId());
@@ -128,11 +136,11 @@ public class UserResource {
      * @param response HTTP Response
      */
     @PostMapping("/logout")
-    public void logoutUser(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+    public void logoutUser(@CookieValue(value = COOKIE_AUTH, required = false) String sessionToken,
                            HttpServletResponse response) {
         if (sessionToken != null) {
 
-            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionToken).maxAge(0).sameSite("strict").httpOnly(true).build(); // maxAge 0 deletes the cookie
+            ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionToken).maxAge(0).sameSite(SAME_SITE_STRICT).httpOnly(true).build(); // maxAge 0 deletes the cookie
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
 
@@ -174,7 +182,6 @@ public class UserResource {
             // used to determine if a business hasn't already been created.
             if (storedAddress.isPresent()) {
                 address = storedAddress.get();
-                businesses = address.getBusinesses();
             } else {
                 // Otherwise a new address is created and saved.
                 address = new Address(
@@ -187,8 +194,6 @@ public class UserResource {
                         suburb
                 );
                 addressRepository.save(address);
-                // No businesses will exist at new address.
-                businesses = new ArrayList<>();
             }
 
             User newUser = new User(
@@ -208,7 +213,7 @@ public class UserResource {
             newUser.setSessionUUID(getUniqueSessionUUID());
             User createdUser = userRepository.save(newUser);
 
-            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", createdUser.getSessionUUID()).maxAge(3600).sameSite("strict").httpOnly(true).build();
+            ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, createdUser.getSessionUUID()).maxAge(3600).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             logger.info("Successful Registration - User Id {}", createdUser.getId());
@@ -230,18 +235,17 @@ public class UserResource {
      */
     @GetMapping("/users/{id}")
     public UserPayloadParent retrieveUser(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
+            @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken, @PathVariable Integer id
     ) throws Exception {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectUser = userRepository.findById(id);
 
         if (optionalSelectUser.isEmpty()) {
-            logger.error("Requested route does exist, but some part of the request is not acceptable");
+            logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+                    HTTP_NOT_ACCEPTABLE_MESSAGE
             );
         }
 
@@ -313,7 +317,7 @@ public class UserResource {
      */
     @GetMapping("/users/search")
     public ResponseEntity<List<UserPayloadSecure>> searchUsers(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken,
             @RequestParam String searchQuery,
             @RequestParam(defaultValue = "fullNameASC") String orderBy,
             @RequestParam(defaultValue = "0") String page
@@ -430,17 +434,16 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/makeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
-    public void setGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
+    public void setGAA(@PathVariable int id, @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken){
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
         if (optionalSelectedUser.isEmpty()) {
-            logger.error("Requested route does exist, but some part of the request is not acceptable");
+            logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+                    HTTP_NOT_ACCEPTABLE_MESSAGE
             );
         } else {
             User selectedUser = optionalSelectedUser.get();
@@ -465,17 +468,16 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/revokeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
-    public void revokeGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+    public void revokeGAA(@PathVariable int id, @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken) {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
         if (optionalSelectedUser.isEmpty()){
-            logger.error("Requested route does exist, but some part of the request is not acceptable");
+            logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+                    HTTP_NOT_ACCEPTABLE_MESSAGE
             );
         } else {
             User selectedUser = optionalSelectedUser.get();
