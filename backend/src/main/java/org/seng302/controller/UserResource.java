@@ -14,6 +14,8 @@ import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
+import org.seng302.model.Conversation;
+import org.seng302.model.repository.ConversationRepository;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.UserIdPayload;
@@ -43,6 +45,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +73,9 @@ public class UserResource {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private ConversationRepository conversationRepository;
 
     private Address address;
 
@@ -492,6 +498,63 @@ public class UserResource {
                         "The user does not have permission to perform the requested action"
                 );
             }
+        }
+    }
+
+    /**
+     * This method is used to delete a notification.
+     *
+     * It will return a 401 error if the user is not logged in.
+     * It will return a 406 error if the conversation does not exist.
+     * It will return a 403 error if the user does not have permission to delete the conversation.
+     * A GAA or DGAA can delete a conversation for other members.
+     * A user can remove themself from a conversation. If there are no remaining members in a
+     * conversation then it is deleted.
+     *
+     * @param sessionToken a token used for user authentication.
+     * @param conversationId the id of the conversation to be deleted.
+     */
+    @Transactional
+    @DeleteMapping("/users/conversation/{conversationId}")
+    @ResponseStatus(code = HttpStatus.OK, reason = "Conversation successfully deleted")
+    public void deleteConversation(
+            @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken,
+            @PathVariable Integer conversationId
+    ) {
+        // checks to see if user is logged in. If they are not a 401 is returned.
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        Optional<Conversation> conversation = conversationRepository.findById(conversationId);
+        // if no conversation is found with given id then return a 406.
+        if (conversation.isEmpty()) {
+            logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+
+        if (currentUser == conversation.get().getInstigator()) {
+            // this "removes" the user from the conversation since there is no longer a link.
+            conversation.get().setInstigator(null);
+        } else if (currentUser == conversation.get().getReceiver()) {
+            // this "removes" the user from the conversation since there is no longer a link.
+            conversation.get().setReceiver(null);
+        } else if (Authorization.isGAAorDGAA(currentUser)) {
+            // if the current user is a GAA or DGAA then they can delete the conversation.
+            conversationRepository.deleteById(conversationId);
+            logger.debug("Conversation deleted");
+        } else {
+            logger.error("Conversation Deletion Error - 403 [FORBIDDEN] - User doesn't have permissions to delete conversation");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid permissions to delete conversation");
+        }
+
+
+        if ((conversation.get().getInstigator() == null) && (conversation.get().getReceiver() == null)) {
+            // if there is no remaining members in the conversation then delete it.
+            conversationRepository.deleteById(conversationId);
+            logger.debug("Conversation deleted");
+        } else {
+            // if a user removes themself from a conversation then update the members in the conversation.
+            conversationRepository.save(conversation.get());
+            logger.debug("User removed from conversation");
         }
     }
 }
