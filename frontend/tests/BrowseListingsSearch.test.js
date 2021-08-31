@@ -195,7 +195,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             await browseListingsSearchWrapper.vm.$nextTick();
 
             expect(router.currentRoute.name).toBe('BrowseListings')
-            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType&orderBy=priceASC&page=1&minimumPrice&maximumPrice&fromDate&toDate`)
+            expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType&orderBy=priceASC&page=1&barcode&minimumPrice&maximumPrice&fromDate&toDate`)
         });
 
         test('Testing that clicking the search button populates the URL correctly', () => {
@@ -208,7 +208,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
                 searchButton.trigger('click');
 
                 expect(router.currentRoute.name).toBe('BrowseListings')
-                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType&orderBy=priceASC&page=1&minimumPrice&maximumPrice&fromDate&toDate`)
+                expect(router.currentRoute.fullPath).toBe(`/browseListings?searchQuery=${expectedQuery}&searchType&orderBy=priceASC&page=1&barcode&minimumPrice&maximumPrice&fromDate&toDate`)
             });
         });
     })
@@ -528,6 +528,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
             browseListingsSearchWrapper.vm.$data.page = 1;
+            browseListingsSearchWrapper.vm.$data.barcode = "";
             browseListingsSearchWrapper.vm.$data.lowestPrice = 10;
             browseListingsSearchWrapper.vm.$data.highestPrice = 100;
             browseListingsSearchWrapper.vm.$data.startDate = "2020-01-24";
@@ -550,6 +551,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             expect($router.push).toHaveBeenCalledWith({ path: `/browseListings`,
                 query: { searchQuery: searchQuery, searchType: null,
                 orderBy: orderBy, page: page, businessTypes: [],
+                barcode: "",
                 minimumPrice: minimumPrice, maximumPrice: maximumPrice,
                 fromDate: fromDate, toDate: toDate }})
         });
@@ -559,6 +561,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
             browseListingsSearchWrapper.vm.$data.page = 1;
+            browseListingsSearchWrapper.vm.$data.barcode = "";
             browseListingsSearchWrapper.vm.$data.lowestPrice = 100;
             browseListingsSearchWrapper.vm.$data.highestPrice = 10;
             browseListingsSearchWrapper.vm.$data.startDate = "2020-01-24";
@@ -581,16 +584,17 @@ describe("Testing the BrowseListingsSearch methods", () => {
             expect($router.push).toHaveBeenCalledWith({ path: `/browseListings`,
                 query: { searchQuery: searchQuery, searchType: null,
                     orderBy: orderBy, page: page, businessTypes: [],
+                    barcode: "",
                     minimumPrice: minimumPrice, maximumPrice: maximumPrice,
                     fromDate: fromDate, toDate: toDate }})
         })
-
 
         test('Testing that the grid data is populated correctly when data is returned and the dates are swapped around ' +
             'when they are out of order', async () => {
             browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
             browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
             browseListingsSearchWrapper.vm.$data.page = 1;
+            browseListingsSearchWrapper.vm.$data.barcode = "";
             browseListingsSearchWrapper.vm.$data.lowestPrice = 10;
             browseListingsSearchWrapper.vm.$data.highestPrice = 100;
             browseListingsSearchWrapper.vm.$data.startDate = "2020-05-28";
@@ -613,6 +617,40 @@ describe("Testing the BrowseListingsSearch methods", () => {
             expect($router.push).toHaveBeenCalledWith({ path: `/browseListings`,
                 query: { searchQuery: searchQuery, searchType: null,
                     orderBy: orderBy, page: page, businessTypes: [],
+                    barcode: "",
+                    minimumPrice: minimumPrice, maximumPrice: maximumPrice,
+                    fromDate: fromDate, toDate: toDate }})
+        })
+
+        test('Testing that the barcode searching data is populated correctly when data is returned', async () => {
+            browseListingsSearchWrapper.vm.$refs.searchInput.value = "test";
+            browseListingsSearchWrapper.vm.$data.orderBy ="priceASC";
+            browseListingsSearchWrapper.vm.$data.page = 1;
+            browseListingsSearchWrapper.vm.$data.barcode = "073360613418";
+            browseListingsSearchWrapper.vm.$data.lowestPrice = 10;
+            browseListingsSearchWrapper.vm.$data.highestPrice = 100;
+            browseListingsSearchWrapper.vm.$data.startDate = "2020-01-24";
+            browseListingsSearchWrapper.vm.$data.endDate = "2020-05-28";
+
+            const searchQuery = "test";
+            const orderBy ="priceASC";
+            const page = 1;
+            const barcode = "073360613418";
+            const minimumPrice = 10;
+            const maximumPrice = 100;
+            const fromDate = "2020-01-24T00:00";
+            const toDate = "2020-05-28T00:00";
+
+            Api.searchListings.mockImplementation( () => Promise.resolve(browseListingApiResponse) );
+
+            browseListingsSearchWrapper.vm.searchClicked();
+
+            await browseListingsSearchWrapper.vm.$nextTick()
+
+            expect($router.push).toHaveBeenCalledWith({ path: `/browseListings`,
+                query: { searchQuery: searchQuery, searchType: null,
+                    orderBy: orderBy, page: page, businessTypes: [],
+                    barcode: barcode,
                     minimumPrice: minimumPrice, maximumPrice: maximumPrice,
                     fromDate: fromDate, toDate: toDate }})
         })
