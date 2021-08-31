@@ -41,7 +41,7 @@ public class Product {
     private Business business;
 
     @OneToMany(mappedBy = "product")
-    private List<Image> images;
+    private List<ProductImage> productImages;
 
     @Id
     @Column(name = "business_id")
@@ -261,7 +261,7 @@ public class Product {
                 manufacturer,
                 recommendedRetailPrice,
                 created,
-                images,
+                productImages,
                 business.toBusinessPayload(),
                 barcode);
     }

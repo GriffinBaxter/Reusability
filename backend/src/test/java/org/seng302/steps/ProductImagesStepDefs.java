@@ -73,9 +73,9 @@ public class ProductImagesStepDefs {
     private Product product;
     private MockHttpServletResponse response;
     private MockMultipartFile jpgImage;
-    private Image primaryImage;
-    private Image nonPrimaryImage;
-    private Image newImage;
+    private ProductImage primaryProductImage;
+    private ProductImage nonPrimaryProductImage;
+    private ProductImage newProductImage;
     private String productId;
     private Integer businessId;
     private String sessionToken;
@@ -172,7 +172,7 @@ public class ProductImagesStepDefs {
         String sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
-        primaryImage = new Image(1, productId, businessId, filename, filename, true);
+        primaryProductImage = new ProductImage(1, productId, businessId, filename, filename, true);
 
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
@@ -181,11 +181,11 @@ public class ProductImagesStepDefs {
                 new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
         );
         lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
-        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = new ArrayList<>();
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryProductImage.getFilename());
+        List<ProductImage> productImages = new ArrayList<>();
 
-        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.saveAndFlush(any(Image.class))).thenReturn(primaryImage);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
+        when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
 
         response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
 
@@ -195,36 +195,36 @@ public class ProductImagesStepDefs {
     public void this_image_is_stored_and_displayed() throws UnsupportedEncodingException {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
 
     }
 
     @Given("the primary image of this product is {string}")
     public void the_primary_image_of_this_product_is(String filename) {
 
-        primaryImage = new Image(1, productId, businessId, filename, filename, true);
+        primaryProductImage = new ProductImage(1, productId, businessId, filename, filename, true);
 
-        primaryImage.setIsPrimary(true);
-        List <Image> primaryImages = new ArrayList<>();
-        primaryImages.add(primaryImage);
-        assertThat(primaryImage.getFilename()).isEqualTo(filename);
-        given(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).willReturn(primaryImages);
+        primaryProductImage.setIsPrimary(true);
+        List <ProductImage> primaryProductImages = new ArrayList<>();
+        primaryProductImages.add(primaryProductImage);
+        assertThat(primaryProductImage.getFilename()).isEqualTo(filename);
+        given(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).willReturn(primaryProductImages);
 
     }
 
     @Given("it has a non-primary image of {string}")
     public void it_has_a_non_primary_image_of(String filename) {
 
-        nonPrimaryImage = new Image(2, productId, businessId, filename, filename, false);
+        nonPrimaryProductImage = new ProductImage(2, productId, businessId, filename, filename, false);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly().useConstructor("test-images"));
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
 
 
-        nonPrimaryImage.setIsPrimary(false);
-        List <Image> nonPrimaryImages = new ArrayList<>();
-        nonPrimaryImages.add(nonPrimaryImage);
-        given(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, false)).willReturn(nonPrimaryImages);
+        nonPrimaryProductImage.setIsPrimary(false);
+        List <ProductImage> nonPrimaryProductImages = new ArrayList<>();
+        nonPrimaryProductImages.add(nonPrimaryProductImage);
+        given(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, false)).willReturn(nonPrimaryProductImages);
 
     }
 
@@ -234,13 +234,13 @@ public class ProductImagesStepDefs {
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
-        List<Image> images = List.of(primaryImage);
-        newImage = new Image(2, productId, businessId, filename, filename, false);
+        List<ProductImage> productImages = List.of(primaryProductImage);
+        newProductImage = new ProductImage(2, productId, businessId, filename, filename, false);
 
-        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.findImageByIdAndBusinessIdAndProductId(newImage.getId(), businessId, productId)).thenReturn(Optional.of(newImage));
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(newProductImage.getId(), businessId, productId)).thenReturn(Optional.of(newProductImage));
 
-        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, newImage.getId())).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, newProductImage.getId())).cookie(cookie)).andReturn().getResponse();
 
     }
 
@@ -248,17 +248,17 @@ public class ProductImagesStepDefs {
     public void the_primary_image_is_updated() {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(newImage.getIsPrimary()).isTrue();
-        assertThat(primaryImage.getIsPrimary()).isFalse();
+        assertThat(newProductImage.getIsPrimary()).isTrue();
+        assertThat(primaryProductImage.getIsPrimary()).isFalse();
 
     }
 
     @Given("this business only has the image of {string}")
     public void this_business_only_has_the_image_of(String filename) {
 
-        primaryImage = new Image(1, productId, businessId, "storage/test-images/" + filename , filename, true);
-        List <Image> primaryImages = List.of(primaryImage);
-        given(imageRepository.findImageByBusinessIdAndProductId(businessId, productId)).willReturn(primaryImages);
+        primaryProductImage = new ProductImage(1, productId, businessId, "storage/test-images/" + filename , filename, true);
+        List <ProductImage> primaryProductImages = List.of(primaryProductImage);
+        given(imageRepository.findImageByBusinessIdAndProductId(businessId, productId)).willReturn(primaryProductImages);
 
     }
 
@@ -269,11 +269,11 @@ public class ProductImagesStepDefs {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
-        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryImage.getFilename());
-        List<Image> images = List.of(primaryImage);
-        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(images);
-        when(imageRepository.findImageByIdAndBusinessIdAndProductId(primaryImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryImage));
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryImage.getId())).cookie(cookie)).andReturn().getResponse();
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryProductImage.getFilename());
+        List<ProductImage> productImages = List.of(primaryProductImage);
+        when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
+        when(imageRepository.findImageByIdAndBusinessIdAndProductId(primaryProductImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryProductImage));
+        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
 
     }
 
