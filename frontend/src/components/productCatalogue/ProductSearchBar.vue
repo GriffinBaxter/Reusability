@@ -1,29 +1,24 @@
 <template>
   <div style="margin-bottom: 20px">
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-product-name"
+      <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-product-name"
              value="PRODUCT_NAME" checked>
-      <label class="form-check-label" for="radio-product-name">Product Name</label>
+      <label class="form-check-label" for="checkbox-product-name">Product Name</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-product-id"
+      <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-product-id"
              value="PRODUCT_ID">
-      <label class="form-check-label" for="radio-product-id">Product ID</label>
+      <label class="form-check-label" for="checkbox-product-id">Product ID</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-manufacturer"
+      <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-manufacturer"
              value="MANUFACTURER">
-      <label class="form-check-label" for="radio-manufacturer">Manufacturer</label>
+      <label class="form-check-label" for="checkbox-manufacturer">Manufacturer</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-description"
+      <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-description"
              value="DESCRIPTION">
-      <label class="form-check-label" for="radio-description">Description</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="search-type-radio" id="radio-all"
-             value="ALL">
-      <label class="form-check-label" for="radio-all">ALL</label>
+      <label class="form-check-label" for="checkbox-description">Description</label>
     </div>
 
     <div class="input-group" id="search-inputs" style="alignment: center">
@@ -47,14 +42,20 @@ export default {
      * Finds the selected radio button
      * @return The value of the selected radio button
      */
-    getSelectedRadio() {
-      let radios = document.querySelectorAll("input[name='search-type-radio']");
+    getSelectedCheckbox() {
+      let checkboxes = document.querySelectorAll("input[name='search-type-checkbox']");
+      let value = [];
 
-      for (const radio of radios) {
-        if (radio.checked) {
-          return radio.value;
+      for (const checkbox of checkboxes) {
+        if (checkbox.checked) {
+          value.push(checkbox.value);
         }
       }
+      if (value.length === 0){
+        document.getElementById("checkbox-product-name").click();
+        value.push("PRODUCT_NAME");
+      }
+      return value
     },
     /**
      * When the enter key is pressed, the query is run with the search value.
@@ -70,6 +71,7 @@ export default {
      */
     searchClicked() {
       // TODO: call search api
+      this.getSelectedCheckbox()
       const searchQuery = this.$refs.searchInput.value;
       console.log(searchQuery)
     }

@@ -20,101 +20,102 @@ afterEach(() => {
     wrapper.destroy();
 });
 
-describe("Tests for search type radio", () => {
-    let radioProductNameButton;
-    let radioProductIdButton;
-    let radioManufacturerButton;
-    let radioDescriptionButton;
-    let radioAllButton;
+describe("Tests for search type checkbox", () => {
+    let checkboxProductNameButton;
+    let checkboxProductIdButton;
+    let checkboxManufacturerButton;
+    let checkboxDescriptionButton;
 
     beforeEach(() => {
         wrapper = shallowMount(ProductSearchBar, {
             localVue,
         });
 
-        radioProductNameButton = wrapper.find('#radio-product-name');
-        radioProductIdButton = wrapper.find('#radio-product-id');
-        radioManufacturerButton = wrapper.find('#radio-manufacturer');
-        radioDescriptionButton = wrapper.find('#radio-description');
-        radioAllButton = wrapper.find('#radio-all');
+        checkboxProductNameButton = wrapper.find('#checkbox-product-name');
+        checkboxProductIdButton = wrapper.find('#checkbox-product-id');
+        checkboxManufacturerButton = wrapper.find('#checkbox-manufacturer');
+        checkboxDescriptionButton = wrapper.find('#checkbox-description');
+        console.log(wrapper.html())
+
+        expect(checkboxProductNameButton.exists()).toBeTruthy();
+        expect(checkboxProductIdButton.exists()).toBeTruthy();
+        expect(checkboxManufacturerButton.exists()).toBeTruthy();
+        expect(checkboxDescriptionButton.exists()).toBeTruthy();
 
         // mock the call which gets the radio buttons
         jest.spyOn(document, 'querySelectorAll').mockImplementation(() => {
-            return [radioProductNameButton.element, radioProductIdButton.element, radioManufacturerButton.element,
-                radioDescriptionButton.element, radioAllButton.element];
+            return [checkboxProductNameButton.element, checkboxProductIdButton.element,
+                checkboxManufacturerButton.element, checkboxDescriptionButton.element];
         });
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return checkboxProductNameButton.element;
+        })
     })
 
-    test("Test for if do not click any radio, the value will be PRODUCT_NAME", async function () {
-        // Given
-        expect(radioProductNameButton.exists()).toBeTruthy();
-
-        // When
-        await radioProductNameButton.trigger('click');
-        await wrapper.vm.$nextTick();
-
+    test("Test for if do not click any checkbox, the value will be PRODUCT_NAME", async function () {
         // Then
-        expect(wrapper.vm.getSelectedRadio()).toEqual("PRODUCT_NAME")
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["PRODUCT_NAME"])
     });
 
-    test("Test for if click on Product Name the value will be PRODUCT_NAME", async function () {
-        // Given
-        expect(radioProductNameButton.exists()).toBeTruthy();
-
+    test("Test for if click on Product Name (unselected) the value will be PRODUCT_NAME", async function () {
         // When
-        await radioProductNameButton.trigger('click');
+        await checkboxProductNameButton.trigger('click');
         await wrapper.vm.$nextTick();
 
         // Then
-        expect(wrapper.vm.getSelectedRadio()).toEqual("PRODUCT_NAME")
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["PRODUCT_NAME"])
     });
 
     test("Test for if click on Product Id the value will be PRODUCT_ID", async function () {
         // Given
-        expect(radioProductIdButton.exists()).toBeTruthy();
+        await checkboxProductNameButton.trigger('click');
 
         // When
-        await radioProductIdButton.trigger('click');
+        await checkboxProductIdButton.trigger('click');
         await wrapper.vm.$nextTick();
 
         // Then
-        expect(wrapper.vm.getSelectedRadio()).toEqual("PRODUCT_ID")
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["PRODUCT_ID"])
     });
 
     test("Test for if click on Manufacturer the value will be MANUFACTURER", async function () {
         // Given
-        expect(radioManufacturerButton.exists()).toBeTruthy();
+        await checkboxProductNameButton.trigger('click');
 
         // When
-        await radioManufacturerButton.trigger('click');
+        await checkboxManufacturerButton.trigger('click');
         await wrapper.vm.$nextTick();
 
         // Then
-        expect(wrapper.vm.getSelectedRadio()).toEqual("MANUFACTURER")
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["MANUFACTURER"])
     });
 
     test("Test for if click on Description the value will be DESCRIPTION", async function () {
         // Given
-        expect(radioDescriptionButton.exists()).toBeTruthy();
+        await checkboxProductNameButton.trigger('click');
 
         // When
-        await radioDescriptionButton.trigger('click');
+        await checkboxDescriptionButton.trigger('click');
         await wrapper.vm.$nextTick();
 
         // Then
-        expect(wrapper.vm.getSelectedRadio()).toEqual("DESCRIPTION")
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["DESCRIPTION"])
     });
 
-    test("Test for if click on All the value will be ALL", async function () {
+    test("Test for if click on all the value will be all of them", async function () {
         // Given
-        expect(radioAllButton.exists()).toBeTruthy();
+        await checkboxProductNameButton.trigger('click');
 
         // When
-        await radioAllButton.trigger('click');
+        await checkboxProductNameButton.trigger('click');
+        await checkboxProductIdButton.trigger('click');
+        await checkboxManufacturerButton.trigger('click');
+        await checkboxDescriptionButton.trigger('click');
         await wrapper.vm.$nextTick();
 
         // Then
-        expect(wrapper.vm.getSelectedRadio()).toEqual("ALL")
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["PRODUCT_NAME", "PRODUCT_ID", "MANUFACTURER", "DESCRIPTION"])
     });
 
 })
