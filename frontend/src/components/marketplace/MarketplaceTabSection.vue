@@ -8,7 +8,7 @@
       <!---------------------------------------------- ordering menu ------------------------------------------------>
 
       <div id="ordering-options-menu-container">
-        <OrderingOptionsMenu @new-card-created="(e) => $emit('new-card-created', e)"></OrderingOptionsMenu>
+        <OrderingOptionsMenu @new-card-created="(e) => $emit('new-card-created', e)" v-bind:type="section"></OrderingOptionsMenu>
       </div>
 
       <!------------------------------------------------ cards ------------------------------------------------------>
