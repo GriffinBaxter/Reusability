@@ -90,7 +90,7 @@
             <div class="text-center" id="match-fields-clear-btn-container">
 
               <!--------------------------------------- clear field match button -------------------------------------------->
-              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-50"
+              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
                       @click="clearRadios('business')">
                 Clear Field
               </button>
@@ -174,6 +174,28 @@
 
             </div>
 
+            <!---------------------------------------- barcode filtering menu ----------------------------------------->
+
+            <br>
+            <div class="row">
+              <label class="d-inline-block p-2 fs-5 text-center">Barcode (EAN or UPC)</label>
+              <div class="d-inline-block p-2 text-center">
+                <input type="number" class="form-control filter-input d-inline-block" v-model="barcode">
+                <button type="button" class="btn green-button" style="margin-top: -5px" @click="(event) => {
+                  this.$refs.barcodeScannerModal.showModel(event);
+                }">
+                  <i class="fas fa-camera" aria-hidden="true"></i>
+                </button>
+              </div>
+
+              <div class="text-center">
+                <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
+                        @click="barcode = ''">
+                  Clear Barcode
+                </button>
+              </div>
+            </div>
+
             <!--------------------------------------------------------------------------------------------------------->
 
           </div>
@@ -184,11 +206,11 @@
             <div class="row">
               <form>
                 <div class="form-group" id="price-filtering-container">
-                  <label for="lowest-price-input" class="d-inline-block p-2">Price Range $ </label>
+                  <label for="lowest-price-input" class="d-inline-block p-2">Price Range</label><br>
                   <input type="number" min="0" class="form-control filter-input d-inline-block" id="lowest-price-input"
                          placeholder="0.00" v-model="lowestPrice">
 
-                  <label for="highest-price-input" class="d-inline-block p-2"> to $ </label>
+                  <label for="highest-price-input" class="d-inline-block p-2"> to </label>
                   <input type="number" min="0" class="form-control filter-input d-inline-block" id="highest-price-input"
                          placeholder="0.00" v-model="highestPrice">
                 </div>
@@ -199,10 +221,12 @@
               <form>
                 <div class="form-group" id="date-filtering-container">
                   <label for="start-date-input" class="d-inline-block p-2">Closing Date </label>
+                  <br>
                   <input type="date" class="form-control filter-input d-inline-block" id="start-date-input"
                          v-model="startDate">
-
+                  <br>
                   <label for="end-date-input" class="d-inline-block p-2"> to </label>
+                  <br>
                   <input type="date" class="form-control filter-input d-inline-block" id="end-date-input"
                          v-model="endDate">
                 </div>
@@ -212,7 +236,7 @@
             <div class="text-center" id="filter-buttons-container">
 
               <!--------------------------------------- clear filters button -------------------------------------------->
-              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-25"
+              <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
                       @click="clearFilters()">
                 Clear Filters
               </button>
@@ -221,6 +245,9 @@
 
           </div>
         </div>
+
+        <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode"/>
+
       </div>
     </div>
 
@@ -231,9 +258,13 @@
 <script>
 import compareAsc from 'date-fns/compareAsc'
 import {parseISO} from "date-fns";
+import BarcodeScannerModal from "../BarcodeScannerModal";
 
 export default {
   name: "BrowseListingsSearch",
+  components: {
+    BarcodeScannerModal
+  },
   data() {
     return {
       orderByOption: "price",         // default
@@ -246,6 +277,7 @@ export default {
       orderBySequenceText: "From Lowest Price",
       businessTypeOption: null,
       businessTypeOptionText: 'Business Type',
+      barcode: null,
       lowestPrice: null,
       highestPrice: null,
       startDate: null,
@@ -313,6 +345,7 @@ export default {
       const orderBy = this.orderByOption + this.orderBySequence;
       const page = 1;
       const businessTypes = this.getSelectedRadio('business');
+      const barcode = this.barcode;
       const minimumPrice = this.lowestPrice;
       const maximumPrice = this.highestPrice;
       let fromDate = this.startDate;
@@ -341,6 +374,7 @@ export default {
           orderBy !== this.$route.query.orderBy ||
           String(page) !== this.$route.query.page ||
           !this.isTypeSame ||
+          barcode !== this.$route.query.barcode ||
           minimumPrice !== this.$route.query.minimumPrice ||
           maximumPrice !== this.$route.query.maximumPrice ||
           fromDate !== this.$route.query.fromDate ||
@@ -350,6 +384,7 @@ export default {
           path: '/browseListings', query: {
             searchQuery: searchQuery, searchType: searchType,
             orderBy: orderBy, page: page, businessTypes: businessTypes,
+            barcode: barcode,
             minimumPrice: minimumPrice, maximumPrice: maximumPrice,
             fromDate: fromDate, toDate: toDate
           }
@@ -482,6 +517,10 @@ export default {
       this.highestPrice = null
       this.startDate = null
       this.endDate = null
+    },
+    
+    updateBarcode(barcode) {
+      this.barcode = barcode;
     }
 
   }
@@ -490,9 +529,18 @@ export default {
 
 <style scoped>
 
-/* styling for price and date range input fields */
+/* styling for price range input field */
+#price-filtering-container .form-control {
+  width: 20%;
+}
+
+/* styling for date range input field */
+#date-filtering-container .form-control {
+  width: 100%;
+}
+
 .form-control {
-  width: 34%;
+  width: 70%;
 }
 
 #search-filter-ordering-options-container {
