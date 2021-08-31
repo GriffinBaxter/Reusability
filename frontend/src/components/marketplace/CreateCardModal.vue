@@ -14,7 +14,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" tabindex="-1"  ></button>
           </div>
 
-          <EditCreateCardModal currentModal="create" ref="editCreateModal"/>
+          <EditCreateCardModal currentModal="create" ref="editCreateModal" v-bind:type="type"/>
 
           <!-- Modal footer -->
           <div class="modal-footer">
@@ -36,6 +36,12 @@ export default {
   name: "CreateCardModal",
   components: {
     EditCreateCardModal
+  },
+  props: {
+    type: {
+      type: String,
+      required: true
+    },
   },
   data() {
     return {

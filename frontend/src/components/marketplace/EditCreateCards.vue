@@ -7,7 +7,7 @@
       <div class="row my-lg-2" v-if="modalError">
         <div class="col-12 mx-auto">
           <div class="alert alert-danger">
-            {{modalError}}
+            {{ modalError }}
           </div>
         </div>
       </div>
@@ -15,10 +15,12 @@
       <!-- Select a section  -->
       <div class="row my-lg-2" v-if="currentModal === 'create'">
         <div class="col-md-6 my-2 my-lg-0">
-          <label for="section-selection" class="form-label">What section would you like to post your card?*</label>
+          <label :for="'section-selection' + type" class="form-label">What section would you like to post your
+            card?*</label>
         </div>
         <div class="col-md-6 my-2 my-lg-0">
-          <select id="section-selection" name="section-selection" :class="`form-select ${formErrorClasses.sectionSelectionError}`"
+          <select :id="'section-selection' + type" :name="'section-selection' + type"
+                  :class="`form-select ${formErrorClasses.sectionSelectionError}`"
                   v-model="sectionSelected" @click="isSectionSelectedInvalid">
             <option value="" disabled selected>Select section</option>
             <option id="for-sale-option" :value="sections.FOR_SALE">For Sale</option>
@@ -26,14 +28,14 @@
             <option id="wanted-option" :value="sections.WANTED">Wanted</option>
           </select>
           <div id="section-selection-invalid-feedback" class="invalid-feedback" v-if="formError.sectionSelectionError">
-            {{formError.sectionSelectionError}}
+            {{ formError.sectionSelectionError }}
           </div>
         </div>
       </div>
 
       <div v-else>
         <label for="section-display" class="fw-bold">Section:</label>
-        <p id="section-display">{{sectionSelected}}</p>
+        <p id="section-display">{{ sectionSelected }}</p>
       </div>
 
       <hr v-if="currentModal === 'create'">
@@ -46,13 +48,15 @@
         </div>
         <div class="col-md">
           <div id="autofill-container-users" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
-            <input autocomplete="off" id="card-creator" @keydown="searchUsers()" :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorInput" ref="card-creator">
+            <input autocomplete="off" id="card-creator" @keydown="searchUsers()"
+                   :class="`form-control ${formErrorClasses.creatorIdError}`" v-model="creatorInput" ref="card-creator">
             <div class="invalid-feedback" v-if="formError.creatorIdError">
-              {{formError.creatorIdError}}
+              {{ formError.creatorIdError }}
             </div>
             <ul class="autofill-options hidden-all" id="autofill-list-users" ref="autofill-list-users">
-              <li v-for="user in users" v-bind:key="user.id" tabindex="-1" v-bind:value="user.id" data-bs-toggle="popover" data-bs-trigger="hover focus">
-                {{ user.firstName }} {{ user.lastName}}
+              <li v-for="user in users" v-bind:key="user.id" tabindex="-1" v-bind:value="user.id"
+                  data-bs-toggle="popover" data-bs-trigger="hover focus">
+                {{ user.firstName }} {{ user.lastName }}
               </li>
             </ul>
           </div>
@@ -64,13 +68,13 @@
         <!-- User's full name-->
         <div class="col-md-12 col-6 d-md-flex flex-md-row">
           <label for="user-full-name" class="fw-bold me-md-2">Name:</label>
-          <p id="user-full-name">{{userFullName}}</p>
+          <p id="user-full-name">{{ userFullName }}</p>
         </div>
 
         <!-- User's location details -->
         <div class="col-md-12 col-6 d-md-flex flex-md-row">
           <label for="user-location" class="fw-bold me-md-2">Location:</label>
-          <p id="user-location">{{userLocation}}</p>
+          <p id="user-location">{{ userLocation }}</p>
         </div>
       </div>
 
@@ -78,13 +82,13 @@
       <!-- Card title -->
       <div class="row my-lg-2">
         <div class="col-md-3 ">
-          <label for="card-title" class="fw-bold">Title*:</label>
+          <label :for="'card-title' + type" class="fw-bold">Title*:</label>
         </div>
         <div class="col-md">
-          <input id="card-title" :class="`form-control ${formErrorClasses.titleError}`" v-model="title"
+          <input :id="'card-title' + type" :class="`form-control ${formErrorClasses.titleError}`" v-model="title"
                  :maxlength="config.config.title.maxLength" @input="isTitleInvalid">
           <div id="card-title-invalid-feedback" class="invalid-feedback" v-if="formError.titleError">
-            {{formError.titleError}}
+            {{ formError.titleError }}
           </div>
         </div>
       </div>
@@ -92,13 +96,16 @@
       <!-- Card Description -->
       <div class="row my-4">
         <div class="col-md-3 ">
-          <label for="card-description" class="fw-bold">Description:</label>
+          <label :for="'card-description'" class="fw-bold">Description:</label>
         </div>
         <div class="col-md">
-                  <textarea id="card-description" :class="`form-control ${formErrorClasses.descriptionError}`" v-model="description"
-                            :maxlength="config.config.description.maxLength" @input="isDescriptionInvalid"/>
+          <textarea :id="'card-description'"
+                    :class="`form-control ${formErrorClasses.descriptionError}`"
+                    v-model="description"
+                    :maxlength="config.config.description.maxLength"
+                    @input="isDescriptionInvalid"/>
           <div id="card-description-invalid-feedback" class="invalid-feedback" v-if="formError.descriptionError">
-            {{formError.descriptionError}}
+            {{ formError.descriptionError }}
           </div>
         </div>
       </div>
@@ -110,22 +117,26 @@
         </div>
         <div class="col-md">
           <div style="position: relative; height: 80px;" :class="`form-control ${formErrorClasses.keywordsError}`">
-            <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop" style="resize: none; overflow-y: scroll" disabled />
-            <textarea ref="keywordsInput" v-bind:id="'card-keywords-' + this.$props.currentModal" class="form-control keywords-input " style="resize: none; overflow-y: scroll; " v-model="keywordsInput"
+            <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop"
+                 style="resize: none; overflow-y: scroll" disabled/>
+            <textarea ref="keywordsInput" v-bind:id="'card-keywords-' + type"
+                      class="form-control keywords-input " style="resize: none; overflow-y: scroll; "
+                      v-model="keywordsInput"
                       @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
           </div>
-                  <div id="autofill-container" ref="autofill-container">
-                    <ul class="autofill-options" id="autofill-list" ref="autofill-list">
-                      <li
-                          v-for="keyword in autocompleteKeywords"
-                          v-bind:key="keyword.id"
-                          v-bind:id="keyword.id"
-                          v-on:click="updateKeyword(keyword.name)"
-                      >{{ keyword.name }}</li>
-                    </ul>
-                  </div>
+          <div id="autofill-container" ref="autofill-container">
+            <ul class="autofill-options" id="autofill-list" ref="autofill-list">
+              <li
+                  v-for="keyword in autocompleteKeywords"
+                  v-bind:key="keyword.id"
+                  v-bind:id="keyword.id"
+                  v-on:click="updateKeyword(keyword.name)"
+              >{{ keyword.name }}
+              </li>
+            </ul>
+          </div>
           <div id="card-keywords-invalid-feedback" class="invalid-feedback" v-if="formError.keywordsError">
-            {{formError.keywordsError}}
+            {{ formError.keywordsError }}
           </div>
         </div>
       </div>
@@ -143,16 +154,25 @@
 import Api from "../../Api";
 import cardConfig from "../../configs/MarketplaceCard"
 import Cookies from "js-cookie";
-import User, { UserRole} from "../../configs/User"
+import User, {UserRole} from "../../configs/User"
 import Autofill from "../autofill";
 import LoadingDots from "../LoadingDots";
 
 export default {
   name: "EditCreateCardModal",
   components: {LoadingDots},
-  props: [
-      'currentModal'
-  ],
+  props: {
+    type: {
+      type: String,
+      default: "none",
+      required: false
+    },
+    currentModal: {
+      type: String,
+      default: 'currentModal',
+      required: false
+    }
+  },
   data() {
     return {
       user: User,
@@ -249,12 +269,12 @@ export default {
       if (this.submitAttempted) {
         if (Object.values(this.sections).indexOf(this.sectionSelected) === -1) {
           this.formError.sectionSelectionError = "Please select a valid choice.";
-          this.formErrorClasses.sectionSelectionError =  this.isInvalidClass;
+          this.formErrorClasses.sectionSelectionError = this.isInvalidClass;
           return true
         }
       }
       this.formError.sectionSelectionError = "";
-      this.formErrorClasses.sectionSelectionError =  "";
+      this.formErrorClasses.sectionSelectionError = "";
       return false
     },
     /**
@@ -307,7 +327,7 @@ export default {
             invalidKeywords.push(keyword)
           }
         }
-        if (invalidKeywords.length > 0 ) {
+        if (invalidKeywords.length > 0) {
           this.formError.keywordsError = `All keywords need to be between ${this.config.config.keyword.minLength} and ${this.config.config.keyword.maxLength} in length.`
           this.formErrorClasses.keywordsError = this.isInvalidClass
           return true
@@ -396,7 +416,7 @@ export default {
      */
     getKeywords() {
       // Get all the unique strings and filter out any spaces and or new lines from the keywords.
-      let keywords = [...new Set(this.keywordsInput.split(" "))].filter( (keyword) => keyword !== "" && keyword !== "\n");
+      let keywords = [...new Set(this.keywordsInput.split(" "))].filter((keyword) => keyword !== "" && keyword !== "\n");
 
       // Removes the keyword prefix.
       for (let i = 0; i < keywords.length; i++) {
@@ -667,7 +687,7 @@ export default {
      */
     onClickOrKeyUp() {
       const elementID = 'card-keywords-' + this.$props.currentModal;
-      if (elementID  === document.activeElement.id) {
+      if (elementID === document.activeElement.id) {
         this.updateCursorPosition()
       } else {
         this.autocompleteKeywords = [];
@@ -688,7 +708,7 @@ export default {
       let keywordSearch = this.currentKeyword;
       if (this.keywordsInput === "" ||
           (this.keywordsInput.length === this.textCursorPosition &&
-          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+              this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
       ) {
         keywordSearch = "";
       }
@@ -699,7 +719,7 @@ export default {
             currentKeywordStartEnd !== false ||
             this.keywordsInput === "" ||
             (this.keywordsInput.length === this.textCursorPosition &&
-            this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+                this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
         ) {
           this.autocompleteKeywords = [];
           Api.searchKeywords(keywordSearch).then(response => {
@@ -724,7 +744,7 @@ export default {
     updateKeyword(keyword) {
       if (this.keywordsInput === "" ||
           (this.keywordsInput.length === this.textCursorPosition &&
-          this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
+              this.keywordsInput.charAt(this.keywordsInput.length - 1) === " ")
       ) {
         this.keywordsInput = this.keywordsInput + keyword;
       } else {
@@ -1024,7 +1044,7 @@ export default {
         this.users = response.data;
       }, (error) => {
         if (error.response) {
-          if (error.response.status === 401 ){
+          if (error.response.status === 401) {
             this.$router.push({path: '/invalidtoken'})
           } else {
             console.log(`${error.response.status} - Something went wrong`)
@@ -1044,7 +1064,7 @@ export default {
 
     // Global event listener to toggle autofill list display
     let self = this;
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
       if (!event.target.closest('#autofill-container-users') && self.autofillState !== 'closed' && self.$refs["autofill-list-users"]) {
         Autofill.toggleList('closed', self.$refs["autofill-list-users"]);
         self.autofillState = 'initial';
@@ -1065,7 +1085,7 @@ export default {
       val = val.replace(/\s+/g, ' ').replace(/\s+#*/g, " ");
 
       let strings = val.split(" ");
-      for (let i = 0; i < strings.length; i++ ) {
+      for (let i = 0; i < strings.length; i++) {
         // Add a hashtag in front of all strings besides
         strings[i] = this.addKeywordPrefix(strings[i])
 
@@ -1109,7 +1129,6 @@ export default {
 </script>
 
 
-
 <style>
 /** ensure that any changes made here happen on both the front and back layer!!!! */
 
@@ -1128,6 +1147,7 @@ div.keywords-backdrop, textarea.keywords-input {
   line-height: 2em;
   font-family: 'Roboto', sans-serif;
 }
+
 div.keywords-backdrop {
   background-color: #fff;
   white-space: pre-wrap;
@@ -1156,7 +1176,7 @@ strong.keywordHighlight {
   letter-spacing: 2px;
   word-spacing: 2px;
   line-height: 2em;
-  }
+}
 
 /*********************************************************************
                         Autofill styling
@@ -1167,38 +1187,38 @@ strong.keywordHighlight {
   https://24ways.org/2019/making-a-better-custom-select-element/
 *********************************************************************/
 
-  #autofill-container, #autofill-container-users {
-    position: relative;
-  }
+#autofill-container, #autofill-container-users {
+  position: relative;
+}
 
-  #card-creator::-ms-expand {
-    display: none;
-  }
+#card-creator::-ms-expand {
+  display: none;
+}
 
-  .autofill-options {
-    border: 1px solid lightgray;
-    border-radius: 0 0 0.25em 0.25em;
-    line-height: 1.25;
-    padding: 0;
-    list-style-type: none;
-    cursor: pointer;
-    z-index: 2;
-    position: absolute;
-    width: 100%;
-    background-color: #ffffff;
-  }
+.autofill-options {
+  border: 1px solid lightgray;
+  border-radius: 0 0 0.25em 0.25em;
+  line-height: 1.25;
+  padding: 0;
+  list-style-type: none;
+  cursor: pointer;
+  z-index: 2;
+  position: absolute;
+  width: 100%;
+  background-color: #ffffff;
+}
 
-  .autofill-options li {
-    padding: 1em;
-  }
+.autofill-options li {
+  padding: 1em;
+}
 
-  .autofill-options li:hover, .autofill-options li:focus {
-    background: #1EBA8C;
-    color: #fff;
-  }
+.autofill-options li:hover, .autofill-options li:focus {
+  background: #1EBA8C;
+  color: #fff;
+}
 
-  .hidden-all {
-    display: none;
-  }
+.hidden-all {
+  display: none;
+}
 
 </style>
