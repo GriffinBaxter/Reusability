@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.1.4
+  version: 6.1.5
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1854,7 +1854,7 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/user/{id}/profile':
+  '/users/{id}/profile':
     put:
       tags:
         - 'U10 Modifying Individuals'
@@ -1926,7 +1926,7 @@ paths:
         '406':
           description: 'Selected User not exist'
 
-  '/business/{id}/profile':
+  '/businesses/{id}/profile':
     put:
       tags:
         - 'U11 Modifying Businesses'
