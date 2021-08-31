@@ -1,6 +1,5 @@
 package org.seng302.model.repository;
 
-import org.seng302.model.Listing;
 import org.seng302.model.Product;
 import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +10,9 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
