@@ -70,14 +70,14 @@ describe("Testing the behaviour of prefilled input fields", () => {
 
     test("Test that the title returned from the Api is stored in the input by default.", async () => {
         // Checking the title has been set correctly
-        expect(editCreateCardModal.find("#card-title").exists()).toBe(true);
-        expect(editCreateCardModal.find("#card-title").element.value).toBe("TestTitle");
+        expect(editCreateCardModal.find("#card-title-default").exists()).toBe(true);
+        expect(editCreateCardModal.find("#card-title-default").element.value).toBe("TestTitle");
     })
 
     test("Test that the description returned from the Api is stored in the input by default.", async () => {
         // Checking the description has been set correctly
-        expect(editCreateCardModal.find("#card-description").exists()).toBe(true);
-        expect(editCreateCardModal.find("#card-description").element.value).toBe("Card for testing");
+        expect(editCreateCardModal.find("#card-description-default").exists()).toBe(true);
+        expect(editCreateCardModal.find("#card-description-default").element.value).toBe("Card for testing");
     })
 
     test("Test that the section returned from the Api is stored in the input by default.", async () => {
@@ -88,8 +88,8 @@ describe("Testing the behaviour of prefilled input fields", () => {
 
     test("Test that the keywords returned from the Api is stored in the input by default.", async () => {
         // Checking the keywords has been set correctly
-        expect(editCreateCardModal.find("#card-keywords-edit").exists()).toBe(true);
-        expect(editCreateCardModal.find("#card-keywords-edit").element.value).toBe("#Key");
+        expect(editCreateCardModal.find("#card-keywords-edit-default").exists()).toBe(true);
+        expect(editCreateCardModal.find("#card-keywords-edit-default").element.value).toBe("#Key");
     })
 })
 

@@ -208,7 +208,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
             );
             predicateList.add(predicateForToDate);
         }
-        if (barcode != null) {
+        if (barcode != null && !barcode.equals("")) {
             // where businessType = type
             Predicate predicateForBarcode = criteriaBuilder.equal(listing.get("inventoryItem").get("product").get("barcode"), barcode);
             predicateList.add(predicateForBarcode);

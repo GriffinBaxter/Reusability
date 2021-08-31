@@ -1,6 +1,7 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
+import org.seng302.Validation;
 import org.seng302.model.Address;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.controller.UserResource;
@@ -86,6 +87,28 @@ class UserResourceIntegrationTests {
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
+    private final String modifiedUserPayload = "{\n" +
+            "\"firstName\": \"%s\",\n" +
+            "\"lastName\": \"%s\",\n" +
+            "\"middleName\": \"%s\",\n" +
+            "\"nickname\": \"%s\",\n" +
+            "\"bio\": \"%s\",\n" +
+            "\"email\": \"%s\",\n" +
+            "\"dateOfBirth\": \"%s\",\n" +
+            "\"phoneNumber\": \"%s\",\n" +
+            "\"homeAddress\": {\n" +
+            "\"streetNumber\": \"%s\",\n" +
+            "\"streetName\": \"%s\",\n" +
+            "\"suburb\": \"%s\",\n" +
+            "\"city\": \"%s\",\n" +
+            "\"region\": \"%s\",\n" +
+            "\"country\": \"%s\",\n" +
+            "\"postcode\": \"%s\"\n" +
+            "},\n" +
+            "\"currentPassword\": \"%s\",\n" +
+            "\"newPassword\": \"%s\"\n" +
+            "}";
+
     private MockHttpServletResponse response;
 
     private String expectedJson;
@@ -167,7 +190,6 @@ class UserResourceIntegrationTests {
                                 Role.USER);
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
-       // this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
 
         //test users for searching for user by name
 
@@ -1442,5 +1464,527 @@ class UserResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(userRepository.findById(dGAA.getId()).get().getRole()).isEqualTo(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+    }
+
+/* ------------------------------------------ Modified User Profile Tests ------------------------------------------- */
+
+    /**
+     * Test An OK status return when user modify his profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanChangeProfileForHisSelf() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK status return when DGAA modify other user's profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testDGAACanChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        System.out.println(response.getErrorMessage());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK status return when GAA modify other user's profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test A FORBIDDEN status return when user try to modify other user's profile.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(LocalDate.of(2000, 5, 10));
+    }
+
+    /**
+     * Test A NOT_ACCEPTABLE status return when user try to modify not exist user's profile.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangeProfileForNotExistUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Test A UNAUTHORIZED status return when user is not login.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testNotLoginUserCanNotChangeProfile() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Test A BAD_REQUEST status return when user is try to modify profile by invalid info, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testValidationStillWorkForModifiedUserProfile() throws Exception {
+        // given
+        String newName = "";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, newName, "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", LocalDate.of(1990, 9, 10).toString(), "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!",
+                "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                        .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                        .cookie(cookie))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid first name");
+    }
+
+    /**
+     * Test A BAD_REQUEST status return when user is try to modify profile by invalid address, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testValidationStillWorkForModifiedAddress() throws Exception {
+        // given
+        String newCountry = "";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", LocalDate.of(1990, 9, 10).toString(), "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", newCountry, "90210", "Testpassword123!",
+                "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                        .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                        .cookie(cookie))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid country");
+    }
+
+    /**
+     * Test A BAD_REQUEST status return when user is try to modify profile by invalid address, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanUserEmailAddressAlreadyExist() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!",
+                "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK status return when user modify his password with a correct current password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanChangePasswordWhenTheyGivenCorrectCurrentPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    /**
+     * Test An BAD_REQUEST status return when user modify his password with an incorrect current password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangePasswordWhenTheyGivenIncorrectCurrentPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isFalse();
+    }
+
+    /**
+     * Test An OK status return when GAA modify User's password without password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanChangePasswordForOtherUsersWithoutPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    /**
+     * Test An BAD_REQUEST status return when GAA try to modify GAA's password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanNotChangePasswordForOtherGAAWithoutPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(),
+                Role.GLOBALAPPLICATIONADMIN);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isFalse();
+    }
+
+    /**
+     * Test An BAD_REQUEST status return when GAA try to modify DGAA's password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanNotChangePasswordForDGAA() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isFalse();
+    }
+
+    /**
+     * Test An OK status return when DGAA try to modify User's password without password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testDGAACanChangePasswordForUsersWithoutPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    /**
+     * Test An OK status return when DGAA try to modify GAA's password without password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testDGAACanChangePasswordForGAAWithoutPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(),
+                Role.GLOBALAPPLICATIONADMIN);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
     }
 }
