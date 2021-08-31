@@ -18,6 +18,7 @@ import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.UserIdPayload;
 import org.seng302.view.incoming.UserLoginPayload;
+import org.seng302.view.incoming.UserProfileModifyPayload;
 import org.seng302.view.incoming.UserRegistrationPayload;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.model.repository.AddressRepository;
@@ -42,7 +43,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -70,10 +70,6 @@ public class UserResource {
 
     @Autowired
     private AddressRepository addressRepository;
-
-    private Address address;
-
-    private List<Business> businesses;
 
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
 
@@ -139,6 +135,49 @@ public class UserResource {
         }
     }
 
+    private Address extractAddress(AddressPayload addressPayload) {
+        Address address;
+        try {
+            String streetNumber = addressPayload.getStreetNumber();
+            String streetName = addressPayload.getStreetName();
+            String city = addressPayload.getCity();
+            String region = addressPayload.getRegion();
+            String country = addressPayload.getCountry();
+            String postcode = addressPayload.getPostcode();
+            String suburb = addressPayload.getSuburb();
+
+            // Check to see if address already exists.
+            Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(
+                    streetNumber, streetName, city, region, country, postcode, suburb);
+
+            // If address already exists it is retrieved.
+            // The businesses already existing are also retrieved. These businesses will be
+            // used to determine if a business hasn't already been created.
+            if (storedAddress.isPresent()) {
+                address = storedAddress.get();
+            } else {
+                // Otherwise, a new address is created and saved.
+                address = new Address(
+                        streetNumber,
+                        streetName,
+                        city,
+                        region,
+                        country,
+                        postcode,
+                        suburb
+                );
+                addressRepository.save(address);
+            }
+        } catch (IllegalAddressArgumentException e) {
+            logger.error("Registration Failure - {}", e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    e.getMessage()
+            );
+        }
+        return address;
+    }
+
     /**
      * Create a new user account.
      * @param registration Registration payload
@@ -155,42 +194,9 @@ public class UserResource {
             );
         }
 
+        Address address = extractAddress(registration.getHomeAddress());
+
         try {
-            AddressPayload addressJSON = registration.getHomeAddress();
-            String streetNumber = addressJSON.getStreetNumber();
-            String streetName = addressJSON.getStreetName();
-            String city = addressJSON.getCity();
-            String region = addressJSON.getRegion();
-            String country = addressJSON.getCountry();
-            String postcode = addressJSON.getPostcode();
-            String suburb = addressJSON.getSuburb();
-
-            // Check to see if address already exists.
-            Optional<Address> storedAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(
-                    streetNumber, streetName, city, region, country, postcode, suburb);
-
-            // If address already exists it is retrieved.
-            // The businesses already existing are also retrieved. These businesses will be
-            // used to determine if a business hasn't already been created.
-            if (storedAddress.isPresent()) {
-                address = storedAddress.get();
-                businesses = address.getBusinesses();
-            } else {
-                // Otherwise a new address is created and saved.
-                address = new Address(
-                        streetNumber,
-                        streetName,
-                        city,
-                        region,
-                        country,
-                        postcode,
-                        suburb
-                );
-                addressRepository.save(address);
-                // No businesses will exist at new address.
-                businesses = new ArrayList<>();
-            }
-
             User newUser = new User(
                     registration.getFirstName(),
                     registration.getLastName(),
@@ -214,7 +220,7 @@ public class UserResource {
             logger.info("Successful Registration - User Id {}", createdUser.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
 
-        } catch (IllegalUserArgumentException | IllegalAddressArgumentException e) {
+        } catch (IllegalUserArgumentException e) {
             logger.error("Registration Failure - {}", e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -283,7 +289,7 @@ public class UserResource {
                     administrators
             );
         } else {
-            // Otherwise return a UserPayloadSecure without the phone number, date of birth and a secure address with only the city, region, and country.
+            // Otherwise, return a UserPayloadSecure without the phone number, date of birth and a secure address with only the city, region, and country.
             return new UserPayloadSecure(
                     selectUser.getId(),
                     selectUser.getFirstName(),
@@ -464,7 +470,7 @@ public class UserResource {
      * @param id mail address (primary key)
      */
     @PutMapping("/users/{id}/revokeAdmin")
-    @ResponseStatus(value = HttpStatus.OK, reason = "Account created successfully")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
     public void revokeGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -491,5 +497,93 @@ public class UserResource {
                 );
             }
         }
+    }
+
+    /**
+     * Update given user by given user payload
+     * @param user user
+     * @param userProfileModifyPayload user payload
+     * @return updated User
+     */
+    private User updateUserInfo(User currentUser, User selectedUser, UserProfileModifyPayload userProfileModifyPayload) {
+        String newEmailAddress = userProfileModifyPayload.getEmail();
+        if (userRepository.findByEmail(newEmailAddress).isPresent() && !selectedUser.getEmail().equals(newEmailAddress)){
+            logger.error("Registration Failure - {}", "Email address used");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "The Email already been used."
+            );
+        }
+        try {
+            Address address = extractAddress(userProfileModifyPayload.getHomeAddress());
+            selectedUser.setHomeAddress(address);
+            selectedUser.updateFirstName(userProfileModifyPayload.getFirstName());
+            selectedUser.updateLastName(userProfileModifyPayload.getLastName());
+            selectedUser.updateMiddleName(userProfileModifyPayload.getMiddleName());
+            selectedUser.updateNickname(userProfileModifyPayload.getNickname());
+            selectedUser.updateBio(userProfileModifyPayload.getBio());
+            selectedUser.updateEmail(userProfileModifyPayload.getEmail());
+            selectedUser.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
+            selectedUser.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
+            if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
+                    || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
+                    || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
+                        && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN))) {
+                selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
+            } else if (userProfileModifyPayload.getCurrentPassword() != null
+                    && !userProfileModifyPayload.getCurrentPassword().isEmpty()){
+                logger.error("Registration Failure - {}", "current password error");
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Wrong Password"
+                );
+            }
+        } catch (IllegalUserArgumentException e) {
+            logger.error("Registration Failure - {}", e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    e.getMessage()
+            );
+        }
+        logger.debug("Selected user (ID: {}) update successfully.", selectedUser.getId());
+        return selectedUser;
+    }
+
+    /**
+     * Put method to modify user profile.
+     * @param id current user id
+     * @param sessionToken sessionToken for current user
+     * @param userProfileModifyPayload new profile info
+     */
+    @PutMapping("/users/{id}/profile")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Account updated successfully")
+    public void modifiedUserProfile(@PathVariable int id,
+                                    @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                    @RequestBody(required = false) UserProfileModifyPayload userProfileModifyPayload){
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        Optional<User> optionalSelectedUser = userRepository.findById(id);
+
+        if (optionalSelectedUser.isEmpty()) {
+            logger.error("Selected user does not exist.");
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Selected user does not exist."
+            );
+        }
+
+        User selectedUser = optionalSelectedUser.get();
+        logger.debug("Selected user (ID: {}) retrieve successfully.", selectedUser.getId());
+
+        if (selectedUser.getId() != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)){
+            logger.error("User does not have permission to perform action.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "The user does not have permission to perform the requested action"
+            );
+        }
+
+        userRepository.save(updateUserInfo(currentUser, selectedUser, userProfileModifyPayload));
+        logger.info("Selected user (ID: {}) profile update saved.", selectedUser.getId());
     }
 }

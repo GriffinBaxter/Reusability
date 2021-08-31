@@ -50,26 +50,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ExtendWith(MockitoExtension.class)
 public class ProductImagesStepDefs {
 
-    @Autowired
     private MockMvc mvc;
 
-    @Autowired
     @MockBean
     private UserRepository userRepository;
 
-    @Autowired
     @MockBean
     private BusinessRepository businessRepository;
 
-    @Autowired
     @MockBean
     private ProductRepository productRepository;
 
-    @Autowired
     @MockBean
     private ImageRepository imageRepository;
 
-    @Autowired
     @MockBean
     private FileStorageService fileStorageService;
 

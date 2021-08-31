@@ -1010,7 +1010,7 @@ class ProductResourceIntegrationTests {
 
 
     /**
-     * Tests that a OK status is returned when attempting to modify a product with valid details and as DGAA.
+     * Tests that an OK status is returned when attempting to modify a product with valid details and as DGAA.
      *
      * @throws Exception Exception error
      */

@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.1.4
+  version: 6.1.6
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1855,7 +1855,7 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/user/{id}/profile':
+  '/users/{id}/profile':
     put:
       tags:
         - 'U10 Modifying Individuals'
@@ -1876,7 +1876,47 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              properties:
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Smith
+                middleName:
+                  type: string
+                  example: Hector
+                nickname:
+                  type: string
+                  example: Jonny
+                bio:
+                  type: string
+                  example: Likes long walks on the beach
+                email:
+                  type: string
+                  format: email
+                  example: johnsmith99@gmail.com
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: '1999-04-27'
+                phoneNumber:
+                  type: string
+                  example: '+64 3 555 0129'
+                homeAddress:
+                  $ref: '#/components/schemas/Address'
+                currentPassword:
+                  type: string
+                  example: '1337-H%nt3r2'
+                  format: password
+                  writeOnly: true
+                  description: Should not be stored in plain text (i.e hash it)
+                newPassword:
+                  type: string
+                  example: 'NewPassword123!'
+                  format: password
+                  writeOnly: true
+                  description: Should not be stored in plain text (i.e hash it)
       responses:
         '200':
           description: User updated successfully
@@ -1887,7 +1927,7 @@ paths:
         '406':
           description: 'Selected User not exist'
 
-  '/business/{id}/profile':
+  '/businesses/{id}/profile':
     put:
       tags:
         - 'U11 Modifying Businesses'
@@ -2129,7 +2169,7 @@ components:
           example: "1982 Lada Samara"
         description:
           type: string
-          description:  A more detailed description of the card.
+          description: A more detailed description of the card.
           example: "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar."
         keywordIds:
           type: array
