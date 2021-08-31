@@ -172,7 +172,7 @@ public class ModifyUserStepDefs {
                 dateOfBirth, phoneNumber, address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), currentPassword, newPassword);
 
-        response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
+        response = mvc.perform(put(String.format("/users/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(cookie)).andReturn().getResponse();
     }
@@ -233,7 +233,7 @@ public class ModifyUserStepDefs {
                 user.getPhoneNumber(), streetNumber, streetName, suburb, city, region, country, postcode, password,
                 password);
 
-        response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
+        response = mvc.perform(put(String.format("/users/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(cookie)).andReturn().getResponse();
     }
@@ -271,7 +271,7 @@ public class ModifyUserStepDefs {
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
-        response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
+        response = mvc.perform(put(String.format("/users/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(cookie)).andReturn().getResponse();
     }
@@ -305,7 +305,7 @@ public class ModifyUserStepDefs {
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
-        response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
+        response = mvc.perform(put(String.format("/users/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(cookie)).andReturn().getResponse();
     }
@@ -325,7 +325,7 @@ public class ModifyUserStepDefs {
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
-        response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
+        response = mvc.perform(put(String.format("/users/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(cookie)).andReturn().getResponse();
     }
@@ -345,7 +345,7 @@ public class ModifyUserStepDefs {
                 address.getStreetNumber(), address.getStreetName(), address.getSuburb(), address.getCity(),
                 address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
-        response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
+        response = mvc.perform(put(String.format("/users/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(cookie)).andReturn().getResponse();
     }
@@ -357,7 +357,7 @@ public class ModifyUserStepDefs {
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode(), password, password);
 
-        response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
+        response = mvc.perform(put(String.format("/users/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(cookie)).andReturn().getResponse();
     }
@@ -377,7 +377,7 @@ public class ModifyUserStepDefs {
                 user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), "", address.getPostcode(), password, password);
 
-        response = mvc.perform(put(String.format("/user/%d/profile", user.getId()))
+        response = mvc.perform(put(String.format("/users/%d/profile", user.getId()))
                 .contentType(MediaType.APPLICATION_JSON).content(payload)
                 .cookie(cookie)).andReturn().getResponse();
     }

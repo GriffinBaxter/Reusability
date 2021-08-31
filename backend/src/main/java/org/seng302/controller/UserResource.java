@@ -505,9 +505,9 @@ public class UserResource {
      * @param userProfileModifyPayload user payload
      * @return updated User
      */
-    private User updateUserInfo(User user, UserProfileModifyPayload userProfileModifyPayload) {
+    private User updateUserInfo(User currentUser, User selectedUser, UserProfileModifyPayload userProfileModifyPayload) {
         String newEmailAddress = userProfileModifyPayload.getEmail();
-        if (userRepository.findByEmail(newEmailAddress).isPresent() && !user.getEmail().equals(newEmailAddress)){
+        if (userRepository.findByEmail(newEmailAddress).isPresent() && !selectedUser.getEmail().equals(newEmailAddress)){
             logger.error("Registration Failure - {}", "Email address used");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -516,17 +516,20 @@ public class UserResource {
         }
         try {
             Address address = extractAddress(userProfileModifyPayload.getHomeAddress());
-            user.setHomeAddress(address);
-            user.updateFirstName(userProfileModifyPayload.getFirstName());
-            user.updateLastName(userProfileModifyPayload.getLastName());
-            user.updateMiddleName(userProfileModifyPayload.getMiddleName());
-            user.updateNickname(userProfileModifyPayload.getNickname());
-            user.updateBio(userProfileModifyPayload.getBio());
-            user.updateEmail(userProfileModifyPayload.getEmail());
-            user.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
-            user.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
-            if (user.verifyPassword(userProfileModifyPayload.getCurrentPassword())) {
-                user.updatePassword(userProfileModifyPayload.getNewPassword());
+            selectedUser.setHomeAddress(address);
+            selectedUser.updateFirstName(userProfileModifyPayload.getFirstName());
+            selectedUser.updateLastName(userProfileModifyPayload.getLastName());
+            selectedUser.updateMiddleName(userProfileModifyPayload.getMiddleName());
+            selectedUser.updateNickname(userProfileModifyPayload.getNickname());
+            selectedUser.updateBio(userProfileModifyPayload.getBio());
+            selectedUser.updateEmail(userProfileModifyPayload.getEmail());
+            selectedUser.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
+            selectedUser.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
+            if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
+                    || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
+                    || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
+                        && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN))) {
+                selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
             } else if (userProfileModifyPayload.getCurrentPassword() != null
                     && !userProfileModifyPayload.getCurrentPassword().isEmpty()){
                 logger.error("Registration Failure - {}", "current password error");
@@ -542,8 +545,8 @@ public class UserResource {
                     e.getMessage()
             );
         }
-        logger.debug("Selected user (ID: {}) update successfully.", user.getId());
-        return user;
+        logger.debug("Selected user (ID: {}) update successfully.", selectedUser.getId());
+        return selectedUser;
     }
 
     /**
@@ -552,7 +555,7 @@ public class UserResource {
      * @param sessionToken sessionToken for current user
      * @param userProfileModifyPayload new profile info
      */
-    @PutMapping("/user/{id}/profile")
+    @PutMapping("/users/{id}/profile")
     @ResponseStatus(value = HttpStatus.OK, reason = "Account updated successfully")
     public void modifiedUserProfile(@PathVariable int id,
                                     @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
@@ -580,7 +583,7 @@ public class UserResource {
             );
         }
 
-        userRepository.save(updateUserInfo(selectedUser, userProfileModifyPayload));
+        userRepository.save(updateUserInfo(currentUser, selectedUser, userProfileModifyPayload));
         logger.info("Selected user (ID: {}) profile update saved.", selectedUser.getId());
     }
 }
