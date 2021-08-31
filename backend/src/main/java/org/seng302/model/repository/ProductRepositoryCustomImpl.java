@@ -1,5 +1,6 @@
 package org.seng302.model.repository;
 
+import com.sun.xml.bind.v2.runtime.reflect.Lister;
 import org.seng302.model.Product;
 import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Product> findAllProductsBySingleField(List<String> names, Integer businessId, String field, Pageable pageable) throws Exception {
+    public Page<Product> findAllProductsByBusinessIdAndIncludedFields(List<String> names, List<String> fields, Integer businessId, Pageable pageable) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = criteriaBuilder.createQuery(Product.class);
@@ -28,52 +29,13 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         Root<Product> product = query.from(Product.class);
 
         Path<String> path;
-        switch (field) {
-            case "productId":
-                path = product.get("id");
-                break;
-            case "name":
-                path = product.get("name");
-                break;
-            case "manufacturer":
-                path = product.get("manufacturer");
-                break;
-            case "description":
-                path = product.get("description");
-                break;
-            default:    // field parameter is invalid
-                throw new Exception("Invalid field");
+        ArrayList<Predicate> predicates = new ArrayList<>();
+
+        // Valid fields are "id", "name", "manufacturer" & "description"
+        for (String field : fields) {
+            path = product.get(field);
+            predicates.addAll(CustomRepositoryUtils.getPredicates(names, path, criteriaBuilder));
         }
-
-        ArrayList<Predicate> predicates = CustomRepositoryUtils.getPredicates(names, path, criteriaBuilder);
-
-        return getProducts(predicates, businessId, pageable, product, query, criteriaBuilder);
-    }
-
-    @Override
-    public Page<Product> findAllProductsByAllFields(List<String> names, Integer businessId, Pageable pageable) {
-
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Product> query = criteriaBuilder.createQuery(Product.class);
-
-        Root<Product> product = query.from(Product.class);
-
-        Path<String> path = product.get("id");
-        ArrayList<Predicate> predicates = CustomRepositoryUtils.getPredicates(names, path, criteriaBuilder);
-
-        path = product.get("name");
-        predicates.addAll(CustomRepositoryUtils.getPredicates(names, path, criteriaBuilder));
-
-        path = product.get("manufacturer");
-        predicates.addAll(CustomRepositoryUtils.getPredicates(names, path, criteriaBuilder));
-
-        path = product.get("description");
-        predicates.addAll(CustomRepositoryUtils.getPredicates(names, path, criteriaBuilder));
-
-        return getProducts(predicates, businessId, pageable, product, query, criteriaBuilder);
-    }
-
-    private Page<Product> getProducts(ArrayList<Predicate> predicates, Integer businessId, Pageable pageable, Root<Product> product, CriteriaQuery<Product> query, CriteriaBuilder criteriaBuilder) {
 
         Path<String> businessPath = product.get("businessId");
 

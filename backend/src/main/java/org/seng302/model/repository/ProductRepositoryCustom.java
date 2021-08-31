@@ -12,7 +12,5 @@ import java.util.List;
 
 public interface ProductRepositoryCustom {
 
-    Page<Product> findAllProductsBySingleField(List<String> names, Integer businessId, String field, Pageable pageable) throws Exception;
-
-    Page<Product> findAllProductsByAllFields(List<String> names, Integer businessId, Pageable pageable);
+    Page<Product> findAllProductsByBusinessIdAndIncludedFields(List<String> names, List<String> fields, Integer businessId, Pageable pageable);
 }
