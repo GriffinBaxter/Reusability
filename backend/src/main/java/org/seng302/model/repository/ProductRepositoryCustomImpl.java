@@ -1,6 +1,5 @@
 package org.seng302.model.repository;
 
-import com.sun.xml.bind.v2.runtime.reflect.Lister;
 import org.seng302.model.Product;
 import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,16 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     @Autowired
     private EntityManager entityManager;
 
+    /**
+     * Search for products for a business by selected fields
+     * @param search list of values to search for
+     * @param fields list of fields to search ("id", "name", "manufacturer", "description")
+     * @param businessId id of business
+     * @param pageable Pageable object
+     * @return Page of Products by search criteria
+     */
     @Override
-    public Page<Product> findAllProductsByBusinessIdAndIncludedFields(List<String> names, List<String> fields, Integer businessId, Pageable pageable) {
+    public Page<Product> findAllProductsByBusinessIdAndIncludedFields(List<String> search, List<String> fields, Integer businessId, Pageable pageable) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = criteriaBuilder.createQuery(Product.class);
@@ -34,7 +41,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         // Valid fields are "id", "name", "manufacturer" & "description"
         for (String field : fields) {
             path = product.get(field);
-            predicates.addAll(CustomRepositoryUtils.getPredicates(names, path, criteriaBuilder));
+            predicates.addAll(CustomRepositoryUtils.getPredicates(search, path, criteriaBuilder));
         }
 
         Path<String> businessPath = product.get("businessId");
