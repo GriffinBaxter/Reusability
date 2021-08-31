@@ -336,7 +336,7 @@ class CustomProductRepositoryTests {
      * Returns list of Products
      */
     @Test
-    void whenFindAllProductsBySingleField_manufacturer_ProductsExist() {
+    void whenFindAllProductsByBusinessIdAndIncludedFields_manufacturer_ProductsExist() {
         List<String> strings = new ArrayList<>();
         strings.add("New");
 
@@ -453,7 +453,7 @@ class CustomProductRepositoryTests {
     // -------------------------- findAllProductsByBusinessIdAndIncludedFields Multiple --------------------------
 
     /**
-     * Tests findProductsByAllFields by productID field when query exists
+     * Tests findAllProductsByBusinessIdAndIncludedFields by productID field when query exists
      * Returns list of Products
      */
     @Test
