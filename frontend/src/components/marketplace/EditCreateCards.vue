@@ -15,11 +15,11 @@
       <!-- Select a section  -->
       <div class="row my-lg-2" v-if="currentModal === 'create'">
         <div class="col-md-6 my-2 my-lg-0">
-          <label :for="'section-selection' + type" class="form-label">What section would you like to post your
+          <label :for="'section-selection-' + type" class="form-label">What section would you like to post your
             card?*</label>
         </div>
         <div class="col-md-6 my-2 my-lg-0">
-          <select :id="'section-selection' + type" :name="'section-selection' + type"
+          <select :id="'section-selection-' + type" :name="'section-selection-' + type"
                   :class="`form-select ${formErrorClasses.sectionSelectionError}`"
                   v-model="sectionSelected" @click="isSectionSelectedInvalid">
             <option value="" disabled selected>Select section</option>
@@ -82,10 +82,10 @@
       <!-- Card title -->
       <div class="row my-lg-2">
         <div class="col-md-3 ">
-          <label :for="'card-title' + type" class="fw-bold">Title*:</label>
+          <label :for="'card-title-' + type" class="fw-bold">Title*:</label>
         </div>
         <div class="col-md">
-          <input :id="'card-title' + type" :class="`form-control ${formErrorClasses.titleError}`" v-model="title"
+          <input :id="'card-title-' + type" :class="`form-control ${formErrorClasses.titleError}`" v-model="title"
                  :maxlength="config.config.title.maxLength" @input="isTitleInvalid">
           <div id="card-title-invalid-feedback" class="invalid-feedback" v-if="formError.titleError">
             {{ formError.titleError }}
@@ -96,10 +96,10 @@
       <!-- Card Description -->
       <div class="row my-4">
         <div class="col-md-3 ">
-          <label :for="'card-description'" class="fw-bold">Description:</label>
+          <label :for="'card-description-' + type" class="fw-bold">Description:</label>
         </div>
         <div class="col-md">
-          <textarea :id="'card-description'"
+          <textarea :id="'card-description-' + type"
                     :class="`form-control ${formErrorClasses.descriptionError}`"
                     v-model="description"
                     :maxlength="config.config.description.maxLength"
@@ -113,13 +113,13 @@
       <!-- Card Keywords -->
       <div class="row my-4">
         <div class="col-md-3 ">
-          <label v-bind:for="'card-keywords-' + this.$props.currentModal" class="fw-bold">Keywords:</label>
+          <label v-bind:for="'card-keywords-' + this.$props.currentModal + '-' + type" class="fw-bold">Keywords:</label>
         </div>
         <div class="col-md">
           <div style="position: relative; height: 80px;" :class="`form-control ${formErrorClasses.keywordsError}`">
             <div v-html="keywordsBackdrop" ref="keywordsBackdrop" class="form-control keywords-backdrop"
                  style="resize: none; overflow-y: scroll" disabled/>
-            <textarea ref="keywordsInput" v-bind:id="'card-keywords-' + type"
+            <textarea ref="keywordsInput" v-bind:id="'card-keywords-' + this.$props.currentModal + '-' + type"
                       class="form-control keywords-input " style="resize: none; overflow-y: scroll; "
                       v-model="keywordsInput"
                       @scroll="handleKeywordsScroll" @keydown="handleKeywordsScroll"/>
@@ -164,7 +164,7 @@ export default {
   props: {
     type: {
       type: String,
-      default: "none",
+      default: "default",
       required: false
     },
     currentModal: {
@@ -686,7 +686,7 @@ export default {
      * or outside the keyword text-box).
      */
     onClickOrKeyUp() {
-      const elementID = 'card-keywords-' + this.$props.currentModal;
+      const elementID = 'card-keywords-' + this.$props.currentModal + '-' + this.type;
       if (elementID === document.activeElement.id) {
         this.updateCursorPosition()
       } else {
@@ -699,7 +699,7 @@ export default {
      * suggestion, if there is no match, or if a click has been registered outside the text-box.
      */
     updateCursorPosition() {
-      const elementID = 'card-keywords-' + this.$props.currentModal;
+      const elementID = 'card-keywords-' + this.$props.currentModal + '-' + this.type;
       this.textCursorPosition = document.getElementById(elementID).selectionStart;
       this.currentKeyword = "";
 
