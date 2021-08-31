@@ -7,7 +7,6 @@ import org.seng302.Main;
 import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
-import org.seng302.model.repository.MarketCardNotificationRepository;
 import org.seng302.model.repository.MarketplaceConversationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

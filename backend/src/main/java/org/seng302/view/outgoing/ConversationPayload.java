@@ -47,43 +47,43 @@ public class ConversationPayload {
         this.created = created.toString();
     }
 
-    private int getId() {
+    public int getId() {
         return id;
     }
 
-    private int getInstigatorId() {
+    public int getInstigatorId() {
         return instigatorId;
     }
 
-    private String getInstigatorName() {
+    public String getInstigatorName() {
         return instigatorName;
     }
 
-    private ImagePayload getInstigatorImage() {
+    public ImagePayload getInstigatorImage() {
         return instigatorImage;
     }
 
-    private int getReceiverId() {
+    public int getReceiverId() {
         return receiverId;
     }
 
-    private String getReceiverName() {
+    public String getReceiverName() {
         return receiverName;
     }
 
-    private ImagePayload getReceiverImage() {
+    public ImagePayload getReceiverImage() {
         return receiverImage;
     }
 
-    private int getMarketplaceCardId() {
+    public int getMarketplaceCardId() {
         return marketplaceCardId;
     }
 
-    private String getMarketplaceCardTitle() {
+    public String getMarketplaceCardTitle() {
         return marketplaceCardTitle;
     }
 
-    private String getCreated() {
+    public String getCreated() {
         return created;
     }
 
