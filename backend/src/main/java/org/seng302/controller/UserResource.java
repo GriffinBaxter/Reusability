@@ -16,6 +16,7 @@ import org.seng302.model.Address;
 import org.seng302.Authorization;
 import org.seng302.model.Conversation;
 import org.seng302.model.repository.ConversationRepository;
+import org.seng302.model.repository.MessageRepository;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.UserIdPayload;
@@ -77,6 +78,9 @@ public class UserResource {
     @Autowired
     private ConversationRepository conversationRepository;
 
+    @Autowired
+    private MessageRepository messageRepository;
+
     private Address address;
 
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
@@ -91,9 +95,14 @@ public class UserResource {
     private static final String HTTP_NOT_ACCEPTABLE_MESSAGE = "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
             "for example trying to access a resource by an ID that does not exist.";
 
-    public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
+    public UserResource(UserRepository userRepository,
+                        AddressRepository addressRepository,
+                        ConversationRepository conversationRepository,
+                        MessageRepository messageRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
+        this.conversationRepository = conversationRepository;
+        this.messageRepository = messageRepository;
     }
 
     /**
@@ -538,19 +547,20 @@ public class UserResource {
             // this "removes" the user from the conversation since there is no longer a link.
             conversation.get().setReceiver(null);
         } else if (Authorization.isGAAorDGAA(currentUser)) {
-            // if the current user is a GAA or DGAA then they can delete the conversation.
+            // if the current user is a GAA or DGAA then they can delete the conversation and its associated messages.
+            messageRepository.deleteByConversation(conversation.get());
             conversationRepository.deleteById(conversationId);
-            logger.debug("Conversation deleted");
+            logger.debug("Conversation and messages deleted");
         } else {
             logger.error("Conversation Deletion Error - 403 [FORBIDDEN] - User doesn't have permissions to delete conversation");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid permissions to delete conversation");
         }
 
-
         if ((conversation.get().getInstigator() == null) && (conversation.get().getReceiver() == null)) {
-            // if there is no remaining members in the conversation then delete it.
+            // if there is no remaining members in the conversation then delete it and its associated messages.
+            messageRepository.deleteByConversation(conversation.get());
             conversationRepository.deleteById(conversationId);
-            logger.debug("Conversation deleted");
+            logger.debug("Conversation and messages deleted");
         } else {
             // if a user removes themself from a conversation then update the members in the conversation.
             conversationRepository.save(conversation.get());

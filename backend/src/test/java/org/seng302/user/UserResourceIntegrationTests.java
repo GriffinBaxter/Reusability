@@ -1,12 +1,14 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
-import org.seng302.model.Address;
+import org.seng302.model.*;
+import org.seng302.model.enums.Section;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.controller.UserResource;
 import org.seng302.Main;
 import org.seng302.model.enums.Role;
-import org.seng302.model.User;
+import org.seng302.model.repository.ConversationRepository;
+import org.seng302.model.repository.MessageRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -52,6 +54,12 @@ class UserResourceIntegrationTests {
 
     @MockBean
     private AddressRepository addressRepository;
+
+    @MockBean
+    private ConversationRepository conversationRepository;
+
+    @MockBean
+    private MessageRepository messageRepository;
 
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
                                         "\"password\": \"%s\"}";
@@ -108,6 +116,11 @@ class UserResourceIntegrationTests {
     private Address address3;
     private Address address4;
     private Address address5;
+
+    private Conversation conversation;
+    private MarketplaceCard marketplaceCard;
+    private Message message1;
+    private Message message2;
 
     @BeforeAll
     void setup() throws Exception {
@@ -194,6 +207,7 @@ class UserResourceIntegrationTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser1.setId(4);
+        searchUser1.setSessionUUID(User.generateSessionUUID());
 
         address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China", "Barryville");
 
@@ -267,8 +281,36 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser5.setId(8);
 
+        marketplaceCard = new MarketplaceCard(
+                anotherUser.getId(),
+                anotherUser,
+                Section.FORSALE,
+                LocalDateTime.now(),
+                "Royal Gala Apples For Sale",
+                "Fresh, wanting $3 a kg.");
+        marketplaceCard.setId(1);
+
+        conversation = new Conversation(
+                user,
+                anotherUser,
+                marketplaceCard);
+        conversation.setId(1);
+
+        message1 = new Message(
+                conversation,
+                user,
+                "Can I please have 5kg?");
+        message1.setId(1);
+
+        message2 = new Message(
+                conversation,
+                anotherUser,
+                "You sure can!");
+        message2.setId(2);
+
         // initializes the MockMVC object and tells it to use the userRepository
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository,
+                addressRepository, conversationRepository, messageRepository)).build();
 
     }
 
@@ -1443,4 +1485,77 @@ class UserResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(userRepository.findById(dGAA.getId()).get().getRole()).isEqualTo(Role.DEFAULTGLOBALAPPLICATIONADMIN);
     }
+
+    /* ----------------------------------------Delete Conversation Endpoint-------------------------------------------*/
+
+    /**
+     * Test that an UNAUTHORIZED status is received when a non-logged in user tries to delete a conversation.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canNotDeleteConversationWhenUserNotLoggedIn() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.empty());
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Access token is missing or invalid");
+    }
+
+    /**
+     * Test that an NOT_ACCEPTABLE status is received when the conversation does not exist.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canNotDeleteConversationWhenItDoesNotExist() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(conversationRepository.findById(conversation.getId()))
+                .willReturn(Optional.empty());
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                "for example trying to access a resource by an ID that does not exist.");
+    }
+
+    /**
+     * Test that a FORBIDDEN status is received when the conversation exists but the user is trying to
+     * delete a conversation they are not a member of and they are not a GAA or DGAA.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canNotDeleteConversationWhenItExistsButNotAMemberGAAOrDGAA() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(searchUser1.getSessionUUID())).willReturn(Optional.ofNullable(searchUser1));
+        given(conversationRepository.findById(conversation.getId()))
+                .willReturn(Optional.ofNullable(conversation));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
+                .cookie(new Cookie("JSESSIONID", searchUser1.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid permissions to delete conversation");
+    }
+
+    // 200 current user insigator
+    // 200 current user reciever
+    // 200 DGAA (admin)
+    // 200 both null
+
 }

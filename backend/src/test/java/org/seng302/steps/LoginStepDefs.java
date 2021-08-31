@@ -10,6 +10,8 @@ import org.seng302.model.Address;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
+import org.seng302.model.repository.ConversationRepository;
+import org.seng302.model.repository.MessageRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.controller.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,14 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private AddressRepository addressRepository;
 
+    @Autowired
+    @MockBean
+    private ConversationRepository conversationRepository;
+
+    @Autowired
+    @MockBean
+    private MessageRepository messageRepository;
+
     private User user;
     private Address address;
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
@@ -60,7 +70,8 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
     public void createMockMvc() {
         userRepository = mock(UserRepository.class);
         addressRepository = mock(AddressRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(
+                userRepository, addressRepository, conversationRepository, messageRepository)).build();
     }
 
     @Given("The user's details exist in the database, with email of {string} and password of {string}")

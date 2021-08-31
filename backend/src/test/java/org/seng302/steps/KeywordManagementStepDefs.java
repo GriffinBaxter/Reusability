@@ -10,10 +10,7 @@ import org.seng302.model.Address;
 import org.seng302.model.KeywordNotification;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
-import org.seng302.model.repository.AddressRepository;
-import org.seng302.model.repository.KeywordNotificationRepository;
-import org.seng302.model.repository.KeywordRepository;
-import org.seng302.model.repository.UserRepository;
+import org.seng302.model.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -58,6 +55,14 @@ public class KeywordManagementStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordNotificationRepository keywordNotificationRepository;
 
+    @Autowired
+    @MockBean
+    private ConversationRepository conversationRepository;
+
+    @Autowired
+    @MockBean
+    private MessageRepository messageRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -77,7 +82,8 @@ public class KeywordManagementStepDefs extends CucumberSpringConfiguration {
         keywordRepository = mock(KeywordRepository.class);
 
         this.keywordMVC = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
-        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(
+                userRepository, addressRepository, conversationRepository, messageRepository)).build();
     }
 
     @Given("I am already logged in.")
