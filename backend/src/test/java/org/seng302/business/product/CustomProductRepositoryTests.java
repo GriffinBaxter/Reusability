@@ -178,7 +178,7 @@ class CustomProductRepositoryTests {
     // -------------------------- findAllProductsBySingleField ProductId --------------------------
 
     /**
-     * Tests findProductsBySingleField by productId field when query exists and no optional filters are used
+     * Tests findProductsBySingleField by productId field when query exists
      * Returns list of Products
      */
     @Test
@@ -197,12 +197,43 @@ class CustomProductRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, 1, "productId", pageable);
+        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, business.getId(), "productId", pageable);
 
         // then
         assertThat(productsPage.getContent().size()).isNotZero();
         for (int i = 0; i < productsPage.getContent().size(); i++){
-            assertThat(productsPage.getContent().get(i)).isEqualTo(expectedIds.get(i));
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
+        }
+    }
+
+    /**
+     * Tests findProductsBySingleField by productId field when multiple queries exist
+     * Returns list of Products
+     */
+    @Test
+    void whenFindAllProductsBySingleField_productId_MultipleQueries_ProductsExist() throws Exception {
+        List<String> strings = new ArrayList<>();
+        strings.add("Be");
+        strings.add("pro");
+
+        List<String> expectedIds = new ArrayList<>();
+        expectedIds.add("BEAN");
+        expectedIds.add("PROD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, business.getId(), "productId", pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isEqualTo(2);
+        for (int i = 0; i < productsPage.getContent().size(); i++){
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
         }
     }
 
@@ -227,5 +258,260 @@ class CustomProductRepositoryTests {
 
         // then
         assertThat(productsPage.getContent().size()).isZero();
+    }
+
+    // -------------------------- findAllProductsBySingleField Name --------------------------
+
+    /**
+     * Tests findProductsBySingleField by name field when query exists
+     * Returns list of Products
+     */
+    @Test
+    void whenFindAllProductsBySingleField_name_ProductsExist() throws Exception {
+        List<String> strings = new ArrayList<>();
+        strings.add("Product");
+
+        List<String> expectedIds = new ArrayList<>();
+        expectedIds.add("PROD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, business.getId(), "name", pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isNotZero();
+        for (int i = 0; i < productsPage.getContent().size(); i++){
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
+        }
+    }
+
+    /**
+     * Tests findProductsBySingleField by name field when query doesn't exist
+     * Returns empty list
+     */
+    @Test
+    void whenFindProductsBySingleField_name_ProductsDoNotExist() throws Exception {
+        List<String> strings = new ArrayList<>();
+        strings.add("ABCD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, 1, "name", pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isZero();
+    }
+
+    // -------------------------- findAllProductsBySingleField Manufacturer --------------------------
+
+    /**
+     * Tests findProductsBySingleField by manufacturer field when query exists
+     * Returns list of Products
+     */
+    @Test
+    void whenFindAllProductsBySingleField_manufacturer_ProductsExist() throws Exception {
+        List<String> strings = new ArrayList<>();
+        strings.add("New");
+
+        List<String> expectedIds = new ArrayList<>();
+        expectedIds.add("DUCT");
+        expectedIds.add("PROD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, business.getId(), "manufacturer", pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isNotZero();
+        for (int i = 0; i < productsPage.getContent().size(); i++){
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
+        }
+    }
+
+    /**
+     * Tests findProductsBySingleField by manufacturer field when query doesn't exist
+     * Returns empty list
+     */
+    @Test
+    void whenFindProductsBySingleField_manufacturer_ProductsDoNotExist() throws Exception {
+        List<String> strings = new ArrayList<>();
+        strings.add("ABCD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, 1, "manufacturer", pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isZero();
+    }
+
+    // -------------------------- findAllProductsBySingleField Description --------------------------
+
+    /**
+     * Tests findProductsBySingleField by description field when query exists
+     * Returns list of Products
+     */
+    @Test
+    void whenFindAllProductsBySingleField_description_ProductsExist() throws Exception {
+        List<String> strings = new ArrayList<>();
+        strings.add("Brand new");
+
+        List<String> expectedIds = new ArrayList<>();
+        expectedIds.add("DUCT");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, business.getId(), "description", pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isNotZero();
+        for (int i = 0; i < productsPage.getContent().size(); i++){
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
+        }
+    }
+
+    /**
+     * Tests findProductsBySingleField by description field when query doesn't exist
+     * Returns empty list
+     */
+    @Test
+    void whenFindProductsBySingleField_description_ProductsDoNotExist() throws Exception {
+        List<String> strings = new ArrayList<>();
+        strings.add("ABCD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsBySingleField(strings, 1, "description", pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isZero();
+    }
+
+    // -------------------------- findAllProductsByAllFields --------------------------
+
+    /**
+     * Tests findProductsByAllFields by productID field when query exists
+     * Returns list of Products
+     */
+    @Test
+    void whenFindProductsByAllFields_productId_ProductsExist() {
+        List<String> strings = new ArrayList<>();
+        strings.add("Pro");
+
+        List<String> expectedIds = new ArrayList<>();
+        expectedIds.add("PROD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsByAllFields(strings, business.getId(), pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isNotZero();
+        for (int i = 0; i < productsPage.getContent().size(); i++){
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
+        }
+    }
+
+    /**
+     * Tests findProductsByAllFields by productID field when query exists
+     * Returns list of Products
+     */
+    @Test
+    void whenFindProductsByAllFields_nameOrProductId_ProductsExist() {
+        List<String> strings = new ArrayList<>();
+        strings.add("Pro");
+        strings.add("beans");
+
+        List<String> expectedIds = new ArrayList<>();
+        expectedIds.add("BEAN");
+        expectedIds.add("PROD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsByAllFields(strings, business.getId(), pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isNotZero();
+        for (int i = 0; i < productsPage.getContent().size(); i++){
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
+        }
+    }
+
+    /**
+     * Tests findProductsByAllFields by manufacturer and description fields when query exists
+     * Returns list of Products
+     */
+    @Test
+    void whenFindProductsByAllFields_manufacturerDescription_ProductsExist() {
+        List<String> strings = new ArrayList<>();
+        strings.add("New");
+
+        List<String> expectedIds = new ArrayList<>();
+        expectedIds.add("DUCT");
+        expectedIds.add("PROD");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsByAllFields(strings, business.getId(), pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isNotZero();
+        for (int i = 0; i < productsPage.getContent().size(); i++){
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
+        }
     }
 }
