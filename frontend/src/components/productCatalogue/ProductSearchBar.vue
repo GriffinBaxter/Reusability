@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     /**
-     * Finds the selected radio button
+     * Finds the selected checkBox button
      * @return The value of the selected radio button
      */
     getSelectedCheckbox() {
@@ -67,7 +67,7 @@ export default {
       }
     },
     /**
-     * Search button is clicked and query/filters for listings search are executed.
+     * Search button is clicked and query/filters for product search are executed.
      */
     searchClicked() {
       // TODO: call search api

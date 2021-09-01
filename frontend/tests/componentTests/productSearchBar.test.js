@@ -42,7 +42,7 @@ describe("Tests for search type checkbox", () => {
         expect(checkboxManufacturerButton.exists()).toBeTruthy();
         expect(checkboxDescriptionButton.exists()).toBeTruthy();
 
-        // mock the call which gets the radio buttons
+        // mock the call which gets the checkbox buttons
         jest.spyOn(document, 'querySelectorAll').mockImplementation(() => {
             return [checkboxProductNameButton.element, checkboxProductIdButton.element,
                 checkboxManufacturerButton.element, checkboxDescriptionButton.element];
