@@ -84,7 +84,7 @@ public class MarketplaceConversationResource {
 
         if (storedReceiver.isEmpty()) {
             logger.error("Invalid Conversation - invalid receiver id");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid conversation - invalid receiver id"
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Conversation - invalid receiver id"
             );
         }
 
@@ -93,40 +93,32 @@ public class MarketplaceConversationResource {
 
         if (storedCard.isEmpty()) {
             logger.error("Invalid Conversation - invalid card id ");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid conversation - invalid card id"
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Conversation - invalid card id"
             );
         }
 
 
         // if conversationId is null, then create conversation
-
-
         if (conversationId == null) {
 
             //201
             conversation = this.createConversation(sender, storedReceiver.get(), storedCard.get());
-
-            System.out.println("Here");
-
             this.createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
-
-            System.out.println("this");
-
             return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(conversation.getId()));
 
         } else {
+
             // check if conversation exists if conversationId is not null
             Optional<Conversation> storedConversation = marketplaceConversationRepository.findConversationById(conversationId);
-
             if (storedConversation.isEmpty()) {
-                //400
-                logger.error("Invalid Conversation");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid conversation"
+                //406
+                logger.error("Invalid Conversation - conversation id does not exist.");
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid Conversation - conversation id does not exist"
                 );
             } else {
                 //201
-                this.createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
-                return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(conversation.getId()));
+                this.createMessage(storedConversation.get(), sender, marketplaceConversationMessagePayload.getContent());
+                return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(storedConversation.get().getId()));
             }
         }
     }
@@ -162,7 +154,7 @@ public class MarketplaceConversationResource {
         try {
             Message message = new Message(conversation, sender, content);
             marketplaceConversationMessageRepository.save(message);
-            logger.info("Successful Message Creation - {}", conversation);
+            logger.info("Successful Message Creation - {}", message);
         } catch (IllegalArgumentException | IllegalMessageContentException e) {
             //400
             logger.error("Message Creation Failure - {}", e.getMessage());
