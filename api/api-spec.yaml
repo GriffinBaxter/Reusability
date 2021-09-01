@@ -2041,24 +2041,18 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/users/{userId}/messages/{conversationId}':
+  '/home/conversation/{conversationId}/messages':
     get:
       tags:
-        - 'UCM8: Contacting other marketplace users'
-        - 'Messages'
-      summary: 'Retrieve all messages in a conversation (ordered by created date)'
+        - 'UCM8: Contacting Other Marketplace Users'
+        - 'Marketplace conversation message'
+      summary: 'Retrieve all messages in a conversation'
       security:
         - CookieAuth:
             - user
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: userId
-          in: path
-          description: User's ID
-          required: true
-          schema:
-            type: integer
         - name: conversationId
           in: path
           description: Conversation ID
@@ -2076,8 +2070,6 @@ paths:
                   $ref: '#/components/schemas/Message'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: 'Forbidden: Returned when the user is not a member of the conversation'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
