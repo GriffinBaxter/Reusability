@@ -72,12 +72,12 @@ public class MarketplaceConversationResource {
      * @return marketplace conversation ID.
      * @throws Exception Exception.
      */
-    @PostMapping("/home/conversation/{conversationId}")
+    @PostMapping({"/home/conversation/{conversationId}", "/home/conversation"})
     public ResponseEntity<MarketplaceConversationIdPayload> createMarketplaceConversationMessage(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestBody MarketplaceConversationMessagePayload marketplaceConversationMessagePayload,
-            @PathVariable String conversationId
-    ) throws Exception {
+            @PathVariable(required = false) Integer conversationId
+    ) {
 
         //401
         User sender = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -90,41 +90,41 @@ public class MarketplaceConversationResource {
 
         if (storedReceiver.isEmpty()) {
             logger.error("Invalid Conversation - invalid receiver id");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid conversation - invalid receiver id"
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Conversation - invalid receiver id"
             );
         }
 
-        Integer cardId = marketplaceConversationMessagePayload.getCardId();
+        Integer cardId = marketplaceConversationMessagePayload.getMarketplaceCardId();
         Optional<MarketplaceCard> storedCard = marketplaceCardRepository.findById(cardId);
 
         if (storedCard.isEmpty()) {
             logger.error("Invalid Conversation - invalid card id ");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid conversation - invalid card id"
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Conversation - invalid card id"
             );
         }
 
 
         // if conversationId is null, then create conversation
-
         if (conversationId == null) {
+
             //201
             conversation = this.createConversation(sender, storedReceiver.get(), storedCard.get());
             this.createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
             return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(conversation.getId()));
 
         } else {
-            //400
-            // check if conversation exists if conversationId is not null
-            Optional<Conversation> storedConversation = marketplaceConversationRepository.findConversationById(Integer.parseInt(conversationId));
 
+            // check if conversation exists if conversationId is not null
+            Optional<Conversation> storedConversation = marketplaceConversationRepository.findConversationById(conversationId);
             if (storedConversation.isEmpty()) {
-                logger.error("Invalid Conversation");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid conversation"
+                //406
+                logger.error("Invalid Conversation - conversation id does not exist.");
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid Conversation - conversation id does not exist"
                 );
             } else {
                 //201
-                this.createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
-                return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(conversation.getId()));
+                this.createMessage(storedConversation.get(), sender, marketplaceConversationMessagePayload.getContent());
+                return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(storedConversation.get().getId()));
             }
         }
     }
@@ -160,7 +160,7 @@ public class MarketplaceConversationResource {
         try {
             Message message = new Message(conversation, sender, content);
             marketplaceConversationMessageRepository.save(message);
-            logger.info("Successful Message Creation - {}", conversation);
+            logger.info("Successful Message Creation - {}", message);
         } catch (IllegalArgumentException | IllegalMessageContentException e) {
             //400
             logger.error("Message Creation Failure - {}", e.getMessage());

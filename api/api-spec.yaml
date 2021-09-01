@@ -1988,6 +1988,8 @@ paths:
                   $ref: '#/components/schemas/Conversation'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
 
 
 components:
@@ -2719,7 +2721,7 @@ components:
           type: integer
           example: 100
           description: ID of the sender
-        recieverId:
+        receiverId:
           type: integer
           example: 101
           description: ID of the reciever

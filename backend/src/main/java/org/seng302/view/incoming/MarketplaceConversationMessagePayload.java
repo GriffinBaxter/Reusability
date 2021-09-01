@@ -19,7 +19,7 @@ public class MarketplaceConversationMessagePayload {
 
     private Integer senderId;
     private Integer receiverId;
-    private Integer cardId;
+    private Integer marketplaceCardId;
     private String content;
     private LocalDateTime created;
 
@@ -50,7 +50,7 @@ public class MarketplaceConversationMessagePayload {
     public Integer getReceiverId() { return receiverId; }
     public void setReceiverId(Integer receiverId) { this.receiverId = receiverId; }
 
-    public Integer getCardId() { return cardId; }
-    public void setCardId(Integer cardId) { this.cardId = cardId; }
+    public Integer getMarketplaceCardId() { return marketplaceCardId; }
+    public void setMarketplaceCardId(Integer cardId) { this.marketplaceCardId = cardId; }
 
 }
