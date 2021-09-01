@@ -16,6 +16,13 @@ public class InventoryItemRepositoryCustomImpl implements InventoryItemRepositor
     @Autowired
     private EntityManager entityManager;
 
+    /**
+     * Search for Inventory Items with a certain barcode for a business
+     * @param barcode Barcode number
+     * @param businessId Business Id
+     * @param paging Pageable object
+     * @return Page of Inventory items fitting criteria
+     */
     @Override
     public Page<InventoryItem> findInventoryItemsByBarcodeAndBusinessId(String barcode, Integer businessId, Pageable paging) {
 
