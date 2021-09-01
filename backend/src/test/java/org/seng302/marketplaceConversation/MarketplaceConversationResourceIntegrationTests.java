@@ -180,7 +180,7 @@ class MarketplaceConversationResourceIntegrationTests {
         );
         conversation.setId(1);
 
-        String content = "Hi Hayley, I want to buy some baked goods :)";
+        content = "Hi Hayley, I want to buy some baked goods :)";
 
         message = new Message(
                 conversation,

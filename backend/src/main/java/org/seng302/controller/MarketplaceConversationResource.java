@@ -71,9 +71,7 @@ public class MarketplaceConversationResource {
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestBody MarketplaceConversationMessagePayload marketplaceConversationMessagePayload,
             @PathVariable(required = false) Integer conversationId
-    ) throws Exception {
-
-        System.out.println(conversationId);
+    ) {
 
         //401
         User sender = Authorization.getUserVerifySession(sessionToken, userRepository);

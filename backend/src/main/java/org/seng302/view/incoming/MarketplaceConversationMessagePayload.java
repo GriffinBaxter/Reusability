@@ -21,8 +21,23 @@ public class MarketplaceConversationMessagePayload {
     private Integer receiverId;
     private Integer marketplaceCardId;
     private String content;
-    private LocalDateTime created; //TODO: do we need this?
+    private LocalDateTime created;
 
+    /**
+     * Empty constructor for MarketplaceConversationMessagePayload
+     */
+    public MarketplaceConversationMessagePayload() {
+
+    }
+
+    /**
+     * Constructor for MarketplaceConversationMessagePayload
+     * @param senderId The sender id
+     * @param receiverId The receiver id
+     * @param marketplaceCardId The marketplace card id
+     * @param content The message content
+     * @param created The created date
+     */
     public MarketplaceConversationMessagePayload(Integer senderId, Integer receiverId, Integer marketplaceCardId, String content, LocalDateTime created) {
         this.senderId = senderId;
         this.receiverId = receiverId;
