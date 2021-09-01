@@ -16,7 +16,6 @@ import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
 import org.seng302.model.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,22 +41,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  */
 public class ModifyInventoryItemStepDefs {
 
-    @Autowired
     private MockMvc mvc;
 
-    @Autowired
     @MockBean
     private UserRepository userRepository;
 
-    @Autowired
     @MockBean
     private BusinessRepository businessRepository;
 
-    @Autowired
     @MockBean
     private ProductRepository productRepository;
 
-    @Autowired
     @MockBean
     private InventoryItemRepository inventoryItemRepository;
 
@@ -144,9 +138,6 @@ public class ModifyInventoryItemStepDefs {
                 ""
         );
         user.setBusinessesAdministeredObjects(List.of(business));
-        this.mvc = MockMvcBuilders.standaloneSetup(new InventoryItemResource(
-                inventoryItemRepository, productRepository, businessRepository, userRepository))
-                .build();
     }
 
     @Given("I have an inventory item with Product Id {string}, quantity {int}, price per item {string}, total price {string}, manufactured {string}, sell by {string}, best before {string} and expires {string}.")

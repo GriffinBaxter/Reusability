@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
 import org.seng302.model.Business;
-import org.seng302.model.Image;
+import org.seng302.model.ProductImage;
 import org.seng302.model.Product;
 import org.seng302.model.User;
 import org.seng302.model.enums.Role;
@@ -74,7 +74,6 @@ public class ImageResource {
             @PathVariable Integer businessId,
             @PathVariable String productId
     ) {
-
         // Verify token access
         User user = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -165,16 +164,16 @@ public class ImageResource {
         }
 
         // Store the image data in an object
-        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
-        boolean isFirstImage = primaryImages.isEmpty();
-        Image storedImage = imageRepository.saveAndFlush(
-                new Image(productId, businessId, imageFilePath, thumbnailFilePath, isFirstImage)
+        List<ProductImage> primaryProductImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+        boolean isFirstImage = primaryProductImages.isEmpty();
+        ProductImage storedProductImage = imageRepository.saveAndFlush(
+                new ProductImage(productId, businessId, imageFilePath, thumbnailFilePath, isFirstImage)
         );
 
-        String successMessage = String.format("Successfully uploaded and stored image under filename \"%s\", for product id: \"%s\", for business id: \"%d\", by a user (id: %d)", storedImage.getFilename(), productId, businessId, user.getId());
+        String successMessage = String.format("Successfully uploaded and stored image under filename \"%s\", for product id: \"%s\", for business id: \"%d\", by a user (id: %d)", storedProductImage.getFilename(), productId, businessId, user.getId());
         logger.info(successMessage);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(storedImage.getId()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(storedProductImage.getId()));
 
     }
 
@@ -201,11 +200,11 @@ public class ImageResource {
         verifyProductId(productId, business, user);
 
         // Verify image id
-        Image image = verifyImageId(imageId, businessId, productId, user);
+        ProductImage productImage = verifyImageId(imageId, businessId, productId, user);
 
         // verify file exists & delete image
-        boolean imageDeleted = fileStorageService.deleteFile(image.getFilename());
-        boolean thumbnailDeleted = fileStorageService.deleteFile(image.getThumbnailFilename());
+        boolean imageDeleted = fileStorageService.deleteFile(productImage.getFilename());
+        boolean thumbnailDeleted = fileStorageService.deleteFile(productImage.getThumbnailFilename());
         if (!imageDeleted || !thumbnailDeleted) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
             logger.error(errorMessage);
@@ -242,19 +241,19 @@ public class ImageResource {
         verifyProductId(productId, business, user);
 
         // Verify image id
-        Image image = verifyImageId(imageId, businessId, productId, user);
+        ProductImage productImage = verifyImageId(imageId, businessId, productId, user);
 
         // Set existing primary image to non-primary
-        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
-        for (Image primaryImage: primaryImages) {
-            primaryImage.setIsPrimary(false);
+        List<ProductImage> primaryProductImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+        for (ProductImage primaryProductImage : primaryProductImages) {
+            primaryProductImage.setIsPrimary(false);
         }
         
         // Set desired image to primary image
-        image.setIsPrimary(true);
+        productImage.setIsPrimary(true);
         
         // Save the image in the repository
-        imageRepository.save(image);
+        imageRepository.save(productImage);
     }
 
     /**
@@ -340,8 +339,8 @@ public class ImageResource {
      * @param businessId
      * @param productId
      */
-    private Image verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
-        Optional<Image> image = imageRepository.findImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
+    private ProductImage verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
+        Optional<ProductImage> image = imageRepository.findImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
 
         if (image.isEmpty()) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
@@ -363,12 +362,12 @@ public class ImageResource {
      * @param productId
      */
     private void updatePrimaryImage(Integer businessId, String productId) {
-        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
-        if (primaryImages.isEmpty()) {
-            List<Image> images = imageRepository.findImageByBusinessIdAndProductId(businessId, productId);
-            if (!images.isEmpty()) {
-                images.get(0).setIsPrimary(true);
-                imageRepository.save(images.get(0));
+        List<ProductImage> primaryProductImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+        if (primaryProductImages.isEmpty()) {
+            List<ProductImage> productImages = imageRepository.findImageByBusinessIdAndProductId(businessId, productId);
+            if (!productImages.isEmpty()) {
+                productImages.get(0).setIsPrimary(true);
+                imageRepository.save(productImages.get(0));
             }
         }
     }
