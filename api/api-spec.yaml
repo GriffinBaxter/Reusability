@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.1.6
+  version: 6.2.0
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -524,7 +524,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Product'
 
-  '/businesses/{businessId}/products/{productId}/images':
+  '/images':
     post:
       tags:
         - 'U16: Product Images'
@@ -536,18 +536,39 @@ paths:
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: businessId
-          in: path
-          description: ID of business to search catalogue of
-          required: true
-          schema:
-            type: integer
-        - name: productId
-          in: path
-          description: ID (Product Code) of product to try to find in catalogue
+        - name: imageType
+          in: query
           required: true
           schema:
             type: string
+          description: >-
+            which entity will use this image
+
+            rules (enum):
+
+            * USER
+
+            * BUSINESS
+
+            * PRODUCT
+        - name: usersID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of use this image related to
+        - name: businessesID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of business this image related to
+        - name: productID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of product this image related to
       requestBody:
         content:
           multipart/form-data:
@@ -576,11 +597,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: 'Forbidden: Returned when a user tries to add an image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
+          description: 'Forbidden:
+            Returned when a user tries to add an image for another user AND user is not a global application admin
+            OR when a user tries to add an image for a business that he do not administer AND the user is not a global application admin
+            OR when a user tries to add an image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/businesses/{businessId}/products/{productId}/images/{imageId}':
+  '/images/{id}':
     delete:
       tags:
         - 'U16: Product Images'
@@ -592,46 +616,97 @@ paths:
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: businessId
-          in: path
-          description: ID of business that owns product
-          required: true
-          schema:
-            type: integer
-        - name: productId
-          in: path
-          description: ID (Product Code) of product to delete image for
-          required: true
-          schema:
-            type: string
         - name: imageId
           in: path
           description: ID of the image to delete
           required: true
           schema:
             type: integer
+        - name: imageType
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >-
+            which entity will use this image
+
+            rules (enum):
+
+            * USER
+
+            * BUSINESS
+
+            * PRODUCT
+        - name: usersID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of use this image related to
+        - name: businessesID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of business this image related to
+        - name: productID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of product this image related to
       responses:
         '200':
           description: Image deleted successfully
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: 'Forbidden: Returned when a user tries to delete an image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
+          description: 'Forbidden:
+            Returned when a user tries to delete an image for another user AND user is not a global application admin
+            OR when a user tries to delete an image for a business that he do not administer AND the user is not a global application admin
+            OR when a user tries to delete an image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary':
+  '/images/{id}/makePrimary':
     put:
       tags:
         - 'U16: Product Images'
         - 'Catalogue / Products'
-      summary: Set an existing image to be the new primary image for some product
+      summary: Set an existing image to be the new primary image
       security:
         - CookieAuth:
             - user
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
+        - name: imageId
+          in: path
+          description: ID of the image to set as being the primary image for product
+          required: true
+          schema:
+            type: integer
+        - name: imageType
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >-
+            which entity will use this image
+
+              rules (enum):
+
+              * USER
+
+              * BUSINESS
+
+              * PRODUCT
+        - name: usersID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of use this image related to
         - name: businessId
           in: path
           description: ID of business that owns product
@@ -644,19 +719,16 @@ paths:
           required: true
           schema:
             type: string
-        - name: imageId
-          in: path
-          description: ID of the image to set as being the primary image for product
-          required: true
-          schema:
-            type: integer
       responses:
         '200':
           description: Primary image successfully updated
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: 'Forbidden: Returned when a user tries to update the primary image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
+          description: 'Forbidden:
+           Returned when a user tries to update the image primary for another user AND user is not a global application admin
+           OR when a user tries to update the image primary for a business that he do not administer AND the user is not a global application admin
+           OR when a user tries to update the image primary for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
@@ -2016,7 +2088,7 @@ paths:
                   properties:
                     granularityName:
                       type: string
-                      description: 'The name as part of the currently granularity setting, e.g. February, Tuesday or 
+                      description: 'The name as part of the currently granularity setting, e.g. February, Tuesday or
                       2020 (null if granularity is "Total")'
                       example: February
                     totalSales:
@@ -2031,7 +2103,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an 
+          description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an
           administrator of the business.'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
