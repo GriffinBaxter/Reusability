@@ -2885,12 +2885,12 @@ components:
           example: 408
           description: ID of the marketplace card involved in the conversation
         content:
-          type: String
+          type: string
           example: "Hi, I am interested in exchanging some apples for some pears."
-          description: message content
+          description: Message content
         created:
           type: string
           format: date-time
           example: '2021-07-15T05:10:00Z'
-          description: date and time of the conversation creation
+          description: Date and time message was created/sent
 
