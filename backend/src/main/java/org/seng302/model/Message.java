@@ -3,6 +3,7 @@ package org.seng302.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.seng302.exceptions.IllegalMessageContentException;
+import org.seng302.view.outgoing.MessagePayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -63,5 +64,13 @@ public class Message {
         }
         this.content = content;
         this.created = LocalDateTime.now();
+    }
+
+    /**
+     * Converts the Message into its payload representation to be sent to the frontend.
+     * @return MessagePayload object representing the message.
+     */
+    public MessagePayload toMessagePayload() {
+        return new MessagePayload(sender.getId(), conversation.getReceiver().getId(), conversation.getMarketplaceCard().getId(), content, created);
     }
 }

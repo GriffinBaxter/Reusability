@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
  */
 public class ConversationPayload {
 
-    private int id;
-    private int instigatorId;
+    private Integer id;
+    private Integer instigatorId;
     private String instigatorName;
     private ImagePayload instigatorImage;
-    private int receiverId;
+    private Integer receiverId;
     private String receiverName;
     private ImagePayload receiverImage;
-    private int marketplaceCardId;
+    private Integer marketplaceCardId;
     private String marketplaceCardTitle;
     private String created;
 

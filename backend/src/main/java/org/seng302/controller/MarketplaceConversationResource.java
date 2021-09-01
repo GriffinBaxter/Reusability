@@ -9,6 +9,7 @@ import org.seng302.model.repository.*;
 import org.seng302.view.incoming.MarketplaceConversationMessagePayload;
 import org.seng302.view.outgoing.MarketplaceConversationIdPayload;
 import org.seng302.view.outgoing.ConversationPayload;
+import org.seng302.view.outgoing.MessagePayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -105,8 +106,8 @@ public class MarketplaceConversationResource {
 
 
         // if conversationId is null, then create conversation
-
-        if (conversationId == null) {
+        // TODO Just changed this to fix this endpoint while I work on the get messages one
+        if (conversationId.equals("null")) {
             //201
             conversation = this.createConversation(sender, storedReceiver.get(), storedCard.get());
             this.createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
@@ -189,6 +190,44 @@ public class MarketplaceConversationResource {
     }
 
     /**
+     * Retrieve all messages in a given conversation.
+     * If there are no messages, then an empty array is returned.
+     * No user ID is provided in the URL as the JSESSIONID is used to determine which user is requesting the messages for the conversation.
+     *
+     * @param sessionToken The token used to identify the user.
+     * @return Array of messages belonging to the given conversation.
+     */
+    @GetMapping("/home/conversation/{conversationId}/messages")
+    public List<MessagePayload> getMarketplaceConversationMessages(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer conversationId) {
+        //401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        Optional<Conversation> optionalConversation = marketplaceConversationRepository.findConversationById(conversationId);
+
+        // 404
+        if (optionalConversation.isEmpty()) {
+            logger.error("Invalid Conversation ID");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid conversation ID");
+        }
+
+        Conversation currentConversation = optionalConversation.get();
+        System.out.println(currentConversation.getReceiver().getId() + " " + currentUser.getId() + " " + currentConversation.getInstigator().getId());
+        // 403
+        if (currentConversation.getReceiver().getId() != currentUser.getId() && currentConversation.getInstigator().getId() != currentUser.getId()) {
+            logger.error("User does not have permission to perform action.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "The user does not have permission to perform the requested action"
+            );
+        }
+
+        List<Message> messageList = marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(conversationId);
+
+        return toMessagePayloadList(messageList);
+    }
+
+    /**
      * Converts a list of Conversation objects to a list of ConversationPayload objects to be sent to the frontend.
      *
      * @param conversationList A list of Conversation objects.
@@ -200,6 +239,20 @@ public class MarketplaceConversationResource {
             conversationPayloadList.add(conversation.toConversationPayload());
         }
         return conversationPayloadList;
+    }
+
+    /**
+     * Converts a list of Message objects to a list of MessagePayload objects to be sent to the frontend.
+     *
+     * @param messageList A list of Message objects.
+     * @return A list of MessagePayload objects to be sent to the frontend.
+     */
+    public List<MessagePayload> toMessagePayloadList(List<Message> messageList) {
+        List<MessagePayload> messagePayloadList = new ArrayList<>();
+        for (Message message: messageList) {
+            messagePayloadList.add(message.toMessagePayload());
+        }
+        return messagePayloadList;
     }
 
 }

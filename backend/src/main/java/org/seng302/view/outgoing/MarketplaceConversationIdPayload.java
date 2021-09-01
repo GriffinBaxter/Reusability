@@ -15,6 +15,7 @@ package org.seng302.view.outgoing;
  * Returned when new marketplace conversation is created.
  */
 public class MarketplaceConversationIdPayload {
+    // TODO Why is this a business ID?
     private int businessId;
 
     public MarketplaceConversationIdPayload(int businessId) {
