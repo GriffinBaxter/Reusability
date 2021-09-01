@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.2.0
+  version: 6.2.1
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -567,7 +567,7 @@ paths:
           in: query
           required: false
           schema:
-            type: integer
+            type: string
           description: ID of product this image related to
       requestBody:
         content:
@@ -616,7 +616,7 @@ paths:
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: imageId
+        - name: id
           in: path
           description: ID of the image to delete
           required: true
@@ -653,7 +653,7 @@ paths:
           in: query
           required: false
           schema:
-            type: integer
+            type: string
           description: ID of product this image related to
       responses:
         '200':
@@ -680,7 +680,7 @@ paths:
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: imageId
+        - name: id
           in: path
           description: ID of the image to set as being the primary image for product
           required: true
@@ -708,13 +708,13 @@ paths:
             type: integer
           description: ID of use this image related to
         - name: businessId
-          in: path
+          in: query
           description: ID of business that owns product
           required: true
           schema:
             type: integer
         - name: productId
-          in: path
+          in: query
           description: ID (Product Code) of product to update primary image for
           required: true
           schema:
