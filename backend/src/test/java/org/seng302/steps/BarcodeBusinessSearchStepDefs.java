@@ -72,15 +72,6 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
             "\"password\": \"%s\"}";
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
-    private final String productPayloadFormat = "{\"id\":\"%s\"," +
-            "\"name\":\"%s\"," +
-            "\"description\":\"%s\"," +
-            "\"manufacturer\":\"%s\"," +
-            "\"recommendedRetailPrice\":%.1f," +
-            "\"barcode\":\"%s\"}";
-
-    private String productPayload;
-    private String returnProductPayload;
 
     @Before
     public void createMockMvc() {
