@@ -1,7 +1,8 @@
 <template>
-  <div id="component-wrapper">
-    <div id="messages-wrapper">
-      <div id="content-wrapper">
+  <div id="component-wrapper" >
+    <div id="messages-wrapper" >
+      <LoadingDots v-if="isLoading" />
+      <div id="content-wrapper" v-else>
         <MessageOption v-for="(conv) in conversations" :key="conv.id" :username="conv.username" :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
       </div>
     </div>
@@ -14,10 +15,11 @@
 <script>
 import MessageOption from "./MessageOption";
 import Api from "../../Api"
+import LoadingDots from "@/components/LoadingDots";
 
 export default {
   name: "Messages",
-  components: {MessageOption},
+  components: {LoadingDots, MessageOption},
   data() {
     return {
       conversations: [
@@ -72,7 +74,8 @@ export default {
           newMessage: false,
         }
       ],
-      errorMessage: ""
+      errorMessage: "",
+      isLoading: false,
     }
   },
   methods: {
@@ -85,6 +88,7 @@ export default {
   },
   beforeMount() {
     this.errorMessage = "";
+    this.isLoading = true;
     Api.getConversations().then(
         (res) => {
           this.conversations = res.data.map( (conversation) => {
@@ -101,8 +105,9 @@ export default {
           if (this.conversations.length === 0) {
             this.errorMessage = "No messages found.";
           }
+          this.isLoading = false;
         }
-    ).catch((err) => {
+  ).catch((err) => {
       if (err.response) {
         if (err.response.status === 401) {
           this.$router.push({path: '/invalidtoken'});
@@ -114,6 +119,7 @@ export default {
       } else {
         this.toastErrorMessage("Something went wrong sorry.");
       }
+      this.isLoading = false;
     });
   }
 
