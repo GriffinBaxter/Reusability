@@ -22,69 +22,23 @@ export default {
   components: {LoadingDots, MessageOption},
   data() {
     return {
-      conversations: [
-        {
-          username: "Pontiff Sulyvahn",
-          cardName: "Card name Example",
-          newMessage: true,
-        },
-        {
-          username: "Yhorm the Giant",
-          cardName: "Card name Example",
-          newMessage: false,
-        },
-        {
-          username: "Aldrich Devourer of Gods",
-          cardName: "Card name Example",
-          newMessage: false,
-        },
-        {
-          username: "Chapion Gundyr",
-          cardName: "Card name Example",
-          newMessage: true,
-        },
-        {
-          username: "Nameless King",
-          cardName: "Card name Example",
-          newMessage: false,
-        },
-        {
-          username: "Darkeater Midir",
-          cardName: "Card name Example",
-          newMessage: true,
-        },
-        {
-          username: "Lothric",
-          cardName: "Card name Example",
-          newMessage: false,
-        },
-        {
-          username: "Oceiros",
-          cardName: "Card name Example",
-          newMessage: true,
-        },
-        {
-          username: "Dancer",
-          cardName: "Card name Example",
-          newMessage: true,
-        },
-        {
-          username: "Wolnir",
-          cardName: "Card name Example",
-          newMessage: false,
-        }
-      ],
+      conversations: [],
       errorMessage: "",
       isLoading: false,
     }
   },
   methods: {
+    /**
+     * Toasts a message for 1 second to give an update about error messages.
+     *
+     * @param message the message to show
+     */
     toastErrorMessage(message) {
       this.errorMessage = message;
       setTimeout(() => {
         this.errorMessage = "";
       }, 1000)
-    }
+    },
   },
   beforeMount() {
     this.errorMessage = "";
