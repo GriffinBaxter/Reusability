@@ -23,29 +23,6 @@ public class MarketplaceConversationMessagePayload {
     private String content;
     private LocalDateTime created;
 
-    /**
-     * Empty constructor for MarketplaceConversationMessagePayload
-     */
-    public MarketplaceConversationMessagePayload() {
-
-    }
-
-    /**
-     * Constructor for MarketplaceConversationMessagePayload
-     * @param senderId The sender id
-     * @param receiverId The receiver id
-     * @param marketplaceCardId The marketplace card id
-     * @param content The message content
-     * @param created The created date
-     */
-    public MarketplaceConversationMessagePayload(Integer senderId, Integer receiverId, Integer marketplaceCardId, String content, LocalDateTime created) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
-        this.marketplaceCardId = marketplaceCardId;
-        this.content = content;
-        this.created = created;
-    }
-
     public Integer getSenderId() {
         return senderId;
     }

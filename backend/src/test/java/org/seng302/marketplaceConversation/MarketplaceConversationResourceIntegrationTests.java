@@ -75,11 +75,11 @@ class MarketplaceConversationResourceIntegrationTests {
     private Message message;
     private String content;
 
-    private final String messagePayloadJson = "{\"senderId\":\"%d\"," +
-            "\"receiverId\":\"%d\"," +
-            "\"marketplaceCardId\":\"%d\"," +
+    private final String messagePayloadJson = "{\"senderId\":%d," +
+            "\"receiverId\":%d," +
+            "\"marketplaceCardId\":%d," +
             "\"content\":\"%s\"," +
-            "\"created\":%s}";
+            "\"created\":\"%s\"}";
 
     /**
      * Before each create a user that will be used in all tests when creating cards.
@@ -206,11 +206,12 @@ class MarketplaceConversationResourceIntegrationTests {
     @Test
     void givenNoCookie_WhenCreateMessage_ThenReceiveUnauthorizedStatus() throws Exception {
         // given
+        given(userRepository.findById(sender.getId())).willReturn(Optional.ofNullable(sender));
+        String nonExistingSessionUUID = User.generateSessionUUID();
+        given(userRepository.findBySessionUUID(nonExistingSessionUUID)).willReturn(Optional.empty());
         payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
                 marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
-        String nonExistingSessionUUID = User.generateSessionUUID();
-        given(userRepository.findBySessionUUID(nonExistingSessionUUID)).willReturn(Optional.empty());
 
         // when
         response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
