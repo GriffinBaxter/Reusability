@@ -19,9 +19,17 @@ public class MarketplaceConversationMessagePayload {
 
     private Integer senderId;
     private Integer receiverId;
-    private Integer cardId;
+    private Integer marketplaceCardId;
     private String content;
-    private LocalDateTime created;
+    private LocalDateTime created; //TODO: do we need this?
+
+    public MarketplaceConversationMessagePayload(Integer senderId, Integer receiverId, Integer marketplaceCardId, String content, LocalDateTime created) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.marketplaceCardId = marketplaceCardId;
+        this.content = content;
+        this.created = created;
+    }
 
     public Integer getSenderId() {
         return senderId;
@@ -50,7 +58,7 @@ public class MarketplaceConversationMessagePayload {
     public Integer getReceiverId() { return receiverId; }
     public void setReceiverId(Integer receiverId) { this.receiverId = receiverId; }
 
-    public Integer getCardId() { return cardId; }
-    public void setCardId(Integer cardId) { this.cardId = cardId; }
+    public Integer getMarketplaceCardId() { return marketplaceCardId; }
+    public void setMarketplaceCardId(Integer cardId) { this.marketplaceCardId = cardId; }
 
 }

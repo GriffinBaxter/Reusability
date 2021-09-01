@@ -88,8 +88,17 @@ public class MarketplaceConversationResource {
             );
         }
 
-        Integer cardId = marketplaceConversationMessagePayload.getCardId();
+        System.out.println("hello");
+
+        Integer cardId = marketplaceConversationMessagePayload.getMarketplaceCardId();
+
+        System.out.println(cardId);
+
+
         Optional<MarketplaceCard> storedCard = marketplaceCardRepository.findById(cardId);
+
+        System.out.println("here");
+
 
         if (storedCard.isEmpty()) {
             logger.error("Invalid Conversation - invalid card id ");
@@ -101,13 +110,14 @@ public class MarketplaceConversationResource {
         // if conversationId is null, then create conversation
 
         if (conversationId == null) {
+
+
             //201
             conversation = this.createConversation(sender, storedReceiver.get(), storedCard.get());
             this.createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
             return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(conversation.getId()));
 
         } else {
-
             // check if conversation exists if conversationId is not null
             Optional<Conversation> storedConversation = marketplaceConversationRepository.findConversationById(conversationId);
 
