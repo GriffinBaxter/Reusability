@@ -2,6 +2,7 @@ package org.seng302.model.repository;
 
 import org.seng302.model.Listing;
 import org.seng302.model.enums.BusinessType;
+import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -53,7 +54,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         Path<String> namePath = listing.get("inventoryItem").get("product").get("name");
 
-        ArrayList<Predicate> predicates = getNamePredicates(names, namePath, criteriaBuilder);
+        ArrayList<Predicate> predicates = CustomRepositoryUtils.getPredicates(names, namePath, criteriaBuilder);
 
         return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode, criteriaBuilder, query, listing, predicates);
     }
@@ -128,34 +129,9 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         Path<String> businessNamePath = listing.get("inventoryItem").get("product").get("business").get("name");
 
-        ArrayList<Predicate> predicates = getNamePredicates(names, businessNamePath, criteriaBuilder);
+        ArrayList<Predicate> predicates = CustomRepositoryUtils.getPredicates(names, businessNamePath, criteriaBuilder);
 
         return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode, criteriaBuilder, query, listing, predicates);
-    }
-
-    /**
-     * Gets Predicates that contain only one field (ie Product name).
-     *
-     * @param names list of names to search
-     * @param path path to required field
-     * @param criteriaBuilder CriteriaBuilder object
-     * @return ArrayList of Predicates
-     *
-     * Preconditions: path is valid
-     *                names is not empty
-     * Postconditions: List of predicates
-     */
-    private ArrayList<Predicate> getNamePredicates(List<String> names, Path<String> path, CriteriaBuilder criteriaBuilder) {
-        ArrayList<Predicate> predicates = new ArrayList<>();
-        for (String name : names) {
-            if (name.startsWith("\"") && name.endsWith("\"")) {
-                name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
-                predicates.add(criteriaBuilder.equal(path, name));
-            } else {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(path), "%" + name.toUpperCase() + "%"));
-            }
-        }
-        return predicates;
     }
 
     /**
