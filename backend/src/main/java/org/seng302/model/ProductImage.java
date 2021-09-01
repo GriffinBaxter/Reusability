@@ -1,11 +1,9 @@
 package org.seng302.model;
 
-import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 
 @Entity
-public class ProductImage extends Image{
+public class ProductImage extends Image {
     // Association many images can have the same one product id.
     @ManyToOne(targetEntity = Product.class, fetch = FetchType.LAZY)
     @JoinColumns({

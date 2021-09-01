@@ -112,6 +112,9 @@ public class User {
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private List<BookmarkedListingMessage> bookmarkedListingMessages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<UserImage> userImages;
+
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
     private static final Integer FIRST_NAME_MAX_LENGTH = 255;

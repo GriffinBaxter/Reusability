@@ -106,4 +106,16 @@ public class Authorization {
         }
     }
 
+    // TODO:tests
+    public static void verifyImageExtension(String imageFileType, String imageName) {
+        if (!imageFileType.equalsIgnoreCase("jpg") && !imageFileType.equalsIgnoreCase("jpeg") &&
+                !imageFileType.equalsIgnoreCase("png") && !imageFileType.equalsIgnoreCase("gif")) {
+
+            String errorMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", imageName);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The file type of the image uploaded is not " +
+                    "supported. Only JPG, JPEG, PNG and GIF are supported.");
+        }
+    }
+
 }
