@@ -28,8 +28,10 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
@@ -188,27 +190,36 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
                 marketplaceCardId, content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
 
-        System.out.println(payloadJson);
-        System.out.println(sender);
+        conversation = new Conversation(
+                sender,
+                receiver,
+                marketplaceCard
+        );
+
+        message1 = new Message(
+                conversation,
+                sender,
+                content
+        );
+
+        when(marketplaceConversationRepository.save(any(Conversation.class))).thenReturn(conversation);
+        when(marketplaceConversationMessageRepository.save(any(Message.class))).thenReturn(message1);
 
         response = mvc.perform(post("/home/conversation")
                 .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))
                 .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
-
     }
 
     @Then("A conversation which contains this message is created")
     public void A_conversation_which_contains_this_message_is_created() throws UnsupportedEncodingException {
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(expectedConversationIdJson);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @Given("I have contacted this user about this card before in the conversation with id {int}")
     public void i_have_contacted_this_user_about_this_card_before_in_the_conversation_with_id(Integer marketplaceCardId) {
         given(marketplaceConversationRepository.findConversationByMarketplaceCardId(marketplaceCardId)).willReturn(Optional.empty());
-
     }
 
     @When("I send a message with the content of {string} about this marketplace card with id {int} in the existing conversation with id {int}")
@@ -218,6 +229,9 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
         payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
                 marketplaceCardId, content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
+
+        when(marketplaceConversationRepository.save(any(Conversation.class))).thenReturn(conversation);
+        when(marketplaceConversationMessageRepository.save(any(Message.class))).thenReturn(message2);
 
         response = mvc.perform(post(String.format("/home/conversation", conversationId))
                 .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))

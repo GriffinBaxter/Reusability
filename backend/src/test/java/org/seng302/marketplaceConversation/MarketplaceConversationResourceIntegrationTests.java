@@ -312,7 +312,7 @@ class MarketplaceConversationResourceIntegrationTests {
      * Tests that a CREATED (201) status is received when sending a marketplace conversation message
      * to the /home/conversation/{conversationId} API endpoint and the receiver id corresponds
      * to an existing marketplace conversation, the card id corresponds to an existing marketplace card and the
-     * conversation id is null (and thus the conversation is created).
+     * conversation id is not provided (and thus the conversation is created).
      *
      * @throws Exception thrown if there is an error when checking that the conversation exists.
      */
