@@ -381,5 +381,9 @@ export default {
         }, {
             withCredentials: true
         })
+    },
+    // retrives conversation entities
+    getConversations() {
+        return instance.get(`/home/conversation`, {withCredentials: true})
     }
 }

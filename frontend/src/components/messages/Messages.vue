@@ -7,7 +7,9 @@
 </template>
 
 <script>
-import MessageOption from "@/components/messages/MessageOption";
+import MessageOption from "./MessageOption";
+import Api from "../../Api"
+
 export default {
   name: "Messages",
   components: {MessageOption},
@@ -64,8 +66,29 @@ export default {
           cardName: "Card name Example",
           newMessage: false,
         }
-      ]
+      ],
+      errorMessage: ""
     }
+  },
+  beforeMount() {
+    this.errorMessage = "";
+    Api.getConversations().then(
+        (res) => {
+          this.messages = res.data.map( () => {})
+        }
+    ).catch((err) => {
+      if (err.response) {
+        if (err.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else  {
+          this.errorMessage = "Something went wrong sorry."
+        }
+      } else if (err.request) {
+          this.errorMessage = "Timed out getting conversations."
+      } else {
+        this.errorMessage = "Something went wrong sorry."
+      }
+    });
   }
 
 }
