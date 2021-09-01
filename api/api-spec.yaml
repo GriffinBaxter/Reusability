@@ -48,6 +48,7 @@ tags:
   - name: 'U29: Browse/Search Sale Listings'
   - name: 'U30: Individual Full Sale Listing'
   - name: 'U31: Purchases'
+  - name: 'U41: Sales report'
   # Entities
   - name: 'Users'
     description: 'Grouping of endpoints related to the User entity'
@@ -2029,6 +2030,83 @@ paths:
           description: 'Forbidden: Returned when a user tries to update the business info for a business they do not administer AND the user is not a global application admin'
         '406':
           description: 'Selected Business not exist'
+
+  '/businesses/{businessId}/salesReport':
+    get:
+      tags:
+        - 'U41: Sales report'
+        - 'Listings / sales'
+        - 'Business Accounts'
+      summary: 'Retrieve sales report for a business'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: businessId
+          in: path
+          description: 'The ID of the given business for which to retrieve the sales report'
+          required: true
+          schema:
+            type: integer
+            example: 118
+        - name: fromDate
+          in: query
+          description: 'The date the sales report should be from'
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          description: 'The date the sales report should be to'
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: granularity
+          in: query
+          description: 'The granularity of the returned sales report'
+          required: true
+          schema:
+            type: string
+            enum:
+              - Total
+              - Yearly
+              - Monthly
+              - Daily
+      responses:
+        '200':
+          description: 'Sales report for a business as per the dates and granularity criteria'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    granularityName:
+                      type: string
+                      description: 'The name as part of the currently granularity setting, e.g. February, Tuesday or
+                      2020 (null if granularity is "Total")'
+                      example: February
+                    totalSales:
+                      type: number
+                      description: 'The number of sales within the set granularity'
+                      example: 420
+                    totalRevenue:
+                      type: number
+                      format: double
+                      description: 'The currency value of sales within the set grandularity'
+                      example: 69.69
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an
+          administrator of the business.'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
 
 
 components:
