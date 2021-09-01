@@ -1,0 +1,389 @@
+{
+	"info": {
+		"_postman_id": "f471137b-2633-4bb2-991a-4bf14a39f087",
+		"name": "POST for Messages",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "401 - not logged in",
+			"item": [
+				{
+					"name": "create message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderId\": 100,\r\n    \"recieverId\": 101,\r\n    \"marketplaceCardId\": 102,\r\n    \"content\": \"Hello\",\r\n    \"created\": \"2021-07-15T05:10:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "400 - non-existent receiver id",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"frank.j.smith@email.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create message with non-existent receiver id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderId\": 8,\r\n    \"recieverId\": 1000,\r\n    \"marketplaceCardId\": 102,\r\n    \"content\": \"Hello\",\r\n    \"created\": \"2021-07-15T05:10:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "400 - non-existent marketplace card id",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"frank.j.smith@email.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create message with non-existent marketplace card id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderId\": 8,\r\n    \"receiverId\": 1,\r\n    \"marketplaceCardId\": 102,\r\n    \"content\": \"Hello\",\r\n    \"created\": \"2021-07-15T05:10:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "400 - non-existent conversation id",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"frank.j.smith@email.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create message with non-existent conversation id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderId\": 8,\r\n    \"receiverId\": 1,\r\n    \"marketplaceCardId\": 3,\r\n    \"content\": \"Hello\",\r\n    \"created\": \"2021-07-15T05:10:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/1000",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								"1000"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "201 - no conversation id, conversation created, message created",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"frank.j.smith@email.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create message with non-existent conversation id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderId\": 8,\r\n    \"receiverId\": 1,\r\n    \"marketplaceCardId\": 3,\r\n    \"content\": \"Hello\",\r\n    \"created\": \"2021-07-15T05:10:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "201 - conversation id exists, message created",
+			"item": [
+				{
+					"name": "/login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"frank.j.smith@email.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create message with non-existent conversation id Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderId\": 8,\r\n    \"receiverId\": 1,\r\n    \"marketplaceCardId\": 3,\r\n    \"content\": \"Hello\",\r\n    \"created\": \"2021-07-15T05:10:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/null",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								"null"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create message with non-existent conversation id Copy 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderId\": 8,\r\n    \"receiverId\": 1,\r\n    \"marketplaceCardId\": 3,\r\n    \"content\": \"Can I please buy some baked goods?\",\r\n    \"created\": \"2021-07-15T05:10:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

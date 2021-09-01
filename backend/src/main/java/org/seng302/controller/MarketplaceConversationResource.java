@@ -70,8 +70,10 @@ public class MarketplaceConversationResource {
     public ResponseEntity<MarketplaceConversationIdPayload> createMarketplaceConversationMessage(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestBody MarketplaceConversationMessagePayload marketplaceConversationMessagePayload,
-            @PathVariable Integer conversationId
+            @PathVariable(required = false) Integer conversationId
     ) throws Exception {
+
+        System.out.println(conversationId);
 
         //401
         User sender = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -88,17 +90,8 @@ public class MarketplaceConversationResource {
             );
         }
 
-        System.out.println("hello");
-
         Integer cardId = marketplaceConversationMessagePayload.getMarketplaceCardId();
-
-        System.out.println(cardId);
-
-
         Optional<MarketplaceCard> storedCard = marketplaceCardRepository.findById(cardId);
-
-        System.out.println("here");
-
 
         if (storedCard.isEmpty()) {
             logger.error("Invalid Conversation - invalid card id ");
@@ -109,12 +102,18 @@ public class MarketplaceConversationResource {
 
         // if conversationId is null, then create conversation
 
-        if (conversationId == null) {
 
+        if (conversationId == null) {
 
             //201
             conversation = this.createConversation(sender, storedReceiver.get(), storedCard.get());
+
+            System.out.println("Here");
+
             this.createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
+
+            System.out.println("this");
+
             return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(conversation.getId()));
 
         } else {
