@@ -275,7 +275,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:9499/home/conversation/",
+							"raw": "http://localhost:9499/home/conversation/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -284,7 +284,7 @@
 							"path": [
 								"home",
 								"conversation",
-								""
+								"1"
 							]
 						}
 					},

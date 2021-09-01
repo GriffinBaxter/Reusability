@@ -66,7 +66,7 @@ public class MarketplaceConversationResource {
      * @return marketplace conversation ID.
      * @throws Exception Exception.
      */
-    @PostMapping("/home/conversation/{conversationId}")
+    @PostMapping({"/home/conversation/{conversationId}", "/home/conversation"})
     public ResponseEntity<MarketplaceConversationIdPayload> createMarketplaceConversationMessage(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestBody MarketplaceConversationMessagePayload marketplaceConversationMessagePayload,
