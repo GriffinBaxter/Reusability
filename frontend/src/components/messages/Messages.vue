@@ -3,7 +3,7 @@
     <div id="messages-wrapper" >
       <LoadingDots v-if="isLoading" />
       <div id="content-wrapper" v-else>
-        <MessageOption v-for="(conv) in conversations" :key="conv.id" :username="conv.userName" :image="conv.image" :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
+        <MessageOption @delete="conversations.pop(0)" v-for="(conv) in conversations" :key="conv.id" :username="conv.userName" :image="conv.image" :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
       </div>
     </div>
     <div class="error-message" v-if="errorMessage">
@@ -46,6 +46,9 @@ export default {
     this.isLoading = true;
     Api.getConversations().then(
         (res) => {
+          res.data.push({id: 1,instigatorName: "yum", marketplaceCardTitle: "deto", created: "asd", newMessage: true});
+          res.data.push({id: 2, instigatorName: "yum", marketplaceCardTitle: "deto", created: "asd", newMessage: true});
+          res.data.push({id: 3, instigatorName: "yum", marketplaceCardTitle: "deto", created: "asd", newMessage: true});
           this.conversations = res.data.map( (conversation) => {
             return {
               id: conversation.id,

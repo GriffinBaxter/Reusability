@@ -1,5 +1,5 @@
 <template>
-  <div class="message-option">
+  <div class="message-option" @click="$emit('delete')">
     <div class="message-button-wrap">
       <div class="new-message-icon-wrap">
         <div class="new-message-icon" v-if="newMessage"></div>
