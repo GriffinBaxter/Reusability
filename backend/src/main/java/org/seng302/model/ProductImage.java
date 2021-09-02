@@ -57,4 +57,16 @@ public class ProductImage extends Image {
     public void setBusinessId(int businessId) {
         this.businessId = businessId;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":" + getId() + ", " +
+                "\"businessId\":" + businessId + ", " +
+                "\"productId\":" + productId + ", " +
+                "\"filename\":\"" + getFilename() + "\", " +
+                "\"thumbnailFilename\":\"" + getThumbnailFilename() + "\", " +
+                "\"isPrimary\":" + getIsPrimary() +
+                "}";
+    }
 }

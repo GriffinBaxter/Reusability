@@ -38,4 +38,15 @@ public class UserImage extends Image {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":" + getId() + ", " +
+                "\"userId\":" + userId + ", " +
+                "\"filename\":\"" + getFilename() + "\", " +
+                "\"thumbnailFilename\":\"" + getThumbnailFilename() + "\", " +
+                "\"isPrimary\":" + getIsPrimary() +
+                "}";
+    }
 }
