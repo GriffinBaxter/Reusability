@@ -456,6 +456,16 @@ public class ListingResource {
                 .body(listingPayloads);
     }
 
+    /**
+     * Retrieve sales report for a business, by from/to dates and granularity (e.g. Yearly).
+     *
+     * @param sessionToken Session token used to authenticate user (is user logged in?).
+     * @param businessId ID of the business to retrieve the sales report from.
+     * @param fromDate The date the sales report should be from.
+     * @param toDate The date the sales report should be to.
+     * @param granularity The granularity of the sales report (e.g. Yearly).
+     * @return List of sales report payloads containing granularity name, total sales and total revenue.
+     */
     @GetMapping("/businesses/{businessId}/salesReport")
     public ResponseEntity<List<SalesReportPayload>> retrieveSalesReport(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,

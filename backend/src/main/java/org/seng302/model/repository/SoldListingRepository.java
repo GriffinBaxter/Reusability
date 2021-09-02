@@ -25,6 +25,13 @@ public interface SoldListingRepository extends JpaRepository<SoldListing, Intege
      */
     Page<SoldListing> findAllByBusinessId(Integer businessId, Pageable pageable);
 
+    /**
+     * Find all Sold Listings for a particular business between given sale dates
+     * @param businessId ID of business to find
+     * @param fromDate The date the sale should be from
+     * @param toDate The date the sale should be to
+     * @return List of SoldListings
+     */
     List<SoldListing> findAllByBusinessIdAndSaleDateBetween(
             Integer businessId,
             LocalDateTime fromDate,
