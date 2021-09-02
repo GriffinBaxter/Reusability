@@ -551,13 +551,13 @@ paths:
             * BUSINESS
 
             * PRODUCT
-        - name: usersID
+        - name: userID
           in: query
           required: false
           schema:
             type: integer
           description: ID of use this image related to
-        - name: businessesID
+        - name: businessID
           in: query
           required: false
           schema:
@@ -637,13 +637,13 @@ paths:
             * BUSINESS
 
             * PRODUCT
-        - name: usersID
+        - name: userID
           in: query
           required: false
           schema:
             type: integer
           description: ID of use this image related to
-        - name: businessesID
+        - name: businessID
           in: query
           required: false
           schema:
@@ -701,7 +701,7 @@ paths:
               * BUSINESS
 
               * PRODUCT
-        - name: usersID
+        - name: userID
           in: query
           required: false
           schema:
