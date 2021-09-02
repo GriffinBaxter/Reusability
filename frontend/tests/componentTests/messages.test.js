@@ -9,6 +9,7 @@ import Messages from "../../src/components/messages/Messages";
 import MessageOption from "../../src/components/messages/MessageOption";
 import Api from "../../src/Api";
 import VueLogger from "vuejs-logger";
+import ProfileImage from "../../public/sample_profile_image.jpg"
 
 
 jest.mock("../../src/Api");
@@ -137,11 +138,48 @@ describe("Testing the Messages.vue component", () => {
 
 describe("Testing MessageOption.vue", () => {
 
-    test("Testing the length of the card name under the character limit", async () => {})
+    const factory = async (username, cardName) => {
+        const wrapper = await shallowMount(MessageOption, {
+            localVue,
+            propsData: {
+                userName: username,
+                image: ProfileImage,
+                newMessage: true,
+                cardName: cardName
+            }
+        });
+        await wrapper.vm.$nextTick();
 
-    test("Testing the length of the card name over the character limit", async () => {})
+        return wrapper;
+    }
 
-    test("Testing the length of the user name under the character limit", async () => {})
+    test("Testing the length of the card name under the character limit", async () => {
+        const wrapper = await factory("username", "0 123 456 789");
+        expect(wrapper.find(".card-name").text()).toStrictEqual("0 123 456 789");
+    })
 
-    test("Testing the length of the user name over the character limit", async () => {})
+    test("Testing the length of the card name on the character limit", async () => {
+        const wrapper = await factory("username", "0 123 456 7893");
+        expect(wrapper.find(".card-name").text()).toStrictEqual("0 123 456 7...");
+    })
+
+    test("Testing the length of the card name over the character limit", async () => {
+        const wrapper = await factory("username", "0 123 456 78933");
+        expect(wrapper.find(".card-name").text()).toStrictEqual("0 123 456 7...");
+    })
+
+    test("Testing the length of the user name under the character limit", async () => {
+        const wrapper = await factory( "123450 123 456 789", "cardname");
+        expect(wrapper.find(".user-name").text()).toStrictEqual("123450 123 456 789");
+    })
+
+    test("Testing the length of the user name over the character limit", async () => {
+        const wrapper = await factory( "123450 123 456 7893", "cardname");
+        expect(wrapper.find(".user-name").text()).toStrictEqual("123450 123 456 7...");
+    })
+
+    test("Testing the length of the user name over the character limit", async () => {
+        const wrapper = await factory( "123450 123 456 78933", "cardname");
+        expect(wrapper.find(".user-name").text()).toStrictEqual("123450 123 456 7...");
+    })
 })

@@ -5,11 +5,11 @@
         <div class="new-message-icon" v-if="newMessage"></div>
       </div>
       <div class="user-icon-wrap">
-        <img :src="image" :alt="`seller ${username}'s profile image`" class="user-icon">
+        <img :src="image" :alt="`seller ${userName}'s profile image`" class="user-icon">
       </div>
       <div class="conversation-details">
         <div class="card-name">{{limitStringLength(cardName, MAX_CARD_LENGTH)}}</div>
-        <div class="user-name">{{limitStringLength(username, MAX_USERNAME_LENGTH)}}</div>
+        <div class="user-name">{{limitStringLength(userName, MAX_USERNAME_LENGTH)}}</div>
       </div>
     </div>
     <div class="delete-icon-wrap" @click="$emit('delete')">
@@ -25,7 +25,7 @@
 export default {
   name: "MessageOption",
   props: {
-    username: {
+    userName: {
       type: String,
       required: true
     },
@@ -58,7 +58,7 @@ export default {
      */
     limitStringLength(str, maxLength) {
       if (str.length >= maxLength) {
-        return str.substr(0, maxLength) + "...";
+        return str.substr(0, maxLength-3) + "...";
       }
       return str;
     }
