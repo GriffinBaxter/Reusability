@@ -201,6 +201,7 @@ public class MarketplaceConversationResource {
     public List<MessagePayload> getMarketplaceConversationMessages(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer conversationId) {
+
         //401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         Optional<Conversation> optionalConversation = marketplaceConversationRepository.findConversationById(conversationId);
@@ -212,7 +213,7 @@ public class MarketplaceConversationResource {
         }
 
         Conversation currentConversation = optionalConversation.get();
-        System.out.println(currentConversation.getReceiver().getId() + " " + currentUser.getId() + " " + currentConversation.getInstigator().getId());
+
         // 403
         if (currentConversation.getReceiver().getId() != currentUser.getId() && currentConversation.getInstigator().getId() != currentUser.getId()) {
             logger.error("User does not have permission to perform action.");
