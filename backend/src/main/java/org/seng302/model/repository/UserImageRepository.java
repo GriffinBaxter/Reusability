@@ -7,7 +7,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.util.List;
 
 @RepositoryRestResource
-public interface UserImageRepository extends JpaRepository<UserImage, String> {
+public interface UserImageRepository extends JpaRepository<UserImage, Integer> {
 
     /**
      * Search for all primary images for given user.

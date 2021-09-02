@@ -9,7 +9,7 @@ import java.util.Optional;
 
 
 @RepositoryRestResource
-public interface ImageRepository extends JpaRepository<ProductImage, String> {
+public interface ImageRepository extends JpaRepository<ProductImage, Integer> {
 
     List<ProductImage> findImageByBusinessIdAndProductId(Integer businessId, String productId);
 
