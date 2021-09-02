@@ -7,8 +7,6 @@ import org.seng302.model.repository.AddressRepository;
 import org.seng302.controller.UserResource;
 import org.seng302.Main;
 import org.seng302.model.enums.Role;
-import org.seng302.model.repository.ConversationRepository;
-import org.seng302.model.repository.MessageRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -54,12 +52,6 @@ class UserResourceIntegrationTests {
 
     @MockBean
     private AddressRepository addressRepository;
-
-    @MockBean
-    private ConversationRepository conversationRepository;
-
-    @MockBean
-    private MessageRepository messageRepository;
 
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
                                         "\"password\": \"%s\"}";
@@ -116,11 +108,6 @@ class UserResourceIntegrationTests {
     private Address address3;
     private Address address4;
     private Address address5;
-
-    private Conversation conversation;
-    private MarketplaceCard marketplaceCard;
-    private Message message1;
-    private Message message2;
 
     @BeforeAll
     void setup() throws Exception {
@@ -281,36 +268,8 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser5.setId(8);
 
-        marketplaceCard = new MarketplaceCard(
-                anotherUser.getId(),
-                anotherUser,
-                Section.FORSALE,
-                LocalDateTime.now(),
-                "Royal Gala Apples For Sale",
-                "Fresh, wanting $3 a kg.");
-        marketplaceCard.setId(1);
-
-        conversation = new Conversation(
-                user,
-                anotherUser,
-                marketplaceCard);
-        conversation.setId(1);
-
-        message1 = new Message(
-                conversation,
-                user,
-                "Can I please have 5kg?");
-        message1.setId(1);
-
-        message2 = new Message(
-                conversation,
-                anotherUser,
-                "You sure can!");
-        message2.setId(2);
-
         // initializes the MockMVC object and tells it to use the userRepository
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository,
-                addressRepository, conversationRepository, messageRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
 
     }
 
@@ -1484,165 +1443,5 @@ class UserResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(userRepository.findById(dGAA.getId()).get().getRole()).isEqualTo(Role.DEFAULTGLOBALAPPLICATIONADMIN);
-    }
-
-    /* ----------------------------------------Delete Conversation Endpoint-------------------------------------------*/
-
-    /**
-     * Test that an UNAUTHORIZED status is received when a non-logged in user tries to delete a conversation.
-     * @throws Exception thrown if there is an error when deleting a conversation.
-     */
-    @Test
-    void canNotDeleteConversationWhenUserNotLoggedIn() throws Exception {
-        // Given
-        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.empty());
-
-        // When
-        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId())))
-                .andReturn()
-                .getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Access token is missing or invalid");
-    }
-
-    /**
-     * Test that an NOT_ACCEPTABLE status is received when the conversation does not exist.
-     * @throws Exception thrown if there is an error when deleting a conversation.
-     */
-    @Test
-    void canNotDeleteConversationWhenItDoesNotExist() throws Exception {
-        // Given
-        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
-        given(conversationRepository.findById(conversation.getId()))
-                .willReturn(Optional.empty());
-
-        // When
-        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn()
-                .getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-        assertThat(response.getErrorMessage()).isEqualTo("The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                "for example trying to access a resource by an ID that does not exist.");
-    }
-
-    /**
-     * Test that a FORBIDDEN status is received when the conversation exists but the user is trying to
-     * delete a conversation they are not a member of and they are not a GAA or DGAA.
-     * @throws Exception thrown if there is an error when deleting a conversation.
-     */
-    @Test
-    void canNotDeleteConversationWhenItExistsButNotAMemberGAAOrDGAA() throws Exception {
-        // Given
-        given(userRepository.findBySessionUUID(searchUser1.getSessionUUID())).willReturn(Optional.ofNullable(searchUser1));
-        given(conversationRepository.findById(conversation.getId()))
-                .willReturn(Optional.ofNullable(conversation));
-
-        // When
-        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", searchUser1.getSessionUUID())))
-                .andReturn()
-                .getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Invalid permissions to delete conversation");
-    }
-
-    /**
-     * Test that an OK status is received when the conversation exists and a DGAA tries to
-     * delete a conversation for other users.
-     * @throws Exception thrown if there is an error when deleting a conversation.
-     */
-    @Test
-    void canDeleteConversationWhenItExistsAndCurrentUserIsADGAA() throws Exception {
-        // Given
-        given(userRepository.findBySessionUUID(dGAA.getSessionUUID())).willReturn(Optional.ofNullable(dGAA));
-        given(conversationRepository.findById(conversation.getId()))
-                .willReturn(Optional.ofNullable(conversation));
-
-        // When
-        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
-                .andReturn()
-                .getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    /**
-     * Test that an OK status is received when the conversation exists and the instigator tries to
-     * delete a conversation when the receiver has already removed themself from the conversation.
-     * @throws Exception thrown if there is an error when deleting a conversation.
-     */
-    @Test
-    void canDeleteConversationWhenReceiverHasAlreadyRemovedThemself() throws Exception {
-        // Given
-        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
-        Conversation conversationWithReceiverRemoved = new Conversation(
-                conversation.getInstigator(),
-                null,
-                conversation.getMarketplaceCard());
-        conversationWithReceiverRemoved.setId(2);
-        given(conversationRepository.findById(conversationWithReceiverRemoved.getId()))
-                .willReturn(Optional.ofNullable(conversationWithReceiverRemoved));
-
-        // When
-        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationWithReceiverRemoved.getId()))
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn()
-                .getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    /**
-     * Test that an OK status is received when the conversation exists and the instigator tries to
-     * remove themself from the conversation.
-     * @throws Exception thrown if there is an error when deleting a conversation.
-     */
-    @Test
-    void canRemoveInstigatorFromConversation() throws Exception {
-        // Given
-        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
-        given(conversationRepository.findById(conversation.getId()))
-                .willReturn(Optional.ofNullable(conversation));
-
-        // When
-        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
-                .andReturn()
-                .getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    /**
-     * Test that an OK status is received when the conversation exists and the receiver tries to
-     * remove themself from the conversation.
-     * @throws Exception thrown if there is an error when deleting a conversation.
-     */
-    @Test
-    void canRemoveReceiverFromConversation() throws Exception {
-        // Given
-        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
-        given(conversationRepository.findById(conversation.getId()))
-                .willReturn(Optional.ofNullable(conversation));
-
-        // When
-        response = mvc.perform(delete(String.format("/users/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
-                .andReturn()
-                .getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 }

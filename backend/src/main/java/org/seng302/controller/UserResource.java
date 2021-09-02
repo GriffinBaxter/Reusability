@@ -14,9 +14,6 @@ import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
-import org.seng302.model.Conversation;
-import org.seng302.model.repository.ConversationRepository;
-import org.seng302.model.repository.MessageRepository;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.UserIdPayload;
@@ -46,7 +43,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +60,6 @@ import static org.seng302.model.enums.Role.*;
  * GET "/users/search" endpoint used to retrieve user accounts based on search criteria.
  * PUT "/users/{id}/makeAdmin" endpoint used to make a user account a GAA.
  * PUT "/users/{id}/revokeAdmin" endpoint used to revoke admin perms from user account (GAA -> normal user account)
- * DELETE "/users/conversation/{conversationId} endpoint used to delete a marketplace conversation.
  */
 @RestController
 public class UserResource {
@@ -74,12 +69,6 @@ public class UserResource {
 
     @Autowired
     private AddressRepository addressRepository;
-
-    @Autowired
-    private ConversationRepository conversationRepository;
-
-    @Autowired
-    private MessageRepository messageRepository;
 
     private Address address;
 
@@ -95,14 +84,9 @@ public class UserResource {
     private static final String HTTP_NOT_ACCEPTABLE_MESSAGE = "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
             "for example trying to access a resource by an ID that does not exist.";
 
-    public UserResource(UserRepository userRepository,
-                        AddressRepository addressRepository,
-                        ConversationRepository conversationRepository,
-                        MessageRepository messageRepository) {
+    public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
-        this.conversationRepository = conversationRepository;
-        this.messageRepository = messageRepository;
     }
 
     /**
@@ -510,61 +494,4 @@ public class UserResource {
         }
     }
 
-    /**
-     * This method is used to delete a notification.
-     *
-     * It will return a 401 error if the user is not logged in.
-     * It will return a 406 error if the conversation does not exist.
-     * It will return a 403 error if the user does not have permission to delete the conversation.
-     * A GAA or DGAA can delete a conversation for other members.
-     * A user can remove themself from a conversation. If there are no remaining members in a
-     * conversation then it is deleted.
-     *
-     * @param sessionToken a token used for user authentication.
-     * @param conversationId the id of the conversation to be deleted.
-     */
-    @Transactional
-    @DeleteMapping("/users/conversation/{conversationId}")
-    @ResponseStatus(code = HttpStatus.OK, reason = "Conversation successfully deleted")
-    public void deleteConversation(
-            @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken,
-            @PathVariable Integer conversationId
-    ) {
-        // checks to see if user is logged in. If they are not a 401 is returned.
-        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
-
-        Optional<Conversation> conversation = conversationRepository.findById(conversationId);
-        // if no conversation is found with given id then return a 406.
-        if (conversation.isEmpty()) {
-            logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
-        }
-
-        if (currentUser == conversation.get().getInstigator()) {
-            // this "removes" the user from the conversation since there is no longer a link.
-            conversation.get().setInstigator(null);
-        } else if (currentUser == conversation.get().getReceiver()) {
-            // this "removes" the user from the conversation since there is no longer a link.
-            conversation.get().setReceiver(null);
-        } else if (Authorization.isGAAorDGAA(currentUser)) {
-            // if the current user is a GAA or DGAA then they can delete the conversation and its associated messages.
-            messageRepository.deleteByConversation(conversation.get());
-            conversationRepository.deleteById(conversationId);
-            logger.debug("Conversation and messages deleted");
-        } else {
-            logger.error("Conversation Deletion Error - 403 [FORBIDDEN] - User doesn't have permissions to delete conversation");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid permissions to delete conversation");
-        }
-
-        if ((conversation.get().getInstigator() == null) && (conversation.get().getReceiver() == null)) {
-            // if there is no remaining members in the conversation then delete it and its associated messages.
-            messageRepository.deleteByConversation(conversation.get());
-            conversationRepository.deleteById(conversationId);
-            logger.debug("Conversation and messages deleted");
-        } else {
-            // if a user removes themself from a conversation then update the members in the conversation.
-            conversationRepository.save(conversation.get());
-            logger.debug("User removed from conversation");
-        }
-    }
 }

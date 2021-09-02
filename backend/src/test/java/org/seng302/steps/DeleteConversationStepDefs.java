@@ -4,7 +4,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.seng302.controller.UserResource;
+import org.seng302.controller.MarketplaceConversationResource;
 import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalMarketplaceCardArgumentException;
 import org.seng302.exceptions.IllegalMessageContentException;
@@ -12,10 +12,7 @@ import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
-import org.seng302.model.repository.AddressRepository;
-import org.seng302.model.repository.ConversationRepository;
-import org.seng302.model.repository.MessageRepository;
-import org.seng302.model.repository.UserRepository;
+import org.seng302.model.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -45,15 +42,15 @@ public class DeleteConversationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
     @MockBean
-    private AddressRepository addressRepository;
+    private MarketplaceConversationRepository conversationRepository;
 
     @Autowired
     @MockBean
-    private ConversationRepository conversationRepository;
+    private MarketplaceConversationMessageRepository messageRepository;
 
     @Autowired
     @MockBean
-    private MessageRepository messageRepository;
+    private MarketplaceCardRepository marketplaceCardRepository;
 
     private User user;
     private User anotherUser;
@@ -67,11 +64,11 @@ public class DeleteConversationStepDefs extends CucumberSpringConfiguration {
     @Before
     public void createMockMvc() {
         userRepository = mock(UserRepository.class);
-        addressRepository = mock(AddressRepository.class);
-        conversationRepository = mock(ConversationRepository.class);
-        messageRepository = mock(MessageRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(
-                userRepository, addressRepository, conversationRepository, messageRepository)).build();
+        conversationRepository = mock(MarketplaceConversationRepository.class);
+        messageRepository = mock(MarketplaceConversationMessageRepository.class);
+        marketplaceCardRepository = mock(MarketplaceCardRepository.class);
+        this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceConversationResource(userRepository,
+                marketplaceCardRepository, conversationRepository, messageRepository)).build();
     }
 
     @Given("I have received a message from another user.")

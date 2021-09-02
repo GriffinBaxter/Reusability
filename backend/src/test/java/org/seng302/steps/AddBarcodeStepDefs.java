@@ -63,14 +63,6 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private ProductUpdateService productUpdateService;
 
-    @Autowired
-    @MockBean
-    private ConversationRepository conversationRepository;
-
-    @Autowired
-    @MockBean
-    private MessageRepository messageRepository;
-
     private MockHttpServletResponse response;
 
     private User user;
@@ -103,8 +95,7 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
         this.productMVC = MockMvcBuilders.standaloneSetup(new ProductResource(
                 productRepository, businessRepository, userRepository, productUpdateService
         )).build();
-        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(
-                userRepository, addressRepository, conversationRepository, messageRepository)).build();
+        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
     @Given("I am logged in as a business administrator for an existing business.")

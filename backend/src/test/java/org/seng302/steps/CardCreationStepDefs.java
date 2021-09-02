@@ -64,14 +64,6 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private MarketCardNotificationRepository marketCardNotificationRepository;
 
-    @Autowired
-    @MockBean
-    private ConversationRepository conversationRepository;
-
-    @Autowired
-    @MockBean
-    private MessageRepository messageRepository;
-
     private MockHttpServletResponse response;
 
     private User user;
@@ -104,8 +96,7 @@ public class CardCreationStepDefs extends CucumberSpringConfiguration {
                 keywordRepository,
                 marketCardNotificationRepository
         )).build();
-        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(
-                userRepository, addressRepository, conversationRepository, messageRepository)).build();
+        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
     @Given("I am logged in.")
