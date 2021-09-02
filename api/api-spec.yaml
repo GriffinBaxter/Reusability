@@ -2720,7 +2720,7 @@ components:
           description: User that started the conversation (from a card)
         receiverId:
           type: integer
-          example: 100
+          example: 101
           readOnly: true
           description: User that created the card
         marketplaceCardId:
@@ -2728,6 +2728,14 @@ components:
           example: 100
           readOnly: true
           description: The marketplace card of the conversation
+        deletedByInstigator:
+          type: boolean
+          example: false
+          description: A boolean value used to keep track of whether the instigator has deleted/left the conversation. true if they have, false if they have not.
+        deletedByReceiver:
+          type: boolean
+          example: false
+          description: A boolean value used to keep track of whether the receiver has deleted/left the conversation. true if they have, false if they have not.
         created:
           type: string
           format: date-time
@@ -2758,7 +2766,7 @@ components:
           example: 408
           description: ID of the marketplace card involved in the conversation
         content:
-          type: String
+          type: string
           example: "Hi, I am interested in exchanging some apples for some pears."
           description: message content
         created:

@@ -75,7 +75,6 @@ public class MarketplaceConversationResource {
      * @param conversationId The ID of the conversation that the message is being added to. Null if new conversation.
      * @param marketplaceConversationMessagePayload contains new message info.
      * @return marketplace conversation ID.
-     * @throws Exception Exception.
      */
     @PostMapping({"/home/conversation/{conversationId}", "/home/conversation"})
     public ResponseEntity<MarketplaceConversationIdPayload> createMarketplaceConversationMessage(
@@ -204,15 +203,17 @@ public class MarketplaceConversationResource {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
         }
 
-        if (currentUser == optionalConversation.get().getInstigator()) {
-            // this "removes" the user from the conversation since there is no longer a link.
-            optionalConversation.get().setInstigator(null);
-        } else if (currentUser == optionalConversation.get().getReceiver()) {
-            // this "removes" the user from the conversation since there is no longer a link.
-            optionalConversation.get().setReceiver(null);
+        conversation = optionalConversation.get();
+
+        if (currentUser == conversation.getInstigator()) {
+            // the conversation has been deleted/left by the user.
+            conversation.setDeletedByInstigator(true);
+        } else if (currentUser == conversation.getReceiver()) {
+            // the conversation has been deleted/left by the user.
+            conversation.setDeletedByReceiver(true);
         } else if (Authorization.isGAAorDGAA(currentUser)) {
             // if the current user is a GAA or DGAA then they can delete the conversation and its associated messages.
-            marketplaceConversationMessageRepository.deleteByConversation(optionalConversation.get());
+            marketplaceConversationMessageRepository.deleteByConversation(conversation);
             marketplaceConversationRepository.deleteById(conversationId);
             logger.debug("Conversation and messages deleted");
         } else {
@@ -220,14 +221,14 @@ public class MarketplaceConversationResource {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid permissions to delete conversation");
         }
 
-        if ((optionalConversation.get().getInstigator() == null) && (optionalConversation.get().getReceiver() == null)) {
+        if (conversation.hasNoMembers()) {
             // if there is no remaining members in the conversation then delete it and its associated messages.
-            marketplaceConversationMessageRepository.deleteByConversation(optionalConversation.get());
+            marketplaceConversationMessageRepository.deleteByConversation(conversation);
             marketplaceConversationRepository.deleteById(conversationId);
             logger.debug("Conversation and messages deleted");
         } else {
             // if a user removes themself from a conversation then update the members in the conversation.
-            marketplaceConversationRepository.save(optionalConversation.get());
+            marketplaceConversationRepository.save(conversation);
             logger.debug("User removed from conversation");
         }
     }
