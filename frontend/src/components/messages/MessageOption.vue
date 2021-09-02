@@ -5,7 +5,7 @@
         <div class="new-message-icon" v-if="newMessage"></div>
       </div>
       <div class="user-icon-wrap">
-        <img src="../../../public/profile_icon_default.png" alt="Seller image" class="user-icon">
+        <img :src="image" :alt="`seller ${username}'s profile image`" class="user-icon">
       </div>
       <div class="conversation-details">
         <div class="card-name">{{limitStringLength(cardName, MAX_CARD_LENGTH)}}</div>
@@ -26,6 +26,10 @@ export default {
   name: "MessageOption",
   props: {
     username: {
+      type: String,
+      required: true
+    },
+    image: {
       type: String,
       required: true
     },

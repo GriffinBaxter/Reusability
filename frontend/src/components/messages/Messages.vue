@@ -3,7 +3,7 @@
     <div id="messages-wrapper" >
       <LoadingDots v-if="isLoading" />
       <div id="content-wrapper" v-else>
-        <MessageOption v-for="(conv) in conversations" :key="conv.id" :username="conv.username" :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
+        <MessageOption v-for="(conv) in conversations" :key="conv.id" :username="conv.userName" :image="conv.image" :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
       </div>
     </div>
     <div class="error-message" v-if="errorMessage">
@@ -15,7 +15,8 @@
 <script>
 import MessageOption from "./MessageOption";
 import Api from "../../Api"
-import LoadingDots from "@/components/LoadingDots";
+import LoadingDots from "../LoadingDots";
+import DefaultImage from "../../../public/profile_icon_default.png"
 
 export default {
   name: "Messages",
@@ -48,14 +49,13 @@ export default {
           this.conversations = res.data.map( (conversation) => {
             return {
               id: conversation.id,
-              image: conversation.instigatorImage && "../../../public/profile_icon_default.png",
+              image: conversation.instigatorImage || DefaultImage,
               userName: conversation.instigatorName,
               cardName: conversation.marketplaceCardTitle,
-              creation_time: conversation.created,
+              creationTime: conversation.created,
               newMessage: true
             };
           });
-
           if (this.conversations.length === 0) {
             this.errorMessage = "No messages found.";
           }
