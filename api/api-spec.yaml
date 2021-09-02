@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.1.4
+  version: 6.2.1
   title: Wasteless
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -43,12 +43,12 @@ tags:
   - name: 'UCM5: Find my cards'
   - name: 'UCM6: Keyword management'
   - name: 'UCM7: Keyword search'
-  - name: 'UCM8: Contacting Other Marketplace Users'
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
   - name: 'U29: Browse/Search Sale Listings'
   - name: 'U30: Individual Full Sale Listing'
   - name: 'U31: Purchases'
+  - name: 'U41: Sales report'
   # Entities
   - name: 'Users'
     description: 'Grouping of endpoints related to the User entity'
@@ -66,10 +66,6 @@ tags:
     description: 'Grouping of endpoints related to system-wide keywords that can be added by users and attached to marketplace cards'
   - name: 'Notifications'
     description: 'Grouping of endpoints related to notifications'
-  - name: 'Conversations'
-    description: 'Grouping of endpoints related to the Conversation entity'
-  - name: 'Messages'
-    description: 'Grouping of endpoints related to the Message entity'
 
 security:
   - CookieAuth:
@@ -528,7 +524,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Product'
 
-  '/businesses/{businessId}/products/{productId}/images':
+  '/images':
     post:
       tags:
         - 'U16: Product Images'
@@ -540,18 +536,39 @@ paths:
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: businessId
-          in: path
-          description: ID of business to search catalogue of
-          required: true
-          schema:
-            type: integer
-        - name: productId
-          in: path
-          description: ID (Product Code) of product to try to find in catalogue
+        - name: imageType
+          in: query
           required: true
           schema:
             type: string
+          description: >-
+            which entity will use this image
+
+            rules (enum):
+
+            * USER
+
+            * BUSINESS
+
+            * PRODUCT
+        - name: userID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of use this image related to
+        - name: businessID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of business this image related to
+        - name: productID
+          in: query
+          required: false
+          schema:
+            type: string
+          description: ID of product this image related to
       requestBody:
         content:
           multipart/form-data:
@@ -580,11 +597,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: 'Forbidden: Returned when a user tries to add an image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
+          description: 'Forbidden:
+            Returned when a user tries to add an image for another user AND user is not a global application admin
+            OR when a user tries to add an image for a business that he do not administer AND the user is not a global application admin
+            OR when a user tries to add an image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/businesses/{businessId}/products/{productId}/images/{imageId}':
+  '/images/{id}':
     delete:
       tags:
         - 'U16: Product Images'
@@ -596,71 +616,119 @@ paths:
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: businessId
-          in: path
-          description: ID of business that owns product
-          required: true
-          schema:
-            type: integer
-        - name: productId
-          in: path
-          description: ID (Product Code) of product to delete image for
-          required: true
-          schema:
-            type: string
-        - name: imageId
+        - name: id
           in: path
           description: ID of the image to delete
           required: true
           schema:
             type: integer
+        - name: imageType
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >-
+            which entity will use this image
+
+            rules (enum):
+
+            * USER
+
+            * BUSINESS
+
+            * PRODUCT
+        - name: userID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of use this image related to
+        - name: businessID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of business this image related to
+        - name: productID
+          in: query
+          required: false
+          schema:
+            type: string
+          description: ID of product this image related to
       responses:
         '200':
           description: Image deleted successfully
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: 'Forbidden: Returned when a user tries to delete an image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
+          description: 'Forbidden:
+            Returned when a user tries to delete an image for another user AND user is not a global application admin
+            OR when a user tries to delete an image for a business that he do not administer AND the user is not a global application admin
+            OR when a user tries to delete an image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary':
+  '/images/{id}/makePrimary':
     put:
       tags:
         - 'U16: Product Images'
         - 'Catalogue / Products'
-      summary: Set an existing image to be the new primary image for some product
+      summary: Set an existing image to be the new primary image
       security:
         - CookieAuth:
             - user
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: businessId
-          in: path
-          description: ID of business that owns product
-          required: true
-          schema:
-            type: integer
-        - name: productId
-          in: path
-          description: ID (Product Code) of product to update primary image for
-          required: true
-          schema:
-            type: string
-        - name: imageId
+        - name: id
           in: path
           description: ID of the image to set as being the primary image for product
           required: true
           schema:
             type: integer
+        - name: imageType
+          in: query
+          required: true
+          schema:
+            type: string
+          description: >-
+            which entity will use this image
+
+              rules (enum):
+
+              * USER
+
+              * BUSINESS
+
+              * PRODUCT
+        - name: userID
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID of use this image related to
+        - name: businessId
+          in: query
+          description: ID of business that owns product
+          required: true
+          schema:
+            type: integer
+        - name: productId
+          in: query
+          description: ID (Product Code) of product to update primary image for
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Primary image successfully updated
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: 'Forbidden: Returned when a user tries to update the primary image for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
+          description: 'Forbidden:
+           Returned when a user tries to update the image primary for another user AND user is not a global application admin
+           OR when a user tries to update the image primary for a business that he do not administer AND the user is not a global application admin
+           OR when a user tries to update the image primary for a product that it is in a catalogue for a business they do not administer AND the user is not a global application admin'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
@@ -1461,7 +1529,6 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
 
   '/notifications/{id}':
-
     delete:
       tags:
         - 'UCM4: Card expiry'
@@ -1860,7 +1927,7 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
-  '/user/{id}/profile':
+  '/users/{id}/profile':
     put:
       tags:
         - 'U10 Modifying Individuals'
@@ -1881,7 +1948,47 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              properties:
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Smith
+                middleName:
+                  type: string
+                  example: Hector
+                nickname:
+                  type: string
+                  example: Jonny
+                bio:
+                  type: string
+                  example: Likes long walks on the beach
+                email:
+                  type: string
+                  format: email
+                  example: johnsmith99@gmail.com
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: '1999-04-27'
+                phoneNumber:
+                  type: string
+                  example: '+64 3 555 0129'
+                homeAddress:
+                  $ref: '#/components/schemas/Address'
+                currentPassword:
+                  type: string
+                  example: '1337-H%nt3r2'
+                  format: password
+                  writeOnly: true
+                  description: Should not be stored in plain text (i.e hash it)
+                newPassword:
+                  type: string
+                  example: 'NewPassword123!'
+                  format: password
+                  writeOnly: true
+                  description: Should not be stored in plain text (i.e hash it)
       responses:
         '200':
           description: User updated successfully
@@ -1892,7 +1999,7 @@ paths:
         '406':
           description: 'Selected User not exist'
 
-  '/business/{id}/profile':
+  '/businesses/{id}/profile':
     put:
       tags:
         - 'U11 Modifying Businesses'
@@ -1924,70 +2031,82 @@ paths:
         '406':
           description: 'Selected Business not exist'
 
-
-  '/home/conversation/{conversationId}':
-    post:
+  '/businesses/{businessId}/salesReport':
+    get:
       tags:
-        - 'UCM8: Contacting Other Marketplace Users'
-        - 'Marketplace conversation message'
-      summary: Creates a marketplace conversation message.
+        - 'U41: Sales report'
+        - 'Listings / sales'
+        - 'Business Accounts'
+      summary: 'Retrieve sales report for a business'
       security:
         - CookieAuth:
             - user
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: conversationId
+        - name: businessId
           in: path
-          description: ID of Marketplace conversation
+          description: 'The ID of the given business for which to retrieve the sales report'
           required: true
           schema:
             type: integer
-
-      responses:
-        '201':
-          description: Marketplace conversation message created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  conversationId:
-                    type: integer
-                    description: The ID of the Marketplace conversation
-                    example: 600
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Message'
-
-  '/home/conversation':
-    get:
-      tags:
-        - 'UCM8: Contacting Other Marketplace Users'
-        - 'Marketplace conversation message'
-      summary: 'Retrieve all conversations associated with a user'
-      security:
-        - CookieAuth:
-            - user
-            - globalApplicationAdmin
-            - defaultGlobalApplicationAdmin
+            example: 118
+        - name: fromDate
+          in: query
+          description: 'The date the sales report should be from'
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          description: 'The date the sales report should be to'
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: granularity
+          in: query
+          description: 'The granularity of the returned sales report'
+          required: true
+          schema:
+            type: string
+            enum:
+              - Total
+              - Yearly
+              - Monthly
+              - Daily
       responses:
         '200':
-          description: Request successful, a (possibly empty) list of conversations is returned
+          description: 'Sales report for a business as per the dates and granularity criteria'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Conversation'
+                  type: object
+                  properties:
+                    granularityName:
+                      type: string
+                      description: 'The name as part of the currently granularity setting, e.g. February, Tuesday or
+                      2020 (null if granularity is "Total")'
+                      example: February
+                    totalSales:
+                      type: number
+                      description: 'The number of sales within the set granularity'
+                      example: 420
+                    totalRevenue:
+                      type: number
+                      format: double
+                      description: 'The currency value of sales within the set grandularity'
+                      example: 69.69
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an
+          administrator of the business.'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
 
 
 components:
@@ -2122,7 +2241,7 @@ components:
           example: "1982 Lada Samara"
         description:
           type: string
-          description:  A more detailed description of the card.
+          description: A more detailed description of the card.
           example: "Beige, suitable for a hen house. Fair condition. Some rust. As is, where is. Will swap for budgerigar."
         keywordIds:
           type: array
@@ -2667,73 +2786,3 @@ components:
           example: '2021-07-14T14:32:00Z'
           readOnly: true
           description: Date and time that listing will close
-
-    Conversation:
-      type: object
-      description: Represents a conversation about a Community Marketplace card between two users.
-      required:
-        - conversationId
-        - instigatorId
-        - receiverId
-        - marketplaceCardId
-        - created
-      properties:
-        conversationId:
-          type: integer
-          example: 500
-          readOnly: true
-          description: Unique ID, autogenerated by the system
-        instigatorId:
-          type: integer
-          example: 100
-          readOnly: true
-          description: User that started the conversation (from a card)
-        receiverId:
-          type: integer
-          example: 100
-          readOnly: true
-          description: User that created the card
-        marketplaceCardId:
-          type: integer
-          example: 100
-          readOnly: true
-          description: The marketplace card of the conversation
-        created:
-          type: string
-          format: date-time
-          example: '2021-07-15T05:10:00Z'
-          readOnly: true
-          description: Date and time of the conversation creation
-        messages:
-          $ref: '#/components/schemas/Message'
-
-    Message:
-      type: object
-      description: Represents a message in a conversation about a Community Marketplace card between two users.
-      required:
-        - senderId
-        - content
-        - created
-      properties:
-        senderId:
-          type: integer
-          example: 100
-          description: ID of the sender
-        recieverId:
-          type: integer
-          example: 101
-          description: ID of the reciever
-        marketplaceCardId:
-          type: integer
-          example: 408
-          description: ID of the marketplace card involved in the conversation
-        content:
-          type: String
-          example: "Hi, I am interested in exchanging some apples for some pears."
-          description: message content
-        created:
-          type: string
-          format: date-time
-          example: '2021-07-15T05:10:00Z'
-          description: date and time of the conversation creation
-
