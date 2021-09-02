@@ -2149,6 +2149,8 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
       requestBody:
         content:
           application/json:
@@ -2177,8 +2179,42 @@ paths:
                   $ref: '#/components/schemas/Conversation'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+
+    post:
+      tags:
+        - 'UCM8: Contacting Other Marketplace Users'
+        - 'Marketplace conversation message'
+      summary: Creates a marketplace conversation as well as a message in this conversation.
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      responses:
+        '201':
+          description: Marketplace conversation message created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversationId:
+                    type: integer
+                    description: The ID of the Marketplace conversation
+                    example: 600
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
 
 
 components:

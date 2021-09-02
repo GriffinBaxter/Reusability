@@ -1,10 +1,10 @@
 /**
- * Summary. This file contains the definition for the BusinessRegistrationPayload.
+ * Summary. This file contains the definition for the MarketplaceConversationMessagePayload.
  *
- * Description. This file contains the definition for the BusinessRegistrationPayload.
+ * Description. This file contains the definition for the MarketplaceConversationMessagePayload.
  *
- * @link   team-400/src/main/java/org/seng302/business/BusinessRegistrationPayload
- * @file   This file contains the definition for BusinessRegistrationPayload.
+ * @link   team-400/src/main/java/org/seng302/view/incoming/MarketplaceConversationMessagePayload
+ * @file   This file contains the definition for MarketplaceConversationMessagePayload.
  * @author team-400.
  * @since  5.5.2021
  */
