@@ -15,10 +15,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
-import org.seng302.model.repository.BusinessRepository;
-import org.seng302.model.repository.ImageRepository;
-import org.seng302.model.repository.ProductRepository;
-import org.seng302.model.repository.UserRepository;
+import org.seng302.model.repository.*;
 import org.seng302.services.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -73,6 +70,9 @@ class ProductImageResourceIntegrationTests {
 
     @MockBean
     private ImageRepository imageRepository;
+
+    @MockBean
+    private UserImageRepository userImageRepository;
 
     private FileStorageService fileStorageService;
 
@@ -230,7 +230,8 @@ class ProductImageResourceIntegrationTests {
         primaryProductImage = new ProductImage(1, productId, businessId, "storage/test", "test/test", true);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly());
 
-        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository,
+                productRepository, imageRepository, userImageRepository, fileStorageService)).build();
     }
 
     //------------------------------------ Product Image Creation Endpoint Tests ---------------------------------------
@@ -261,7 +262,12 @@ class ProductImageResourceIntegrationTests {
         List<ProductImage> productImages = new ArrayList<>();
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -295,7 +301,12 @@ class ProductImageResourceIntegrationTests {
         productImages.add(primaryProductImage);
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -316,7 +327,12 @@ class ProductImageResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -335,7 +351,12 @@ class ProductImageResourceIntegrationTests {
         sessionToken = user.getSessionUUID();
 
         // When
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpegImage)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
@@ -356,8 +377,12 @@ class ProductImageResourceIntegrationTests {
 
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.empty());
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
-
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 
@@ -379,8 +404,12 @@ class ProductImageResourceIntegrationTests {
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
-
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
@@ -403,7 +432,12 @@ class ProductImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.empty());
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
@@ -435,7 +469,12 @@ class ProductImageResourceIntegrationTests {
         productImages.add(primaryProductImage);
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -469,7 +508,11 @@ class ProductImageResourceIntegrationTests {
         productImages.add(primaryProductImage);
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                .param("unCheckImageType", "PRODUCT_IMAGE")
+                .param("businessId", String.valueOf(businessId))
+                .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -502,7 +545,12 @@ class ProductImageResourceIntegrationTests {
         productImages.add(primaryProductImage);
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -532,8 +580,12 @@ class ProductImageResourceIntegrationTests {
         productImages.add(primaryProductImage);
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
-
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
+        System.out.println(response.getErrorMessage());
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
@@ -555,7 +607,12 @@ class ProductImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(otherFile).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(otherFile).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
@@ -587,7 +644,12 @@ class ProductImageResourceIntegrationTests {
         List<ProductImage> productImages = new ArrayList<>();
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(gifImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(gifImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -620,7 +682,12 @@ class ProductImageResourceIntegrationTests {
         List<ProductImage> productImages = new ArrayList<>();
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(pngImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(pngImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -653,7 +720,12 @@ class ProductImageResourceIntegrationTests {
         List<ProductImage> productImages = new ArrayList<>();
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpegImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -686,7 +758,12 @@ class ProductImageResourceIntegrationTests {
         List<ProductImage> productImages = new ArrayList<>();
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());

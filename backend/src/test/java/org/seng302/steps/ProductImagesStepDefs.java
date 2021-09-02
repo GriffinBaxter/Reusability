@@ -65,6 +65,9 @@ public class ProductImagesStepDefs {
     private ImageRepository imageRepository;
 
     @MockBean
+    private UserImageRepository userImageRepository;
+
+    @MockBean
     private FileStorageService fileStorageService;
 
     private Address address;
@@ -86,9 +89,13 @@ public class ProductImagesStepDefs {
         businessRepository = mock(BusinessRepository.class);
         userRepository = mock(UserRepository.class);
         imageRepository = mock(ImageRepository.class);
-        fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly().useConstructor("test-images"));
-        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
-        jpgImage = new MockMultipartFile("images", "testImage.jpg", MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
+        userImageRepository = mock(UserImageRepository.class);
+        fileStorageService = Mockito.mock(FileStorageService.class,
+                withSettings().stubOnly().useConstructor("test-images"));
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository,
+                productRepository, imageRepository, userImageRepository, fileStorageService)).build();
+        jpgImage = new MockMultipartFile("images", "testImage.jpg",
+                MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
 
     }
 
@@ -187,7 +194,12 @@ public class ProductImagesStepDefs {
         when(imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(imageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
 
-        response = mvc.perform(multipart(String.format("/businesses/%d/products/%s/images", businessId, productId)).file(jpgImage).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
     }
 
@@ -218,8 +230,8 @@ public class ProductImagesStepDefs {
         nonPrimaryProductImage = new ProductImage(2, productId, businessId, filename, filename, false);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly().useConstructor("test-images"));
 
-        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository, productRepository, imageRepository, fileStorageService)).build();
-
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository,
+                productRepository, imageRepository, userImageRepository, fileStorageService)).build();
 
         nonPrimaryProductImage.setIsPrimary(false);
         List <ProductImage> nonPrimaryProductImages = new ArrayList<>();

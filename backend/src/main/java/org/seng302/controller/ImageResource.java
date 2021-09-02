@@ -151,10 +151,9 @@ public class ImageResource {
     public ResponseEntity<ImageCreatePayload> createImage(@RequestParam("images") MultipartFile image,
                                                           @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                           @RequestParam String unCheckImageType,
-                                                          @RequestParam Integer userId,
-                                                          @RequestParam Integer businessId,
-                                                          @RequestParam String productId
-    ) {
+                                                          @RequestParam(required = false) Integer userId,
+                                                          @RequestParam(required = false) Integer businessId,
+                                                          @RequestParam(required = false) String productId) {
         // Verify token access
         User user = Authorization.getUserVerifySession(sessionToken, userRepository);
 
