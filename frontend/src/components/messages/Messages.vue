@@ -3,7 +3,7 @@
     <div id="messages-wrapper" >
       <LoadingDots v-if="isLoading" />
       <div id="content-wrapper" v-else>
-        <MessageOption v-for="(conv) in conversations" :key="conv.id" :username="conv.userName" :image="conv.image" :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
+        <MessageOption v-for="(conv) in conversations" :key="conv.id" :id="`conversation-${conv.id}`" :username="conv.userName" :image="conv.image" :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
       </div>
     </div>
     <div class="error-message" v-if="errorMessage">
