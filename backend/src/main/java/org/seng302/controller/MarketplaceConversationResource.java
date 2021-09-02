@@ -184,6 +184,7 @@ public class MarketplaceConversationResource {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(currentUser.getId(), currentUser.getId());
+        logger.info("Conversations retrieved user with ID {}", currentUser.getId());
 
         return toConversationPayloadList(conversationList);
     }
