@@ -65,10 +65,13 @@ class MarketplaceConversationResourceIntegrationTests {
 
     private User instigator;
     private User receiver;
+    private User anotherUser;
 
     private MarketplaceCard marketplaceCard;
 
     private Conversation conversation;
+
+    private Message message;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -116,6 +119,23 @@ class MarketplaceConversationResourceIntegrationTests {
         receiver.setId(2);
         receiver.setSessionUUID(User.generateSessionUUID());
 
+        anotherUser = new User(
+                "John",
+                "Jacobs",
+                "A",
+                "Jay",
+                "bio",
+                "john@example.com",
+                LocalDate.of(2020, Month.JANUARY, 1).minusYears(13),
+                "1234567555",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
+
         marketplaceCard = new MarketplaceCard(
                 instigator.getId(),
                 instigator,
@@ -128,6 +148,9 @@ class MarketplaceConversationResourceIntegrationTests {
 
         conversation = new Conversation(instigator, receiver, marketplaceCard);
         conversation.setId(1);
+
+        message = new Message(conversation, instigator, "This is a message");
+        message.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(
                    new MarketplaceConversationResource(userRepository, marketplaceCardRepository, marketplaceConversationRepository, marketplaceConversationMessageRepository))
@@ -203,6 +226,83 @@ class MarketplaceConversationResourceIntegrationTests {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo("[" + conversation.toConversationPayload().toString() + "]");
+    }
+
+    /**
+     * Tests that an OK status and a list of messages are received when trying to retrieve messages from an existing conversation.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void canRetrieveListOfMessagesWhenConversationExists() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when an invalid JSESSIONID is provided with the GET request for messages.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void cannotRetrieveMessagesWithInvalidCookie() throws Exception {
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that a NOT FOUND status is received when getting messages for a conversation that does not exist.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void cannotRetrieveMessagesWithInvalidConversationId() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+
+        // When
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when trying to access messages of a conversation that the user is not a part of.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void cannotRetrieveListOfMessagesWhenNotMyConversation() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
 }
