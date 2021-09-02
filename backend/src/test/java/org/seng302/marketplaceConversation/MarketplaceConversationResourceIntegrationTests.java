@@ -520,9 +520,10 @@ class MarketplaceConversationResourceIntegrationTests {
         given(userRepository.findBySessionUUID(sender.getSessionUUID())).willReturn(Optional.ofNullable(sender));
         Conversation conversationWithReceiverRemoved = new Conversation(
                 conversationDelete.getInstigator(),
-                null,
+                conversationDelete.getReceiver(),
                 conversationDelete.getMarketplaceCard());
         conversationWithReceiverRemoved.setId(3);
+        conversationWithReceiverRemoved.setDeletedByReceiver(true);
         given(marketplaceConversationRepository.findById(conversationWithReceiverRemoved.getId()))
                 .willReturn(Optional.ofNullable(conversationWithReceiverRemoved));
 
