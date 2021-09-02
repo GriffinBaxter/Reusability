@@ -2114,7 +2114,7 @@ paths:
       tags:
         - 'U28: Product search'
         - 'Catalogue / Products'
-      summary: 'Search for users by some criteria, for now: their name'
+      summary: "Search for a business's products by a given query in one of four possible fields. For example, by name or description."
       security:
         - CookieAuth:
             - user
