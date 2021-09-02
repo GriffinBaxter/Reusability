@@ -15,15 +15,14 @@ package org.seng302.view.outgoing;
  * Returned when new marketplace conversation is created.
  */
 public class MarketplaceConversationIdPayload {
-    // TODO Why is this a business ID?
-    private int businessId;
+    private int conversationId;
 
-    public MarketplaceConversationIdPayload(int businessId) {
-        this.businessId = businessId;
+    public MarketplaceConversationIdPayload(int conversationId) {
+        this.conversationId = conversationId;
     }
 
-    public int getBusinessId() {
-        return businessId;
+    public int getConversationId() {
+        return conversationId;
     }
 
     public MarketplaceConversationIdPayload() {
