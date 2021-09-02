@@ -456,6 +456,64 @@ public class ListingResource {
                 .body(listingPayloads);
     }
 
+    @GetMapping("/businesses/{businessId}/salesReport")
+    public ResponseEntity<List<SalesReportPayload>> retrieveSalesReport(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+            @RequestParam(defaultValue = "Total") String granularity
+    ) {
+        logger.debug(
+                "Business sales report request received with business ID {}, from date {}, " +
+                        "to date {}, granularity {}",
+                businessId, fromDate, toDate, granularity);
+
+        // 401 if not verified
+        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // 406 if business does not exist
+        Authorization.verifyBusinessExists(businessId, businessRepository);
+
+        // 403 if not a business admin nor a GAA
+        Authorization.verifyBusinessAdmin(user, businessId);
+
+        // 400 if granularity does not exist
+        List<SalesReportPayload> salesReportPayloads;
+        switch (granularity) {
+            case "Total":
+                List<SoldListing> soldListings = soldListingRepository.findAllByBusinessIdAndSaleDateBetween(
+                        businessId, fromDate, toDate
+                );
+                int totalSales = 0;
+                double totalRevenue = 0;
+                for (SoldListing soldListing : soldListings) {
+                    totalSales++;
+                    totalRevenue += soldListing.getPrice();
+                }
+                salesReportPayloads = List.of(new SalesReportPayload(null, totalSales, totalRevenue));
+                break;
+            case "Yearly":
+                throw new IllegalStateException("Yearly not yet implemented");
+            case "Monthly":
+                throw new IllegalStateException("Monthly not yet implemented");
+            case "Daily":
+                throw new IllegalStateException("Daily not yet implemented");
+            default:
+                logger.error("400 [BAD REQUEST] - Granularity type {} does not exist", granularity);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "There was some error with the data supplied."
+                );
+        }
+
+        logger.info(
+                "Sales Report Success - 200 [OK] - Sales Report retrieved for business ID {}, from date {}, " +
+                        "to date {}, granularity {}",
+                businessId, fromDate, toDate, granularity
+        );
+        return ResponseEntity.ok().body(salesReportPayloads);
+    }
+
     /**
      * Converts a list of Listings to a list of ListingPayloads.
      * @param listingList The given list of listings

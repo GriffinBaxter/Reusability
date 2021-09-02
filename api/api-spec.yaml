@@ -2100,6 +2100,8 @@ paths:
                       format: double
                       description: 'The currency value of sales within the set grandularity'
                       example: 69.69
+        '400':
+          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
