@@ -78,13 +78,13 @@
 					{
 						"key": "Content-Type",
 						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"productId\": \"NEW-T-P\",\n  \"quantity\": 4,\n  \"pricePerItem\": 6.5,\n  \"totalPrice\": 21.99,\n  \"manufactured\": \"2021-09-01\",\n  \"sellBy\": \"2021-09-01\",\n  \"bestBefore\": \"2021-09-01\",\n  \"expires\": \"2021-09-01\"\n}",
+					"raw": "{\n  \"productId\": \"NEW-T-P\",\n  \"quantity\": 4,\n  \"pricePerItem\": 6.5,\n  \"totalPrice\": 21.99,\n  \"manufactured\": \"2021-01-01\",\n  \"sellBy\": \"2023-09-01\",\n  \"bestBefore\": \"2023-09-01\",\n  \"expires\": \"2023-09-01\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
