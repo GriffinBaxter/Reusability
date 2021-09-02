@@ -33,10 +33,18 @@
                 </div>
               </div>
 
+              <hr>
+
               <!--user's nickname and bio-->
               <div class="mt-3">
                 <h4>{{ nickname }}</h4>
                 <div class="text-secondary">{{ bio }}</div>
+                <div id="edit-profile" style="padding-top: 10px" v-if="!otherUser">
+                  <hr>
+                  <button type="button" class="btn btn-md btn-outline-primary green-button">
+                    Edit Profile
+                  </button>
+                </div>
               </div>
 
             </div>
