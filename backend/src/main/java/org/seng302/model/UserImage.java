@@ -1,5 +1,7 @@
 package org.seng302.model;
 
+import org.seng302.model.enums.ImageType;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,12 +14,12 @@ public class UserImage extends Image {
     private int userId;
 
     public UserImage(Integer id, int userId, String filename, String thumbnailFilename, Boolean isPrimary) {
-        super(id, filename, thumbnailFilename, isPrimary);
+        super(id, filename, thumbnailFilename, isPrimary, ImageType.USER_IMAGE);
         this.userId = userId;
     }
 
     public UserImage(int userId, String filename, String thumbnailFilename, Boolean isPrimary) {
-        super(filename, thumbnailFilename, isPrimary);
+        super(filename, thumbnailFilename, isPrimary, ImageType.USER_IMAGE);
         this.userId = userId;
     }
 
