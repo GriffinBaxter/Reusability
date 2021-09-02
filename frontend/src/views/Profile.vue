@@ -26,6 +26,11 @@
               <!--user's profile image-->
               <div id="imageDiv">
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+                <div id="change-profile-picture-button" style="padding-top: 10px" v-if="!otherUser">
+                  <button type="button" class="btn btn-md btn-outline-primary green-button">
+                    Change Profile Picture
+                  </button>
+                </div>
               </div>
 
               <!--user's nickname and bio-->
