@@ -45,6 +45,7 @@ tags:
   - name: 'UCM7: Keyword search'
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
+  - name: 'U28: Product search'
   - name: 'U29: Browse/Search Sale Listings'
   - name: 'U30: Individual Full Sale Listing'
   - name: 'U31: Purchases'
@@ -2105,6 +2106,63 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an
           administrator of the business.'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
+  '/businesses/{businessId}/searchProducts':
+    get:
+      tags:
+        - 'U28: Product search'
+        - 'Catalogue / Products'
+      summary: 'Search for users by some criteria, for now: their name'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: businessId
+          in: path
+          description: 'The ID of the given business to search their product catalogue'
+          required: true
+          schema:
+            type: integer
+            example: 118
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+          required: true
+          description: "String to search products for. This string will be matched by the selected field to search in."
+        - in: query
+          name: searchBy
+          schema:
+            type: string
+          required: true
+          description: >-
+            The product field to search by.
+            Can be one of:
+
+            * productName: The name of the product
+
+            * productId: The ID of the product
+
+            * description: The description of the product
+
+            * manufacturer: The product's manufacturer
+      responses:
+        '200':
+          description: Request successful, a (possibly empty) list of products is returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
