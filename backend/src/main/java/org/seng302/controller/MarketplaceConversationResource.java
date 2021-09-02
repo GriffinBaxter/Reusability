@@ -215,13 +215,16 @@ public class MarketplaceConversationResource {
 
         Conversation currentConversation = optionalConversation.get();
 
-        // 403
-        if (currentConversation.getReceiver().getId() != currentUser.getId() && currentConversation.getInstigator().getId() != currentUser.getId()) {
-            logger.error("User does not have permission to perform action.");
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "The user does not have permission to perform the requested action"
-            );
+        // DGAA/GAAs can access any messages
+        if (!Authorization.isGAAorDGAA(currentUser)) {
+            // 403
+            if (currentConversation.getReceiver().getId() != currentUser.getId() && currentConversation.getInstigator().getId() != currentUser.getId()) {
+                logger.error("User does not have permission to perform action.");
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "The user does not have permission to perform the requested action"
+                );
+            }
         }
 
         List<Message> messageList = marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(conversationId);

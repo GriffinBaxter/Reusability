@@ -66,6 +66,8 @@ class MarketplaceConversationResourceIntegrationTests {
     private User instigator;
     private User receiver;
     private User anotherUser;
+    private User dgaa;
+    private User gaa;
 
     private MarketplaceCard marketplaceCard;
 
@@ -135,6 +137,40 @@ class MarketplaceConversationResourceIntegrationTests {
         );
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
+
+        dgaa = new User(
+                "Admin",
+                "Jacobs",
+                "A",
+                "admin",
+                "bio",
+                "admin@example.com",
+                LocalDate.of(2020, Month.JANUARY, 1).minusYears(13),
+                "1234567555",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN
+        );
+        dgaa.setId(4);
+        dgaa.setSessionUUID(User.generateSessionUUID());
+
+        gaa = new User(
+                "AnotherAdmin",
+                "Jacobs",
+                "A",
+                "secondAdmin",
+                "bio",
+                "admin2@example.com",
+                LocalDate.of(2020, Month.JANUARY, 1).minusYears(13),
+                "1234567555",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.GLOBALAPPLICATIONADMIN
+        );
+        gaa.setId(5);
+        gaa.setSessionUUID(User.generateSessionUUID());
 
         marketplaceCard = new MarketplaceCard(
                 instigator.getId(),
@@ -303,6 +339,50 @@ class MarketplaceConversationResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that an OK status and a list of messages are received when trying to retrieve messages from a conversation
+     * the user is not a part of when acting as a DGAA. (DGAAs can view all messages)
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void canRetrieveListOfMessagesWhenNotMyConversationWhileActingAsDGAA() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
+    }
+
+    /**
+     * Tests that an OK status and a list of messages are received when trying to retrieve messages from a conversation
+     * the user is not a part of when acting as a GAA. (GAAs can view all messages)
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void canRetrieveListOfMessagesWhenNotMyConversationWhileActingAsGAA() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(gaa.getSessionUUID())).willReturn(Optional.ofNullable(gaa));
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", gaa.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
     }
 
 }
