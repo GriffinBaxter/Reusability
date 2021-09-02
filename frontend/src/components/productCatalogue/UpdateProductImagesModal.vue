@@ -218,7 +218,8 @@ export default {
       let image = new FormData();
       image.append("images", file)
 
-      Api.uploadProductImage(this.$props.businessId, this.currentProduct.data.id, image)
+      Api.uploadProductImage("PRODUCT_IMAGE", "", this.$props.businessId,
+          this.currentProduct.data.id, image)
           .then(() => {
             location.reload();
           }).catch((error) => {
