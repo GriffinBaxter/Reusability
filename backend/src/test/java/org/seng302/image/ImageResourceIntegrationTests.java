@@ -233,7 +233,7 @@ class ImageResourceIntegrationTests {
         businessId = business.getId();
 
         primaryProductImage = new ProductImage(1, productId, businessId, "storage/test", "test/test", true);
-        primaryUserImage = new UserImage(3, userId, "storage/test", "test/test", true);
+        primaryUserImage = new UserImage(1, userId, "storage/test", "test/test", true);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly());
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository,
@@ -275,7 +275,7 @@ class ImageResourceIntegrationTests {
         // Then
         System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
     }
 
     /**
@@ -350,7 +350,7 @@ class ImageResourceIntegrationTests {
         // Then
         System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
     }
 
     /**
@@ -411,6 +411,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Required request part 'images' is not present");
     }
 
     /**
@@ -436,6 +437,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Required request part 'images' is not present");
     }
 
     /**
@@ -457,7 +459,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-
+        assertThat(response.getErrorMessage()).isEqualTo("Access token is missing or invalid");
     }
 
     /**
@@ -479,7 +481,7 @@ class ImageResourceIntegrationTests {
                 .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-
+        assertThat(response.getErrorMessage()).isEqualTo("Access token is missing or invalid");
     }
 
     /**
@@ -754,6 +756,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("User have no permission to do this.");
     }
 
     /**
@@ -890,6 +893,8 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo(
+                "The file type of the image uploaded is not supported. Only JPG, JPEG, PNG and GIF are supported.");
     }
 
 
