@@ -2150,6 +2150,44 @@ paths:
             * description: The description of the product
 
             * manufacturer: The product's manufacturer
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            Order the products by the given property, according to the following
+            rules:
+
+            * productIdASC: alphabetically by product id, A - Z
+
+            * productIdDESC: alphabetically by product id, Z - A
+
+            * nameASC: alphabetically by name, A - Z
+
+            * nameDESC: alphabetically by name, Z - A
+
+            * recommendedRetailPriceASC: the RRP from least to most
+
+            * recommendedRetailPriceDESC: the RRP from most to least
+
+            * manufacturerASC: alphabetically by manufacturer, A - Z
+
+            * manufacturerDESC: alphabetically by manufacturer, Z - A
+
+            * createdASC: created date from earliest to latest
+
+            * createdDESC: created date from latest to earliest
+
+            * barcodeASC: ordered by barcode, ascending
+
+            * barcodeDESC: ordered by barcode, descending
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: 'The page of products to display.'
       responses:
         '200':
           description: Request successful, a (possibly empty) list of products is returned
