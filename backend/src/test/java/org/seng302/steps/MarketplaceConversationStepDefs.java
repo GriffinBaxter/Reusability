@@ -8,11 +8,9 @@ import org.seng302.controller.ListingResource;
 import org.seng302.controller.MarketplaceConversationResource;
 import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalMarketplaceCardArgumentException;
+import org.seng302.exceptions.IllegalMessageContentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
-import org.seng302.model.Address;
-import org.seng302.model.Conversation;
-import org.seng302.model.MarketplaceCard;
-import org.seng302.model.User;
+import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
 import org.seng302.model.repository.*;
@@ -29,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +62,10 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
     private User receiver;
     private MarketplaceCard marketplaceCard;
     private Conversation conversation;
+    private Message message;
+    private Message message2;
+    private Message message3;
+    private ArrayList<Message> messageArrayList = new ArrayList<>();
 
     private MockHttpServletResponse response;
 
@@ -76,7 +79,7 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
     }
 
     @Given("There exists a conversation with instigator {string} with id {int}, recipient {string} with id {int}, and marketplace card with title {string}.")
-    public void thereExistsAConversationWithInstigatorWithIdRecipientWithIdAndMarketplaceCardWithTitle(String instigatorName, int instigatorId, String receiverName, int receiverId, String cardTitle) throws IllegalAddressArgumentException, IllegalUserArgumentException, IllegalMarketplaceCardArgumentException {
+    public void thereExistsAConversationWithInstigatorWithIdRecipientWithIdAndMarketplaceCardWithTitle(String instigatorName, int instigatorId, String receiverName, int receiverId, String cardTitle) throws IllegalAddressArgumentException, IllegalUserArgumentException, IllegalMarketplaceCardArgumentException, IllegalMessageContentException {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -135,6 +138,8 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
         marketplaceCard.setId(1);
 
         conversation = new Conversation(instigator, receiver, marketplaceCard);
+        message = new Message(conversation, instigator, "Initial Message");
+        message2 = new Message(conversation, receiver, "First reply");
     }
 
     @When("The recipient with id {int} tries to retrieve their conversations.")
@@ -155,6 +160,50 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
         assertThat(conversation.toConversationPayload().getInstigatorName()).isEqualTo(instigatorName);
         assertThat(conversation.toConversationPayload().getReceiverName()).isEqualTo(receiverName);
         assertThat(conversation.toConversationPayload().getMarketplaceCardTitle()).isEqualTo(cardTitle);
+    }
+
+    @When("The recipient with id {int} tries to retrieve the messages in their conversation.")
+    public void the_recipient_with_id_tries_to_retrieve_the_messages_in_their_conversation(Integer recipientId) throws Exception {
+        given(userRepository.findBySessionUUID(receiver.getSessionUUID())).willReturn(Optional.ofNullable(receiver));
+
+        when(marketplaceConversationRepository.findConversationById(conversation.getId())).thenReturn(Optional.of(conversation));
+        messageArrayList.add(message2);
+        messageArrayList.add(message);
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(conversation.getId())).thenReturn(messageArrayList);
+
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", receiver.getSessionUUID()))).andReturn().getResponse();
+    }
+
+    @When("The recipient replies to the conversation with the message {string}")
+    public void the_recipient_replies_to_the_conversation_with_the_message(String message) throws IllegalMessageContentException {
+        message3 = new Message(conversation, receiver, message);
+        messageArrayList.add(message3);
+    }
+
+    @Then("A 200 response is received containing an ordered list of full messages.")
+    public void a_response_is_received_containing_an_ordered_list_of_full_messages() throws UnsupportedEncodingException {
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        StringBuilder responseInnerJSON = new StringBuilder();
+        for (Message message : messageArrayList) {
+            responseInnerJSON.append(message.toMessagePayload().toString()).append(",");
+        }
+        // Remove trailing comma
+        responseInnerJSON = new StringBuilder(responseInnerJSON.substring(0, responseInnerJSON.length() - 1));
+        assertThat(response.getContentAsString()).isEqualTo("[" + responseInnerJSON + "]");
+    }
+
+    @Then("A 200 response is received containing the message {string}")
+    public void a_response_is_received_containing_the_message(String messageString) throws UnsupportedEncodingException {
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        StringBuilder responseInnerJSON = new StringBuilder();
+        for (Message message : messageArrayList) {
+            responseInnerJSON.append(message.toMessagePayload().toString()).append(",");
+        }
+        // Remove trailing comma
+        responseInnerJSON = new StringBuilder(responseInnerJSON.substring(0, responseInnerJSON.length() - 1));
+        assertThat(response.getContentAsString()).isEqualTo("[" + responseInnerJSON + "]");
+        assertThat(response.getContentAsString()).contains(messageString);
     }
 
 }
