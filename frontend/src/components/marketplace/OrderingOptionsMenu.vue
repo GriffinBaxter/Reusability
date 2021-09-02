@@ -53,7 +53,7 @@
 
     <!--------------------------------------- create card button ------------------------------------------------------>
     <div class="btn-group me-2" role="group" aria-label="Second group" style="margin-top: 6px">
-      <CreateCardModal @new-card-created="(e) => $emit('new-card-created', e)"></CreateCardModal>
+      <CreateCardModal @new-card-created="(e) => $emit('new-card-created', e)" v-bind:type="type"></CreateCardModal>
     </div>
   </div>
 
@@ -74,6 +74,12 @@ export default {
       orderDirectionOption: "Select Direction",  // default
       orderBy: this.$route.query["orderBy"] || "dateDESC" // gets orderBy from URL or (if not there) sets to default
     }
+  },
+  props: {
+    type: {
+      type: String,
+      required: true
+    },
   },
   methods: {
 

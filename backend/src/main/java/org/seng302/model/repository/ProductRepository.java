@@ -23,7 +23,7 @@ import java.util.Optional;
  * ProductRepository interface
  */
 @RepositoryRestResource
-public interface ProductRepository extends JpaRepository<Product, String> {
+public interface ProductRepository extends JpaRepository<Product, String>, ProductRepositoryCustom {
 
     /**
      * Finds any products with the given business ID.

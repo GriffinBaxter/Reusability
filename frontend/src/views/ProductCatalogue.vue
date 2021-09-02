@@ -17,13 +17,15 @@
             </div>
           </div>
 
-          <div class="row mb-3">
+          <div class="row">
             <div class="col">
               <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end" tabindex="0"
                       @click="showCreateProductModal()">Create Product
               </button>
             </div>
           </div>
+
+          <ProductSearchBar/>
 
           <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0"
                  :table-headers="tableHeaders" :table-data="tableData"
@@ -248,10 +250,12 @@ import UpdateProductImagesModal from "../components/productCatalogue/UpdateProdu
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
+import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
 
 export default {
   name: "ProductCatalogue",
   components: {
+    ProductSearchBar,
     UpdateProductModal,
     UpdateProductImagesModal,
     Table,
