@@ -41,7 +41,7 @@
                 <div class="text-secondary">{{ bio }}</div>
                 <div id="edit-profile" style="padding-top: 10px" v-if="!otherUser">
                   <hr>
-                  <button type="button" class="btn btn-md btn-outline-primary green-button">
+                  <button type="button" class="btn btn-md btn-outline-primary green-button" @click="goToEdit()">
                     Edit Profile
                   </button>
                 </div>
@@ -749,6 +749,13 @@ export default {
           (this.actingBusinessId && this.otherUser) ||
           (this.isValidRole(this.role) && this.otherUser && !this.isDGAA(this.role)) ||
           (!this.otherUser);
+    },
+    /**
+     * Takes the user to the edit profile page
+     */
+    goToEdit() {
+      const id = this.urlID
+      this.$router.push({name:"EditProfile", params: {id}})
     }
   },
 
