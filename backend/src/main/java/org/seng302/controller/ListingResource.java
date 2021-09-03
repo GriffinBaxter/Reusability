@@ -42,6 +42,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
 
@@ -492,13 +493,27 @@ public class ListingResource {
         // 403 if not a business admin nor a GAA
         Authorization.verifyBusinessAdmin(user, businessId);
 
+        LocalDateTime startOf2021 = LocalDateTime.of(2021, Month.JANUARY, 1, 0, 0);
+        if (fromDate.isBefore(startOf2021)) {
+            fromDate = startOf2021;
+        }
+        if (toDate.isAfter(LocalDateTime.now())) {
+            toDate = LocalDateTime.now();
+        }
+
         // 400 if "from date" is after "to date"
         if (fromDate.isAfter(toDate)) {
-            logger.error("400 [BAD REQUEST] - \"From date\" is after \"to date\"");
+            logger.error(
+                    "400 [BAD REQUEST] - \"From date\" is after \"to date\" or " +
+                            "\"to date\" is before 2021 (before the year that the app was first deployed)"
+            );
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "There was some error with the data supplied."
             );
         }
+
+        // Set "to date" to the end of the day
+        toDate = toDate.with(LocalTime.MAX);
 
         // 400 if granularity does not exist
         ArrayList<SalesReportPayload> salesReportPayloads = new ArrayList<>();

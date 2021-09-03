@@ -2053,14 +2053,16 @@ paths:
             example: 118
         - name: fromDate
           in: query
-          description: 'The date the sales report should be from'
+          description: 'The date the sales report should be from. Will be set to the start of 2021 if before 2021 
+          (the year that the app was first deployed), must be before or at the "to date".'
           required: true
           schema:
             type: string
             format: date-time
         - name: toDate
           in: query
-          description: 'The date the sales report should be to'
+          description: 'The date the sales report should be to. Will be set to the current date if in the future, 
+          must be at or after the start of 2021 (the year that the app was first deployed).'
           required: true
           schema:
             type: string
