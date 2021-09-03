@@ -13,7 +13,20 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/1/messages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								"1",
+								"messages"
+							]
+						}
 					},
 					"response": []
 				}
@@ -108,7 +121,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"senderId\": 1,\r\n  \"receiverId\": 2,\r\n  \"marketplaceCardId\": 23,\r\n  \"content\": \"Hi, I am interested in exchanging some apples for some pears.\",\r\n  \"created\": \"2021-10-15T05:10:00Z\"\r\n}",
+							"raw": "{\r\n  \"senderId\": 2,\r\n  \"receiverId\": 1,\r\n  \"marketplaceCardId\": 23,\r\n  \"content\": \"Hi, this is a reply :)\",\r\n  \"created\": \"2021-10-15T05:10:00Z\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -116,7 +129,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:9499/home/conversation",
+							"raw": "http://localhost:9499/home/conversation/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -124,7 +137,8 @@
 							"port": "9499",
 							"path": [
 								"home",
-								"conversation"
+								"conversation",
+								"1"
 							]
 						}
 					},
@@ -162,7 +176,20 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": "http://localhost:9499/home/conversation/999/messages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"home",
+								"conversation",
+								"999",
+								"messages"
+							]
+						}
 					},
 					"response": []
 				}
@@ -178,7 +205,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"emailUSER@email.com\",\r\n  \"password\": \"Password123!\"\r\n}",
+							"raw": "{\r\n  \"email\": \"francisca.benitez@example.com\",\r\n  \"password\": \"Password123!\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -205,7 +232,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:9499/home/conversation/999/messages",
+							"raw": "http://localhost:9499/home/conversation/1/messages",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -214,7 +241,7 @@
 							"path": [
 								"home",
 								"conversation",
-								"999",
+								"1",
 								"messages"
 							]
 						}
