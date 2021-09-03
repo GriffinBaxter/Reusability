@@ -43,7 +43,7 @@ public class ImageResource {
     private ProductRepository productRepository;
 
     @Autowired
-    private ImageRepository imageRepository;
+    private ProductImageRepository productImageRepository;
 
     @Autowired
     private UserImageRepository userImageRepository;
@@ -58,12 +58,12 @@ public class ImageResource {
     }
 
     public ImageResource(BusinessRepository businessRepository, UserRepository userRepository,
-                         ProductRepository productRepository, ImageRepository imageRepository,
+                         ProductRepository productRepository, ProductImageRepository productImageRepository,
                          UserImageRepository userImageRepository, FileStorageService fileStorageService) {
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
-        this.imageRepository = imageRepository;
+        this.productImageRepository = productImageRepository;
         this.userImageRepository = userImageRepository;
         this.fileStorageService = fileStorageService;
     }
@@ -190,7 +190,7 @@ public class ImageResource {
 
                 imageType = ImageType.PRODUCT_IMAGE;
                 imageOwnerInfo = String.format("for business (id: %s), product (id: %s)", businessId, productId);
-                allProductImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+                allProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
                 break;
             default:
                 logger.error("Given image type {} invalid", unCheckImageType);
@@ -215,7 +215,7 @@ public class ImageResource {
             //TODO:
         } else {
             boolean isFirstImage = allProductImages.isEmpty();
-            ProductImage storedProductImage = imageRepository.saveAndFlush(
+            ProductImage storedProductImage = productImageRepository.saveAndFlush(
                     new ProductImage(productId, businessId, imageFilePath, thumbnailFilePath, isFirstImage));
             storedImageId = storedProductImage.getId();
             storedImageFileName = storedProductImage.getFilename();
@@ -263,8 +263,8 @@ public class ImageResource {
         }
 
         // Delete from database
-        imageRepository.deleteByIdAndBusinessIdAndProductId(imageId, businessId, productId);
-        imageRepository.flush();
+        productImageRepository.deleteByIdAndBusinessIdAndProductId(imageId, businessId, productId);
+        productImageRepository.flush();
         // Check if primary image and update primary image if it is
         updatePrimaryImage(businessId, productId);
     }
@@ -294,7 +294,7 @@ public class ImageResource {
         ProductImage productImage = verifyImageId(imageId, businessId, productId, user);
 
         // Set existing primary image to non-primary
-        List<ProductImage> primaryProductImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+        List<ProductImage> primaryProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
         for (ProductImage primaryProductImage : primaryProductImages) {
             primaryProductImage.setIsPrimary(false);
         }
@@ -303,7 +303,7 @@ public class ImageResource {
         productImage.setIsPrimary(true);
 
         // Save the image in the repository
-        imageRepository.save(productImage);
+        productImageRepository.save(productImage);
     }
 
     /**
@@ -425,7 +425,7 @@ public class ImageResource {
                                        String productId,
                                        User user)
             throws ResponseStatusException {
-        Optional<ProductImage> image = imageRepository.findImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
+        Optional<ProductImage> image = productImageRepository.findProductImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
 
         if (image.isEmpty()) {
             String errorMessage =
@@ -451,13 +451,13 @@ public class ImageResource {
      * @param productId
      */
     private void updatePrimaryImage(Integer businessId, String productId) {
-        List<ProductImage> primaryProductImages = imageRepository
-                .findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+        List<ProductImage> primaryProductImages = productImageRepository
+                .findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
         if (primaryProductImages.isEmpty()) {
-            List<ProductImage> productImages = imageRepository.findImageByBusinessIdAndProductId(businessId, productId);
+            List<ProductImage> productImages = productImageRepository.findProductImageByBusinessIdAndProductId(businessId, productId);
             if (!productImages.isEmpty()) {
                 productImages.get(0).setIsPrimary(true);
-                imageRepository.save(productImages.get(0));
+                productImageRepository.save(productImages.get(0));
             }
         }
     }
