@@ -17,7 +17,6 @@ import org.seng302.exceptions.IllegalProductArgumentException;
 import org.seng302.model.*;
 import org.seng302.Authorization;
 import org.seng302.model.User;
-import org.seng302.model.enums.BusinessType;
 import org.seng302.model.repository.*;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
@@ -35,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
