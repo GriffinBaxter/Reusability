@@ -63,7 +63,7 @@ export default {
     enterPressed(event) {
       if (event.keyCode === 13) {
         // Enter pressed
-        this.searchClicked()
+        this.searchClicked();
       }
     },
     /**
@@ -71,8 +71,8 @@ export default {
      */
     searchClicked() {
       const checked = this.getSelectedCheckbox();
-      const query = this.$refs.searchInput.value;
-      this.$emit('search', checked, query);
+      const searchQuery = this.$refs.searchInput.value;
+      this.$emit('search', checked, searchQuery);
     }
   }
 }

@@ -285,7 +285,7 @@ export default {
       totalRows: 0,
       loadingProducts: false,
       // The query to search for.
-      query: "",
+      searchQuery: "",
       // The attributes to search by stored as a list.
       searchBy: ["productName"],
       // The attributes to search by in the required url format.
@@ -484,7 +484,7 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"query": this.query, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       })
       this.requestProducts();
     },
@@ -532,7 +532,7 @@ export default {
     async requestProducts() {
       // Getting all the information necessary from the route update (params and query).
       this.businessId = parseInt(this.$route.params.id);
-      this.query = this.$route.query["query"] || "";
+      this.searchQuery = this.$route.query["searchQuery"] || "";
       this.searchBy = this.convertSearchByStringToList();
       this.convertSearchByListToString(); // update the searchByString
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
@@ -540,7 +540,7 @@ export default {
       this.loadingProducts = true;
 
       // Perform the call to sort the products and get them back.
-      await Api.searchProducts(this.businessId, this.query, this.searchByString, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.orderByString, this.currentPage).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
@@ -601,7 +601,7 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"query": this.query, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestProducts();
     },
@@ -961,13 +961,13 @@ export default {
         return undefined;
       });
     },
-    onSearch (checked, query) {
+    onSearch (checked, searchQuery) {
       this.searchBy = checked;
-      this.query = query;
+      this.searchQuery = searchQuery;
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"query": this.query, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestProducts();
     }
