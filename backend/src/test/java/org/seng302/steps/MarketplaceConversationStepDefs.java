@@ -186,7 +186,8 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
 
     @Given("I have not contacted this user about this card with id {int} before")
     public void i_have_not_contacted_this_user_about_this_card_with_id_before(Integer marketplaceCardId) {
-        given(marketplaceConversationRepository.findConversationByMarketplaceCardId(marketplaceCardId)).willReturn(Optional.empty());
+        given(marketplaceConversationRepository.findById(marketplaceCardId)).willReturn(Optional.empty());
+        given(marketplaceConversationRepository.findById(marketplaceCardId)).willReturn(Optional.empty());
     }
 
     @When("I send a message with the content of {string} about this marketplace card with id {int}")
@@ -223,13 +224,12 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
 
     @Then("A conversation which contains this message is created")
     public void A_conversation_which_contains_this_message_is_created() {
-        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @Given("I have contacted this user about this card before in the conversation with id {int}")
     public void i_have_contacted_this_user_about_this_card_before_in_the_conversation_with_id(Integer marketplaceCardId) {
-        given(marketplaceConversationRepository.findConversationByMarketplaceCardId(marketplaceCardId)).willReturn(Optional.empty());
+        given(marketplaceConversationRepository.findById(marketplaceCardId)).willReturn(Optional.empty());
     }
 
     @When("I send a message with the content of {string} about this marketplace card with id {int} in the existing conversation with id {int}")

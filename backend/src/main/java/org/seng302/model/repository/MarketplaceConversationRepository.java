@@ -29,12 +29,4 @@ public interface MarketplaceConversationRepository extends JpaRepository<Convers
             Integer conversationId
     );
 
-    /**
-     * Search to see if a conversation associated with a given marketplace card exists.
-     * @param marketplaceCardId the id of the marketplace card to search for.
-     * @return conversation object if exists
-     */
-    Optional<Conversation> findConversationByMarketplaceCardId(
-            Integer marketplaceCardId
-    );
 }
