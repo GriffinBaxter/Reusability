@@ -286,6 +286,13 @@ class ListingRepositoryIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)),
                 LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
 
+        Listing listing1Dup = new Listing(inventoryItem1,
+                5,
+                12.0,
+                "",
+                LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+
         listing2 = new Listing(inventoryItem2,
                 4,
                 1.2,
@@ -321,7 +328,7 @@ class ListingRepositoryIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)),
                 LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
 
-        listings = List.of(listing1, listing2, listing3, listing4, listing5, listing6);
+        listings = List.of(listing1, listing1Dup, listing2, listing3, listing4, listing5, listing6);
         for (Listing listing : listings) {
             entityManager.persist(listing);
         }
@@ -349,11 +356,13 @@ class ListingRepositoryIntegrationTests {
         orderedQuantities.add(3);
         orderedQuantities.add(4);
         orderedQuantities.add(5);
+        orderedQuantities.add(5);
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("PROD");
         orderedProdIds.add("DUCT");
         orderedProdIds.add("APP-LE3");
         orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
 
         // when
@@ -381,11 +390,13 @@ class ListingRepositoryIntegrationTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<Integer> orderedQuantities = new ArrayList<>();
         orderedQuantities.add(5);
+        orderedQuantities.add(5);
         orderedQuantities.add(4);
         orderedQuantities.add(3);
         orderedQuantities.add(2);
         orderedQuantities.add(1);
         ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("APP-LE");
         orderedProdIds.add("APP-LE3");
@@ -420,11 +431,13 @@ class ListingRepositoryIntegrationTests {
         orderedPrices.add(1.5);
         orderedPrices.add(11.2);
         orderedPrices.add(12.0);
+        orderedPrices.add(12.0);
         orderedPrices.add(15.2);
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("APP-LE");
         orderedProdIds.add("APP-LE3");
         orderedProdIds.add("DUCT");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("PROD");
 
@@ -454,11 +467,13 @@ class ListingRepositoryIntegrationTests {
         ArrayList<Double> orderedPrices = new ArrayList<>();
         orderedPrices.add(15.2);
         orderedPrices.add(12.0);
+        orderedPrices.add(12.0);
         orderedPrices.add(11.2);
         orderedPrices.add(1.5);
         orderedPrices.add(1.2);
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("DUCT");
         orderedProdIds.add("APP-LE3");
@@ -490,11 +505,13 @@ class ListingRepositoryIntegrationTests {
         ArrayList<LocalDateTime> orderedPrices = new ArrayList<>();
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 3, 1), LocalTime.of(0,0,0)));
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("APP-LE");
         orderedProdIds.add("DUCT");
@@ -529,11 +546,13 @@ class ListingRepositoryIntegrationTests {
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)));
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("APP-LE3");
         orderedProdIds.add("DUCT");
         orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("PROD");
 
@@ -565,11 +584,13 @@ class ListingRepositoryIntegrationTests {
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 3, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 4, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("DUCT");
         orderedProdIds.add("APP-LE3");
         orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("PROD");
 
@@ -599,11 +620,13 @@ class ListingRepositoryIntegrationTests {
         ArrayList<LocalDateTime> orderedPrices = new ArrayList<>();
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 4, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 3, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 12, 1), LocalTime.of(0,0,0)));
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("APP-LE");
         orderedProdIds.add("APP-LE3");
@@ -630,15 +653,15 @@ class ListingRepositoryIntegrationTests {
         // given
         int pageNo = 0;
         // Page size 20 means page will be half full with the default 13 users inserted
-        int pageSize = 10;
+        int pageSize = 12;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
         Page<Listing> listingPage = listingRepository.findListingsByBusinessId(businessId, pageable);
 
         // then
-        assertThat(listingPage.getTotalElements()).isEqualTo(5);
-        for (int i = 0; i < listings.size(); i++) {
+        assertThat(listingPage.getTotalElements()).isEqualTo(6);
+        for (int i = 0; i < listingPage.getContent().size(); i++) {
             assertThat(listingPage.getContent().get(i)).isEqualTo(listings.get(i));
         }
     }
@@ -677,13 +700,15 @@ class ListingRepositoryIntegrationTests {
         Page<Listing> listingPage3 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(2, pageSize, sortBy));
         Page<Listing> listingPage4 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(3, pageSize, sortBy));
         Page<Listing> listingPage5 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(4, pageSize, sortBy));
+        Page<Listing> listingPage6 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(5, pageSize, sortBy));
 
         // then
-        assertThat(listingPage2.getTotalPages()).isEqualTo(5);
+        assertThat(listingPage2.getTotalPages()).isEqualTo(6);
         assertThat(listingPage2.getContent().get(0)).isEqualTo(listings.get(1));
         assertThat(listingPage3.getContent().get(0)).isEqualTo(listings.get(2));
         assertThat(listingPage4.getContent().get(0)).isEqualTo(listings.get(3));
         assertThat(listingPage5.getContent().get(0)).isEqualTo(listings.get(4));
+        assertThat(listingPage6.getContent().get(0)).isEqualTo(listings.get(5));
     }
 
     /**
@@ -728,8 +753,8 @@ class ListingRepositoryIntegrationTests {
         // then
         assertThat(listingPage.getTotalPages()).isEqualTo(3);
         assertThat(listingPage.getSize()).isEqualTo(2);
-        assertThat(listingPage.getContent().get(0).getInventoryItem().getProductId()).isEqualTo("APP-LE3");
-        assertThat(listingPage.getContent().get(1).getInventoryItem().getProductId()).isEqualTo("DUCT");
+        assertThat(listingPage.getContent().get(0).getInventoryItem().getProductId()).isEqualTo("APP-LE");
+        assertThat(listingPage.getContent().get(1).getInventoryItem().getProductId()).isEqualTo("APP-LE3");
     }
 
     // ---------------------------------------- findListingsByBusinessIdAndId ----------------------------------------
@@ -791,7 +816,6 @@ class ListingRepositoryIntegrationTests {
 
         // when
         Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, pageable);
-//        Page<Listing> listingPage = listingRepository.findListingsByBusinessIdAndInventoryItem(business.getId(), inventoryItem1, pageable);
 
         // then
         assertThat(listingPage.getContent().size()).isEqualTo(1);
@@ -808,10 +832,48 @@ class ListingRepositoryIntegrationTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(businessId, barcode, pageable);
+        Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, pageable);
 
         // then
         assertThat(listingPage.getContent().size()).isZero();
+    }
+
+    @Test
+    void whenFindListingsByBusinessIdAndInventoryItem_Product_Barcode_withValidBarcode_ReturnMultipleListings() {
+        // given
+        String barcode = "9300675024235";
+        int pageNo = 0;
+        int pageSize = 2;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, pageable);
+
+        // then
+        assertThat(listingPage.getContent().size()).isGreaterThan(1);
+        for (int i = 0; i < listingPage.getContent().size(); i++) {
+            assertThat(listingPage.getContent().get(i).getInventoryItem().getProduct().getProductId()).isEqualTo("APPLE");
+        }
+    }
+
+    @Test
+    void whenFindListingsByBusinessIdAndInventoryItem_Product_Barcode_withValidBarcodeForTwoBusinesses_ReturnBusinessListing() {
+        // given
+        String barcode = "9415767624207";
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, pageable);
+
+        // then
+        assertThat(listingPage.getContent().size()).isNotZero();
+        for (int i = 0; i < listingPage.getContent().size(); i++) {
+            assertThat(listingPage.getContent().get(i).getInventoryItem().getProduct().getProductId()).isEqualTo("APP-LE3");
+        }
     }
 }
 
