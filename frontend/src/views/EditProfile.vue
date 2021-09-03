@@ -514,10 +514,7 @@ export default {
      * @param e, the current event.
      */
     editUser(e) {
-      // Steps required for the function before starting processing.
       e.preventDefault()  // prevents page from reloading
-      this.trimTextInputFields()
-
 
     },
 

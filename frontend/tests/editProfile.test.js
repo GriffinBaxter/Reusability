@@ -1,17 +1,12 @@
 import {test, expect, describe, jest} from "@jest/globals";
 import Api from "../src/Api";
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import Cookies from "js-cookie";
 import EditProfile from "../src/views/EditProfile";
-import VueLogger from "vuejs-logger";
-import VueRouter from "vue-router";
 
 jest.mock("../src/Api");
 jest.mock("js-cookie");
 
-const localVue = createLocalVue();
-localVue.use(VueLogger, {isEnabled : false});
-localVue.use(VueRouter);
 
 /**
  * Jest tests for editProfile.vue
