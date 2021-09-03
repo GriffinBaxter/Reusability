@@ -40,4 +40,13 @@ public interface ListingRepository extends JpaRepository<Listing, Integer>, List
      * @return A listing with the given ID if it exists.
      */
      Optional<Listing> findListingByBusinessIdAndId(Integer businessId, Integer listingId);
+
+    /**
+     * Finds all listings for a business with a certain product barcode.
+     * @param businessId A business ID.
+     * @param barcode Product barcode number.
+     * @param paging Pageable Object for sorting & paging.
+     * @return A page of listings.
+     */
+     Page<Listing> findListingsByBusinessIdAndInventoryItem_Product_Barcode(Integer businessId, String barcode, Pageable paging);
 }
