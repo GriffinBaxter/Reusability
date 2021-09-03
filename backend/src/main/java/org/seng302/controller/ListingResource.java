@@ -124,7 +124,7 @@ public class ListingResource {
                                                                  @PathVariable Integer id,
                                                                  @RequestParam(defaultValue = "closesASC") String orderBy,
                                                                  @RequestParam(defaultValue = "0") String page,
-                                                                 @RequestParam String barcode) throws Exception {
+                                                                 @RequestParam(required = false) String barcode) throws Exception {
 
         logger.debug("Business listings retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
@@ -181,7 +181,7 @@ public class ListingResource {
         Page<Listing> pagedResult;
 
         if (barcode != null) {
-            pagedResult = listingRepository.findListingsByBusinessIdAndInventoryItem_Product_Barcode(id, barcode, paging);
+            pagedResult = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(id, barcode, paging);
         } else {
             pagedResult = listingRepository.findListingsByBusinessId(id, paging);
         }
