@@ -25,7 +25,7 @@
             </div>
           </div>
 
-          <ProductSearchBar/>
+          <ProductSearchBar v-on:search="onSearch"/>
 
           <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0"
                  :table-headers="tableHeaders" :table-data="tableData"
@@ -116,10 +116,10 @@
                   </div>
                   <!--recommended retail price-->
                   <div class="form-group">
-                    <label for="product-price" v-if="currencyCode != ''">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-if="currencyCode !== ''">Recommended Retail Price ({{ currencyCode }})</label>
                     <label for="product-price" v-else>Recommended Retail Price</label>
                     <div class="input-group">
-                      <div class="input-group-prepend" v-if="currencySymbol != ''">
+                      <div class="input-group-prepend" v-if="currencySymbol !== ''">
                         <span class="input-group-text">{{ currencySymbol }}</span>
                       </div>
                       <input id="product-price" class="input-styling" name="product-price" type="text"
@@ -284,6 +284,12 @@ export default {
       currentPage: 0,
       totalRows: 0,
       loadingProducts: false,
+      // The query to search for.
+      query: "",
+      // The attributes to search by stored as a list.
+      searchBy: ["productName"],
+      // The attributes to search by in the required url format.
+      searchByString: "",
 
 
       // Product modal variables
@@ -360,6 +366,30 @@ export default {
     }
   },
   methods: {
+    /**
+     * This method get the list of attributes of a product that are to be searched for and
+     * converts them to a string which can be used in the url.
+     */
+    convertSearchByListToString() {
+      let searchByString = "";
+      for (let i = 0; i < this.searchBy.length; i++) {
+        if (i === 0) {
+          searchByString += this.searchBy[i];
+        } else {
+          searchByString = searchByString + "&searchBy=" + this.searchBy[i];
+        }
+      }
+      this.searchByString = searchByString;
+    },
+    /**
+     * This method converts the route query for searchBy to a list.
+     * @return list of searchBy attributes.
+     */
+    convertSearchByStringToList() {
+      let searchByString = this.$route.query["searchBy"];
+      if (searchByString) { return searchByString.split("&"); }
+      return ["productName"]; // if searchBy does not exist in route query then return the default.
+    },
     /**
      * set link business accounts
      */
@@ -451,9 +481,10 @@ export default {
      */
     updatePage(event) {
       this.currentPage = event.newPageNumber;
+      this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"query": this.query, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       })
       this.requestProducts();
     },
@@ -499,15 +530,17 @@ export default {
      * @return {Promise}
      */
     async requestProducts() {
-
       // Getting all the information necessary from the route update (params and query).
       this.businessId = parseInt(this.$route.params.id);
+      this.query = this.$route.query["query"] || "";
+      this.searchBy = this.convertSearchByStringToList();
+      this.convertSearchByListToString(); // update the searchByString
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
       this.loadingProducts = true;
 
       // Perform the call to sort the products and get them back.
-      await Api.sortProducts(this.businessId, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.query, this.searchByString, this.orderByString, this.currentPage).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
@@ -564,10 +597,11 @@ export default {
      * @param event This contains the {orderBy, isAscending} components of the new desired ordering.
      */
     orderProducts(event) {
-      this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
+      this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`;
+      this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"query": this.query, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestProducts();
     },
@@ -770,7 +804,6 @@ export default {
               this.toastErrorMessage = "";
               this.cannotProceed = false;
 
-
               this.userAlertMessage = this.addedMessage;
               this.closeCreateProductModal();
               this.afterCreation();
@@ -927,6 +960,16 @@ export default {
       autofillProductFromBarcode(this, function () {
         return undefined;
       });
+    },
+    onSearch (checked, query) {
+      this.searchBy = checked;
+      this.query = query;
+      this.convertSearchByListToString(); // update the searchByString
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/productCatalogue`,
+        query: {"query": this.query, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+      });
+      this.requestProducts();
     }
   },
 
@@ -957,7 +1000,7 @@ export default {
             (e) => console.log(e)
         )
       } else {
-        this.$router.push({name: 'Login'});
+        await  this.$router.push({name: 'Login'});
       }
     }
 

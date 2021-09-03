@@ -2,22 +2,22 @@
   <div style="margin-bottom: 20px">
     <div class="form-check form-check-inline">
       <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-product-name"
-             value="PRODUCT_NAME" checked>
+             value="productName" checked>
       <label class="form-check-label" for="checkbox-product-name">Product Name</label>
     </div>
     <div class="form-check form-check-inline">
       <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-product-id"
-             value="PRODUCT_ID">
+             value="productId">
       <label class="form-check-label" for="checkbox-product-id">Product ID</label>
     </div>
     <div class="form-check form-check-inline">
       <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-manufacturer"
-             value="MANUFACTURER">
+             value="manufacturer">
       <label class="form-check-label" for="checkbox-manufacturer">Manufacturer</label>
     </div>
     <div class="form-check form-check-inline">
       <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-description"
-             value="DESCRIPTION">
+             value="description">
       <label class="form-check-label" for="checkbox-description">Description</label>
     </div>
 
@@ -53,7 +53,7 @@ export default {
       }
       if (value.length === 0){
         document.getElementById("checkbox-product-name").click();
-        value.push("PRODUCT_NAME");
+        value.push("productName");
       }
       return value
     },
@@ -70,10 +70,9 @@ export default {
      * Search button is clicked and query/filters for product search are executed.
      */
     searchClicked() {
-      // TODO: call search api
-      this.getSelectedCheckbox()
-      const searchQuery = this.$refs.searchInput.value;
-      console.log(searchQuery)
+      const checked = this.getSelectedCheckbox();
+      const query = this.$refs.searchInput.value;
+      this.$emit('search', checked, query);
     }
   }
 }
