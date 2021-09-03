@@ -117,6 +117,7 @@ public class ListingResource {
      * @param id business ID
      * @param orderBy ordering of results
      * @param page page number
+     * @param barcode Barcode number (Optional)
      * @return Listings for business
      */
     @GetMapping("/businesses/{id}/listings")
