@@ -803,10 +803,13 @@ class ListingRepositoryIntegrationTests {
 
     }
 
-    // ---------------------------------------- findListingsByBusinessIdAndInventoryItem_Product_Barcode ----------------------------------------
+    // ---------------------------------------- findByBusinessIdAndInventoryItemProductBarcode ----------------------------------------
 
+    /**
+     * Tests the findByBusinessIdAndInventoryItemProductBarcode method returns the correct Listing
+     */
     @Test
-    void whenFindListingsByBusinessIdAndInventoryItem_Product_Barcode_withValidBarcode_ReturnListing() {
+    void whenFindByBusinessIdAndInventoryItemProductBarcode_withValidBarcode_ReturnListing() {
         // given
         String barcode = "9310140001531";
         int pageNo = 0;
@@ -822,8 +825,11 @@ class ListingRepositoryIntegrationTests {
         assertThat(listingPage.getContent().get(0).getInventoryItem().getProductId()).isEqualTo("PROD");
     }
 
+    /**
+     * Tests the findByBusinessIdAndInventoryItemProductBarcode method returns an empty list if barcode doesn't exist
+     */
     @Test
-    void whenFindListingsByBusinessIdAndInventoryItem_Product_Barcode_withInvalidBarcode_ReturnNoListing() {
+    void whenFindByBusinessIdAndInventoryItemProductBarcode_withInvalidBarcode_ReturnNoListing() {
         // given
         String barcode = "111111111111111";
         int pageNo = 1;
@@ -838,8 +844,11 @@ class ListingRepositoryIntegrationTests {
         assertThat(listingPage.getContent().size()).isZero();
     }
 
+    /**
+     * Tests findByBusinessIdAndInventoryItemProductBarcode method returns all listings with the requested barcode
+     */
     @Test
-    void whenFindListingsByBusinessIdAndInventoryItem_Product_Barcode_withValidBarcode_ReturnMultipleListings() {
+    void whenFindByBusinessIdAndInventoryItemProductBarcode_withValidBarcode_ReturnMultipleListings() {
         // given
         String barcode = "9300675024235";
         int pageNo = 0;
@@ -857,8 +866,11 @@ class ListingRepositoryIntegrationTests {
         }
     }
 
+    /**
+     * Tests findByBusinessIdAndInventoryItemProductBarcode method only returns values for the current business and barcode
+     */
     @Test
-    void whenFindListingsByBusinessIdAndInventoryItem_Product_Barcode_withValidBarcodeForTwoBusinesses_ReturnBusinessListing() {
+    void whenFindByBusinessIdAndInventoryItemProductBarcode_withValidBarcodeForTwoBusinesses_ReturnBusinessListing() {
         // given
         String barcode = "9415767624207";
         int pageNo = 0;
