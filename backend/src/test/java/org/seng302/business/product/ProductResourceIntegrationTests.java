@@ -676,7 +676,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
