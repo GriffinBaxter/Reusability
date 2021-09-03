@@ -5,5 +5,10 @@ Feature: BS3 - Barcode Business Search
 
   Scenario: AC1 & AC2 - Search for inventory items with barcode
     Given I have a inventory item with a barcode "9300675024235"
-    When I request to retrieve listings for my business with barcode "9300675024235"
+    When I request to retrieve inventory item for my business with barcode "9300675024235"
     Then My inventory item is returned in a list by its self
+
+  Scenario: AC1 & AC2 - Search for listings with barcode
+    Given I have a listing with a barcode "9415767624207"
+    When I request to retrieve listings for my business with barcode "9415767624207"
+    Then My listing is returned in a list by its self

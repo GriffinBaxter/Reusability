@@ -4,7 +4,9 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.seng302.controller.InventoryItemResource;import org.seng302.controller.UserResource;
+import org.seng302.controller.InventoryItemResource;
+import org.seng302.controller.ListingResource;
+import org.seng302.controller.UserResource;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
@@ -41,6 +43,9 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
     private MockMvc inventoryMVC;
 
     @Autowired
+    private MockMvc listingMVC;
+
+    @Autowired
     @MockBean
     private UserRepository userRepository;
 
@@ -60,6 +65,26 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private InventoryItemRepository inventoryRepository;
 
+    @Autowired
+    @MockBean
+    private ListingRepository listingRepository;
+
+    @Autowired
+    @MockBean
+    private SoldListingRepository soldListingRepository;
+
+    @Autowired
+    @MockBean
+    private ListingNotificationRepository listingNotificationRepository;
+
+    @Autowired
+    @MockBean
+    private SoldListingNotificationRepository soldListingNotificationRepository;
+
+    @Autowired
+    @MockBean
+    private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -67,6 +92,7 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
     private Business business;
     private Product product;
     private InventoryItem inventoryItem;
+    private Listing listing;
 
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
             "\"password\": \"%s\"}";
@@ -80,8 +106,14 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
         businessRepository = mock(BusinessRepository.class);
         productRepository = mock(ProductRepository.class);
         inventoryRepository = mock(InventoryItemRepository.class);
+        listingRepository = mock(ListingRepository.class);
+        soldListingRepository = mock(SoldListingRepository.class);
+        listingNotificationRepository = mock(ListingNotificationRepository.class);
+        soldListingNotificationRepository = mock(SoldListingNotificationRepository.class);
+        bookmarkedListingMessageRepository = mock(BookmarkedListingMessageRepository.class);
 
         this.inventoryMVC = MockMvcBuilders.standaloneSetup(new InventoryItemResource(inventoryRepository, productRepository, businessRepository, userRepository)).build();
+        this.listingMVC = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository)).build();
         this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
@@ -149,8 +181,8 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
                 null,null,null,LocalDate.now().plusDays(2));
     }
 
-    @When("I request to retrieve listings for my business with barcode {string}")
-    public void iRequestToRetrieveListingsForMyBusinessWithBarcode(String barcode) throws Exception {
+    @When("I request to retrieve inventory item for my business with barcode {string}")
+    public void iRequestToRetrieveInventoryItemForMyBusinessWithBarcode(String barcode) throws Exception {
         List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResponse = new PageImpl<>(list);
 
@@ -160,10 +192,10 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 5, sort);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(1)).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
         when(inventoryRepository.findInventoryItemsByBarcodeAndBusinessId(barcode, business.getId(), paging)).thenReturn(pagedResponse);
 
-        response = inventoryMVC.perform(get("/businesses/1/inventory")
+        response = inventoryMVC.perform(get(String.format("/businesses/%d/inventory", business.getId()))
                 .param("barcode", barcode)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
         ).andReturn().getResponse();
@@ -187,4 +219,65 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 
+    @Given("I have a listing with a barcode {string}")
+    public void iHaveAListingWithABarcode(String barcode) throws Exception {
+        product = new Product(
+                "TEST-LIST",
+                business,
+                "Listing",
+                "description",
+                "manufacturer",
+                Double.parseDouble("4.5"),
+                barcode
+        );
+        inventoryItem = new InventoryItem(product, product.getProductId(),
+                5, 2.0,10.0,
+                null,null,null,LocalDate.now().plusDays(2));
+        listing = new Listing(inventoryItem, 2, 9.0, "",
+                LocalDateTime.now(), LocalDateTime.now().plusDays(2));
+    }
+
+    @When("I request to retrieve listings for my business with barcode {string}")
+    public void iRequestToRetrieveListingsForMyBusinessWithBarcode(String barcode) throws Exception {
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+
+        Sort sort = Sort.by(Sort.Order.asc("closes").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, paging)).thenReturn(pagedResponse);
+
+        response = listingMVC.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                .param("barcode", barcode)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+        ).andReturn().getResponse();
+    }
+
+    @Then("My listing is returned in a list by its self")
+    public void myListingIsReturnedInAListByItsSelf() throws UnsupportedEncodingException {
+        String expectedJSON = "[{" +
+                "\"id\":0," +
+                "\"inventoryItem\":{" +
+                "\"id\":0," +
+                "\"product\":{" + "\"id\":\"TEST-LIST\",\"name\":\"Listing\",\"description\":\"description\",\"manufacturer\":\"manufacturer\",\"recommendedRetailPrice\":4.5," + "\"created\":\"" + product.getCreated().toString() + "\",\"images\":[]," +
+                "\"business\":{\"id\":1," +
+                "\"administrators\":[" +
+                "{\"id\":1,\"firstName\":\"Bob\",\"lastName\":\"Smith\",\"middleName\":\"Ben\",\"nickname\":\"Bobby\",\"bio\":\"cool person\",\"email\":\"email@email.com\",\"created\":\"2021-02-02T00:00\",\"role\":\"GLOBALAPPLICATIONADMIN\",\"businessesAdministered\":[null],\"dateOfBirth\":\"2007-02-02\",\"phoneNumber\":\"0271316\",\"homeAddress\":{\"streetNumber\":\"3/24\",\"streetName\":\"Ilam Road\",\"suburb\":\"Ilam\",\"city\":\"Christchurch\",\"region\":\"Canterbury\",\"country\":\"New Zealand\",\"postcode\":\"90210\"}}]," +
+                "\"primaryAdministratorId\":1,\"name\":\"Business Name\",\"description\":\"Description\"," +
+                "\"address\":{\"streetNumber\":\"3/24\",\"streetName\":\"Ilam Road\",\"suburb\":\"Ilam\",\"city\":\"Christchurch\",\"region\":\"Canterbury\",\"country\":\"New Zealand\",\"postcode\":\"90210\"}" +
+                ",\"businessType\":\"ACCOMMODATION_AND_FOOD_SERVICES\",\"created\":\"2021-02-02T00:00\"}," +
+                "\"barcode\":\"" + product.getBarcode() +
+                "\"}" +
+                ",\"quantity\":5,\"pricePerItem\":2.0,\"totalPrice\":10.0,\"manufactured\":\"\",\"sellBy\":\"\",\"bestBefore\":\"\",\"expires\":\"" + inventoryItem.getExpires().toString() + "\"}," +
+                "\"quantity\":2,\"price\":9.0,\"moreInfo\":\"\",\"created\":\"" + listing.getCreated().toString() +
+                "\",\"closes\":\"" + listing.getCloses().toString() +
+                "\",\"isBookmarked\":false,\"totalBookmarks\":0" +
+                "}]";
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
 }
