@@ -41,10 +41,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.TextStyle;
 import java.util.*;
 
-import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
-import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
+import static java.time.temporal.TemporalAdjusters.*;
 
 
 /**
@@ -501,17 +502,15 @@ public class ListingResource {
 
         // 400 if granularity does not exist
         ArrayList<SalesReportPayload> salesReportPayloads = new ArrayList<>();
+        LocalDateTime currentDate = fromDate;
         switch (granularity) {
             case "Total":
                 salesReportPayloads.add(generateIndividualSalesReport(businessId, fromDate, toDate, null));
                 break;
             case "Yearly":
-                LocalDateTime currentDate = fromDate;
                 while (currentDate.getYear() != toDate.getYear()) {
                     salesReportPayloads.add(generateIndividualSalesReport(
-                            businessId,
-                            currentDate,
-                            currentDate.with(lastDayOfYear()),
+                            businessId, currentDate, currentDate.with(lastDayOfYear()),
                             String.valueOf(currentDate.getYear())
                     ));
                     currentDate = currentDate.plusYears(1).with(firstDayOfYear());
@@ -521,9 +520,41 @@ public class ListingResource {
                 ));
                 break;
             case "Monthly":
-                throw new IllegalStateException("Monthly not yet implemented");
+                while (currentDate.getYear() != toDate.getYear() || currentDate.getMonth() != toDate.getMonth()) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(lastDayOfMonth()),
+                            currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                    currentDate.getYear()
+                    ));
+                    currentDate = currentDate.plusMonths(1).with(firstDayOfMonth());
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate,
+                        currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                currentDate.getYear()
+                ));
+                break;
             case "Daily":
-                throw new IllegalStateException("Daily not yet implemented");
+                while (
+                        currentDate.getYear() != toDate.getYear() ||
+                        currentDate.getMonth() != toDate.getMonth() ||
+                        currentDate.getDayOfMonth() != toDate.getDayOfMonth()
+                ) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(LocalTime.MAX),
+                            currentDate.getDayOfMonth() + " " +
+                                    currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                    currentDate.getYear()
+                    ));
+                    currentDate = currentDate.plusDays(1).with(LocalTime.MIN);
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate,
+                        currentDate.getDayOfMonth() + " " +
+                                currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                currentDate.getYear()
+                ));
+                break;
             default:
                 logger.error("400 [BAD REQUEST] - Granularity type {} does not exist", granularity);
                 throw new ResponseStatusException(
