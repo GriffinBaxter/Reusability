@@ -443,13 +443,9 @@ public class ProductResource {
             searchBy = List.of("name");
         }
 
-        System.out.println(searchBy);
-
         List<String> validSearchBy = List.of("name", "id", "description", "manufacturer");
         for (String searchType : searchBy) {
-            System.out.println(searchType);
             if (!validSearchBy.contains(searchType)) {
-                System.out.println("invalid");
                 logger.error("400 [BAD REQUEST] - {} is an invalid search by parameter", searchType);
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
@@ -459,8 +455,6 @@ public class ProductResource {
         }
 
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
-
-        System.out.println(names);
 
         return productRepository.findAllProductsByBusinessIdAndIncludedFields(names, searchBy, businessId, paging);
     }

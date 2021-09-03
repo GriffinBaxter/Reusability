@@ -598,7 +598,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -637,7 +637,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -715,7 +715,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -756,7 +756,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of("Beans"), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -797,7 +797,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of("PROD"), List.of("id"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -823,13 +823,8 @@ class ProductResourceIntegrationTests {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
-        // when
-        List<Product> list = List.of(product);
-        Page<Product> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
 
+        // when
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
                         .param("searchQuery", "Beans")
@@ -1017,7 +1012,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("barcode").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -1058,7 +1053,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.desc("barcode").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
