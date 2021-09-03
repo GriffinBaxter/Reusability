@@ -417,9 +417,10 @@ paths:
     get:
       tags:
         - 'U15: Product Catalogue'
+        - 'U28: Product search'
         - 'Business Accounts'
         - 'Catalogue / Products'
-      summary: "Retrieve all the products in a business's catalogue"
+      summary: "Retrieve all the products in a business's catalogue via a search query"
       security:
         - CookieAuth:
             - user
@@ -432,6 +433,28 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+          required: false
+          description: "String to search products for. This string will be matched by the selected field to search in."
+        - in: query
+          name: searchBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            The product field to search by.
+            Can be one of:
+
+            * productName: The name of the product
+
+            * productId: The ID of the product
+
+            * description: The description of the product
+
+            * manufacturer: The product's manufacturer
         - in: query
           name: orderBy
           schema:
@@ -2106,101 +2129,6 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an
           administrator of the business.'
-        '406':
-          $ref: '#/components/responses/NotAcceptableError'
-
-  '/businesses/{businessId}/searchProducts':
-    get:
-      tags:
-        - 'U28: Product search'
-        - 'Catalogue / Products'
-      summary: "Search for a business's products by a given query in one of four possible fields. For example, by name or description."
-      security:
-        - CookieAuth:
-            - user
-            - globalApplicationAdmin
-            - defaultGlobalApplicationAdmin
-      parameters:
-        - name: businessId
-          in: path
-          description: 'The ID of the given business to search their product catalogue'
-          required: true
-          schema:
-            type: integer
-            example: 118
-        - in: query
-          name: searchQuery
-          schema:
-            type: string
-          required: true
-          description: "String to search products for. This string will be matched by the selected field to search in."
-        - in: query
-          name: searchBy
-          schema:
-            type: string
-          required: true
-          description: >-
-            The product field to search by.
-            Can be one of:
-
-            * productName: The name of the product
-
-            * productId: The ID of the product
-
-            * description: The description of the product
-
-            * manufacturer: The product's manufacturer
-        - in: query
-          name: orderBy
-          schema:
-            type: string
-          required: false
-          description: >-
-            Order the products by the given property, according to the following
-            rules:
-
-            * productIdASC: alphabetically by product id, A - Z
-
-            * productIdDESC: alphabetically by product id, Z - A
-
-            * nameASC: alphabetically by name, A - Z
-
-            * nameDESC: alphabetically by name, Z - A
-
-            * recommendedRetailPriceASC: the RRP from least to most
-
-            * recommendedRetailPriceDESC: the RRP from most to least
-
-            * manufacturerASC: alphabetically by manufacturer, A - Z
-
-            * manufacturerDESC: alphabetically by manufacturer, Z - A
-
-            * createdASC: created date from earliest to latest
-
-            * createdDESC: created date from latest to earliest
-
-            * barcodeASC: ordered by barcode, ascending
-
-            * barcodeDESC: ordered by barcode, descending
-        - in: query
-          name: page
-          schema:
-            type: string
-          required: false
-          description: 'The page of products to display.'
-      responses:
-        '200':
-          description: Request successful, a (possibly empty) list of products is returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
