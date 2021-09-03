@@ -16,5 +16,4 @@ public interface UserImageRepository extends JpaRepository<UserImage, Integer> {
      * @return list of primary images for given user.
      */
     List<UserImage> findUserImagesByUserIdAndIsPrimary(Integer userId, Boolean isPrimary);
-    //TODO:tests
 }
