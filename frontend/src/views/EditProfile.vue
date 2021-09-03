@@ -849,7 +849,7 @@ export default {
       // this.getLoginRole(currentID);
        const id = this.$route.params.id
 
-      if (currentID !== id && this.role !== "GLOBALAPPLICATIONADMIN" && this.role !== "DEFAULTGLOBALAPPLICATIONADMIN") {
+      if (currentID !== id) {
         this.$router.push({name: "Profile", params: {id}})
       }
     }
