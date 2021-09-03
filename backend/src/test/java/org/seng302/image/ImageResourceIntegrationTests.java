@@ -273,7 +273,6 @@ class ImageResourceIntegrationTests {
                 .andReturn().getResponse();
 
         // Then
-        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
     }
@@ -348,7 +347,6 @@ class ImageResourceIntegrationTests {
                 .andReturn().getResponse();
 
         // Then
-        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
     }
@@ -504,7 +502,6 @@ class ImageResourceIntegrationTests {
                         .param("unCheckImageType", ""))
                 .andReturn().getResponse();
         // Then
-        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getErrorMessage()).isEqualTo("Invalid image type");
     }

@@ -460,7 +460,6 @@ public class ModifyUserStepDefs {
 
     @Then("This image will be stored.")
     public void this_image_will_be_stored() throws UnsupportedEncodingException {
-        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
     }
