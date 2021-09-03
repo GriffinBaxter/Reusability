@@ -491,38 +491,34 @@ public class ListingResource {
         // 403 if not a business admin nor a GAA
         Authorization.verifyBusinessAdmin(user, businessId);
 
-        // 400 if granularity does not exist or from date is after to date
+        // 400 if "from date" is after "to date"
         if (fromDate.isAfter(toDate)) {
             logger.error("400 [BAD REQUEST] - \"From date\" is after \"to date\"");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "There was some error with the data supplied."
             );
         }
+
+        // 400 if granularity does not exist
         ArrayList<SalesReportPayload> salesReportPayloads = new ArrayList<>();
         switch (granularity) {
             case "Total":
-                salesReportPayloads.add(
-                        generateIndividualSalesReportPayload(businessId, fromDate, toDate, null)
-                );
+                salesReportPayloads.add(generateIndividualSalesReport(businessId, fromDate, toDate, null));
                 break;
             case "Yearly":
                 LocalDateTime currentDate = fromDate;
                 while (currentDate.getYear() != toDate.getYear()) {
-                    salesReportPayloads.add(
-                            generateIndividualSalesReportPayload(
-                                    businessId,
-                                    currentDate,
-                                    currentDate.with(lastDayOfYear()),
-                                    String.valueOf(currentDate.getYear())
-                            )
-                    );
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId,
+                            currentDate,
+                            currentDate.with(lastDayOfYear()),
+                            String.valueOf(currentDate.getYear())
+                    ));
                     currentDate = currentDate.plusYears(1).with(firstDayOfYear());
                 }
-                salesReportPayloads.add(
-                        generateIndividualSalesReportPayload(
-                                businessId, currentDate, toDate, String.valueOf(currentDate.getYear())
-                        )
-                );
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate, String.valueOf(currentDate.getYear())
+                ));
                 break;
             case "Monthly":
                 throw new IllegalStateException("Monthly not yet implemented");
@@ -543,7 +539,16 @@ public class ListingResource {
         return ResponseEntity.ok().body(salesReportPayloads);
     }
 
-    private SalesReportPayload generateIndividualSalesReportPayload(
+    /**
+     * Method for generating and returning an individual sales report payload.
+     * 
+     * @param businessId The business ID.
+     * @param fromDate The date the sales report payload should be from.
+     * @param toDate The date the sales report payload should be to.
+     * @param granularityName The granularity name e.g. 2020.
+     * @return SalesReportPayload.
+     */
+    private SalesReportPayload generateIndividualSalesReport(
             Integer businessId, LocalDateTime fromDate, LocalDateTime toDate, String granularityName
     ) {
         List<SoldListing> soldListings = soldListingRepository.findAllByBusinessIdAndSaleDateBetween(
