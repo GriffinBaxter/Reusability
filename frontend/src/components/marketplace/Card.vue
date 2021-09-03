@@ -1,7 +1,11 @@
 <template>
   <div class="card rounded shadow-sm border-0" id="card-container">
     <div class="card-body p-4">
-        <h4 id="card-title" class="col">{{ title }}</h4>
+      <h4 :id="'card-title_' + index"
+          style="height: 70px; padding-bottom: 0;"
+          class="col">
+        {{ title }}
+      </h4>
 
       <div class="row">
         <div class="col">
@@ -50,7 +54,9 @@ export default {
     },
     creator: {
       type: Object,
-      default: function () {return {}},
+      default: function () {
+        return {}
+      },
       required: true
     },
     cardImage: {
@@ -77,11 +83,6 @@ export default {
 #avatar-image {
   width: 30px;
   border-radius: 50px;
-}
-
-#card-title {
-  height: 70px;
-  padding-bottom: 0px;
 }
 
 #card-img-container {

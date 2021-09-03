@@ -1,20 +1,10 @@
-/**
- * Summary. This file contains the definition for the UserRegistrationPayload.
- *
- * Description. This file contains the defintion for the UserRegistrationPayload.
- *
- * @link   team-400/src/main/java/org/seng302/user/UserRegistrationPayload
- * @file   This file contains the definition for UserRegistrationPayload.
- * @author team-400.
- * @since  5.5.2021
- */
 package org.seng302.view.incoming;
 
 import org.seng302.view.outgoing.AddressPayload;
 
 import java.time.LocalDate;
 
-public class UserRegistrationPayload {
+public class UserProfileModifyPayload {
     private String firstName;
     private String lastName;
     private String middleName;
@@ -24,7 +14,8 @@ public class UserRegistrationPayload {
     private LocalDate dateOfBirth;
     private String phoneNumber;
     private AddressPayload homeAddress;
-    private String password;
+    private String currentPassword;
+    private String newPassword;
 
     public String getFirstName() {
         return firstName;
@@ -62,8 +53,12 @@ public class UserRegistrationPayload {
         return homeAddress;
     }
 
-    public String getPassword() {
-        return password;
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
     }
 
     @Override
@@ -78,7 +73,8 @@ public class UserRegistrationPayload {
                 "dateOfBirth: " + dateOfBirth +
                 "phoneNumber: " + phoneNumber +
                 "homeAddress=" + homeAddress +
-                "password: " + password +
+                "currentPassword: " + currentPassword +
+                "newPassword: " + newPassword +
                 ')';
     }
 }

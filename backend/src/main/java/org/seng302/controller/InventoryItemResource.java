@@ -99,7 +99,8 @@ public class InventoryItemResource {
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer id,
             @RequestParam(defaultValue = "productIdASC") String orderBy,
-            @RequestParam(defaultValue = "0") String page
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(required = false) String barcode
     ) throws Exception {
 
         logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}",
@@ -227,7 +228,13 @@ public class InventoryItemResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<InventoryItem> pagedResult = inventoryItemRepository.findInventoryItemsByBusinessId(id, paging);
+        Page<InventoryItem> pagedResult;
+
+        if (barcode != null) {
+            pagedResult = inventoryItemRepository.findInventoryItemsByBarcodeAndBusinessId(barcode, id, paging);
+        } else {
+            pagedResult = inventoryItemRepository.findInventoryItemsByBusinessId(id, paging);
+        }
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();

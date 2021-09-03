@@ -85,8 +85,8 @@
               <!--product barcode-->
               <div class="form-group">
                 <br>
-                <label for="barcode-checkbox">Edit Barcode?&nbsp;</label>
-                <input type="checkbox" id="barcode-checkbox" name="barcode-checkbox" v-model="editBarcode">
+                <label for="barcode-checkbox-in-update-modal">Edit Barcode?&nbsp;</label>
+                <input type="checkbox" id="barcode-checkbox-in-update-modal" name="barcode-checkbox-in-update-modal" v-model="editBarcode">
                 <br>
                 <div v-if="editBarcode">
                   <br>
