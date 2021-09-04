@@ -52,21 +52,21 @@ describe("Tests for search type checkbox", () => {
         })
     })
 
-    test("Test for if do not click any checkbox, the value will be productName", async function () {
+    test("Test for if do not click any checkbox, the value will be name", async function () {
         // Then
-        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["productName"])
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["name"])
     });
 
-    test("Test for if click on Product Name (unselected) the value will be productName", async function () {
+    test("Test for if click on Product Name (unselected) the value will be name", async function () {
         // When
         await checkboxProductNameButton.trigger('click');
         await wrapper.vm.$nextTick();
 
         // Then
-        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["productName"])
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["name"])
     });
 
-    test("Test for if click on Product Id the value will be productId", async function () {
+    test("Test for if click on Product Id the value will be id", async function () {
         // Given
         await checkboxProductNameButton.trigger('click');
 
@@ -75,7 +75,7 @@ describe("Tests for search type checkbox", () => {
         await wrapper.vm.$nextTick();
 
         // Then
-        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["productId"])
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["id"])
     });
 
     test("Test for if click on Manufacturer the value will be manufacturer", async function () {
@@ -114,7 +114,7 @@ describe("Tests for search type checkbox", () => {
         await wrapper.vm.$nextTick();
 
         // Then
-        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["productName", "productId", "manufacturer", "description"])
+        expect(wrapper.vm.getSelectedCheckbox()).toEqual(["name", "id", "manufacturer", "description"])
     });
 
 })
@@ -168,7 +168,7 @@ describe('Tests for enterPressed.', () => {
         wrapper.vm.$refs.searchInput.value = "Hello";
         wrapper.vm.searchClicked();
         expect(wrapper.emitted().search).toBeTruthy();
-        expect(wrapper.emitted().search[0]).toEqual([["productName"], "Hello"]);
+        expect(wrapper.emitted().search[0]).toEqual([["name"], "Hello"]);
     })
 
 })
