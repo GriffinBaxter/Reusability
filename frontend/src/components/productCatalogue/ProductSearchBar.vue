@@ -2,12 +2,12 @@
   <div style="margin-bottom: 20px">
     <div class="form-check form-check-inline">
       <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-product-name"
-             value="productName" checked>
+             value="name" checked>
       <label class="form-check-label" for="checkbox-product-name">Product Name</label>
     </div>
     <div class="form-check form-check-inline">
       <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-product-id"
-             value="productId">
+             value="id">
       <label class="form-check-label" for="checkbox-product-id">Product ID</label>
     </div>
     <div class="form-check form-check-inline">
@@ -53,7 +53,7 @@ export default {
       }
       if (value.length === 0){
         document.getElementById("checkbox-product-name").click();
-        value.push("productName");
+        value.push("name");
       }
       return value
     },

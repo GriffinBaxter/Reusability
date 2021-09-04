@@ -287,7 +287,7 @@ export default {
       // The query to search for.
       searchQuery: "",
       // The attributes to search by stored as a list.
-      searchBy: ["productName"],
+      searchBy: ["name"],
       // The attributes to search by in the required url format.
       searchByString: "",
 
@@ -376,7 +376,7 @@ export default {
         if (i === 0) {
           searchByString += this.searchBy[i];
         } else {
-          searchByString = searchByString + "&searchBy=" + this.searchBy[i];
+          searchByString = searchByString + "," + this.searchBy[i];
         }
       }
       this.searchByString = searchByString;
@@ -388,7 +388,7 @@ export default {
     convertSearchByStringToList() {
       let searchByString = this.$route.query["searchBy"];
       if (searchByString) { return searchByString.split("&"); }
-      return ["productName"]; // if searchBy does not exist in route query then return the default.
+      return ["name"]; // if searchBy does not exist in route query then return the default.
     },
     /**
      * set link business accounts
@@ -930,8 +930,9 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": "0"}
       });
+      console.log(this.$route);
       this.requestProducts();
     }
   },

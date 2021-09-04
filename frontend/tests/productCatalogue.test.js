@@ -1319,6 +1319,6 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         wrapper.vm.updatePage(mockedEvent);
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
-            query: { "searchQuery": "", "searchBy": "productName", "orderBy": "", "page": "2"}})
+            query: { "searchQuery": "", "searchBy": "name", "orderBy": "", "page": "2"}})
     })
 })
