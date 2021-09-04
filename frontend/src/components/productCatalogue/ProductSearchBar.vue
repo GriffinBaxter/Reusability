@@ -27,6 +27,31 @@
         <i class="fas fa-search" aria-hidden="true"/>
       </button>
     </div>
+
+    <!---------------------------------------- barcode filtering menu ----------------------------------------->
+
+    <br>
+    <div class="row">
+      <label class="d-inline-block my-3 text-center col-xl-2 col-l-6 col-md-6">Barcode (EAN or UPC)</label>
+      <div class="d-inline-block p-2 text-center col-xl-4 col-l-2 col-md-6">
+        <input type="number" class="form-control filter-input d-inline-block" id="barcode-input" v-model="barcode">
+        <button type="button" class="btn green-button" style="margin-top: -5px" @click="(event) => {
+                  this.$refs.barcodeScannerModal.showModel(event);
+                }">
+          <i class="fas fa-camera" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="text-center col-xl-2 col-l-2 col-md-6">
+        <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
+                @click="barcode = ''">
+          Clear Barcode
+        </button>
+      </div>
+    </div>
+
+    <!--------------------------------------------------------------------------------------------------------->
+
   </div>
 
 </template>
@@ -85,5 +110,9 @@ export default {
   border-radius: 20px;
   padding: 30px 6%;
   margin-top: 20px;
+}
+
+#barcode-input {
+  max-width: 260px;
 }
 </style>

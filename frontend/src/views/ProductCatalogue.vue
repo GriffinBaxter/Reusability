@@ -290,6 +290,8 @@ export default {
       searchBy: ["name"],
       // The attributes to search by in the required url format.
       searchByString: "",
+      // The attributes to search by barcode in the required url format.
+      searchBarcode: "",
 
 
       // Product modal variables
@@ -363,6 +365,7 @@ export default {
 
       // List of Business account current user account administrated
       linkBusinessAccount: [],
+
     }
   },
   methods: {
