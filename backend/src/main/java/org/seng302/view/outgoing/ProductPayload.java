@@ -109,10 +109,10 @@ public class ProductPayload {
                 "\"description\":\"" + description + "\"," +
                 "\"manufacturer\":\"" + manufacturer + "\"," +
                 "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
-                "\"created\":\"" + created + "," +
+                "\"created\":\"" + created + "\"," +
                 "\"images\":" + images + "," +
                 "\"business\":" + business +
-                "\"barcode\":\"" + barcode + "\"}";
+                ",\"barcode\":\"" + barcode + "\"}";
     }
 
 }

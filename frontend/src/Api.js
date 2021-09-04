@@ -95,9 +95,9 @@ export default {
         withCredentials: true
     }),
 
-    // Sends a get request to the backend asking for a sorted list of products for a business
-    sortProducts: (businessID, sortBy, page) => {
-        return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`, {
+    // Sends a get request to the backend asking for a sorted and paginated list of products matching the given search criteria for a business.
+    searchProducts: (businessID, searchQuery, searchBy, sortBy, page) => {
+        return instance.get(`/businesses/${businessID}/products?searchQuery=${searchQuery}&searchBy=${searchBy}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },

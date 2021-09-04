@@ -138,4 +138,22 @@ public class UserPayload extends UserPayloadParent {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":" + super.getId() + "," +
+                "\"firstName\":\"" + super.getFirstName() + "\"," +
+                "\"lastName\":\"" + super.getLastName() + "\"," +
+                "\"middleName\":\"" + super.getMiddleName() + "\"," +
+                "\"nickname\":\"" + super.getNickname() + "\"," +
+                "\"bio\":\"" + super.getBio() + "\"," +
+                "\"email\":\"" + super.getEmail() + "\"," +
+                "\"created\":\"" + super.getCreated() + "\"," +
+                "\"role\":\"" + super.getRole() + "\"," +
+                "\"businessesAdministered\":[null]," +
+                "\"dateOfBirth\":\"" + dateOfBirth + "\"," +
+                "\"phoneNumber\":\"" + phoneNumber + "\"," +
+                "\"homeAddress\":" + homeAddress + "}";
+    }
 }

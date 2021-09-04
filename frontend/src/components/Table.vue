@@ -145,7 +145,7 @@ export default {
       default() { return true; }
     },
 
-    // This controls wether or not the data given is considered the page data.
+    // This controls whether or not the data given is considered the page data.
     tableDataIsPage: {
       type: Boolean,
       required: false,
@@ -338,7 +338,6 @@ export default {
     updateTable(newData = false, rebuildRows = false) {
       this.dataIsReady = false;
 
-
       // Updates the totalPages to be able to know how many pages exist
       this.totalPages = Math.ceil(this.totalRows/this.maxRowsPerPage);
 
@@ -375,12 +374,12 @@ export default {
       let row = [];
       let numberOfDataPoints = this.tableData.length + this.tableData.length % this.tableHeaders.length;
 
-      // Prases the raw stream of tabke data and converts it into lists of rows.
+      // Parses the raw stream of table data and converts it into lists of rows.
       for (let i = 0; i < numberOfDataPoints; i++) {
 
         let dataPoint = this.nullStringValue;
 
-        // If the value is accessable and not null we set the data point to the value. Otherwise to the nullTableValue.
+        // If the value is accessible and not null we set the data point to the value. Otherwise to the nullTableValue.
         if (i < this.tableData.length) {
           if (this.tableData[i] != null) {
             dataPoint = this.tableData[i];
@@ -389,7 +388,7 @@ export default {
 
         row.push(dataPoint);
 
-        // Once we added a divisable amount of data points by the number of headers onto the row array
+        // Once we added a divisible amount of data points by the number of headers onto the row array
         // and this isn't the first item (this is because 0 % NUMBER == 0). Then we can add it to the rows.
         if ((i+1) % this.tableHeaders.length === 0 && i > 0) {
           this.rows.push(row);
