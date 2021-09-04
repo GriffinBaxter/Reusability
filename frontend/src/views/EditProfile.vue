@@ -134,9 +134,19 @@
                 <!--current password input field-->
                 <div class="col my-2 my-lg-0">
                   <label for="current-password">Current Password (Only required when changing password)</label>
-                  <input id="current-password" name="password" tabindex="7"
-                         v-model="currentPassword" :class="toggleInvalidClass(currentPasswordErrorMsg)"
-                         :maxlength="config.password.maxLength" required>
+                  <div class="input-group">
+                    <input id="current-password" name="password" tabindex="7"  :type="togglePasswordInputType(showCurrentPassword)"
+                           v-model="currentPassword" :class="toggleInvalidClass(currentPasswordErrorMsg)"
+                           :maxlength="config.password.maxLength" required>
+
+                    <!--toggle password visibility-->
+                    <span class="input-group-text green-search-button" @click="showCurrentPassword = !showCurrentPassword"
+                          @keydown=" (event) => { if (event.keyCode === 13) this.showCurrentPassword = !showCurrentPassword}"
+                          tabindex="8">
+                      <i v-if="!showCurrentPassword" class="fas fa-eye" aria-hidden="true"></i>
+                      <i v-else class="fas fa-eye-slash" aria-hidden="true"></i>
+                    </span>
+                  </div>
                   <div class="invalid-feedback">
                     {{currentPasswordErrorMsg}}
                   </div>
@@ -410,6 +420,7 @@ export default {
       // Current password related variables
       currentPassword: "",
       currentPasswordErrorMsg: "",
+      showCurrentPassword: false,
 
       // Confirm password related variables
       confirmPassword: "",
@@ -516,14 +527,41 @@ export default {
     editUser(e) {
       e.preventDefault()  // prevents page from reloading
 
+      this.trimTextInputFields()
+
+      // Validation
+      let requestIsInvalid = false
+
+      if (this.firstName === "") {
+        requestIsInvalid = true
+      }
+      if (this.lastName === "") {
+        requestIsInvalid = true
+      }
+      if (this.email === "") {
+        requestIsInvalid = true
+      }
+      if (this.country === "") {
+        requestIsInvalid = true
+      }
+      if (this.password !== "" || this.confirmPassword !== "") {
+        if (this.currentPassword === "" || this.password === "" || this.confirmPassword === "") {
+          requestIsInvalid = true
+        }
+      }
+
+      if (requestIsInvalid) {
+        return
+      }
+
       const addressData = {
-        streetNumber: this.$refs.streetNumber.value,
-        streetName: this.$refs.streetName.value,
-        suburb: this.$refs.suburb.value,
-        city: this.$refs.city.value,
-        region: this.$refs.region.value,
-        country: this.$refs.country.value,
-        postcode: this.$refs.postcode.value
+        streetNumber: this.streetNumber,
+        streetName: this.streetName,
+        suburb: this.suburb,
+        city: this.city,
+        region: this.region,
+        country: this.country,
+        postcode: this.postcode
       }
       let user;
       if (this.password === "") { // password field is empty
@@ -566,7 +604,6 @@ export default {
             this.$router.push({name: "Profile", params: {id}})
           }
       }).catch((error) => {
-        this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
             this.errorMessageBubble = error.response.data.message
@@ -864,6 +901,25 @@ export default {
     },
 
     /**
+     * This method removes white space from the beginning and end of all the input field's input values.
+     */
+    trimTextInputFields () {
+      this.firstName = this.firstName.trim();
+      this.middleName = this.middleName.trim();
+      this.lastName = this.lastName.trim();
+      this.nickname = this.nickname.trim();
+      this.bio = this.bio.trim();
+      this.email = this.email.trim();
+      this.country = this.country.trim();
+      this.city = this.city.trim();
+      this.postcode = this.postcode.trim();
+      this.region = this.region.trim();
+      this.streetNumber = this.streetNumber.trim();
+      this.streetName = this.streetName.trim();
+      this.suburb = this.suburb.trim();
+    },
+
+    /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
      * https://www.w3schools.com/howto/howto_js_autocomplete.asp
      *
@@ -883,22 +939,42 @@ export default {
      */
     retrieveUser(id) {
       Api.getUser(id).then((res) => {
-        this.bio = res.data.bio
+        if (res.data.bio !== null) {
+          this.bio = res.data.bio
+        }
         this.dateOfBirth = res.data.dateOfBirth
         this.email = res.data.email
-        this.phoneNumber = res.data.phoneNumber
+        if (res.data.phoneNumber !== null) {
+          this.phoneNumber = res.data.phoneNumber
+        }
         // Names
         this.firstName = res.data.firstName
-        this.middleName = res.data.middleName
+        if (res.data.middleName !== null) {
+          this.middleName = res.data.middleName
+        }
         this.lastName = res.data.lastName
-        this.nickname = res.data.nickname
+        if (res.data.nickname !== null) {
+          this.nickname = res.data.nickname
+        }
         // Address
-        this.streetNumber = res.data.homeAddress.streetNumber
-        this.streetName = res.data.homeAddress.streetName
-        this.suburb = res.data.homeAddress.suburb
-        this.city = res.data.homeAddress.city
-        this.region = res.data.homeAddress.region
-        this.postcode = res.data.homeAddress.postcode
+        if (res.data.homeAddress.streetNumber !== null) {
+          this.streetNumber = res.data.homeAddress.streetNumber
+        }
+        if (res.data.homeAddress.streetName !== null) {
+          this.streetName = res.data.homeAddress.streetName
+        }
+        if (res.data.homeAddress.suburb !== null) {
+          this.suburb = res.data.homeAddress.suburb
+        }
+        if (res.data.homeAddress.city !== null) {
+          this.city = res.data.homeAddress.city
+        }
+        if (res.data.homeAddress.region !== null) {
+          this.region = res.data.homeAddress.region
+        }
+        if (res.data.homeAddress.postcode) {
+          this.postcode = res.data.homeAddress.postcode
+        }
         this.country = res.data.homeAddress.country
       })
     }
