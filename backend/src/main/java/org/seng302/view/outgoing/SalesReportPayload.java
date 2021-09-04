@@ -14,6 +14,12 @@ public class SalesReportPayload {
         this.totalRevenue = totalRevenue;
     }
 
+    /**
+     * Default constructor used for automated tests
+     */
+    public SalesReportPayload() {
+    }
+
     public String getGranularityName() {
         return granularityName;
     }

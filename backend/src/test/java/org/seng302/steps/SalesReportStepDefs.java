@@ -1,5 +1,7 @@
 package org.seng302.steps;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -9,6 +11,7 @@ import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
 import org.seng302.model.repository.*;
+import org.seng302.view.outgoing.SalesReportPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -84,12 +87,17 @@ public class SalesReportStepDefs extends CucumberSpringConfiguration {
 
     private MockHttpServletResponse response;
 
+    ObjectMapper mapper = new ObjectMapper();
+
     private String yearFromDate;
     private String yearToDate;
     private String monthFromDate;
     private String monthToDate;
     private String dayFromDate;
     private String dayToDate;
+    private String customFromDate;
+    private String customToDate;
+    private String granularity;
 
     @Before
     public void createMockMvc() {
@@ -232,5 +240,71 @@ public class SalesReportStepDefs extends CucumberSpringConfiguration {
                         .param("granularity", "Total"))
                 .andReturn().getResponse();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @When("I select a custom period for the sales report to start at {string} and end at {string}.")
+    public void iSelectACustomPeriodForTheSalesReportToStartAtAndEndAt(String start, String end) {
+        customFromDate = start;
+        customToDate = end;
+    }
+
+
+    @Then("A sales report is returned for the custom period.")
+    public void aSalesReportIsReturnedForTheCustomPeriod() throws Exception {
+        response = mvc.perform(get(String.format("/businesses/%d/salesReport", business.getId()))
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+                        .param("fromDate", customFromDate)
+                        .param("toDate", customToDate)
+                        .param("granularity", "Total"))
+                .andReturn().getResponse();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @When("I select a granularity for the sales report.")
+    public void iSelectAGranularityForTheSalesReport() {
+        granularity = "Yearly";
+    }
+
+    @Then("A sales report is returned with the granularity.")
+    public void aSalesReportIsReturnedWithTheGranularity() throws Exception {
+        response = mvc.perform(get(String.format("/businesses/%d/salesReport", business.getId()))
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+                        .param("fromDate", "2021-04-20T00:00")
+                        .param("toDate", "2021-09-30T00:00")
+                        .param("granularity", granularity))
+                .andReturn().getResponse();
+        List<SalesReportPayload> responseList = mapper.readValue(
+                response.getContentAsString(), new TypeReference<>(){}
+        );
+        String granularityName = "2021";
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(responseList.get(0).getGranularityName()).isEqualTo(granularityName);
+    }
+
+    @When("I select a granularity of {string} for the sales report.")
+    public void iSelectAGranularityOfForTheSalesReport(String granularityInput) {
+        granularity = granularityInput;
+    }
+
+    @Then("A sales report is returned with the {string} granularity.")
+    public void aSalesReportIsReturnedWithTheGranularity(String granularityInput) throws Exception {
+        response = mvc.perform(get(String.format("/businesses/%d/salesReport", business.getId()))
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
+                        .param("fromDate", "2021-04-20T00:00")
+                        .param("toDate", "2021-09-30T00:00")
+                        .param("granularity", granularity))
+                .andReturn().getResponse();
+        List<SalesReportPayload> responseList = mapper.readValue(
+                response.getContentAsString(), new TypeReference<>(){}
+        );
+        List<String> granularityNames = List.of(
+                "April 2021", "May 2021", "June 2021", "July 2021", "August 2021", "September 2021"
+        );
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        for (int i = 0; i < responseList.size(); i++) {
+            assertThat(responseList.get(i).getGranularityName()).isEqualTo(granularityNames.get(i));
+        }
     }
 }
