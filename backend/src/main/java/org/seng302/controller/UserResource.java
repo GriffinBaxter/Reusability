@@ -501,7 +501,8 @@ public class UserResource {
 
     /**
      * Update given user by given user payload
-     * @param user user
+     * @param currentUser current user logged in
+     * @param selectedUser user to edit
      * @param userProfileModifyPayload user payload
      * @return updated User
      */
@@ -525,18 +526,28 @@ public class UserResource {
             selectedUser.updateEmail(userProfileModifyPayload.getEmail());
             selectedUser.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
             selectedUser.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
-            if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
-                    || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
-                    || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
-                        && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN))) {
-                selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
-            } else if (userProfileModifyPayload.getCurrentPassword() != null
-                    && !userProfileModifyPayload.getCurrentPassword().isEmpty()){
-                logger.error("Registration Failure - {}", "current password error");
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Wrong Password"
-                );
+            if (userProfileModifyPayload.getNewPassword() != null) {
+                if (userProfileModifyPayload.getCurrentPassword() != null) {
+                    if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
+                            || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
+                            || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
+                            && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN))) {
+                        selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
+                    } else if (userProfileModifyPayload.getCurrentPassword() != null
+                            && !userProfileModifyPayload.getCurrentPassword().isEmpty()) {
+                        logger.error("User Update Failure - {}", "current password error");
+                        throw new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "Wrong Password"
+                        );
+                    }
+                } else {
+                    logger.error("User Update Failure - {}", "current password not sent");
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Current password not sent"
+                    );
+                }
             }
         } catch (IllegalUserArgumentException e) {
             logger.error("Registration Failure - {}", e.getMessage());

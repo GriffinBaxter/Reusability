@@ -351,7 +351,7 @@
 </template>
 
 <script>
-import User from "../configs/User"
+import User, {EditUser} from "../configs/User"
 import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
@@ -516,6 +516,69 @@ export default {
     editUser(e) {
       e.preventDefault()  // prevents page from reloading
 
+      const addressData = {
+        streetNumber: this.$refs.streetNumber.value,
+        streetName: this.$refs.streetName.value,
+        suburb: this.$refs.suburb.value,
+        city: this.$refs.city.value,
+        region: this.$refs.region.value,
+        country: this.$refs.country.value,
+        postcode: this.$refs.postcode.value
+      }
+      let user;
+      if (this.password === "") { // password field is empty
+        // Wrapping up the user submitted fields into a class object (User).
+        const userData = {
+          firstName: this.firstName.charAt(0).toUpperCase() + this.firstName.slice(1),
+          lastName: this.lastName.charAt(0).toUpperCase() + this.lastName.slice(1),
+          middleName: this.middleName.charAt(0).toUpperCase() + this.middleName.slice(1),
+          nickname: this.nickname.charAt(0).toUpperCase() + this.nickname.slice(1),
+          bio: this.bio,
+          email: this.email,
+          dateOfBirth: this.dateOfBirth,
+          phoneNumber: this.phoneNumber,
+          homeAddress: addressData,
+          currentPassword: null,
+          newPassword: null
+        }
+        user = new EditUser(userData)
+      } else {
+        // Wrapping up the user submitted fields into a class object (User).
+        const userData = {
+          firstName: this.firstName.charAt(0).toUpperCase() + this.firstName.slice(1),
+          lastName: this.lastName.charAt(0).toUpperCase() + this.lastName.slice(1),
+          middleName: this.middleName.charAt(0).toUpperCase() + this.middleName.slice(1),
+          nickname: this.nickname.charAt(0).toUpperCase() + this.nickname.slice(1),
+          bio: this.bio,
+          email: this.email,
+          dateOfBirth: this.dateOfBirth,
+          phoneNumber: this.phoneNumber,
+          homeAddress: addressData,
+          currentPassword: this.currentPassword,
+          newPassword: this.password
+        }
+        user = new EditUser(userData)
+      }
+      const id = this.$route.params.id
+
+      Api.editUser(id, user).then( (res) => {
+          if (res.status === 200) {
+            this.$router.push({name: "Profile", params: {id}})
+          }
+      }).catch((error) => {
+        this.cannotProceed = true;
+        if (error.response) {
+          if (error.response.status === 400) {
+            this.errorMessageBubble = error.response.data.message
+          } else {
+            this.errorMessageBubble = `${error.response.status} Unexpected error occurred!`;
+          }
+        } else if (error.request) {
+          this.errorMessageBubble = 'Timeout occurred';
+        } else {
+          this.errorMessageBubble = 'Unexpected error occurred!';
+        }
+      })
     },
 
     /**
