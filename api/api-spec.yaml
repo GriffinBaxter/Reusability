@@ -2034,7 +2034,7 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user tries to update the business info for a business they do not administer AND the user is not a global application admin'
         '406':
-          description: 'Selected Business not exist'
+          description: 'Selected Business does not exist'
 
   '/businesses/{businessId}/salesReport':
     get:
@@ -2955,7 +2955,7 @@ components:
           example: 408
           description: ID of the marketplace card involved in the conversation
         content:
-          type: String
+          type: string
           example: "Hi, I am interested in exchanging some apples for some pears."
           description: message content
         created:

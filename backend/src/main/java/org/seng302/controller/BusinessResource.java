@@ -44,6 +44,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -506,8 +507,15 @@ public class BusinessResource {
                                @PathVariable Integer id, @RequestBody BusinessModifyPayload businessModifyPayload) {
 
         // Verify session token. fail --> 401 UAUTHORIZED
+        User user = Authorization.getUserVerifySession(session, userRepository);
 
         // verify business exists. fail --> 406 NOT_ACCEPTABLE
+        Optional<Business> business = businessRepository.findBusinessById(id);
+        if (business.isEmpty()) {
+            String errorMessage = String.format("Business id requests to be modified %d does not exist.", id);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Selected Business does not exist");
+        }
 
         // Verify user permissions. fail --> 403 FORBIDDEN
 
