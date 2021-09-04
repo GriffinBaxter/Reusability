@@ -50,6 +50,8 @@
       </div>
     </div>
 
+    <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode"/>
+
     <!--------------------------------------------------------------------------------------------------------->
 
   </div>
@@ -57,10 +59,18 @@
 </template>
 
 <script>
+
+import BarcodeScannerModal from "../BarcodeScannerModal";
+
 export default {
   name: "ProductSearchBar",
+  components: {
+    BarcodeScannerModal
+  },
   data() {
-    return {}
+    return {
+      barcode: null,
+    }
   },
   methods: {
     /**
@@ -91,6 +101,8 @@ export default {
         this.searchClicked();
       }
     },
+
+    //TODO: add barcode search value to this method
     /**
      * Search button is clicked and query/filters for product search are executed.
      */
@@ -98,6 +110,13 @@ export default {
       const checked = this.getSelectedCheckbox();
       const searchQuery = this.$refs.searchInput.value;
       this.$emit('search', checked, searchQuery);
+    },
+    /**
+     * Updates the barcode used in the product catalogue search.
+     * @param barcode The new barcode to search by.
+     */
+    updateBarcode(barcode) {
+      this.barcode = barcode;
     }
   }
 }
