@@ -1,4 +1,4 @@
-package org.seng302.marketplaceConversation;
+package org.seng302.conversation;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +8,10 @@ import org.seng302.controller.MarketplaceConversationResource;
 import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
-import org.seng302.model.repository.*;
+import org.seng302.model.repository.MarketplaceCardRepository;
+import org.seng302.model.repository.MarketplaceConversationMessageRepository;
+import org.seng302.model.repository.MarketplaceConversationRepository;
+import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,15 +23,20 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
  * MarketplaceConversationResource test class
@@ -57,16 +65,16 @@ class MarketplaceConversationResourceIntegrationTests {
 
     private MockHttpServletResponse response;
 
-    private String payloadJson;
-
-    private User sender;
+    private User instigator;
     private User receiver;
-    private User gaa;
-    private User dgaa;
+
     private MarketplaceCard marketplaceCard;
+
     private Conversation conversation;
     private Message message;
     private String content;
+
+    private String payloadJson;
 
     private final String messagePayloadJson = "{\"senderId\":%d," +
             "\"receiverId\":%d," +
@@ -74,13 +82,8 @@ class MarketplaceConversationResourceIntegrationTests {
             "\"content\":\"%s\"," +
             "\"created\":\"%s\"}";
 
-    /**
-     * Before each create a user that will be used in all tests when creating cards.
-     *
-     * @throws Exception thrown if there is an error when creating an address or user.
-     */
     @BeforeEach
-    void setup() throws Exception {
+    public void setup() throws Exception {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -91,7 +94,7 @@ class MarketplaceConversationResourceIntegrationTests {
                 "Ilam"
         );
 
-        sender = new User(
+        instigator = new User(
                 "John",
                 "Doe",
                 "S",
@@ -105,60 +108,29 @@ class MarketplaceConversationResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        sender.setId(1);
-        sender.setSessionUUID(User.generateSessionUUID());
+        instigator.setId(1);
+        instigator.setSessionUUID(User.generateSessionUUID());
 
-        receiver = new User("Another",
-                "User",
-                "Middle",
-                "AU",
+        receiver = new User(
+                "Abby",
+                "Wyatt",
+                "W",
+                "Abby",
                 "bio",
-                "anotheruser@example.com",
-                LocalDate.of(2000, 1, 1),
-                "123456789",
+                "Abby@example.com",
+                LocalDate.of(2020, Month.JANUARY, 1).minusYears(13),
+                "1234567555",
                 address,
                 "Password123!",
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0)),
-                Role.USER);
+                LocalDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
         receiver.setId(2);
         receiver.setSessionUUID(User.generateSessionUUID());
 
-        gaa = new User("Global",
-                "Admin",
-                "Application",
-                "GAA",
-                "bio",
-                "gaa@example.com",
-                LocalDate.of(2000, 1, 1),
-                "123456789",
-                address,
-                "Password123!",
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0)),
-                Role.GLOBALAPPLICATIONADMIN);
-        gaa.setId(3);
-        gaa.setSessionUUID(User.generateSessionUUID());
-
-        dgaa = new User("Default",
-                "Admin",
-                "Application",
-                "DGAA",
-                "bio",
-                "dgaa@example.com",
-                LocalDate.of(2000, 1, 1),
-                "123456789",
-                address,
-                "Password123!",
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0)),
-                Role.DEFAULTGLOBALAPPLICATIONADMIN);
-        dgaa.setId(4);
-        dgaa.setSessionUUID(User.generateSessionUUID());
-
         marketplaceCard = new MarketplaceCard(
-                receiver.getId(),
-                receiver,
+                instigator.getId(),
+                instigator,
                 Section.FORSALE,
                 LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
                 "Hayley's Birthday",
@@ -166,25 +138,92 @@ class MarketplaceConversationResourceIntegrationTests {
         );
         marketplaceCard.setId(1);
 
-        conversation = new Conversation(
-                        sender,
-                        receiver,
-                        marketplaceCard
-        );
+        conversation = new Conversation(instigator, receiver, marketplaceCard);
         conversation.setId(1);
 
         content = "Hi Hayley, I want to buy some baked goods :)";
 
         message = new Message(
                 conversation,
-                sender,
+                instigator,
                 content
         );
         message.setId(1);
 
-        this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceConversationResource(
-                userRepository, marketplaceCardRepository, marketplaceConversationRepository, marketplaceConversationMessageRepository))
-                .build();
+        this.mvc = MockMvcBuilders.standaloneSetup(
+                   new MarketplaceConversationResource(userRepository, marketplaceCardRepository, marketplaceConversationRepository, marketplaceConversationMessageRepository))
+                   .build();
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when no cookie is provided with the GET request.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void cannotRetrieveConversationsWithNoCookie() throws Exception {
+        // When
+        response = mvc.perform(get("/home/conversation")).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when an invalid JSESSIONID is provided with the GET request.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void cannotRetrieveConversationsWithInvalidCookie() throws Exception {
+        // When
+        response = mvc.perform(get("/home/conversation")
+                        .cookie(new Cookie("JSESSIONID", "0"))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an OK status and an empty list are received when trying to retrieve conversations and the user has no
+     * conversations associated with them.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void canRetrieveEmptyListWhenNoAssociatedConversationsExist() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+
+        // When
+        when(marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(instigator.getId(), instigator.getId())).thenReturn(List.of());
+        response = mvc.perform(get("/home/conversation")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[]");
+    }
+
+    /**
+     * Tests that an OK status and a list of conversations are received when trying to retrieve conversations and the user has a
+     * conversation associated with them.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void canRetrieveListOfConversationsWhenAssociatedConversationsExist() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+
+        // When
+        when(marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(instigator.getId(), instigator.getId())).thenReturn(List.of(conversation));
+        response = mvc.perform(get("/home/conversation")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + conversation.toConversationPayload().toString() + "]");
     }
 
     // --------------------------------- Tests for POST /home/conversation/{conversationId} ----------------------------
@@ -199,17 +238,17 @@ class MarketplaceConversationResourceIntegrationTests {
     @Test
     void givenNoCookie_WhenCreateMessage_ThenReceiveUnauthorizedStatus() throws Exception {
         // given
-        given(userRepository.findById(sender.getId())).willReturn(Optional.ofNullable(sender));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
         String nonExistingSessionUUID = User.generateSessionUUID();
         given(userRepository.findBySessionUUID(nonExistingSessionUUID)).willReturn(Optional.empty());
-        payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
                 marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
 
         // when
         response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", nonExistingSessionUUID))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                        .cookie(new Cookie("JSESSIONID", nonExistingSessionUUID))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
 
         // then
@@ -226,8 +265,8 @@ class MarketplaceConversationResourceIntegrationTests {
     @Test
     void givenValidCookieAndNonExistentReceiverId_WhenCreateMessage_ThenReceiveBadRequestStatus() throws Exception {
         // given
-        given(userRepository.findBySessionUUID(sender.getSessionUUID())).willReturn(Optional.ofNullable(sender));
-        payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
                 marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
         given(marketplaceConversationMessageRepository.findMessageById(message.getId())).willReturn(Optional.ofNullable(message));
@@ -237,8 +276,8 @@ class MarketplaceConversationResourceIntegrationTests {
 
         // when
         response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
 
         // then
@@ -256,9 +295,9 @@ class MarketplaceConversationResourceIntegrationTests {
     @Test
     void givenValidCookieAndValidReceiverIdAndInvalidMarketplaceCardId_WhenCreateMessage_ThenReceiveBadRequestStatus() throws Exception {
         // given
-        given(userRepository.findBySessionUUID(sender.getSessionUUID())).willReturn(Optional.ofNullable(sender));
-        given(userRepository.findById(sender.getId())).willReturn(Optional.ofNullable(sender));
-        payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
                 marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
         given(marketplaceConversationMessageRepository.findMessageById(message.getId())).willReturn(Optional.ofNullable(message));
@@ -267,8 +306,8 @@ class MarketplaceConversationResourceIntegrationTests {
 
         // when
         response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
 
         // then
@@ -286,9 +325,9 @@ class MarketplaceConversationResourceIntegrationTests {
     @Test
     void givenValidCookieAndValidReceiverIdAndValidCardIdAndNonExistentConversationId_WhenCreateMessage_ThenReceiveBadRequestStatus() throws Exception {
         // given
-        given(userRepository.findBySessionUUID(sender.getSessionUUID())).willReturn(Optional.ofNullable(sender));
-        given(userRepository.findById(sender.getId())).willReturn(Optional.ofNullable(sender));
-        payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
                 marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
         given(marketplaceConversationMessageRepository.findMessageById(message.getId())).willReturn(Optional.empty());
@@ -298,8 +337,8 @@ class MarketplaceConversationResourceIntegrationTests {
 
         // when
         response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
 
         // then
@@ -319,9 +358,9 @@ class MarketplaceConversationResourceIntegrationTests {
     @Test
     void givenValidDataAndConversationIdIsNotProvided_WhenCreateMessage_ThenReceiveCreatedStatus() throws Exception {
         // given
-        given(userRepository.findBySessionUUID(sender.getSessionUUID())).willReturn(Optional.ofNullable(sender));
-        given(userRepository.findById(sender.getId())).willReturn(Optional.ofNullable(sender));
-        payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
                 marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
         given(userRepository.findById(receiver.getId())).willReturn(Optional.ofNullable(receiver));
@@ -329,9 +368,9 @@ class MarketplaceConversationResourceIntegrationTests {
         given(marketplaceConversationRepository.findById(conversation.getId())).willReturn(Optional.empty());
 
         // when
-        response = mvc.perform(post(String.format("/home/conversation"))
-                .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+        response = mvc.perform(post("/home/conversation")
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
 
         // then
@@ -349,9 +388,9 @@ class MarketplaceConversationResourceIntegrationTests {
     @Test
     void givenValidDataAndConversationIdExists_WhenCreateMessage_ThenReceiveCreatedStatus() throws Exception {
         // given
-        given(userRepository.findBySessionUUID(sender.getSessionUUID())).willReturn(Optional.ofNullable(sender));
-        given(userRepository.findById(sender.getId())).willReturn(Optional.ofNullable(sender));
-        payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
                 marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
         given(userRepository.findById(receiver.getId())).willReturn(Optional.ofNullable(receiver));
@@ -360,11 +399,12 @@ class MarketplaceConversationResourceIntegrationTests {
 
         // when
         response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
-                .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
+
 }

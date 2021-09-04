@@ -1,15 +1,15 @@
 package org.seng302.steps;
 
 import io.cucumber.java.Before;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.java.en.And;
 import org.seng302.controller.MarketplaceConversationResource;
 import org.seng302.controller.UserResource;
+import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalMarketplaceCardArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
-import org.seng302.model.Address;
 import org.seng302.model.*;
 import org.seng302.model.enums.Role;
 import org.seng302.model.enums.Section;
@@ -21,34 +21,35 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
  * Marketplace conversation step definitions class
  */
+
 public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
-    private MockMvc conversationMVC;
+    private MockMvc mvc;
 
     @Autowired
     private MockMvc userMVC;
-
-    @Autowired
-    @MockBean
-    private MarketplaceCardRepository marketplaceCardRepository;
 
     @Autowired
     @MockBean
@@ -58,6 +59,11 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
     @MockBean
     private AddressRepository addressRepository;
 
+
+    @Autowired
+    @MockBean
+    private MarketplaceCardRepository marketplaceCardRepository;
+
     @Autowired
     @MockBean
     private MarketplaceConversationRepository marketplaceConversationRepository;
@@ -66,15 +72,16 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
     @MockBean
     private MarketplaceConversationMessageRepository marketplaceConversationMessageRepository;
 
-    private User sender;
-    private User receiver;
     private Address address1;
     private Address address2;
+    private User instigator;
+    private User receiver;
     private MarketplaceCard marketplaceCard;
     private Conversation conversation;
     private Message message1;
     private Message message2;
     private String payloadJson;
+
 
     private MockHttpServletResponse response;
 
@@ -90,16 +97,14 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
 
     private final String expectedConversationIdJson = "{\"conversationId\":%s}";
 
+
     @Before
     public void createMockMvc() {
         userRepository = mock(UserRepository.class);
         marketplaceCardRepository = mock(MarketplaceCardRepository.class);
         marketplaceConversationRepository = mock(MarketplaceConversationRepository.class);
         marketplaceConversationMessageRepository = mock(MarketplaceConversationMessageRepository.class);
-
-        this.conversationMVC = MockMvcBuilders.standaloneSetup(new MarketplaceConversationResource(
-                userRepository, marketplaceCardRepository, marketplaceConversationRepository, marketplaceConversationMessageRepository))
-                .build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceConversationResource(userRepository, marketplaceCardRepository, marketplaceConversationRepository, marketplaceConversationMessageRepository)).build();
         this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
     }
 
@@ -123,7 +128,7 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
                 "4198",
                 "Gragol"
         );
-        sender = new User("Bob",
+        instigator = new User("Bob",
                 "Smith",
                 "Ben",
                 "Bobby",
@@ -136,16 +141,16 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.GLOBALAPPLICATIONADMIN);
-        sender.setId(1);
+        instigator.setId(1);
 
-        given(userRepository.findByEmail(sender.getEmail())).willReturn(Optional.of(sender));
+        given(userRepository.findByEmail(instigator.getEmail())).willReturn(Optional.of(instigator));
 
         response = userMVC.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(String.format(loginPayloadJson, sender.getEmail(), "Password123!")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.format(loginPayloadJson, instigator.getEmail(), "Password123!")))
                 .andReturn().getResponse();
 
-        assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, sender.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, instigator.getId()));
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -184,6 +189,89 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
 
     }
 
+
+    @Given("There exists a conversation with instigator {string} with id {int}, recipient {string} with id {int}, and marketplace card with title {string}.")
+    public void thereExistsAConversationWithInstigatorWithIdRecipientWithIdAndMarketplaceCardWithTitle(String instigatorName, int instigatorId, String receiverName, int receiverId, String cardTitle) throws IllegalAddressArgumentException, IllegalUserArgumentException, IllegalMarketplaceCardArgumentException {
+        Address address = new Address(
+                "3/24",
+                "Ilam Road",
+                "Christchurch",
+                "Canterbury",
+                "New Zealand",
+                "90210",
+                "Ilam"
+        );
+
+        String[] instigatorNames = instigatorName.split(" ");
+        String[] receiverNames = receiverName.split(" ");
+
+        instigator = new User(
+                instigatorNames[0],
+                instigatorNames[1],
+                "",
+                "",
+                "Biography",
+                "instigator@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        instigator.setId(instigatorId);
+        instigator.setSessionUUID(User.generateSessionUUID());
+
+        receiver = new User(
+                receiverNames[0],
+                receiverNames[1],
+                "",
+                "",
+                "bio",
+                "receiver@example.com",
+                LocalDate.of(2020, Month.JANUARY, 1).minusYears(13),
+                "1234567555",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        receiver.setId(receiverId);
+        receiver.setSessionUUID(User.generateSessionUUID());
+
+        marketplaceCard = new MarketplaceCard(
+                instigator.getId(),
+                instigator,
+                Section.FORSALE,
+                LocalDateTime.of(LocalDate.of(2021, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                cardTitle,
+                "Come join Hayley and help her celebrate her birthday!"
+        );
+        marketplaceCard.setId(1);
+
+        conversation = new Conversation(instigator, receiver, marketplaceCard);
+    }
+
+    @When("The recipient with id {int} tries to retrieve their conversations.")
+    public void theUserWithIdTriesToRetrieveTheirConversations(int id) throws Exception {
+        given(userRepository.findBySessionUUID(receiver.getSessionUUID())).willReturn(Optional.ofNullable(receiver));
+
+        when(marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(id, id)).thenReturn(List.of(conversation));
+
+        response = mvc.perform(get("/home/conversation")
+                .cookie(new Cookie("JSESSIONID", receiver.getSessionUUID()))).andReturn().getResponse();
+    }
+
+    @Then("I receive a 200 response and a conversation with instigator {string}, recipient {string}, and marketplace card {string} is returned in a list.")
+    public void iReceiveA200ResponseAndAConversationWithInstigatorRecipientAndMarketplaceCardIsReturnedInAList(String instigatorName, String receiverName, String cardTitle) throws UnsupportedEncodingException {
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + conversation.toConversationPayload().toString() + "]");
+
+        assertThat(conversation.toConversationPayload().getInstigatorName()).isEqualTo(instigatorName);
+        assertThat(conversation.toConversationPayload().getReceiverName()).isEqualTo(receiverName);
+        assertThat(conversation.toConversationPayload().getMarketplaceCardTitle()).isEqualTo(cardTitle);
+    }
+
     @Given("I have not contacted this user about this card with id {int} before")
     public void i_have_not_contacted_this_user_about_this_card_with_id_before(Integer marketplaceCardId) {
         given(marketplaceConversationRepository.findById(marketplaceCardId)).willReturn(Optional.empty());
@@ -193,32 +281,32 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
     @When("I send a message with the content of {string} about this marketplace card with id {int}")
     public void I_send_a_message_with_the_content_of_about_this_marketplace_card_with_id(String content,
                                                                                          Integer marketplaceCardId) throws Exception {
-        payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
                 marketplaceCardId, content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
 
         conversation = new Conversation(
-                sender,
+                instigator,
                 receiver,
                 marketplaceCard
         );
 
         message1 = new Message(
                 conversation,
-                sender,
+                instigator,
                 content
         );
 
-        when(userRepository.findBySessionUUID(sender.getSessionUUID())).thenReturn(Optional.ofNullable(sender));
+        when(userRepository.findBySessionUUID(instigator.getSessionUUID())).thenReturn(Optional.ofNullable(instigator));
         when(userRepository.findById(receiver.getId())).thenReturn(Optional.ofNullable(receiver));
         when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
 
         when(marketplaceConversationRepository.save(any(Conversation.class))).thenReturn(conversation);
         when(marketplaceConversationMessageRepository.save(any(Message.class))).thenReturn(message1);
 
-        response = conversationMVC.perform(post("/home/conversation")
-                .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+        response = mvc.perform(post("/home/conversation")
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
     }
 
@@ -236,20 +324,20 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
     public void I_send_a_message_with_the_content_of_about_this_marketplace_card_with_id_in_the_existing_conversation(String content,
                                                                                                                       Integer marketplaceCardId,
                                                                                                                       Integer conversationId) throws Exception {
-        payloadJson = String.format(messagePayloadJson, sender.getId(), receiver.getId(),
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
                 marketplaceCardId, content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)));
 
-        when(userRepository.findBySessionUUID(sender.getSessionUUID())).thenReturn(Optional.ofNullable(sender));
+        when(userRepository.findBySessionUUID(instigator.getSessionUUID())).thenReturn(Optional.ofNullable(instigator));
         when(userRepository.findById(receiver.getId())).thenReturn(Optional.ofNullable(receiver));
         when(marketplaceCardRepository.findById(marketplaceCard.getId())).thenReturn(Optional.ofNullable(marketplaceCard));
 
         when(marketplaceConversationRepository.save(any(Conversation.class))).thenReturn(conversation);
         when(marketplaceConversationMessageRepository.save(any(Message.class))).thenReturn(message2);
 
-        response = conversationMVC.perform(post(String.format("/home/conversation", conversationId))
-                .cookie(new Cookie("JSESSIONID", sender.getSessionUUID()))
-                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+        response = mvc.perform(post(String.format("/home/conversation", conversationId))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
     }
 
@@ -257,5 +345,6 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
     public void I_expect_the_message_to_be_created_in_this_conversation() {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
+
 
 }

@@ -8,17 +8,23 @@ import org.seng302.model.*;
 import org.seng302.model.repository.*;
 import org.seng302.view.incoming.MarketplaceConversationMessagePayload;
 import org.seng302.view.outgoing.MarketplaceConversationIdPayload;
+import org.seng302.view.outgoing.ConversationPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Controller class for marketplace conversation. This class includes:
  * POST "/home/conversation/{conversationId}" endpoint used for creating a message in a conversation. If no conversation
  *                                            exists, conversation is created and its ID is returned.
+ * GET "/home/conversation" endpoint used for retrieving all the conversations related to a given user. An empty array
+ *                          is returned if no conversations exist for the user.
  */
 @RestController
 public class MarketplaceConversationResource {
@@ -160,6 +166,40 @@ public class MarketplaceConversationResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage()
             );
         }
+    }
+
+    /**
+     * Retrieve all conversations related to a given user.
+     * If there are no conversations, then an empty array is returned.
+     * No user ID is provided in the URL as the JSESSIONID is used to determine which user is requesting their conversations.
+     *
+     * @param sessionToken The token used to identify the user.
+     * @return Array of conversations belonging to the user.
+     */
+    @GetMapping("/home/conversation")
+    public List<ConversationPayload> createMarketplaceConversationMessage(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+        //401
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(currentUser.getId(), currentUser.getId());
+        logger.info("Conversations retrieved user with ID {}", currentUser.getId());
+
+        return toConversationPayloadList(conversationList);
+    }
+
+    /**
+     * Converts a list of Conversation objects to a list of ConversationPayload objects to be sent to the frontend.
+     *
+     * @param conversationList A list of Conversation objects.
+     * @return A list of ConversationPayload objects to be sent to the frontend.
+     */
+    public List<ConversationPayload> toConversationPayloadList(List<Conversation> conversationList) {
+        List<ConversationPayload> conversationPayloadList = new ArrayList<>();
+        for (Conversation conversation: conversationList) {
+            conversationPayloadList.add(conversation.toConversationPayload());
+        }
+        return conversationPayloadList;
     }
 
 }
