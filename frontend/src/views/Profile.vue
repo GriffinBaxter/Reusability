@@ -275,6 +275,7 @@ export default {
       actionErrorMessage: "",
       loadingAction: false,
       urlID: null,
+      currentID: null,
       firstName: "",
       lastName: "",
       middleName: "",
@@ -754,7 +755,12 @@ export default {
      * Takes the user to the edit profile page
      */
     goToEdit() {
-      const id = this.urlID
+      let id
+      if (this.urlID === "profile") {
+        id = this.currentID
+      } else {
+        id = this.urlID
+      }
       this.$router.push({name:"EditProfile", params: {id}})
     }
   },
@@ -765,17 +771,17 @@ export default {
    */
   mounted() {
 
-    const currentID = Cookies.get('userID');
+    this.currentID = Cookies.get('userID');
 
-    if (currentID) {
-      this.getLoginRole(currentID);
+    if (this.currentID) {
+      this.getLoginRole(this.currentID);
 
       const url = document.URL
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
 
-      if (currentID === this.urlID || this.urlID === 'profile') {
-        this.retrieveUser(currentID);
-        this.retrieveUsersCards(currentID);
+      if (this.currentID === this.urlID || this.urlID === 'profile') {
+        this.retrieveUser(this.currentID);
+        this.retrieveUsersCards(this.currentID);
       } else {
         // Another user
         this.retrieveUser(this.urlID);
