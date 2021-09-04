@@ -28,7 +28,7 @@
               <!-- Primary Image -->
               <div class="col-lg-4">
                 <h5>Primary Image:</h5>
-                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../../public/default-product.jpg')" id="primary-image" alt="primary image">
+                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../public/default-product.jpg')" id="primary-image" alt="primary image">
               </div>
 
               <div class="col-lg-8">
@@ -70,11 +70,11 @@
 </template>
 
 <script>
-import Product from "../../configs/Product";
+import Product from "../configs/Product";
 import {Modal} from "bootstrap";
-import Api from "../../Api"
-import Business from "../../configs/Business";
-import User from "../../configs/User";
+import Api from "../Api"
+import Business from "../configs/Business";
+import User from "../configs/User";
 
 export default {
   name: "UpdateImagesModal",
@@ -144,7 +144,7 @@ export default {
       if (this.images.length > 0) {
         document.getElementById("primary-image").src = this.getImageSrc(this.primaryImageFilename);
       } else {
-        document.getElementById("primary-image").src = require('../../../public/default-product.jpg');
+        document.getElementById("primary-image").src = require('../../public/default-product.jpg');
       }
 
       this.selectedImage = null;

@@ -250,7 +250,7 @@ import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
 import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
-import UpdateImagesModal from "../components/productCatalogue/UpdateImagesModal";
+import UpdateImagesModal from "../components/UpdateImagesModal";
 
 export default {
   name: "ProductCatalogue",
