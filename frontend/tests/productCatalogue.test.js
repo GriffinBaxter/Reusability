@@ -1239,7 +1239,7 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
                 id: 1
             },
             query: {
-                searchQuery: '', searchBy: 'productName', orderBy: '', page: '0'
+                searchQuery: '', searchBy: 'name', orderBy: '', page: '0'
             }
         }
         $router = {
@@ -1320,5 +1320,37 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
             query: { "searchQuery": "", "searchBy": "name", "orderBy": "", "page": "2"}})
+    })
+
+    test('Test the convertSearchByListToString method generates the correct string when searchBy only contains name', () => {
+        wrapper.vm.$data.searchBy = ["name"];
+
+        wrapper.vm.convertSearchByListToString();
+
+        expect(wrapper.vm.$data.searchByString).toEqual("name");
+    })
+
+    test('Test the convertSearchByListToString method generates the correct string when searchBy contains name, id and description', () => {
+        wrapper.vm.$data.searchBy = ["name", "id", "description"];
+
+        wrapper.vm.convertSearchByListToString();
+
+        expect(wrapper.vm.$data.searchByString).toEqual("name,id,description");
+    })
+
+    test('Test the convertSearchByStringToList method generates the correct list when searchByString contains name,id,description', () => {
+        wrapper.vm.$route.query["searchBy"] = "name,id,description";
+
+        const searchBy = wrapper.vm.convertSearchByStringToList();
+
+        expect(searchBy).toEqual(["name", "id", "description"]);
+    })
+
+    test('Test the convertSearchByStringToList method generates the correct list when searchByString is not set', () => {
+        wrapper.vm.$route.query["searchBy"] = null;
+
+        const searchBy = wrapper.vm.convertSearchByStringToList();
+
+        expect(searchBy).toEqual(["name"]);
     })
 })

@@ -387,7 +387,7 @@ export default {
      */
     convertSearchByStringToList() {
       let searchByString = this.$route.query["searchBy"];
-      if (searchByString) { return searchByString.split("&"); }
+      if (searchByString) { return searchByString.split(","); }
       return ["name"]; // if searchBy does not exist in route query then return the default.
     },
     /**
@@ -569,9 +569,8 @@ export default {
             newtableData.push(formatDate(this.productList[i].data.created));
             newtableData.push(this.productList[i].data.barcode);
           }
-
-          this.tableData = newtableData;
         }
+        this.tableData = newtableData;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -932,7 +931,6 @@ export default {
         path: `/businessProfile/${this.businessId}/productCatalogue`,
         query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": "0"}
       });
-      console.log(this.$route);
       this.requestProducts();
     }
   },
