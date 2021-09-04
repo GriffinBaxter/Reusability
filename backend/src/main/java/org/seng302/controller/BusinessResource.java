@@ -17,6 +17,7 @@ import org.seng302.exceptions.IllegalAddressArgumentException;
 import org.seng302.exceptions.IllegalBusinessArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Validation;
+import org.seng302.view.incoming.BusinessModifyPayload;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.Business;
@@ -490,5 +491,32 @@ public class BusinessResource {
         }
         return businessType;
     }
+
+    /**
+     * Modification of bussiness endpoint. Requires the user to have permission; business to exist and all the payload's
+     * content to be still valid with the requirements. Then it will update the business.
+     *
+     * @param session User session token.
+     * @param id Id of the business the user wants to update.
+     * @param businessModifyPayload The changes made to the business.
+     */
+    @PutMapping("/businesses/{id}/profile")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Business updated successfully")
+    public void modifyBusiness(@CookieValue(value = "JSESSIONID", required = false) String session,
+                               @PathVariable Integer id, @RequestBody BusinessModifyPayload businessModifyPayload) {
+
+        // Verify session token. fail --> 401 UAUTHORIZED
+
+        // verify business exists. fail --> 406 NOT_ACCEPTABLE
+
+        // Verify user permissions. fail --> 403 FORBIDDEN
+
+        // Verify payload content is still valid to the requirements of a business. fail --> 400 BAD REQUEST
+
+        // perform the modification. fail --> 500 SERVER ERROR
+
+        // save and flush. fail --> 500 SERVER ERROR
+    }
+
 
 }
