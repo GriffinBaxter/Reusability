@@ -1,12 +1,15 @@
 <template>
 
   <!-- Modal -->
-  <div class="modal fade" ref="_updateProductImagesModal" tabindex="-1" aria-labelledby="updateProductImagesModal" aria-hidden="true" id="update-product-images-modal">
+  <div class="modal fade" ref="_updateImagesModal" tabindex="-1" aria-labelledby="updateImagesModal" aria-hidden="true" id="update-product-images-modal">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="updateProductImagesModalTitle">Update Product {{value.data.id}}'s Images</h5>
+          <h5 v-if="location === 'Product'" class="modal-title" id="updateImagesModalTitle_Product">Update Product {{value.data.id}}'s Images</h5>
+          <h5 v-else-if="location === 'Business'" class="modal-title" id="updateImagesModalTitle_Business">Update {{value.data.name}}'s Images</h5>
+          <h5 v-else-if="location === 'User'" class="modal-title" id="updateImagesModalTitle_User">Update {{value.data.firstName}}'s Images</h5>
         </div>
+
         <div class="modal-body">
 
           <!-- Modal form content wrapper-->
@@ -70,22 +73,31 @@
 import Product from "../../configs/Product";
 import {Modal} from "bootstrap";
 import Api from "../../Api"
+import Business from "../../configs/Business";
+import User from "../../configs/User";
 
 export default {
-  name: "UpdateProductImagesModal",
+  name: "UpdateImagesModal",
   props: {
 
-    // Product details -- MUST BE V-MODEL therefore MUST BE NAMED VALUE!
+    // Product/Business/User details -- MUST BE V-MODEL therefore MUST BE NAMED VALUE!
     value: {
-      type: Product,
-      required: true
+      type: Object,
+      required: false
     },
 
-    // Business id used to know what business to update
+    // id used to know what business/user to update
     businessId: {
       type: Number,
       required: true
+    },
+
+    // Current location ("Product", "Business", "User")
+    location: {
+      type: String,
+      required: true
     }
+
   },
   data() {
     return {
@@ -101,7 +113,7 @@ export default {
       images: [],
 
       // Create the object that will store the data
-      currentProduct: new Product(this.value.data)
+      currentData: null
     }
   },
   methods: {
@@ -114,24 +126,20 @@ export default {
       event.preventDefault();
 
       // If the modal is already showing prevent the placeholders from being updated.
-      if (!this.$refs._updateProductImagesModal.classList.contains("show")) {
+      if (!this.$refs._updateImagesModal.classList.contains("show")) {
         // Update the placeholders
-        this.currentProduct.data.id = this.value.data.id;
-        this.currentProduct.data.name = this.value.data.name;
-        this.currentProduct.data.description = this.value.data.description;
-        this.currentProduct.data.manufacturer = this.value.data.manufacturer;
-        this.currentProduct.data.recommendedRetailPrice = this.value.data.recommendedRetailPrice;
-        this.currentProduct.data.images = this.value.data.images;
+        this.currentData.data.id = this.value.data.id;
+        this.currentData.data.images = this.value.data.images;
       }
 
-      for (let image of this.currentProduct.data.images) {
+      for (let image of this.currentData.data.images) {
         if (image.isPrimary) {
           this.primaryImage = image.id;
           this.primaryImageFilename = image.filename;
         }
       }
 
-      this.images = this.currentProduct.data.images;
+      this.images = this.currentData.data.images;
 
       if (this.images.length > 0) {
         document.getElementById("primary-image").src = this.getImageSrc(this.primaryImageFilename);
@@ -161,52 +169,64 @@ export default {
      * to delete it.
      */
     deleteSelectedImage() {
-      Api.deleteProductImage(this.businessId, this.currentProduct.data.id , this.selectedImage).then(
-          response => {
-            if (response.status === 200) {
-              location.reload();
-            } else {
-              this.formErrorModalMessage = "Sorry, something went wrong...";
+      if (this.location === "Product"){
+        Api.deleteProductImage(this.businessId, this.currentData.data.id , this.selectedImage).then(
+            response => {
+              if (response.status === 200) {
+                location.reload();
+              } else {
+                this.formErrorModalMessage = "Sorry, something went wrong...";
+              }
             }
+        ).catch((error) => {
+          if (error.request && !error.response) {
+            this.$router.push({path: '/timeout'});
+          } else if (error.response.status === 403) {
+            this.formErrorModalMessage = "Sorry, you do not have permission to delete this image.";
+          } else if (error.response.status === 406) {
+            this.formErrorModalMessage = "Sorry, something went wrong...";
+          } else {
+            this.$router.push({path: '/timeout'});
+            console.log(error.message);
           }
-      ).catch((error) => {
-        if (error.request && !error.response) {
-          this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 403) {
-          this.formErrorModalMessage = "Sorry, you do not have permission to delete this image.";
-        } else if (error.response.status === 406) {
-          this.formErrorModalMessage = "Sorry, something went wrong...";
-        } else {
-          this.$router.push({path: '/timeout'});
-          console.log(error.message);
-        }
-      })
+        })
+      } else if (this.location === "Business") {
+        console.log("To be implemented")
+      } else if (this.location === "User") {
+        console.log("To be implemented")
+      }
     },
 
     /**
      * Sets the selected image to the primary image.
      */
     setPrimarySelectedImage() {
-      Api.setPrimaryImage(this.businessId, this.currentProduct.data.id , this.selectedImage).then(
-          response => {
-            if (response.status === 200) {
-              location.reload();
-            } else {
-              this.formErrorModalMessage = "Sorry, something went wrong...";
+      if (this.location === "Product") {
+        Api.setPrimaryImage(this.businessId, this.currentData.data.id, this.selectedImage).then(
+            response => {
+              if (response.status === 200) {
+                location.reload();
+              } else {
+                this.formErrorModalMessage = "Sorry, something went wrong...";
+              }
             }
+        ).catch((error) => {
+          if (error.request && !error.response) {
+            this.$router.push({path: '/timeout'});
+          } else if (error.response.status === 403) {
+            this.formErrorModalMessage = "Sorry, you do not have permission to change the primary image.";
+          } else if (error.response.status === 406) {
+            this.formErrorModalMessage = "Sorry, something went wrong...";
+          } else {
+            this.$router.push({path: '/timeout'});
+            console.log(error.message);
           }
-      ).catch((error) => {
-        if (error.request && !error.response) {
-          this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 403) {
-          this.formErrorModalMessage = "Sorry, you do not have permission to change the primary image.";
-        } else if (error.response.status === 406) {
-          this.formErrorModalMessage = "Sorry, something went wrong...";
-        } else {
-          this.$router.push({path: '/timeout'});
-          console.log(error.message);
-        }
-      })
+        })
+      } else if (this.location === "Business") {
+        console.log("To be implemented")
+      } else if (this.location === "User") {
+        console.log("To be implemented")
+      }
     },
 
     /**
@@ -218,13 +238,19 @@ export default {
       let image = new FormData();
       image.append("images", file)
 
-      Api.uploadProductImage(this.$props.businessId, this.currentProduct.data.id, image)
-          .then(() => {
-            location.reload();
-          }).catch((error) => {
-        this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
-        console.log(error.message);
-      })
+      if (this.location === "Product") {
+        Api.uploadProductImage(this.$props.businessId, this.currentData.data.id, image)
+            .then(() => {
+              location.reload();
+            }).catch((error) => {
+          this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
+          console.log(error.message);
+        })
+      } else if (this.location === "Business") {
+        console.log("To be implemented")
+      } else if (this.location === "User") {
+        console.log("To be implemented")
+      }
     },
 
     onUploadClick() {
@@ -233,9 +259,16 @@ export default {
   },
   mounted() {
     // Create a modal and attach it to the updateProductModel reference.
-    this.modal = new Modal(this.$refs._updateProductImagesModal);
+    this.modal = new Modal(this.$refs._updateImagesModal);
 
-    // temp
+    if (this.location === "Product") {
+      this.currentData = new Product(this.value.data)
+    } else if (this.location === "Business") {
+      this.currentData = new Business(this.value.data)
+    } else if (this.location === "User") {
+      this.currentData = new User(this.value.data)
+    }
+        // temp
     this.primaryImage = 0;
   }
 }
