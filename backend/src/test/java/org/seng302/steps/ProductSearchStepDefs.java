@@ -30,6 +30,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+
+/**
+ * Product search step definitions class
+ */
 public class ProductSearchStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
