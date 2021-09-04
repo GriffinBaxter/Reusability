@@ -1,6 +1,5 @@
 package org.seng302.view.incoming;
 
-import org.seng302.model.Address;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.view.outgoing.AddressPayload;
 
@@ -32,6 +31,10 @@ public class BusinessModifyPayload {
     }
 
     public BusinessType getBusinessType() {
-        return BusinessType.valueOf(businessType.toUpperCase());
+        try {
+            return BusinessType.valueOf(businessType.toUpperCase());
+        } catch (IllegalArgumentException err) {
+            return null;
+        }
     }
 }

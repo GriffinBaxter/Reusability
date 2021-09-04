@@ -532,9 +532,28 @@ public class BusinessResource {
         updateBusinessName(updatedBusiness, user, businessModifyPayload);
         updateBusinessDescription(updatedBusiness, businessModifyPayload.getDescription());
         updateBusinessAddress(updatedBusiness, user, businessModifyPayload.getAddress());
-
+        updateBusinessType(updatedBusiness, user, businessModifyPayload.getBusinessType());
 
         // save and flush. fail --> 500 SERVER ERROR
+    }
+
+    /**
+     * Update the business type of a given business.
+     *
+     * @param business The business to be updated.
+     * @param user The user requesting the update.
+     * @param businessType The new business type.
+     * @throws ResponseStatusException Thrown when the new business type does not exist or invalid.
+     */
+    private void updateBusinessType(Business business, User user, BusinessType businessType) throws ResponseStatusException{
+        if (businessType == null) {
+            String errorMessage = String.format("User (id: %d) attempted to update business type for business (id: %d). But the type was invalid.", user.getId(), business.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+        }
+        String debugMessage = String.format("User (id: %d) updated business type for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getBusinessType().toString(), businessType);
+        logger.debug(debugMessage);
+        business.setBusinessType(businessType);
     }
 
     // TODO UPDATE the CURRENCY of the business. To suit the new address.
