@@ -1267,7 +1267,7 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         jest.clearAllMocks();
     });
 
-    test('Test the user is pushed to the search destination.', () => {
+    test('Test the onSearch method pushes the user to their search destination.', () => {
         const checked = ["productName"];
         const searchQuery = "Apples";
         wrapper.vm.$data.businessId = 1;
@@ -1294,5 +1294,31 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         expect(wrapper.vm.$data.userAlertMessage).toEqual("");
         wrapper.vm.afterEdit();
         expect(wrapper.vm.$data.userAlertMessage).toEqual("Product Edited");
+    })
+
+    test( 'Test the trimTextInputFields method removes whitespace from start and end of string', () => {
+        // "mock" values for text input fields
+        wrapper.vm.$data.productID = "NEW-PRODUCT";
+        wrapper.vm.$data.barcode = "         9300675024235";
+        wrapper.vm.$data.productName = "A new product";
+        wrapper.vm.$data.description = "   Testing to see if values are trimmed   ";
+        wrapper.vm.$data.manufacturer = "PepsiCo      ";
+
+        wrapper.vm.trimTextInputFields();
+
+        expect(wrapper.vm.$data.productID).toEqual("NEW-PRODUCT");
+        expect(wrapper.vm.$data.barcode).toEqual("9300675024235");
+        expect(wrapper.vm.$data.productName).toEqual("A new product");
+        expect(wrapper.vm.$data.description).toEqual("Testing to see if values are trimmed");
+        expect(wrapper.vm.$data.manufacturer).toEqual("PepsiCo");
+    })
+
+    test('Test the updatePage method pushes the user to their search destination.', () => {
+        const mockedEvent = {newPageNumber: 2}
+        wrapper.vm.$data.businessId = 1;
+        wrapper.vm.updatePage(mockedEvent);
+
+        expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
+            query: { "searchQuery": "", "searchBy": "productName", "orderBy": "", "page": "2"}})
     })
 })
