@@ -518,13 +518,130 @@ public class BusinessResource {
         }
 
         // Verify user permissions. fail --> 403 FORBIDDEN
+        if (!business.get().isAnAdministratorOfThisBusiness(user) && !Authorization.isGAAorDGAA(user)) {
+            String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d). But " +
+                    "lacked permissions.", user.getId(), id);
+
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
+                    "update the business info for a business they do not administer AND the user is not a global application admin");
+        }
 
         // Verify payload content is still valid to the requirements of a business. fail --> 400 BAD REQUEST
+        Business updatedBusiness = updatePrimaryAdminstrator(user, business.get(), businessModifyPayload);
+        updateBusinessName(updatedBusiness, user, businessModifyPayload);
+        updateBusinessDescription(updatedBusiness, businessModifyPayload.getDescription());
+        updateBusinessAddress(updatedBusiness, user, businessModifyPayload.getAddress());
 
-        // perform the modification. fail --> 500 SERVER ERROR
 
         // save and flush. fail --> 500 SERVER ERROR
     }
 
+    // TODO UPDATE the CURRENCY of the business. To suit the new address.
+    /**
+     * Updates the business address.
+     *
+     * @param business The business to be updated.
+     * @param user The user requesting the update.
+     * @param addressJSON The new address payload.
+     * @throws ResponseStatusException Is thrown when the new address does not meet the requirements.
+     */
+    private void updateBusinessAddress(Business business, User user, AddressPayload addressJSON) throws ResponseStatusException{
+        Optional<Address> existingAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(addressJSON.getStreetNumber(),
+                addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
+
+        // If the address is new, we need to first add it to the database.
+        if (existingAddress.isEmpty()){
+            try {
+                Address newAddress = new Address(addressJSON.getStreetNumber(),
+                        addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
+                business.setAddress(newAddress);
+            } catch (IllegalAddressArgumentException err) {
+                String errorMessage = String.format("User (id: %d) attempted to update address for business (id: %d). But the address was invalid", user.getId(), business.getId());
+                logger.error(errorMessage);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+            }
+        } else {
+            business.setAddress(existingAddress.get());
+        }
+        String debugMessage = String.format("User (id: %d) updated address for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getAddress().toString(), addressJSON);
+        logger.debug(debugMessage);
+    }
+
+    /**
+     * Updates the business description if provided.
+     *
+     * @param business The business that is to be updated.
+     * @param description The new description provided.
+     */
+    private void updateBusinessDescription(Business business, String description) {
+        if (description != null) {
+            business.setDescription(description);
+        }
+    }
+
+    /**
+     * Updates the business name of a given business.
+     *
+     * @param business The business to be updated.
+     * @param user The user who requested the update.
+     * @param payload The whole update payload.
+     * @throws ResponseStatusException Thrown when the name placed if invalid or null.
+     */
+    private void updateBusinessName(Business business, User user, BusinessModifyPayload payload) throws ResponseStatusException {
+        try {
+            // Check that it is present
+            if (payload.getName() == null) {
+                throw new IllegalBusinessArgumentException("Cannot be null");
+            }
+            // Perform the modification
+            business.setName(payload.getName());
+            String debugMessage = String.format("User (id: %d) modfied business (id: %d) name. %s --> %s.",
+                    user.getId(), business.getId(), business.getName(), payload.getName());
+            logger.debug(debugMessage);
+
+        } catch (IllegalBusinessArgumentException err) {
+            // If an error is thrown the data was invalid.
+            String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d)'s name." +
+                    " But it was invalid.", user.getId(), business.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data " +
+                    "supplied by the user, appropriate error message(s) should be shown to user");
+        }
+    }
+
+    /**
+     * Attempts to update the business primary adminstrator if there is a new value.
+     *
+     * @param user The user that requested update.
+     * @param business The business that the update is performed on.
+     * @param payload The payload of the update.
+     * @throws ResponseStatusException Thrown when the user is not GAA nor DGAA and is not the primary admin and is trying to change
+     * who the primary admin is.
+     *
+     * @return {Business} The newly updated business object.
+     */
+    private Business updatePrimaryAdminstrator(User user, Business business, BusinessModifyPayload payload)
+            throws ResponseStatusException {
+        boolean userIsPrimaryAdmin = business.getPrimaryAdministratorId().equals(user.getId());
+
+        if (userIsPrimaryAdmin || Authorization.isGAAorDGAA(user)) {
+            if (payload.getPrimaryAdminId() != null) {
+                String debugMessage = String.format("Updated business has a new primary adminstrator %d --> %d",
+                        payload.getPrimaryAdminId(), business.getPrimaryAdministratorId());
+                logger.debug(debugMessage);
+                business.setPrimaryAdministratorId(payload.getPrimaryAdminId());
+            }
+        } else {
+            // Only the primary admin can change the primary admin (or the GAA and DGAA can as well).
+            String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
+                    "But lacked permissions.", user.getId(), business.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
+                    "update the business info for a business they do not administer AND the user is not a global application admin");
+        }
+
+        return business;
+    }
 
 }
