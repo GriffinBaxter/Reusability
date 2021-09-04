@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 20px">
+  <div id="search-container" style="margin-bottom: 20px">
     <div class="form-check form-check-inline">
       <input class="form-check-input" type="checkbox" name="search-type-checkbox" id="checkbox-product-name"
              value="name" checked>
@@ -80,4 +80,10 @@ export default {
 
 <style scoped>
 
+#search-container {
+  background-color: #f1f4f5;
+  border-radius: 20px;
+  padding: 30px 6%;
+  margin-top: 20px;
+}
 </style>
