@@ -39,7 +39,7 @@
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
 
-        <UpdateImagesModal ref="updateImagesModal" location="Product" :business-id="businessId" v-model="currentProduct"/>
+        <UpdateImagesModal ref="updateImagesModal" location="Product" :id="businessId" v-model="currentProduct"/>
 
         <div v-if="showModal">
           <transition name="fade">

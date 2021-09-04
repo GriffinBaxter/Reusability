@@ -73,8 +73,6 @@
 import Product from "../configs/Product";
 import {Modal} from "bootstrap";
 import Api from "../Api"
-import Business from "../configs/Business";
-import User from "../configs/User";
 
 export default {
   name: "UpdateImagesModal",
@@ -83,13 +81,13 @@ export default {
     // Product/Business/User details -- MUST BE V-MODEL therefore MUST BE NAMED VALUE!
     value: {
       type: Object,
-      required: false
+      required: true
     },
 
-    // id used to know what business/user to update
-    businessId: {
+    // id used to know what business product belongs to update
+    id: {
       type: Number,
-      required: true
+      required: false
     },
 
     // Current location ("Product", "Business", "User")
@@ -130,6 +128,12 @@ export default {
         // Update the placeholders
         this.currentData.data.id = this.value.data.id;
         this.currentData.data.images = this.value.data.images;
+      }
+
+      if (this.location === "User") {
+        this.currentData.data.firstName = this.value.data.firstName
+      } else if (this.location === "Business") {
+        this.currentData.data.name = this.value.data.name;
       }
 
       for (let image of this.currentData.data.images) {
@@ -263,10 +267,8 @@ export default {
 
     if (this.location === "Product") {
       this.currentData = new Product(this.value.data)
-    } else if (this.location === "Business") {
-      this.currentData = new Business(this.value.data)
-    } else if (this.location === "User") {
-      this.currentData = new User(this.value.data)
+    } else if (this.location === "Business" || this.location === "User") {
+      this.currentData = this.value
     }
         // temp
     this.primaryImage = 0;
