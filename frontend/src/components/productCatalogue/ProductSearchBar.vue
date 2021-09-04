@@ -102,14 +102,26 @@ export default {
       }
     },
 
-    //TODO: add barcode search value to this method
     /**
      * Search button is clicked and query/filters for product search are executed.
      */
     searchClicked() {
       const checked = this.getSelectedCheckbox();
+      const searchBarcode = this.barcode;
       const searchQuery = this.$refs.searchInput.value;
-      this.$emit('search', checked, searchQuery);
+
+      if (
+          searchQuery !== this.$route.query.searchQuery ||
+          searchBarcode !== this.$route.query.barcode
+      ) {
+        this.$router.push({
+          path: `/businessProfile/${parseInt(this.$route.params.id)}/productCatalogue`, query: {
+            searchQuery: searchQuery, barcode: searchBarcode,
+          }
+        });
+      }
+
+      this.$emit('search', checked, searchQuery, searchBarcode);
     },
     /**
      * Updates the barcode used in the product catalogue search.
