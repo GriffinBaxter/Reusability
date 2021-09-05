@@ -210,7 +210,7 @@ public class MarketplaceConversationResource {
         // 404
         if (optionalConversation.isEmpty()) {
             logger.error("Invalid Conversation ID");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid conversation ID");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid conversation ID");
         }
 
         Conversation currentConversation = optionalConversation.get();

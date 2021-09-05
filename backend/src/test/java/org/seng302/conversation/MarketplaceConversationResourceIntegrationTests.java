@@ -318,7 +318,7 @@ class MarketplaceConversationResourceIntegrationTests {
                 .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
     /**
