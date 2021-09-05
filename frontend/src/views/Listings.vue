@@ -121,7 +121,6 @@ import Api from "../Api";
 import Cookies from "js-cookie";
 import CreateListing from "../components/listing/CreateListingModal";
 import Footer from "../components/main/Footer";
-import CurrencyAPI from "../currencyInstance";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 
@@ -339,6 +338,8 @@ name: "Listings",
     getBusinessData(data) {
       this.businessName = data.name;
       this.businessCountry = data.address.country;
+      this.currencySymbol = data.currencySymbol;
+      this.currencyCode = data.currencyCode;
       // Checks if user is acting as business
       const actAs = Cookies.get('actAs');
       this.businessAdmin = actAs === String(data.id);
@@ -385,26 +386,6 @@ name: "Listings",
       }
     },
 
-    /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
-     */
-    async currencyRequest() {
-      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
-        this.filterResponse(response.data);
-      }).catch((error) => console.log(error))
-    },
-
-    /**
-     * Retrieves the currency code and symbol that we want from the API response.
-     * @param response The response from the REST countries API
-     */
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
-    },
-
     async getUserRole(id) {
       await Api.getUser(id).then(response => {
         this.role = response.data.role;
@@ -436,7 +417,6 @@ name: "Listings",
       this.getListings().catch(
           (e) => console.log(e)
       );
-      await this.currencyRequest();
     }
   }
 }

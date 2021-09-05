@@ -185,7 +185,6 @@ import Api from "../Api";
 import Cookies from "js-cookie";
 import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
 import PageButtons from "../components/PageButtons";
-import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
 
@@ -333,6 +332,8 @@ export default {
         this.businessName = response.data.name;
         this.businessDescription = response.data.description;
         this.businessCountry = response.data.address.country;
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -635,20 +636,6 @@ export default {
         this.creationSuccess = false
       }, 5000);
     },
-    /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
-     */
-    async currencyRequest() {
-      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
-        this.filterResponse(response.data);
-      }).catch((error) => console.log(error))
-    },
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
-    },
   },
 
   async mounted() {
@@ -672,7 +659,6 @@ export default {
         this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
-        await this.currencyRequest();
       }
     }
   }

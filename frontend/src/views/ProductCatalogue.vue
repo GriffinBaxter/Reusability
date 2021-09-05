@@ -244,7 +244,6 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
-import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
 import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
@@ -859,32 +858,15 @@ export default {
     },
 
     /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
+     * Retrieves the currency of the business from the backend.
      */
     async currencyRequest() {
       this.businessId = parseInt(this.$route.params.id);
 
-      /*
-        Request business from backend. If received assign the country of the business
-        to a variable.
-        */
-      let country = "";
       await Api.getBusiness(this.businessId).then((response) => {
-        country = response.data.address.country;
-      })
-          .catch((error) => console.log(error))
-
-      await CurrencyAPI.currencyQuery(country).then((response) => {
-        this.filterResponse(response.data);
-      })
-          .catch((error) => console.log(error))
-    },
-
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
+      }).catch((error) => console.log(error))
     },
 
     onUploadClick() {
