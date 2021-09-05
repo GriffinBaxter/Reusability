@@ -91,7 +91,12 @@ public class ImageResource {
 
         // Checking file extension
         String fileExtension = getFileExtension(imageFileName);
-        verifyImageExtension(fileExtension, imageName);
+        if (verifyImageExtension(fileExtension, imageName)) {
+            logger.error("Creating another image with unknown if it is actually an IMAGE (name: {}) !!!",
+                    image.getName());
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The file type of the image uploaded is not " +
+                    "supported. Only JPG, JPEG, PNG and GIF are supported.");
+        }
 
         // Creating thumbnail image
         InputStream thumbnailInputStream;
@@ -120,7 +125,8 @@ public class ImageResource {
         }
         // If the file already exists then we need to just something went wrong
         catch (FileAlreadyExistsException e) {
-            String errorMessage = String.format("File already existed. Canceling storage of image with filename %s, %s", imageFileName, imageOwner);
+            String errorMessage = String.format("File already existed. Canceling storage of image with filename %s, %s",
+                    imageFileName, imageOwner);
             logger.error(errorMessage);
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
