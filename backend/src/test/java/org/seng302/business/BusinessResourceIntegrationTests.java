@@ -2284,4 +2284,198 @@ class BusinessResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    /**
+     *
+     */
+    @Test
+    void canUpdateTheBusinessWithAllFields() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void receivingUnauthorizedWhenNotProvidingASessionTokenModifyBusiness() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void receivingAuthorizedWhentProvidingAInvalidSessionTokenModifyBusiness() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void receivingANotAcceptableWhenProvidingInvalidBusinessId() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessAsGaa() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessAsDgaa() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessAsNonAdminUser() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessAsRegularAdminOfBusiness() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessAsPrimaryAdmin() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsGaa() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsDgaa() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsUser() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsAdmin() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsPrimaryAdmin() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNullPrimaryId() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNewName() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNullName() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNewDescription() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNullDescription() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNewAddress() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNullAddress() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNullBusinessType() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithNewBusinessType() throws Exception {
+
+    }
+
+    /**
+     *
+     */
+    @Test
+    void updatingBusinessWithInvalidBusinessType() throws Exception {
+
+    }
+
+
+
 }
