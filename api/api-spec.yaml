@@ -498,6 +498,12 @@ paths:
             type: string
           required: false
           description: 'The page of products to display.'
+        - in: query
+          name: barcode
+          schema:
+            type: string
+          required: false
+          description: "A barcode as a string to search the products for. Must be a UPC-A or EAN-13 barcode."
       responses:
         '200':
           description: 'Catalogue retrieved successfully. This could be an empty array.'
@@ -868,7 +874,7 @@ paths:
           schema:
             type: string
           required: false
-          description: 'Product barcode number for barcode search'
+          description: 'Product barcode number for barcode search. Must be a UPC-A or EAN-13 barcode.'
       responses:
         '200':
           description: 'Inventory retrieved successfully. This could be an empty array.'
@@ -1080,7 +1086,7 @@ paths:
           schema:
             type: string
           required: false
-          description: "Criteria to search listings for, a barcode"
+          description: "Criteria to search listings for, a barcode. Must be a UPC-A or EAN-13 barcode."
       responses:
         '200':
           description: Request successful, a (possibly empty) list of listing is returned
@@ -1148,7 +1154,7 @@ paths:
           schema:
             type: string
           required: false
-          description: 'Product barcode number for barcode search'
+          description: 'Product barcode number for barcode search. Must be a UPC-A or EAN-13 barcode.'
       responses:
         '200':
           description: 'Listings retrieved successfully. This could be an empty array.'
