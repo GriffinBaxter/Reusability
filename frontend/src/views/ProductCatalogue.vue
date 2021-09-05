@@ -367,7 +367,7 @@ export default {
   },
   methods: {
     /**
-     * This method get the list of attributes of a product that are to be searched for and
+     * This method gets the list of attributes of a product that are to be searched for and
      * converts them to a string which can be used in the url.
      */
     convertSearchByListToString() {
