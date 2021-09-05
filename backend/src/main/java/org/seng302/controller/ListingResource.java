@@ -512,9 +512,6 @@ public class ListingResource {
             );
         }
 
-        // Set "to date" to the end of the day
-        toDate = toDate.with(LocalTime.MAX);
-
         // 400 if granularity does not exist
         ArrayList<SalesReportPayload> salesReportPayloads = new ArrayList<>();
         LocalDateTime currentDate = fromDate;
@@ -597,6 +594,9 @@ public class ListingResource {
     private SalesReportPayload generateIndividualSalesReport(
             Integer businessId, LocalDateTime fromDate, LocalDateTime toDate, String granularityName
     ) {
+        // Set "to date" to the end of the day
+        toDate = toDate.with(LocalTime.MAX);
+
         List<SoldListing> soldListings = soldListingRepository.findAllByBusinessIdAndSaleDateBetween(
                 businessId, fromDate, toDate
         );

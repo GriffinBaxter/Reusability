@@ -87,7 +87,7 @@ public class SalesReportStepDefs extends CucumberSpringConfiguration {
 
     private MockHttpServletResponse response;
 
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private String yearFromDate;
     private String yearToDate;
@@ -293,7 +293,7 @@ public class SalesReportStepDefs extends CucumberSpringConfiguration {
                         .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))
                         .param("fromDate", "2021-04-20T00:00")
                         .param("toDate", "2021-09-30T00:00")
-                        .param("granularity", granularity))
+                        .param("granularity", granularityInput))
                 .andReturn().getResponse();
         List<SalesReportPayload> responseList = mapper.readValue(
                 response.getContentAsString(), new TypeReference<>(){}
