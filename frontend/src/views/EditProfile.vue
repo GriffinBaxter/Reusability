@@ -676,7 +676,6 @@ export default {
       if (country) { document.getElementById('country').value = country; }
     },
 
-
     /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
      * https://www.w3schools.com/howto/howto_js_autocomplete.asp
