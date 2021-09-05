@@ -15,14 +15,14 @@ package org.seng302.view.outgoing;
  * Returned when new marketplace conversation is created.
  */
 public class MarketplaceConversationIdPayload {
-    private int businessId;
+    private int conversationId;
 
-    public MarketplaceConversationIdPayload(int businessId) {
-        this.businessId = businessId;
+    public MarketplaceConversationIdPayload(int conversationId) {
+        this.conversationId = conversationId;
     }
 
-    public int getBusinessId() {
-        return businessId;
+    public int getConversationId() {
+        return conversationId;
     }
 
     public MarketplaceConversationIdPayload() {

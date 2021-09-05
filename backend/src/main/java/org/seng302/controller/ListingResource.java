@@ -117,13 +117,15 @@ public class ListingResource {
      * @param id business ID
      * @param orderBy ordering of results
      * @param page page number
+     * @param barcode Barcode number (Optional)
      * @return Listings for business
      */
     @GetMapping("/businesses/{id}/listings")
     public ResponseEntity<List<ListingPayload>> retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                                  @PathVariable Integer id,
                                                                  @RequestParam(defaultValue = "closesASC") String orderBy,
-                                                                 @RequestParam(defaultValue = "0") String page) throws Exception {
+                                                                 @RequestParam(defaultValue = "0") String page,
+                                                                 @RequestParam(required = false) String barcode) throws Exception {
 
         logger.debug("Business listings retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
 
@@ -177,7 +179,13 @@ public class ListingResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<Listing> pagedResult = listingRepository.findListingsByBusinessId(id, paging);
+        Page<Listing> pagedResult;
+
+        if (barcode != null) {
+            pagedResult = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(id, barcode, paging);
+        } else {
+            pagedResult = listingRepository.findListingsByBusinessId(id, paging);
+        }
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();

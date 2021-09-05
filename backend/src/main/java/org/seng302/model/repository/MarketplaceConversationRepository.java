@@ -31,6 +31,7 @@ public interface MarketplaceConversationRepository extends JpaRepository<Convers
             Integer conversationId
     );
 
+
     /**
      * Return all conversations associated with the provided user IDs.
      * @param instigatorId The user ID of the instigator.

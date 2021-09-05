@@ -1,10 +1,10 @@
 /**
- * Summary. This file contains the definition for the BusinessRegistrationPayload.
+ * Summary. This file contains the definition for the MarketplaceConversationMessagePayload.
  *
- * Description. This file contains the definition for the BusinessRegistrationPayload.
+ * Description. This file contains the definition for the MarketplaceConversationMessagePayload.
  *
- * @link   team-400/src/main/java/org/seng302/business/BusinessRegistrationPayload
- * @file   This file contains the definition for BusinessRegistrationPayload.
+ * @link   team-400/src/main/java/org/seng302/view/incoming/MarketplaceConversationMessagePayload
+ * @file   This file contains the definition for MarketplaceConversationMessagePayload.
  * @author team-400.
  * @since  5.5.2021
  */
@@ -19,7 +19,7 @@ public class MarketplaceConversationMessagePayload {
 
     private Integer senderId;
     private Integer receiverId;
-    private Integer cardId;
+    private Integer marketplaceCardId;
     private String content;
     private LocalDateTime created;
 
@@ -50,7 +50,7 @@ public class MarketplaceConversationMessagePayload {
     public Integer getReceiverId() { return receiverId; }
     public void setReceiverId(Integer receiverId) { this.receiverId = receiverId; }
 
-    public Integer getCardId() { return cardId; }
-    public void setCardId(Integer cardId) { this.cardId = cardId; }
+    public Integer getMarketplaceCardId() { return marketplaceCardId; }
+    public void setMarketplaceCardId(Integer cardId) { this.marketplaceCardId = cardId; }
 
 }
