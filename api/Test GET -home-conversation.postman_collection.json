@@ -1,0 +1,144 @@
+{
+	"info": {
+		"_postman_id": "830b8846-2f55-4eb4-ae4f-8f39b493cf91",
+		"name": "Test GET /home/conversation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Login as a user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"emailUSER@email.com\",\r\n  \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create a conversation with another user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"senderId\": {{userId}},\r\n  \"receiverId\": 2,\r\n  \"marketplaceCardId\": 3,\r\n  \"content\": \"Hello there\",\r\n  \"created\": \"2021-07-15T05:10:00Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/home/conversation",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"home",
+						"conversation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3/5. Request your conversations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/home/conversation",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"home",
+						"conversation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Login as the other user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"chad.taylor@example.com\",\r\n  \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "userId",
+			"value": ""
+		}
+	]
+}
