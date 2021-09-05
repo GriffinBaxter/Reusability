@@ -46,6 +46,7 @@ tags:
   - name: 'UCM8: Contacting Other Marketplace Users'
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
+  - name: 'U28: Product search'
   - name: 'U29: Browse/Search Sale Listings'
   - name: 'U30: Individual Full Sale Listing'
   - name: 'U31: Purchases'
@@ -421,9 +422,10 @@ paths:
     get:
       tags:
         - 'U15: Product Catalogue'
+        - 'U28: Product search'
         - 'Business Accounts'
         - 'Catalogue / Products'
-      summary: "Retrieve all the products in a business's catalogue"
+      summary: "Retrieve all the products in a business's catalogue via a search query"
       security:
         - CookieAuth:
             - user
@@ -436,6 +438,28 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+          required: false
+          description: "String to search products for. This string will be matched by the selected field(s) to search in."
+        - in: query
+          name: searchBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            The product field or fields to search by.
+            Can be one or more of:
+
+            * name: The name of the product
+
+            * id: The ID of the product
+
+            * description: The description of the product
+
+            * manufacturer: The product's manufacturer
         - in: query
           name: orderBy
           schema:
