@@ -113,7 +113,9 @@ class InventoryItemResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s\"}," +
+            "\"created\":\"%s\"," +
+            "\"currencySymbol\":\"%s\"," +
+            "\"currencyCode\":\"%s\"}," +
             "\"barcode\":\"%s\"}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.2f," +
@@ -191,7 +193,9 @@ class InventoryItemResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(3);
         user.setBusinessesAdministeredObjects(List.of(business));
@@ -814,7 +818,8 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -858,7 +863,8 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -903,7 +909,8 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -1085,7 +1092,8 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 

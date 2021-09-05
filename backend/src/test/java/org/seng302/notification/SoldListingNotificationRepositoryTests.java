@@ -110,7 +110,9 @@ class SoldListingNotificationRepositoryTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business = entityManager.persist(business);
         entityManager.flush();
@@ -122,7 +124,9 @@ class SoldListingNotificationRepositoryTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         anotherBusiness = entityManager.persist(anotherBusiness);
         entityManager.flush();

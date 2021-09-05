@@ -85,7 +85,9 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
             "\"description\":\"%s\"," +
             "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s\""+
+            "\"created\":\"%s\","+
+            "\"currencySymbol\":\"%s\"," +
+            "\"currencyCode\":\"%s\"" +
             "}";
 
     private final String expectedAdministratorJson = "[{\"id\":%d," +
@@ -182,7 +184,9 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 address1,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user1
+                user1,
+                "$",
+                "NZD"
         );
 
         List<String> names = new ArrayList<>();
@@ -206,7 +210,9 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 address1,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user1
+                user1,
+                "$",
+                "NZD"
         );
 
         business2 = new Business(
@@ -216,7 +222,9 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 address2,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user2
+                user2,
+                "$",
+                "NZD"
         );
 
         List<String> names = new ArrayList<>();
@@ -277,7 +285,8 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
                 user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
-                name, business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+                name, business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -293,9 +302,11 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user2.getDateOfBirth(), user2.getPhoneNumber(), address2);
 
         String expectedBusinessJson1 = String.format(expectedBusinessJson, business1.getId(), expectedUserJson1, business1.getPrimaryAdministratorId(),
-                name1, business1.getDescription(), business1.getAddress(), business1.getBusinessType(), business1.getCreated());
+                name1, business1.getDescription(), business1.getAddress(), business1.getBusinessType(), business1.getCreated(),
+                business1.getCurrencySymbol(), business1.getCurrencyCode());
         String expectedBusinessJson2 = String.format(expectedBusinessJson, business2.getId(), expectedUserJson2, business2.getPrimaryAdministratorId(),
-                name2, business2.getDescription(), business2.getAddress(), business2.getBusinessType(), business2.getCreated());
+                name2, business2.getDescription(), business2.getAddress(), business2.getBusinessType(), business2.getCreated(),
+                business2.getCurrencySymbol(), business2.getCurrencyCode());
 
         expectedJson = "[" + expectedBusinessJson1 + "," + expectedBusinessJson2 + "]";
 
@@ -316,7 +327,9 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 address1,
                 businessType,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user1
+                user1,
+                "$",
+                "NZD"
         );
 
         businesses = new ArrayList<>();
@@ -339,7 +352,9 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 address1,
                 businessType,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user1
+                user1,
+                "$",
+                "NZD"
         );
 
         businesses = new ArrayList<>();
@@ -388,7 +403,8 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
                 user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
-                business.getName(), business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated()) + "]";
+                business.getName(), business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -400,7 +416,8 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1.getMiddleName(), user1.getNickname(), user1.getBio(), user1.getEmail(), user1.getCreated(), user1.getRole(),
                 user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
-                name, business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated()) + "]";
+                name, business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);

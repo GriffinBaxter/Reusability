@@ -89,7 +89,9 @@ class BusinessResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s\""+
+            "\"created\":\"%s\","+
+            "\"currencySymbol\":\"%s\","+
+            "\"currencyCode\":\"%s\""+
             "}";
 
     private final String expectedAdministratorJson = "[{\"id\":%d," +
@@ -140,7 +142,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         anotherUser = new User(
@@ -202,7 +206,9 @@ class BusinessResourceIntegrationTests {
                 ),
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         newBusiness.setId(3);
         newBusiness.addAdministrators(user);
@@ -258,7 +264,9 @@ class BusinessResourceIntegrationTests {
                 ),
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         newBusiness.setId(3);
         newBusiness.addAdministrators(user);
@@ -693,7 +701,9 @@ class BusinessResourceIntegrationTests {
                     "\"postcode\":\"" + address.getPostcode() + "\"" +
                     "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                "\"created\":\"" + business.getCreated() + "\"}";
+                "\"created\":\"" + business.getCreated() + "\"," +
+                "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -741,7 +751,7 @@ class BusinessResourceIntegrationTests {
                 "\"postcode\":\"90210\"" +
                 "}" +
                 "}]" + "," +
-                "\"primaryAdministratorId\":null," +
+                "\"primaryAdministratorId\":" + user.getId() + "," +
                 "\"name\":\"" + business.getName() + "\"," +
                 "\"description\":\"" + business.getDescription() + "\"," +
                 "\"address\":{" +
@@ -754,7 +764,9 @@ class BusinessResourceIntegrationTests {
                 "\"postcode\":\"" + address.getPostcode() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                "\"created\":\"" + business.getCreated() + "\"}";
+                "\"created\":\"" + business.getCreated() + "\"," +
+                "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
         sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -831,7 +843,9 @@ class BusinessResourceIntegrationTests {
                 "\"postcode\":\"" + address.getPostcode() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                "\"created\":\"" + business.getCreated() + "\"}";
+                "\"created\":\"" + business.getCreated() + "\"," +
+                "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
 
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -940,7 +954,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
 
@@ -1014,7 +1030,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1085,7 +1103,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1159,7 +1179,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1236,7 +1258,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1308,7 +1332,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1381,7 +1407,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1457,7 +1485,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1533,7 +1563,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1611,7 +1643,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1685,7 +1719,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1759,7 +1795,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1831,7 +1869,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1887,7 +1927,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1959,7 +2001,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -2006,7 +2050,8 @@ class BusinessResourceIntegrationTests {
                 user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
-                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         // when
         List<Business> list = List.of(business);
@@ -2041,7 +2086,8 @@ class BusinessResourceIntegrationTests {
                 user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
-                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
 
         // when
@@ -2079,7 +2125,8 @@ class BusinessResourceIntegrationTests {
                 user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
-                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         // when
         List<Business> list = List.of(business);
@@ -2228,7 +2275,8 @@ class BusinessResourceIntegrationTests {
                 user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
-                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         // when
         List<Business> list = List.of(business);
@@ -2265,7 +2313,8 @@ class BusinessResourceIntegrationTests {
                 user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
-                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         // when
         List<Business> list = List.of(business);
