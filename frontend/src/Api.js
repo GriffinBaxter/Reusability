@@ -374,6 +374,12 @@ export default {
         })
     },
 
+    // Sends a POST request to the backend to make a new conversation for a marketplace card.
+    createConversation: (messagePayload) => {
+        return instance.post(`/home/conversation`, messagePayload, { withCredentials: true})
+    },
+
+    // TODO needs to be updated when task 730 is done?
     // Sends a message to the backend with a card ID and user ID of the intended recipient
     sendMessage: (cardId, recipient, message) => {
         return instance.post(`/cards/${cardId}/message`, {
@@ -382,7 +388,8 @@ export default {
             withCredentials: true
         })
     },
-    // retrives conversation entities
+
+    // retrieves conversation entities
     getConversations() {
         return instance.get(`/home/conversation`, {withCredentials: true})
     }

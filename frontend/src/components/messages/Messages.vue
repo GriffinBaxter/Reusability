@@ -16,7 +16,8 @@
 import MessageOption from "./MessageOption";
 import Api from "../../Api"
 import LoadingDots from "../LoadingDots";
-import DefaultImage from "../../../public/profile_icon_default.png"
+import DefaultImage from "../../../public/profile_icon_default.png";
+import Cookies from "js-cookie";
 
 export default {
   name: "Messages",
@@ -39,7 +40,7 @@ export default {
       setTimeout(() => {
         this.errorMessage = "";
       }, 1000)
-    }
+    },
   },
   beforeMount() {
     this.errorMessage = "";
@@ -47,10 +48,20 @@ export default {
     Api.getConversations().then(
         (res) => {
           this.conversations = res.data.map( (conversation) => {
+            let userImage;
+            let userName;
+            const currentId = Cookies.get("userID");
+            if (conversation.instigatorId === currentId) {
+              userImage = conversation.receiverImage;
+              userName = conversation.receiverName;
+            } else {
+              userImage = conversation.instigatorImage;
+              userName = conversation.instigatorName;
+            }
             return {
               id: conversation.id,
-              image: conversation.instigatorImage || DefaultImage,
-              userName: conversation.instigatorName,
+              image: userImage || DefaultImage,
+              userName: userName,
               cardName: conversation.marketplaceCardTitle,
               creationTime: conversation.created,
               newMessage: true
