@@ -243,7 +243,7 @@ export default {
       image.append("images", file)
 
       if (this.location === "Product") {
-        Api.uploadProductImage(this.$props.businessId, this.currentData.data.id, image)
+        Api.uploadProductImage(this.$props.id, this.currentData.data.id, image)
             .then(() => {
               location.reload();
             }).catch((error) => {
