@@ -438,19 +438,19 @@ paths:
           schema:
             type: string
           required: false
-          description: "String to search products for. This string will be matched by the selected field to search in."
+          description: "String to search products for. This string will be matched by the selected field(s) to search in."
         - in: query
           name: searchBy
           schema:
             type: string
           required: false
           description: >-
-            The product field to search by.
-            Can be one of:
+            The product field or fields to search by.
+            Can be one or more of:
 
-            * productName: The name of the product
+            * name: The name of the product
 
-            * productId: The ID of the product
+            * id: The ID of the product
 
             * description: The description of the product
 
