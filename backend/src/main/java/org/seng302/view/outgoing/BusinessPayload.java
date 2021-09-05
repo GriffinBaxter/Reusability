@@ -29,6 +29,7 @@ import java.util.List;
  * @since  5.5.2021
  */
 public class BusinessPayload {
+
     private Integer id;
     private List<UserPayload> administrators;
     private Integer primaryAdministratorId;
@@ -37,6 +38,8 @@ public class BusinessPayload {
     private AddressPayload address;
     private String businessType;
     private String created;
+    private String currencySymbol;
+    private String currencyCode;
 
     /**
      * translate a list of Business to a list of BusinessPayload
@@ -59,7 +62,9 @@ public class BusinessPayload {
                            String description,
                            AddressPayload address,
                            BusinessType businessType,
-                           LocalDateTime created
+                           LocalDateTime created,
+                           String currencySymbol,
+                           String currencyCode
                            ) throws Exception {
         this.id = id;
         this.administrators = UserPayload.convertToPayloadWithoutBusiness(administrators);
@@ -72,7 +77,8 @@ public class BusinessPayload {
         this.address = address;
         this.businessType = businessType.toString();
         this.created = created.toString();
-
+        this.currencySymbol = currencySymbol;
+        this.currencyCode = currencyCode;
     }
 
     public int getId() {
@@ -107,6 +113,14 @@ public class BusinessPayload {
         return created;
     }
 
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
     @Override
     public String toString() {
         return "{\"id\":" + id +
@@ -116,6 +130,8 @@ public class BusinessPayload {
                 "\"description\":\"" + description + "\"," +
                 "\"address\":" + address +
                 ",\"businessType\":\"" + businessType + "\"," +
-                "\"created\":\"" + created +"\"}";
+                "\"created\":\"" + created + "\"," +
+                "\"currencySymbol\":\"" + currencySymbol + "\"," +
+                "\"currencyCode\":\"" + currencyCode + "\"}";
     }
 }

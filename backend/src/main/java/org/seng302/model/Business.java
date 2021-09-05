@@ -68,6 +68,12 @@ public class Business {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
+    @Column(name = "currencySymbol")
+    private String currencySymbol;
+
+    @Column(name = "currencyCode")
+    private String currencyCode;
+
     // Values need for validation.
     private static final Integer NAME_MIN_LENGTH = 1;
     private static final Integer NAME_MAX_LENGTH = 100;
@@ -85,6 +91,8 @@ public class Business {
      * @param businessType the type of the business (mandatory)
      * @param created the date the business was created
      * @param administrator the user who created this business
+     * @param currencySymbol the symbol of the currency belonging to the business
+     * @param currencyCode the code of the currency belonging to the business
      * @throws IllegalBusinessArgumentException thrown when parameter is not valid.
      */
     public Business(Integer primaryAdministratorId,
@@ -93,7 +101,9 @@ public class Business {
                     Address address,
                     BusinessType businessType,
                     LocalDateTime created,
-                    User administrator
+                    User administrator,
+                    String currencySymbol,
+                    String currencyCode
     ) throws IllegalBusinessArgumentException {
         if (!isValidName(name)){
             throw new IllegalBusinessArgumentException("Invalid business name");
@@ -109,7 +119,8 @@ public class Business {
         this.businessType = businessType;
         this.created = created;
         administrators.add(administrator);
-
+        this.currencySymbol = currencySymbol;
+        this.currencyCode = currencyCode;
     }
 
     /**
@@ -176,6 +187,22 @@ public class Business {
         return primaryAdministratorId;
     }
 
+    /**
+     * get currency symbol
+     * @return currency symbol
+     */
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+
+    /**
+     * get currency code
+     * @return currency code
+     */
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
 
     /**
      * set id
@@ -226,6 +253,22 @@ public class Business {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * set currency symbol
+     * @param currencySymbol the symbol of the currency of the business
+     */
+    public void setCurrencySymbol(String currencySymbol) {
+        this.currencySymbol = currencySymbol;
+    }
+
+    /**
+     * set currency code
+     * @param currencyCode the code of the currency of the business
+     */
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 
     /**
@@ -306,7 +349,9 @@ public class Business {
                 description,
                 addressPayload,
                 businessType,
-                created
+                created,
+                currencySymbol,
+                currencyCode
         );
     }
 
@@ -325,6 +370,8 @@ public class Business {
                 ",\"address\":\"" + address + "\"" +
                 ",\"businessType\":\"" + businessType + "\"" +
                 ",\"created\":\"" + created + "\"" +
+                ",\"currencySymbol\":\"" + currencySymbol + "\"" +
+                ",\"currencyCode\":\"" + currencyCode + "\"" +
                 "}";
     }
 

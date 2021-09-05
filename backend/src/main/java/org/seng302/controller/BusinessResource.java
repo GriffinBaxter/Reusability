@@ -43,8 +43,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +96,8 @@ public class BusinessResource {
         String name = businessRegistrationPayload.getName();
         String description = businessRegistrationPayload.getDescription();
         BusinessType businessType = businessRegistrationPayload.getBusinessType();
+        String currencySymbol = businessRegistrationPayload.getCurrencySymbol();
+        String currencyCode = businessRegistrationPayload.getCurrencyCode();
 
         //403
         if (currentUser.getId() != businessRegistrationPayload.getPrimaryAdministratorId()){
@@ -169,7 +169,9 @@ public class BusinessResource {
                         address,
                         businessType,
                         LocalDateTime.now(),
-                        currentUser
+                        currentUser,
+                        currencySymbol,
+                        currencyCode
                 );
                 business.addAdministrators(currentUser); //add user to administrators list
                 Business createdBusiness = businessRepository.save(business);
@@ -246,8 +248,10 @@ public class BusinessResource {
                 selectBusiness.getDescription(),
                 addressPayload,
                 selectBusiness.getBusinessType(),
-                selectBusiness.getCreated()
-                );
+                selectBusiness.getCreated(),
+                selectBusiness.getCurrencySymbol(),
+                selectBusiness.getCurrencyCode()
+        );
     }
 
     /**
