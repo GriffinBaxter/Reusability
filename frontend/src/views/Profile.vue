@@ -26,12 +26,25 @@
               <!--user's profile image-->
               <div id="imageDiv">
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+                <div id="change-profile-picture-button" style="padding-top: 10px" v-if="!otherUser">
+                  <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button">
+                    Change Profile Picture
+                  </button>
+                </div>
               </div>
+
+              <hr>
 
               <!--user's nickname and bio-->
               <div class="mt-3">
                 <h4>{{ nickname }}</h4>
                 <div class="text-secondary">{{ bio }}</div>
+                <div id="edit-profile" style="padding-top: 10px" v-if="!otherUser">
+                  <hr>
+                  <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button">
+                    Edit Profile
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -103,7 +116,7 @@
             <!--register business button-->
             <div class="card-body" v-if="!otherUser">
               <div id="registerBusinessRow" v-if="!otherUser">
-                <button type="button" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
+                <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
                   Register Business
                 </button>
               </div>
