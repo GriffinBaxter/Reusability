@@ -162,7 +162,7 @@ import Business from "../configs/Business"
 import Footer from "../components/main/Footer";
 import AddressAPI from "../addressInstance";
 import Cookies from 'js-cookie';
-import CurrencyAPI from "@/currencyInstance";
+import CurrencyAPI from "../currencyInstance";
 
 export default {
   name: "BusinessRegistration",
