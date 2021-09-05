@@ -8,11 +8,12 @@ import ProductCatalogue from "../src/views/ProductCatalogue";
 import VueRouter from "vue-router";
 import Api from "../src/Api"
 import ProductSearchBar from "../src/components/productCatalogue/ProductSearchBar";
+import BarcodeScannerModal from "../src/components/BarcodeScannerModal";
 
 jest.mock("../src/Api");
 
 // ---------------------------------------------- Search Bar Tests -----------------------------------------------------
-describe("Testing the BrowseListingsSearch methods", () => {
+describe("Testing the ProductSearchBar methods", () => {
 
     let productCatalogueSearchWrapper;
     let data;
@@ -206,6 +207,7 @@ describe("Testing the BrowseListingsSearch methods", () => {
 
         let productCatalogueSearchWrapper;
         let router;
+        let barcodeScannerModalWrapper;
 
         beforeAll(() => {
             const localVue = createLocalVue();
@@ -216,17 +218,28 @@ describe("Testing the BrowseListingsSearch methods", () => {
                 routes
             })
             router.push({
-                name: 'BrowseListings',
+                name: 'ProductCatalogue',
             })
             productCatalogueSearchWrapper = shallowMount(ProductSearchBar, {
                 localVue,
                 router
             });
+            barcodeScannerModalWrapper = shallowMount(BarcodeScannerModal, {
+                localVue
+            })
         });
 
-
         test('Testing that pressing the camera button opens the barcode scanning model', () => {
-            // TODO
+
+            let scannerModalBtn;
+
+            scannerModalBtn = productCatalogueSearchWrapper.find('#scanner-modal-btn');
+            scannerModalBtn.trigger('click');
+
+            productCatalogueSearchWrapper.vm.$nextTick();
+
+            expect(barcodeScannerModalWrapper.find('#modal').prop('className')).toBe('BarcodeScannerModal');
+            // expect(productCatalogueSearchWrapper.find('#shade').prop('className')).toBe('shade');
 
         });
 
@@ -236,11 +249,27 @@ describe("Testing the BrowseListingsSearch methods", () => {
         });
 
         test('Testing that pressing the clear button for the barcode input box clears the barcode when it is present', () => {
-            // TODO
+            let barcodeClearBtn;
+            productCatalogueSearchWrapper.vm.barcode = "1234567891234";
+
+            barcodeClearBtn = productCatalogueSearchWrapper.find('#barcode-clear-btn');
+            barcodeClearBtn.trigger('click');
+
+            productCatalogueSearchWrapper.vm.$nextTick();
+
+            expect(productCatalogueSearchWrapper.vm.barcode).toBe("");
         });
 
         test('Testing that pressing the clear button for the barcode input box has no impact when there is not barcode present', () => {
-            // TODO
+            let barcodeClearBtn;
+            productCatalogueSearchWrapper.vm.barcode = "";
+
+            barcodeClearBtn = productCatalogueSearchWrapper.find('#barcode-clear-btn');
+            barcodeClearBtn.trigger('click');
+
+            productCatalogueSearchWrapper.vm.$nextTick();
+
+            expect(productCatalogueSearchWrapper.vm.barcode).toBe("");
         });
     })
 })

@@ -35,7 +35,7 @@
       <label class="d-inline-block my-3 text-center col-xl-2 col-l-6 col-md-6">Barcode (EAN or UPC)</label>
       <div class="d-inline-block p-2 text-center col-xl-4 col-l-2 col-md-6">
         <input type="number" class="form-control filter-input d-inline-block" id="barcode-input" v-model="barcode">
-        <button type="button" class="btn green-button" style="margin-top: -5px" @click="(event) => {
+        <button type="button" id="scanner-modal-btn" class="btn green-button" style="margin-top: -5px" @click="(event) => {
                   this.$refs.barcodeScannerModal.showModel(event);
                 }">
           <i class="fas fa-camera" aria-hidden="true"></i>
@@ -43,7 +43,7 @@
       </div>
 
       <div class="text-center col-xl-2 col-l-2 col-md-6">
-        <button type="button" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
+        <button type="button" id="barcode-clear-btn" class="btn btn-md btn-outline-primary green-button m-2 d-inline-block w-30"
                 @click="barcode = ''">
           Clear Barcode
         </button>
