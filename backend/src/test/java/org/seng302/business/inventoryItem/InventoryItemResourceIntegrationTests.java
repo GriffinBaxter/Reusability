@@ -1066,6 +1066,52 @@ class InventoryItemResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
+    /**
+     * Tests that an OK status and a list of inventory item payloads is received when the business ID in the
+     * /businesses/{id}/inventory/ API endpoint exists and a barcode is sent.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canRetrieveInventoryItemsWhenBusinessExistsWithBarcode() throws Exception {
+        // given
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        List<InventoryItem> list = List.of(inventoryItem);
+        Page<InventoryItem> pagedResult = new PageImpl<>(list);
+        Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sortBy);
+
+        String barcode = "";
+
+        when(inventoryItemRepository.findInventoryItemsByBarcodeAndBusinessId(barcode, business.getId(), paging)).thenReturn(pagedResult);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .param("barcode", barcode)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
 //--------------------------- Tests for /businesses/{id}/inventory/{inventoryItemId} endpoint --------------------------
 
     /**

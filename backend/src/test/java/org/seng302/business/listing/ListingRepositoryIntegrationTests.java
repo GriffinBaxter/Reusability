@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -28,6 +29,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-class FindListingsByBusinessIdTests {
+class ListingRepositoryIntegrationTests {
     @Autowired
     private TestEntityManager entityManager;
 
@@ -53,12 +55,14 @@ class FindListingsByBusinessIdTests {
     private Integer businessId;
     private Business anotherBusiness;
     private Integer anotherBusinessId;
+    private Business business2;
 
     private Product product1;
     private Product product2;
     private Product product3;
     private Product product4;
     private Product product5;
+    private Product product6;
     private List<Product> products;
 
     private InventoryItem inventoryItem1;
@@ -122,6 +126,18 @@ class FindListingsByBusinessIdTests {
         businessId = business.getId();
         entityManager.flush();
 
+        business2 = new Business(
+                user.getId(),
+                "Business name",
+                "Desc.",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        business2 = entityManager.persist(business2);
+        entityManager.flush();
+
         anotherBusiness = new Business(
                 user.getId(),
                 "example name 2",
@@ -142,7 +158,7 @@ class FindListingsByBusinessIdTests {
                 "A Description",
                 "Manufacturer",
                 21.00,
-                ""
+                "9300675024235"
         );
         product2 = new Product(
                 "APP-LE",
@@ -160,7 +176,7 @@ class FindListingsByBusinessIdTests {
                 "Description",
                 "A Manufacturer",
                 11.00,
-                ""
+                "9415767624207"
         );
         product4 = new Product(
                 "DUCT",
@@ -178,10 +194,20 @@ class FindListingsByBusinessIdTests {
                 "New Description",
                 "New Manufacturer",
                 10.00,
-                ""
+                "9310140001531"
         );
 
-        products = List.of(product1, product2, product3, product4, product5);
+        product6 = new Product(
+                "BAR",
+                business2,
+                "Bark",
+                "Desc",
+                "J&J",
+                2.1,
+                "9415767624207"
+        );
+
+        products = List.of(product1, product2, product3, product4, product5, product6);
         for (Product product : products) {
             entityManager.persist(product);
         }
@@ -237,13 +263,30 @@ class FindListingsByBusinessIdTests {
                 LocalDate.of(2023, 4, 25),
                 LocalDate.of(2023, 12, 25));
 
-        inventoryItems = List.of(inventoryItem1, inventoryItem2, inventoryItem3, inventoryItem4, inventoryItem5);
+        InventoryItem inventoryItem6 = new InventoryItem(product6,
+                "BAR",
+                20,
+                2.1,
+                42.0,
+                null,
+                null,
+                null,
+                LocalDate.of(2023, 12, 25));
+
+        inventoryItems = List.of(inventoryItem1, inventoryItem2, inventoryItem3, inventoryItem4, inventoryItem5, inventoryItem6);
         for (InventoryItem inventoryItem : inventoryItems) {
             entityManager.persist(inventoryItem);
         }
 
         entityManager.flush();
         listing1 = new Listing(inventoryItem1,
+                5,
+                12.0,
+                "",
+                LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+
+        Listing listing1Dup = new Listing(inventoryItem1,
                 5,
                 12.0,
                 "",
@@ -278,14 +321,21 @@ class FindListingsByBusinessIdTests {
                 LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)),
                 LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
 
-        listings = List.of(listing1, listing2, listing3, listing4, listing5);
+        Listing listing6 = new Listing(inventoryItem6,
+                1,
+                34.2,
+                "",
+                LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
+
+        listings = List.of(listing1, listing1Dup, listing2, listing3, listing4, listing5, listing6);
         for (Listing listing : listings) {
             entityManager.persist(listing);
         }
         entityManager.flush();
     }
 
-    // -------------------------------------- order by quantity tests ----------------------------------------------
+    // -------------------------------------- findListingsByBusinessId ----------------------------------------------
 
     /**
      * Tests that the findListingByBusinessId functionality will order listings by quantity
@@ -306,11 +356,13 @@ class FindListingsByBusinessIdTests {
         orderedQuantities.add(3);
         orderedQuantities.add(4);
         orderedQuantities.add(5);
+        orderedQuantities.add(5);
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("PROD");
         orderedProdIds.add("DUCT");
         orderedProdIds.add("APP-LE3");
         orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
 
         // when
@@ -338,11 +390,13 @@ class FindListingsByBusinessIdTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<Integer> orderedQuantities = new ArrayList<>();
         orderedQuantities.add(5);
+        orderedQuantities.add(5);
         orderedQuantities.add(4);
         orderedQuantities.add(3);
         orderedQuantities.add(2);
         orderedQuantities.add(1);
         ArrayList<String> orderedProdIds = new ArrayList<>();
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("APP-LE");
         orderedProdIds.add("APP-LE3");
@@ -377,11 +431,13 @@ class FindListingsByBusinessIdTests {
         orderedPrices.add(1.5);
         orderedPrices.add(11.2);
         orderedPrices.add(12.0);
+        orderedPrices.add(12.0);
         orderedPrices.add(15.2);
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("APP-LE");
         orderedProdIds.add("APP-LE3");
         orderedProdIds.add("DUCT");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("PROD");
 
@@ -411,11 +467,13 @@ class FindListingsByBusinessIdTests {
         ArrayList<Double> orderedPrices = new ArrayList<>();
         orderedPrices.add(15.2);
         orderedPrices.add(12.0);
+        orderedPrices.add(12.0);
         orderedPrices.add(11.2);
         orderedPrices.add(1.5);
         orderedPrices.add(1.2);
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("DUCT");
         orderedProdIds.add("APP-LE3");
@@ -447,11 +505,13 @@ class FindListingsByBusinessIdTests {
         ArrayList<LocalDateTime> orderedPrices = new ArrayList<>();
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 3, 1), LocalTime.of(0,0,0)));
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("APP-LE");
         orderedProdIds.add("DUCT");
@@ -486,11 +546,13 @@ class FindListingsByBusinessIdTests {
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 8, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)));
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("APP-LE3");
         orderedProdIds.add("DUCT");
         orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("PROD");
 
@@ -522,11 +584,13 @@ class FindListingsByBusinessIdTests {
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 3, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 4, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("DUCT");
         orderedProdIds.add("APP-LE3");
         orderedProdIds.add("APP-LE");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("PROD");
 
@@ -556,11 +620,13 @@ class FindListingsByBusinessIdTests {
         ArrayList<LocalDateTime> orderedPrices = new ArrayList<>();
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+        orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 4, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2022, 3, 1), LocalTime.of(0,0,0)));
         orderedPrices.add(LocalDateTime.of(LocalDate.of(2021, 12, 1), LocalTime.of(0,0,0)));
         ArrayList<String> orderedProdIds = new ArrayList<>();
         orderedProdIds.add("PROD");
+        orderedProdIds.add("APPLE");
         orderedProdIds.add("APPLE");
         orderedProdIds.add("APP-LE");
         orderedProdIds.add("APP-LE3");
@@ -587,15 +653,15 @@ class FindListingsByBusinessIdTests {
         // given
         int pageNo = 0;
         // Page size 20 means page will be half full with the default 13 users inserted
-        int pageSize = 10;
+        int pageSize = 12;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         // when
         Page<Listing> listingPage = listingRepository.findListingsByBusinessId(businessId, pageable);
 
         // then
-        assertThat(listingPage.getTotalElements()).isEqualTo(5);
-        for (int i = 0; i < listings.size(); i++) {
+        assertThat(listingPage.getTotalElements()).isEqualTo(6);
+        for (int i = 0; i < listingPage.getContent().size(); i++) {
             assertThat(listingPage.getContent().get(i)).isEqualTo(listings.get(i));
         }
     }
@@ -634,13 +700,15 @@ class FindListingsByBusinessIdTests {
         Page<Listing> listingPage3 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(2, pageSize, sortBy));
         Page<Listing> listingPage4 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(3, pageSize, sortBy));
         Page<Listing> listingPage5 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(4, pageSize, sortBy));
+        Page<Listing> listingPage6 = listingRepository.findListingsByBusinessId(businessId, PageRequest.of(5, pageSize, sortBy));
 
         // then
-        assertThat(listingPage2.getTotalPages()).isEqualTo(5);
+        assertThat(listingPage2.getTotalPages()).isEqualTo(6);
         assertThat(listingPage2.getContent().get(0)).isEqualTo(listings.get(1));
         assertThat(listingPage3.getContent().get(0)).isEqualTo(listings.get(2));
         assertThat(listingPage4.getContent().get(0)).isEqualTo(listings.get(3));
         assertThat(listingPage5.getContent().get(0)).isEqualTo(listings.get(4));
+        assertThat(listingPage6.getContent().get(0)).isEqualTo(listings.get(5));
     }
 
     /**
@@ -685,10 +753,140 @@ class FindListingsByBusinessIdTests {
         // then
         assertThat(listingPage.getTotalPages()).isEqualTo(3);
         assertThat(listingPage.getSize()).isEqualTo(2);
-        assertThat(listingPage.getContent().get(0).getInventoryItem().getProductId()).isEqualTo("APP-LE3");
-        assertThat(listingPage.getContent().get(1).getInventoryItem().getProductId()).isEqualTo("DUCT");
+        assertThat(listingPage.getContent().get(0).getInventoryItem().getProductId()).isEqualTo("APP-LE");
+        assertThat(listingPage.getContent().get(1).getInventoryItem().getProductId()).isEqualTo("APP-LE3");
     }
 
+    // ---------------------------------------- findListingsByBusinessIdAndId ----------------------------------------
+
+    /**
+     * Tests that the (correct) listing is returned when calling findByBusinessIdAndId() with an existing business Id and listing Id
+     */
+    @Test
+    void whenFindListingByBusinessIdAndIdWithValidBusinessIdAndListingId_thenReturnListing() {
+
+        // When
+        Optional<Listing> retrievedListing = listingRepository.findListingByBusinessIdAndId(business.getId(), listing1.getId());
+
+        // Then
+        assertThat(retrievedListing).isPresent();
+        Listing foundListing = retrievedListing.get();
+        assertThat(foundListing.getId()).isEqualTo(listing1.getId());
+
+    }
+
+    /**
+     * Tests that no listing is returned when calling findByBusinessIdAndId() with an existing business Id but a non-existent listing Id
+     */
+    @Test
+    void whenFindListingByBusinessIdAndIdWithValidBusinessIdAndInvalidListingId_thenDontReturnListing() {
+
+        // When
+        Optional<Listing> retrievedListing = listingRepository.findListingByBusinessIdAndId(business.getId(), 999999);
+
+        // Then
+        assertThat(retrievedListing).isNotPresent();
+
+    }
+
+    /**
+     * Tests that no listing is returned when calling findByBusinessIdAndId() with a non-existent business Id.
+     */
+    @Test
+    void whenFindListingByBusinessIdAndIdWithInvalidBusinessId_thenDontReturnListing() {
+
+        // When
+        Optional<Listing> retrievedListing = listingRepository.findListingByBusinessIdAndId(999999, 999999);
+
+        // Then
+        assertThat(retrievedListing).isNotPresent();
+
+    }
+
+    // ---------------------------------------- findByBusinessIdAndInventoryItemProductBarcode ----------------------------------------
+
+    /**
+     * Tests the findByBusinessIdAndInventoryItemProductBarcode method returns the correct Listing
+     */
+    @Test
+    void whenFindByBusinessIdAndInventoryItemProductBarcode_withValidBarcode_ReturnListing() {
+        // given
+        String barcode = "9310140001531";
+        int pageNo = 0;
+        int pageSize = 2;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, pageable);
+
+        // then
+        assertThat(listingPage.getContent().size()).isEqualTo(1);
+        assertThat(listingPage.getContent().get(0).getInventoryItem().getProductId()).isEqualTo("PROD");
+    }
+
+    /**
+     * Tests the findByBusinessIdAndInventoryItemProductBarcode method returns an empty list if barcode doesn't exist
+     */
+    @Test
+    void whenFindByBusinessIdAndInventoryItemProductBarcode_withInvalidBarcode_ReturnNoListing() {
+        // given
+        String barcode = "111111111111111";
+        int pageNo = 1;
+        int pageSize = 2;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, pageable);
+
+        // then
+        assertThat(listingPage.getContent().size()).isZero();
+    }
+
+    /**
+     * Tests findByBusinessIdAndInventoryItemProductBarcode method returns all listings with the requested barcode
+     */
+    @Test
+    void whenFindByBusinessIdAndInventoryItemProductBarcode_withValidBarcode_ReturnMultipleListings() {
+        // given
+        String barcode = "9300675024235";
+        int pageNo = 0;
+        int pageSize = 2;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, pageable);
+
+        // then
+        assertThat(listingPage.getContent().size()).isGreaterThan(1);
+        for (int i = 0; i < listingPage.getContent().size(); i++) {
+            assertThat(listingPage.getContent().get(i).getInventoryItem().getProduct().getProductId()).isEqualTo("APPLE");
+        }
+    }
+
+    /**
+     * Tests findByBusinessIdAndInventoryItemProductBarcode method only returns values for the current business and barcode
+     */
+    @Test
+    void whenFindByBusinessIdAndInventoryItemProductBarcode_withValidBarcodeForTwoBusinesses_ReturnBusinessListing() {
+        // given
+        String barcode = "9415767624207";
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Listing> listingPage = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), barcode, pageable);
+
+        // then
+        assertThat(listingPage.getContent().size()).isNotZero();
+        for (int i = 0; i < listingPage.getContent().size(); i++) {
+            assertThat(listingPage.getContent().get(i).getInventoryItem().getProduct().getProductId()).isEqualTo("APP-LE3");
+        }
+    }
 }
 
 
