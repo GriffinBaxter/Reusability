@@ -85,6 +85,7 @@ public class BusinessResource {
      * create a new business by info given by businessPayload
      * @param sessionToken value of cookie
      * @param businessRegistrationPayload contain new business info
+     * @return business id payload
      */
     @PostMapping("/businesses")
     public ResponseEntity<BusinessIdPayload> createBusiness(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,

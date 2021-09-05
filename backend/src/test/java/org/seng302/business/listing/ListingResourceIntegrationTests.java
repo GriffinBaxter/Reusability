@@ -1692,6 +1692,52 @@ class ListingResourceIntegrationTests {
     }
 
     /**
+     * Test that an OK status is returned along with a payload of valid Listings when calling
+     * /businesses/{businessId}/listings with a barcode parameter
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canRetrieveListingByBarcode() throws Exception {
+
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        // given
+        given(userRepository.findById(4)).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), product.getBarcode(), paging)).willReturn(pagedResponse);
+
+        expectedJSON = String.format(expectedListingsJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
+                listing.isBookmarked(anotherUser), listing.getTotalBookmarks());
+
+
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))
+                .param("barcode", product.getBarcode()))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
      * Test that an OK status return and bookmark states will be change to true when user has not bookmarked given listing.
      *
      * @throws Exception Exception error
@@ -2009,7 +2055,7 @@ class ListingResourceIntegrationTests {
 
     /**
      * Tests that a 200 is returned when the user tries to delete their own message
-     * @throws Exception
+     * @throws Exception Exception error
      */
     @Test
     void canDeleteBookmarkMessageWithExistingMessage() throws Exception {

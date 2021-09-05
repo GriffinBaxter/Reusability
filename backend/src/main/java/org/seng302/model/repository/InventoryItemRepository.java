@@ -23,7 +23,7 @@ import java.util.Optional;
  * InventoryItemRepository interface
  */
 @RepositoryRestResource
-public interface InventoryItemRepository extends JpaRepository<InventoryItem, String> {
+public interface InventoryItemRepository extends JpaRepository<InventoryItem, Integer>, InventoryItemRepositoryCustom {
 
     /**
      * Search for an InventoryItem by its id
