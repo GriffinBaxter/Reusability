@@ -375,6 +375,8 @@ export default {
 
   data() {
     return {
+      // Used to determine if logged in user is admin
+      currentRole: null,
 
       // Used for having pre-filled input fields
       DEBUG_MODE: false,
@@ -934,65 +936,92 @@ export default {
       }
     },
     /**
-     * Retrieves the current url id's details and autofills details into the appropriate fields
-     * @param id User id to retrieve
+     * Retrieves the current url id's details and sets role/calls setFields() depending on user retrieving
+     * @param id Id to retrieve from backend
+     * @param isUrlID T/F if the id passed is Url Id or logged in user
      */
-    retrieveUser(id) {
-      Api.getUser(id).then((res) => {
-        if (res.data.bio !== null) {
-          this.bio = res.data.bio
+    async retrieveUser(id, isUrlID) {
+      await Api.getUser(id).then((res) => {
+        if (isUrlID) {
+          this.setFields(res)
+        } else {
+          this.currentRole = res.data.role
         }
-        this.dateOfBirth = res.data.dateOfBirth
-        this.email = res.data.email
-        if (res.data.phoneNumber !== null) {
-          this.phoneNumber = res.data.phoneNumber
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 406) {
+            this.$router.push({name: "NoUser"})
+          } else if (err.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          } else {
+            console.log(err.response)
+          }
+        } else {
+          console.log(err)
         }
-        // Names
-        this.firstName = res.data.firstName
-        if (res.data.middleName !== null) {
-          this.middleName = res.data.middleName
-        }
-        this.lastName = res.data.lastName
-        if (res.data.nickname !== null) {
-          this.nickname = res.data.nickname
-        }
-        // Address
-        if (res.data.homeAddress.streetNumber !== null) {
-          this.streetNumber = res.data.homeAddress.streetNumber
-        }
-        if (res.data.homeAddress.streetName !== null) {
-          this.streetName = res.data.homeAddress.streetName
-        }
-        if (res.data.homeAddress.suburb !== null) {
-          this.suburb = res.data.homeAddress.suburb
-        }
-        if (res.data.homeAddress.city !== null) {
-          this.city = res.data.homeAddress.city
-        }
-        if (res.data.homeAddress.region !== null) {
-          this.region = res.data.homeAddress.region
-        }
-        if (res.data.homeAddress.postcode) {
-          this.postcode = res.data.homeAddress.postcode
-        }
-        this.country = res.data.homeAddress.country
       })
+    },
+    /**
+     * Autofills the fields from API response
+     * @param res API response
+     */
+    setFields(res) {
+      if (res.data.bio !== null) {
+        this.bio = res.data.bio
+      }
+      this.dateOfBirth = res.data.dateOfBirth
+      this.email = res.data.email
+      if (res.data.phoneNumber !== null) {
+        this.phoneNumber = res.data.phoneNumber
+      }
+      // Names
+      this.firstName = res.data.firstName
+      if (res.data.middleName !== null) {
+        this.middleName = res.data.middleName
+      }
+      this.lastName = res.data.lastName
+      if (res.data.nickname !== null) {
+        this.nickname = res.data.nickname
+      }
+      // Address
+      if (res.data.homeAddress.streetNumber !== null) {
+        this.streetNumber = res.data.homeAddress.streetNumber
+      }
+      if (res.data.homeAddress.streetName !== null) {
+        this.streetName = res.data.homeAddress.streetName
+      }
+      if (res.data.homeAddress.suburb !== null) {
+        this.suburb = res.data.homeAddress.suburb
+      }
+      if (res.data.homeAddress.city !== null) {
+        this.city = res.data.homeAddress.city
+      }
+      if (res.data.homeAddress.region !== null) {
+        this.region = res.data.homeAddress.region
+      }
+      if (res.data.homeAddress.postcode) {
+        this.postcode = res.data.homeAddress.postcode
+      }
+      this.country = res.data.homeAddress.country
     }
   },
-  beforeCreate() {
+  async created() {
     const currentID = Cookies.get('userID');
     if (currentID) {
       // this.getLoginRole(currentID);
        const id = this.$route.params.id
 
       if (currentID !== id) {
-        this.$router.push({name: "Profile", params: {id}})
+        await this.retrieveUser(currentID, false);
+        if (this.currentRole === null || this.currentRole === "USER") {
+          await this.$router.push({name: "Profile", params: {id}})
+        }
       }
     }
   },
   mounted() {
     const id = this.$route.params.id
-    this.retrieveUser(id);
+    this.retrieveUser(id, true);
   }
 }
 
