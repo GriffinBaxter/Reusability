@@ -602,7 +602,7 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestProducts();
     },
@@ -880,11 +880,17 @@ export default {
       }).catch((error) => console.log(error))
     },
 
+    /**
+     * Gets the currency code and symbol from the REST countries API response.
+     */
     filterResponse(response) {
       this.currencyCode = response[0].currencies[0].code;
       this.currencySymbol = response[0].currencies[0].symbol;
     },
 
+    /**
+     * Clicks the image
+     */
     onUploadClick() {
       this.$refs.image.click();
     },
@@ -918,7 +924,7 @@ export default {
     },
 
     /**
-     * Autofills data from the barcode, using the OpenFoodFacts API.
+     * Autofill data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
       this.toastErrorMessage = "";
@@ -926,18 +932,30 @@ export default {
         return undefined;
       });
     },
-    onSearch (checked, searchQuery) {
+
+    /**
+     * Requests the products that match the current search.
+     * @param checked A list of selected checked boxes.
+     * @param searchQuery The search query.
+     * @param searchBarcode The barcode to search by.
+     */
+    onSearch (checked, searchQuery, searchBarcode) {
       this.searchBy = checked;
       this.searchQuery = searchQuery;
+      this.searchBarcode = searchBarcode;
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": "0"}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0"}
       });
       this.requestProducts();
     }
   },
 
+  /**
+   * Mounts the product catalogue.
+   * @return {Promise<void>}
+   */
   async mounted() {
     // If the edit is successful the UpdateProductModal component will emit an 'edits' event. This code notices the emit
     // and will alert the user that the edit was successful by calling the afterEdit function.
@@ -949,10 +967,9 @@ export default {
     if (checkAccessPermission(this.$route.params.id, actAs)) {
       await this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
     } else {
-      /**
-       * When mounted, initiate population of page.
-       * If cookies are invalid or not present, redirect to login page.
-       */
+
+      // When mounted, initiate population of page.
+      // If cookies are invalid or not present, redirect to login page.
       const currentID = Cookies.get('userID');
       if (currentID) {
         await this.currencyRequest();

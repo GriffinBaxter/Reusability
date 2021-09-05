@@ -110,17 +110,6 @@ export default {
       const searchBarcode = this.barcode;
       const searchQuery = this.$refs.searchInput.value;
 
-      if (
-          searchQuery !== this.$route.query.searchQuery ||
-          searchBarcode !== this.$route.query.barcode
-      ) {
-        this.$router.push({
-          path: `/businessProfile/${parseInt(this.$route.params.id)}/productCatalogue`, query: {
-            searchQuery: searchQuery, barcode: searchBarcode,
-          }
-        });
-      }
-
       this.$emit('search', checked, searchQuery, searchBarcode);
     },
     /**
