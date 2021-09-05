@@ -86,9 +86,14 @@ export default {
           value.push(checkbox.value);
         }
       }
-      if (value.length === 0){
-        document.getElementById("checkbox-product-name").click();
-        value.push("name");
+      if (value.length === 0) {
+        window.onload = function () {
+
+          console.log(document.getElementById('checkbox-product-name'))
+
+          document.getElementById('checkbox-product-name').click();
+          value.push("name");
+        }
       }
       return value
     },
@@ -109,6 +114,17 @@ export default {
       const checked = this.getSelectedCheckbox();
       const searchBarcode = this.barcode;
       const searchQuery = this.$refs.searchInput.value;
+
+      if (
+          searchQuery !== this.$route.query.searchQuery ||
+          searchBarcode !== this.$route.query.barcode
+      ) {
+        this.$router.push({
+          path: '/productCatalogue', query: {
+            searchQuery: searchQuery, barcode: searchBarcode
+          }
+        });
+      }
 
       this.$emit('search', checked, searchQuery, searchBarcode);
     },
