@@ -24,6 +24,8 @@ import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 import java.util.List;
 
+import static org.seng302.Validation.verifyImageExtension;
+
 /**
  * Controller class for images. This class includes:
  * POST "/businesses/{businessId}/products/{productId}/images" endpoint used for adding image to a product of a businesses.
@@ -89,7 +91,7 @@ public class ImageResource {
 
         // Checking file extension
         String fileExtension = getFileExtension(imageFileName);
-        Authorization.verifyImageExtension(fileExtension, imageName);
+        verifyImageExtension(fileExtension, imageName);
 
         // Creating thumbnail image
         InputStream thumbnailInputStream;
@@ -183,7 +185,7 @@ public class ImageResource {
                 Business business = getVerifiedBusiness(businessId);
 
                 // Verify access rights of the user to the business
-                verifyAdministrationRights(currentUser, business);
+                Authorization.verifyBusinessAdmin(currentUser, businessId);
 
                 // Verify Product id
                 verifyProductId(productId, business, currentUser);
@@ -244,7 +246,7 @@ public class ImageResource {
         Business business = getVerifiedBusiness(businessId);
 
         // Verify access rights of the user to the business
-        verifyAdministrationRights(user, business);
+        Authorization.verifyBusinessAdmin(user, businessId);
 
         // Verify Product id
         verifyProductId(productId, business, user);
@@ -285,7 +287,7 @@ public class ImageResource {
         Business business = getVerifiedBusiness(businessId);
 
         // Verify access rights of the user to the business
-        verifyAdministrationRights(user, business);
+        Authorization.verifyBusinessAdmin(user, businessId);
 
         // Verify Product id
         verifyProductId(productId, business, user);
@@ -324,14 +326,14 @@ public class ImageResource {
     }
 
     /**
-     * Verifies that the given business id exists and returns the associated business if it exists.
-     * Throws a NOT_ACCEPTABLE error is the business id does not exist.
+     * Verifies that the given user id exists and returns the user if it exists.
+     * Throws a NOT_ACCEPTABLE error is the user id does not exist.
      * <p>
      * PRECONDITIONS:
      * POST CONDITIONS:
      *
      * @param userId
-     * @return business
+     * @return user
      */
     private User getVerifiedUser(Integer userId) throws ResponseStatusException {
         Optional<User> user = userRepository.findById(userId);
@@ -363,28 +365,6 @@ public class ImageResource {
                     "for example trying to access a resource by an ID that does not exist.");
         }
         return business.get();
-    }
-
-    /**
-     * Verifies that the given user has the administration rights to access and potentially modify the associated business content.
-     * Throws FORBIDDEN error message is the user has incorrect administration rights.
-     * <p>
-     * PRECONDITIONS:
-     * POST CONDITIONS:
-     *
-     * @param user,     the user who wants to access the information of the given business
-     * @param business, the business that is desired to be accessed
-     */
-    private void verifyAdministrationRights(User user, Business business) throws ResponseStatusException {
-        if (user.getRole().equals(Role.USER) && !user.getBusinessesAdministered().contains(business.getId())) {
-            String errorMessage = String
-                    .format("User (id: %d) lacks permissions to modify business (id: %d) product images.",
-                            user.getId(), business.getId());
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to add " +
-                    "an image for a product that it is in a catalogue for a business they do not administer AND " +
-                    "the user is not a global application admin");
-        }
     }
 
     /**
