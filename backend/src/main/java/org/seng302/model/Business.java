@@ -334,7 +334,7 @@ public class Business {
      * @param businessName The business name to be checked.
      * @return true when the business name is valid
      */
-    private boolean isValidName(String businessName) {
+    public boolean isValidName(String businessName) {
         return (businessName.length() >= NAME_MIN_LENGTH) &&
                 (businessName.length() <= NAME_MAX_LENGTH) &&
                 (businessName.matches("^[a-zA-Z0-9À-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '#,.&()-]+$"));
@@ -346,7 +346,7 @@ public class Business {
      * @param description The description to be checked.
      * @return true when the description is valid.
      */
-    private boolean isValidDescription(String description) {
+    public boolean isValidDescription(String description) {
         return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
     }
 }

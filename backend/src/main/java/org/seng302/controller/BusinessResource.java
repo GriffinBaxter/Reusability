@@ -530,11 +530,12 @@ public class BusinessResource {
         // Verify payload content is still valid to the requirements of a business. fail --> 400 BAD REQUEST
         Business updatedBusiness = updatePrimaryAdminstrator(user, business.get(), businessModifyPayload);
         updateBusinessName(updatedBusiness, user, businessModifyPayload);
-        updateBusinessDescription(updatedBusiness, businessModifyPayload.getDescription());
+        updateBusinessDescription(updatedBusiness, user, businessModifyPayload.getDescription());
         updateBusinessAddress(updatedBusiness, user, businessModifyPayload.getAddress());
         updateBusinessType(updatedBusiness, user, businessModifyPayload.getBusinessType());
 
         // save and flush. fail --> 500 SERVER ERROR
+        businessRepository.saveAndFlush(updatedBusiness);
     }
 
     /**
@@ -574,6 +575,7 @@ public class BusinessResource {
             try {
                 Address newAddress = new Address(addressJSON.getStreetNumber(),
                         addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
+                addressRepository.save(newAddress);
                 business.setAddress(newAddress);
             } catch (IllegalAddressArgumentException err) {
                 String errorMessage = String.format("User (id: %d) attempted to update address for business (id: %d). But the address was invalid", user.getId(), business.getId());
@@ -591,10 +593,19 @@ public class BusinessResource {
      * Updates the business description if provided.
      *
      * @param business The business that is to be updated.
+     * @param user the requesting user
      * @param description The new description provided.
      */
-    private void updateBusinessDescription(Business business, String description) {
+    private void updateBusinessDescription(Business business, User user, String description) {
         if (description != null) {
+            if (!business.isValidDescription(description)) {
+                String errorMessage = String.format("User (id: %d) attempted to update description for business (id: %d). But the description was invalid", user.getId(), business.getId());
+                logger.error(errorMessage);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+            }
+
+            String debugMessage = String.format("User (id: %d) updated description for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getDescription(), description);
+            logger.debug(debugMessage);
             business.setDescription(description);
         }
     }
@@ -613,6 +624,12 @@ public class BusinessResource {
             if (payload.getName() == null) {
                 throw new IllegalBusinessArgumentException("Cannot be null");
             }
+
+            // Check that it is valid
+            if (!business.isValidName(payload.getName())) {
+                throw new IllegalBusinessArgumentException("invalid name provided.");
+            }
+
             // Perform the modification
             business.setName(payload.getName());
             String debugMessage = String.format("User (id: %d) modfied business (id: %d) name. %s --> %s.",
@@ -645,11 +662,28 @@ public class BusinessResource {
         boolean userIsPrimaryAdmin = business.getPrimaryAdministratorId().equals(user.getId());
 
         if (userIsPrimaryAdmin || Authorization.isGAAorDGAA(user)) {
-            if (payload.getPrimaryAdminId() != null) {
+            if (payload.getPrimaryAdministratorId() != null) {
+                Optional<User> newPrimaryAdmin = userRepository.findById(payload.getPrimaryAdministratorId());
+
+                // Ensure the new id is valid
+                if (newPrimaryAdmin.isEmpty()) {
+                    String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
+                            "But lacked permissions.", user.getId(), business.getId());
+                    logger.error(errorMessage);
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
+                            "update the business info for a business they do not administer AND the user is not a global application admin");
+                }
+
+                // If the new primary admin is not part of the business then add him in.
+                if (!business.isAnAdministratorOfThisBusiness(newPrimaryAdmin.get())) {
+                    business.addAdministrators(newPrimaryAdmin.get());
+                }
+
+
                 String debugMessage = String.format("Updated business has a new primary adminstrator %d --> %d",
-                        payload.getPrimaryAdminId(), business.getPrimaryAdministratorId());
+                        payload.getPrimaryAdministratorId(), business.getPrimaryAdministratorId());
                 logger.debug(debugMessage);
-                business.setPrimaryAdministratorId(payload.getPrimaryAdminId());
+                business.setPrimaryAdministratorId(payload.getPrimaryAdministratorId());
             }
         } else {
             // Only the primary admin can change the primary admin (or the GAA and DGAA can as well).
