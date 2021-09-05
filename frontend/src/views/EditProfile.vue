@@ -356,6 +356,7 @@ import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
 import Api from "../Api";
+import {filterResponse} from "./helpFunction";
 
 export default {
   name: "EditProfile",
@@ -535,84 +536,13 @@ export default {
       let input = document.getElementById('home-address').value;
       if (input.length > 4) { // Starts on 5th char
         await AddressAPI.addressQuery(input).then((response) => {
-          this.addresses = this.filterResponse(response.data);
+          this.addresses = filterResponse(response.data);
         })
             .catch((error) => console.log(error))
       } else {
         this.addresses = [];
       }
     },
-
-    /**
-     * Filters the response data from the Komoot API by extracting the relevant fields and storing them
-     * both as a string to be shown in the autocomplete dropdown box, and unchanged in the addressResultProperties
-     * variable to allow for the individual parts of the address to be entered into the correct fields
-     * when a user clicks on an autocomplete option.
-     * @param data The request result from sent back by the Komoot Photon API
-     * @returns {array} A list of addresses to suggest to the user
-     */
-    filterResponse (data) {
-      let {features} = data;
-      let autoCompleteOptions = [];
-      let index = 0;
-      let numInList = 0;
-      let fLength = features.length;
-      // Display the first 8 options returned
-      let maxL = 8;
-      // Clear the list after each request (before filtering)
-      this.addressResultProperties = [];
-
-      while ((numInList < maxL) && (index < fLength)) {
-        let address = "";
-        let { properties } = features[index];
-        if (properties) {
-
-          let {country, city, postcode, state, street, housenumber, name, district} = properties;
-
-          if (name) {
-            address += name + ", ";
-          }
-
-          if (housenumber) {
-            address += housenumber;
-          }
-
-          if (street) {
-            address += " " + street + ", ";
-          }
-
-          if (district) {
-            address += " " + district + ", ";
-          }
-
-          if (city) {
-            address += city + ", ";
-          }
-
-          if (postcode) {
-            address += postcode + ", ";
-          }
-
-          if (state) {
-            address += state + ", ";
-          }
-
-          if (country) {
-            address += country;
-          }
-
-          if (!autoCompleteOptions.includes(address.trim())) {
-            // Add to both the string to display and the variable for later use.
-            autoCompleteOptions.push(address.trim());
-            this.addressResultProperties.push(properties);
-            numInList++;
-          }
-        }
-        index++;
-      }
-      return autoCompleteOptions;
-    },
-
 
     /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
