@@ -503,7 +503,7 @@ paths:
           schema:
             type: string
           required: false
-          description: "Criteria to search listings for, a barcode. Must be a UPC-A or EAN-13 barcode."
+          description: "A barcode as a string to search the products for. Must be a UPC-A or EAN-13 barcode."
       responses:
         '200':
           description: 'Catalogue retrieved successfully. This could be an empty array.'
