@@ -598,7 +598,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -637,7 +637,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -676,7 +676,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -715,7 +715,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -727,6 +727,115 @@ class ProductResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status and a list of product payloads is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists.
+     * Test specifically for when the order by and page params provided are valid and a search query is provided.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canRetrieveProductsWhenBusinessExistsWithSearchQueryAndValidOrderByAndPageParams() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "]";
+
+        // when
+        List<Product> list = List.of(product);
+        Page<Product> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of("Beans"), List.of("name"), 1, paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                        .param("searchQuery", "Beans")
+                        .param("orderBy", "productIdASC")
+                        .param("page", "0")
+                        .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /** Tests that an OK status and a list of product payloads is received when the business ID in the
+     * /businesses/{id}/products API endpoint exists.
+     * Test specifically for when the order by and page params provided are valid and a search query and valid search by is provided.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canRetrieveProductsWhenBusinessExistsWithSearchQueryAndValidSearchByAndValidOrderByAndPageParams() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "]";
+
+        // when
+        List<Product> list = List.of(product);
+        Page<Product> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of("PROD"), List.of("id"), 1, paging)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                        .param("searchQuery", "PROD")
+                        .param("searchBy", "id")
+                        .param("orderBy", "productIdASC")
+                        .param("page", "0")
+                        .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /** Tests that a BAD_REQUEST status is received when making a request to the /businesses/{id}/products API endpoint with
+     * a valid business ID, a search query, valid order by and page params but an invalid search by.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveProductsWhenBusinessExistsWithSearchQueryAndInvalidSearchBy() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                        .param("searchQuery", "Beans")
+                        .param("searchBy", "name", "desc")
+                        .param("orderBy", "productIdASC")
+                        .param("page", "0")
+                        .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -903,7 +1012,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("barcode").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -944,7 +1053,7 @@ class ProductResourceIntegrationTests {
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.desc("barcode").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
-        when(productRepository.findProductsByBusinessId(1, paging)).thenReturn(pagedResponse);
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
@@ -1010,7 +1119,7 @@ class ProductResourceIntegrationTests {
 
 
     /**
-     * Tests that a OK status is returned when attempting to modify a product with valid details and as DGAA.
+     * Tests that an OK status is returned when attempting to modify a product with valid details and as DGAA.
      *
      * @throws Exception Exception error
      */

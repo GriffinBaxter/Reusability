@@ -95,9 +95,9 @@ export default {
         withCredentials: true
     }),
 
-    // Sends a get request to the backend asking for a sorted list of products for a business
-    sortProducts: (businessID, sortBy, page) => {
-        return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`, {
+    // Sends a get request to the backend asking for a sorted and paginated list of products matching the given search criteria for a business.
+    searchProducts: (businessID, searchQuery, searchBy, sortBy, page) => {
+        return instance.get(`/businesses/${businessID}/products?searchQuery=${searchQuery}&searchBy=${searchBy}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },
@@ -321,8 +321,8 @@ export default {
     },
 
     // Sends a GET request to the backend asking for any listings matching the given criteria (paginated)
-    searchListings: (searchQuery, searchType, orderBy, page, businessTypes, minimumPrice, maximumPrice, fromDate, toDate) => {
-        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessTypes=${businessTypes}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
+    searchListings: (searchQuery, searchType, orderBy, page, businessTypes, barcode, minimumPrice, maximumPrice, fromDate, toDate) => {
+        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessTypes=${businessTypes}&barcode=${barcode}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
             withCredentials: true
         })
     },

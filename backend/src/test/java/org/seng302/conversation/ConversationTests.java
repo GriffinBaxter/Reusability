@@ -1,4 +1,4 @@
-package org.seng302.marketplaceConversation;
+package org.seng302.conversation;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

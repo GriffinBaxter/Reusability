@@ -2,6 +2,7 @@ package org.seng302.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.seng302.view.outgoing.ConversationPayload;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -76,6 +77,14 @@ public class Conversation {
         this.deletedByInstigator = false;
         this.deletedByReceiver = false;
         this.created = LocalDateTime.now();
+    }
+
+    /**
+     * Converts the Conversation into its payload representation to be sent to the frontend.
+     * @return ConversationPayload object representing the conversation.
+     */
+    public ConversationPayload toConversationPayload() {
+        return new ConversationPayload(id, instigator, receiver, marketplaceCard, created, deletedByInstigator, deletedByReceiver);
     }
 
     /**
