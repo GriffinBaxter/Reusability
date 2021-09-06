@@ -316,6 +316,8 @@ export default {
     switchNotificationBox() {
       this.newNotification = false;
       this.openNotificationBox = !this.openNotificationBox;
+      this.showInteractMenu = false;
+      this.showMessages = false;
     },
     /**
      * omit name which length longer than max.
@@ -416,6 +418,7 @@ export default {
     toggleMessages() {
       this.showMessages = !this.showMessages;
       this.openNotificationBox = false;
+      this.showInteractMenu = false;
     },
     /**
      * Closes the interact as and its inner parts.
