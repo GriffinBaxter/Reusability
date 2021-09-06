@@ -563,7 +563,6 @@ public class BusinessResource {
         business.setBusinessType(businessType);
     }
 
-    // TODO UPDATE the CURRENCY of the business. To suit the new address.
     /**
      * Updates the business address.
      *
