@@ -537,6 +537,8 @@ public class BusinessResource {
         updateBusinessDescription(updatedBusiness, user, businessModifyPayload.getDescription());
         updateBusinessAddress(updatedBusiness, user, businessModifyPayload.getAddress());
         updateBusinessType(updatedBusiness, user, businessModifyPayload.getBusinessType());
+        updateBusinessCurrencySymbol(updatedBusiness, user, businessModifyPayload.getCurrencySymbol());
+        updateBusinessCurrencyCode(updatedBusiness, user, businessModifyPayload.getCurrencyCode());
 
         // save and flush. fail --> 500 SERVER ERROR
         businessRepository.saveAndFlush(updatedBusiness);
@@ -699,6 +701,36 @@ public class BusinessResource {
         }
 
         return business;
+    }
+
+    /**
+     * Updates the business currency symbol if provided.
+     *
+     * @param business The business that is to be updated.
+     * @param user the requesting user
+     * @param currencySymbol The new currency symbol provided.
+     */
+    private void updateBusinessCurrencySymbol(Business business, User user, String currencySymbol) {
+        if (currencySymbol != null) {
+            String debugMessage = String.format("User (id: %d) updated currency symbol for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getCurrencySymbol(), currencySymbol);
+            logger.debug(debugMessage);
+            business.setCurrencySymbol(currencySymbol);
+        }
+    }
+
+    /**
+     * Updates the business currency code if provided.
+     *
+     * @param business The business that is to be updated.
+     * @param user the requesting user
+     * @param currencyCode The new currency code provided.
+     */
+    private void updateBusinessCurrencyCode(Business business, User user, String currencyCode) {
+        if (currencyCode != null) {
+            String debugMessage = String.format("User (id: %d) updated currency code for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getCurrencyCode(), currencyCode);
+            logger.debug(debugMessage);
+            business.setCurrencySymbol(currencyCode);
+        }
     }
 
 }

@@ -751,7 +751,7 @@ class BusinessResourceIntegrationTests {
                 "\"postcode\":\"90210\"" +
                 "}" +
                 "}]" + "," +
-                "\"primaryAdministratorId\":" + user.getId() + "," +
+                "\"primaryAdministratorId\":null," +
                 "\"name\":\"" + business.getName() + "\"," +
                 "\"description\":\"" + business.getDescription() + "\"," +
                 "\"address\":{" +

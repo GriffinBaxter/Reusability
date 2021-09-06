@@ -13,6 +13,8 @@ public class BusinessModifyPayload {
     private String description;
     private AddressPayload address;
     private String businessType;
+    private String currencySymbol;
+    private String currencyCode;
 
     public Integer getPrimaryAdministratorId() {
         return primaryAdministratorId;
@@ -34,13 +36,23 @@ public class BusinessModifyPayload {
         return businessTypeTranslate(businessType);
     }
 
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
     public String toString() {
         return "{" +
-                "\"primaryAdministratorId\"" + primaryAdministratorId + "," +
-                "\"name\"" + name + "," +
-                "\"description\"" + description + "," +
-                "\"address\"" + address.toString() + "," +
-                "\"businessType\"" + businessType + "," +
+                "\"primaryAdministratorId\":" + primaryAdministratorId + "," +
+                "\"name\":\"" + name + "\"," +
+                "\"description\":\"" + description + "\"," +
+                "\"address\":" + address.toString() + "," +
+                "\"businessType\":\"" + businessType + "\"," +
+                "\"currencySymbol\":\"" + currencySymbol + "\"," +
+                "\"currencyCode\":\"" + currencyCode + "\"" +
                 "}";
     }
 
