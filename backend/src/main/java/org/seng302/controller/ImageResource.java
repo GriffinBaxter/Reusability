@@ -102,10 +102,7 @@ public class ImageResource {
         try {
             thumbnailInputStream = fileStorageService.generateThumbnail(image, fileExtension);
         } catch (IOException e) {
-            String errorMessage = String.format(
-                    "Thumbnail unable to be created from image (name: %s)", image.getName()
-            );
-            logger.error(errorMessage);
+            logger.error("Thumbnail unable to be created from image (name: {})", image.getName());
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Thumbnail unable to be created from image.");
         }
 
@@ -124,20 +121,20 @@ public class ImageResource {
         }
         // If the file already exists then we need to just something went wrong
         catch (FileAlreadyExistsException e) {
-            String errorMessage = String.format("File already existed. Canceling storage of image with filename %s, %s",
+            logger.error("File already existed. Canceling storage of image with filename {}, {}",
                     imageFileName, imageOwner);
-            logger.error(errorMessage);
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored.");
         }
         // If this fails we need to ensure it was removed.
         catch (IOException e) {
-            String errorMessage = String.format("Failed to store image with filename %s, %s", imageFileName, imageOwner);
-            logger.error(errorMessage);
+            logger.error("Failed to store image with filename {}, {}", imageFileName, imageOwner);
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored.");
         }
 
         // If we cannot get the file path, then we have to assume that it failed.
@@ -146,9 +143,9 @@ public class ImageResource {
         if (imageFilePath == null || thumbnailFilePath == null) {
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            String errorMessage = String.format("Failed to locate image with filename %s, %s", imageFileName, imageOwner);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored");
+            logger.error("Failed to locate image with filename {}, {}", imageFileName, imageOwner);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored");
         }
 
         return List.of(imageFilePath, thumbnailFilePath);
@@ -197,7 +194,7 @@ public class ImageResource {
                 //TODO: allBusinessImages
                 break;
             case "PRODUCT_IMAGE":
-                // Verify businessIs parameter
+                // Verify businessId parameter
                 Business business = getVerifiedBusiness(businessId);
 
                 // Verify access rights of the user to the business
@@ -316,14 +313,15 @@ public class ImageResource {
 
                 // Verify current user permission
                 if (userId != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User have no permission to do this.");
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "User does not have permission to update this image.");
                 }
 
                 // Verify image id
                 Optional<UserImage> optionalUserImage = userImageRepository.findById(imageId);
                 if (optionalUserImage.isEmpty()) {
-                    logger.error("Given image (Id: {}) does not exist.", imageId);
-                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image does not exist.");
+                    logger.error("Given user image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given user image does not exist.");
                 }
                 UserImage newPrimaryUserImage = optionalUserImage.get();
                 logger.info("User image (ID: {}) retrieved", imageId);
@@ -346,7 +344,7 @@ public class ImageResource {
                 //TODO: allBusinessImages
                 break;
             case "PRODUCT_IMAGE":
-                // Verify businessIs parameter
+                // Verify businessId parameter
                 Business business = getVerifiedBusiness(businessId);
 
                 // Verify access rights of the user to the business
@@ -359,8 +357,8 @@ public class ImageResource {
                 Optional<ProductImage> optionalProductImage = productImageRepository.findById(imageId);
 
                 if (optionalProductImage.isEmpty()) {
-                    logger.error("Given image (Id: {}) does not exist.", imageId);
-                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image does not exist.");
+                    logger.error("Given product image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given product image does not exist.");
                 }
 
                 ProductImage newPrimaryProductImage = optionalProductImage.get();
@@ -441,14 +439,6 @@ public class ImageResource {
         return business.get();
     }
 
-    private Image getVerifiedImage(Optional<Image> optionalImage, Integer imageId) {
-        if (optionalImage.isEmpty()) {
-            logger.error("Given image (Id: {}) does not exist.", imageId);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image does not exist.");
-        }
-        return optionalImage.get();
-    }
-
     /**
      * Verifies that the given product id exists.
      * Throws NOT_ACCEPTABLE error if product id does not exists.
@@ -514,7 +504,8 @@ public class ImageResource {
         List<ProductImage> primaryProductImages = productImageRepository
                 .findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
         if (primaryProductImages.isEmpty()) {
-            List<ProductImage> productImages = productImageRepository.findProductImageByBusinessIdAndProductId(businessId, productId);
+            List<ProductImage> productImages = productImageRepository
+                    .findProductImageByBusinessIdAndProductId(businessId, productId);
             if (!productImages.isEmpty()) {
                 productImages.get(0).setIsPrimary(true);
                 productImageRepository.save(productImages.get(0));
