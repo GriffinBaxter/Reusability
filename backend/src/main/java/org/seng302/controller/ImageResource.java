@@ -154,6 +154,17 @@ public class ImageResource {
         return List.of(imageFilePath, thumbnailFilePath);
     }
 
+    /**
+     * Upload an image for given user/business/product.
+     *
+     * @param image            image file
+     * @param sessionToken     current user session token
+     * @param unCheckImageType image type (user/business/product) (owner type)
+     * @param userId           selected user id
+     * @param businessId       selected business id
+     * @param productId        selected product id
+     * @return image create payload
+     */
     @PostMapping("/images")
     public ResponseEntity<ImageCreatePayload> createImage(@RequestParam("images") MultipartFile image,
                                                           @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
@@ -276,6 +287,16 @@ public class ImageResource {
         updatePrimaryImage(businessId, productId);
     }
 
+    /**
+     * make given image be primary image for given owner
+     *
+     * @param sessionToken     current user session token
+     * @param imageId          selected
+     * @param unCheckImageType image type (user/business/product) (owner type)
+     * @param userId           selected user id
+     * @param businessId       selected business id
+     * @param productId        selected product id
+     */
     @PutMapping("/images/{imageId}/makePrimary")
     @ResponseStatus(value = HttpStatus.OK, reason = "Primary image successfully updated")
     public void makePrimaryImage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
