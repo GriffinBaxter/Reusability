@@ -159,7 +159,7 @@ public class ImageResource {
      *
      * @param image            image file
      * @param sessionToken     current user session token
-     * @param unCheckImageType image type (user/business/product) (owner type)
+     * @param uncheckedImageType image type (user/business/product) (owner type)
      * @param userId           selected user id
      * @param businessId       selected business id
      * @param productId        selected product id
@@ -168,7 +168,7 @@ public class ImageResource {
     @PostMapping("/images")
     public ResponseEntity<ImageCreatePayload> createImage(@RequestParam("images") MultipartFile image,
                                                           @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                                          @RequestParam String unCheckImageType,
+                                                          @RequestParam String uncheckedImageType,
                                                           @RequestParam(required = false) Integer userId,
                                                           @RequestParam(required = false) Integer businessId,
                                                           @RequestParam(required = false) String productId) {
@@ -179,7 +179,7 @@ public class ImageResource {
         String imageOwnerInfo;
         List<UserImage> allUserImages = new ArrayList<>();
         List<ProductImage> allProductImages = new ArrayList<>();
-        switch (unCheckImageType) {
+        switch (uncheckedImageType) {
             case "USER_IMAGE":
                 // Verify userIs parameter
                 getVerifiedUser(userId);
@@ -211,7 +211,7 @@ public class ImageResource {
                 allProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
                 break;
             default:
-                logger.error("Given image type {} invalid", unCheckImageType);
+                logger.error("Given image type {} invalid", uncheckedImageType);
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type");
         }
 
@@ -292,7 +292,7 @@ public class ImageResource {
      *
      * @param sessionToken     current user session token
      * @param imageId          selected
-     * @param unCheckImageType image type (user/business/product) (owner type)
+     * @param uncheckedImageType image type (user/business/product) (owner type)
      * @param userId           selected user id
      * @param businessId       selected business id
      * @param productId        selected product id
@@ -301,7 +301,7 @@ public class ImageResource {
     @ResponseStatus(value = HttpStatus.OK, reason = "Primary image successfully updated")
     public void makePrimaryImage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                  @PathVariable Integer imageId,
-                                 @RequestParam String unCheckImageType,
+                                 @RequestParam String uncheckedImageType,
                                  @RequestParam(required = false) Integer userId,
                                  @RequestParam(required = false) Integer businessId,
                                  @RequestParam(required = false) String productId) {
@@ -309,9 +309,9 @@ public class ImageResource {
         // Verify token access
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        switch (unCheckImageType) {
+        switch (uncheckedImageType) {
             case "USER_IMAGE":
-                // Verify userIs parameter
+                // Verify userId parameter
                 getVerifiedUser(userId);
 
                 // Verify current user permission
@@ -322,8 +322,8 @@ public class ImageResource {
                 // Verify image id
                 Optional<UserImage> optionalUserImage = userImageRepository.findById(imageId);
                 if (optionalUserImage.isEmpty()) {
-                    logger.error("Given image (Id: {}) is not exist.", imageId);
-                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image is not exist.");
+                    logger.error("Given image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image does not exist.");
                 }
                 UserImage newPrimaryUserImage = optionalUserImage.get();
                 logger.info("User image (ID: {}) retrieved", imageId);
@@ -359,8 +359,8 @@ public class ImageResource {
                 Optional<ProductImage> optionalProductImage = productImageRepository.findById(imageId);
 
                 if (optionalProductImage.isEmpty()) {
-                    logger.error("Given image (Id: {}) is not exist.", imageId);
-                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image is not exist.");
+                    logger.error("Given image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image does not exist.");
                 }
 
                 ProductImage newPrimaryProductImage = optionalProductImage.get();
@@ -381,7 +381,7 @@ public class ImageResource {
                 productImageRepository.saveAndFlush(newPrimaryProductImage);
                 break;
             default:
-                logger.error("Given image type {} invalid", unCheckImageType);
+                logger.error("Given image type {} invalid", uncheckedImageType);
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type");
         }
     }
@@ -416,8 +416,8 @@ public class ImageResource {
     private User getVerifiedUser(Integer userId) throws ResponseStatusException {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            logger.error("Given user (ID: {}) is not exist.", userId);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given user is not exist.");
+            logger.error("Given user (ID: {}) does not exist.", userId);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given user does not exist.");
         }
         return user.get();
     }
@@ -435,10 +435,18 @@ public class ImageResource {
     private Business getVerifiedBusiness(Integer businessId) throws ResponseStatusException {
         Optional<Business> business = businessRepository.findBusinessById(businessId);
         if (business.isEmpty()) {
-            logger.error("Given business (ID: {}) is not exist", businessId);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given business is not exist.");
+            logger.error("Given business (ID: {}) does not exist", businessId);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given business does not exist.");
         }
         return business.get();
+    }
+
+    private Image getVerifiedImage(Optional<Image> optionalImage, Integer imageId) {
+        if (optionalImage.isEmpty()) {
+            logger.error("Given image (Id: {}) does not exist.", imageId);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image does not exist.");
+        }
+        return optionalImage.get();
     }
 
     /**
@@ -455,10 +463,9 @@ public class ImageResource {
     private void verifyProductId(String productId, Business business, User user) throws ResponseStatusException {
         Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, business.getId());
         if (product.isEmpty()) {
-            String errorMessage = String.format("Given product (ID: {}) is not exist in current business (ID: {})",
+            logger.error("Given product (ID: {}) does not exist in current business (ID: {})",
                     productId, business.getId());
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given Product is not exist in current business.");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given Product does not exist in current business.");
         }
     }
 
