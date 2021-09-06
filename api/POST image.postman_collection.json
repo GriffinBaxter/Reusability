@@ -1,0 +1,153 @@
+{
+	"info": {
+		"_postman_id": "2df51eab-b106-48b5-91eb-4a5a8b3115ad",
+		"name": "POST image",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "For user",
+			"item": [
+				{
+					"name": "/login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"frank.j.smith@email.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/Users/xzmy/Desktop/截屏2021-08-26 下午2.11.38.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9499/images?userId=8&uncheckedImageType=USER_IMAGE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"images"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "8"
+								},
+								{
+									"key": "uncheckedImageType",
+									"value": "USER_IMAGE"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "For product",
+			"item": [
+				{
+					"name": "/login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"frank.j.smith@email.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/Users/xzmy/Desktop/截屏2021-08-26 下午2.11.38.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9499/images?userId=8&uncheckedImageType=USER_IMAGE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"images"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "8"
+								},
+								{
+									"key": "uncheckedImageType",
+									"value": "USER_IMAGE"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
