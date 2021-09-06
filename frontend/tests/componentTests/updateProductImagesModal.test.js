@@ -3,7 +3,7 @@
  */
 
 import {shallowMount} from '@vue/test-utils';
-import updateProductImagesModal from "../../src/components/productCatalogue/UpdateProductImagesModal";
+import updateImagesModal from "../../src/components/UpdateImagesModal";
 import Api from "../../src/Api";
 import {describe, expect, jest, test} from "@jest/globals";
 import Product from "../../src/configs/Product";
@@ -12,7 +12,7 @@ const endOfToday = require('date-fns/endOfToday');
 jest.mock("../../src/Api");
 
 const factory = (values = {}) => {
-    return shallowMount(updateProductImagesModal, {
+    return shallowMount(updateImagesModal, {
         data () {
             return {
                 ...values
@@ -31,7 +31,8 @@ const factory = (values = {}) => {
                     {filename: "/fakeImage2.png", id: 2, isPrimary: false}
                 ]
             }),
-            businessId: 1
+            businessId: 1,
+            location: "Product"
         }
     })
 }
