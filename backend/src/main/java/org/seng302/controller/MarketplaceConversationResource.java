@@ -193,7 +193,9 @@ public class MarketplaceConversationResource {
         //401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(currentUser.getId(), currentUser.getId());
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(
+                currentUser.getId(), false, currentUser.getId(), false
+        );
         logger.info("Conversations retrieved user with ID {}", currentUser.getId());
 
         return toConversationPayloadList(conversationList);
@@ -207,8 +209,8 @@ public class MarketplaceConversationResource {
      */
     public List<ConversationPayload> toConversationPayloadList(List<Conversation> conversationList) {
         List<ConversationPayload> conversationPayloadList = new ArrayList<>();
-        for (Conversation conversation: conversationList) {
-            conversationPayloadList.add(conversation.toConversationPayload());
+        for (Conversation unconvertedConversation: conversationList) {
+            conversationPayloadList.add(unconvertedConversation.toConversationPayload());
         }
         return conversationPayloadList;
     }

@@ -253,7 +253,7 @@ class MarketplaceConversationResourceIntegrationTests {
         given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
 
         // When
-        when(marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(instigator.getId(), instigator.getId())).thenReturn(List.of());
+        when(marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(instigator.getId(), false, instigator.getId(), false)).thenReturn(List.of());
         response = mvc.perform(get("/home/conversation")
                 .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
 
@@ -274,7 +274,7 @@ class MarketplaceConversationResourceIntegrationTests {
         given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
 
         // When
-        when(marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(instigator.getId(), instigator.getId())).thenReturn(List.of(conversation));
+        when(marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(instigator.getId(), false, instigator.getId(), false)).thenReturn(List.of(conversation));
         response = mvc.perform(get("/home/conversation")
                 .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
 
