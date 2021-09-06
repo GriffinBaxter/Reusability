@@ -232,14 +232,17 @@ describe("Testing the ProductSearchBar methods", () => {
         test('Testing that pressing the camera button opens the barcode scanning model', () => {
 
             let scannerModalBtn;
+            let barcodeScannerModal;
 
             scannerModalBtn = productCatalogueSearchWrapper.find('#scanner-modal-btn');
             scannerModalBtn.trigger('click');
 
             productCatalogueSearchWrapper.vm.$nextTick();
 
-            expect(barcodeScannerModalWrapper.find('#modal').prop('className')).toBe('BarcodeScannerModal');
-            // expect(productCatalogueSearchWrapper.find('#shade').prop('className')).toBe('shade');
+            barcodeScannerModal = productCatalogueSearchWrapper.find('#barcode-scanner-modal')
+
+
+            expect(barcodeScannerModal.exists()).toBeTruthy();
 
         });
 
