@@ -96,10 +96,10 @@ export default {
   #component-wrapper {
     position: absolute;
     top: 100%;
-    right: 15px;
+    right: 2px;
     z-index: 999;
-    width: 100%;
     height: max(400px, 100%);
+    width: 300px;
   }
 
   #messages-wrapper {
@@ -113,11 +113,25 @@ export default {
 
     max-width: 274px;
 
-    border: 1px black solid;
+    border: 1px #a8a8a8 solid;
+    box-shadow: -2px 10px 1rem #00000030;
     overflow: auto;
     background-color: white;
+
+
   }
 
+  #messages-wrapper::-webkit-scrollbar {
+    width: 20px;
+  }
+
+  #messages-wrapper::-webkit-scrollbar-thumb {
+    height: 56px;
+    border-radius: 10px;
+    border: 4px solid transparent;
+    background-clip: content-box;
+    background-color: #aaa;
+  }
 
 
   #content-wrapper {
