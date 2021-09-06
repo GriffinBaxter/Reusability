@@ -465,7 +465,7 @@ public class ModifyUserStepDefs {
         when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
         when(userImageRepository.saveAndFlush(any(UserImage.class))).thenReturn(primaryUserImage);
         response = imageMvc.perform(multipart("/images").file(image).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(user.getId())))
                 .andReturn().getResponse();
     }
@@ -503,7 +503,7 @@ public class ModifyUserStepDefs {
         when(userImageRepository.findById(newPrimaryUserImage.getId()))
                 .thenReturn(Optional.of(newPrimaryUserImage));
         response = imageMvc.perform(put(String.format("/images/%d/makePrimary", newPrimaryUserImage.getId())).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(userId))
                         .param("businessId", "")
                         .param("productId", ""))

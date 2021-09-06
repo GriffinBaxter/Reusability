@@ -197,7 +197,7 @@ public class ProductImagesStepDefs {
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
 
         response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -207,7 +207,7 @@ public class ProductImagesStepDefs {
 
     @Then("this image is stored and displayed")
     public void this_image_is_stored_and_displayed() throws UnsupportedEncodingException {
-
+        System.out.println(response.getErrorMessage());
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
 
@@ -258,7 +258,7 @@ public class ProductImagesStepDefs {
         when(productImageRepository.findById(newProductImage.getId())).thenReturn(Optional.of(newProductImage));
 
         response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
