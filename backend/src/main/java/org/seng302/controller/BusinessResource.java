@@ -579,27 +579,27 @@ public class BusinessResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data " +
                     "supplied by the user, appropriate error message(s) should be shown to user");
         }
-
+        Address newAddress = null;
         Optional<Address> existingAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(addressJSON.getStreetNumber(),
                 addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
 
         // If the address is new, we need to first add it to the database.
         if (existingAddress.isEmpty()){
             try {
-                Address newAddress = new Address(addressJSON.getStreetNumber(),
+                newAddress = new Address(addressJSON.getStreetNumber(),
                         addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
                 addressRepository.save(newAddress);
-                business.setAddress(newAddress);
             } catch (IllegalAddressArgumentException err) {
                 String errorMessage = String.format("User (id: %d) attempted to update address for business (id: %d). But the address was invalid", user.getId(), business.getId());
                 logger.error(errorMessage);
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
             }
         } else {
-            business.setAddress(existingAddress.get());
+            newAddress = existingAddress.get();
         }
         String debugMessage = String.format("User (id: %d) updated address for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getAddress().toString(), addressJSON);
         logger.debug(debugMessage);
+        business.setAddress(newAddress);
     }
 
     /**
@@ -644,10 +644,10 @@ public class BusinessResource {
             }
 
             // Perform the modification
-            business.setName(payload.getName());
             String debugMessage = String.format("User (id: %d) modfied business (id: %d) name. %s --> %s.",
                     user.getId(), business.getId(), business.getName(), payload.getName());
             logger.debug(debugMessage);
+            business.setName(payload.getName());
 
         } catch (IllegalBusinessArgumentException err) {
             // If an error is thrown the data was invalid.

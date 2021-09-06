@@ -3019,6 +3019,7 @@ class BusinessResourceIntegrationTests {
     @Test
     void updatingBusinessPrimaryAdminIdAsPrimaryAdmin() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        address = new Address("1", "old", "old", "old", "old", "old", "old");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
@@ -3312,6 +3313,7 @@ class BusinessResourceIntegrationTests {
     @Test
     void updatingBusinessWithNewAddress() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        address = new Address("1", "old", "old", "old", "old", "old", "old");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
@@ -3354,7 +3356,7 @@ class BusinessResourceIntegrationTests {
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(business.getAddress()).isEqualTo(newBusiness.getAddress());
     }
 
     /**
@@ -3485,7 +3487,6 @@ class BusinessResourceIntegrationTests {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(business.getBusinessType()).isEqualTo(newBusiness.getBusinessType());
-        assertThat(business).hasToString(newBusiness.toString());
     }
 
     /**
