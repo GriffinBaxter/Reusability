@@ -74,7 +74,8 @@ export default {
     cursor: pointer;
     transition: background-color 200ms ease-in-out;
 
-    padding: 0.821em 0 ;
+    padding: 0.821em 0.5em ;
+    width: 100%;
   }
 
   .message-option:hover {

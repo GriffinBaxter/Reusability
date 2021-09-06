@@ -110,8 +110,7 @@ export default {
 
     width: 100%;
     height: max(400px, 100%);
-
-    max-width: 274px;
+    max-width: 284px;
 
     border: 1px #a8a8a8 solid;
     box-shadow: -2px 10px 1rem #00000030;
