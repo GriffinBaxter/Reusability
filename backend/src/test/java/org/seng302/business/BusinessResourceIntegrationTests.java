@@ -2405,7 +2405,7 @@ class BusinessResourceIntegrationTests {
     }
 
     /**
-     *
+     * Testing that an UNAUTHROIZED is returned when failing to provide a session token.
      */
     @Test
     void receivingUnauthorizedWhenNotProvidingASessionTokenModifyBusiness() throws Exception {
@@ -2456,7 +2456,8 @@ class BusinessResourceIntegrationTests {
     }
 
     /**
-     *
+     * Testing that we receive an UNAUTHORIZED when providing an invalid session token. And the business
+     * is not modified.
      */
     @Test
     void receivingAuthorizedWhentProvidingAInvalidSessionTokenModifyBusiness() throws Exception {
@@ -2507,7 +2508,7 @@ class BusinessResourceIntegrationTests {
     }
 
     /**
-     *
+     * Testing that a NOT_ACCEPTABLE is returned when we provide a invalud business id. And that the business is not modified.
      */
     @Test
     void receivingANotAcceptableWhenProvidingInvalidBusinessId() throws Exception {
@@ -2558,7 +2559,7 @@ class BusinessResourceIntegrationTests {
     }
 
     /**
-     *
+     * Testing that a GAA can modify a business that is not there own. And returning an OK status.
      */
     @Test
     void updatingBusinessAsGaa() throws Exception {
