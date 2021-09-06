@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
  * MarketplaceConversationResource test class
@@ -72,8 +74,17 @@ class MarketplaceConversationResourceIntegrationTests {
     private MarketplaceCard marketplaceCard;
 
     private Conversation conversation;
-
     private Message message;
+    private String content;
+
+    private String payloadJson;
+
+    private final String messagePayloadJson = "{\"senderId\":%d," +
+            "\"receiverId\":%d," +
+            "\"marketplaceCardId\":%d," +
+            "\"content\":\"%s\"," +
+            "\"created\":\"%s\"}";
+
 
     @BeforeEach
     public void setup() throws Exception {
@@ -185,7 +196,13 @@ class MarketplaceConversationResourceIntegrationTests {
         conversation = new Conversation(instigator, receiver, marketplaceCard);
         conversation.setId(1);
 
-        message = new Message(conversation, instigator, "This is a message");
+        content = "Hi Hayley, I want to buy some baked goods :)";
+
+        message = new Message(
+                conversation,
+                instigator,
+                content
+        );
         message.setId(1);
 
         this.mvc = MockMvcBuilders.standaloneSetup(
@@ -262,6 +279,187 @@ class MarketplaceConversationResourceIntegrationTests {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo("[" + conversation.toConversationPayload().toString() + "]");
+    }
+
+    // --------------------------------- Tests for POST /home/conversation/{conversationId} ----------------------------
+
+    /**
+     * Tests that a UNAUTHORIZED (401) status is received when sending a valid marketplace conversation message
+     * to the /home/conversation/{conversationId} API endpoint when the user is not logged in.
+     * Conversation already exists and message does not exist.
+     *
+     * @throws Exception thrown if there is an error when checking that the users is logged in.
+     */
+    @Test
+    void givenNoCookie_WhenCreateMessage_ThenReceiveUnauthorizedStatus() throws Exception {
+        // given
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        String nonExistingSessionUUID = User.generateSessionUUID();
+        given(userRepository.findBySessionUUID(nonExistingSessionUUID)).willReturn(Optional.empty());
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
+                marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)));
+
+        // when
+        response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
+                        .cookie(new Cookie("JSESSIONID", nonExistingSessionUUID))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that a BAD_REQUEST (400) status is received when sending a marketplace conversation message
+     * to the /home/conversation/{conversationId} API endpoint and the receiver id does not correspond
+     * to an existing user.
+     *
+     * @throws Exception thrown if there is an error when checking that the receiving user exists.
+     */
+    @Test
+    void givenValidCookieAndNonExistentReceiverId_WhenCreateMessage_ThenReceiveBadRequestStatus() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
+                marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)));
+        given(marketplaceConversationMessageRepository.findMessageById(message.getId())).willReturn(Optional.ofNullable(message));
+
+        Integer nonExistentUserId = 1000;
+        given(userRepository.findById(nonExistentUserId)).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid Conversation - invalid receiver id");
+    }
+
+    /**
+     * Tests that a BAD_REQUEST (400) status is received when sending a marketplace conversation message
+     * to the /home/conversation/{conversationId} API endpoint and the receiver id does not correspond
+     * to an existing marketplace card.
+     *
+     * @throws Exception thrown if there is an error when checking that the card exists.
+     */
+    @Test
+    void givenValidCookieAndValidReceiverIdAndInvalidMarketplaceCardId_WhenCreateMessage_ThenReceiveBadRequestStatus() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
+                marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)));
+        given(marketplaceConversationMessageRepository.findMessageById(message.getId())).willReturn(Optional.ofNullable(message));
+        given(userRepository.findById(receiver.getId())).willReturn(Optional.ofNullable(receiver));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid Conversation - invalid card id");
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE (406) status is received when sending a marketplace conversation message
+     * to the /home/conversation/{conversationId} API endpoint and the conversation id does not correspond
+     * to an existing marketplace conversation, and the receiver and card exist.
+     *
+     * @throws Exception thrown if there is an error when checking that the conversation exists.
+     */
+    @Test
+    void givenValidCookieAndValidReceiverIdAndValidCardIdAndNonExistentConversationId_WhenCreateMessage_ThenReceiveBadRequestStatus() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
+                marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)));
+        given(marketplaceConversationMessageRepository.findMessageById(message.getId())).willReturn(Optional.empty());
+        given(userRepository.findById(receiver.getId())).willReturn(Optional.ofNullable(receiver));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+        given(marketplaceConversationRepository.findConversationById(conversation.getId())).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid Conversation - conversation id does not exist");
+    }
+
+
+    /**
+     * Tests that a CREATED (201) status is received when sending a marketplace conversation message
+     * to the /home/conversation/{conversationId} API endpoint and the receiver id corresponds
+     * to an existing marketplace conversation, the card id corresponds to an existing marketplace card and the
+     * conversation id is not provided (and thus the conversation is created).
+     *
+     * @throws Exception thrown if there is an error when checking that the conversation exists.
+     */
+    @Test
+    void givenValidDataAndConversationIdIsNotProvided_WhenCreateMessage_ThenReceiveCreatedStatus() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
+                marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)));
+        given(userRepository.findById(receiver.getId())).willReturn(Optional.ofNullable(receiver));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+        given(marketplaceConversationRepository.findById(conversation.getId())).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(post("/home/conversation")
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Tests that a CREATED (201) status is received when sending a marketplace conversation message
+     * to the /home/conversation/{conversationId} API endpoint and the receiver id corresponds
+     * to an existing marketplace conversation, the card id corresponds to an existing marketplace card and the
+     * conversation id is an existing conversation.
+     *
+     * @throws Exception thrown if there is an error when checking that the conversation exists.
+     */
+    @Test
+    void givenValidDataAndConversationIdExists_WhenCreateMessage_ThenReceiveCreatedStatus() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
+                marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)));
+        given(userRepository.findById(receiver.getId())).willReturn(Optional.ofNullable(receiver));
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+        given(marketplaceConversationRepository.findConversationById(conversation.getId())).willReturn(Optional.ofNullable(conversation));
+
+        // when
+        response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
+                        .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                        .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     /**

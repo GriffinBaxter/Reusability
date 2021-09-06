@@ -10,7 +10,9 @@
  */
 package org.seng302.model.repository;
 
+import org.seng302.model.InventoryItem;
 import org.seng302.model.Listing;
+import org.seng302.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,4 +42,13 @@ public interface ListingRepository extends JpaRepository<Listing, Integer>, List
      * @return A listing with the given ID if it exists.
      */
      Optional<Listing> findListingByBusinessIdAndId(Integer businessId, Integer listingId);
+
+    /**
+     * Finds all listings for a business with a certain product barcode.
+     * @param businessId A business ID.
+     * @param barcode Product barcode number.
+     * @param paging Pageable Object for sorting & paging.
+     * @return A page of listings.
+     */
+     Page<Listing> findByBusinessIdAndInventoryItemProductBarcode(Integer businessId, String barcode, Pageable paging);
 }

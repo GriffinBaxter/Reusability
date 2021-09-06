@@ -8,7 +8,7 @@ servers:
 info:
   description: API specification for the SENG302 2021 project
   version: 6.2.1
-  title: Wasteless
+  title: REUSEABILITY
   contact:
     email: s302team400@cosc.canterbury.ac.nz
   license:
@@ -46,6 +46,7 @@ tags:
   - name: 'UCM8: Contacting Other Marketplace Users'
   - name: 'U23: Business search'
   - name: 'UCM9: Edit card'
+  - name: 'U28: Product search'
   - name: 'U29: Browse/Search Sale Listings'
   - name: 'U30: Individual Full Sale Listing'
   - name: 'U31: Purchases'
@@ -421,9 +422,10 @@ paths:
     get:
       tags:
         - 'U15: Product Catalogue'
+        - 'U28: Product search'
         - 'Business Accounts'
         - 'Catalogue / Products'
-      summary: "Retrieve all the products in a business's catalogue"
+      summary: "Retrieve all the products in a business's catalogue via a search query"
       security:
         - CookieAuth:
             - user
@@ -436,6 +438,28 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+          required: false
+          description: "String to search products for. This string will be matched by the selected field(s) to search in."
+        - in: query
+          name: searchBy
+          schema:
+            type: string
+          required: false
+          description: >-
+            The product field or fields to search by.
+            Can be one or more of:
+
+            * name: The name of the product
+
+            * id: The ID of the product
+
+            * description: The description of the product
+
+            * manufacturer: The product's manufacturer
         - in: query
           name: orderBy
           schema:
@@ -474,6 +498,12 @@ paths:
             type: string
           required: false
           description: 'The page of products to display.'
+        - in: query
+          name: barcode
+          schema:
+            type: string
+          required: false
+          description: "A barcode as a string to search the products for. Must be a UPC-A or EAN-13 barcode."
       responses:
         '200':
           description: 'Catalogue retrieved successfully. This could be an empty array.'
@@ -844,7 +874,7 @@ paths:
           schema:
             type: string
           required: false
-          description: 'Product barcode number for barcode search'
+          description: 'Product barcode number for barcode search. Must be a UPC-A or EAN-13 barcode.'
       responses:
         '200':
           description: 'Inventory retrieved successfully. This could be an empty array.'
@@ -1056,7 +1086,7 @@ paths:
           schema:
             type: string
           required: false
-          description: "Criteria to search listings for, a barcode"
+          description: "Criteria to search listings for, a barcode. Must be a UPC-A or EAN-13 barcode."
       responses:
         '200':
           description: Request successful, a (possibly empty) list of listing is returned
@@ -1124,7 +1154,7 @@ paths:
           schema:
             type: string
           required: false
-          description: 'Product barcode number for barcode search'
+          description: 'Product barcode number for barcode search. Must be a UPC-A or EAN-13 barcode.'
       responses:
         '200':
           description: 'Listings retrieved successfully. This could be an empty array.'
@@ -2058,14 +2088,16 @@ paths:
             example: 118
         - name: fromDate
           in: query
-          description: 'The date the sales report should be from'
+          description: 'The date the sales report should be from. Will be set to the start of 2021 if before 2021
+          (the year that the app was first deployed), must be before or at the "to date".'
           required: true
           schema:
             type: string
             format: date-time
         - name: toDate
           in: query
-          description: 'The date the sales report should be to'
+          description: 'The date the sales report should be to. Will be set to the current date if in the future,
+          must be at or after the start of 2021 (the year that the app was first deployed).'
           required: true
           schema:
             type: string
@@ -2105,6 +2137,8 @@ paths:
                       format: double
                       description: 'The currency value of sales within the set grandularity'
                       example: 69.69
+        '400':
+          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -2183,6 +2217,8 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
       requestBody:
         content:
           application/json:
@@ -2211,8 +2247,42 @@ paths:
                   $ref: '#/components/schemas/Conversation'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+
+    post:
+      tags:
+        - 'UCM8: Contacting Other Marketplace Users'
+        - 'Marketplace conversation message'
+      summary: Creates a marketplace conversation as well as a message in this conversation.
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      responses:
+        '201':
+          description: Marketplace conversation message created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversationId:
+                    type: integer
+                    description: The ID of the Marketplace conversation
+                    example: 600
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
 
 
 components:

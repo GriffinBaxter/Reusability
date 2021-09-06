@@ -71,7 +71,6 @@ public class MarketplaceConversationResource {
      * @param conversationId The ID of the conversation that the message is being added to. Null if new conversation.
      * @param marketplaceConversationMessagePayload contains new message info.
      * @return marketplace conversation ID.
-     * @throws Exception Exception.
      */
     @PostMapping({"/home/conversation/{conversationId}", "/home/conversation"})
     public ResponseEntity<MarketplaceConversationIdPayload> createMarketplaceConversationMessage(
@@ -109,8 +108,8 @@ public class MarketplaceConversationResource {
         if (conversationId == null) {
 
             //201
-            conversation = this.createConversation(sender, storedReceiver.get(), storedCard.get());
-            this.createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
+            conversation = createConversation(sender, storedReceiver.get(), storedCard.get());
+            createMessage(conversation, sender, marketplaceConversationMessagePayload.getContent());
             return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(conversation.getId()));
 
         } else {
@@ -124,7 +123,7 @@ public class MarketplaceConversationResource {
                 );
             } else {
                 //201
-                this.createMessage(storedConversation.get(), sender, marketplaceConversationMessagePayload.getContent());
+                createMessage(storedConversation.get(), sender, marketplaceConversationMessagePayload.getContent());
                 return ResponseEntity.status(HttpStatus.CREATED).body(new MarketplaceConversationIdPayload(storedConversation.get().getId()));
             }
         }
