@@ -666,39 +666,39 @@ public class BusinessResource {
             throws ResponseStatusException {
         boolean userIsPrimaryAdmin = business.getPrimaryAdministratorId().equals(user.getId());
 
-        if (userIsPrimaryAdmin || Authorization.isGAAorDGAA(user)) {
-            if (payload.getPrimaryAdministratorId() != null) {
-                Optional<User> newPrimaryAdmin = userRepository.findById(payload.getPrimaryAdministratorId());
+        if (payload.getPrimaryAdministratorId() != null) {
+            if (userIsPrimaryAdmin || Authorization.isGAAorDGAA(user)) {
+                    Optional<User> newPrimaryAdmin = userRepository.findById(payload.getPrimaryAdministratorId());
 
-                // Ensure the new id is valid
-                if (newPrimaryAdmin.isEmpty()) {
-                    String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
-                            "But lacked permissions.", user.getId(), business.getId());
-                    logger.error(errorMessage);
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
-                            "update the business info for a business they do not administer AND the user is not a global application admin");
-                }
+                    // Ensure the new id is valid
+                    if (newPrimaryAdmin.isEmpty()) {
+                        String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
+                                "But lacked permissions.", user.getId(), business.getId());
+                        logger.error(errorMessage);
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
+                                "update the business info for a business they do not administer AND the user is not a global application admin");
+                    }
 
-                // If the new primary admin is not part of the business then add him in.
-                if (!business.isAnAdministratorOfThisBusiness(newPrimaryAdmin.get())) {
-                    business.addAdministrators(newPrimaryAdmin.get());
-                }
+                    // If the new primary admin is not part of the business then add him in.
+                    if (!business.isAnAdministratorOfThisBusiness(newPrimaryAdmin.get())) {
+                        business.addAdministrators(newPrimaryAdmin.get());
+                    }
 
 
-                String debugMessage = String.format("Updated business has a new primary adminstrator %d --> %d",
-                        payload.getPrimaryAdministratorId(), business.getPrimaryAdministratorId());
-                logger.debug(debugMessage);
-                business.setPrimaryAdministratorId(payload.getPrimaryAdministratorId());
+                    String debugMessage = String.format("Updated business has a new primary adminstrator %d --> %d",
+                            payload.getPrimaryAdministratorId(), business.getPrimaryAdministratorId());
+                    logger.debug(debugMessage);
+                    business.setPrimaryAdministratorId(payload.getPrimaryAdministratorId());
+
+            } else {
+                // Only the primary admin can change the primary admin (or the GAA and DGAA can as well).
+                String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
+                        "But lacked permissions.", user.getId(), business.getId());
+                logger.error(errorMessage);
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
+                        "update the business info for a business they do not administer AND the user is not a global application admin");
             }
-        } else {
-            // Only the primary admin can change the primary admin (or the GAA and DGAA can as well).
-            String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
-                    "But lacked permissions.", user.getId(), business.getId());
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
-                    "update the business info for a business they do not administer AND the user is not a global application admin");
         }
-
         return business;
     }
 

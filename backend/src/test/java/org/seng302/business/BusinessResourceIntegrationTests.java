@@ -2610,19 +2610,106 @@ class BusinessResourceIntegrationTests {
     }
 
     /**
-     *
+     * Testing that a business can be modified by a DGAA and returns an OK status.
      */
     @Test
     void updatingBusinessAsDgaa() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress.toString() + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
 
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(business).hasToString(newBusiness.toString());
     }
 
     /**
-     *
+     * Testing that a non admin cannot modify a business as they do not have permissions and that it
+     * returns FORBIDDEN.
      */
     @Test
     void updatingBusinessAsNonAdminUser() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress.toString() + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
 
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(dGAA));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(business).hasToString(business.toString());
     }
 
     /**
@@ -2630,7 +2717,50 @@ class BusinessResourceIntegrationTests {
      */
     @Test
     void updatingBusinessAsRegularAdminOfBusiness() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress.toString() + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        business = new Business(
+                dGAA.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                dGAA,
+                "#",
+                "BED"
+        );
+        business.addAdministrators(anotherUser);
+        Business newBusiness = new Business(
+                dGAA.getId(),
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
 
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(business).hasToString(newBusiness.toString());
     }
 
     /**
