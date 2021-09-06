@@ -76,6 +76,8 @@ export default {
 
     padding: 0.821em 0.5em ;
     width: 100%;
+
+    border-bottom: 1px #88888830 solid;
   }
 
   .message-option:hover {
@@ -107,6 +109,7 @@ export default {
   .user-icon-wrap {
     width: 18%;
     height: 100%;
+    margin: 0 0.35em;
 
     display: flex;
     justify-content: center;

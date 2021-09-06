@@ -96,9 +96,10 @@ export default {
   #component-wrapper {
     position: absolute;
     top: 100%;
+    bottom: 0;
     right: 2px;
     z-index: 999;
-    height: max(400px, 100%);
+    height: 83vh;
     width: 300px;
   }
 
@@ -146,8 +147,6 @@ export default {
     z-index: 1000;
     top: 0;
     text-align: center;
-    right: 15px;
-    max-width: 274px;
     width: 100%;
     height: 24px;
 
