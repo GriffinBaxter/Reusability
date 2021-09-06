@@ -104,6 +104,8 @@ class ImageResourceIntegrationTests {
 
     private UserImage primaryUserImage;
 
+    private UserImage newUserImage;
+
     private ProductImage primaryProductImage;
 
     private ProductImage newProductImage;
@@ -236,8 +238,12 @@ class ImageResourceIntegrationTests {
         productId = product.getProductId();
         businessId = business.getId();
 
-        primaryProductImage = new ProductImage(1, productId, businessId, "storage/test", "test/test", true);
-        primaryUserImage = new UserImage(1, userId, "storage/test", "test/test", true);
+        primaryUserImage = new UserImage(1, userId, "storage/test",
+                "test/test", true);
+        newUserImage = new UserImage(2, userId, "storage/test2",
+                "test/test2", false);
+        primaryProductImage = new ProductImage(1, productId, businessId, "storage/test",
+                "test/test", true);
         newProductImage = new ProductImage(2, productId, businessId, "storage/test2",
                 "test2/test2", false);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly());
@@ -1251,6 +1257,210 @@ class ImageResourceIntegrationTests {
     }
 
     //--------------------------- Product Image Changing Primary Image Endpoint Tests ----------------------------------
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when user try to change primary image before login.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatUserCanNotMakeAnyImageBePrimaryBeforeLogin () throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        sessionToken = user.getSessionUUID();
+        assertThat(primaryProductImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        List<ProductImage> productImages = List.of(primaryProductImage);
+        when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true))
+                .thenReturn(productImages);
+        when(productImageRepository.findById(newProductImage.getId()))
+                .thenReturn(Optional.of(newProductImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId()))
+                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an OK status is received when user try change primary image for his self.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatUserCanChangePrimaryImageForHisSelf() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.of(newUserImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newUserImage.getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that an OK status is received when GAA try change primary image for a user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatGAACanChangePrimaryImageForAUser() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.of(newUserImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newUserImage.getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that an OK status is received when DGAA try change primary image for a user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatDGAACanChangePrimaryImageForAUser() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.of(newUserImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newUserImage.getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that an FORBIDDEN status is received when user try change primary image for another user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatUserCanNotChangePrimaryImageForAnotherUser() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.of(newUserImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("User have no permission to do this.");
+    }
+
+    /**
+     * Tests that an NOT_ACCEPTABLE status is received when user try change primary image for a not exist image.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatUserCanNotChangePrimaryImageForANotExistImage() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Given image is not exist.");
+    }
 
     /**
      * Tests that an OK status is received when making an image the primary image of an existing business with an

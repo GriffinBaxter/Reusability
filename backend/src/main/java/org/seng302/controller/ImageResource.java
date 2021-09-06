@@ -323,9 +323,7 @@ public class ImageResource {
                 Optional<UserImage> optionalUserImage = userImageRepository.findById(imageId);
                 if (optionalUserImage.isEmpty()) {
                     logger.error("Given image (Id: {}) is not exist.", imageId);
-                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist " +
-                            "(so not a 404) but some part of the request is not acceptable, for example trying to " +
-                            "access a resource by an ID that does not exist.");
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given image is not exist.");
                 }
                 UserImage newPrimaryUserImage = optionalUserImage.get();
                 logger.info("User image (ID: {}) retrieved", imageId);
