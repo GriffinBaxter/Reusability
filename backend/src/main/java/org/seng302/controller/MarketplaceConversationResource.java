@@ -256,6 +256,7 @@ public class MarketplaceConversationResource {
             marketplaceConversationMessageRepository.deleteByConversation(conversation);
             marketplaceConversationRepository.deleteById(conversationId);
             logger.debug("Conversation and messages deleted");
+            return; // need to return since conversation is deleted.
         } else {
             logger.error("Conversation Deletion Error - 403 [FORBIDDEN] - User doesn't have permissions to delete conversation");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid permissions to delete conversation");
