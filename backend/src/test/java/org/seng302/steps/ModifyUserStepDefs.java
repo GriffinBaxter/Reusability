@@ -4,6 +4,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import lombok.SneakyThrows;
 import org.mockito.Mockito;
 import org.seng302.controller.ImageResource;
 import org.seng302.controller.UserResource;
@@ -74,6 +75,8 @@ public class ModifyUserStepDefs {
 
     private MockMultipartFile image;
 
+    private MockMultipartFile anotherImage;
+
     private FileStorageService fileStorageService;
 
     private List<UserImage> userImages;
@@ -113,6 +116,8 @@ public class ModifyUserStepDefs {
     private String password;
 
     private UserImage primaryUserImage;
+
+    private UserImage newPrimaryUserImage;
 
     private Integer userId;
 
@@ -179,7 +184,8 @@ public class ModifyUserStepDefs {
 
         cookie = new Cookie("JSESSIONID", user.getSessionUUID());
         userId = user.getId();
-        primaryUserImage = new UserImage(1, userId, "storage/test", "test/test", true);
+        primaryUserImage = new UserImage(1, userId, "apples.jpg", "test/apples.jpg", true);
+        newPrimaryUserImage = new UserImage(2, userId, "Iphone13.jpg", "test/Iphone13.jpg", false);
         userImages = new ArrayList<>();
     }
 
@@ -435,9 +441,15 @@ public class ModifyUserStepDefs {
 
     @Given("I have a image with filename of {string}.")
     public void i_have_a_image_with_filename_of(String fileName) throws IOException {
-        image = new MockMultipartFile("images", fileName,
-                MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream(fileName));
-        assertThat(image.getOriginalFilename()).isEqualTo(fileName);
+        if (image == null) {
+            image = new MockMultipartFile("images", fileName,
+                    MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream(fileName));
+            assertThat(image.getOriginalFilename()).isEqualTo(fileName);
+        } else {
+            anotherImage = new MockMultipartFile("images", fileName,
+                    MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream(fileName));
+            assertThat(anotherImage.getOriginalFilename()).isEqualTo(fileName);
+        }
     }
 
     @When("I upload this image for myself.")
@@ -469,14 +481,32 @@ public class ModifyUserStepDefs {
         assertThat(userImages.size()).isZero();
     }
 
-    @Then("This image will be the primary image.")
-    public void this_image_will_be_the_primary_image() {
-        assertThat(primaryUserImage.getIsPrimary()).isTrue();
-    }
-
     @Then("A thumbnail of this image will be automatically created.")
     public void a_thumbnail_of_this_image_will_be_automatically_created() {
         assertThat(primaryUserImage.getThumbnailFilename()).isNotEmpty();
     }
 
+    @Then("The primary image is {string}.")
+    public void the_primary_image_is(String fileName) {
+        UserImage primaryImage = primaryUserImage.getIsPrimary() ? primaryUserImage : newPrimaryUserImage;
+        assertThat(primaryImage.getIsPrimary()).isTrue();
+        assertThat(primaryImage.getFilename()).isEqualTo(fileName);
+    }
+
+    @When("I set the second image be my primary image.")
+    public void i_set_the_second_image_be_my_primary_image() throws Exception {
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newPrimaryUserImage.getId()))
+                .thenReturn(Optional.of(newPrimaryUserImage));
+        response = imageMvc.perform(put(String.format("/images/%d/makePrimary", newPrimaryUserImage.getId())).cookie(cookie)
+                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId", ""))
+                .andReturn().getResponse();
+    }
 }
