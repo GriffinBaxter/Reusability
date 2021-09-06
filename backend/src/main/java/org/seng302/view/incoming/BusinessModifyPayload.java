@@ -45,15 +45,18 @@ public class BusinessModifyPayload {
     }
 
     public String toString() {
-        return "{" +
+        String tmp =  "{" +
                 "\"primaryAdministratorId\":" + primaryAdministratorId + "," +
                 "\"name\":\"" + name + "\"," +
-                "\"description\":\"" + description + "\"," +
-                "\"address\":" + address.toString() + "," +
-                "\"businessType\":\"" + businessType + "\"," +
+                "\"description\":\"" + description + "\",";
+                if (address != null) {
+                    tmp += "\"address\":" + address.toString() + ",";
+                }
+                tmp += "\"businessType\":\"" + businessType + "\"," +
                 "\"currencySymbol\":\"" + currencySymbol + "\"," +
                 "\"currencyCode\":\"" + currencyCode + "\"" +
                 "}";
+        return tmp;
     }
 
     /**
@@ -62,16 +65,22 @@ public class BusinessModifyPayload {
      * @return when string is business type return BusinessType object, if not return null
      */
     private BusinessType businessTypeTranslate(String string){
-        BusinessType businessType = null;
-        if (string.toUpperCase().equals("ACCOMMODATION AND FOOD SERVICES")){
-            businessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
-        } else if (string.toUpperCase().equals("RETAIL TRADE")){
-            businessType = BusinessType.RETAIL_TRADE;
-        } else if (string.toUpperCase().equals("CHARITABLE ORGANISATION")){
-            businessType = BusinessType.CHARITABLE_ORGANISATION;
-        } else if (string.toUpperCase().equals("NON PROFIT ORGANISATION")){
-            businessType = BusinessType.NON_PROFIT_ORGANISATION;
+        BusinessType translatedType = null;
+        if (string == null) {
+            return null;
+        }else {
+            string = string.toUpperCase();
         }
-        return businessType;
+
+        if (string.equals("ACCOMMODATION AND FOOD SERVICES")){
+            translatedType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+        } else if (string.equals("RETAIL TRADE")){
+            translatedType = BusinessType.RETAIL_TRADE;
+        } else if (string.equals("CHARITABLE ORGANISATION")){
+            translatedType = BusinessType.CHARITABLE_ORGANISATION;
+        } else if (string.equals("NON PROFIT ORGANISATION")){
+            translatedType = BusinessType.NON_PROFIT_ORGANISATION;
+        }
+        return translatedType;
     }
 }

@@ -572,6 +572,14 @@ public class BusinessResource {
      * @throws ResponseStatusException Is thrown when the new address does not meet the requirements.
      */
     private void updateBusinessAddress(Business business, User user, AddressPayload addressJSON) throws ResponseStatusException{
+        if (addressJSON == null) {
+            String errorMessage = String.format("User (id: %d) attempted to modify a business (id: %d)." +
+                    " But did not provide a new address.", user.getId(), business.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data " +
+                    "supplied by the user, appropriate error message(s) should be shown to user");
+        }
+
         Optional<Address> existingAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(addressJSON.getStreetNumber(),
                 addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
 
