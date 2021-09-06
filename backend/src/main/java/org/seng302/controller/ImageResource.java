@@ -27,9 +27,9 @@ import static org.seng302.Validation.verifyImageExtension;
 
 /**
  * Controller class for images. This class includes:
- * POST "/businesses/{businessId}/products/{productId}/images" endpoint used for adding image to a product of a businesses.
+ * POST   "/images" endpoint used for adding image to a product of a businesses.
  * DELETE "/businesses/{businessId}/products/{productId}/images/{imageId}" endpoint for deleting an image for a product of a business.
- * PUT "/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary" endpoint for changing the primary image of a product.
+ * PUT    "/images/{imageId}/makePrimary" endpoint for changing the primary image of a product.
  */
 @RestController
 public class ImageResource {
@@ -157,12 +157,12 @@ public class ImageResource {
     /**
      * Upload an image for given user/business/product.
      *
-     * @param image            image file
-     * @param sessionToken     current user session token
+     * @param image              image file
+     * @param sessionToken       current user session token
      * @param uncheckedImageType image type (user/business/product) (owner type)
-     * @param userId           selected user id
-     * @param businessId       selected business id
-     * @param productId        selected product id
+     * @param userId             selected user id
+     * @param businessId         selected business id
+     * @param productId          selected product id
      * @return image create payload
      */
     @PostMapping("/images")
@@ -290,12 +290,12 @@ public class ImageResource {
     /**
      * make given image be primary image for given owner
      *
-     * @param sessionToken     current user session token
-     * @param imageId          selected
+     * @param sessionToken       current user session token
+     * @param imageId            selected
      * @param uncheckedImageType image type (user/business/product) (owner type)
-     * @param userId           selected user id
-     * @param businessId       selected business id
-     * @param productId        selected product id
+     * @param userId             selected user id
+     * @param businessId         selected business id
+     * @param productId          selected product id
      */
     @PutMapping("/images/{imageId}/makePrimary")
     @ResponseStatus(value = HttpStatus.OK, reason = "Primary image successfully updated")
