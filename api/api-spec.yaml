@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.2.1
+  version: 6.2.2
   title: REUSEABILITY
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -571,7 +571,7 @@ paths:
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: imageType
+        - name: uncheckedImageType
           in: query
           required: true
           schema:
@@ -657,7 +657,7 @@ paths:
           required: true
           schema:
             type: integer
-        - name: imageType
+        - name: uncheckedImageType
           in: query
           required: true
           schema:
@@ -721,7 +721,7 @@ paths:
           required: true
           schema:
             type: integer
-        - name: imageType
+        - name: uncheckedImageType
           in: query
           required: true
           schema:
