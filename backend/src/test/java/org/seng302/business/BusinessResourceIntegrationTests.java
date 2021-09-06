@@ -2369,7 +2369,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2395,13 +2395,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
     }
 
     /**
@@ -2420,7 +2420,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2446,13 +2446,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId()))
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId()))
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
     /**
@@ -2472,7 +2472,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2498,13 +2498,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
     /**
@@ -2523,7 +2523,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2549,13 +2549,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
         response = mvc.perform(put(String.format("/businesses/%d/profile", 12354665)).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
     /**
@@ -2574,7 +2574,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2600,13 +2600,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
     }
 
     /**
@@ -2625,7 +2625,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2651,13 +2651,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
     }
 
     /**
@@ -2677,7 +2677,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2703,13 +2703,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(dGAA));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
     /**
@@ -2728,7 +2728,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 dGAA.getId(),
                 "name",
                 "some text",
@@ -2739,7 +2739,7 @@ class BusinessResourceIntegrationTests {
                 "#",
                 "BED"
         );
-        business.addAdministrators(anotherUser);
+        someBusiness.addAdministrators(anotherUser);
         Business newBusiness = new Business(
                 dGAA.getId(),
                 "new",
@@ -2755,13 +2755,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
     }
 
     /**
@@ -2781,7 +2781,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2807,13 +2807,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
     }
 
     /**
@@ -2833,7 +2833,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2859,13 +2859,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness.getPrimaryAdministratorId()).isEqualTo(newBusiness.getPrimaryAdministratorId());
     }
 
     /**
@@ -2884,7 +2884,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2910,13 +2910,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness.getPrimaryAdministratorId()).isEqualTo(newBusiness.getPrimaryAdministratorId());
     }
 
     /**
@@ -2936,7 +2936,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2947,28 +2947,18 @@ class BusinessResourceIntegrationTests {
                 "#",
                 "BED"
         );
-        Business newBusiness = new Business(
-                13,
-                "new",
-                "new",
-                newAddressObj,
-                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                anotherUser,
-                "$",
-                "NZD");
 
         sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness.getPrimaryAdministratorId()).isEqualTo(someBusiness.getPrimaryAdministratorId());
     }
 
     /**
@@ -2987,7 +2977,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -2998,19 +2988,19 @@ class BusinessResourceIntegrationTests {
                 "#",
                 "BED"
         );
-        business.addAdministrators(anotherUser);
+        someBusiness.addAdministrators(anotherUser);
 
         sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(dGAA));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.of(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
     /**
@@ -3019,7 +3009,7 @@ class BusinessResourceIntegrationTests {
     @Test
     void updatingBusinessPrimaryAdminIdAsPrimaryAdmin() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
-        address = new Address("1", "old", "old", "old", "old", "old", "old");
+        Address oldAddress = new Address("1", "old", "old", "old", "old", "old", "old");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
@@ -3030,11 +3020,11 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
-                address,
+                oldAddress,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
                 user,
@@ -3056,13 +3046,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness.getPrimaryAdministratorId()).isEqualTo(newBusiness.getPrimaryAdministratorId());
     }
 
     /**
@@ -3080,7 +3070,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3106,13 +3096,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
     }
 
     /**
@@ -3131,7 +3121,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3157,13 +3147,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness.getName()).hasToString(newBusiness.getName());
     }
 
     /**
@@ -3181,7 +3171,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3197,13 +3187,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
     /**
@@ -3222,7 +3212,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3248,13 +3238,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness.getDescription()).hasToString(newBusiness.getDescription());
     }
 
     /**
@@ -3272,7 +3262,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3298,13 +3288,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business).hasToString(newBusiness.toString());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
     }
 
     /**
@@ -3313,7 +3303,7 @@ class BusinessResourceIntegrationTests {
     @Test
     void updatingBusinessWithNewAddress() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
-        address = new Address("1", "old", "old", "old", "old", "old", "old");
+        Address oldAddress = new Address("1", "old", "old", "old", "old", "old", "old");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
@@ -3324,11 +3314,11 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
-                address,
+                oldAddress,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
                 user,
@@ -3350,13 +3340,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business.getAddress()).isEqualTo(newBusiness.getAddress());
+        assertThat(someBusiness.getAddress()).isEqualTo(newBusiness.getAddress());
     }
 
     /**
@@ -3372,7 +3362,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3389,13 +3379,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
     /**
@@ -3413,7 +3403,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3429,13 +3419,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
     /**
@@ -3454,7 +3444,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3480,13 +3470,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(business.getBusinessType()).isEqualTo(newBusiness.getBusinessType());
+        assertThat(someBusiness.getBusinessType()).isEqualTo(newBusiness.getBusinessType());
     }
 
     /**
@@ -3505,7 +3495,7 @@ class BusinessResourceIntegrationTests {
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
-        business = new Business(
+        Business someBusiness = new Business(
                 user.getId(),
                 "name",
                 "some text",
@@ -3521,13 +3511,13 @@ class BusinessResourceIntegrationTests {
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
-        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(business).hasToString(business.toString());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
     }
 
 
