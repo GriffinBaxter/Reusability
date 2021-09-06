@@ -189,7 +189,7 @@ class MarketplaceConversationResourceIntegrationTests {
         marketplaceCardDelete.setId(2);
 
         conversation = new Conversation(instigator, receiver, marketplaceCard);
-        conversationDelete.setId(1);
+        conversation.setId(1);
 
         conversationDelete = new Conversation(instigator, receiver, marketplaceCardDelete);
         conversationDelete.setId(2);

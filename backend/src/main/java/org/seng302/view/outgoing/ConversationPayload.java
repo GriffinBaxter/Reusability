@@ -116,15 +116,15 @@ public class ConversationPayload {
         return "{" +
                 "\"id\":" + id +
                 ",\"instigatorId\":" + instigatorId +
-                ",\"instigatorName\":\"" + instigatorName + "\"," +
-                "\"instigatorImage\":" + instigatorImage +
+                ",\"instigatorName\":\"" + instigatorName + "\"" +
+                ",\"instigatorImage\":" + instigatorImage +
                 ",\"receiverId\":" + receiverId +
-                ",\"receiverName\":\"" + receiverName + "\"," +
-                "\"receiverImage\":" + receiverImage +
+                ",\"receiverName\":\"" + receiverName + "\"" +
+                ",\"receiverImage\":" + receiverImage +
                 ",\"marketplaceCardId\":" + marketplaceCardId +
-                ",\"marketplaceCardTitle\":\"" + marketplaceCardTitle + "\"," +
-                "\"created\":\"" + created + "\"," +
-                "\"deletedByInstigator\":" + deletedByInstigator + "," +
-                "\"deletedByReceiver\":" + deletedByReceiver + "}";
+                ",\"marketplaceCardTitle\":\"" + marketplaceCardTitle + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                ",\"deletedByInstigator\":" + deletedByInstigator +
+                ",\"deletedByReceiver\":" + deletedByReceiver + "}";
     }
 }
