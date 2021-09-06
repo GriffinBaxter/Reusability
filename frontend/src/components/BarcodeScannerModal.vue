@@ -65,9 +65,15 @@ export default {
       liveStreamAvailable: false,
       liveStreaming: false,
       barcodeFound: false,
+
+      hasBeenShown: false
     }
   },
   methods: {
+
+    /**
+     *
+     */
     showModel(event) {
 
       // Prevent any default actions
@@ -78,8 +84,13 @@ export default {
 
       // Show the modal
       this.modal.show();
+
+      this.hasBeenShown = true;
     },
 
+    /**
+     *
+     */
     onUploadClick() {
       this.$refs.image.click();
     },
@@ -123,7 +134,7 @@ export default {
 
   mounted() {
     this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
-    
+
     // Create a modal and attach it to the barcodeScannerModal reference.
     this.modal = new Modal(this.$refs._barcodeScannerModal);
   }

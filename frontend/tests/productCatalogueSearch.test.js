@@ -3,7 +3,7 @@
  */
 
 import {test, expect, describe, jest, beforeAll, afterEach} from "@jest/globals"
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {createLocalVue, shallowMount, mount} from "@vue/test-utils";
 import ProductCatalogue from "../src/views/ProductCatalogue";
 import VueRouter from "vue-router";
 import Api from "../src/Api"
@@ -207,9 +207,8 @@ describe("Testing the ProductSearchBar methods", () => {
 
         let productCatalogueSearchWrapper;
         let router;
-        let barcodeScannerModalWrapper;
 
-        beforeAll(() => {
+        beforeEach(() => {
             const localVue = createLocalVue();
             localVue.use(VueRouter)
 
@@ -220,29 +219,40 @@ describe("Testing the ProductSearchBar methods", () => {
             router.push({
                 name: 'ProductCatalogue',
             })
-            productCatalogueSearchWrapper = shallowMount(ProductSearchBar, {
+            productCatalogueSearchWrapper = mount(ProductSearchBar, {
                 localVue,
                 router
             });
-            barcodeScannerModalWrapper = shallowMount(BarcodeScannerModal, {
-                localVue
-            })
         });
 
-        test('Testing that pressing the camera button opens the barcode scanning model', () => {
+        test('Testing that pressing the camera button opens the barcode scanning model', async () => {
 
             let scannerModalBtn;
-            let barcodeScannerModal;
 
             scannerModalBtn = productCatalogueSearchWrapper.find('#scanner-modal-btn');
-            scannerModalBtn.trigger('click');
+            await scannerModalBtn.trigger('click');
 
-            productCatalogueSearchWrapper.vm.$nextTick();
+            await productCatalogueSearchWrapper.vm.$nextTick();
 
-            barcodeScannerModal = productCatalogueSearchWrapper.find('#barcode-scanner-modal')
+            const modal = productCatalogueSearchWrapper.findComponent(BarcodeScannerModal)
 
+            expect(scannerModalBtn.exists()).toBeTruthy();
+            expect(modal.vm.hasBeenShown).toBe(true);
 
-            expect(barcodeScannerModal.exists()).toBeTruthy();
+        });
+
+        test('Testing that the barcode scanning model is not present by default', async () => {
+
+            let scannerModalBtn;
+
+            scannerModalBtn = productCatalogueSearchWrapper.find('#scanner-modal-btn');
+
+            await productCatalogueSearchWrapper.vm.$nextTick();
+
+            const modal = productCatalogueSearchWrapper.findComponent(BarcodeScannerModal)
+
+            expect(scannerModalBtn.exists()).toBeTruthy();
+            expect(modal.vm.hasBeenShown).toBe(false);
 
         });
 
