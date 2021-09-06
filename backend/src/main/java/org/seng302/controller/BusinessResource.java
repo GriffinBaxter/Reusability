@@ -728,7 +728,7 @@ public class BusinessResource {
         if (currencyCode != null) {
             String debugMessage = String.format("User (id: %d) updated currency code for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getCurrencyCode(), currencyCode);
             logger.debug(debugMessage);
-            business.setCurrencySymbol(currencyCode);
+            business.setCurrencyCode(currencyCode);
         }
     }
 
