@@ -81,7 +81,6 @@ export default {
 
       for (const checkbox of checkboxes) {
         if (checkbox.checked) {
-          console.log(checkbox.value)
           values.push(checkbox.value);
         }
       }

@@ -72,7 +72,7 @@ export default {
   methods: {
 
     /**
-     *
+     * Shows the barcode scanner modal.
      */
     showModel(event) {
 
@@ -89,7 +89,7 @@ export default {
     },
 
     /**
-     *
+     *  Clicks the image.
      */
     onUploadClick() {
       this.$refs.image.click();
