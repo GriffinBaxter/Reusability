@@ -1425,7 +1425,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getErrorMessage()).isEqualTo("User have no permission to do this.");
+        assertThat(response.getErrorMessage()).isEqualTo("User does not have permission to update this image.");
     }
 
     /**
@@ -1459,7 +1459,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Given image does not exist.");
+        assertThat(response.getErrorMessage()).isEqualTo("Given user image does not exist.");
     }
 
     /**
@@ -1563,7 +1563,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Given image does not exist.");
+        assertThat(response.getErrorMessage()).isEqualTo("Given product image does not exist.");
     }
 
     /**
