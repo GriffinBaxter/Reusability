@@ -20,6 +20,8 @@ describe("Testing the ProductSearchBar methods", () => {
     let $route;
     let productCatalogueApiResponse;
     let searchClickedSpy;
+    let productSearchBarWrapper;
+    let checkboxProductNameButton;
 
     beforeAll(() => {
         const $router = {
@@ -114,9 +116,24 @@ describe("Testing the ProductSearchBar methods", () => {
                 }
             });
 
+        productSearchBarWrapper = shallowMount(ProductSearchBar,
+            {
+                mocks: {
+                    $router,
+                    $route
+                }
+            }
+        );
+
         Promise.resolve();
 
-        searchClickedSpy = jest.spyOn(ProductSearchBar.methods, 'searchClicked')
+        searchClickedSpy = jest.spyOn(ProductSearchBar.methods, 'searchClicked');
+
+        checkboxProductNameButton = productSearchBarWrapper.find('#checkbox-product-name');
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return checkboxProductNameButton.element;
+        })
 
     });
 
@@ -167,36 +184,38 @@ describe("Testing the ProductSearchBar methods", () => {
         });
 
         test('Testing that pressing enter populates the URL correctly', async() => {
-            let inputQuery = 'Product Catalogue Search Enter Test';
-            let expectedQuery = 'Product%20Catalogue%20Search%20Enter%20Test';
+            const inputQuery = 'Product Catalogue Search Enter Test';
+            const barcode = 123457891234;
             productCatalogueSearchWrapper.vm.$refs.searchInput.value = inputQuery;
+            productCatalogueSearchWrapper.vm.barcode = barcode;
 
             let nameCheckbox = productCatalogueSearchWrapper.find('#checkbox-product-name');
             nameCheckbox.trigger('click');
-
             await productCatalogueSearchWrapper.vm.$nextTick();
 
             let searchBar = productCatalogueSearchWrapper.find('#product-search-bar');
             searchBar.trigger('keydown.enter');
-
             await productCatalogueSearchWrapper.vm.$nextTick();
 
             expect(router.currentRoute.name).toBe('ProductCatalogue')
-            expect(router.currentRoute.fullPath).toBe(`/productCatalogue?searchQuery=${expectedQuery}&barcode`)
+            expect(productCatalogueSearchWrapper.emitted().search[0]).toEqual([["name"], inputQuery, barcode]);
         });
 
         test('Testing that clicking the search button populates the URL correctly', async () => {
-            let inputQuery = 'Product Catalogue Search Click Test';
-            let expectedQuery = 'Product%20Catalogue%20Search%20Click%20Test';
+            const inputQuery = 'Product Catalogue Search Click Test';
+            const barcode = 123457891234;
 
             productCatalogueSearchWrapper.vm.$refs.searchInput.value = inputQuery;
+            productCatalogueSearchWrapper.vm.barcode = barcode;
 
             await productCatalogueSearchWrapper.vm.$nextTick().then(() => {
                 let searchButton = productCatalogueSearchWrapper.find('#product-search-button');
                 searchButton.trigger('click');
 
                 expect(router.currentRoute.name).toBe('ProductCatalogue')
-                expect(router.currentRoute.fullPath).toBe(`/productCatalogue?searchQuery=${expectedQuery}&barcode`)
+                expect(productCatalogueSearchWrapper.emitted().search[1]).toEqual([["name"], inputQuery, barcode]);
+
+
             });
         });
     })

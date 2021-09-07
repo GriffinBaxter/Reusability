@@ -77,23 +77,20 @@ export default {
      */
     getSelectedCheckbox() {
       let checkboxes = document.querySelectorAll("input[name='search-type-checkbox']");
-      let value = [];
+      let values = [];
 
       for (const checkbox of checkboxes) {
         if (checkbox.checked) {
-          value.push(checkbox.value);
+          console.log(checkbox.value)
+          values.push(checkbox.value);
         }
       }
-      if (value.length === 0) {
-        window.onload = function () {
 
-          console.log(document.getElementById('checkbox-product-name'))
-
+      if (values.length === 0) {
           document.getElementById('checkbox-product-name').click();
-          value.push("name");
-        }
+          values.push("name");
       }
-      return value
+      return values
     },
     /**
      * When the enter key is pressed, the query is run with the search value.
@@ -117,14 +114,10 @@ export default {
           searchQuery !== this.$route.query.searchQuery ||
           searchBarcode !== this.$route.query.barcode
       ) {
-        this.$router.push({
-          path: '/productCatalogue', query: {
-            searchQuery: searchQuery, barcode: searchBarcode
-          }
-        });
+        this.$emit('search', checked, searchQuery, searchBarcode);
       }
 
-      this.$emit('search', checked, searchQuery, searchBarcode);
+
     },
     /**
      * Updates the barcode used in the product catalogue search.
