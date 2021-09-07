@@ -1,6 +1,6 @@
 <template>
-  <div class="row" style="margin-top: -5px">
-    <label class="d-inline-block fs-6 text-center">Barcode (EAN or UPC)</label>
+  <div class="row">
+    <label class="d-inline-block fs-6">Barcode (EAN or UPC)</label>
     <div class="d-inline-block center">
       <input type="number" class="form-control d-inline-block" v-model="barcode" style="width: 150px" @keydown="enterPressed($event)">
       <button type="button" class="btn green-button d-inline-block" style="width: 42px"
