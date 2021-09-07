@@ -367,6 +367,8 @@ import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
 import Api from "../Api";
+import {isValidDateOfBirth} from "./helpFunction";
+import {getErrorMessage} from "../components/inventory/InventoryValidationHelper";
 
 export default {
   name: "EditProfile",
@@ -507,91 +509,6 @@ export default {
     },
 
     /**
-     * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
-     *
-     * @param val, int, the value to be tested for being within the range.
-     * @param min, int, the minimum value in the range.
-     * @param max, int, the maximum value in the range.
-     * @returns Boolean, true if within range, false is not within range.
-     */
-    between(val, min, max) {
-      return min <= val && val <= max;
-    },
-
-    /**
-     * This method validates the date of birth field input and creates a Date which represents the new user's
-     * date of birth.
-     *
-     * @param selectedDate, string, the date of birth of the user.
-     * @returns {Boolean|null}, returns true is the date is valid i.e. in the past and meets the expected format, else
-     *                          null or false.
-     */
-    isValidDateOfBirth(selectedDate) {
-      const todayDate = new Date();
-      const year_13_ms = 1000 * 60 * 60 * 24 * 365 * 13;
-      const data = this.parseSelectedDate(selectedDate);
-
-      if (data) {
-        const {year, month, day} = data;
-        if (year && month && day) {
-          const chosenDate = new Date(year, month, day);
-          return todayDate - chosenDate >= year_13_ms;
-        }
-      }
-      return null;
-    },
-
-    /**
-     * This method parses the given date of birth input and separates it into a year, month and day, provided it meets
-     * the expected format.
-     *
-     * @param dateString, string, the date to validate and separate.
-     * @returns {{month: number, year: number, day: number}|null}, {year, month, day}, if the date meets the expected
-     * format, else null.
-     *
-     */
-    parseSelectedDate(dateString) {
-      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,2}-[0-9]{1,2}$/
-
-      if (verifyRegex.test(dateString)) {
-        const dateParts = dateString.split("-", 3);
-        return {
-          year: Number(dateParts[0]),
-          month: Number(dateParts[1]),
-          day: Number(dateParts[2])
-        }
-      } else {
-        return null
-      }
-    },
-
-    /**
-     * This method determines the error message to be generated for a given input value based on the field type and
-     * its associated validity (determined by a regex).
-     *
-     * @param name, string, name of the input field.
-     * @param inputVal, string, the value entered in the stated field.
-     * @param minLength, number, the minimum allowed length of the inputVal.
-     * @param maxLength, number, the maximum allowed length of the inputVal.
-     * @param regexMessage, string, the tailored message about the expected syntax for the inputVal if it does not
-     *                              meet the regex given.
-     * @param regex, string, the allowed format for the given input field.
-     * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
-     */
-    getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = "";
-      if (inputVal === "" && minLength >= 1) {
-        errorMessage = "Please enter input";
-      }
-      else if (!regex.test(inputVal)) {
-        errorMessage = regexMessage;
-      } else if (!this.between(inputVal.length, minLength, maxLength)) {
-        errorMessage = `Input must be between ${minLength} and ${maxLength} characters long.`
-      }
-      return errorMessage;
-    },
-
-    /**
      * This method checks the password against the given criteria and determines whether it meets the criteria.
      * If it does, the colour is changed from black to red.
      *
@@ -608,255 +525,18 @@ export default {
     },
 
     /**
-     * This method edits a user.
+     * This method checks the validation of all fields and if all fields are okay sends an EditUser object to the backend
+     * to update the user, if not, appropriate error messages will be displayed
+     *
      * @param e, the current event.
      */
     editUser(e) {
       e.preventDefault()  // prevents page from reloading
 
       this.trimTextInputFields()
+      this.getErrorMsgs()
 
-      // Validation
-      let requestIsInvalid = false
-
-      // ===================================== START OF INPUT FIELDS VALIDATION ========================================
-
-      // First name error checking
-      this.firstNameErrorMsg = this.getErrorMessage(
-          this.config.firstName.name,
-          this.firstName,
-          this.config.firstName.minLength,
-          this.config.firstName.maxLength,
-          this.config.firstName.regexMessage,
-          this.config.firstName.regex
-      )
-      if (this.firstNameErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Middle name error checking
-      this.middleNameErrorMsg = this.getErrorMessage(
-          this.config.middleName.name,
-          this.middleName,
-          this.config.middleName.minLength,
-          this.config.middleName.maxLength,
-          this.config.middleName.regexMessage,
-          this.config.middleName.regex
-      )
-      if (this.middleNameErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Last name error checking
-      this.lastNameErrorMsg = this.getErrorMessage(
-          this.config.lastName.name,
-          this.lastName,
-          this.config.lastName.minLength,
-          this.config.lastName.maxLength,
-          this.config.lastName.regexMessage,
-          this.config.lastName.regex
-      )
-      if (this.lastNameErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Nickname error checking
-      this.nicknameErrorMsg = this.getErrorMessage(
-          this.config.nickname.name,
-          this.nickname,
-          this.config.nickname.minLength,
-          this.config.nickname.maxLength,
-          this.config.nickname.regexMessage,
-          this.config.nickname.regex
-      )
-      if (this.nicknameErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Bio error checking
-      this.bioErrorMsg = this.getErrorMessage(
-          this.config.bio.name,
-          this.bio,
-          this.config.bio.minLength,
-          this.config.bio.maxLength,
-      )
-      if (this.bioErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Email error checking
-      this.emailErrorMsg = this.getErrorMessage(
-          this.config.email.name,
-          this.email,
-          this.config.email.minLength,
-          this.config.email.maxLength,
-          this.config.email.regexMessage,
-          this.config.email.regex
-      )
-      if (this.emailErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Date of birth error checking
-      if (!this.dateOfBirth) {
-        this.dateOfBirthErrorMsg = "This field is required!"
-        requestIsInvalid = true
-      } else if (!this.isValidDateOfBirth(this.dateOfBirth)) {
-        this.dateOfBirthErrorMsg = "Must be over 13, and not from the future."
-        requestIsInvalid = true
-      } else {
-        this.dateOfBirthErrorMsg = "";
-      }
-
-      if (this.password !== "") {
-        // Current Password error checking
-        this.currentPasswordErrorMsg = this.getErrorMessage(
-            this.config.password.name,
-            this.currentPassword,
-            this.config.password.minLength,
-            this.config.password.maxLength,
-            this.config.password.regexStrongMessage,
-            this.config.password.regexStrong,
-        )
-        if (this.currentPasswordErrorMsg) {
-          requestIsInvalid = true
-        }
-
-        // Password error checking
-        this.passwordErrorMsg = this.getErrorMessage(
-            this.config.password.name,
-            this.password,
-            this.config.password.minLength,
-            this.config.password.maxLength,
-            this.config.password.regexStrongMessage,
-            this.config.password.regexStrong,
-        )
-        if (this.passwordErrorMsg) {
-          requestIsInvalid = true
-        }
-      } else {
-        this.passwordErrorMsg = ""
-        this.currentPasswordErrorMsg = ""
-      }
-
-      // Confirm password error checking
-      if (this.password !== this.confirmPassword) {
-        this.confirmPasswordErrorMsg = "Confirmation password does not equal password field."
-      } else {
-        this.confirmPasswordErrorMsg = ""
-      }
-      if (this.confirmPasswordErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Phone number error checking
-      this.phoneNumberErrorMsg = this.getErrorMessage(
-          this.config.phoneNumber.name,
-          this.phoneNumber,
-          this.config.phoneNumber.minLength,
-          this.config.phoneNumber.maxLength,
-          this.config.phoneNumber.regexMessage,
-          this.config.phoneNumber.regex
-      )
-      if (this.phoneNumberErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Home address error checking
-      this.homeAddressErrorMsg = this.getErrorMessage(
-          this.config.homeAddress.name,
-          this.$refs.homeAddressInput.value,
-          this.config.homeAddress.minLength,
-          this.config.homeAddress.maxLength
-      )
-      if (this.homeAddressErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Street number error checking
-      this.streetNumberErrorMsg = this.getErrorMessage(
-          this.config.streetNumber.name,
-          // Using v-model for this address input apparently does not update
-          // when we insert from our autocomplete list so it has been changed to use $refs
-          this.$refs.streetNumber.value,
-          this.config.streetNumber.minLength,
-          this.config.streetNumber.maxLength
-      )
-      if (this.streetNumberErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Street name error checking
-      this.streetNameErrorMsg = this.getErrorMessage(
-          this.config.streetName.name,
-          // Using v-model for this address input apparently does not update
-          // when we insert from our autocomplete list so it has been changed to use $refs
-          this.$refs.streetName.value,
-          this.config.streetName.minLength,
-          this.config.streetName.maxLength
-      )
-      if (this.streetNameErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Suburb error checking
-      this.suburbErrorMsg = this.getErrorMessage(
-          this.config.suburb.name,
-          this.$refs.suburb.value,
-          this.config.suburb.minLength,
-          this.config.suburb.maxLength
-      )
-      if (this.suburbErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Postcode error checking
-      this.postcodeErrorMsg = this.getErrorMessage(
-          this.config.postcode.name,
-          this.$refs.postcode.value,
-          this.config.postcode.minLength,
-          this.config.postcode.maxLength
-      )
-      if (this.postcodeErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // City error checking
-      this.cityErrorMsg = this.getErrorMessage(
-          this.config.city.name,
-          this.$refs.city.value,
-          this.config.city.minLength,
-          this.config.city.maxLength
-      )
-      if (this.cityErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Region error checking
-      this.regionErrorMsg = this.getErrorMessage(
-          this.config.region.name,
-          this.$refs.region.value,
-          this.config.region.minLength,
-          this.config.region.maxLength
-      )
-      if (this.regionErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Country error checking
-      this.countryErrorMsg = this.getErrorMessage(
-          this.config.country.name,
-          this.$refs.country.value,
-          this.config.country.minLength,
-          this.config.country.maxLength
-      )
-      if (this.countryErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // ====================================== END OF INPUT FIELDS VALIDATION =========================================
-
-      if (requestIsInvalid) {
+      if (!this.checkRequestValid()) {
         return
       }
 
@@ -869,43 +549,30 @@ export default {
         country: this.country,
         postcode: this.postcode
       }
-      let user;
-      if (this.password === "") { // password field is empty
-        // Wrapping up the user submitted fields into a class object (User).
-        const userData = {
-          firstName: this.firstName.charAt(0).toUpperCase() + this.firstName.slice(1),
-          lastName: this.lastName.charAt(0).toUpperCase() + this.lastName.slice(1),
-          middleName: this.middleName.charAt(0).toUpperCase() + this.middleName.slice(1),
-          nickname: this.nickname.charAt(0).toUpperCase() + this.nickname.slice(1),
-          bio: this.bio,
-          email: this.email,
-          dateOfBirth: this.dateOfBirth,
-          phoneNumber: this.phoneNumber,
-          homeAddress: addressData,
-          currentPassword: null,
-          newPassword: null
-        }
-        user = new EditUser(userData)
-      } else {
-        // Wrapping up the user submitted fields into a class object (User).
-        const userData = {
-          firstName: this.firstName.charAt(0).toUpperCase() + this.firstName.slice(1),
-          lastName: this.lastName.charAt(0).toUpperCase() + this.lastName.slice(1),
-          middleName: this.middleName.charAt(0).toUpperCase() + this.middleName.slice(1),
-          nickname: this.nickname.charAt(0).toUpperCase() + this.nickname.slice(1),
-          bio: this.bio,
-          email: this.email,
-          dateOfBirth: this.dateOfBirth,
-          phoneNumber: this.phoneNumber,
-          homeAddress: addressData,
-          currentPassword: this.currentPassword,
-          newPassword: this.password
-        }
-        user = new EditUser(userData)
+
+
+      let currentPassword = null
+      let newPassword = null
+      if (this.password !== "") { // password field is not empty
+        currentPassword = this.currentPassword;
+        newPassword = this.password
+      }
+      const userData = {
+        firstName: this.firstName.charAt(0).toUpperCase() + this.firstName.slice(1),
+        lastName: this.lastName.charAt(0).toUpperCase() + this.lastName.slice(1),
+        middleName: this.middleName.charAt(0).toUpperCase() + this.middleName.slice(1),
+        nickname: this.nickname.charAt(0).toUpperCase() + this.nickname.slice(1),
+        bio: this.bio,
+        email: this.email,
+        dateOfBirth: this.dateOfBirth,
+        phoneNumber: this.phoneNumber,
+        homeAddress: addressData,
+        currentPassword: currentPassword,
+        newPassword: newPassword
       }
       const id = this.$route.params.id
 
-      Api.editUser(id, user).then( (res) => {
+      Api.editUser(id, new EditUser(userData)).then( (res) => {
         if (res.status === 200) {
           this.$router.push({name: "Profile", params: {id}})
         }
@@ -924,6 +591,203 @@ export default {
           this.errorMessageBubble = 'Unexpected error occurred!';
         }
       })
+    },
+    /**
+     * Checks validation for all fields and creates error messages as required
+     */
+    getErrorMsgs() {
+      // First/Middle/Last/Nick name error checking
+      this.getNameErrorMsgs()
+      // Current password, password and confirm password error checking
+      this.getPasswordErrorMsgs()
+      // Street number/name, suburb, city, region, postcode, country
+      this.getAddressErrorMsgs()
+      // Bio error checking
+      this.bioErrorMsg = getErrorMessage(
+          this.config.bio.name,
+          this.bio,
+          this.config.bio.minLength,
+          this.config.bio.maxLength,
+      )
+      // Email error checking
+      this.emailErrorMsg = getErrorMessage(
+          this.config.email.name,
+          this.email,
+          this.config.email.minLength,
+          this.config.email.maxLength,
+          this.config.email.regexMessage,
+          this.config.email.regex
+      )
+      // Date of birth error checking
+      if (!this.dateOfBirth) {
+        this.dateOfBirthErrorMsg = "This field is required!"
+      } else if (!isValidDateOfBirth(this.dateOfBirth)) {
+        this.dateOfBirthErrorMsg = "Must be over 13, and not from the future."
+      } else {
+        this.dateOfBirthErrorMsg = "";
+      }
+      // Phone number error checking
+      this.phoneNumberErrorMsg = getErrorMessage(
+          this.config.phoneNumber.name,
+          this.phoneNumber,
+          this.config.phoneNumber.minLength,
+          this.config.phoneNumber.maxLength,
+          this.config.phoneNumber.regexMessage,
+          this.config.phoneNumber.regex
+      )
+    },
+    /**
+     * Checks validation for all name related fields and creates error messages as required
+     */
+    getNameErrorMsgs() {
+      // First name error checking
+      this.firstNameErrorMsg = getErrorMessage(
+          this.config.firstName.name,
+          this.firstName,
+          this.config.firstName.minLength,
+          this.config.firstName.maxLength,
+          this.config.firstName.regexMessage,
+          this.config.firstName.regex
+      )
+      // Middle name error checking
+      this.middleNameErrorMsg = getErrorMessage(
+          this.config.middleName.name,
+          this.middleName,
+          this.config.middleName.minLength,
+          this.config.middleName.maxLength,
+          this.config.middleName.regexMessage,
+          this.config.middleName.regex
+      )
+      // Last name error checking
+      this.lastNameErrorMsg = getErrorMessage(
+          this.config.lastName.name,
+          this.lastName,
+          this.config.lastName.minLength,
+          this.config.lastName.maxLength,
+          this.config.lastName.regexMessage,
+          this.config.lastName.regex
+      )
+      // Nickname error checking
+      this.nicknameErrorMsg = getErrorMessage(
+          this.config.nickname.name,
+          this.nickname,
+          this.config.nickname.minLength,
+          this.config.nickname.maxLength,
+          this.config.nickname.regexMessage,
+          this.config.nickname.regex
+      )
+    },
+    /**
+     * Checks validation for all password related fields and creates error messages as required
+     */
+    getPasswordErrorMsgs() {
+      if (this.password !== "") {
+        // Current Password error checking
+        this.currentPasswordErrorMsg = getErrorMessage(
+            this.config.password.name,
+            this.currentPassword,
+            this.config.password.minLength,
+            this.config.password.maxLength,
+            this.config.password.regexStrongMessage,
+            this.config.password.regexStrong,
+        )
+        // Password error checking
+        this.passwordErrorMsg = getErrorMessage(
+            this.config.password.name,
+            this.password,
+            this.config.password.minLength,
+            this.config.password.maxLength,
+            this.config.password.regexStrongMessage,
+            this.config.password.regexStrong,
+        )
+      } else {
+        this.passwordErrorMsg = ""
+        this.currentPasswordErrorMsg = ""
+      }
+      // Confirm password error checking
+      if (this.password !== this.confirmPassword) {
+        this.confirmPasswordErrorMsg = "Confirmation password does not equal password field."
+      } else {
+        this.confirmPasswordErrorMsg = ""
+      }
+    },
+    /**
+     * Checks validation for all address related fields and creates error messages as required
+     */
+    getAddressErrorMsgs() {
+      // Street number error checking
+      this.streetNumberErrorMsg = getErrorMessage(
+          this.config.streetNumber.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetNumber.value,
+          this.config.streetNumber.minLength,
+          this.config.streetNumber.maxLength
+      )
+      // Street name error checking
+      this.streetNameErrorMsg = getErrorMessage(
+          this.config.streetName.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetName.value,
+          this.config.streetName.minLength,
+          this.config.streetName.maxLength
+      )
+      // Suburb error checking
+      this.suburbErrorMsg = getErrorMessage(
+          this.config.suburb.name,
+          this.$refs.suburb.value,
+          this.config.suburb.minLength,
+          this.config.suburb.maxLength
+      )
+      // Postcode error checking
+      this.postcodeErrorMsg = getErrorMessage(
+          this.config.postcode.name,
+          this.$refs.postcode.value,
+          this.config.postcode.minLength,
+          this.config.postcode.maxLength
+      )
+      // City error checking
+      this.cityErrorMsg = getErrorMessage(
+          this.config.city.name,
+          this.$refs.city.value,
+          this.config.city.minLength,
+          this.config.city.maxLength
+      )
+      // Region error checking
+      this.regionErrorMsg = getErrorMessage(
+          this.config.region.name,
+          this.$refs.region.value,
+          this.config.region.minLength,
+          this.config.region.maxLength
+      )
+      // Country error checking
+      this.countryErrorMsg = getErrorMessage(
+          this.config.country.name,
+          this.$refs.country.value,
+          this.config.country.minLength,
+          this.config.country.maxLength
+      )
+    },
+    /**
+     * Checks if any error messages are displayed and returns a true/false
+     * @return T/F if request is valid
+     */
+    checkRequestValid() {
+      let valid = true
+      if (this.firstNameErrorMsg || this.middleNameErrorMsg || this.lastNameErrorMsg || this.nicknameErrorMsg) {
+        valid = false
+      }
+      if (this.streetNumberErrorMsg || this.streetNameErrorMsg || this.suburbErrorMsg || this.cityErrorMsg || this.regionErrorMsg || this.postcodeErrorMsg || this.countryErrorMsg) {
+        valid = false
+      }
+      if (this.dateOfBirthErrorMsg || this.bioErrorMsg || this.emailErrorMsg) {
+        valid = false
+      }
+      if (this.passwordErrorMsg || this.currentPasswordErrorMsg || this.confirmPasswordErrorMsg) {
+        valid = false
+      }
+      return valid
     },
 
     /**
@@ -1244,18 +1108,10 @@ export default {
      * @param res API response
      */
     setFields(res) {
-      if (res.data.bio !== null) {
-        this.bio = res.data.bio
-      }
-      if (res.data.dateOfBirth !== null) {
-        this.dateOfBirth = res.data.dateOfBirth
-      }
-      if (res.data.email !== null) {
-        this.email = res.data.email
-      }
-      if (res.data.phoneNumber !== null) {
-        this.phoneNumber = res.data.phoneNumber
-      }
+      if (res.data.bio !== null) { this.bio = res.data.bio }
+      if (res.data.dateOfBirth !== null) { this.dateOfBirth = res.data.dateOfBirth }
+      if (res.data.email !== null) { this.email = res.data.email }
+      if (res.data.phoneNumber !== null) { this.phoneNumber = res.data.phoneNumber }
       // Names
       this.setNameFields(res.data);
       // Address
@@ -1267,45 +1123,23 @@ export default {
      */
     setAddressFields(address) {
       // Address
-      if (address.streetNumber !== null) {
-        this.streetNumber = address.streetNumber
-      }
-      if (address.streetName !== null) {
-        this.streetName = address.streetName
-      }
-      if (address.suburb !== null) {
-        this.suburb = address.suburb
-      }
-      if (address.city !== null) {
-        this.city = address.city
-      }
-      if (address.region !== null) {
-        this.region = address.region
-      }
-      if (address.postcode !== null) {
-        this.postcode = address.postcode
-      }
-      if (address.postcode !== null) {
-        this.country = address.country
-      }
+      if (address.streetNumber !== null) { this.streetNumber = address.streetNumber }
+      if (address.streetName !== null) { this.streetName = address.streetName }
+      if (address.suburb !== null) { this.suburb = address.suburb }
+      if (address.city !== null) { this.city = address.city }
+      if (address.region !== null) { this.region = address.region }
+      if (address.postcode !== null) { this.postcode = address.postcode }
+      if (address.postcode !== null) { this.country = address.country }
     },
     /**
      * Sets Name Fields if they exist (this is done to prevent setting inputs as undefined)
      * @param names object containing name fields
      */
     setNameFields(names) {
-      if (names.firstName !== null) {
-        this.firstName = names.firstName
-      }
-      if (names.middleName !== null) {
-        this.middleName = names.middleName
-      }
-      if (names.lastName !== null) {
-        this.lastName = names.lastName
-      }
-      if (names.nickname !== null) {
-        this.nickname = names.nickname
-      }
+      if (names.firstName !== null) { this.firstName = names.firstName }
+      if (names.middleName !== null) { this.middleName = names.middleName}
+      if (names.lastName !== null) { this.lastName = names.lastName }
+      if (names.nickname !== null) { this.nickname = names.nickname }
     }
   },
   async created() {

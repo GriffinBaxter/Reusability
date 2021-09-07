@@ -340,6 +340,7 @@ import User from "../configs/User"
 import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
+import {isValidDateOfBirth} from "./helpFunction";
 
 export default {
   name: "Registration",
@@ -519,29 +520,6 @@ export default {
     },
 
     /**
-     * This method validates the date of birth field input and creates a Date which represents the new user's
-     * date of birth.
-     *
-     * @param selectedDate, string, the date of birth of the user.
-     * @returns {Boolean|null}, returns true is the date is valid i.e. in the past and meets the expected format, else
-     *                          null or false.
-     */
-    isValidDateOfBirth(selectedDate) {
-      const todayDate = new Date();
-      const year_13_ms = 1000 * 60 * 60 * 24 * 365 * 13;
-      const data = this.parseSelectedDate(selectedDate);
-
-      if (data) {
-        const {year, month, day} = data;
-        if (year && month && day) {
-          const chosenDate = new Date(year, month, day);
-          return todayDate - chosenDate >= year_13_ms;
-        }
-      }
-      return null;
-    },
-
-    /**
      * This method determines the maximum possible date of birth.
      *
      * @returns {string}, the maximum possible date of birth in the expected String format of e.g. 2021-03-15.
@@ -705,7 +683,7 @@ export default {
       if (!this.dateOfBirth) {
         this.dateOfBirthErrorMsg = "This field is required!"
         requestIsInvalid = true
-      } else if (!this.isValidDateOfBirth(this.dateOfBirth)) {
+      } else if (!isValidDateOfBirth(this.dateOfBirth)) {
         this.dateOfBirthErrorMsg = "Must be over 13, and not from the future."
         requestIsInvalid = true
       } else {

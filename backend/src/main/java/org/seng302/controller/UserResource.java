@@ -71,8 +71,6 @@ public class UserResource {
     @Autowired
     private AddressRepository addressRepository;
 
-    private Address address;
-
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
 
     // the name of the cookie used for authentication.
@@ -535,6 +533,7 @@ public class UserResource {
             selectedUser.updateEmail(userProfileModifyPayload.getEmail());
             selectedUser.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
             selectedUser.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
+
             if (userProfileModifyPayload.getNewPassword() != null) {
                 if (userProfileModifyPayload.getCurrentPassword() != null) {
                     if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())

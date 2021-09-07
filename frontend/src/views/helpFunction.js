@@ -52,3 +52,26 @@ export function getFormattedAddress(number, streetName, suburb, city, postcode, 
 export function checkNullity(item) {
     return (item || "");
 }
+
+/**
+ * This method validates the date of birth field input and creates a Date which represents the new user's
+ * date of birth.
+ *
+ * @param selectedDate, string, the date of birth of the user.
+ * @returns {Boolean|null}, returns true is the date is valid i.e. in the past and meets the expected format, else
+ *                          null or false.
+ */
+export function isValidDateOfBirth(selectedDate) {
+    const todayDate = new Date();
+    const year_13_ms = 1000 * 60 * 60 * 24 * 365 * 13;
+    const data = this.parseSelectedDate(selectedDate);
+
+    if (data) {
+        const {year, month, day} = data;
+        if (year && month && day) {
+            const chosenDate = new Date(year, month, day);
+            return todayDate - chosenDate >= year_13_ms;
+        }
+    }
+    return null;
+}
