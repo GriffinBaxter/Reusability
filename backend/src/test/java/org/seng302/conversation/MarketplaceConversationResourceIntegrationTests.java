@@ -86,7 +86,6 @@ class MarketplaceConversationResourceIntegrationTests {
 
 
     // Conversation Deletion
-    private User dgaa;
     private User outsideUser;
     private Conversation conversationDelete;
     private MarketplaceCard marketplaceCardDelete;
