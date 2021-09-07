@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.2.2
+  version: 6.2.4
   title: REUSEABILITY
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -2250,6 +2250,34 @@ paths:
             schema:
               $ref: '#/components/schemas/Message'
 
+  '/users/conversation/{conversationId}':
+    delete:
+      tags:
+        - 'UCM8: Contacting Other Marketplace Users'
+        - 'Conversations'
+      summary: Delete a marketplace conversation
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: conversationId
+          in: path
+          description: ID of conversation to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Conversation successfully deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Forbidden: Returned when a user tries to delete a conversation that does not involve them AND the user is not an admin'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
 
 components:
   securitySchemes:
@@ -2949,16 +2977,39 @@ components:
           example: 100
           readOnly: true
           description: User that started the conversation (from a card)
+        instigatorName:
+          type: string
+          example: Tom Edwards
+          readOnly: true
+          description: The name of the user that started the conversation (from a card)
         receiverId:
           type: integer
-          example: 100
+          example: 101
           readOnly: true
           description: User that created the card
+        receiverName:
+          type: string
+          example: Billy Bob
+          readOnly: true
+          description: The name of the user that created the card
         marketplaceCardId:
           type: integer
           example: 100
           readOnly: true
           description: The marketplace card of the conversation
+        marketplaceCardTitle:
+          type: string
+          example: Royal Gala Apples For Sale
+          readOnly: true
+          description: The marketplace card title of the conversation
+        deletedByInstigator:
+          type: boolean
+          example: false
+          description: A boolean value used to keep track of whether the instigator has deleted/left the conversation. true if they have, false if they have not.
+        deletedByReceiver:
+          type: boolean
+          example: false
+          description: A boolean value used to keep track of whether the receiver has deleted/left the conversation. true if they have, false if they have not.
         created:
           type: string
           format: date-time
@@ -2989,7 +3040,7 @@ components:
           example: 408
           description: ID of the marketplace card involved in the conversation
         content:
-          type: String
+          type: string
           example: "Hi, I am interested in exchanging some apples for some pears."
           description: message content
         created:

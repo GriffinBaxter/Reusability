@@ -250,13 +250,14 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
         marketplaceCard.setId(1);
 
         conversation = new Conversation(instigator, receiver, marketplaceCard);
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
     }
 
     @When("The recipient with id {int} tries to retrieve their conversations.")
     public void theUserWithIdTriesToRetrieveTheirConversations(int id) throws Exception {
         given(userRepository.findBySessionUUID(receiver.getSessionUUID())).willReturn(Optional.ofNullable(receiver));
 
-        when(marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(id, id)).thenReturn(List.of(conversation));
+        when(marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(id, false, id, false)).thenReturn(List.of(conversation));
 
         response = mvc.perform(get("/home/conversation")
                 .cookie(new Cookie("JSESSIONID", receiver.getSessionUUID()))).andReturn().getResponse();
@@ -290,6 +291,7 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
                 receiver,
                 marketplaceCard
         );
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
 
         message1 = new Message(
                 conversation,
@@ -335,7 +337,7 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
         when(marketplaceConversationRepository.save(any(Conversation.class))).thenReturn(conversation);
         when(marketplaceConversationMessageRepository.save(any(Message.class))).thenReturn(message2);
 
-        response = mvc.perform(post(String.format("/home/conversation", conversationId))
+        response = mvc.perform(post(String.format("/home/conversation"))
                         .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
                         .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
                 .andReturn().getResponse();
