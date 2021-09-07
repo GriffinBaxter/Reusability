@@ -176,7 +176,6 @@ describe("Testing the response on save attempt", () => {
     let editProfileWrapper;
     let mockEditResponse;
     let id;
-    let $router;
 
     beforeEach(async () => {
 
@@ -186,9 +185,6 @@ describe("Testing the response on save attempt", () => {
             params: {
                 id: id
             }
-        }
-        $router = {
-            push: jest.fn()
         }
         const mockApiResponse = {
             status: 200,
@@ -218,8 +214,7 @@ describe("Testing the response on save attempt", () => {
 
         editProfileWrapper = shallowMount(EditProfile, {
             mocks: {
-                $route,
-                $router
+                $route
             }
         });
         await editProfileWrapper.vm.$nextTick();
