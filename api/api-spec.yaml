@@ -3069,7 +3069,7 @@ components:
           type: integer
           example: 200
           description: ID of the message recipient
-          readOnly: true
+          writeOnly: true
         marketplaceCardId:
           type: integer
           example: 408
