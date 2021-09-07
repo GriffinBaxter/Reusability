@@ -4,12 +4,12 @@
       <LoadingDots v-if="isLoading" />
       <div id="content-wrapper" v-else>
         <div v-if="!conversationIsOpen">
-          <div v-for="(conv) in conversations" :key="conv.id" @click="openConversation(conv.id)">
+          <div v-for="(conv) in conversations" :key="conv.id" @click="openConversation(conv)">
             <MessageOption :id="`conversation-${conv.id}`" :userName="conv.userName" :image="conv.image"
                            :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
           </div>
         </div>
-        <MessageConversation v-else ref="msgConversation"/>
+        <MessageConversation v-else title="currentTitle" ref="msgConversation"/>
       </div>
     </div>
     <div class="error-message" v-if="errorMessage">
@@ -58,6 +58,12 @@ export default {
       this.$nextTick(() => {
         this.$refs.msgConversation.openConversation(conversationId)
       })
+    },
+    /**
+     * Closes the open conversation
+     */
+    closeConversation() {
+      this.conversationIsOpen = false;
     }
   },
   beforeMount() {
@@ -68,21 +74,26 @@ export default {
           this.conversations = res.data.map( (conversation) => {
             let userImage;
             let userName;
+            let userId;
             const currentId = Cookies.get("userID");
             if (conversation.instigatorId === currentId) {
               userImage = conversation.receiverImage;
               userName = conversation.receiverName;
+              userId = conversation.receiverId;
             } else {
               userImage = conversation.instigatorImage;
               userName = conversation.instigatorName;
+              userId = conversation.instigatorId;
             }
             return {
               id: conversation.id,
               image: userImage || DefaultImage,
               userName: userName,
+              userId: userId,
               cardName: conversation.marketplaceCardTitle,
               creationTime: conversation.created,
-              newMessage: true
+              newMessage: true,
+              marketplaceCardId: conversation.marketplaceCardId
             };
           });
           if (this.conversations.length === 0) {
