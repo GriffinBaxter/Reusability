@@ -2088,7 +2088,7 @@ paths:
             example: 118
         - name: fromDate
           in: query
-          description: 'The date the sales report should be from. Will be set to the start of 2021 if before 2021
+          description: 'The date the sales report should be from. Will be set to the start of 2021 if before 2021 
           (the year that the app was first deployed), must be before or at the "to date".'
           required: true
           schema:
@@ -2096,7 +2096,7 @@ paths:
             format: date-time
         - name: toDate
           in: query
-          description: 'The date the sales report should be to. Will be set to the current date if in the future,
+          description: 'The date the sales report should be to. Will be set to the current date if in the future, 
           must be at or after the start of 2021 (the year that the app was first deployed).'
           required: true
           schema:
@@ -2977,16 +2977,31 @@ components:
           example: 100
           readOnly: true
           description: User that started the conversation (from a card)
+        instigatorName:
+          type: string
+          example: Tom Edwards
+          readOnly: true
+          description: The name of the user that started the conversation (from a card)
         receiverId:
           type: integer
           example: 101
           readOnly: true
           description: User that created the card
+        receiverName:
+          type: string
+          example: Billy Bob
+          readOnly: true
+          description: The name of the user that created the card
         marketplaceCardId:
           type: integer
           example: 100
           readOnly: true
           description: The marketplace card of the conversation
+        marketplaceCardTitle:
+          type: string
+          example: Royal Gala Apples For Sale
+          readOnly: true
+          description: The marketplace card title of the conversation
         deletedByInstigator:
           type: boolean
           example: false

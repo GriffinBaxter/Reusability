@@ -83,6 +83,7 @@ class MessageTests {
         marketplaceCard.setId(1);
         
         conversation = new Conversation(anotherUser, user, marketplaceCard);
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
     }
 
     /**

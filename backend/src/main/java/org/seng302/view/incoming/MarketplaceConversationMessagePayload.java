@@ -10,8 +10,6 @@
  */
 package org.seng302.view.incoming;
 
-import java.time.LocalDateTime;
-
 /**
  * Class for the marketplace conversation payload.
  */
@@ -21,7 +19,6 @@ public class MarketplaceConversationMessagePayload {
     private Integer receiverId;
     private Integer marketplaceCardId;
     private String content;
-    private LocalDateTime created;
 
     public Integer getSenderId() {
         return senderId;
@@ -37,14 +34,6 @@ public class MarketplaceConversationMessagePayload {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
     }
 
     public Integer getReceiverId() { return receiverId; }

@@ -190,6 +190,7 @@ class MarketplaceConversationResourceIntegrationTests {
 
         conversation = new Conversation(instigator, receiver, marketplaceCard);
         conversation.setId(1);
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
 
         conversationDelete = new Conversation(instigator, receiver, marketplaceCardDelete);
         conversationDelete.setId(2);

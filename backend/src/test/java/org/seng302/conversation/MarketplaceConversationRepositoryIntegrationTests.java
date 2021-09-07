@@ -139,6 +139,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
     @Test
     void findAllByInstigatorIdOrReceiverId_ReturnsEmptyList() {
         Conversation conversation = new Conversation(user1, user2, marketplaceCard1);
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
         entityManager.persist(conversation);
         entityManager.flush();
 
@@ -156,9 +157,11 @@ class MarketplaceConversationRepositoryIntegrationTests {
     @Test
     void findAllByInstigatorIdOrReceiverId_ReturnsOneWhereUserIsReceiver() {
         Conversation expectedConversation = new Conversation(user1, user2, marketplaceCard1);
+        expectedConversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
         expectedConversation = entityManager.persist(expectedConversation);
         entityManager.flush();
         Conversation otherConversation = new Conversation(user1, anotherUser, marketplaceCard2);
+        otherConversation.setCreated(LocalDateTime.of(2021, 6, 2, 0, 0));
         entityManager.persist(otherConversation);
         entityManager.flush();
 
@@ -180,9 +183,11 @@ class MarketplaceConversationRepositoryIntegrationTests {
     @Test
     void findAllByInstigatorIdOrReceiverId_ReturnsOneWhereUserIsInstigator() {
         Conversation expectedConversation = new Conversation(user1, user2, marketplaceCard1);
+        expectedConversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
         expectedConversation = entityManager.persist(expectedConversation);
         entityManager.flush();
         Conversation otherConversation = new Conversation(user2, anotherUser, marketplaceCard2);
+        otherConversation.setCreated(LocalDateTime.of(2021, 6, 2, 0, 0));
         entityManager.persist(otherConversation);
         entityManager.flush();
 
@@ -205,12 +210,15 @@ class MarketplaceConversationRepositoryIntegrationTests {
     @Test
     void findAllByInstigatorIdOrReceiverId_ReturnsTwoWhereUserIsInstigatorForOneConversationAndReceiverForOneConversation_OrderedByCreatedDescending() {
         Conversation expectedConversation = new Conversation(user1, user2, marketplaceCard1);
+        expectedConversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
         expectedConversation = entityManager.persist(expectedConversation);
         entityManager.flush();
         Conversation otherExpectedConversation = new Conversation(anotherUser, user1, marketplaceCard2);
+        otherExpectedConversation.setCreated(LocalDateTime.of(2021, 6, 2, 0, 0));
         otherExpectedConversation = entityManager.persist(otherExpectedConversation);
         entityManager.flush();
         Conversation otherConversation = new Conversation(anotherUser, user2, marketplaceCard2);
+        otherConversation.setCreated(LocalDateTime.of(2021, 6, 3, 0, 0));
         entityManager.persist(otherConversation);
         entityManager.flush();
 
@@ -241,12 +249,15 @@ class MarketplaceConversationRepositoryIntegrationTests {
     @Test
     void findAllByInstigatorIdOrReceiverId_ReturnsTwoWhereOneUserIsInstigatorForOneConversationAndOneUserIsReceiverOfOneConversation_OrderedByCreatedDescending() {
         Conversation expectedConversation = new Conversation(user1, anotherUser, marketplaceCard1);
+        expectedConversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
         expectedConversation = entityManager.persist(expectedConversation);
         entityManager.flush();
         Conversation otherConversation = new Conversation(anotherUser, user1, marketplaceCard2);
+        otherConversation.setCreated(LocalDateTime.of(2021, 6, 2, 0, 0));
         entityManager.persist(otherConversation);
         entityManager.flush();
         Conversation otherExpectedConversation = new Conversation(anotherUser, user2, marketplaceCard2);
+        otherExpectedConversation.setCreated(LocalDateTime.of(2021, 6, 3, 0, 0));
         otherExpectedConversation = entityManager.persist(otherExpectedConversation);
         entityManager.flush();
 
@@ -276,9 +287,11 @@ class MarketplaceConversationRepositoryIntegrationTests {
     @Test
     void findAllByInstigatorIdOrReceiverId_ReturnsOneWhereOneUserIsInstigatorAndOneUserIsReceiver() {
         Conversation expectedConversation = new Conversation(user1, user2, marketplaceCard1);
+        expectedConversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
         expectedConversation = entityManager.persist(expectedConversation);
         entityManager.flush();
         Conversation otherConversation = new Conversation(anotherUser, user1, marketplaceCard2);
+        otherConversation.setCreated(LocalDateTime.of(2021, 6, 2, 0, 0));
         entityManager.persist(otherConversation);
         entityManager.flush();
 
@@ -301,6 +314,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
     @Test
     void findAllByInstigatorIdOrReceiverId_ReturnsEmptyListWhereOneUserIsInstigatorAndOneUserIsReceiver() {
         Conversation conversation = new Conversation(user1, user2, marketplaceCard1);
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
         entityManager.persist(conversation);
         entityManager.flush();
 
