@@ -115,6 +115,7 @@
               <div class="col-md-3 py-1">
                 <BarcodeSearchBar/>
               </div>
+              
             </div>
 
             <!--space-->
