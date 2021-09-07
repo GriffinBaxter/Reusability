@@ -102,3 +102,71 @@ describe("Testing the autofill of data", () => {
         expect(editProfileWrapper.find("#bio").element.value).toBe("Biography")
     })
 })
+
+describe("Testing validation when no input is recieved", () => {
+    let editProfileWrapper;
+
+    beforeEach(async () => {
+        let $route = {
+            params: {
+                id: 1
+            }
+        }
+        const mockApiResponse = {
+            status: 200,
+            data: {
+                homeAddress: {
+                }
+            }
+        }
+
+        Api.getUser.mockImplementation( () => Promise.resolve(mockApiResponse) );
+        Cookies.get.mockReturnValue(1);
+
+        editProfileWrapper = shallowMount(EditProfile, {
+            mocks: {
+                $route
+            }
+        });
+
+        await editProfileWrapper.vm.$nextTick();
+
+        await editProfileWrapper.vm.editUser({preventDefault: jest.fn()});
+
+        await editProfileWrapper.vm.$nextTick();
+    })
+
+    test("Testing name error messages with no input", () => {
+        expect(editProfileWrapper.vm.$data.firstNameErrorMsg).toBe("Please enter input")
+
+        expect(editProfileWrapper.vm.$data.middleNameErrorMsg).toBe("")
+
+        expect(editProfileWrapper.vm.$data.lastNameErrorMsg).toBe("Please enter input")
+
+        expect(editProfileWrapper.vm.$data.nicknameErrorMsg).toBe("")
+    })
+
+    test("Testing address error messages with no input", () => {
+        expect(editProfileWrapper.vm.$data.streetNumberErrorMsg).toBe("")
+
+        expect(editProfileWrapper.vm.$data.streetNameErrorMsg).toBe("")
+
+        expect(editProfileWrapper.vm.$data.suburbErrorMsg).toBe("")
+
+        expect(editProfileWrapper.vm.$data.cityErrorMsg).toBe("")
+
+        expect(editProfileWrapper.vm.$data.regionErrorMsg).toBe("")
+
+        expect(editProfileWrapper.vm.$data.postcodeErrorMsg).toBe("")
+
+        expect(editProfileWrapper.vm.$data.countryErrorMsg).toBe("Please enter input")
+    })
+
+    test("Testing other error messages with no input", () => {
+        expect(editProfileWrapper.vm.$data.emailErrorMsg).toBe("Please enter input")
+
+        expect(editProfileWrapper.vm.$data.phoneNumberErrorMsg).toBe("")
+
+        expect(editProfileWrapper.vm.$data.bioErrorMsg).toBe("")
+    })
+})

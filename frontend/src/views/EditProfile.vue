@@ -913,6 +913,8 @@ export default {
         if (error.response) {
           if (error.response.status === 400) {
             this.errorMessageBubble = error.response.data.message
+          } else if (error.response === 401) {
+            this.$router.push({name: "InvalidToken"})
           } else {
             this.errorMessageBubble = `${error.response.status} Unexpected error occurred!`;
           }
@@ -1266,47 +1268,72 @@ export default {
       })
     },
     /**
-     * Autofills the fields from API response
+     * Auto-fills the fields from API response that exist (this is done to prevent inputs being set as undefined)
      * @param res API response
      */
     setFields(res) {
-      if (res.data.bio !== null) {
+      if (res.data.bio !== undefined) {
         this.bio = res.data.bio
       }
-      this.dateOfBirth = res.data.dateOfBirth
-      this.email = res.data.email
-      if (res.data.phoneNumber !== null) {
+      if (res.data.dateOfBirth !== undefined) {
+        this.dateOfBirth = res.data.dateOfBirth
+      }
+      if (res.data.email !== undefined) {
+        this.email = res.data.email
+      }
+      if (res.data.phoneNumber !== undefined) {
         this.phoneNumber = res.data.phoneNumber
       }
       // Names
-      this.firstName = res.data.firstName
-      if (res.data.middleName !== null) {
-        this.middleName = res.data.middleName
-      }
-      this.lastName = res.data.lastName
-      if (res.data.nickname !== null) {
-        this.nickname = res.data.nickname
-      }
+      this.setNameFields(res.data);
       // Address
-      if (res.data.homeAddress.streetNumber !== null) {
-        this.streetNumber = res.data.homeAddress.streetNumber
+      this.setAddressFields(res.data.homeAddress);
+    },
+    /**
+     * Sets Address Fields if they exist (this is done to prevent setting inputs as undefined)
+     * @param address object containing address fields
+     */
+    setAddressFields(address) {
+      // Address
+      if (address.streetNumber !== undefined) {
+        this.streetNumber = address.streetNumber
       }
-      if (res.data.homeAddress.streetName !== null) {
-        this.streetName = res.data.homeAddress.streetName
+      if (address.streetName !== undefined) {
+        this.streetName = address.streetName
       }
-      if (res.data.homeAddress.suburb !== null) {
-        this.suburb = res.data.homeAddress.suburb
+      if (address.suburb !== undefined) {
+        this.suburb = address.suburb
       }
-      if (res.data.homeAddress.city !== null) {
-        this.city = res.data.homeAddress.city
+      if (address.city !== undefined) {
+        this.city = address.city
       }
-      if (res.data.homeAddress.region !== null) {
-        this.region = res.data.homeAddress.region
+      if (address.region !== undefined) {
+        this.region = address.region
       }
-      if (res.data.homeAddress.postcode) {
-        this.postcode = res.data.homeAddress.postcode
+      if (address.postcode !== undefined) {
+        this.postcode = address.postcode
       }
-      this.country = res.data.homeAddress.country
+      if (address.postcode !== undefined) {
+        this.country = address.country
+      }
+    },
+    /**
+     * Sets Name Fields if they exist (this is done to prevent setting inputs as undefined)
+     * @param names object containing name fields
+     */
+    setNameFields(names) {
+      if (names.firstName !== undefined) {
+        this.firstName = names.firstName
+      }
+      if (names.middleName !== undefined) {
+        this.middleName = names.middleName
+      }
+      if (names.lastName !== undefined) {
+        this.lastName = names.lastName
+      }
+      if (names.nickname !== undefined) {
+        this.nickname = names.nickname
+      }
     }
   },
   async created() {
