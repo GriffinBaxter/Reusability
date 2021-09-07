@@ -2,6 +2,10 @@ package org.seng302.view.outgoing;
 
 import java.time.LocalDateTime;
 
+/**
+ * MessagePayload class, used to send message data for a single message to the front-end.
+ * Usually combined in an array for a conversation.
+ */
 public class MessagePayload {
 
     private Integer senderId;
