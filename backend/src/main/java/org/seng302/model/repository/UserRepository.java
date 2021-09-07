@@ -27,14 +27,14 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, String>, UserRepositoryCustom {
 
     /**
-     * Search for an user account by their email address.
+     * Search for a user account by their email address.
      * @param emailAddress Email address
      * @return A user matching the email address
      */
     Optional<User> findByEmail(String emailAddress);
 
     /**
-     * Search for an user account by its id.
+     * Search for a user account by its id.
      * @param id Integer id
      * @return A user matching the id
      */

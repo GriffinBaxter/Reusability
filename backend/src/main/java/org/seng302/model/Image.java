@@ -1,16 +1,15 @@
 package org.seng302.model;
 
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import org.seng302.model.enums.ImageType;
+
+import javax.persistence.*;
 
 @MappedSuperclass
 public class Image {
     // Id field for an Image entity
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id", nullable = false)
     private Integer id;
 
@@ -25,13 +24,15 @@ public class Image {
     @Column(name = "is_primary", nullable = false)
     private Boolean isPrimary;
 
-    public Image(String filename, String thumbnailFilename, Boolean isPrimary) {
+    private ImageType imageType;
+
+    public Image(String filename, String thumbnailFilename, Boolean isPrimary, ImageType imageType) {
         this.filename = filename;
         this.thumbnailFilename = thumbnailFilename;
         this.isPrimary = isPrimary;
     }
 
-    public Image(Integer id, String filename, String thumbnailFilename, Boolean isPrimary) {
+    public Image(Integer id, String filename, String thumbnailFilename, Boolean isPrimary, ImageType imageType) {
         this.id = id;
         this.filename = filename;
         this.thumbnailFilename = thumbnailFilename;
@@ -71,6 +72,14 @@ public class Image {
 
     public void setIsPrimary(Boolean primary) {
         isPrimary = primary;
+    }
+
+    public ImageType getImageType() {
+        return imageType;
+    }
+
+    public void setImageType(ImageType imageType) {
+        this.imageType = imageType;
     }
 
     public String toString() {

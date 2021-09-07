@@ -257,6 +257,7 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
         conversation = new Conversation(instigator, receiver, marketplaceCard);
         message = new Message(conversation, instigator, "Initial Message");
         message2 = new Message(conversation, receiver, "First reply");
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
     }
 
     @When("The recipient with id {int} tries to retrieve their conversations.")
@@ -341,6 +342,7 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
                 receiver,
                 marketplaceCard
         );
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
 
         message1 = new Message(
                 conversation,

@@ -195,6 +195,7 @@ class MarketplaceConversationResourceIntegrationTests {
 
         conversation = new Conversation(instigator, receiver, marketplaceCard);
         conversation.setId(1);
+        conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
 
         content = "Hi Hayley, I want to buy some baked goods :)";
 

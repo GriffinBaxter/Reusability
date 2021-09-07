@@ -2983,16 +2983,31 @@ components:
           example: 100
           readOnly: true
           description: User that started the conversation (from a card)
+        instigatorName:
+          type: string
+          example: Tom Edwards
+          readOnly: true
+          description: The name of the user that started the conversation (from a card)
         receiverId:
           type: integer
           example: 100
           readOnly: true
           description: User that created the card
+        receiverName:
+          type: string
+          example: Billy Bob
+          readOnly: true
+          description: The name of the user that created the card
         marketplaceCardId:
           type: integer
           example: 100
           readOnly: true
           description: The marketplace card of the conversation
+        marketplaceCardTitle:
+          type: string
+          example: Royal Gala Apples For Sale
+          readOnly: true
+          description: The marketplace card title of the conversation
         created:
           type: string
           format: date-time

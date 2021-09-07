@@ -39,7 +39,7 @@
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
 
-        <UpdateProductImagesModal ref="updateProductImagesModal" :business-id="businessId" v-model="currentProduct"/>
+        <UpdateImagesModal ref="updateImagesModal" location="Product" :id="businessId" v-model="currentProduct"/>
 
         <div v-if="showModal">
           <transition name="fade">
@@ -65,7 +65,7 @@
                     <div class="modal-footer">
                       <button class="btn btn-primary" @click="(event) => {
                       this.showModal = false;
-                      this.$refs.updateProductImagesModal.showModel(event);
+                      this.$refs.updateImagesModal.showModel(event);
                     }">Update Photos</button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
@@ -246,18 +246,18 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
-import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
 import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
+import UpdateImagesModal from "../components/UpdateImagesModal";
 
 export default {
   name: "ProductCatalogue",
   components: {
     ProductSearchBar,
     UpdateProductModal,
-    UpdateProductImagesModal,
+    UpdateImagesModal,
     Table,
     ProductModal,
     Navbar,
