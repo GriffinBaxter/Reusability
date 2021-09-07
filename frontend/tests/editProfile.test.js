@@ -170,3 +170,78 @@ describe("Testing validation when no input is recieved", () => {
         expect(editProfileWrapper.vm.$data.bioErrorMsg).toBe("")
     })
 })
+
+describe("Testing the response on save attempt", () => {
+
+    let editProfileWrapper;
+    let mockEditResponse;
+    let id;
+    let $router;
+
+    beforeEach(async () => {
+
+        id = 1;
+
+        let $route = {
+            params: {
+                id: id
+            }
+        }
+        $router = {
+            push: jest.fn()
+        }
+        const mockApiResponse = {
+            status: 200,
+            data: {
+                firstName: "first",
+                middleName: "second",
+                lastName: "third",
+                nickname: "nick",
+                homeAddress: {
+                    streetNumber: "123",
+                    streetName: "Road Street",
+                    suburb: "Suburb",
+                    city: "City",
+                    postcode: "1234",
+                    region: "Region",
+                    country: "Country"
+                },
+                email: "email@example.com",
+                bio: "Biography",
+                phoneNumber: "0210210210",
+                dateOfBirth: "1999-11-05"
+            }
+        }
+
+        Api.getUser.mockImplementation(() => Promise.resolve(mockApiResponse));
+        Cookies.get.mockReturnValue(id);
+
+        editProfileWrapper = shallowMount(EditProfile, {
+            mocks: {
+                $route,
+                $router
+            }
+        });
+        await editProfileWrapper.vm.$nextTick();
+    })
+
+    test("System displays error message on 400 response", async () => {
+        let message = "Email in use"
+        mockEditResponse = {
+            response: {
+                status: 400,
+                data: {
+                    message: message
+                }
+            }
+        }
+
+        Api.editUser.mockImplementation(() => Promise.reject(mockEditResponse))
+
+        await editProfileWrapper.vm.editUser({preventDefault: jest.fn()});
+
+        await editProfileWrapper.vm.$nextTick();
+
+        expect(editProfileWrapper.vm.$data.errorMessageBubble).toBe(message)
+    })
+})

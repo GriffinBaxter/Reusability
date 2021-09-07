@@ -906,9 +906,9 @@ export default {
       const id = this.$route.params.id
 
       Api.editUser(id, user).then( (res) => {
-          if (res.status === 200) {
-            this.$router.push({name: "Profile", params: {id}})
-          }
+        if (res.status === 200) {
+          this.$router.push({name: "Profile", params: {id}})
+        }
       }).catch((error) => {
         if (error.response) {
           if (error.response.status === 400) {
