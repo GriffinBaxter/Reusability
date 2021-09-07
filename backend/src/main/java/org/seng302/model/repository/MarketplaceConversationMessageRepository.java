@@ -18,6 +18,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,6 +45,13 @@ public interface MarketplaceConversationMessageRepository extends JpaRepository<
      * @return the list of messages that are deleted.
      */
     List<Message> deleteByConversation(Conversation conversation);
+
+    /**
+     * Return all messages associated with the provided conversation ID.
+     * @param conversationId The conversation ID.
+     * @return A list of Message objects if any exist, otherwise an empty list.
+     */
+    List<Message> findAllByConversationId_OrderByCreatedDesc(Integer conversationId);
 
 
 }
