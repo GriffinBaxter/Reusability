@@ -135,7 +135,8 @@
               <div class="col my-2 my-lg-0">
                 <label for="password">Password*</label>
                 <div class="input-group">
-                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)">
+                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password"
+                         v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" autocomplete="new-password">
 
                   <!--toggle password visibility-->
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
@@ -162,7 +163,7 @@
                 <label for="confirm-password">Confirm Password*</label>
                 <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
                        v-model="confirmPassword" :class="toggleInvalidClass(confirmPasswordErrorMsg)"
-                       :maxlength="config.password.maxLength" required>
+                       :maxlength="config.password.maxLength" autocomplete="new-password" required>
                 <div class="invalid-feedback">
                   {{confirmPasswordErrorMsg}}
                 </div>
@@ -1070,7 +1071,7 @@ export default {
      * https://www.w3schools.com/howto/howto_js_autocomplete.asp
      *
      * This function removes all of the autocomplete dropdown items except the one passed to it.
-     * @param DOM Element An optional element that won't be closed if given
+     * @param element Element An optional element that won't be closed if given
      */
     closeAllLists(element) {
       // Close all autocomplete lists in the document, except the one passed as an argument

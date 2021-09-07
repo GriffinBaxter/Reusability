@@ -98,7 +98,7 @@
                 <div class="col my-2 my-lg-0">
                   <label for="email">Email*</label>
                   <input id="email" name="email" type="email" tabindex="6" v-model="email"
-                         :class="toggleInvalidClass(emailErrorMsg)" :maxlength="config.email.maxLength" required>
+                         :class="toggleInvalidClass(emailErrorMsg)" :maxlength="config.email.maxLength" autocomplete="email" required>
                   <div class="invalid-feedback">
                     {{emailErrorMsg}}
                   </div>
@@ -137,7 +137,7 @@
                   <div class="input-group">
                     <input id="current-password" name="password" tabindex="7"  :type="togglePasswordInputType(showCurrentPassword)"
                            v-model="currentPassword" :class="toggleInvalidClass(currentPasswordErrorMsg)"
-                           :maxlength="config.password.maxLength" required>
+                           :maxlength="config.password.maxLength" autocomplete="password">
 
                     <!--toggle password visibility-->
                     <span class="input-group-text green-search-button" @click="showCurrentPassword = !showCurrentPassword"
@@ -162,7 +162,8 @@
                 <div class="col my-2 my-lg-0">
                   <label for="password">Password</label>
                   <div class="input-group">
-                    <input id="password" name="password" tabindex="8" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)">
+                    <input id="password" name="password" tabindex="8" :type="togglePasswordInputType(showPassword)" v-model="password"
+                           v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" autocomplete="new-password">
 
                     <!--toggle password visibility-->
                     <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
@@ -189,7 +190,7 @@
                   <label for="confirm-password">Confirm Password</label>
                   <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
                          v-model="confirmPassword" :class="toggleInvalidClass(confirmPasswordErrorMsg)"
-                         :maxlength="config.password.maxLength" required>
+                         :maxlength="config.password.maxLength" autocomplete="new-password">
                   <div class="invalid-feedback">
                     {{confirmPasswordErrorMsg}}
                   </div>
