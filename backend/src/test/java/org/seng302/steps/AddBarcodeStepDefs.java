@@ -83,7 +83,6 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
             "\"barcode\":\"%s\"}";
 
     private String productPayload;
-    private String returnProductPayload;
 
     @Before
     public void createMockMvc() {

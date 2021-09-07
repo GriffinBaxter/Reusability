@@ -35,8 +35,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * MarketplaceConversationResource test class
@@ -81,6 +80,14 @@ class MarketplaceConversationResourceIntegrationTests {
             "\"marketplaceCardId\":%d," +
             "\"content\":\"%s\"," +
             "\"created\":\"%s\"}";
+
+    // Conversation Deletion
+    private User dgaa;
+    private User outsideUser;
+    private Conversation conversationDelete;
+    private MarketplaceCard marketplaceCardDelete;
+    private Message messageDelete1;
+    private Message messageDelete2;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -128,6 +135,39 @@ class MarketplaceConversationResourceIntegrationTests {
         receiver.setId(2);
         receiver.setSessionUUID(User.generateSessionUUID());
 
+        dgaa = new User("Default",
+                "Admin",
+                "Application",
+                "DGAA",
+                "bio",
+                "dgaa@example.com",
+                LocalDate.of(2000, 1, 1),
+                "123456789",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 1, 1),
+                        LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        dgaa.setId(3);
+        dgaa.setSessionUUID(User.generateSessionUUID());
+
+        outsideUser = new User(
+                "Alex",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "test@email.com",
+                LocalDate.of(2000, 2, 2),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2000, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        outsideUser.setId(4);
+        outsideUser.setSessionUUID(User.generateSessionUUID());
+
         marketplaceCard = new MarketplaceCard(
                 instigator.getId(),
                 instigator,
@@ -138,23 +178,40 @@ class MarketplaceConversationResourceIntegrationTests {
         );
         marketplaceCard.setId(1);
 
+        marketplaceCardDelete = new MarketplaceCard(
+                receiver.getId(),
+                receiver,
+                Section.FORSALE,
+                LocalDateTime.now(),
+                "Royal Gala Apples For Sale",
+                "Fresh, wanting $3 a kg."
+        );
+        marketplaceCardDelete.setId(2);
+
         conversation = new Conversation(instigator, receiver, marketplaceCard);
         conversation.setId(1);
         conversation.setCreated(LocalDateTime.of(2021, 6, 1, 0, 0));
 
+        conversationDelete = new Conversation(instigator, receiver, marketplaceCardDelete);
+        conversationDelete.setId(2);
+
         content = "Hi Hayley, I want to buy some baked goods :)";
 
-        message = new Message(
-                conversation,
-                instigator,
-                content
-        );
+        message = new Message(conversation, instigator, content);
         message.setId(1);
+
+        messageDelete1 = new Message(conversationDelete, instigator, "Can I please have 5kg?");
+        messageDelete1.setId(2);
+
+        messageDelete2 = new Message(conversationDelete, receiver, "You sure can!");
+        messageDelete2.setId(3);
 
         this.mvc = MockMvcBuilders.standaloneSetup(
                    new MarketplaceConversationResource(userRepository, marketplaceCardRepository, marketplaceConversationRepository, marketplaceConversationMessageRepository))
                    .build();
     }
+
+    // ---------------------------------------- Tests for GET /home/conversation ---------------------------------------
 
     /**
      * Tests that an UNAUTHORIZED status is received when no cookie is provided with the GET request.
@@ -197,7 +254,7 @@ class MarketplaceConversationResourceIntegrationTests {
         given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
 
         // When
-        when(marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(instigator.getId(), instigator.getId())).thenReturn(List.of());
+        when(marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(instigator.getId(), false, instigator.getId(), false)).thenReturn(List.of());
         response = mvc.perform(get("/home/conversation")
                 .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
 
@@ -218,7 +275,7 @@ class MarketplaceConversationResourceIntegrationTests {
         given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
 
         // When
-        when(marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(instigator.getId(), instigator.getId())).thenReturn(List.of(conversation));
+        when(marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(instigator.getId(), false, instigator.getId(), false)).thenReturn(List.of(conversation));
         response = mvc.perform(get("/home/conversation")
                 .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
 
@@ -406,6 +463,168 @@ class MarketplaceConversationResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+
+    // ------------------------------ Tests for DELETE /users/conversation/{conversationId} ----------------------------
+
+    /**
+     * Test that an UNAUTHORIZED status is received when a non-logged in user tries to delete a conversation.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canNotDeleteConversationWhenUserNotLoggedIn() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.empty());
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationDelete.getId())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Access token is missing or invalid");
+    }
+
+    /**
+     * Test that an NOT_ACCEPTABLE status is received when the conversation does not exist.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canNotDeleteConversationWhenItDoesNotExist() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(marketplaceConversationRepository.findById(conversationDelete.getId()))
+                .willReturn(Optional.empty());
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationDelete.getId()))
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+                "for example trying to access a resource by an ID that does not exist.");
+    }
+
+    /**
+     * Test that a FORBIDDEN status is received when the conversation exists but the user is trying to
+     * delete a conversation they are not a member of and they are not a GAA or DGAA.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canNotDeleteConversationWhenItExistsButNotAMemberGAAOrDGAA() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(outsideUser.getSessionUUID())).willReturn(Optional.ofNullable(outsideUser));
+        given(marketplaceConversationRepository.findById(conversationDelete.getId()))
+                .willReturn(Optional.ofNullable(conversationDelete));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationDelete.getId()))
+                .cookie(new Cookie("JSESSIONID", outsideUser.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid permissions to delete conversation");
+    }
+
+    /**
+     * Test that an OK status is received when the conversation exists and a DGAA tries to
+     * delete a conversation for other users.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canDeleteConversationWhenItExistsAndCurrentUserIsADGAA() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+        given(marketplaceConversationRepository.findById(conversationDelete.getId()))
+                .willReturn(Optional.ofNullable(conversationDelete));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationDelete.getId()))
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that an OK status is received when the conversation exists and the instigator tries to
+     * delete a conversation when the receiver has already removed themself from the conversation.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canDeleteConversationWhenReceiverHasAlreadyRemovedThemself() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        Conversation conversationWithReceiverRemoved = new Conversation(
+                conversationDelete.getInstigator(),
+                conversationDelete.getReceiver(),
+                conversationDelete.getMarketplaceCard());
+        conversationWithReceiverRemoved.setId(3);
+        conversationWithReceiverRemoved.setDeletedByReceiver(true);
+        given(marketplaceConversationRepository.findById(conversationWithReceiverRemoved.getId()))
+                .willReturn(Optional.ofNullable(conversationWithReceiverRemoved));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationWithReceiverRemoved.getId()))
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that an OK status is received when the conversation exists and the instigator tries to
+     * remove themself from the conversation.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canRemoveInstigatorFromConversation() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(marketplaceConversationRepository.findById(conversationDelete.getId()))
+                .willReturn(Optional.ofNullable(conversationDelete));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationDelete.getId()))
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Test that an OK status is received when the conversation exists and the receiver tries to
+     * remove themself from the conversation.
+     * @throws Exception thrown if there is an error when deleting a conversation.
+     */
+    @Test
+    void canRemoveReceiverFromConversation() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(receiver.getSessionUUID())).willReturn(Optional.ofNullable(receiver));
+        given(marketplaceConversationRepository.findById(conversationDelete.getId()))
+                .willReturn(Optional.ofNullable(conversationDelete));
+
+        // When
+        response = mvc.perform(delete(String.format("/users/conversation/%d", conversationDelete.getId()))
+                .cookie(new Cookie("JSESSIONID", receiver.getSessionUUID())))
+                .andReturn()
+                .getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
 }

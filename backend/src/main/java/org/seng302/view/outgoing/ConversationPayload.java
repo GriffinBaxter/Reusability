@@ -20,6 +20,8 @@ public class ConversationPayload {
     private int marketplaceCardId;
     private String marketplaceCardTitle;
     private String created;
+    private boolean deletedByInstigator;
+    private boolean deletedByReceiver;
 
     /**
      * Constructor for conversation payloads.
@@ -29,8 +31,20 @@ public class ConversationPayload {
      * @param receiver The User object representing the recipient of the conversation.
      * @param marketplaceCard The MarketplaceCard object representing the marketplace card the conversation refers to.
      * @param created The date and time the conversation was created.
+     * @param deletedByInstigator A boolean which keeps track of whether the instigator of the conversation has deleted/left
+     *                            the conversation. true if they have deleted/left, false otherwise.
+     * @param deletedByReceiver A boolean which keeps track of whether the receiver of the conversation has deleted/left
+     *                          the conversation. true if they have deleted/left, false otherwise.
      */
-    public ConversationPayload(int id, User instigator, User receiver, MarketplaceCard marketplaceCard, LocalDateTime created) {
+    public ConversationPayload(
+            int id,
+            User instigator,
+            User receiver,
+            MarketplaceCard marketplaceCard,
+            LocalDateTime created,
+            boolean deletedByInstigator,
+            boolean deletedByReceiver
+    ) {
         this.id = id;
         this.instigatorId = instigator.getId();
         this.instigatorName = instigator.getFirstName() + " " +
@@ -45,6 +59,8 @@ public class ConversationPayload {
         this.marketplaceCardId = marketplaceCard.getId();
         this.marketplaceCardTitle = marketplaceCard.getTitle();
         this.created = created.toString();
+        this.deletedByInstigator = deletedByInstigator;
+        this.deletedByReceiver = deletedByReceiver;
     }
 
     public int getId() {
@@ -87,6 +103,10 @@ public class ConversationPayload {
         return created;
     }
 
+    public boolean getDeletedByInstigator() {  return deletedByInstigator; }
+
+    public boolean getDeletedByReceiver() { return deletedByReceiver; }
+
     /**
      * An override of the toString method for debugging and testing purposes.
      * @return String representation of the conversation payload.
@@ -96,13 +116,15 @@ public class ConversationPayload {
         return "{" +
                 "\"id\":" + id +
                 ",\"instigatorId\":" + instigatorId +
-                ",\"instigatorName\":\"" + instigatorName + "\"," +
-                "\"instigatorImage\":" + instigatorImage +
+                ",\"instigatorName\":\"" + instigatorName + "\"" +
+                ",\"instigatorImage\":" + instigatorImage +
                 ",\"receiverId\":" + receiverId +
-                ",\"receiverName\":\"" + receiverName + "\"," +
-                "\"receiverImage\":" + receiverImage +
+                ",\"receiverName\":\"" + receiverName + "\"" +
+                ",\"receiverImage\":" + receiverImage +
                 ",\"marketplaceCardId\":" + marketplaceCardId +
-                ",\"marketplaceCardTitle\":\"" + marketplaceCardTitle + "\"," +
-                "\"created\":\"" + created + "\"}";
+                ",\"marketplaceCardTitle\":\"" + marketplaceCardTitle + "\"" +
+                ",\"created\":\"" + created + "\"" +
+                ",\"deletedByInstigator\":" + deletedByInstigator +
+                ",\"deletedByReceiver\":" + deletedByReceiver + "}";
     }
 }
