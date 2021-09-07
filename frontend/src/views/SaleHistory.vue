@@ -4,6 +4,39 @@
       <!--nav bar-->
       <Navbar></Navbar>
 
+      <div class="btn-group col d-inline-block p-2" role="group">
+        <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                data-bs-toggle="dropdown" aria-expanded="false">{{ period }}
+        </button>
+        <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+          <li class="btn green-button-transparent col-12 order-by-options-btn"
+              @click="period = 'Year'">
+            Year
+          </li>
+          <li class="btn green-button-transparent col-12 order-by-options-btn"
+              @click="period = 'Month'">
+            Month
+          </li>
+          <li class="btn green-button-transparent col-12 order-by-options-btn"
+              @click="period = 'Day'">
+            Day
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="period === 'Year'" class="btn-group col d-inline-block p-2" role="group">
+        <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                data-bs-toggle="dropdown" aria-expanded="false">{{ year }}
+        </button>
+        <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+          <li class="btn green-button-transparent col-12 order-by-options-btn"
+              v-for="validYear in validYears" v-bind:key="validYear"
+              @click="year = validYear">
+            {{ validYear }}
+          </li>
+        </ul>
+      </div>
+
       <div class="container mt-4">
         <div class="card p-3">
           <h1 id="page-title">{{ businessName }} Sale History</h1>
@@ -94,7 +127,12 @@ export default {
       currentPage: 0,
       noResults: false,
       numberListingsRetrieved: 0,
-      totalListings: 0
+      totalListings: 0,
+
+      // Sales Report Attributes
+      period: "Year",
+      validYears: [],
+      year: "",
     }
   },
   methods: {
@@ -200,6 +238,13 @@ export default {
    * If cookies are invalid or not present, redirect to login page.
    */
   async mounted() {
+    // Sets validYears to a list of years from 2021 to the current year
+    this.year = new Date().getFullYear();
+    this.validYears.push(2021);
+    while (this.validYears[this.validYears.length - 1] < this.year) {
+      this.validYears.push(this.validYears[this.validYears.length - 1] + 1);
+    }
+
     const actAs = Cookies.get('actAs');
     if (checkAccessPermission(this.$route.params.businessId, actAs)) {
       await this.$router.push({path: `/businessProfile/${actAs}/saleHistory`});
@@ -235,6 +280,12 @@ export default {
 
 table td:hover {
   cursor: default;
+}
+
+.dropdown-menu {
+  margin-top: 0;
+  border: none;
+  width: 200px;
 }
 
 </style>
