@@ -5,14 +5,12 @@
 import {test, expect, describe, jest, beforeAll} from "@jest/globals"
 import reg from '../src/views/ProductCatalogue'
 import Product from '../src/configs/Product'
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import ProductCatalogue from "../src/views/ProductCatalogue";
 import Cookies from "js-cookie";
 import Api from "../src/Api";
 import CurrencyApi from "../src/currencyInstance";
 import OpenFoodFactsApi from "../src/openFoodFactsInstance";
-import VueRouter from "vue-router";
-import BrowseListingsSearch from "@/components/listing/BrowseListingsSearch";
 
 jest.mock("../src/Api");
 jest.mock("../src/currencyInstance");
@@ -1320,7 +1318,7 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         wrapper.vm.updatePage(mockedEvent);
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
-            query: { "searchQuery": "", "searchBy": "name", "orderBy": "", "page": "2"}})
+            query: { "searchQuery": "", "searchBy": "name", "orderBy": "", "page": "2", "barcode": ""}})
     })
 
     test('Test the convertSearchByListToString method generates the correct string when searchBy only contains name', () => {
