@@ -115,6 +115,34 @@
 					"response": []
 				},
 				{
+					"name": "Login As Recipient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"chad.taylor@example.com\",\r\n  \"password\": \"Password123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9499/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Add another message",
 					"request": {
 						"method": "POST",
