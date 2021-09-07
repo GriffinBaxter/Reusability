@@ -1243,16 +1243,16 @@ export default {
      * @param res API response
      */
     setFields(res) {
-      if (res.data.bio !== undefined) {
+      if (res.data.bio !== null) {
         this.bio = res.data.bio
       }
-      if (res.data.dateOfBirth !== undefined) {
+      if (res.data.dateOfBirth !== null) {
         this.dateOfBirth = res.data.dateOfBirth
       }
-      if (res.data.email !== undefined) {
+      if (res.data.email !== null) {
         this.email = res.data.email
       }
-      if (res.data.phoneNumber !== undefined) {
+      if (res.data.phoneNumber !== null) {
         this.phoneNumber = res.data.phoneNumber
       }
       // Names
@@ -1266,25 +1266,25 @@ export default {
      */
     setAddressFields(address) {
       // Address
-      if (address.streetNumber !== undefined) {
+      if (address.streetNumber !== null) {
         this.streetNumber = address.streetNumber
       }
-      if (address.streetName !== undefined) {
+      if (address.streetName !== null) {
         this.streetName = address.streetName
       }
-      if (address.suburb !== undefined) {
+      if (address.suburb !== null) {
         this.suburb = address.suburb
       }
-      if (address.city !== undefined) {
+      if (address.city !== null) {
         this.city = address.city
       }
-      if (address.region !== undefined) {
+      if (address.region !== null) {
         this.region = address.region
       }
-      if (address.postcode !== undefined) {
+      if (address.postcode !== null) {
         this.postcode = address.postcode
       }
-      if (address.postcode !== undefined) {
+      if (address.postcode !== null) {
         this.country = address.country
       }
     },
@@ -1293,16 +1293,16 @@ export default {
      * @param names object containing name fields
      */
     setNameFields(names) {
-      if (names.firstName !== undefined) {
+      if (names.firstName !== null) {
         this.firstName = names.firstName
       }
-      if (names.middleName !== undefined) {
+      if (names.middleName !== null) {
         this.middleName = names.middleName
       }
-      if (names.lastName !== undefined) {
+      if (names.lastName !== null) {
         this.lastName = names.lastName
       }
-      if (names.nickname !== undefined) {
+      if (names.nickname !== null) {
         this.nickname = names.nickname
       }
     }

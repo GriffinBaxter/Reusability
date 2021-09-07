@@ -115,8 +115,23 @@ describe("Testing validation when no input is recieved", () => {
         const mockApiResponse = {
             status: 200,
             data: {
+                firstName: null,
+                middleName: null,
+                lastName: null,
+                nickname: null,
                 homeAddress: {
-                }
+                    streetNumber: null,
+                    streetName: null,
+                    suburb: null,
+                    city: null,
+                    postcode: null,
+                    region: null,
+                    country: null
+                },
+                email: null,
+                bio: null,
+                phoneNumber: null,
+                dateOfBirth: null
             }
         }
 
