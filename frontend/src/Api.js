@@ -393,5 +393,10 @@ export default {
     // retrieves conversation entities
     getConversations() {
         return instance.get(`/home/conversation`, {withCredentials: true})
+    },
+
+    // retrieves a specific conversation
+    getConversation(id) {
+        return instance.get(`/home/conversation/${id}/messages`, {withCredentials: true})
     }
 }

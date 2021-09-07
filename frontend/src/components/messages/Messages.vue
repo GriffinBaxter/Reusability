@@ -3,7 +3,13 @@
     <div id="messages-wrapper" >
       <LoadingDots v-if="isLoading" />
       <div id="content-wrapper" v-else>
-        <MessageOption v-for="(conv) in conversations" :key="conv.id" :id="`conversation-${conv.id}`" :userName="conv.userName" :image="conv.image" :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
+        <div v-if="!conversationIsOpen">
+          <div v-for="(conv) in conversations" :key="conv.id" @click="openConversation(conv.id)">
+            <MessageOption :id="`conversation-${conv.id}`" :userName="conv.userName" :image="conv.image"
+                           :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
+          </div>
+        </div>
+        <MessageConversation v-else ref="msgConversation"/>
       </div>
     </div>
     <div class="error-message" v-if="errorMessage">
@@ -18,15 +24,17 @@ import Api from "../../Api"
 import LoadingDots from "../LoadingDots";
 import DefaultImage from "../../../public/profile_icon_default.png";
 import Cookies from "js-cookie";
+import MessageConversation from "./MessageConversation";
 
 export default {
   name: "Messages",
-  components: {LoadingDots, MessageOption},
+  components: {MessageConversation, LoadingDots, MessageOption},
   data() {
     return {
       conversations: [],
       errorMessage: "",
       isLoading: false,
+      conversationIsOpen: false
     }
   },
   methods: {
@@ -41,6 +49,16 @@ export default {
         this.errorMessage = "";
       }, 1000)
     },
+    /**
+     * Opens and loads the selected conversation
+     * @param conversationId ID of the conversation
+     */
+    openConversation(conversationId) {
+      this.conversationIsOpen = true;
+      this.$nextTick(() => {
+        this.$refs.msgConversation.openConversation(conversationId)
+      })
+    }
   },
   beforeMount() {
     this.errorMessage = "";
