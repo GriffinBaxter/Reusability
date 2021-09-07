@@ -28,7 +28,7 @@ import java.util.List;
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-public class MarketplaceConversationMessageRepositoryIntegrationTests {
+class MarketplaceConversationMessageRepositoryIntegrationTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -41,6 +41,15 @@ public class MarketplaceConversationMessageRepositoryIntegrationTests {
     private User anotherUser;
     private MarketplaceCard marketplaceCard1;
     private MarketplaceCard marketplaceCard2;
+    private Conversation conversation;
+    private Message message;
+    private String content;
+    private Message message2;
+    private String content2;
+    private Message message3;
+    private String content3;
+    private Message message4;
+    private String content4;
 
     /**
      * Sets up data for testing
@@ -133,6 +142,26 @@ public class MarketplaceConversationMessageRepositoryIntegrationTests {
         );
         marketplaceCard2 = entityManager.persist(marketplaceCard2);
         entityManager.flush();
+
+        conversation = new Conversation(user1, user2, marketplaceCard1);
+        entityManager.persist(conversation);
+        entityManager.flush();
+        content = "Here is a message";
+        message = new Message(conversation, user1, content);
+        entityManager.persist(message);
+        entityManager.flush();
+        content2 = "Here is another new message";
+        message2 = new Message(conversation, user2, content2);
+        entityManager.persist(message2);
+        entityManager.flush();
+        content3 = "Here is a third new message";
+        message3 = new Message(conversation, user1, content3);
+        entityManager.persist(message3);
+        entityManager.flush();
+        content4 = "Here is a fourth new message";
+        message4 = new Message(conversation, user2, content4);
+        entityManager.persist(message4);
+        entityManager.flush();
     }
 
     /**
@@ -156,29 +185,18 @@ public class MarketplaceConversationMessageRepositoryIntegrationTests {
      */
     @Test
     void findAllByConversationId_OrderByCreatedDesc_ReturnsMessageList() throws IllegalMessageContentException {
-        Conversation conversation = new Conversation(user1, user2, marketplaceCard1);
-        entityManager.persist(conversation);
-        entityManager.flush();
-        String content = "Here is a message";
-        Message message = new Message(conversation, user1, content);
-        entityManager.persist(message);
-        entityManager.flush();
-        String content2 = "Here is a new message";
-        Message message2 = new Message(conversation, user2, content2);
-        entityManager.persist(message2);
-        entityManager.flush();
 
         // When
         List<Message> messageList = marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(conversation.getId());
 
         // Then
-        assertThat(messageList.get(0).getId()).isEqualTo(message2.getId());
-        assertThat(messageList.get(0).getContent()).isEqualTo(content2);
+        assertThat(messageList.get(0).getId()).isEqualTo(message4.getId());
+        assertThat(messageList.get(0).getContent()).isEqualTo(content4);
         assertThat(messageList.get(0).getConversation()).isEqualTo(conversation);
         assertThat(messageList.get(0).getSender()).isEqualTo(user2);
 
-        assertThat(messageList.get(1).getId()).isEqualTo(message.getId());
-        assertThat(messageList.get(1).getContent()).isEqualTo(content);
+        assertThat(messageList.get(1).getId()).isEqualTo(message3.getId());
+        assertThat(messageList.get(1).getContent()).isEqualTo(content3);
         assertThat(messageList.get(1).getConversation()).isEqualTo(conversation);
         assertThat(messageList.get(1).getSender()).isEqualTo(user1);
     }
@@ -188,25 +206,7 @@ public class MarketplaceConversationMessageRepositoryIntegrationTests {
      */
     @Test
     void findAllByConversationId_OrderByCreatedDesc_ReturnsOrderedMessageList() throws IllegalMessageContentException {
-        Conversation conversation = new Conversation(user1, user2, marketplaceCard1);
-        entityManager.persist(conversation);
-        entityManager.flush();
-        String content = "Here is a message";
-        Message message = new Message(conversation, user1, content);
-        entityManager.persist(message);
-        entityManager.flush();
-        String content2 = "Here is another new message";
-        Message message2 = new Message(conversation, user2, content2);
-        entityManager.persist(message2);
-        entityManager.flush();
-        String content3 = "Here is a third new message";
-        Message message3 = new Message(conversation, user1, content3);
-        entityManager.persist(message3);
-        entityManager.flush();
-        String content4 = "Here is a fourth new message";
-        Message message4 = new Message(conversation, user2, content4);
-        entityManager.persist(message4);
-        entityManager.flush();
+
 
         // When
         List<Message> messageList = marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(conversation.getId());
