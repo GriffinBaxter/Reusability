@@ -534,6 +534,7 @@ public class UserResource {
             selectedUser.updateEmail(userProfileModifyPayload.getEmail());
             selectedUser.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
             selectedUser.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
+            System.out.println(userProfileModifyPayload.getCurrentPassword());
             if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
                     || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
                     || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
