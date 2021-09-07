@@ -45,6 +45,20 @@ public class Conversation {
     private MarketplaceCard marketplaceCard;
 
     /**
+     * A boolean value used to keep track of whether the instigator has deleted/left the conversation.
+     * true if they have, false if they have not.
+     */
+    @Column(name = "deleted_by_instigator")
+    private boolean deletedByInstigator;
+
+    /**
+     * A boolean value used to keep track of whether the receiver has deleted/left the conversation.
+     * true if they have, false if they have not.
+     */
+    @Column(name = "deleted_by_receiver")
+    private boolean deletedByReceiver;
+
+    /**
      * Date and time of the conversation creation
      */
     @Column(name = "created", nullable = false)
@@ -60,6 +74,8 @@ public class Conversation {
         this.instigator = instigator;
         this.receiver = receiver;
         this.marketplaceCard = marketplaceCard;
+        this.deletedByInstigator = false;
+        this.deletedByReceiver = false;
         this.created = LocalDateTime.now();
     }
 
@@ -68,6 +84,15 @@ public class Conversation {
      * @return ConversationPayload object representing the conversation.
      */
     public ConversationPayload toConversationPayload() {
-        return new ConversationPayload(id, instigator, receiver, marketplaceCard, created);
+        return new ConversationPayload(id, instigator, receiver, marketplaceCard, created, deletedByInstigator, deletedByReceiver);
+    }
+
+    /**
+     * If the conversation has been deleted by both the instigator and receiver then it contains no members and should
+     * be deleted.
+     * @return boolean true if conversation is deleted by both instigator and receiver, otherwise false.
+     */
+    public boolean hasNoMembers() {
+        return deletedByInstigator && deletedByReceiver;
     }
 }

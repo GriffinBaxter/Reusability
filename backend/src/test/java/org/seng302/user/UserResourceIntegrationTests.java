@@ -1,7 +1,6 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
-import org.seng302.Validation;
 import org.seng302.model.Address;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.controller.UserResource;
@@ -216,6 +215,7 @@ class UserResourceIntegrationTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser1.setId(4);
+        searchUser1.setSessionUUID(User.generateSessionUUID());
 
         address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China", "Barryville");
 
