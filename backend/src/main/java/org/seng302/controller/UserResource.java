@@ -501,7 +501,7 @@ public class UserResource {
 
     /**
      * Update given user by given user payload
-     * @param user user
+     * @param currentUser user
      * @param userProfileModifyPayload user payload
      * @return updated User
      */
@@ -525,6 +525,7 @@ public class UserResource {
             selectedUser.updateEmail(userProfileModifyPayload.getEmail());
             selectedUser.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
             selectedUser.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
+            System.out.println(userProfileModifyPayload.getCurrentPassword());
             if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
                     || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
                     || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
