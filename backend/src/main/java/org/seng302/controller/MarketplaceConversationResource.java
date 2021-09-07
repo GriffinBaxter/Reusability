@@ -219,7 +219,7 @@ public class MarketplaceConversationResource {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
         Optional<Conversation> optionalConversation = marketplaceConversationRepository.findConversationById(conversationId);
 
-        // 404
+        // 406
         if (optionalConversation.isEmpty()) {
             logger.error("Invalid Conversation ID");
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid conversation ID");
