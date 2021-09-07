@@ -113,9 +113,9 @@
               <div class="col-3 col-md-4 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
 
               <div class="col-md-3 py-1">
-                <BarcodeSearchBar/>
+                <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
               </div>
-              
+
             </div>
 
             <!--space-->
@@ -245,6 +245,8 @@ export default {
       currencyCode: "",
       currencySymbol: "",
 
+      barcode: "",
+
       // List of Business account current user account administrated
       linkBusinessAccount:[],
     }
@@ -321,7 +323,7 @@ export default {
       this.currentPage = newPageNumber;
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
       })
       this.retrieveInventoryItems();
     },
@@ -519,7 +521,7 @@ export default {
 
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
       });
       this.retrieveInventoryItems();
     },
@@ -550,9 +552,14 @@ export default {
       // Getting query params from the route update.
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.barcode = this.$route.query["barcode"] || "";
+
+      if (this.barcode === undefined || null) {
+        this.barcode = "";
+      }
 
       // Perform the call to sort the products and get them back.
-      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage).then(response => {
+      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage, this.barcode).then(response => {
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -564,6 +571,7 @@ export default {
 
         // No results
         if (this.InventoryItemList.length <= 0) {
+          this.inventories = [];
           this.currentPage = 0;
           this.maxPage = 0;
           this.totalRows = 0;
@@ -656,6 +664,14 @@ export default {
       this.currencyCode = response[0].currencies[0].code;
       this.currencySymbol = response[0].currencies[0].symbol;
     },
+
+    barcodeSearch(event) {
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"barcode": event, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+      });
+      this.retrieveInventoryItems();
+    }
   },
 
   async mounted() {

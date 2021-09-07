@@ -42,7 +42,7 @@ export default {
      * When the search button is clicked, an event is emitted with the barcode
      */
     searchClicked() {
-      this.emit('barcodeSearch', this.barcode);
+      this.$emit('barcodeSearch', this.barcode);
     },
 
     /**

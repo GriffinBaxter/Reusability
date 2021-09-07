@@ -230,7 +230,7 @@ public class InventoryItemResource {
 
         Page<InventoryItem> pagedResult;
 
-        if (barcode != null) {
+        if (barcode != null && !barcode.equals("")) {
             pagedResult = inventoryItemRepository.findInventoryItemsByBarcodeAndBusinessId(barcode, id, paging);
         } else {
             pagedResult = inventoryItemRepository.findInventoryItemsByBusinessId(id, paging);

@@ -58,7 +58,7 @@
           <div class="col-3 col-md-4 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
 
           <div class="col-md-3 py-1">
-            <BarcodeSearchBar/>
+            <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
           </div>
 
         </div>
@@ -162,6 +162,8 @@ name: "Listings",
       currencyCode: "",
       currencySymbol: "",
 
+      barcode: "",
+
       creationSuccess: false
     }
   },
@@ -193,7 +195,7 @@ name: "Listings",
      */
     updatePage(newPageNumber) {
       this.currentPage = newPageNumber;
-      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
       this.getListings();
     },
 
@@ -277,7 +279,7 @@ name: "Listings",
 
       }
 
-      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}});
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}});
       this.getListings();
     },
 
@@ -299,8 +301,13 @@ name: "Listings",
       */
       this.orderBy = this.$route.query["orderBy"] || "closesASC";
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.barcode = this.$route.query["barcode"] || "";
 
-      await Api.sortListings(this.businessId, this.orderBy, this.currentPage).then(response => {
+      if (this.barcode === undefined || null) {
+        this.barcode = "";
+      }
+
+      await Api.sortListings(this.businessId, this.orderBy, this.currentPage, this.barcode).then(response => {
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -360,6 +367,7 @@ name: "Listings",
     },
     populatePage(response) {
       if (response.data.length <= 0) {
+        this.listings = [];
         this.currentPage = 0;
         this.maxPage = 0;
         this.totalRows = 0;
@@ -425,6 +433,12 @@ name: "Listings",
       }, 5000);
       this.getListings();
     },
+
+    barcodeSearch(event) {
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`,
+        query: {"barcode": event, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+      this.getListings();
+    }
   },
   async mounted() {
     /**
