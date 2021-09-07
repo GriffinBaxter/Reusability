@@ -27,9 +27,9 @@ import static org.seng302.Validation.verifyImageExtension;
 
 /**
  * Controller class for images. This class includes:
- * POST   "/images" endpoint used for adding image to a product of a businesses.
+ * POST   "/images" endpoint used for adding image to a user profile or a business profile or a product of a businesses.
  * DELETE "/businesses/{businessId}/products/{productId}/images/{imageId}" endpoint for deleting an image for a product of a business.
- * PUT    "/images/{imageId}/makePrimary" endpoint for changing the primary image of a product.
+ * PUT    "/images/{imageId}/makePrimary" endpoint for changing the primary image of a user or a business or a product.
  */
 @RestController
 public class ImageResource {
