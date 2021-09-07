@@ -57,10 +57,6 @@
 
           <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
 
-          <div class="col-md-3 py-1">
-            <BarcodeSearchBar/>
-          </div>
-
         </div>
 
         <!--space-->
@@ -128,11 +124,11 @@ import Footer from "../components/main/Footer";
 import CurrencyAPI from "../currencyInstance";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
-import BarcodeSearchBar from "../components/BarcodeSearchBar";
+
 
 export default {
 name: "Listings",
-  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons, BarcodeSearchBar},
+  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons},
   data() {
     return {
       allListings: [],

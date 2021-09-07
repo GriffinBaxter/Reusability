@@ -111,10 +111,6 @@
               </div>
 
               <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
-
-              <div class="col-md-3 py-1">
-                <BarcodeSearchBar/>
-              </div>
             </div>
 
             <!--space-->
@@ -192,7 +188,6 @@ import PageButtons from "../components/PageButtons";
 import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
-import BarcodeSearchBar from "../components/BarcodeSearchBar";
 
 export default {
   components: {
@@ -201,8 +196,7 @@ export default {
     Navbar,
     InventoryItem,
     Footer,
-    PageButtons,
-    BarcodeSearchBar
+    PageButtons
   },
   data() {
     return {
