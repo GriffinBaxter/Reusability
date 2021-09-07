@@ -71,6 +71,6 @@ public class Message {
      * @return MessagePayload object representing the message.
      */
     public MessagePayload toMessagePayload() {
-        return new MessagePayload(sender.getId(), conversation.getReceiver().getId(), conversation.getMarketplaceCard().getId(), content, created);
+        return new MessagePayload(sender.getId(), conversation.getMarketplaceCard().getId(), content, created);
     }
 }

@@ -3065,10 +3065,6 @@ components:
           type: integer
           example: 100
           description: ID of the sender
-        receiverId:
-          type: integer
-          example: 101
-          description: ID of the receiver
         marketplaceCardId:
           type: integer
           example: 408

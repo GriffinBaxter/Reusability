@@ -9,14 +9,12 @@ import java.time.LocalDateTime;
 public class MessagePayload {
 
     private Integer senderId;
-    private Integer receiverId;
     private Integer marketplaceCardId;
     private String content;
     private String created;
 
-    public MessagePayload(Integer senderId, Integer receiverId, Integer marketplaceCardId, String content, LocalDateTime created) {
+    public MessagePayload(Integer senderId, Integer marketplaceCardId, String content, LocalDateTime created) {
         this.senderId = senderId;
-        this.receiverId = receiverId;
         this.marketplaceCardId = marketplaceCardId;
         this.content = content;
         this.created = created.toString();
@@ -24,10 +22,6 @@ public class MessagePayload {
 
     public Integer getSenderId() {
         return senderId;
-    }
-
-    public Integer getReceiverId() {
-        return receiverId;
     }
 
     public Integer getMarketplaceCardId() {
@@ -49,7 +43,6 @@ public class MessagePayload {
     @Override
     public String toString() {
         return "{\"senderId\":" + senderId +
-                ",\"receiverId\":" + receiverId +
                 ",\"marketplaceCardId\":" + marketplaceCardId  +
                 ",\"content\":\"" + content + "\"" +
                 ",\"created\":\"" + created + "\"" +
