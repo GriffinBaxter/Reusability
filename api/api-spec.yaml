@@ -2167,13 +2167,13 @@ paths:
             type: integer
       responses:
         '200':
-          description: Conversation retrieved successfully
+          description: Converstation retrieved successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Message'
+                  $ref: '#/components/schemas/GetMessage'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -2223,7 +2223,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Message'
+              $ref: '#/components/schemas/CreateMessage'
 
   '/home/conversation':
     get:
@@ -2282,7 +2282,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Message'
+              $ref: '#/components/schemas/GetMessage'
 
   '/users/conversation/{conversationId}':
     delete:
@@ -3051,11 +3051,11 @@ components:
           readOnly: true
           description: Date and time of the conversation creation
         messages:
-          $ref: '#/components/schemas/Message'
+          $ref: '#/components/schemas/CreateMessage'
 
-    Message:
+    GetMessage:
       type: object
-      description: Represents a message in a conversation about a Community Marketplace card between two users.
+      description: Represents a returned message in a conversation about a Community Marketplace card between two users.
       required:
         - senderId
         - content
@@ -3065,6 +3065,36 @@ components:
           type: integer
           example: 100
           description: ID of the sender
+        marketplaceCardId:
+          type: integer
+          example: 408
+          description: ID of the marketplace card involved in the conversation
+        content:
+          type: string
+          example: "Hi, I am interested in exchanging some apples for some pears."
+          description: Message content
+        created:
+          type: string
+          format: date-time
+          example: '2021-07-15T05:10:00Z'
+          description: Date and time message was created/sent
+
+    CreateMessage:
+      type: object
+      description: Represents a message being created in a conversation about a Community Marketplace card between two users.
+      required:
+        - senderId
+        - content
+        - created
+      properties:
+        senderId:
+          type: integer
+          example: 100
+          description: ID of the sender
+        receiverId:
+          type: integer
+          example: 200
+          description: ID of the message recipient
         marketplaceCardId:
           type: integer
           example: 408
