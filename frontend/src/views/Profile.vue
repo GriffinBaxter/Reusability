@@ -19,6 +19,9 @@
 
       <div class="row">
 
+        <!-- Update images modal -->
+        <UpdateImagesModal ref="updateImagesModal" location="User" v-model="user"/>
+
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
@@ -27,7 +30,9 @@
               <div id="imageDiv">
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
                 <div id="change-profile-picture-button" style="padding-top: 10px" v-if="!otherUser">
-                  <button type="button" class="btn btn-md btn-outline-primary green-button">
+                  <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button" @click="(event) => {
+                      this.$refs.updateImagesModal.showModel(event);
+                    }">
                     Change Profile Picture
                   </button>
                 </div>
@@ -41,7 +46,7 @@
                 <div class="text-secondary">{{ bio }}</div>
                 <div id="edit-profile" style="padding-top: 10px" v-if="isValidRole(role)">
                   <hr>
-                  <button type="button" class="btn btn-md btn-outline-primary green-button" @click="goToEdit()">
+                  <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button" @click="goToEdit()">
                     Edit Profile
                   </button>
                 </div>
@@ -116,7 +121,7 @@
             <!--register business button-->
             <div class="card-body" v-if="!otherUser">
               <div id="registerBusinessRow" v-if="!otherUser">
-                <button type="button" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
+                <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
                   Register Business
                 </button>
               </div>
@@ -260,6 +265,7 @@ import Navbar from "../components/Navbar";
 import {UserRole} from '../configs/User'
 import {getFormattedAddress, checkNullity} from "../views/helpFunction"
 import UserCardsComp from "../components/UserCardsComp";
+import UpdateImagesModal from "../components/UpdateImagesModal";
 
 export default {
   name: "Profile",
@@ -268,10 +274,19 @@ export default {
     Footer,
     ProfileHeader,
     Navbar,
+    UpdateImagesModal
   },
 
   data() {
     return {
+      user: {
+        data: {
+          firstName: "",
+          images: [],
+          id: 0
+        }
+      },
+
       actionErrorMessage: "",
       loadingAction: false,
       urlID: null,
@@ -305,6 +320,8 @@ export default {
 
       // User card variables
       usersCards: [],
+
+      images: []
     }
   },
   methods: {
@@ -557,7 +574,15 @@ export default {
       if (data.role) {
         this.role = data.role;
       }
+      if (data.images) {
+        this.images = data.images
+      }
 
+      this.user = { data: {
+        firstName: this.firstName,
+        id: this.id,
+        images: this.images}
+      }
       this.getCreatedDate(data.created);
     },
 

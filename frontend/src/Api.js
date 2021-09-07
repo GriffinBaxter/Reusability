@@ -102,9 +102,9 @@ export default {
         withCredentials: true
     }),
 
-    // Sends a get request to the backend asking for a sorted list of products for a business
-    sortProducts: (businessID, sortBy, page) => {
-        return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`, {
+    // Sends a get request to the backend asking for a sorted and paginated list of products matching the given search criteria for a business.
+    searchProducts: (businessID, searchQuery, searchBy, sortBy, page) => {
+        return instance.get(`/businesses/${businessID}/products?searchQuery=${searchQuery}&searchBy=${searchBy}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },
@@ -296,8 +296,9 @@ export default {
     },
 
     // Uploads an image to a given product
-    uploadProductImage: (businessId, productId, image) => {
-        return instance.post(`/businesses/${businessId}/products/${productId}/images`, image, {
+    uploadProductImage: (unCheckImageType, userId, businessId, productId, image) => {
+        return instance.post(`/images?unCheckImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
+            image, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -381,6 +382,12 @@ export default {
         })
     },
 
+    // Sends a POST request to the backend to make a new conversation for a marketplace card.
+    createConversation: (messagePayload) => {
+        return instance.post(`/home/conversation`, messagePayload, { withCredentials: true})
+    },
+
+    // TODO needs to be updated when task 730 is done?
     // Sends a message to the backend with a card ID and user ID of the intended recipient
     sendMessage: (cardId, recipient, message) => {
         return instance.post(`/cards/${cardId}/message`, {
@@ -388,5 +395,10 @@ export default {
         }, {
             withCredentials: true
         })
+    },
+
+    // retrieves conversation entities
+    getConversations() {
+        return instance.get(`/home/conversation`, {withCredentials: true})
     }
 }

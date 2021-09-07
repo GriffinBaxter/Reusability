@@ -950,7 +950,7 @@ describe('Testing autofill functionality', function () {
     beforeAll(() => {
         Api.getBusiness.mockImplementation(() => Promise.resolve({data: {address: {country: ''}}}));
         CurrencyApi.currencyQuery.mockImplementation(() => Promise.resolve({data: [{currencies: [{code: '', symbol: ''}]}]}));
-        Api.sortProducts.mockImplementation(() => Promise.resolve({
+        Api.searchProducts.mockImplementation(() => Promise.resolve({
             status: 200,
             data: [],
             headers: {
@@ -963,7 +963,7 @@ describe('Testing autofill functionality', function () {
                 id: 1
             },
             query: {
-                orderBy: '', page: '0'
+                searchQuery: '', searchBy: 'productName', orderBy: '', page: '0'
             }
         }
 
@@ -1145,7 +1145,7 @@ describe('Testing scanning UI functionality', function () {
                 id: 1
             },
             query: {
-                orderBy: '', page: '0'
+                searchQuery: '', searchBy: 'productName', orderBy: '', page: '0'
             }
         }
 
@@ -1227,3 +1227,130 @@ describe('Testing scanning UI functionality', function () {
         });
     });
 });
+
+describe('Tests miscellaneous methods in Product Catalogue', () => {
+    let wrapper;
+    let $route;
+    let $router;
+
+    beforeEach(() => {
+        $route = {
+            params: {
+                id: 1
+            },
+            query: {
+                searchQuery: '', searchBy: 'name', orderBy: '', page: '0'
+            }
+        }
+        $router = {
+            push: jest.fn()
+        }
+
+        wrapper = shallowMount(ProductCatalogue, {
+            mocks: {
+                $route,
+                $router
+            }
+        });
+
+        Cookies.get = jest.fn().mockImplementation(() => 1); // mock the actAs cookie (business id)
+        Api.searchProducts.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: [],
+            headers: {
+                "total-rows": 1,
+                "total-pages": 1
+            }}));
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Test the onSearch method pushes the user to their search destination.', () => {
+        const checked = ["productName"];
+        const searchQuery = "Apples";
+        wrapper.vm.$data.businessId = 1;
+        wrapper.vm.onSearch(checked, searchQuery);
+
+        expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
+            query: { "searchQuery": searchQuery, "searchBy": "productName", "orderBy": "", "page": "0"}})
+    })
+
+    test('Test the closeCreateProductModal method resets variables.', () => {
+        // "mock" values for modal entries
+        wrapper.vm.$data.productID = "NEW-PRODUCT";
+        wrapper.vm.$data.productName = "A new product";
+        wrapper.vm.$data.description = "Testing to see if values are reset";
+
+        wrapper.vm.closeCreateProductModal();
+
+        expect(wrapper.vm.$data.productID).toEqual("");
+        expect(wrapper.vm.$data.productName).toEqual("");
+        expect(wrapper.vm.$data.description).toEqual("");
+    })
+
+    test('Test the afterEdit method sets the user alert message', () => {
+        expect(wrapper.vm.$data.userAlertMessage).toEqual("");
+        wrapper.vm.afterEdit();
+        expect(wrapper.vm.$data.userAlertMessage).toEqual("Product Edited");
+    })
+
+    test( 'Test the trimTextInputFields method removes whitespace from start and end of string', () => {
+        // "mock" values for text input fields
+        wrapper.vm.$data.productID = "NEW-PRODUCT";
+        wrapper.vm.$data.barcode = "         9300675024235";
+        wrapper.vm.$data.productName = "A new product";
+        wrapper.vm.$data.description = "   Testing to see if values are trimmed   ";
+        wrapper.vm.$data.manufacturer = "PepsiCo      ";
+
+        wrapper.vm.trimTextInputFields();
+
+        expect(wrapper.vm.$data.productID).toEqual("NEW-PRODUCT");
+        expect(wrapper.vm.$data.barcode).toEqual("9300675024235");
+        expect(wrapper.vm.$data.productName).toEqual("A new product");
+        expect(wrapper.vm.$data.description).toEqual("Testing to see if values are trimmed");
+        expect(wrapper.vm.$data.manufacturer).toEqual("PepsiCo");
+    })
+
+    test('Test the updatePage method pushes the user to their search destination.', () => {
+        const mockedEvent = {newPageNumber: 2}
+        wrapper.vm.$data.businessId = 1;
+        wrapper.vm.updatePage(mockedEvent);
+
+        expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
+            query: { "searchQuery": "", "searchBy": "name", "orderBy": "", "page": "2"}})
+    })
+
+    test('Test the convertSearchByListToString method generates the correct string when searchBy only contains name', () => {
+        wrapper.vm.$data.searchBy = ["name"];
+
+        wrapper.vm.convertSearchByListToString();
+
+        expect(wrapper.vm.$data.searchByString).toEqual("name");
+    })
+
+    test('Test the convertSearchByListToString method generates the correct string when searchBy contains name, id and description', () => {
+        wrapper.vm.$data.searchBy = ["name", "id", "description"];
+
+        wrapper.vm.convertSearchByListToString();
+
+        expect(wrapper.vm.$data.searchByString).toEqual("name,id,description");
+    })
+
+    test('Test the convertSearchByStringToList method generates the correct list when searchByString contains name,id,description', () => {
+        wrapper.vm.$route.query["searchBy"] = "name,id,description";
+
+        const searchBy = wrapper.vm.convertSearchByStringToList();
+
+        expect(searchBy).toEqual(["name", "id", "description"]);
+    })
+
+    test('Test the convertSearchByStringToList method generates the correct list when searchByString is not set', () => {
+        wrapper.vm.$route.query["searchBy"] = null;
+
+        const searchBy = wrapper.vm.convertSearchByStringToList();
+
+        expect(searchBy).toEqual(["name"]);
+    })
+})
