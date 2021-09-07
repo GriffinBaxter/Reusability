@@ -38,8 +38,8 @@
 
             <div class="row" role="group" aria-label="Button group with nested dropdown">
               <!--filter-->
-              <div class="btn-group col-md-3 py-1" role="group">
-                <button type="button" class="btn green-button dropdown-toggle"
+              <div class="btn-group col-md-3 py-1 align-self-center" role="group">
+                <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                         data-bs-toggle="dropdown" aria-expanded="false">Filter Option
                 </button>
 
@@ -102,15 +102,15 @@
                 </ul>
               </div>
 
-              <div class="col-md-3 py-1">
+              <div class="col-md-2 py-1 align-self-center">
                 <!--creation button-->
                 <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
-                        data-bs-target="#creationPopup">
+                        data-bs-target="#creationPopup" style="height: 38px">
                   Create New
                 </button>
               </div>
 
-              <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+              <div class="col-3 col-md-4 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
 
               <div class="col-md-3 py-1">
                 <BarcodeSearchBar/>
