@@ -79,7 +79,7 @@ export default {
      */
     deleteConversation() {
       Api.deleteConversation(this.id).then(
-          response => {
+          (response) => {
             if (response.status === 200) {
               this.modal.hide();
               this.$emit('conversationSuccessfullyDeleted');
