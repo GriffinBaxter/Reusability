@@ -36,7 +36,7 @@
 
 <script>
 import {Modal} from "bootstrap";
-import Api from "@/Api";
+import Api from "../../Api"
 
 export default {
   name: "DeleteConversationModal",
