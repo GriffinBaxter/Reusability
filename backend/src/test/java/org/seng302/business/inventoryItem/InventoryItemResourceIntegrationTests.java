@@ -1094,16 +1094,14 @@ class InventoryItemResourceIntegrationTests {
         Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sortBy);
-
-        String barcode = "";
-
-        when(inventoryItemRepository.findInventoryItemsByBarcodeAndBusinessId(barcode, business.getId(), paging)).thenReturn(pagedResult);
+        
+        when(inventoryItemRepository.findInventoryItemsByBarcodeAndBusinessId(product.getBarcode(), business.getId(), paging)).thenReturn(pagedResult);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
-                .param("barcode", barcode)
+                .param("barcode", product.getBarcode())
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
