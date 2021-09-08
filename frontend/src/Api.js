@@ -297,7 +297,7 @@ export default {
 
     // Uploads an image to a given product
     uploadProductImage: (unCheckImageType, userId, businessId, productId, image) => {
-        return instance.post(`/images?unCheckImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
+        return instance.post(`/images?uncheckedImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
             image, {
             withCredentials: true,
             headers: {

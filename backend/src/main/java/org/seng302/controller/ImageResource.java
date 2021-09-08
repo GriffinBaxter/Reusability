@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
 import org.seng302.model.*;
 import org.seng302.model.enums.ImageType;
-import org.seng302.model.enums.Role;
 import org.seng302.model.repository.*;
 import org.seng302.services.FileStorageService;
 import org.seng302.view.outgoing.ImageCreatePayload;
@@ -28,9 +27,9 @@ import static org.seng302.Validation.verifyImageExtension;
 
 /**
  * Controller class for images. This class includes:
- * POST "/businesses/{businessId}/products/{productId}/images" endpoint used for adding image to a product of a businesses.
+ * POST   "/images" endpoint used for adding image to a user profile or a business profile or a product of a businesses.
  * DELETE "/businesses/{businessId}/products/{productId}/images/{imageId}" endpoint for deleting an image for a product of a business.
- * PUT "/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary" endpoint for changing the primary image of a product.
+ * PUT    "/images/{imageId}/makePrimary" endpoint for changing the primary image of a user or a business or a product.
  */
 @RestController
 public class ImageResource {
@@ -103,10 +102,7 @@ public class ImageResource {
         try {
             thumbnailInputStream = fileStorageService.generateThumbnail(image, fileExtension);
         } catch (IOException e) {
-            String errorMessage = String.format(
-                    "Thumbnail unable to be created from image (name: %s)", image.getName()
-            );
-            logger.error(errorMessage);
+            logger.error("Thumbnail unable to be created from image (name: {})", image.getName());
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Thumbnail unable to be created from image.");
         }
 
@@ -125,20 +121,20 @@ public class ImageResource {
         }
         // If the file already exists then we need to just something went wrong
         catch (FileAlreadyExistsException e) {
-            String errorMessage = String.format("File already existed. Canceling storage of image with filename %s, %s",
+            logger.error("File already existed. Canceling storage of image with filename {}, {}",
                     imageFileName, imageOwner);
-            logger.error(errorMessage);
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored.");
         }
         // If this fails we need to ensure it was removed.
         catch (IOException e) {
-            String errorMessage = String.format("Failed to store image with filename %s, %s", imageFileName, imageOwner);
-            logger.error(errorMessage);
+            logger.error("Failed to store image with filename {}, {}", imageFileName, imageOwner);
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored.");
         }
 
         // If we cannot get the file path, then we have to assume that it failed.
@@ -147,18 +143,29 @@ public class ImageResource {
         if (imageFilePath == null || thumbnailFilePath == null) {
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            String errorMessage = String.format("Failed to locate image with filename %s, %s", imageFileName, imageOwner);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored");
+            logger.error("Failed to locate image with filename {}, {}", imageFileName, imageOwner);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored");
         }
 
         return List.of(imageFilePath, thumbnailFilePath);
     }
 
+    /**
+     * Upload an image for given user/business/product.
+     *
+     * @param image              image file
+     * @param sessionToken       current user session token
+     * @param uncheckedImageType image type (user/business/product) (owner type)
+     * @param userId             selected user id
+     * @param businessId         selected business id
+     * @param productId          selected product id
+     * @return image create payload
+     */
     @PostMapping("/images")
     public ResponseEntity<ImageCreatePayload> createImage(@RequestParam("images") MultipartFile image,
                                                           @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                                          @RequestParam String unCheckImageType,
+                                                          @RequestParam String uncheckedImageType,
                                                           @RequestParam(required = false) Integer userId,
                                                           @RequestParam(required = false) Integer businessId,
                                                           @RequestParam(required = false) String productId) {
@@ -169,7 +176,7 @@ public class ImageResource {
         String imageOwnerInfo;
         List<UserImage> allUserImages = new ArrayList<>();
         List<ProductImage> allProductImages = new ArrayList<>();
-        switch (unCheckImageType) {
+        switch (uncheckedImageType) {
             case "USER_IMAGE":
                 // Verify userIs parameter
                 getVerifiedUser(userId);
@@ -187,7 +194,7 @@ public class ImageResource {
                 //TODO: allBusinessImages
                 break;
             case "PRODUCT_IMAGE":
-                // Verify businessIs parameter
+                // Verify businessId parameter
                 Business business = getVerifiedBusiness(businessId);
 
                 // Verify access rights of the user to the business
@@ -201,7 +208,7 @@ public class ImageResource {
                 allProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
                 break;
             default:
-                logger.error("Given image type {} invalid", unCheckImageType);
+                logger.error("Given image type {} invalid", uncheckedImageType);
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type");
         }
 
@@ -277,41 +284,104 @@ public class ImageResource {
         updatePrimaryImage(businessId, productId);
     }
 
-    @PutMapping("/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary")
+    /**
+     * make given image be primary image for given owner
+     *
+     * @param sessionToken       current user session token
+     * @param imageId            selected
+     * @param uncheckedImageType image type (user/business/product) (owner type)
+     * @param userId             selected user id
+     * @param businessId         selected business id
+     * @param productId          selected product id
+     */
+    @PutMapping("/images/{imageId}/makePrimary")
     @ResponseStatus(value = HttpStatus.OK, reason = "Primary image successfully updated")
-    public void makePrimaryImage(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-            @PathVariable Integer businessId,
-            @PathVariable String productId,
-            @PathVariable Integer imageId
-    ) {
+    public void makePrimaryImage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                 @PathVariable Integer imageId,
+                                 @RequestParam String uncheckedImageType,
+                                 @RequestParam(required = false) Integer userId,
+                                 @RequestParam(required = false) Integer businessId,
+                                 @RequestParam(required = false) String productId) {
 
         // Verify token access
-        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
-        // Verify business parameter
-        Business business = getVerifiedBusiness(businessId);
+        switch (uncheckedImageType) {
+            case "USER_IMAGE":
+                // Verify userId parameter
+                getVerifiedUser(userId);
 
-        // Verify access rights of the user to the business
-        Authorization.verifyBusinessAdmin(user, businessId);
+                // Verify current user permission
+                if (userId != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "User does not have permission to update this image.");
+                }
 
-        // Verify Product id
-        verifyProductId(productId, business, user);
+                // Verify image id
+                Optional<UserImage> optionalUserImage = userImageRepository.findById(imageId);
+                if (optionalUserImage.isEmpty()) {
+                    logger.error("Given user image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given user image does not exist.");
+                }
+                UserImage newPrimaryUserImage = optionalUserImage.get();
+                logger.info("User image (ID: {}) retrieved", imageId);
 
-        // Verify image id
-        ProductImage productImage = verifyImageId(imageId, businessId, productId, user);
+                // Set new primary image
+                List<UserImage> allUserImages = userImageRepository
+                        .findUserImagesByUserIdAndIsPrimary(userId, true);
+                for (UserImage userImage : allUserImages) {
+                    userImage.setIsPrimary(false);
+                    userImageRepository.saveAndFlush(userImage);
+                }
 
-        // Set existing primary image to non-primary
-        List<ProductImage> primaryProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
-        for (ProductImage primaryProductImage : primaryProductImages) {
-            primaryProductImage.setIsPrimary(false);
+                // Set desired image to primary image
+                newPrimaryUserImage.setIsPrimary(true);
+
+                // Save the image in the repository
+                userImageRepository.saveAndFlush(newPrimaryUserImage);
+                break;
+            case "BUSINESS_IMAGE":
+                //TODO: allBusinessImages
+                break;
+            case "PRODUCT_IMAGE":
+                // Verify businessId parameter
+                Business business = getVerifiedBusiness(businessId);
+
+                // Verify access rights of the user to the business
+                Authorization.verifyBusinessAdmin(currentUser, businessId);
+
+                // Verify Product id
+                verifyProductId(productId, business, currentUser);
+
+                // Verify image id
+                Optional<ProductImage> optionalProductImage = productImageRepository.findById(imageId);
+
+                if (optionalProductImage.isEmpty()) {
+                    logger.error("Given product image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given product image does not exist.");
+                }
+
+                ProductImage newPrimaryProductImage = optionalProductImage.get();
+                logger.info("Product image (ID: {}) retrieved", imageId);
+
+                // Set existing primary image to non-primary
+                List<ProductImage> allProductImages = productImageRepository
+                        .findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+                for (ProductImage productImage : allProductImages) {
+                    productImage.setIsPrimary(false);
+                    productImageRepository.saveAndFlush(productImage);
+                }
+
+                // Set desired image to primary image
+                newPrimaryProductImage.setIsPrimary(true);
+
+                // Save the image in the repository
+                productImageRepository.saveAndFlush(newPrimaryProductImage);
+                break;
+            default:
+                logger.error("Given image type {} invalid", uncheckedImageType);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type");
         }
-
-        // Set desired image to primary image
-        productImage.setIsPrimary(true);
-
-        // Save the image in the repository
-        productImageRepository.save(productImage);
     }
 
     /**
@@ -344,10 +414,8 @@ public class ImageResource {
     private User getVerifiedUser(Integer userId) throws ResponseStatusException {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            logger.error("The requested route does exist, but some part of the request is not acceptable.");
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist " +
-                    "(so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
+            logger.error("Given user (ID: {}) does not exist.", userId);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given user does not exist.");
         }
         return user.get();
     }
@@ -365,10 +433,8 @@ public class ImageResource {
     private Business getVerifiedBusiness(Integer businessId) throws ResponseStatusException {
         Optional<Business> business = businessRepository.findBusinessById(businessId);
         if (business.isEmpty()) {
-            logger.error("The requested route does exist, but some part of the request is not acceptable.");
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist " +
-                    "(so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
+            logger.error("Given business (ID: {}) does not exist", businessId);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given business does not exist.");
         }
         return business.get();
     }
@@ -387,11 +453,9 @@ public class ImageResource {
     private void verifyProductId(String productId, Business business, User user) throws ResponseStatusException {
         Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, business.getId());
         if (product.isEmpty()) {
-            String errorMessage = String.format("User (id: %d) attempted to access a non-existent product with product id %s.", user.getId(), productId);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404)" +
-                    " but some part of the request is not acceptable, for example trying to access a resource " +
-                    "by an ID that does not exist.");
+            logger.error("Given product (ID: {}) does not exist in current business (ID: {})",
+                    productId, business.getId());
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given Product does not exist in current business.");
         }
     }
 
@@ -440,7 +504,8 @@ public class ImageResource {
         List<ProductImage> primaryProductImages = productImageRepository
                 .findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
         if (primaryProductImages.isEmpty()) {
-            List<ProductImage> productImages = productImageRepository.findProductImageByBusinessIdAndProductId(businessId, productId);
+            List<ProductImage> productImages = productImageRepository
+                    .findProductImageByBusinessIdAndProductId(businessId, productId);
             if (!productImages.isEmpty()) {
                 productImages.get(0).setIsPrimary(true);
                 productImageRepository.save(productImages.get(0));

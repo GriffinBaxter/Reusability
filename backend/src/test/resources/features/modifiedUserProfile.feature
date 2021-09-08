@@ -48,18 +48,25 @@ Feature: U10 Modifying Individuals
     When I try to modify country become null.
     Then A BAD_REQUEST stats return and the message say "Invalid country".
 
-  Scenario: AC5: I can upload one or more images.
+  Scenario: AC5 - I can upload one or more images.
     Given I have a image with filename of "apples.jpg".
     When I upload this image for myself.
     Then This image will be stored.
 
-  Scenario: AC6: One of these images is deemed to be the primary image.
+  Scenario: AC6 - One of these images is deemed to be the primary image.
     Given There is no image for my account.
     Given I have a image with filename of "apples.jpg".
     When I upload this image for myself.
-    Then This image will be the primary image.
+    Then The primary image is "apples.jpg".
 
-  Scenario: AC7: A thumbnail of the primary image is automatically created.
+  Scenario: AC6 - I can change the primary image.
+    Given I have a image with filename of "apples.jpg".
+    Given The primary image is "apples.jpg".
+    Given I have a image with filename of "Iphone13.jpg".
+    When I set the second image be my primary image.
+    Then The primary image is "Iphone13.jpg".
+
+  Scenario: AC7 - A thumbnail of the primary image is automatically created.
     Given There is no image for my account.
     Given I have a image with filename of "apples.jpg".
     When I upload this image for myself.

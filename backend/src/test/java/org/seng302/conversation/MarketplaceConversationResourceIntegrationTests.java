@@ -66,6 +66,9 @@ class MarketplaceConversationResourceIntegrationTests {
 
     private User instigator;
     private User receiver;
+    private User anotherUser;
+    private User dgaa;
+    private User gaa;
 
     private MarketplaceCard marketplaceCard;
 
@@ -81,8 +84,8 @@ class MarketplaceConversationResourceIntegrationTests {
             "\"content\":\"%s\"," +
             "\"created\":\"%s\"}";
 
+
     // Conversation Deletion
-    private User dgaa;
     private User outsideUser;
     private Conversation conversationDelete;
     private MarketplaceCard marketplaceCardDelete;
@@ -135,21 +138,56 @@ class MarketplaceConversationResourceIntegrationTests {
         receiver.setId(2);
         receiver.setSessionUUID(User.generateSessionUUID());
 
-        dgaa = new User("Default",
-                "Admin",
-                "Application",
-                "DGAA",
+        anotherUser = new User(
+                "John",
+                "Jacobs",
+                "A",
+                "Jay",
                 "bio",
-                "dgaa@example.com",
-                LocalDate.of(2000, 1, 1),
+                "john@example.com",
+                LocalDate.of(2020, Month.JANUARY, 1).minusYears(13),
                 "123456789",
                 address,
                 "Password123!",
-                LocalDateTime.of(LocalDate.of(2021, 1, 1),
-                        LocalTime.of(0, 0)),
-                Role.DEFAULTGLOBALAPPLICATIONADMIN);
-        dgaa.setId(3);
+                LocalDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.USER
+        );
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
+
+        dgaa = new User(
+                "Admin",
+                "Jacobs",
+                "A",
+                "admin",
+                "bio",
+                "admin@example.com",
+                LocalDate.of(2020, Month.JANUARY, 1).minusYears(13),
+                "1234567555",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN
+        );
+        dgaa.setId(4);
         dgaa.setSessionUUID(User.generateSessionUUID());
+
+        gaa = new User(
+                "AnotherAdmin",
+                "Jacobs",
+                "A",
+                "secondAdmin",
+                "bio",
+                "admin2@example.com",
+                LocalDate.of(2020, Month.JANUARY, 1).minusYears(13),
+                "1234567555",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2020, Month.JANUARY, 1), LocalTime.of(0, 0)),
+                Role.GLOBALAPPLICATIONADMIN
+        );
+        gaa.setId(5);
+        gaa.setSessionUUID(User.generateSessionUUID());
 
         outsideUser = new User(
                 "Alex",
@@ -165,7 +203,7 @@ class MarketplaceConversationResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2000, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
-        outsideUser.setId(4);
+        outsideUser.setId(6);
         outsideUser.setSessionUUID(User.generateSessionUUID());
 
         marketplaceCard = new MarketplaceCard(
@@ -463,6 +501,127 @@ class MarketplaceConversationResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Tests that an OK status and a list of messages are received when trying to retrieve messages from an existing conversation.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void canRetrieveListOfMessagesWhenConversationExists() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
+    }
+
+    /**
+     * Tests that an UNAUTHORIZED status is received when an invalid JSESSIONID is provided with the GET request for messages.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void cannotRetrieveMessagesWithInvalidCookie() throws Exception {
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that a NOT FOUND status is received when getting messages for a conversation that does not exist.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void cannotRetrieveMessagesWithInvalidConversationId() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+
+        // When
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when trying to access messages of a conversation that the user is not a part of.
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void cannotRetrieveListOfMessagesWhenNotMyConversation() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).willReturn(Optional.ofNullable(anotherUser));
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that an OK status and a list of messages are received when trying to retrieve messages from a conversation
+     * the user is not a part of when acting as a DGAA. (DGAAs can view all messages)
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void canRetrieveListOfMessagesWhenNotMyConversationWhileActingAsDGAA() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(dgaa.getSessionUUID())).willReturn(Optional.ofNullable(dgaa));
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", dgaa.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
+    }
+
+    /**
+     * Tests that an OK status and a list of messages are received when trying to retrieve messages from a conversation
+     * the user is not a part of when acting as a GAA. (GAAs can view all messages)
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void canRetrieveListOfMessagesWhenNotMyConversationWhileActingAsGAA() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(gaa.getSessionUUID())).willReturn(Optional.ofNullable(gaa));
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", gaa.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
     }
 
 
