@@ -144,9 +144,10 @@
 
 import { Modal } from 'bootstrap'
 import InventoryItem from "../../configs/InventoryItem";
-const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');
 import Api from "../../Api";
 import Autofill from '../autofill';
+
+const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');
 
 export default {
   name: "UpdateInventoryItemModal",

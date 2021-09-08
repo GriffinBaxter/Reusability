@@ -434,6 +434,9 @@ name: "Listings",
       this.getListings();
     },
 
+    /**
+     * Routes to URL with event value as the barcode and triggers getListings
+     */
     barcodeSearch(event) {
       this.$router.push({path: `/businessProfile/${this.businessId}/listings`,
         query: {"barcode": event, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})

@@ -182,13 +182,14 @@
 
 
 <script>
+
 import Footer from "../components/main/Footer";
 import InventoryItem from "../components/inventory/InventoryItem";
 import Navbar from "../components/Navbar";
 import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
 import Api from "../Api";
 import Cookies from "js-cookie";
-import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
+import UpdateInventoryItemModal from "../components/inventory/UpdateInventoryItemModal";
 import PageButtons from "../components/PageButtons";
 import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
@@ -665,6 +666,9 @@ export default {
       this.currencySymbol = response[0].currencies[0].symbol;
     },
 
+    /**
+     * Routes to URL with event value as the barcode and triggers retrieveInventoryItems
+     */
     barcodeSearch(event) {
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
