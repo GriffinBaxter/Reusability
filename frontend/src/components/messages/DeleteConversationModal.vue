@@ -73,11 +73,17 @@ export default {
     },
     /**
      * Makes a DELETE call to the backend deleting the conversation with the given id.
+     * If the deletion is successful, a custom event 'conversationSuccessfullyDeleted' is emitted so the Navbar
+     * knows to update the messages. The event is emitted to the Navbar to resolve the issue with the modal being
+     * unavailable when it is a component of Messages.
      */
     deleteConversation() {
       Api.deleteConversation(this.id).then(
           response => {
-            if (response.status !== 200) {
+            if (response.status === 200) {
+              this.modal.hide();
+              this.$emit('conversationSuccessfullyDeleted');
+            } else {
               this.formErrorModalMessage = "Sorry, something went wrong...";
             }
           }
@@ -95,6 +101,9 @@ export default {
       })
     }
   },
+  /**
+   * When mounted create the instance of the modal.
+   */
   mounted() {
     // Create a modal and attach it to the deleteConversationModal reference.
     this.modal = new Modal(this.$refs._deleteConversationModal);
