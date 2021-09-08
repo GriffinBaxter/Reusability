@@ -30,7 +30,7 @@ const mockFullApiResponse = {
         email: "email@example.com",
         bio: "Biography",
         phoneNumber: "0210210210",
-        dateOfBirth: "1999-2-05"
+        dateOfBirth: "1999-2-5"
     }
 }
 /**
@@ -358,6 +358,10 @@ describe("Testing the response on save attempt", () => {
             status: 200
         }
 
+        editProfileWrapper.vm.$data.password = "NewPass123!"
+        editProfileWrapper.vm.$data.confirmPassword = "NewPass123!"
+        editProfileWrapper.vm.$data.currentPassword = "OldPass123!"
+
         Api.editUser.mockImplementation(() => Promise.resolve(mockEditResponse))
 
         await editProfileWrapper.vm.editUser({preventDefault: jest.fn()});
@@ -463,7 +467,7 @@ describe("Tests for other users accessing your Edit Profile page", () => {
     })
 
     test("Test that a logged out user can not access Edit Profile for another user", async () => {
-        const mockCurrentUserApiResponse= {
+        const mockCurrentUserApiResponse = {
             response: {
                 status: 401
             }
