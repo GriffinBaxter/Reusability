@@ -312,16 +312,10 @@ export default {
     isGAA(role) {
       return role === UserRole.GLOBALAPPLICATIONADMIN;
     },
-    /**
-     * get role of given id
-     */
-    getLoginRole(id) {
-      Api.getUser(id).then(response => (this.role = response.data.role))
-    },
 
     // -------------------------------------------------------------------------------------
     /**
-     * switch Notification Box
+     * Switch Notification Box
      */
     switchNotificationBox() {
       this.newNotification = false;
@@ -471,20 +465,20 @@ export default {
     /**
      * Gets information about the current logged in user
      */
-    getUserData() {
-      const currentID = Cookies.get('userID');
-      if (currentID) {
-        Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
-          if (error.request && !error.response) {
-            this.$router.push({path: '/timeout'});
-          } else if (error.response.status === 401) {
-            this.$router.push({path: '/invalidtoken'});
-          } else {
-            this.$router.push({path: '/noUser'});
-            console.log(error.message);
-          }
-        })
-      }
+    getUserData(currentID) {
+      Api.getUser(currentID).then((response) => {
+        this.role = response.data.role;
+        this.setCurUser(response.data);
+      }).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else {
+          this.$router.push({path: '/noUser'});
+          console.log(error.message);
+        }
+      })
     },
     /**
      * Logs the user out of the their account by deleting the cookies of the user, and sending them to
@@ -629,10 +623,9 @@ export default {
     const currentID = Cookies.get('userID');
 
     if(currentID) {
-      this.getLoginRole(currentID);
+      this.getUserData(currentID);
     }
 
-    this.getUserData();
   }
 }
 
