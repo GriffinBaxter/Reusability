@@ -30,7 +30,7 @@ const mockFullApiResponse = {
         email: "email@example.com",
         bio: "Biography",
         phoneNumber: "0210210210",
-        dateOfBirth: "1999-11-05"
+        dateOfBirth: "1999-2-05"
     }
 }
 /**
@@ -407,6 +407,7 @@ describe("Tests for other users accessing your Edit Profile page", () => {
             }
         });
         await editProfileWrapper.vm.$nextTick();
+        await editProfileWrapper.vm.$nextTick();
 
         expect($router.push).toHaveBeenCalledTimes(0)
     })
@@ -430,8 +431,9 @@ describe("Tests for other users accessing your Edit Profile page", () => {
             }
         });
         await editProfileWrapper.vm.$nextTick();
+        await editProfileWrapper.vm.$nextTick();
 
-        expect($router.push).toHaveBeenCalledTimes(0)
+        expect($router.push).toHaveBeenCalledWith({name: "Profile", params: {id: id}})
     })
 
     test("Test that a normal user can not access Edit Profile for another user", async () => {

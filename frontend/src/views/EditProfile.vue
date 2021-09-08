@@ -1129,7 +1129,7 @@ export default {
       if (address.city !== null) { this.city = address.city }
       if (address.region !== null) { this.region = address.region }
       if (address.postcode !== null) { this.postcode = address.postcode }
-      if (address.postcode !== null) { this.country = address.country }
+      if (address.country !== null) { this.country = address.country }
     },
     /**
      * Sets Name Fields if they exist (this is done to prevent setting inputs as undefined)
@@ -1149,7 +1149,7 @@ export default {
 
       if (currentID !== id) {
         await this.retrieveUser(currentID, false);
-        if (this.currentRole === null || this.currentRole === "USER") {
+        if (this.currentRole !== "DEFAULTGLOBALAPPLICATIONADMIN") {
           await this.$router.push({name: "Profile", params: {id}})
         }
       }
