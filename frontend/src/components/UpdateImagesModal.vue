@@ -174,7 +174,7 @@ export default {
      */
     deleteSelectedImage() {
       if (this.location === "Product"){
-        Api.deleteProductImage(this.businessId, this.currentData.data.id , this.selectedImage).then(
+        Api.deleteProductImage(this.$props.id, this.currentData.data.id , this.selectedImage).then(
             response => {
               if (response.status === 200) {
                 location.reload();
@@ -206,7 +206,9 @@ export default {
      */
     setPrimarySelectedImage() {
       if (this.location === "Product") {
-        Api.setPrimaryImage(this.businessId, this.currentData.data.id, this.selectedImage).then(
+        Api.setPrimaryImage(
+            "PRODUCT_IMAGE", "", this.$props.id, this.currentData.data.id, this.selectedImage
+        ).then(
             response => {
               if (response.status === 200) {
                 location.reload();
