@@ -308,6 +308,41 @@ class CustomProductRepositoryTests {
     }
 
     /**
+     * Tests findAllProductsByBusinessIdAndIncludedFields by name field when query is empty
+     * Returns list of all Products
+     */
+    @Test
+    void whenFindAllProductsByBusinessIdAndEmptyQueryAndIncludedFields_name_ProductsExist() {
+        List<String> strings = new ArrayList<>();
+        strings.add("");
+
+        List<String> expectedIds = new ArrayList<>();
+        expectedIds.add("APPLE");
+        expectedIds.add("BEAN");
+        expectedIds.add("DUCT");
+        expectedIds.add("PROD");
+
+        List<String> fields = new ArrayList<>();
+        fields.add("name");
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productsPage = productRepository.findAllProductsByBusinessIdAndIncludedFields(strings, fields , business.getId(), pageable);
+
+        // then
+        assertThat(productsPage.getContent().size()).isNotZero();
+        for (int i = 0; i < productsPage.getContent().size(); i++){
+            assertThat(productsPage.getContent().get(i).getProductId()).isEqualTo(expectedIds.get(i));
+        }
+    }
+
+    /**
      * Tests findAllProductsByBusinessIdAndIncludedFields by name field when query doesn't exist
      * Returns empty list
      */

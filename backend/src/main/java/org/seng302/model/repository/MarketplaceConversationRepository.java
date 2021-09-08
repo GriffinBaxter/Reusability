@@ -33,10 +33,14 @@ public interface MarketplaceConversationRepository extends JpaRepository<Convers
 
 
     /**
-     * Return all conversations associated with the provided user IDs.
+     * Return all conversations associated with the provided user IDs given they have not deleted the conversation.
      * @param instigatorId The user ID of the instigator.
+     * @param deletedByInstigator Keeps track of whether a conversation has been deleted by an instigator.
      * @param receiverId The user ID of the receiver.
+     * @param deletedByReceiver Keeps track of whether a conversation has been deleted by a receiver.
      * @return A list of Conversation objects if any exist, otherwise an empty list.
      */
-    List<Conversation> findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(Integer instigatorId, Integer receiverId);
+    List<Conversation> findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(
+            Integer instigatorId, boolean deletedByInstigator, Integer receiverId, boolean deletedByReceiver
+    );
 }

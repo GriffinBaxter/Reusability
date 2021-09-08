@@ -19,6 +19,9 @@
 
       <div class="row">
 
+        <!-- Update images modal -->
+        <UpdateImagesModal ref="updateImagesModal" location="User" v-model="user"/>
+
         <div class="col-xl-3 mb-3">
           <div class="card text-center shadow-sm">
             <div class="card-body">
@@ -26,12 +29,27 @@
               <!--user's profile image-->
               <div id="imageDiv">
                 <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
+                <div id="change-profile-picture-button" style="padding-top: 10px" v-if="!otherUser">
+                  <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button" @click="(event) => {
+                      this.$refs.updateImagesModal.showModel(event);
+                    }">
+                    Change Profile Picture
+                  </button>
+                </div>
               </div>
+
+              <hr>
 
               <!--user's nickname and bio-->
               <div class="mt-3">
                 <h4>{{ nickname }}</h4>
                 <div class="text-secondary">{{ bio }}</div>
+                <div id="edit-profile" style="padding-top: 10px" v-if="!otherUser">
+                  <hr>
+                  <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button" @click="goToEdit()">
+                    Edit Profile
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -103,7 +121,7 @@
             <!--register business button-->
             <div class="card-body" v-if="!otherUser">
               <div id="registerBusinessRow" v-if="!otherUser">
-                <button type="button" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
+                <button type="button" style="width: 252px; max-width: 100%" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
                   Register Business
                 </button>
               </div>
@@ -247,6 +265,7 @@ import Navbar from "../components/Navbar";
 import {UserRole} from '../configs/User'
 import {getFormattedAddress, checkNullity} from "../views/helpFunction"
 import UserCardsComp from "../components/UserCardsComp";
+import UpdateImagesModal from "../components/UpdateImagesModal";
 
 export default {
   name: "Profile",
@@ -255,13 +274,23 @@ export default {
     Footer,
     ProfileHeader,
     Navbar,
+    UpdateImagesModal
   },
 
   data() {
     return {
+      user: {
+        data: {
+          firstName: "",
+          images: [],
+          id: 0
+        }
+      },
+
       actionErrorMessage: "",
       loadingAction: false,
       urlID: null,
+      currentID: null,
       firstName: "",
       lastName: "",
       middleName: "",
@@ -291,6 +320,8 @@ export default {
 
       // User card variables
       usersCards: [],
+
+      images: []
     }
   },
   methods: {
@@ -543,7 +574,15 @@ export default {
       if (data.role) {
         this.role = data.role;
       }
+      if (data.images) {
+        this.images = data.images
+      }
 
+      this.user = { data: {
+        firstName: this.firstName,
+        id: this.id,
+        images: this.images}
+      }
       this.getCreatedDate(data.created);
     },
 
@@ -736,6 +775,18 @@ export default {
           (this.actingBusinessId && this.otherUser) ||
           (this.isValidRole(this.role) && this.otherUser && !this.isDGAA(this.role)) ||
           (!this.otherUser);
+    },
+    /**
+     * Takes the user to the edit profile page
+     */
+    goToEdit() {
+      let id
+      if (this.urlID === "profile") {
+        id = this.currentID
+      } else {
+        id = this.urlID
+      }
+      this.$router.push({name:"EditProfile", params: {id}})
     }
   },
 
@@ -745,17 +796,17 @@ export default {
    */
   mounted() {
 
-    const currentID = Cookies.get('userID');
+    this.currentID = Cookies.get('userID');
 
-    if (currentID) {
-      this.getLoginRole(currentID);
+    if (this.currentID) {
+      this.getLoginRole(this.currentID);
 
       const url = document.URL
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
 
-      if (currentID === this.urlID || this.urlID === 'profile') {
-        this.retrieveUser(currentID);
-        this.retrieveUsersCards(currentID);
+      if (this.currentID === this.urlID || this.urlID === 'profile') {
+        this.retrieveUser(this.currentID);
+        this.retrieveUsersCards(this.currentID);
       } else {
         // Another user
         this.retrieveUser(this.urlID);

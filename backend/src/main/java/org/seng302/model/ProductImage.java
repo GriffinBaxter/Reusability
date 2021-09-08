@@ -1,11 +1,11 @@
 package org.seng302.model;
 
-import lombok.NoArgsConstructor;
+import org.seng302.model.enums.ImageType;
 
 import javax.persistence.*;
 
 @Entity
-public class ProductImage extends Image{
+public class ProductImage extends Image {
     // Association many images can have the same one product id.
     @ManyToOne(targetEntity = Product.class, fetch = FetchType.LAZY)
     @JoinColumns({
@@ -21,13 +21,13 @@ public class ProductImage extends Image{
     private int businessId;
 
     public ProductImage(int id, String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
-        super(id, filename, thumbnailFilename, isPrimary);
+        super(id, filename, thumbnailFilename, isPrimary, ImageType.PRODUCT_IMAGE);
         this.productId = productId;
         this.businessId = businessId;
     }
 
     public ProductImage(String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
-        super(filename, thumbnailFilename, isPrimary);
+        super(filename, thumbnailFilename, isPrimary, ImageType.PRODUCT_IMAGE);
         this.productId = productId;
         this.businessId = businessId;
     }
@@ -58,5 +58,17 @@ public class ProductImage extends Image{
 
     public void setBusinessId(int businessId) {
         this.businessId = businessId;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":" + getId() + ", " +
+                "\"businessId\":" + businessId + ", " +
+                "\"productId\":" + productId + ", " +
+                "\"filename\":\"" + getFilename() + "\", " +
+                "\"thumbnailFilename\":\"" + getThumbnailFilename() + "\", " +
+                "\"isPrimary\":" + getIsPrimary() +
+                "}";
     }
 }

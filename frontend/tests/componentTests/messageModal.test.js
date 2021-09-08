@@ -11,7 +11,7 @@ import Api from "../../src/Api";
 describe("Testing the message modal functionality", () => {
 
     let messageModalWrapper;
-    let sendMessageSpy;
+    let createConversationSpy;
     let $router;
 
     beforeEach(() => {
@@ -38,9 +38,9 @@ describe("Testing the message modal functionality", () => {
                 }
             });
 
-        sendMessageSpy = jest.spyOn(Api, 'sendMessage');
+        createConversationSpy = jest.spyOn(Api, 'createConversation');
 
-        Api.sendMessage.mockImplementation(() => Promise.resolve());
+        Api.createConversation.mockImplementation(() => Promise.resolve());
     });
 
     afterEach(() => {
@@ -53,7 +53,7 @@ describe("Testing the message modal functionality", () => {
         messageModalWrapper.vm.sendMessage();
 
         expect(messageModalWrapper.vm.modalError).toBe("Message length must be between 1 and 300 characters long");
-        expect(sendMessageSpy).toHaveBeenCalledTimes(0);
+        expect(createConversationSpy).toHaveBeenCalledTimes(0);
     });
 
     test('Testing that when message length is greater than 300 then the modal error is set and the API call is not made', () => {
@@ -62,7 +62,7 @@ describe("Testing the message modal functionality", () => {
         messageModalWrapper.vm.sendMessage();
 
         expect(messageModalWrapper.vm.modalError).toBe("Message length must be between 1 and 300 characters long");
-        expect(sendMessageSpy).toHaveBeenCalledTimes(0);
+        expect(createConversationSpy).toHaveBeenCalledTimes(0);
     });
 
     test('Testing that when message length is 1 then the modal error is not set and the API call is made', async () => {
@@ -73,7 +73,7 @@ describe("Testing the message modal functionality", () => {
 
         expect(messageModalWrapper.vm.modalError).toBe("");
         expect(messageModalWrapper.vm.message).toBe("");
-        expect(sendMessageSpy).toHaveBeenCalledTimes(1);
+        expect(createConversationSpy).toHaveBeenCalledTimes(1);
     });
 
     test('Testing that when message length is 300 then the modal error is not set and the API call is made', async () => {
@@ -84,17 +84,19 @@ describe("Testing the message modal functionality", () => {
 
         expect(messageModalWrapper.vm.modalError).toBe("");
         expect(messageModalWrapper.vm.message).toBe("");
-        expect(sendMessageSpy).toHaveBeenCalledTimes(1);
+        expect(createConversationSpy).toHaveBeenCalledTimes(1);
     });
 
     test('Testing that when a 400 error is received then the modal error is set to the error message', async () => {
         let response = {
             response: {
                 status: 400,
-                data: "Error Message"
+                data: {
+                    message: "Error Message"
+                }
             }
         }
-        Api.sendMessage.mockImplementation(() => Promise.reject(response));
+        Api.createConversation.mockImplementation(() => Promise.reject(response));
 
         messageModalWrapper.vm.message = "a";
 
@@ -112,7 +114,7 @@ describe("Testing the message modal functionality", () => {
                 data: "Error Message"
             }
         }
-        Api.sendMessage.mockImplementation(() => Promise.reject(response));
+        Api.createConversation.mockImplementation(() => Promise.reject(response));
 
         messageModalWrapper.vm.message = "a";
 
@@ -131,7 +133,7 @@ describe("Testing the message modal functionality", () => {
                 data: "Error Message"
             }
         }
-        Api.sendMessage.mockImplementation(() => Promise.reject(response));
+        Api.createConversation.mockImplementation(() => Promise.reject(response));
 
         messageModalWrapper.vm.message = "a";
 
@@ -149,7 +151,7 @@ describe("Testing the message modal functionality", () => {
 
             }
         }
-        Api.sendMessage.mockImplementation(() => Promise.reject(response));
+        Api.createConversation.mockImplementation(() => Promise.reject(response));
 
         messageModalWrapper.vm.message = "a";
 
@@ -168,7 +170,7 @@ describe("Testing the message modal functionality", () => {
                 data: "Error Message"
             }
         }
-        Api.sendMessage.mockImplementation(() => Promise.reject(response));
+        Api.createConversation.mockImplementation(() => Promise.reject(response));
 
         messageModalWrapper.vm.message = "a";
 

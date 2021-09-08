@@ -50,6 +50,17 @@ const routes = [
         component: () => import('../views/Profile.vue')
     },
     {
+        path: '/profile/:id/edit',
+        name: 'EditProfile',
+        meta: {
+            title: 'EditProfile'
+        },
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/EditProfile.vue')
+    },
+    {
         path: '/search',
         name: 'Search',
         meta: {

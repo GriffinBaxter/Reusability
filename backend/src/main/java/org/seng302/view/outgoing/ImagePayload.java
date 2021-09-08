@@ -64,4 +64,14 @@ public class ImagePayload {
     public void setIsPrimary(boolean isPrimary) {
         this.isPrimary = isPrimary;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":" + id +
+                "\"filename\":\"" + filename + "\"," +
+                "\"thumbnailFilename\":\"" + thumbnailFilename + "\"," +
+                "\"isPrimary\":" + isPrimary + "," +
+                " }";
+    }
 }

@@ -46,6 +46,7 @@
 
 import {Modal} from "bootstrap";
 import Api from "../../Api";
+import Cookies from "js-cookie";
 
 export default {
   name: "MessageModal",
@@ -57,7 +58,8 @@ export default {
       creator: "",
       creatorId: "",
       card: "",
-      cardId: ""
+      cardId: "",
+      currentId: ""
     }
   },
   methods: {
@@ -70,14 +72,20 @@ export default {
       if (this.message.length < 1 || this.message.length > 300) {
         this.modalError = "Message length must be between 1 and 300 characters long"
       } else {
-        Api.sendMessage(this.cardId, this.creatorId, this.message).then(() => {
+        const messagePayload = {
+          senderId: parseInt(this.currentId),
+          receiverId: this.creatorId,
+          marketplaceCardId: this.cardId,
+          content: this.message
+        };
+        Api.createConversation(messagePayload).then(() => {
           this.modal.hide();
           this.reset();
         }).catch((error) => {
           if (error.require && !error.response) {
             this.$router.push({path: '/timeout'});
           } else if (error.response.status === 400) {
-            this.modalError = error.response.data;
+            this.modalError = error.response.data.message;
           } else if (error.response.status === 401) {
             this.$router.push({path: '/invalidtoken'});
           } else if (error.response.status === 406) {
@@ -106,6 +114,7 @@ export default {
   },
   mounted() {
     this.modal = new Modal(this.$refs.messageModal);
+    this.currentId = Cookies.get('userID');
   }
 }
 </script>
