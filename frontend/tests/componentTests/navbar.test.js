@@ -180,5 +180,153 @@ describe('Tests for miscellaneous Navbar methods', () => {
         expect(wrapper.vm.$data.showMessages).toBeFalsy();
     })
 
+    test("Test the toggleMessages method sets variables correctly.", () => {
+        wrapper.vm.$data.showMessages = false;
+
+        wrapper.vm.toggleMessages();
+
+        expect(wrapper.vm.$data.showMessages).toBeTruthy();
+        expect(wrapper.vm.$data.openNotificationBox).toBeFalsy();
+        expect(wrapper.vm.$data.showInteractMenu).toBeFalsy();
+    })
+
+    test("Test the closeInteractMenu method sets variables correctly.", () => {
+        wrapper.vm.$data.showMessages = true;
+        wrapper.vm.$data.openNotificationBox = true;
+        wrapper.vm.$data.showInteractMenu = true;
+
+        wrapper.vm.closeInteractMenu();
+
+        expect(wrapper.vm.$data.showMessages).toBeFalsy();
+        expect(wrapper.vm.$data.openNotificationBox).toBeFalsy();
+        expect(wrapper.vm.$data.showInteractMenu).toBeFalsy();
+    })
+
+    test("Test the closeNavbar method sets variables correctly.", () => {
+        wrapper.vm.$data.showBusinessDropdown = true;
+        wrapper.vm.$data.showMessages = true;
+        wrapper.vm.$data.showNavabar = true;
+
+        wrapper.vm.closeNavbar();
+
+        expect(wrapper.vm.$data.showBusinessDropdown).toBeFalsy();
+        expect(wrapper.vm.$data.showMessages).toBeFalsy();
+        expect(wrapper.vm.$data.showNavbar).toBeFalsy();
+    })
+
+    test("Test the toggleBusinessDropdown method sets variable correctly.", () => {
+        wrapper.vm.$data.showBusinessDropdown = true;
+
+        wrapper.vm.toggleBusinessDropdown();
+
+        expect(wrapper.vm.$data.showBusinessDropdown).toBeFalsy();
+
+    })
+
+    test("Test the omitName function returns the original name if its length is less than the max length.", () => {
+        const name = "Zachary";
+        const max = 10;
+
+        expect(wrapper.vm.omitName(name, max)).toEqual(name);
+    })
+
+    test("Test the omitName function returns the omitted name if its length is greater than the max length.", () => {
+        const name = "Zachary";
+        const max = 5;
+
+        expect(wrapper.vm.omitName(name, max)).toEqual("Zacha...");
+    })
+
+    test("Tests refreshDropdown method when nickname is null", () => {
+        wrapper.vm.$data.currentUser = {
+            "id": 21,
+            "firstName": "John",
+            "lastName": "Doe",
+            "middleName": "S",
+            "nickname": null,
+            "bio": "Biography",
+            "email": "email@email.com",
+            "created": "2021-02-02T00:00",
+            "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+            "businessesAdministered": [
+                null
+            ],
+            "dateOfBirth": "2000-02-02",
+            "phoneNumber": "0271316",
+            "homeAddress": {
+                "streetNumber": "3/24",
+                "streetName": "Ilam Road",
+                "suburb": "Ilam",
+                "city": "Christchurch",
+                "region": "Canterbury",
+                "country": "New Zealand",
+                "postcode": "90210"
+            }
+        }
+
+        wrapper.vm.refreshDropdown();
+
+        expect(wrapper.vm.$data.interactAs).toEqual([{id: 21, name: "John"}]);
+        expect(wrapper.vm.$data.interactAsOmit).toEqual([{id: 21, name: "John"}]);
+        expect(wrapper.emitted().getLinkBusinessAccount).toBeTruthy();
+    })
+
+    test("Tests refreshDropdown method when nickname is not null and user administers a business", () => {
+        wrapper.vm.$data.currentUser = {
+            "id": 21,
+            "firstName": "John",
+            "lastName": "Doe",
+            "middleName": "S",
+            "nickname": "Johnny",
+            "bio": "Biography",
+            "email": "email@email.com",
+            "created": "2021-02-02T00:00",
+            "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+            "businessesAdministered": [
+                {
+                    "id": 4,
+                    "administrators": [
+                        null
+                    ],
+                    "primaryAdministratorId": 21,
+                    "name": "Big Business",
+                    "description": null,
+                    "address": {
+                        "streetNumber": null,
+                        "streetName": null,
+                        "suburb": null,
+                        "city": null,
+                        "region": null,
+                        "country": "New Zealand",
+                        "postcode": null
+                    },
+                    "businessType": "CHARITABLE_ORGANISATION",
+                    "created": "2021-09-08T21:22:53.130650"
+                }
+            ],
+            "dateOfBirth": "2000-02-02",
+            "phoneNumber": "0271316",
+            "homeAddress": {
+                "streetNumber": "3/24",
+                "streetName": "Ilam Road",
+                "suburb": "Ilam",
+                "city": "Christchurch",
+                "region": "Canterbury",
+                "country": "New Zealand",
+                "postcode": "90210"
+            }
+        }
+
+        // set the businesses for the user (mocking).
+        wrapper.vm.$data.businesses = wrapper.vm.$data.currentUser.businessesAdministered.filter(
+            (business) => business !== null
+        );
+        wrapper.vm.refreshDropdown();
+
+        expect(wrapper.vm.$data.interactAs).toEqual([{id: 21, name: "Johnny"}, {id: 4, name: "Big Business"}]);
+        expect(wrapper.vm.$data.interactAsOmit).toEqual([{id: 21, name: "Johnny"}, {id: 4, name: "Big Busine..."}]);
+        expect(wrapper.emitted().getLinkBusinessAccount).toBeTruthy();
+    })
+
 
 })
