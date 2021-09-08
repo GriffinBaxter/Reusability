@@ -496,30 +496,6 @@ export default {
     },
 
     /**
-     * This method parses the given date of birth input and separates it into a year, month and day, provided it meets
-     * the expected format.
-     *
-     * @param dateString, string, the date to validate and separate.
-     * @returns {{month: number, year: number, day: number}|null}, {year, month, day}, if the date meets the expected
-     * format, else null.
-     *
-     */
-    parseSelectedDate(dateString) {
-      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,2}-[0-9]{1,2}$/
-
-      if (verifyRegex.test(dateString)) {
-        const dateParts = dateString.split("-", 3);
-        return {
-          year: Number(dateParts[0]),
-          month: Number(dateParts[1]),
-          day: Number(dateParts[2])
-        }
-      } else {
-        return null
-      }
-    },
-
-    /**
      * This method determines the maximum possible date of birth.
      *
      * @returns {string}, the maximum possible date of birth in the expected String format of e.g. 2021-03-15.

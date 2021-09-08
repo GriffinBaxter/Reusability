@@ -536,10 +536,7 @@ public class UserResource {
 
             if (userProfileModifyPayload.getNewPassword() != null) {
                 if (userProfileModifyPayload.getCurrentPassword() != null) {
-                    if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
-                            || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
-                            || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
-                            && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN))) {
+                    if (validPasswordOrHavePermission(selectedUser, currentUser, userProfileModifyPayload)) {
                         selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
                     } else if (userProfileModifyPayload.getCurrentPassword() != null
                             && !userProfileModifyPayload.getCurrentPassword().isEmpty()) {
@@ -566,6 +563,26 @@ public class UserResource {
         }
         logger.debug("Selected user (ID: {}) update successfully.", selectedUser.getId());
         return selectedUser;
+    }
+
+    /**
+     * Checks if the current user can change the password of the selected user
+     * @param selectedUser User the password is changing for
+     * @param currentUser User changing the password
+     * @param userProfileModifyPayload Payload containing the modify user data
+     * @return boolean T/F if the current user can change the password
+     */
+    private boolean validPasswordOrHavePermission(User selectedUser, User currentUser, UserProfileModifyPayload userProfileModifyPayload) {
+        // Case 1: Valid Password
+        if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())) {
+            return true;
+        }
+        // Case 2: User is Admin & selected User is not
+        if (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser)) {
+            return true;
+        }
+        // Case 3: User is DGAA & selected user is GAA, if not, returns false
+        return currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN) && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN);
     }
 
     /**

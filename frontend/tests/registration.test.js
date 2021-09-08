@@ -6,6 +6,7 @@ import {createLocalVue, shallowMount} from "@vue/test-utils";
 import VueLogger from "vuejs-logger";
 import VueRouter from "vue-router";
 import router from '../src/router/index'
+import {isValidDateOfBirth} from "../src/views/helpFunction";
 
 jest.mock("../src/Api.js");
 
@@ -1569,7 +1570,7 @@ test ("Testing isValidDateOfBirth with invalid input 1234--65 gives null.", () =
     const testInput = '1234--65';
     const expectedValue = null
 
-    expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue);
+    expect(isValidDateOfBirth(testInput)).toBe(expectedValue);
 })
 
 /**
@@ -1580,7 +1581,7 @@ test ("Testing isValidDateOfBirth with invalid input 321E321-546a456-6a54-9874 g
     const testInput = '321E321-546a456-6a54-9874';
     const expectedValue = null
 
-    expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue);
+    expect(isValidDateOfBirth(testInput)).toBe(expectedValue);
 })
 
 /**
@@ -1591,7 +1592,7 @@ test ("Testing isValidDateOfBirth with invalid input !@#)-!@#-!@ gives null.", (
     const testInput = '!@#)-!@#-!@';
     const expectedValue = null
 
-    expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue);
+    expect(isValidDateOfBirth(testInput)).toBe(expectedValue);
 })
 
 /**
@@ -1602,7 +1603,7 @@ test ("Testing isValidDateOfBirth with invalid input 123AASD- gives null.", () =
     const testInput = '123AASD-';
     const expectedValue = null
 
-    expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue);
+    expect(isValidDateOfBirth(testInput)).toBe(expectedValue);
 })
 
 /**
@@ -1613,7 +1614,7 @@ test ("Testing isValidDateOfBirth with empty string gives null.", () => {
     const testInput = '';
     const expectedValue = null
 
-    expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue);
+    expect(isValidDateOfBirth(testInput)).toBe(expectedValue);
 })
 
 /**
@@ -1624,7 +1625,7 @@ test('Testing isValidDateOfBirth with invalid input gives null.', () => {
     const testValue5 = ''
     const expectedValue = null
 
-    expect(reg.methods.isValidDateOfBirth(testValue5)).toBe(expectedValue)
+    expect(isValidDateOfBirth(testValue5)).toBe(expectedValue)
 })
 
 
@@ -1636,7 +1637,7 @@ test('Test for boundary date', () => {
     const testInput = reg.methods.getMaxDateOfBirth()
     const expectedValue = true
 
-    expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue)
+    expect(isValidDateOfBirth(testInput)).toBe(expectedValue)
 })
 
 /**
@@ -1647,7 +1648,7 @@ test('Test for random early allowable date', () => {
     const testInput = reg.methods.getMaxDateOfBirth().substring(1)
     const expectedValue = true
 
-    expect(reg.methods.isValidDateOfBirth(testInput)).toBe(expectedValue)
+    expect(isValidDateOfBirth(testInput)).toBe(expectedValue)
 })
 
 
@@ -1660,7 +1661,7 @@ test ('Test the children under 13 aren\'t allowed by usValidDateOfBirth', () => 
     const todayDate = (new Date()).toISOString().split('T')[0];
     const expectedValue = false
 
-    expect(reg.methods.isValidDateOfBirth(todayDate)).toBe(expectedValue)
+    expect(isValidDateOfBirth(todayDate)).toBe(expectedValue)
 })
 
 /**
@@ -1674,7 +1675,7 @@ test('Future birthday is disallowed', () => {
     const futureDate = '9' + todayDate
     const expectedValue = false
 
-    expect(reg.methods.isValidDateOfBirth(futureDate)).toBe(expectedValue)
+    expect(isValidDateOfBirth(futureDate)).toBe(expectedValue)
 })
 
 // ************************************************ Street Number Tests ************************************************

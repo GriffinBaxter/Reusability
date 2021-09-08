@@ -580,7 +580,7 @@ export default {
         if (error.response) {
           if (error.response.status === 400) {
             this.errorMessageBubble = error.response.data.message
-          } else if (error.response === 401) {
+          } else if (error.response.status === 401) {
             this.$router.push({name: "InvalidToken"})
           } else {
             this.errorMessageBubble = `${error.response.status} Unexpected error occurred!`;
