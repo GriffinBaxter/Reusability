@@ -56,6 +56,13 @@ export default {
         withCredentials: true
     }),
 
+    // Sends a put request to the backend with an userID and a edit user object to update user
+    editUser: (id, user) => instance.put(`/users/${id}/profile`, {
+        ...user.data
+    }, {
+        withCredentials: true
+    }),
+
     // Sends a post request to the backend with the user's login details
     signIn: (email, password) => instance.post('login', {email, password}, {
         withCredentials: true
