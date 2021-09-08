@@ -42,7 +42,8 @@ export default {
       isLoading: false,
       conversationIsOpen: false,
       conversationData: {},
-      messages: []
+      messages: [],
+      currentId: 0
     }
   },
   methods: {
@@ -65,7 +66,7 @@ export default {
       this.isLoading = true
       this.conversationData = conversation;
       await Api.getConversation(conversation.id).then((res) => {
-        this.messages = res.data
+        this.messages = res.data.reverse()
       }).catch(() => {
         this.errorMessage = "Something went wrong"
       })
@@ -77,7 +78,7 @@ export default {
      */
     sendMessage(messageInput) {
       let message = {
-        senderId: this.userId,
+        senderId: this.currentId,
         receiverId: this.conversationData.userId,
         marketplaceCardId: this.conversationData.marketplaceCardId,
         content: messageInput
@@ -85,7 +86,6 @@ export default {
 
       Api.sendReply(this.conversationData.id, message).then(() => {
         this.messages.push(message)
-        this.messageInput = ""
       }).catch((err) => {
         if (err.response) {
           if (err.response.status === 401) {
@@ -112,14 +112,14 @@ export default {
   beforeMount() {
     this.errorMessage = "";
     this.isLoading = true;
+    this.currentId = parseInt(Cookies.get("userID"));
     Api.getConversations().then(
         (res) => {
           this.conversations = res.data.map( (conversation) => {
             let userImage;
             let userName;
             let userId;
-            const currentId = Cookies.get("userID");
-            if (conversation.instigatorId === currentId) {
+            if (conversation.instigatorId === this.currentId) {
               userImage = conversation.receiverImage;
               userName = conversation.receiverName;
               userId = conversation.receiverId;

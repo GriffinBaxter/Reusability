@@ -5,7 +5,7 @@
         <p class="p-1 m-0" style="text-align: end"> {{ message.content }} </p>
       </div>
 
-      <div v-else class="row m-1 rounded-2 w-75 float-end" style="background-color: lightblue; word-wrap: break-word">
+      <div v-else class="row m-1 rounded-2 w-75" style="background-color: lightblue; word-wrap: break-word">
         <p class="p-1 m-0"> {{ message.content }} </p>
       </div>
     </div>
