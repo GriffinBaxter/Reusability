@@ -3389,7 +3389,7 @@ class BusinessResourceIntegrationTests {
     }
 
     /**
-     *
+     * When updating a business with a null business type it will fail to update and return a BAD_REQUEST status.
      */
     @Test
     void updatingBusinessWithNullBusinessTypeAndFailingAsItIsRequired() throws Exception {
