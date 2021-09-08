@@ -10,7 +10,9 @@
                            :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
           </div>
         </div>
-        <MessageConversation v-else ref="msgConversation" v-bind:messages="messages"/>
+        <div v-else style="overflow: auto">
+          <MessageConversation ref="msgConversation" v-bind:messages="messages"/>
+        </div>
       </div>
     </div>
     <div class="error-message" v-if="errorMessage">
@@ -176,10 +178,12 @@ export default {
     box-shadow: -2px 10px 1rem #00000030;
     background-color: white;
 
+    display: flex;
+    flex-direction: column;
+
   }
 
   #messages-wrapper {
-    position: absolute;
     right: 15px;
     z-index: 999;
 
@@ -187,7 +191,7 @@ export default {
     height: max(400px, 100%);
     max-width: 284px;
 
-
+    overflow: auto;
   }
 
   #messages-wrapper::-webkit-scrollbar {

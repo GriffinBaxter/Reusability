@@ -29,7 +29,7 @@ export default {
     }
   },
   mounted() {
-    this.userId = Cookies.get("userID");
+    this.userId = parseInt(Cookies.get("userID"));
   }
 }
 </script>

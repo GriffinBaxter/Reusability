@@ -1,5 +1,5 @@
 <template>
-  <div class="input-group m-1 py-1" style="position:absolute; bottom:0;max-width: 270px">
+  <div class="input-group m-1 py-1" style="bottom:0;max-width: 270px">
     <input type="text" class="form-control" placeholder="Enter message here" v-model="messageInput">
     <button type="button" class="input-group-text" @click="sendMessage">Send</button>
   </div>
