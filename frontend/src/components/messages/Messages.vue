@@ -1,5 +1,6 @@
 <template>
   <div id="component-wrapper" >
+    <MessageTitle v-if="conversationIsOpen" v-bind:conversation-data="conversationData" />
     <div id="messages-wrapper" >
       <LoadingDots v-if="isLoading" />
       <div id="content-wrapper" v-else>
@@ -9,12 +10,13 @@
                            :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
           </div>
         </div>
-        <MessageConversation v-else title="currentTitle" ref="msgConversation"/>
+        <MessageConversation v-else ref="msgConversation" v-bind:messages="messages"/>
       </div>
     </div>
     <div class="error-message" v-if="errorMessage">
       {{errorMessage}}
     </div>
+    <SendMessage v-if="conversationIsOpen"/>
   </div>
 </template>
 
@@ -25,16 +27,20 @@ import LoadingDots from "../LoadingDots";
 import DefaultImage from "../../../public/profile_icon_default.png";
 import Cookies from "js-cookie";
 import MessageConversation from "./MessageConversation";
+import MessageTitle from "./MessageTitle";
+import SendMessage from "./SendMessage";
 
 export default {
   name: "Messages",
-  components: {MessageConversation, LoadingDots, MessageOption},
+  components: {MessageConversation, LoadingDots, MessageOption, MessageTitle, SendMessage},
   data() {
     return {
       conversations: [],
       errorMessage: "",
       isLoading: false,
-      conversationIsOpen: false
+      conversationIsOpen: false,
+      conversationData: {},
+      messages: []
     }
   },
   methods: {
@@ -51,12 +57,47 @@ export default {
     },
     /**
      * Opens and loads the selected conversation
-     * @param conversationId ID of the conversation
+     * @param conversation Conversation data
      */
-    openConversation(conversationId) {
+    async openConversation(conversation) {
+      this.isLoading = true
+      this.conversationData = conversation;
+      await Api.getConversation(conversation.id).then((res) => {
+        this.messages = res.data
+      }).catch(() => {
+        this.errorMessage = "Something went wrong"
+      })
       this.conversationIsOpen = true;
-      this.$nextTick(() => {
-        this.$refs.msgConversation.openConversation(conversationId)
+      this.isLoading = false
+    },
+    /**
+     * Sends the currently typed message
+     */
+    sendMessage(messageInput) {
+      let message = {
+        senderId: this.userId,
+        receiverId: this.conversationData.userId,
+        marketplaceCardId: this.conversationData.marketplaceCardId,
+        content: messageInput
+      }
+
+      Api.sendReply(this.conversationData.id, message).then(() => {
+        this.messages.push(message)
+        this.messageInput = ""
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          } else {
+            this.errorMessage = `${err.response.status} - ${err.response.message}`
+          }
+          if (err.request) {
+            this.errorMessage = "Timeout"
+          }
+        } else {
+          this.errorMessage = "Something went wrong"
+        }
+        console.log(err)
       })
     },
     /**
@@ -130,22 +171,21 @@ export default {
     z-index: 999;
     height: 83vh;
     width: 300px;
+
+    border: 1px #a8a8a8 solid;
+    box-shadow: -2px 10px 1rem #00000030;
+    background-color: white;
+
   }
 
   #messages-wrapper {
     position: absolute;
-    top: 0;
     right: 15px;
     z-index: 999;
 
     width: 100%;
     height: max(400px, 100%);
     max-width: 284px;
-
-    border: 1px #a8a8a8 solid;
-    box-shadow: -2px 10px 1rem #00000030;
-    overflow: auto;
-    background-color: white;
 
 
   }
