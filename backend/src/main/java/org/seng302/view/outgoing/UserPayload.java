@@ -11,6 +11,7 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.Business;
+import org.seng302.model.UserImage;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
 
@@ -42,7 +43,8 @@ public class UserPayload extends UserPayloadParent {
                        AddressPayload homeAddress,
                        LocalDateTime created,
                        Role role,
-                       List<Business> businessesAdministeredObject) throws Exception {
+                       List<Business> businessesAdministeredObject,
+                       List<UserImage> userImages) throws Exception {
         super(id,
                 firstName,
                 lastName,
@@ -52,7 +54,9 @@ public class UserPayload extends UserPayloadParent {
                 email,
                 created,
                 role,
-                businessesAdministeredObject);
+                businessesAdministeredObject,
+                userImages
+                );
 
         this.homeAddress = homeAddress;
         this.dateOfBirth = dateOfBirth.toString();
@@ -80,7 +84,8 @@ public class UserPayload extends UserPayloadParent {
                     user.getHomeAddress().toAddressPayload(),
                     user.getCreated(),
                     user.getRole(),
-                    user.getBusinessesAdministeredObjects());
+                    user.getBusinessesAdministeredObjects(),
+                    user.getUserImages());
 
             payLoads.add(newPayload);
         }
@@ -108,7 +113,8 @@ public class UserPayload extends UserPayloadParent {
                     user.getHomeAddress().toAddressPayload(),
                     user.getCreated(),
                     user.getRole(),
-                    Collections.emptyList());
+                    Collections.emptyList(),
+                    user.getUserImages());
 
             payLoads.add(newPayload);
         }
@@ -154,6 +160,8 @@ public class UserPayload extends UserPayloadParent {
                 "\"businessesAdministered\":[null]," +
                 "\"dateOfBirth\":\"" + dateOfBirth + "\"," +
                 "\"phoneNumber\":\"" + phoneNumber + "\"," +
-                "\"homeAddress\":" + homeAddress + "}";
+                "\"homeAddress\":" + homeAddress + "," +
+                "\"images\":" + super.getImages() +
+                "}";
     }
 }

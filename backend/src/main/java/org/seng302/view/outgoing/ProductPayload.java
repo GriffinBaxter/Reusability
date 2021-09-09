@@ -112,8 +112,8 @@ public class ProductPayload {
                 "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
                 "\"created\":\"" + created + "\"," +
                 "\"images\":" + images + "," +
-                "\"business\":" + business +
-                ",\"barcode\":\"" + barcode + "\"}";
+                "\"business\":" + business + "," +
+                "\"barcode\":\"" + barcode + "\"}";
     }
 
 }

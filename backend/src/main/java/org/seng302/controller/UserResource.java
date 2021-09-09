@@ -297,7 +297,8 @@ public class UserResource {
                     selectUser.getHomeAddress().toAddressPayload(),
                     selectUser.getCreated(),
                     role,
-                    administrators
+                    administrators,
+                    selectUser.getUserImages()
             );
         } else {
             // Otherwise, return a UserPayloadSecure without the phone number, date of birth and a secure address with only the city, region, and country.
@@ -311,8 +312,9 @@ public class UserResource {
                     selectUser.getEmail(),
                     selectUser.getHomeAddress().toAddressPayloadSecure(),
                     selectUser.getCreated(),
-                    role,
-                    administrators
+                    null,
+                    administrators,
+                    selectUser.getUserImages()
             );
         }
 
