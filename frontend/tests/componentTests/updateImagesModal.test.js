@@ -176,7 +176,7 @@ describe("Testing the set primary image, delete and upload image functionality",
 
         Api.uploadImage.mockImplementation(() => Promise.reject(data));
 
-        await wrapper.vm.getImage();
+        await wrapper.vm.uploadImage();
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.formErrorModalMessage).toBe(
@@ -184,4 +184,49 @@ describe("Testing the set primary image, delete and upload image functionality",
         );
 
     })
+})
+
+describe("Testing getQueryForParams() function", () => {
+
+    test('Testing when location is User, query will use id as a userId and image type is USER_IMAGE',
+        async () => {
+
+        const wrapper = await factory();
+        await wrapper.setProps({location : "User", id: 1});
+
+        let query = await wrapper.vm.getQueryForParams();
+        expect(query).toEqual("?uncheckedImageType=USER_IMAGE&userId=1")
+    })
+
+    test('Testing when location is Business, query will use id as a businessId and image type is BUSINESS_IMAGE',
+        async () => {
+
+        const wrapper = await factory();
+        await wrapper.setProps({location : "Business", id: 1});
+
+        let query = await wrapper.vm.getQueryForParams();
+        expect(query).toEqual("?uncheckedImageType=BUSINESS_IMAGE&businessId=1")
+    })
+
+    test('Testing when location is Product, query will use id as a businessId and image type is PRODUCT_IMAGE',
+        async () => {
+
+            const wrapper = await factory();
+            await wrapper.setProps({location : "Product", id: 1});
+
+            let query = await wrapper.vm.getQueryForParams();
+            expect(query).toEqual("?uncheckedImageType=PRODUCT_IMAGE&businessId=1&productId=VEGE")
+        })
+
+    test('Testing when location is not one of "Product", "Business", "User", query will return "" and a error will be print in console',
+        async () => {
+
+            const wrapper = await factory();
+            await wrapper.setProps({location : "", id: 1});
+            const consoleSpy = jest.spyOn(console, 'log');
+
+            let query = await wrapper.vm.getQueryForParams();
+            expect(query).toEqual("");
+            expect(consoleSpy).toHaveBeenCalledWith('Location error!');
+     })
 })
