@@ -73,6 +73,9 @@ public class BusinessResource {
 
     private static final Logger logger = LogManager.getLogger(BusinessResource.class.getName());
 
+    private static final String FORBIDDEN_MODIFY_ERROR_MESAGE = "Forbidden: Returned when a user tries to " +
+            "update the business info for a business they do not administer AND the user is not a global application admin";
+
     public BusinessResource(
             BusinessRepository businessRepository, UserRepository userRepository, AddressRepository addressRepository
     ) {
@@ -527,8 +530,7 @@ public class BusinessResource {
                     "lacked permissions.", user.getId(), id);
 
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
-                    "update the business info for a business they do not administer AND the user is not a global application admin");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESAGE);
         }
 
         // Verify payload content is still valid to the requirements of a business. fail --> 400 BAD REQUEST
@@ -556,7 +558,7 @@ public class BusinessResource {
         if (businessType == null) {
             String errorMessage = String.format("User (id: %d) attempted to update business type for business (id: %d). But the type was invalid.", user.getId(), business.getId());
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Business type is required.");
         }
         String debugMessage = String.format("User (id: %d) updated business type for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getBusinessType().toString(), businessType);
         logger.debug(debugMessage);
@@ -576,8 +578,7 @@ public class BusinessResource {
             String errorMessage = String.format("User (id: %d) attempted to modify a business (id: %d)." +
                     " But did not provide a new address.", user.getId(), business.getId());
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data " +
-                    "supplied by the user, appropriate error message(s) should be shown to user");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address is required for modifying the business.");
         }
         Address newAddress = null;
         Optional<Address> existingAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(addressJSON.getStreetNumber(),
@@ -592,7 +593,7 @@ public class BusinessResource {
             } catch (IllegalAddressArgumentException err) {
                 String errorMessage = String.format("User (id: %d) attempted to update address for business (id: %d). But the address was invalid", user.getId(), business.getId());
                 logger.error(errorMessage);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
             }
         } else {
             newAddress = existingAddress.get();
@@ -611,15 +612,17 @@ public class BusinessResource {
      */
     private void updateBusinessDescription(Business business, User user, String description) {
         if (description != null) {
-            if (!business.isValidDescription(description)) {
+            try {
+                String debugMessage = String.format("User (id: %d) updated description for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getDescription(), description);
+                logger.debug(debugMessage);
+                business.setDescription(description);
+            } catch (IllegalBusinessArgumentException err) {
                 String errorMessage = String.format("User (id: %d) attempted to update description for business (id: %d). But the description was invalid", user.getId(), business.getId());
                 logger.error(errorMessage);
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
             }
 
-            String debugMessage = String.format("User (id: %d) updated description for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getDescription(), description);
-            logger.debug(debugMessage);
-            business.setDescription(description);
+
         }
     }
 
@@ -635,12 +638,7 @@ public class BusinessResource {
         try {
             // Check that it is present
             if (payload.getName() == null) {
-                throw new IllegalBusinessArgumentException("Cannot be null");
-            }
-
-            // Check that it is valid
-            if (!business.isValidName(payload.getName())) {
-                throw new IllegalBusinessArgumentException("invalid name provided.");
+                throw new IllegalBusinessArgumentException("Business name is required.");
             }
 
             // Perform the modification
@@ -683,8 +681,7 @@ public class BusinessResource {
                         String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
                                 "But lacked permissions.", user.getId(), business.getId());
                         logger.error(errorMessage);
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
-                                "update the business info for a business they do not administer AND the user is not a global application admin");
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESAGE);
                     }
 
                     // If the new primary admin is not part of the business then add him in.
@@ -703,8 +700,7 @@ public class BusinessResource {
                 String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
                         "But lacked permissions.", user.getId(), business.getId());
                 logger.error(errorMessage);
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
-                        "update the business info for a business they do not administer AND the user is not a global application admin");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESAGE);
             }
         }
         return business;
