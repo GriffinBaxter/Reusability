@@ -10,7 +10,7 @@
                            :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
           </div>
         </div>
-        <div v-else style="overflow: auto">
+        <div class="overflow-auto" v-else>
           <MessageConversation id="message-conversation" ref="msgConversation" v-bind:messages="messages"/>
         </div>
       </div>

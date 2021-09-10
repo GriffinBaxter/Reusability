@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-for="message in messages" v-bind:key="message.index" class="col" style="max-width: 270px">
-      <div v-if="userId === message.senderId" class="row m-1 rounded-2 w-75 float-end" style="background-color: lightgrey; word-wrap: break-word">
-        <p class="p-1 m-0" style="text-align: end"> {{ message.content }} </p>
+    <div v-for="message in messages" v-bind:key="message.index" class="col messages">
+      <div v-if="userId === message.senderId" class="row m-1 rounded-2 w-75 float-end sentMessage">
+        <p class="p-1 m-0"> {{ message.content }} </p>
       </div>
 
-      <div v-else class="row m-1 rounded-2 w-75" style="background-color: lightblue; word-wrap: break-word">
+      <div v-else class="row m-1 rounded-2 w-75 receivedMessage">
         <p class="p-1 m-0"> {{ message.content }} </p>
       </div>
     </div>
@@ -35,5 +35,22 @@ export default {
 </script>
 
 <style scoped>
+
+.messages {
+  max-width: 270px;
+}
+
+.receivedMessage {
+  background-color: lightblue;
+}
+
+.sentMessage {
+  background-color: lightgrey;
+  text-align: end;
+}
+
+.receivedMessage, .sentMessage {
+  word-wrap: break-word;
+}
 
 </style>

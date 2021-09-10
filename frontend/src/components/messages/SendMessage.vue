@@ -1,5 +1,5 @@
 <template>
-  <form class="input-group m-1 py-1" style="bottom:0;max-width: 270px">
+  <form class="input-group m-1 py-1 sendMessage">
     <input type="text" class="form-control" placeholder="Enter message here" v-model="messageInput">
     <button type="submit" class="input-group-text" @click="sendMessage">Send</button>
   </form>
@@ -33,4 +33,8 @@ export default {
 
 <style scoped>
 
+.sendMessage {
+  bottom: 0;
+  max-width: 270px;
+}
 </style>
