@@ -17,7 +17,7 @@
       <div class="col p-0">
         <div class="row">
           <div class="card-body" id="price-div">
-            <h3>{{ '$' + price }}</h3>
+            <h4><strong>{{ (currencySymbol === null || currencySymbol === "") ? "$" : currencySymbol }}{{ price }} {{ currencyCode }}</strong></h4>
           </div>
         </div>
         <div class="row">
@@ -102,6 +102,16 @@ export default {
       default: 0,
       required: true
     },
+    currencySymbol: {
+      type: String,
+      default: "$",
+      required: false
+    },
+    currencyCode: {
+      type: String,
+      default: "",
+      required: false
+    },
     actingBusinessId: {
       type: String,
       default: null
@@ -172,6 +182,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.currencySymbol)
     const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
     this.tooltipList = popoverTriggerList.map(function (popoverTriggerElement) {
       return new Popover(popoverTriggerElement, {sanitize: false, html: true});

@@ -26,6 +26,8 @@
               v-bind:price="listing.price"
               v-bind:quantity="listing.quantity"
               v-bind:total-bookmarks="listing.totalBookmarks"
+              v-bind:currency-symbol="listing.inventoryItem.product.business.currencySymbol"
+              v-bind:currency-code="listing.inventoryItem.product.business.currencyCode"
               v-bind:actingBusinessId="actingBusinessId"/>
         </div>
       </div>
