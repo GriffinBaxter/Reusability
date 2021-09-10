@@ -69,7 +69,6 @@ public class BusinessResource {
     private AddressRepository addressRepository;
 
     private Address address;
-    private List<Business> businesses;
 
     private static final Logger logger = LogManager.getLogger(BusinessResource.class.getName());
 
@@ -95,6 +94,7 @@ public class BusinessResource {
                                                             @RequestBody BusinessRegistrationPayload businessRegistrationPayload) {
         //access token invalid
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        List<Business> businesses;
 
         String name = businessRegistrationPayload.getName();
         String description = businessRegistrationPayload.getDescription();

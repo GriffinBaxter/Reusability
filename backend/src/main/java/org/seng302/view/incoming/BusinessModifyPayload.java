@@ -69,14 +69,19 @@ public class BusinessModifyPayload {
             string = string.toUpperCase();
         }
 
-        if (string.equals("ACCOMMODATION AND FOOD SERVICES")){
-            translatedType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
-        } else if (string.equals("RETAIL TRADE")){
-            translatedType = BusinessType.RETAIL_TRADE;
-        } else if (string.equals("CHARITABLE ORGANISATION")){
-            translatedType = BusinessType.CHARITABLE_ORGANISATION;
-        } else if (string.equals("NON PROFIT ORGANISATION")){
-            translatedType = BusinessType.NON_PROFIT_ORGANISATION;
+        switch (string) {
+            case "ACCOMMODATION AND FOOD SERVICES":
+                translatedType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
+                break;
+            case "RETAIL TRADE":
+                translatedType = BusinessType.RETAIL_TRADE;
+                break;
+            case "CHARITABLE ORGANISATION":
+                translatedType = BusinessType.CHARITABLE_ORGANISATION;
+                break;
+            case "NON PROFIT ORGANISATION":
+                translatedType = BusinessType.NON_PROFIT_ORGANISATION;
+                break;
         }
         return translatedType;
     }
