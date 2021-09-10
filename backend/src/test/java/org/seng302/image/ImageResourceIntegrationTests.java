@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.seng302.Main;
 import org.seng302.controller.ImageResource;
 import org.seng302.model.*;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -100,9 +102,13 @@ class ImageResourceIntegrationTests {
 
     private MockMultipartFile otherFile;
 
+    private UserImage primaryUserImage;
+
+    private UserImage newUserImage;
+
     private ProductImage primaryProductImage;
 
-    private UserImage primaryUserImage;
+    private ProductImage newProductImage;
 
     private Integer userId;
 
@@ -116,7 +122,7 @@ class ImageResourceIntegrationTests {
 
 
     @BeforeEach
-    public void setup() throws Exception{
+    public void setup() throws Exception {
         Address address = new Address(
                 "3/24",
                 "Ilam Road",
@@ -232,8 +238,14 @@ class ImageResourceIntegrationTests {
         productId = product.getProductId();
         businessId = business.getId();
 
-        primaryProductImage = new ProductImage(1, productId, businessId, "storage/test", "test/test", true);
-        primaryUserImage = new UserImage(1, userId, "storage/test", "test/test", true);
+        primaryUserImage = new UserImage(1, userId, "storage/test",
+                "test/test", true);
+        newUserImage = new UserImage(2, userId, "storage/test2",
+                "test/test2", false);
+        primaryProductImage = new ProductImage(1, productId, businessId, "storage/test",
+                "test/test", true);
+        newProductImage = new ProductImage(2, productId, businessId, "storage/test2",
+                "test2/test2", false);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly());
 
         this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository,
@@ -245,10 +257,11 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a user
      * that does not have already any other primary images.
+     *
      * @throws Exception
      */
     @Test
-    void testingFileCreationWithValidDataNoPrimaryImagesForUserImage() throws Exception{
+    void testingFileCreationWithValidDataNoPrimaryImagesForUserImage() throws Exception {
 
         // Given
         userId = user.getId();
@@ -268,7 +281,7 @@ class ImageResourceIntegrationTests {
         when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
         when(userImageRepository.saveAndFlush(any(UserImage.class))).thenReturn(primaryUserImage);
         response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(user.getId())))
                 .andReturn().getResponse();
 
@@ -280,10 +293,11 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a products
      * that does not have already any other primary images.
+     *
      * @throws Exception
      */
     @Test
-    void testingFileCreationWithValidDataNoPrimaryImagesForProductImage() throws Exception{
+    void testingFileCreationWithValidDataNoPrimaryImagesForProductImage() throws Exception {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
@@ -305,7 +319,7 @@ class ImageResourceIntegrationTests {
                 .thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
                 .andReturn().getResponse();
@@ -318,10 +332,11 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a user
      * that has already a primary image.
+     *
      * @throws Exception
      */
     @Test
-    void testingFileCreationWithValidDataWithPrimaryImagesForUserImage() throws Exception{
+    void testingFileCreationWithValidDataWithPrimaryImagesForUserImage() throws Exception {
 
         // Given
         userId = user.getId();
@@ -342,7 +357,7 @@ class ImageResourceIntegrationTests {
         when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
         when(userImageRepository.saveAndFlush(any(UserImage.class))).thenReturn(primaryUserImage);
         response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(user.getId())))
                 .andReturn().getResponse();
 
@@ -354,10 +369,11 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a products
      * that has already a primary image.
+     *
      * @throws Exception
      */
     @Test
-    void testingFileCreationWithValidDataWithPrimaryImagesForProductImage() throws Exception{
+    void testingFileCreationWithValidDataWithPrimaryImagesForProductImage() throws Exception {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
@@ -379,7 +395,7 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
                 .andReturn().getResponse();
@@ -391,6 +407,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that we get a BAD_REQUEST https status when we do not include the 'images' file.
+     *
      * @throws Exception
      */
     @Test
@@ -403,7 +420,7 @@ class ImageResourceIntegrationTests {
 
         // When
         response = mvc.perform(multipart("/images").cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
@@ -414,6 +431,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that we get a BAD_REQUEST https status when we do not include the 'images' file.
+     *
      * @throws Exception
      */
     @Test
@@ -427,7 +445,7 @@ class ImageResourceIntegrationTests {
 
         // When
         response = mvc.perform(multipart("/images").cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -440,10 +458,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Test that the user must provide a cookie.
+     *
      * @throws Exception
      */
     @Test
-    void TestingUserHasToHaveCookie() throws Exception{
+    void TestingUserHasToHaveCookie() throws Exception {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
@@ -452,7 +471,7 @@ class ImageResourceIntegrationTests {
 
         // When
         response = mvc.perform(multipart("/images").file(jpegImage)
-                        .param("unCheckImageType", "PRODUCT_IMAGE"))
+                        .param("uncheckedImageType", "PRODUCT_IMAGE"))
                 .andReturn().getResponse();
 
         // Then
@@ -475,7 +494,7 @@ class ImageResourceIntegrationTests {
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.empty());
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE"))
+                        .param("uncheckedImageType", "PRODUCT_IMAGE"))
                 .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
@@ -484,6 +503,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that the user must provide a valid image type in the parameters when they upload any image.
+     *
      * @throws Exception
      */
     @Test
@@ -499,7 +519,7 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", ""))
+                        .param("uncheckedImageType", ""))
                 .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -509,6 +529,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that the user must provide a valid user id in the parameters when they upload user image.
+     *
      * @throws Exception
      */
     @Test
@@ -524,7 +545,7 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE"))
+                        .param("uncheckedImageType", "USER_IMAGE"))
                 .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
@@ -532,6 +553,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that the user must provide a valid business id in the parameters when they upload product image.
+     *
      * @throws Exception
      */
     @Test
@@ -547,7 +569,7 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("productId", productId))
                 .andReturn().getResponse();
         // Then
@@ -557,6 +579,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that the user must provide a valid product id in the parameters when they upload product image.
+     *
      * @throws Exception
      */
     @Test
@@ -573,7 +596,7 @@ class ImageResourceIntegrationTests {
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.empty());
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
 
@@ -583,10 +606,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user needs to have GAA role to be able to upload an image for another user.
+     *
      * @throws Exception
      */
     @Test
-    void testingUserNeedsToBeGaaForAnotherUser() throws Exception{
+    void testingUserNeedsToBeGaaForAnotherUser() throws Exception {
         // Given
         userId = user.getId();
 
@@ -606,7 +630,7 @@ class ImageResourceIntegrationTests {
         when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
         when(userImageRepository.saveAndFlush(any(UserImage.class))).thenReturn(primaryUserImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
@@ -617,10 +641,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user needs to have GAA role to be able to upload an image for a product they are not on the administrator list of.
+     *
      * @throws Exception
      */
     @Test
-    void testingUserNeedsToBeGaaForBusinessThatTheyAreNotAdminOf() throws Exception{
+    void testingUserNeedsToBeGaaForBusinessThatTheyAreNotAdminOf() throws Exception {
         // Given
         businessId = anotherBusiness.getId();
         productId = product.getProductId();
@@ -642,7 +667,7 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -656,10 +681,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user needs to have DGAA role to be able to upload an image for another user.
+     *
      * @throws Exception
      */
     @Test
-    void testingUserNeedsToBeDgaaForAnotherUser() throws Exception{
+    void testingUserNeedsToBeDgaaForAnotherUser() throws Exception {
         // Given
         userId = user.getId();
 
@@ -679,7 +705,7 @@ class ImageResourceIntegrationTests {
         when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
         when(userImageRepository.saveAndFlush(any(UserImage.class))).thenReturn(primaryUserImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
@@ -690,10 +716,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user can upload an image for his self.
+     *
      * @throws Exception
      */
     @Test
-    void testingUserCanUploadImageForHisSelf() throws Exception{
+    void testingUserCanUploadImageForHisSelf() throws Exception {
         // Given
         userId = user.getId();
 
@@ -713,7 +740,7 @@ class ImageResourceIntegrationTests {
         when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
         when(userImageRepository.saveAndFlush(any(UserImage.class))).thenReturn(primaryUserImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
@@ -724,10 +751,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user can not upload an image for other users.
+     *
      * @throws Exception
      */
     @Test
-    void testingUserCanNotUploadImageForOtherUsers() throws Exception{
+    void testingUserCanNotUploadImageForOtherUsers() throws Exception {
         // Given
         userId = user.getId();
 
@@ -747,7 +775,7 @@ class ImageResourceIntegrationTests {
         when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
         when(userImageRepository.saveAndFlush(any(UserImage.class))).thenReturn(primaryUserImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "USER_IMAGE")
+                        .param("uncheckedImageType", "USER_IMAGE")
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
@@ -758,10 +786,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user needs to have DGAA role to be able to upload an image for a product they are not on the administrator list of.
+     *
      * @throws Exception
      */
     @Test
-    void testingUserNeedsToBeDgaaForBusinessThatTheyAreNotAdminOf() throws Exception{
+    void testingUserNeedsToBeDgaaForBusinessThatTheyAreNotAdminOf() throws Exception {
         // Given
         businessId = anotherBusiness.getId();
         productId = product.getProductId();
@@ -783,9 +812,9 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                .param("unCheckImageType", "PRODUCT_IMAGE")
-                .param("businessId", String.valueOf(businessId))
-                .param("productId", productId))
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
                 .andReturn().getResponse();
 
         // Then
@@ -795,10 +824,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user of role USER can upload images if they are an admin of the business.
+     *
      * @throws Exception
      */
     @Test
-    void testingThatUserMustBeAdminOfBusinessToUploadImages() throws Exception{
+    void testingThatUserMustBeAdminOfBusinessToUploadImages() throws Exception {
         // Given
         businessId = anotherBusiness.getId();
         productId = product.getProductId();
@@ -820,7 +850,7 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -833,10 +863,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user of role USER cannot upload images if they are not an admin of the business.
+     *
      * @throws Exception
      */
     @Test
-    void testingThatUserThatIsNotAnAdminOfBusinessCannotUploadImages() throws Exception{
+    void testingThatUserThatIsNotAnAdminOfBusinessCannotUploadImages() throws Exception {
         // Given
         businessId = anotherBusiness.getId();
         productId = product.getProductId();
@@ -855,7 +886,7 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
                 .andReturn().getResponse();
@@ -866,6 +897,7 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that a user cannot upload a file that is not of type .gif, .gif, .jpg or .jpeg.
+     *
      * @throws Exception
      */
     @Test
@@ -882,7 +914,7 @@ class ImageResourceIntegrationTests {
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
         response = mvc.perform(multipart("/images").file(otherFile).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -897,10 +929,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that .gif is a valid file format to be uploaded.
+     *
      * @throws Exception
      */
     @Test
-    void testingThatGifIsAnAcceptableFormat() throws Exception{
+    void testingThatGifIsAnAcceptableFormat() throws Exception {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
@@ -921,7 +954,7 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(gifImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -935,10 +968,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that .png is a valid file format to be uploaded.
+     *
      * @throws Exception
      */
     @Test
-    void testingThatPngIsAnAcceptableFormat() throws Exception{
+    void testingThatPngIsAnAcceptableFormat() throws Exception {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
@@ -959,7 +993,7 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(pngImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -973,10 +1007,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that .gif is a valid file format to be uploaded.
+     *
      * @throws Exception
      */
     @Test
-    void testingThatJpegIsAnAcceptableFormat() throws Exception{
+    void testingThatJpegIsAnAcceptableFormat() throws Exception {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
@@ -997,7 +1032,7 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -1011,10 +1046,11 @@ class ImageResourceIntegrationTests {
 
     /**
      * Testing that .gif is a valid file format to be uploaded.
+     *
      * @throws Exception
      */
     @Test
-    void testingThatJpgIsAnAcceptableFormat() throws Exception{
+    void testingThatJpgIsAnAcceptableFormat() throws Exception {
         // Given
         businessId = business.getId();
         productId = product.getProductId();
@@ -1035,7 +1071,7 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
         response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
-                        .param("unCheckImageType", "PRODUCT_IMAGE")
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("userId", "")
                         .param("businessId", String.valueOf(businessId))
                         .param("productId", productId))
@@ -1045,7 +1081,6 @@ class ImageResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
     }
-
 
 
     //------------------------------------ Product Image Deletion Endpoint Tests ---------------------------------------
@@ -1224,9 +1259,213 @@ class ImageResourceIntegrationTests {
     //--------------------------- Product Image Changing Primary Image Endpoint Tests ----------------------------------
 
     /**
-     * Tests that an OK status is received when making an image the primary image of an existing business with an existing product at
-     * the file path product-images -> IMAGE_UUID and that the image no longer exists at the file path
-     * location.
+     * Tests that an UNAUTHORIZED status is received when user try to change primary image before login.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatUserCanNotMakeAnyImageBePrimaryBeforeLogin () throws Exception {
+
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+        sessionToken = user.getSessionUUID();
+        assertThat(primaryProductImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        List<ProductImage> productImages = List.of(primaryProductImage);
+        when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true))
+                .thenReturn(productImages);
+        when(productImageRepository.findById(newProductImage.getId()))
+                .thenReturn(Optional.of(newProductImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId()))
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an OK status is received when user try change primary image for his self.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatUserCanChangePrimaryImageForHisSelf() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.of(newUserImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newUserImage.getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that an OK status is received when GAA try change primary image for a user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatGAACanChangePrimaryImageForAUser() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.of(newUserImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newUserImage.getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that an OK status is received when DGAA try change primary image for a user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatDGAACanChangePrimaryImageForAUser() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.of(newUserImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newUserImage.getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that an FORBIDDEN status is received when user try change primary image for another user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatUserCanNotChangePrimaryImageForAnotherUser() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.of(newUserImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("User does not have permission to update this image.");
+    }
+
+    /**
+     * Tests that an NOT_ACCEPTABLE status is received when user try change primary image for a not exist image.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void testingThatUserCanNotChangePrimaryImageForANotExistImage() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryUserImage.getIsPrimary()).isTrue();
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true))
+                .thenReturn(userImages);
+        when(userImageRepository.findById(newUserImage.getId()))
+                .thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId))
+                        .param("businessId", "")
+                        .param("productId",""))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Given user image does not exist.");
+    }
+
+    /**
+     * Tests that an OK status is received when making an image the primary image of an existing business with an
+     * existing product at the file path product-images -> IMAGE_UUID and that the image no longer exists at the file
+     * path location.
      *
      * @throws Exception Exception error
      */
@@ -1238,16 +1477,23 @@ class ImageResourceIntegrationTests {
         productId = product.getProductId();
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryProductImage.getIsPrimary()).isTrue();
 
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
         List<ProductImage> productImages = List.of(primaryProductImage);
-        ProductImage newProductImage = new ProductImage(2, productId, businessId, "storage/test2", "test2/test2", false);
-        when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
-        when(productImageRepository.findProductImageByIdAndBusinessIdAndProductId(primaryProductImage.getId(), businessId, productId)).thenReturn(Optional.of(newProductImage));
-        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
+        when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true))
+                .thenReturn(productImages);
+        when(productImageRepository.findById(newProductImage.getId()))
+                .thenReturn(Optional.of(newProductImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1256,9 +1502,9 @@ class ImageResourceIntegrationTests {
     }
 
     /**
-     * Tests that a FORBIDDEN status is received when making an image the primary image of an existing business with an existing product
-     * at the file path product-images -> IMAGE_UUID but the user does not have administration rights i.e.
-     * not administrator of business.
+     * Tests that a FORBIDDEN status is received when making an image the primary image of an existing business with an
+     * existing product at the file path product-images -> IMAGE_UUID but the user does not have administration rights
+     * i.e. not administrator of business.
      *
      * @throws Exception Exception error
      */
@@ -1274,16 +1520,19 @@ class ImageResourceIntegrationTests {
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
-        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
-
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-
     }
 
     /**
-     * Tests that a NOT_ACCEPTABLE status is received when  making an image the primary image of an existing business with an existing
-     * product but the image id does not exist
+     * Tests that a NOT_ACCEPTABLE status is received when making an image the primary image of an existing business
+     * with an existing product but the image id does not exist
      *
      * @throws Exception Exception error
      */
@@ -1305,16 +1554,21 @@ class ImageResourceIntegrationTests {
         List<ProductImage> productImages = List.of(primaryProductImage);
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.findProductImageByIdAndBusinessIdAndProductId(primaryProductImage.getId(), businessId, productId)).thenReturn(Optional.empty());
-        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, productId, primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-
+        assertThat(response.getErrorMessage()).isEqualTo("Given product image does not exist.");
     }
 
     /**
-     * Tests that a NOT_ACCEPTABLE status is received when  making an image the primary image of an existing business with a non-existing
-     * product.
+     * Tests that a NOT_ACCEPTABLE status is received when making an image the primary image of an existing business
+     * with a non-existing product.
      *
      * @throws Exception Exception error
      */
@@ -1331,14 +1585,19 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.empty());
-        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", businessId, "A9000", primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
-
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Given Product does not exist in current business.");
     }
 
     /**
-     * Tests that a NOT_ACCEPTABLE status is received when  making an image the primary image of an non-existing business.
+     * Tests that a NOT_ACCEPTABLE status is received when making an image the primary image of a non-existing business.
      *
      * @throws Exception Exception error
      */
@@ -1354,10 +1613,15 @@ class ImageResourceIntegrationTests {
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
-        response = mvc.perform(put(String.format("/businesses/%d/products/%s/images/%d/makeprimary", 8000, "A9000", primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
-
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Given business does not exist.");
     }
 
 }

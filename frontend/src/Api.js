@@ -56,6 +56,13 @@ export default {
         withCredentials: true
     }),
 
+    // Sends a put request to the backend with an userID and a edit user object to update user
+    editUser: (id, user) => instance.put(`/users/${id}/profile`, {
+        ...user.data
+    }, {
+        withCredentials: true
+    }),
+
     // Sends a post request to the backend with the user's login details
     signIn: (email, password) => instance.post('login', {email, password}, {
         withCredentials: true
@@ -290,7 +297,7 @@ export default {
 
     // Uploads an image to a given product
     uploadProductImage: (unCheckImageType, userId, businessId, productId, image) => {
-        return instance.post(`/images?unCheckImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
+        return instance.post(`/images?uncheckedImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
             image, {
             withCredentials: true,
             headers: {

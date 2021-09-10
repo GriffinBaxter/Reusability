@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9a98b9ad-aa16-45f2-b9cd-2b83545e7798",
+		"_postman_id": "84af5533-14f0-4b21-b14e-671329d575d4",
 		"name": "images",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -9,7 +9,647 @@
 			"name": "create-image",
 			"item": [
 				{
-					"name": "create-image-invalid-business-id",
+					"name": "user-image",
+					"item": [
+						{
+							"name": "create-image-invalid-user-id",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-no-image",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/form-data",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "anythingElse",
+											"value": "asd",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-txt",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-jpg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-gif",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-gif.gif"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-png",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-jpeg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpeg.jpeg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "product-image",
+					"item": [
+						{
+							"name": "create-product-image-invalid-business-id",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-invalid-product-id",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-no-image",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/form-data",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "anythingElse",
+											"value": "asd",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-txt",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-jpg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-gif",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-gif.gif"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-png",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-jpeg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpeg.jpeg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create-user-image-invalid-unchecked-image-type",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -20,266 +660,25 @@
 									"key": "images",
 									"contentType": "multipart/form-data",
 									"type": "file",
-									"src": "/C:/Users/Dan Ronen/Desktop/smoothie.txt"
+									"src": "postman-product-test-images/test-txt.txt"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://localhost:9499/businesses/3/products/ARNOTTS-CSNAP/images",
+							"raw": "http://localhost:9499/images?uncheckedImageType=OTHERS",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "9499",
 							"path": [
-								"businesses",
-								"3",
-								"products",
-								"ARNOTTS-CSNAP",
 								"images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-image-invalid-product-id",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
+							],
+							"query": [
 								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Users/Dan Ronen/Desktop/smoothie.txt"
+									"key": "uncheckedImageType",
+									"value": "OTHERS"
 								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/3/products/ASDASDKASKDLJASJLDAS/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"3",
-								"products",
-								"ASDASDKASKDLJASJLDAS",
-								"images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-image-no-image",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "multipart/form-data",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "anythingElse",
-									"value": "asd",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/3/products/ARNOTTS-CSNAP/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"3",
-								"products",
-								"ARNOTTS-CSNAP",
-								"images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-image-txt",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Users/Dan Ronen/Desktop/smoothie.txt"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/34565/products/ARNOTTS-CSNAP/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"34565",
-								"products",
-								"ARNOTTS-CSNAP",
-								"images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-image-jpg",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Dan/Desktop Data/Images/queens_town.jpg"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/3/products/ARNOTTS-CSNAP/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"3",
-								"products",
-								"ARNOTTS-CSNAP",
-								"images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-image-gif",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Users/Dan Ronen/Desktop/test-gif.gif"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/3/products/ARNOTTS-CSNAP/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"3",
-								"products",
-								"ARNOTTS-CSNAP",
-								"images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-image-png",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Dan/Desktop Data/Images/Icons/23931.png"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/3/products/ARNOTTS-CSNAP/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"3",
-								"products",
-								"ARNOTTS-CSNAP",
-								"images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-image-jpeg",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Users/Dan Ronen/Desktop/download.jpeg"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/3/products/ARNOTTS-CSNAP/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"3",
-								"products",
-								"ARNOTTS-CSNAP",
-								"images"
 							]
 						}
 					},
@@ -426,168 +825,438 @@
 			"name": "make-primary",
 			"item": [
 				{
-					"name": "make-image-id-2-primary",
+					"name": "user-image",
+					"item": [
+						{
+							"name": "create-primary-user-image-png",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-non-primary-user-image-jpg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-image-id-2-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-image-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/100/makePrimary?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"100",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-user-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=USER_IMAGE&userId=100",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "product-image",
+					"item": [
+						{
+							"name": "create-primary-product-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-non-primary-product-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-image-id-2-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-image-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/100/makePrimary?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"100",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-product-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=AA",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "AA"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-business-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=PRODUCT_IMAGE&businessId=100&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "100"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "make-image-be-primary-with-invalid-uncheckedImageType",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:9499/businesses/4/products/WATT-420-BEANS1/images/2/makeprimary",
+							"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=OTHERS",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "9499",
 							"path": [
-								"businesses",
-								"4",
-								"products",
-								"WATT-420-BEANS1",
 								"images",
 								"2",
-								"makeprimary"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "make-invalid-image-id-primary",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:9499/businesses/4/products/WATT-420-BEANS1/images/800/makeprimary",
-							"protocol": "http",
-							"host": [
-								"localhost"
+								"makePrimary"
 							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"4",
-								"products",
-								"WATT-420-BEANS1",
-								"images",
-								"800",
-								"makeprimary"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "make-invalid-product-id-primary",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:9499/businesses/4/products/I-DONT-EXIST/images/800/makeprimary",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"4",
-								"products",
-								"I-DONT-EXIST",
-								"images",
-								"800",
-								"makeprimary"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "make-invalid-business-id-primary",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:9499/businesses/9999999/products/WATT-420-BEANS1/images/800/makeprimary",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"9999999",
-								"products",
-								"WATT-420-BEANS1",
-								"images",
-								"800",
-								"makeprimary"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-primary-image",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
+							"query": [
 								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Dan/Desktop Data/Images/Icons/twitter-logo.png"
+									"key": "uncheckedImageType",
+									"value": "OTHERS"
 								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/4/products/WATT-420-BEANS1/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"4",
-								"products",
-								"WATT-420-BEANS1",
-								"images"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-non-primary-image",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "images",
-									"contentType": "multipart/form-data",
-									"type": "file",
-									"src": "/C:/Dan/git_repositories/seng302_team400_project/team-400/api/postman-product-test-images/test-jpg.jpg"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:9499/businesses/4/products/WATT-420-BEANS1/images",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9499",
-							"path": [
-								"businesses",
-								"4",
-								"products",
-								"WATT-420-BEANS1",
-								"images"
 							]
 						}
 					},
@@ -800,7 +1469,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"primaryAdministratorId\": 21,\r\n  \"name\": \"Lumbridge General Store\",\r\n  \"description\": \"A one-stop shop for all your adventuring needs\",\r\n  \"address\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"businessType\": \"Accommodation and Food Services\"\r\n}"
+					"raw": "{\r\n  \"primaryAdministratorId\": 22,\r\n  \"name\": \"Lumbridge General Store\",\r\n  \"description\": \"A one-stop shop for all your adventuring needs\",\r\n  \"address\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"businessType\": \"Accommodation and Food Services\"\r\n}"
 				},
 				"url": {
 					"raw": "http://localhost:9499/businesses",
@@ -840,7 +1509,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id\": \"WATT-420-BEANS1\",\r\n  \"name\": \"Watties Baked Beans - 420g can\",\r\n  \"description\": \"Baked Beans as they should be.\",\r\n  \"manufacturer\": \"Some manufacturer\",\r\n  \"recommendedRetailPrice\": 2.2\r\n}"
+					"raw": "{\r\n  \"id\": \"WATT-420-BEANS1\",\r\n  \"name\": \"Watties Baked Beans - 420g can\",\r\n  \"description\": \"Baked Beans as they should be.\",\r\n  \"manufacturer\": \"Some manufacturer\",\r\n  \"recommendedRetailPrice\": 2.2,\r\n  \"barcode\": 9400547002634\r\n}"
 				},
 				"url": {
 					"raw": "http://localhost:9499/businesses/4/products",
