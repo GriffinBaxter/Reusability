@@ -574,7 +574,7 @@ export default {
 
       Api.editUser(id, new EditUser(userData)).then( (res) => {
         if (res.status === 200) {
-          this.$router.push({name: "Profile", params: {id}})
+          this.toProfile()
         }
       }).catch((error) => {
         if (error.response) {
@@ -1110,7 +1110,7 @@ export default {
      */
     setFields(res) {
       if (res.data.role === "DEFAULTGLOBALAPPLICATIONADMIN" && this.currentRole !== null) {
-        this.$router.push({name: "Profile", params: {id: this.$route.params.id}})
+        this.toProfile()
       } else {
         if (res.data.bio !== null) {
           this.bio = res.data.bio
@@ -1163,8 +1163,9 @@ export default {
       if (currentID !== id) {
         await this.retrieveUser(currentID, false);
         if (this.currentRole === null || this.currentRole === "USER") {
-          await this.$router.push({name: "Profile", params: {id}})
+          this.toProfile()
         }
+
       }
     }
   },
