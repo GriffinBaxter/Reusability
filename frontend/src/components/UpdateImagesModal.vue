@@ -205,7 +205,7 @@ export default {
      * Sets the selected image to the primary image.
      */
     setPrimarySelectedImage() {
-      if (this.location === "Product") {
+      if (this.location === "PRODUCT_IMAGE") {
         Api.setPrimaryImage(this.businessId, this.currentData.data.id, this.selectedImage).then(
             response => {
               if (response.status === 200) {
@@ -242,19 +242,25 @@ export default {
       let image = new FormData();
       image.append("images", file)
 
-      if (this.location === "Product") {
-        Api.uploadProductImage("PRODUCT_IMAGE", "", this.$props.id, this.currentData.data.id, image)
-            .then(() => {
-              location.reload();
-            }).catch((error) => {
-          this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
-          console.log(error.message);
-        })
-      } else if (this.location === "Business") {
-        console.log("To be implemented")
-      } else if (this.location === "User") {
-        console.log("To be implemented")
+      let query;
+      switch (this.location) {
+        case "User":
+          query = "?uncheckedImageType=USER_IMAGE&userId=" + this.id;
+          break
+        case "Business":
+          query = "?uncheckedImageType=BUSINESS_IMAGE&businessId=" + this.id;
+          break
+        case "Product":
+          query = "?uncheckedImageType=PRODUCT_IMAGE&businessId=" + this.id + "&productId=" + this.currentData.data.id;
+          break
       }
+      Api.uploadImage(query, image)
+          .then(() => {
+            location.reload();
+          }).catch((error) => {
+        this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
+        console.log(error.message);
+      })
     },
 
     onUploadClick() {

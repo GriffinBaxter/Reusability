@@ -174,7 +174,7 @@ describe("Testing the set primary image, delete and upload image functionality",
             }
         }
 
-        Api.uploadProductImage.mockImplementation(() => Promise.reject(data));
+        Api.uploadImage.mockImplementation(() => Promise.reject(data));
 
         await wrapper.vm.getImage();
         await wrapper.vm.$nextTick();
