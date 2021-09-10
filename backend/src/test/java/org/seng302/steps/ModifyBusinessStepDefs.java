@@ -143,7 +143,7 @@ public class ModifyBusinessStepDefs {
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", business.getId())).cookie(cookie).content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+        response = mvc.perform(put(String.format("/businesses/%d", business.getId())).cookie(cookie).content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
     }
 
 
