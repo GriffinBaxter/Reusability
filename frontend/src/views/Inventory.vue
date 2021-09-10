@@ -12,27 +12,9 @@
     <div class="container p-4 mt-3" id="profileContainer">
       <div class="row">
 
-        <div class="col-xl-2 mb-2">
-          <div class="card text-center shadow-sm">
-            <div class="card-body">
-
-              <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_profile_image.jpg')"
-                   alt="Profile Image"/>
-
-              <!--business's name-->
-              <div class="mt-3">
-                <h5>{{ businessName }}</h5>
-                <div class="text-secondary">{{ businessDescription }}</div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
         <div class="col">
           <div class="card card-body">
-            <h1 style="text-align: center">Inventory</h1>
+            <h1 style="text-align: center">{{ businessName }}'s Inventory</h1>
 
             <hr/>
 
