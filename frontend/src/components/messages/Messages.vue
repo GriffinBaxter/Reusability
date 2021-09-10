@@ -1,22 +1,22 @@
 <template>
   <div id="component-wrapper" >
     <MessageTitle id="message-title" v-if="conversationIsOpen" v-bind:conversation-data="conversationData" />
+    <div class="error-message" v-if="errorMessage">
+      {{errorMessage}}
+    </div>
     <div id="messages-wrapper" >
       <LoadingDots v-if="isLoading" />
       <div id="content-wrapper" v-else>
         <div v-if="!conversationIsOpen">
           <div v-for="(conv) in conversations" :key="conv.id" @click="openConversation(conv)">
             <MessageOption v-on:deleteConversation="emitDeleteConversation" :id="`conversation-${conv.id}`" :userName="conv.userName" :image="conv.image"
-                           :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
+                           :new-message="conv.newMessage" :card-name="conv.cardName" :conversation-id="conv.id"></MessageOption>
           </div>
         </div>
         <div class="overflow-auto" v-else>
           <MessageConversation id="message-conversation" ref="msgConversation" v-bind:messages="messages"/>
         </div>
       </div>
-    </div>
-    <div class="error-message" v-if="errorMessage">
-      {{errorMessage}}
     </div>
     <SendMessage id="send-message" v-if="conversationIsOpen"/>
   </div>
@@ -69,7 +69,7 @@ export default {
         this.messages = res.data.reverse()
         this.conversationIsOpen = true;
       }).catch(() => {
-        this.errorMessage = "Something went wrong"
+        this.toastErrorMessage("Something went wrong")
       })
       this.isLoading = false
     },
@@ -83,7 +83,7 @@ export default {
         marketplaceCardId: this.conversationData.marketplaceCardId,
         content: messageInput
       }
-
+      console.log(this.conversationData.id, message)
       Api.sendReply(this.conversationData.id, message).then(() => {
         this.messages.push(message)
       }).catch((err) => {
@@ -91,12 +91,12 @@ export default {
           if (err.response.status === 401) {
             this.$router.push({name: "InvalidToken"})
           } else {
-            this.errorMessage = `${err.response.status} - ${err.response.message}`
+            this.toastErrorMessage(`${err.response.status} - ${err.response.message}`)
           }
         } else if (err.request) {
-          this.errorMessage = "Timeout"
+          this.toastErrorMessage("Timeout")
         } else {
-          this.errorMessage = "Something went wrong"
+          this.toastErrorMessage("Something went wrong")
         }
       })
     },
@@ -117,22 +117,26 @@ export default {
             this.conversations = res.data.map( (conversation) => {
               let userImage;
               let userName;
-              const currentId = Cookies.get("userID");
+              let userId;
               // comparison between a string and an int
-              if (conversation.instigatorId == currentId) {
+              if (conversation.instigatorId === this.currentId) {
                 userImage = conversation.receiverImage;
                 userName = conversation.receiverName;
+                userId = conversation.receiverId;
               } else {
                 userImage = conversation.instigatorImage;
                 userName = conversation.instigatorName;
+                userId = conversation.instigatorId;
               }
               return {
                 id: conversation.id,
                 image: userImage || DefaultImage,
                 userName: userName,
+                userId: userId,
                 cardName: conversation.marketplaceCardTitle,
                 creationTime: conversation.created,
-                newMessage: true
+                newMessage: true,
+                marketplaceCardId: conversation.marketplaceCardId
               };
             });
             if (this.conversations.length === 0) {
@@ -171,6 +175,7 @@ export default {
    * Before mounting retrieve a user's conversations.
    */
   beforeMount() {
+    this.currentId = parseInt(Cookies.get("userID"));
     this.retrieveConversations();
   }
 
@@ -230,9 +235,7 @@ export default {
   }
 
   .error-message {
-    position: absolute;
     z-index: 1000;
-    top: 0;
     text-align: center;
     width: 100%;
     height: 24px;
