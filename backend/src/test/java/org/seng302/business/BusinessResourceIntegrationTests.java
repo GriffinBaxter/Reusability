@@ -2397,7 +2397,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -2438,7 +2438,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId()))
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId()))
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
@@ -2480,7 +2480,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
@@ -2531,7 +2531,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", 12354665)).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", 12354665)).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
@@ -2582,7 +2582,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -2633,7 +2633,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -2675,7 +2675,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(dGAA));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -2727,7 +2727,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -2779,7 +2779,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -2831,7 +2831,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -2882,7 +2882,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -2924,7 +2924,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -2966,7 +2966,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(dGAA));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.of(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -3018,7 +3018,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -3068,7 +3068,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -3119,7 +3119,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -3159,7 +3159,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -3210,7 +3210,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -3260,7 +3260,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -3312,7 +3312,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -3351,7 +3351,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -3391,7 +3391,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -3442,7 +3442,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -3483,7 +3483,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
         when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
 
-        response = mvc.perform(put(String.format("/businesses/%d/profile", someBusiness.getId())).cookie(cookie)
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
                 .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
