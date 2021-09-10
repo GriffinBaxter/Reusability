@@ -205,7 +205,7 @@ export default {
      * Sets the selected image to the primary image.
      */
     setPrimarySelectedImage() {
-      if (this.location === "PRODUCT_IMAGE") {
+      if (this.location === "Product") {
         Api.setPrimaryImage(this.businessId, this.currentData.data.id, this.selectedImage).then(
             response => {
               if (response.status === 200) {

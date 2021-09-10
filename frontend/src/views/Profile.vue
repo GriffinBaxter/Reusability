@@ -545,7 +545,6 @@ export default {
        */
       //basic unpack
       this.userId = data.id;
-      console.log(this.userId)
       this.dateOfBirth = this.formatAge(data.dateOfBirth);
       this.phoneNumber = data.phoneNumber;
 
@@ -586,7 +585,6 @@ export default {
         this.images = data.images
       }
 
-      console.log(data)
       this.user = {
         data: {
           firstName: this.firstName,
