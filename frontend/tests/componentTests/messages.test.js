@@ -225,6 +225,18 @@ describe("Testing the Messages.vue component", () => {
         expect(wrapper.vm.$data.errorMessage).toStrictEqual("");
         expect(wrapper.find(".error-message").exists()).toBeFalsy();
     })
+
+    test("Testing the emitDeleteConversation method emits an event.", async () => {
+        const id = 1;
+        const userName = "Tom Edwards";
+        Cookies.get = jest.fn().mockImplementation(() => 8);
+        Api.getConversations.mockImplementation(() => Promise.resolve());
+        const wrapper = await factory();
+        wrapper.vm.emitDeleteConversation(id, userName);
+        expect(wrapper.emitted().emittedDeleteConversation).toBeTruthy();
+        expect(wrapper.emitted().emittedDeleteConversation[0]).toEqual([id, userName]);
+    })
+
 })
 
 describe("Testing MessageOption.vue", () => {
@@ -236,7 +248,8 @@ describe("Testing MessageOption.vue", () => {
                 userName: username,
                 image: ProfileImage,
                 newMessage: true,
-                cardName: cardName
+                cardName: cardName,
+                conversationId: 1
             }
         });
         await wrapper.vm.$nextTick();
