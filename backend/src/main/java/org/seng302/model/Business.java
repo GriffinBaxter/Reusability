@@ -108,7 +108,7 @@ public class Business {
         if (!isValidName(name)){
             throw new IllegalBusinessArgumentException("Invalid business name");
         }
-        if (!isValidDescription(description)){
+        if (isValidDescription(description)){
             throw new IllegalBusinessArgumentException("Invalid business description");
         }
 
@@ -253,7 +253,7 @@ public class Business {
      * @throws IllegalBusinessArgumentException When the description is not null and is invalid.
      */
     public void setDescription(String description) throws IllegalBusinessArgumentException{
-        if (description != null && !isValidDescription(description)) {
+        if (description != null && isValidDescription(description)) {
             throw new IllegalBusinessArgumentException("Invalid business description");
         }
         this.description = description;
@@ -398,6 +398,6 @@ public class Business {
      * @return true when the description is valid.
      */
     private boolean isValidDescription(String description) {
-        return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
+        return (description.length() < DESCRIPTION_MIN_LENGTH) || (description.length() > DESCRIPTION_MAX_LENGTH);
     }
 }

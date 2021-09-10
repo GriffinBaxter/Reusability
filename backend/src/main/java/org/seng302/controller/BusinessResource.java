@@ -593,7 +593,7 @@ public class BusinessResource {
             } catch (IllegalAddressArgumentException err) {
                 String errorMessage = String.format("User (id: %d) attempted to update address for business (id: %d). But the address was invalid", user.getId(), business.getId());
                 logger.error(errorMessage);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address provided is invalid.");
             }
         } else {
             newAddress = existingAddress.get();
@@ -619,7 +619,7 @@ public class BusinessResource {
             } catch (IllegalBusinessArgumentException err) {
                 String errorMessage = String.format("User (id: %d) attempted to update description for business (id: %d). But the description was invalid", user.getId(), business.getId());
                 logger.error(errorMessage);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description provided is invalid.");
             }
 
 
@@ -652,8 +652,7 @@ public class BusinessResource {
             String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d)'s name." +
                     " But it was invalid.", user.getId(), business.getId());
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data " +
-                    "supplied by the user, appropriate error message(s) should be shown to user");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, err.getMessage());
         }
     }
 
