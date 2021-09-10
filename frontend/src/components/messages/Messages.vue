@@ -1,6 +1,6 @@
 <template>
   <div id="component-wrapper" >
-    <MessageTitle v-if="conversationIsOpen" v-bind:conversation-data="conversationData" />
+    <MessageTitle id="message-title" v-if="conversationIsOpen" v-bind:conversation-data="conversationData" />
     <div id="messages-wrapper" >
       <LoadingDots v-if="isLoading" />
       <div id="content-wrapper" v-else>
@@ -11,14 +11,14 @@
           </div>
         </div>
         <div v-else style="overflow: auto">
-          <MessageConversation ref="msgConversation" v-bind:messages="messages"/>
+          <MessageConversation id="message-conversation" ref="msgConversation" v-bind:messages="messages"/>
         </div>
       </div>
     </div>
     <div class="error-message" v-if="errorMessage">
       {{errorMessage}}
     </div>
-    <SendMessage v-if="conversationIsOpen"/>
+    <SendMessage id="send-message" v-if="conversationIsOpen"/>
   </div>
 </template>
 
@@ -67,10 +67,10 @@ export default {
       this.conversationData = conversation;
       await Api.getConversation(conversation.id).then((res) => {
         this.messages = res.data.reverse()
+        this.conversationIsOpen = true;
       }).catch(() => {
         this.errorMessage = "Something went wrong"
       })
-      this.conversationIsOpen = true;
       this.isLoading = false
     },
     /**
@@ -93,13 +93,11 @@ export default {
           } else {
             this.errorMessage = `${err.response.status} - ${err.response.message}`
           }
-          if (err.request) {
+        } else if (err.request) {
             this.errorMessage = "Timeout"
-          }
         } else {
           this.errorMessage = "Something went wrong"
         }
-        console.log(err)
       })
     },
     /**
