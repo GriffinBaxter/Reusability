@@ -1105,17 +1105,30 @@ export default {
     },
     /**
      * Auto-fills the fields from API response that exist (this is done to prevent inputs being set as undefined)
+     * Also checks that a GAA isn't trying to edit a DGAA
      * @param res API response
      */
     setFields(res) {
-      if (res.data.bio !== null) { this.bio = res.data.bio }
-      if (res.data.dateOfBirth !== null) { this.dateOfBirth = res.data.dateOfBirth }
-      if (res.data.email !== null) { this.email = res.data.email }
-      if (res.data.phoneNumber !== null) { this.phoneNumber = res.data.phoneNumber }
-      // Names
-      this.setNameFields(res.data);
-      // Address
-      this.setAddressFields(res.data.homeAddress);
+      if (res.data.role === "DEFAULTGLOBALAPPLICATIONADMIN" && this.currentRole !== null) {
+        this.$router.push({name: "Profile", params: {id: this.$route.params.id}})
+      } else {
+        if (res.data.bio !== null) {
+          this.bio = res.data.bio
+        }
+        if (res.data.dateOfBirth !== null) {
+          this.dateOfBirth = res.data.dateOfBirth
+        }
+        if (res.data.email !== null) {
+          this.email = res.data.email
+        }
+        if (res.data.phoneNumber !== null) {
+          this.phoneNumber = res.data.phoneNumber
+        }
+        // Names
+        this.setNameFields(res.data);
+        // Address
+        this.setAddressFields(res.data.homeAddress);
+      }
     },
     /**
      * Sets Address Fields if they exist (this is done to prevent setting inputs as undefined)
