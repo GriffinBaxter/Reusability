@@ -1,6 +1,7 @@
 package org.seng302.steps;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
+import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.controller.BusinessResource;
@@ -10,6 +11,7 @@ import org.seng302.model.User;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
 import org.seng302.model.repository.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import org.seng302.view.outgoing.AddressPayload;
@@ -150,5 +152,6 @@ public class ModifyBusinessStepDefs {
     @Then("The business is modified")
     public void theBusinessIsModified() throws Exception{
         Business newBusiness = new Business(anotherUser.getId(), "new", "new", anotherAddress, BusinessType.ACCOMMODATION_AND_FOOD_SERVICES, business.getCreated(), anotherUser, "$", "NZD");
+        assertThat(newBusiness).hasToString(business.toString());
     }
 }
