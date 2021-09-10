@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.2.4
+  version: 6.2.5
   title: REUSEABILITY
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -2774,6 +2774,13 @@ components:
           description: '(Implemented in U6): A list of businesses for which the user is an administrator'
           items:
             $ref: '#/components/schemas/Business'
+        images:
+          type: array
+          readOnly: true
+          description: 'user images'
+          items:
+            $ref: '#/components/schemas/Image'
+
 
     MarketplaceCardNotification:
       type: object
