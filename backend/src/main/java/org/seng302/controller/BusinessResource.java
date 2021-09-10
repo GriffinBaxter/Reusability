@@ -505,7 +505,7 @@ public class BusinessResource {
      * @param id Id of the business the user wants to update.
      * @param businessModifyPayload The changes made to the business.
      */
-    @PutMapping("/businesses/{id}/profile")
+    @PutMapping("/businesses/{id}")
     @ResponseStatus(value = HttpStatus.OK, reason = "Business updated successfully")
     public void modifyBusiness(@CookieValue(value = "JSESSIONID", required = false) String session,
                                @PathVariable Integer id, @RequestBody BusinessModifyPayload businessModifyPayload) {
