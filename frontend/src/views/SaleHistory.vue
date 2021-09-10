@@ -4,6 +4,7 @@
       <!--nav bar-->
       <Navbar></Navbar>
 
+      Period:
       <div class="btn-group col d-inline-block p-2" role="group">
         <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
                 data-bs-toggle="dropdown" aria-expanded="false">{{ period }}
@@ -26,12 +27,47 @@
 
       <div v-if="period === 'Year'" class="btn-group col d-inline-block p-2" role="group">
         <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
-                data-bs-toggle="dropdown" aria-expanded="false">{{ year }}
+                data-bs-toggle="dropdown" aria-expanded="false">{{ selectedYear }}
         </button>
         <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
           <li class="btn green-button-transparent col-12 order-by-options-btn"
               v-for="validYear in validYears" v-bind:key="validYear"
-              @click="year = validYear">
+              @click="selectedYear = validYear">
+            {{ validYear }}
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="period === 'Month'" class="btn-group col d-inline-block p-2" role="group">
+        <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                data-bs-toggle="dropdown" aria-expanded="false">{{ selectedMonth }}
+        </button>
+        <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+          <div v-if="selectedYear === currentYear">
+            <li class="btn green-button-transparent col-12 order-by-options-btn"
+                v-for="month in months.slice(0, this.currentMonth + 1)" v-bind:key="month"
+                @click="selectedMonth = month">
+              {{ month }}
+            </li>
+          </div>
+          <div v-else>
+            <li class="btn green-button-transparent col-12 order-by-options-btn"
+                v-for="month in months" v-bind:key="month"
+                @click="selectedMonth = month">
+              {{ month }}
+            </li>
+          </div>
+        </ul>
+      </div>
+
+      <div v-if="period === 'Month'" class="btn-group col d-inline-block p-2" role="group">
+        <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                data-bs-toggle="dropdown" aria-expanded="false">{{ selectedYear }}
+        </button>
+        <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+          <li class="btn green-button-transparent col-12 order-by-options-btn"
+              v-for="validYear in validYears" v-bind:key="validYear"
+              @click="selectedYear = validYear">
             {{ validYear }}
           </li>
         </ul>
@@ -131,8 +167,15 @@ export default {
 
       // Sales Report Attributes
       period: "Year",
+      currentYear: 0,
       validYears: [],
-      year: "",
+      selectedYear: "",
+      months: [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ],
+      currentMonth: 0,
+      selectedMonth: "",
     }
   },
   methods: {
@@ -239,11 +282,17 @@ export default {
    */
   async mounted() {
     // Sets validYears to a list of years from 2021 to the current year
-    this.year = new Date().getFullYear();
+    const date = new Date();
+
+    this.currentYear = date.getFullYear();
+    this.selectedYear = this.currentYear;
     this.validYears.push(2021);
-    while (this.validYears[this.validYears.length - 1] < this.year) {
+    while (this.validYears[this.validYears.length - 1] < this.selectedYear) {
       this.validYears.push(this.validYears[this.validYears.length - 1] + 1);
     }
+
+    this.currentMonth = date.getMonth();
+    this.selectedMonth = this.months[this.currentMonth];
 
     const actAs = Cookies.get('actAs');
     if (checkAccessPermission(this.$route.params.businessId, actAs)) {
