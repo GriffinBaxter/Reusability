@@ -1112,18 +1112,10 @@ export default {
       if (res.data.role === "DEFAULTGLOBALAPPLICATIONADMIN" && this.currentRole !== null) {
         this.toProfile()
       } else {
-        if (res.data.bio !== null) {
-          this.bio = res.data.bio
-        }
-        if (res.data.dateOfBirth !== null) {
-          this.dateOfBirth = res.data.dateOfBirth
-        }
-        if (res.data.email !== null) {
-          this.email = res.data.email
-        }
-        if (res.data.phoneNumber !== null) {
-          this.phoneNumber = res.data.phoneNumber
-        }
+        if (res.data.bio !== null) { this.bio = res.data.bio }
+        if (res.data.dateOfBirth !== null) { this.dateOfBirth = res.data.dateOfBirth }
+        if (res.data.email !== null) { this.email = res.data.email }
+        if (res.data.phoneNumber !== null) { this.phoneNumber = res.data.phoneNumber }
         // Names
         this.setNameFields(res.data);
         // Address
