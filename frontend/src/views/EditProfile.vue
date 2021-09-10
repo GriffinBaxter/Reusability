@@ -1149,7 +1149,7 @@ export default {
 
       if (currentID !== id) {
         await this.retrieveUser(currentID, false);
-        if (this.currentRole !== "DEFAULTGLOBALAPPLICATIONADMIN") {
+        if (this.currentRole === null || this.currentRole === "USER") {
           await this.$router.push({name: "Profile", params: {id}})
         }
       }

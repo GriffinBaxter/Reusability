@@ -571,6 +571,8 @@ export default {
       this.bio = data.bio;
       this.email = data.email;
 
+      console.log(data)
+
       if (data.role) {
         this.role = data.role;
       }
