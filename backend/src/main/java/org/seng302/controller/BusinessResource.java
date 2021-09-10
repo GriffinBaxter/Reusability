@@ -498,7 +498,7 @@ public class BusinessResource {
     }
 
     /**
-     * Modification of bussiness endpoint. Requires the user to have permission; business to exist and all the payload's
+     * Modification of business endpoint. Requires the user to have permission; business to exist and all the payload's
      * content to be still valid with the requirements. Then it will update the business.
      *
      * @param session User session token.

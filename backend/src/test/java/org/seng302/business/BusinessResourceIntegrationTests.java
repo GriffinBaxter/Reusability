@@ -2357,14 +2357,14 @@ class BusinessResourceIntegrationTests {
      * receive a OK status message back.
      */
     @Test
-    void canUpdateTheBusinessWithAllFields() throws Exception {
+    void canUpdateTheBusinessWithAllFieldsBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2408,14 +2408,14 @@ class BusinessResourceIntegrationTests {
      * Testing that an UNAUTHROIZED is returned when failing to provide a session token.
      */
     @Test
-    void receivingUnauthorizedWhenNotProvidingASessionTokenModifyBusiness() throws Exception {
+    void receivingUnauthorizedWhenNotProvidingASessionTokenModifyBusinessBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2431,16 +2431,6 @@ class BusinessResourceIntegrationTests {
                 "#",
                 "BED"
         );
-        Business newBusiness = new Business(
-                13,
-                "new",
-                "new",
-                newAddressObj,
-                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user,
-                "$",
-                "NZD");
 
         sessionToken = dGAA.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -2460,14 +2450,14 @@ class BusinessResourceIntegrationTests {
      * is not modified.
      */
     @Test
-    void receivingAuthorizedWhentProvidingAInvalidSessionTokenModifyBusiness() throws Exception {
+    void receivingAuthorizedWhentProvidingAInvalidSessionTokenModifyBusinessBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2483,16 +2473,6 @@ class BusinessResourceIntegrationTests {
                 "#",
                 "BED"
         );
-        Business newBusiness = new Business(
-                13,
-                "new",
-                "new",
-                newAddressObj,
-                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user,
-                "$",
-                "NZD");
 
         sessionToken = "ASNDAJSNDKJANSKJDNAKSJNKDJN DONT MAKE ME AN ACTUAL SESSION!";
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -2511,14 +2491,14 @@ class BusinessResourceIntegrationTests {
      * Testing that a NOT_ACCEPTABLE is returned when we provide a invalud business id. And that the business is not modified.
      */
     @Test
-    void receivingANotAcceptableWhenProvidingInvalidBusinessId() throws Exception {
+    void receivingANotAcceptableWhenProvidingInvalidBusinessIdBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2562,14 +2542,14 @@ class BusinessResourceIntegrationTests {
      * Testing that a GAA can modify a business that is not there own. And returning an OK status.
      */
     @Test
-    void updatingBusinessAsGaa() throws Exception {
+    void updatingBusinessAsGaaBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2613,14 +2593,14 @@ class BusinessResourceIntegrationTests {
      * Testing that a business can be modified by a DGAA and returns an OK status.
      */
     @Test
-    void updatingBusinessAsDgaa() throws Exception {
+    void updatingBusinessAsDgaaBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2665,14 +2645,14 @@ class BusinessResourceIntegrationTests {
      * returns FORBIDDEN.
      */
     @Test
-    void updatingBusinessAsNonAdminUser() throws Exception {
+    void updatingBusinessAsNonAdminUserBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2688,16 +2668,6 @@ class BusinessResourceIntegrationTests {
                 "#",
                 "BED"
         );
-        Business newBusiness = new Business(
-                13,
-                "new",
-                "new",
-                newAddressObj,
-                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
-                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user,
-                "$",
-                "NZD");
 
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -2717,13 +2687,13 @@ class BusinessResourceIntegrationTests {
      * OK status.
      */
     @Test
-    void updatingBusinessAsRegularAdminOfBusiness() throws Exception {
+    void updatingBusinessAsRegularAdminOfBusinessBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2769,14 +2739,14 @@ class BusinessResourceIntegrationTests {
      * that a OK status is returned.
      */
     @Test
-    void updatingBusinessAsPrimaryAdmin() throws Exception {
+    void updatingBusinessAsPrimaryAdminBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2821,14 +2791,14 @@ class BusinessResourceIntegrationTests {
      * is returned.
      */
     @Test
-    void updatingBusinessPrimaryAdminIdAsGaa() throws Exception {
+    void updatingBusinessPrimaryAdminIdAsGaaBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2872,14 +2842,14 @@ class BusinessResourceIntegrationTests {
      * Testing that the DGAA can change the primary admin id of a business. And that a OK status is returned.
      */
     @Test
-    void updatingBusinessPrimaryAdminIdAsDgaa() throws Exception {
+    void updatingBusinessPrimaryAdminIdAsDgaaBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2924,14 +2894,14 @@ class BusinessResourceIntegrationTests {
      * FORBIDDEN error.
      */
     @Test
-    void updatingBusinessPrimaryAdminIdAsUserAndFailing() throws Exception {
+    void updatingBusinessPrimaryAdminIdAsUserAndFailingBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -2965,14 +2935,14 @@ class BusinessResourceIntegrationTests {
      * Testing that a regular admin cannot change the primary admin of a business. And that a FORBIDDEN is returned.
      */
     @Test
-    void updatingBusinessPrimaryAdminIdAsAdminAndFailing() throws Exception {
+    void updatingBusinessPrimaryAdminIdAsAdminAndFailingBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3007,7 +2977,7 @@ class BusinessResourceIntegrationTests {
      * Testing the primary admin can change the primary admin id of a business. And returns an OK status.
      */
     @Test
-    void updatingBusinessPrimaryAdminIdAsPrimaryAdmin() throws Exception {
+    void updatingBusinessPrimaryAdminIdAsPrimaryAdminBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address oldAddress = new Address("1", "old", "old", "old", "old", "old", "old");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
@@ -3015,7 +2985,7 @@ class BusinessResourceIntegrationTests {
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3059,13 +3029,13 @@ class BusinessResourceIntegrationTests {
      * Testing that a business can be modified without the primary id being mentioned.
      */
     @Test
-    void updatingBusinessWithNullPrimaryId() throws Exception {
+    void updatingBusinessWithNullPrimaryIdBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3109,14 +3079,14 @@ class BusinessResourceIntegrationTests {
      * Testing that the name is updated when we include it in the payload. And that a OK status is returned.
      */
     @Test
-    void updatingBusinessWithNewName() throws Exception {
+    void updatingBusinessWithNewNameBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3160,13 +3130,13 @@ class BusinessResourceIntegrationTests {
      * Testing that a name must be provided in the modify payload. And that it returns a BAD_REQUEST.
      */
     @Test
-    void updatingBusinessWithNullNameAndFailingAsItIsRequired() throws Exception {
+    void updatingBusinessWithNullNameAndFailingAsItIsRequiredBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3197,17 +3167,17 @@ class BusinessResourceIntegrationTests {
     }
 
     /**
-     *
+     * Updating the business with a new description. Expecting an OK stats.
      */
     @Test
-    void updatingBusinessWithNewDescription() throws Exception {
+    void updatingBusinessWithNewDescriptionBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3251,13 +3221,13 @@ class BusinessResourceIntegrationTests {
      * Testing with a null description that it still updates the business. And that it returns an OK status.
      */
     @Test
-    void updatingBusinessWithNullDescription() throws Exception {
+    void updatingBusinessWithNullDescriptionBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3301,7 +3271,7 @@ class BusinessResourceIntegrationTests {
      * Testing that the address changes when we include it in the payload. And that it reuturns OK status.
      */
     @Test
-    void updatingBusinessWithNewAddress() throws Exception {
+    void updatingBusinessWithNewAddressBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address oldAddress = new Address("1", "old", "old", "old", "old", "old", "old");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
@@ -3309,7 +3279,7 @@ class BusinessResourceIntegrationTests {
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3353,7 +3323,7 @@ class BusinessResourceIntegrationTests {
      * Testing that you require the address in the modify payload. And that it returns a BAD_REQUEST status.
      */
     @Test
-    void updatingBusinessWithNullAddressAndFailingAsItIsRequired() throws Exception {
+    void updatingBusinessWithNullAddressAndFailingAsItIsRequiredBusinessModify() throws Exception {
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
@@ -3392,14 +3362,14 @@ class BusinessResourceIntegrationTests {
      * When updating a business with a null business type it will fail to update and return a BAD_REQUEST status.
      */
     @Test
-    void updatingBusinessWithNullBusinessTypeAndFailingAsItIsRequired() throws Exception {
+    void updatingBusinessWithNullBusinessTypeAndFailingAsItIsRequiredBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
                 "}";
@@ -3432,14 +3402,14 @@ class BusinessResourceIntegrationTests {
      * Testing that we can update the business type. And that it returns an OK status.
      */
     @Test
-    void updatingBusinessWithNewBusinessType() throws Exception {
+    void updatingBusinessWithNewBusinessTypeBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +
@@ -3483,14 +3453,14 @@ class BusinessResourceIntegrationTests {
      * Testing that providing a invalid business type does not update the business and returns a BAD_REQUEST error code.
      */
     @Test
-    void updatingBusinessWithInvalidBusinessType() throws Exception {
+    void updatingBusinessWithInvalidBusinessTypeBusinessModify() throws Exception {
         AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
         Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
         payloadJson = "{" +
                 "\"primaryAdministratorId\":" + 13 + "," +
                 "\"name\":\"" + "new" + "\"," +
                 "\"description\":\"" + "new" + "\"," +
-                "\"address\":" + newAddress.toString() + "," +
+                "\"address\":" + newAddress + "," +
                 "\"businessType\":\"" + "ACCOMMODATION AND SOMETHING NOT REAL!" + "\"," +
                 "\"currencySymbol\":\"" + "$" + "\"," +
                 "\"currencyCode\":\"" + "NZD" + "\"" +

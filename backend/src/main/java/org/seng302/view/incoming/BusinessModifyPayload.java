@@ -45,18 +45,15 @@ public class BusinessModifyPayload {
     }
 
     public String toString() {
-        String tmp =  "{" +
+        return  "{" +
                 "\"primaryAdministratorId\":" + primaryAdministratorId + "," +
                 "\"name\":\"" + name + "\"," +
-                "\"description\":\"" + description + "\",";
-                if (address != null) {
-                    tmp += "\"address\":" + address.toString() + ",";
-                }
-                tmp += "\"businessType\":\"" + businessType + "\"," +
+                "\"description\":\"" + description + "\"," +
+                "\"address\":" + address + "," +
+                "\"businessType\":\"" + businessType + "\"," +
                 "\"currencySymbol\":\"" + currencySymbol + "\"," +
                 "\"currencyCode\":\"" + currencyCode + "\"" +
                 "}";
-        return tmp;
     }
 
     /**

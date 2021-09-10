@@ -10,7 +10,7 @@
  */
 package org.seng302.view.outgoing;
 
-import org.seng302.model.Address;
+
 import org.seng302.model.Business;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.User;
