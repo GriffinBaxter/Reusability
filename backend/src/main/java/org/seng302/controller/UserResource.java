@@ -275,7 +275,7 @@ public class UserResource {
         }
 
         logger.info("User Found - {}", selectUser);
-        if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
+        if (currentUser.getId() == id || isGAAorDGAA(currentUser)){
 
             // If the current user is a DGAA, show the role of the user
             if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
