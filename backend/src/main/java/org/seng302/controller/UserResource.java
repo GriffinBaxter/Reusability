@@ -510,7 +510,8 @@ public class UserResource {
 
     /**
      * Update given user by given user payload
-     * @param currentUser user
+     * @param currentUser current user logged in
+     * @param selectedUser user to edit
      * @param userProfileModifyPayload user payload
      * @return updated User
      */
@@ -534,19 +535,25 @@ public class UserResource {
             selectedUser.updateEmail(userProfileModifyPayload.getEmail());
             selectedUser.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
             selectedUser.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
-            System.out.println(userProfileModifyPayload.getCurrentPassword());
-            if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
-                    || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
-                    || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
-                        && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN))) {
-                selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
-            } else if (userProfileModifyPayload.getCurrentPassword() != null
-                    && !userProfileModifyPayload.getCurrentPassword().isEmpty()){
-                logger.error("Registration Failure - {}", "current password error");
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Wrong Password"
-                );
+            if (userProfileModifyPayload.getNewPassword() != null) {
+                if (userProfileModifyPayload.getCurrentPassword() != null) {
+                    if (validPasswordOrHavePermission(selectedUser, currentUser, userProfileModifyPayload)) {
+                        selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
+                    } else if (userProfileModifyPayload.getCurrentPassword() != null
+                            && !userProfileModifyPayload.getCurrentPassword().isEmpty()) {
+                        logger.error("User Update Failure - {}", "current password error");
+                        throw new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "Wrong Password"
+                        );
+                    }
+                } else {
+                    logger.error("User Update Failure - {}", "current password not sent");
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Current password not sent"
+                    );
+                }
             }
         } catch (IllegalUserArgumentException e) {
             logger.error("Registration Failure - {}", e.getMessage());
@@ -557,6 +564,26 @@ public class UserResource {
         }
         logger.debug("Selected user (ID: {}) update successfully.", selectedUser.getId());
         return selectedUser;
+    }
+
+    /**
+     * Checks if the current user can change the password of the selected user
+     * @param selectedUser User the password is changing for
+     * @param currentUser User changing the password
+     * @param userProfileModifyPayload Payload containing the modify user data
+     * @return boolean T/F if the current user can change the password
+     */
+    private boolean validPasswordOrHavePermission(User selectedUser, User currentUser, UserProfileModifyPayload userProfileModifyPayload) {
+        // Case 1: Valid Password
+        if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())) {
+            return true;
+        }
+        // Case 2: User is Admin & selected User is not
+        if (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser)) {
+            return true;
+        }
+        // Case 3: User is DGAA & selected user is GAA, if not, returns false
+        return currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN) && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN);
     }
 
     /**

@@ -2088,7 +2088,7 @@ paths:
             example: 118
         - name: fromDate
           in: query
-          description: 'The date the sales report should be from. Will be set to the start of 2021 if before 2021 
+          description: 'The date the sales report should be from. Will be set to the start of 2021 if before 2021
           (the year that the app was first deployed), must be before or at the "to date".'
           required: true
           schema:
@@ -2096,7 +2096,7 @@ paths:
             format: date-time
         - name: toDate
           in: query
-          description: 'The date the sales report should be to. Will be set to the current date if in the future, 
+          description: 'The date the sales report should be to. Will be set to the current date if in the future,
           must be at or after the start of 2021 (the year that the app was first deployed).'
           required: true
           schema:
@@ -2144,6 +2144,40 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an
           administrator of the business.'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
+  '/home/conversation/{conversationId}/messages':
+    get:
+      tags:
+        - 'UCM8: Contacting Other Marketplace Users'
+        - 'Marketplace conversation message'
+      summary: 'Retrieve all messages in a conversation'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: conversationId
+          in: path
+          description: Conversation ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Conversation retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Forbidden: Returned when the user is not a member of the conversation'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
@@ -3033,8 +3067,9 @@ components:
           description: ID of the sender
         receiverId:
           type: integer
-          example: 101
-          description: ID of the reciever
+          example: 200
+          description: ID of the message recipient
+          writeOnly: true
         marketplaceCardId:
           type: integer
           example: 408
@@ -3042,10 +3077,10 @@ components:
         content:
           type: string
           example: "Hi, I am interested in exchanging some apples for some pears."
-          description: message content
+          description: Message content
         created:
           type: string
           format: date-time
           example: '2021-07-15T05:10:00Z'
-          description: date and time of the conversation creation
+          description: Date and time message was created/sent
 
