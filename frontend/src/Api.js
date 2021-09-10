@@ -401,6 +401,13 @@ export default {
         return instance.get(`/home/conversation`, {withCredentials: true})
     },
 
+    // Sends a DELETE request to the backend to delete a conversation with the given id.
+    deleteConversation: (id) => {
+        return instance.delete(`/users/conversation/${id}`, {
+            withCredentials: true
+        })
+    },
+
     // retrieves a specific conversation
     getConversation(id) {
         return instance.get(`/home/conversation/${id}/messages`, {withCredentials: true})

@@ -6,7 +6,7 @@
       <div id="content-wrapper" v-else>
         <div v-if="!conversationIsOpen">
           <div v-for="(conv) in conversations" :key="conv.id" @click="openConversation(conv)">
-            <MessageOption :id="`conversation-${conv.id}`" :userName="conv.userName" :image="conv.image"
+            <MessageOption v-on:deleteConversation="emitDeleteConversation" :id="`conversation-${conv.id}`" :userName="conv.userName" :image="conv.image"
                            :new-message="conv.newMessage" :card-name="conv.cardName"></MessageOption>
           </div>
         </div>
@@ -94,7 +94,7 @@ export default {
             this.errorMessage = `${err.response.status} - ${err.response.message}`
           }
         } else if (err.request) {
-            this.errorMessage = "Timeout"
+          this.errorMessage = "Timeout"
         } else {
           this.errorMessage = "Something went wrong"
         }
@@ -105,57 +105,73 @@ export default {
      */
     closeConversation() {
       this.conversationIsOpen = false;
-    }
-  },
-  beforeMount() {
-    this.errorMessage = "";
-    this.isLoading = true;
-    this.currentId = parseInt(Cookies.get("userID"));
-    Api.getConversations().then(
-        (res) => {
-          this.conversations = res.data.map( (conversation) => {
-            let userImage;
-            let userName;
-            let userId;
-            if (conversation.instigatorId === this.currentId) {
-              userImage = conversation.receiverImage;
-              userName = conversation.receiverName;
-              userId = conversation.receiverId;
-            } else {
-              userImage = conversation.instigatorImage;
-              userName = conversation.instigatorName;
-              userId = conversation.instigatorId;
+    },
+    /**
+     * This method is used to retrieve the conversations for a user.
+     */
+    retrieveConversations() {
+      this.errorMessage = "";
+      this.isLoading = true;
+      Api.getConversations().then(
+          (res) => {
+            this.conversations = res.data.map( (conversation) => {
+              let userImage;
+              let userName;
+              const currentId = Cookies.get("userID");
+              // comparison between a string and an int
+              if (conversation.instigatorId == currentId) {
+                userImage = conversation.receiverImage;
+                userName = conversation.receiverName;
+              } else {
+                userImage = conversation.instigatorImage;
+                userName = conversation.instigatorName;
+              }
+              return {
+                id: conversation.id,
+                image: userImage || DefaultImage,
+                userName: userName,
+                cardName: conversation.marketplaceCardTitle,
+                creationTime: conversation.created,
+                newMessage: true
+              };
+            });
+            if (this.conversations.length === 0) {
+              this.errorMessage = "No messages found.";
             }
-            return {
-              id: conversation.id,
-              image: userImage || DefaultImage,
-              userName: userName,
-              userId: userId,
-              cardName: conversation.marketplaceCardTitle,
-              creationTime: conversation.created,
-              newMessage: true,
-              marketplaceCardId: conversation.marketplaceCardId
-            };
-          });
-          if (this.conversations.length === 0) {
-            this.errorMessage = "No messages found.";
+            this.isLoading = false;
           }
-          this.isLoading = false;
-        }
-  ).catch((err) => {
-      if (err.response) {
-        if (err.response.status === 401) {
-          this.$router.push({path: '/invalidtoken'});
-        } else  {
+      ).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
+          } else  {
+            this.toastErrorMessage("Something went wrong sorry.");
+          }
+        } else if (err.request) {
+          this.toastErrorMessage("Timed out getting conversations.")
+        } else {
           this.toastErrorMessage("Something went wrong sorry.");
         }
-      } else if (err.request) {
-          this.toastErrorMessage("Timed out getting conversations.")
-      } else {
-        this.toastErrorMessage("Something went wrong sorry.");
-      }
-      this.isLoading = false;
-    });
+        this.isLoading = false;
+      });
+    },
+    /**
+     * We need to emit the deleteConversation event to the parent (Navbar). The DeleteConversationModal component is in
+     * the Navbar to resolve the issues of the modal being unavailable when in the Messages component. When the Navbar
+     * receives this event the modal will open.
+     *
+     * @param conversationId the id of the conversation to be deleted.
+     * @param userName the name of the other member in the conversation.
+     */
+    emitDeleteConversation(conversationId, userName) {
+      this.$emit('emittedDeleteConversation', conversationId, userName);
+    }
+  },
+  /**
+   * Before mounting retrieve a user's conversations.
+   */
+  beforeMount() {
+    this.retrieveConversations();
   }
 
 }

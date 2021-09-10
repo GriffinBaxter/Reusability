@@ -1016,10 +1016,6 @@ export default {
   color: #1EBA8C;
 }
 
-.modal {
-  background: rgba(17, 78, 60, 0.4);
-}
-
 .modal-content {
   box-shadow: 0 0 1px 1px #404040;
 }
