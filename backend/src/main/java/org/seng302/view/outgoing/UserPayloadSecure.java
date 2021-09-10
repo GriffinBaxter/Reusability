@@ -106,8 +106,8 @@ public class UserPayloadSecure extends UserPayloadParent {
                 ",\"created\":\"" + super.getCreated() + "\"" +
                 ",\"role\":\"" + super.getRole() + "\"" +
                 ",\"businessesAdministered\":" + super.getBusinessesAdministered().toString() +
-                ",\"homeAddress\":" + homeAddress +
                 ",\"images\":" + super.getImages() +
+                ",\"homeAddress\":" + homeAddress +
                 "}";
     }
 }

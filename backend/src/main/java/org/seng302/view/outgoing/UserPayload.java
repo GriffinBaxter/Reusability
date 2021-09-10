@@ -158,10 +158,10 @@ public class UserPayload extends UserPayloadParent {
                 "\"created\":\"" + super.getCreated() + "\"," +
                 "\"role\":\"" + super.getRole() + "\"," +
                 "\"businessesAdministered\":[null]," +
+                "\"images\":" + super.getImages() + "," +
                 "\"dateOfBirth\":\"" + dateOfBirth + "\"," +
                 "\"phoneNumber\":\"" + phoneNumber + "\"," +
-                "\"homeAddress\":" + homeAddress + "," +
-                "\"images\":" + super.getImages() +
+                "\"homeAddress\":" + homeAddress +
                 "}";
     }
 }
