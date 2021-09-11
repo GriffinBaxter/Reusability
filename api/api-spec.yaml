@@ -563,8 +563,10 @@ paths:
     post:
       tags:
         - 'U16: Product Images'
+        - 'U10 Modifying Individuals'
+        - 'U11 Modifying Businesses'
         - 'Catalogue / Products'
-      summary: Upload a new image for some photo
+      summary: Upload a new image
       security:
         - CookieAuth:
             - user
@@ -643,8 +645,10 @@ paths:
     delete:
       tags:
         - 'U16: Product Images'
+        - 'U10 Modifying Individuals'
+        - 'U11 Modifying Businesses'
         - 'Catalogue / Products'
-      summary: Delete an image of a product
+      summary: Delete an image
       security:
         - CookieAuth:
             - user
@@ -707,6 +711,8 @@ paths:
     put:
       tags:
         - 'U16: Product Images'
+        - 'U10 Modifying Individuals'
+        - 'U11 Modifying Businesses'
         - 'Catalogue / Products'
       summary: Set an existing image to be the new primary image
       security:
@@ -745,13 +751,13 @@ paths:
         - name: businessId
           in: query
           description: ID of business that owns product
-          required: true
+          required: false
           schema:
             type: integer
         - name: productId
           in: query
           description: ID (Product Code) of product to update primary image for
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -3090,4 +3096,3 @@ components:
           format: date-time
           example: '2021-07-15T05:10:00Z'
           description: Date and time message was created/sent
-
