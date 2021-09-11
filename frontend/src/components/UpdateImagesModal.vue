@@ -187,13 +187,13 @@ export default {
       let query;
       switch (this.location) {
         case "User":
-          query = "?uncheckedImageType=USER_IMAGE&userId=" + this.id;
+          query = "?uncheckedImageType=USER_IMAGE&userId=" + this.$props.id;
           break
         case "Business":
-          query = "?uncheckedImageType=BUSINESS_IMAGE&businessId=" + this.id;
+          query = "?uncheckedImageType=BUSINESS_IMAGE&businessId=" + this.$props.id;
           break
         case "Product":
-          query = "?uncheckedImageType=PRODUCT_IMAGE&businessId=" + this.id + "&productId=" + this.currentData.data.id;
+          query = "?uncheckedImageType=PRODUCT_IMAGE&businessId=" + this.$props.id + "&productId=" + this.currentData.data.id;
           break
         default:
           query = "";
@@ -239,34 +239,26 @@ export default {
      * Sets the selected image to the primary image.
      */
     setPrimarySelectedImage() {
-      if (this.location === "Product") {
-        Api.setPrimaryImage(
-            "PRODUCT_IMAGE", "", this.$props.id, this.currentData.data.id, this.selectedImage
-        ).then(
-            response => {
-              if (response.status === 200) {
-                location.reload();
-              } else {
-                this.formErrorModalMessage = "Sorry, something went wrong...";
-              }
+      Api.setPrimaryImage(this.getQueryForParams(), this.selectedImage).then(
+          response => {
+            if (response.status === 200) {
+              location.reload();
+            } else {
+              this.formErrorModalMessage = "Sorry, something went wrong...";
             }
-        ).catch((error) => {
-          if (error.request && !error.response) {
-            this.$router.push({path: '/timeout'});
-          } else if (error.response.status === 403) {
-            this.formErrorModalMessage = "Sorry, you do not have permission to change the primary image.";
-          } else if (error.response.status === 406) {
-            this.formErrorModalMessage = "Sorry, something went wrong...";
-          } else {
-            this.$router.push({path: '/timeout'});
-            console.log(error.message);
           }
-        })
-      } else if (this.location === "Business") {
-        console.log("To be implemented")
-      } else if (this.location === "User") {
-        console.log("To be implemented")
-      }
+      ).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 403) {
+          this.formErrorModalMessage = "Sorry, you do not have permission to change the primary image.";
+        } else if (error.response.status === 406) {
+          this.formErrorModalMessage = "Sorry, something went wrong...";
+        } else {
+          this.$router.push({path: '/timeout'});
+          console.log(error.message);
+        }
+      })
     },
 
     /**
