@@ -262,8 +262,6 @@ public class UserResource {
 
         User selectUser = optionalSelectUser.get();
 
-        //base info
-
         //stop payload loop
         List<Business> administrators;
         administrators = selectUser.getBusinessesAdministeredObjects();
