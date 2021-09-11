@@ -18,7 +18,12 @@
         </div>
       </div>
     </div>
-    <SendMessage id="send-message" v-if="conversationIsOpen"/>
+    <div v-if="conversationIsOpen">
+      <SendMessage id="send-message" v-if="!deletedConversation"/>
+      <div v-else style="background-color: lightblue">
+        <p class="text-center m-0 py-3">Conversation has been deleted</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,6 +46,7 @@ export default {
       errorMessage: "",
       isLoading: false,
       conversationIsOpen: false,
+      deletedConversation: false,
       conversationData: {},
       messages: [],
       currentId: 0
@@ -67,6 +73,7 @@ export default {
       this.conversationData = conversation;
       await Api.getConversation(conversation.id).then((res) => {
         this.messages = res.data.reverse()
+        this.deletedConversation = conversation.deleted;
         this.conversationIsOpen = true;
       }).catch(() => {
         this.toastErrorMessage("Something went wrong")
@@ -114,19 +121,23 @@ export default {
       this.isLoading = true;
       Api.getConversations().then(
           (res) => {
+            console.log(res.data)
             this.conversations = res.data.map( (conversation) => {
               let userImage;
               let userName;
               let userId;
+              let deleted;
               // comparison between a string and an int
               if (conversation.instigatorId === this.currentId) {
                 userImage = conversation.receiverImage;
                 userName = conversation.receiverName;
                 userId = conversation.receiverId;
+                deleted = conversation.deletedByReceiver;
               } else {
                 userImage = conversation.instigatorImage;
                 userName = conversation.instigatorName;
                 userId = conversation.instigatorId;
+                deleted = conversation.deletedByInstigator;
               }
               return {
                 id: conversation.id,
@@ -136,7 +147,8 @@ export default {
                 cardName: conversation.marketplaceCardTitle,
                 creationTime: conversation.created,
                 newMessage: true,
-                marketplaceCardId: conversation.marketplaceCardId
+                marketplaceCardId: conversation.marketplaceCardId,
+                deleted: deleted
               };
             });
             if (this.conversations.length === 0) {
