@@ -414,7 +414,9 @@ describe("Testing the Messages.vue component", () => {
             const response = {
                 response: {
                     status: 400,
-                    message: "Invalid data"
+                    data: {
+                        message: "Invalid data"
+                    }
                 }
             }
 
