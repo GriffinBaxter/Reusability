@@ -21,7 +21,7 @@
     <div v-if="conversationIsOpen">
       <SendMessage id="send-message" v-if="!deletedConversation"/>
       <div v-else style="background-color: lightblue">
-        <p class="text-center m-0 py-3">Conversation has been deleted</p>
+        <p class="text-center m-0 py-3">Conversation has been deleted by other user</p>
       </div>
     </div>
   </div>
@@ -121,7 +121,6 @@ export default {
       this.isLoading = true;
       Api.getConversations().then(
           (res) => {
-            console.log(res.data)
             this.conversations = res.data.map( (conversation) => {
               let userImage;
               let userName;
