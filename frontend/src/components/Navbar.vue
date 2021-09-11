@@ -61,7 +61,7 @@
           </div>
 
           <button id="act-as-wrapper" @click="toggleInteractAs">
-            <img src="../../public/profile_icon_default.png"
+            <img :src="getPrimaryImageSrc(currentUser.images)"
                  class="rounded-circle img-fluid" id="act-as-image" alt="Acting as image"/>
           </button>
 
@@ -573,6 +573,16 @@ export default {
       )
 
       this.refreshDropdown();
+    },
+    getPrimaryImageSrc(images) {
+      if (images.length > 0) {
+        for (let image of images) {
+          if (image.isPrimary) {
+            return Api.getServerURL() + "/" + image.thumbnailFilename;
+          }
+        }
+      }
+      return require('../../public/profile_icon_default.png');
     },
   },
   async beforeMount() {

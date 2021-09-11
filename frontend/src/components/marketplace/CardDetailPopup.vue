@@ -96,7 +96,7 @@ export default {
   name: "CardDetail",
   data() {
     return {
-      avatar: require("../../../public/sample_profile_image.jpg"),
+      avatar: require("../../../public/default-image.jpg"),
       section: "",
       title: "",
       description: "",
@@ -152,6 +152,15 @@ export default {
       data.keywords.forEach(keyword => {
         this.keywords.push({id: keyword.id, name: keyword.name});
       })
+
+      this.avatar = require("../../../public/default-image.jpg");
+      if (data.creator.images.length > 0) {
+        for (let image of data.creator.images) {
+          if (image.isPrimary) {
+            this.avatar = Api.getServerURL() + "/" + image.thumbnailFilename;
+          }
+        }
+      }
     },
     /**
      * retrieve card detail by given id
