@@ -307,8 +307,8 @@ export default {
     },
 
     // Sets the primary image
-    setPrimaryImage: (businessId, productId, imageId) => {
-        return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
+    setPrimaryImage: (unCheckImageType, userId, businessId, productId, imageId) => {
+        return instance.put(`/images/${imageId}/makePrimary?uncheckedImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
             {}, {
                 withCredentials: true
             })
@@ -400,5 +400,12 @@ export default {
     // retrieves conversation entities
     getConversations() {
         return instance.get(`/home/conversation`, {withCredentials: true})
-    }
+    },
+
+    // Sends a DELETE request to the backend to delete a conversation with the given id.
+    deleteConversation: (id) => {
+        return instance.delete(`/users/conversation/${id}`, {
+            withCredentials: true
+        })
+    },
 }
