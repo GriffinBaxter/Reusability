@@ -41,11 +41,11 @@ export default {
 }
 
 .receivedMessage {
-  background-color: lightblue;
+  background-color: lightgrey;
 }
 
 .sentMessage {
-  background-color: lightgrey;
+  background-color: lightblue;
   text-align: end;
 }
 

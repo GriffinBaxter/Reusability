@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     /**
-     * Toasts a message for 1 second to give an update about error messages.
+     * Toasts a message for 2 second to give an update about error messages.
      *
      * @param message the message to show
      */
@@ -56,7 +56,7 @@ export default {
       this.errorMessage = message;
       setTimeout(() => {
         this.errorMessage = "";
-      }, 1000)
+      }, 2000)
     },
     /**
      * Opens and loads the selected conversation
@@ -75,6 +75,7 @@ export default {
     },
     /**
      * Sends the currently typed message
+     * @param messageInput message to send
      */
     sendMessage(messageInput) {
       let message = {
@@ -83,7 +84,6 @@ export default {
         marketplaceCardId: this.conversationData.marketplaceCardId,
         content: messageInput
       }
-      console.log(this.conversationData.id, message)
       Api.sendReply(this.conversationData.id, message).then(() => {
         this.messages.push(message)
       }).catch((err) => {
