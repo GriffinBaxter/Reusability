@@ -71,8 +71,6 @@ public class UserResource {
     @Autowired
     private AddressRepository addressRepository;
 
-    private Address address;
-
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
 
     // the name of the cookie used for authentication.
@@ -264,9 +262,6 @@ public class UserResource {
 
         User selectUser = optionalSelectUser.get();
 
-        //base info
-        Role role = null;
-
         //stop payload loop
         List<Business> administrators;
         administrators = selectUser.getBusinessesAdministeredObjects();
@@ -275,14 +270,10 @@ public class UserResource {
         }
 
         logger.info("User Found - {}", selectUser);
-        if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
+        if (currentUser.getId() == id || isGAAorDGAA(currentUser)){
 
-            // If the current user is a DGAA, show the role of the user
-            if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-                role = selectUser.getRole();
-            } else if (currentUser.getId() == id){
-                role = currentUser.getRole();
-            }
+            Role role = selectUser.getRole();
+
             // If the current ID matches the retrieved user's ID or the current user is the DGAA, return a normal UserPayload with everything in it.
             return new UserPayload(
                     selectUser.getId(),
@@ -311,7 +302,7 @@ public class UserResource {
                     selectUser.getEmail(),
                     selectUser.getHomeAddress().toAddressPayloadSecure(),
                     selectUser.getCreated(),
-                    role,
+                    null,
                     administrators
             );
         }

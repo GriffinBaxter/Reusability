@@ -437,6 +437,37 @@ describe("Tests for other users accessing your Edit Profile page", () => {
         await editProfileWrapper.vm.$nextTick();
         await editProfileWrapper.vm.$nextTick();
 
+        expect($router.push).toHaveBeenCalledTimes(0)
+    })
+
+    test("Test that a GAA cant access Edit Profile for the DGAA", async () => {
+        const mockCurrentUserApiResponse= {
+            status: 200,
+            data: {
+                role: "GLOBALAPPLICATIONADMIN"
+            }
+        };
+        const mockDGAAUserApiResponse = {
+            status: 200,
+            data: {
+                role: "DEFAULTGLOBALAPPLICATIONADMIN"
+            }
+        }
+
+        Api.getUser.mockImplementationOnce(() => Promise.resolve(mockCurrentUserApiResponse));
+        Api.getUser.mockImplementationOnce(() => Promise.resolve(mockDGAAUserApiResponse));
+
+        let editProfileWrapper = shallowMount(EditProfile, {
+            localVue,
+            mocks: {
+                $route,
+                $router
+            }
+        });
+        await editProfileWrapper.vm.$nextTick();
+        await editProfileWrapper.vm.$nextTick();
+
+        expect($router.push).toHaveBeenCalledTimes(1)
         expect($router.push).toHaveBeenCalledWith({name: "Profile", params: {id: id}})
     })
 
