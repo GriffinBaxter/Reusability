@@ -28,7 +28,7 @@
 
                 <!--user's profile image-->
                 <div id="imageDiv">
-                  <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')"
+                  <img class="rounded-circle img-fluid" :src="getPrimaryImageSrc(user.data.images)"
                        alt="Profile Image"/>
                   <div id="change-profile-picture-button" style="padding-top: 10px" v-if="!otherUser">
                     <button type="button" style="width: 252px; max-width: 100%"
@@ -372,6 +372,17 @@ export default {
     },
 
     // --------------------------------------------------------------------------------------------------------------------
+
+    getPrimaryImageSrc(images) {
+      if (images.length > 0) {
+        for (let image of images) {
+          if (image.isPrimary) {
+            return Api.getServerURL() + "/" + image.thumbnailFilename;
+          }
+        }
+      }
+      return require('../../public/default-image.jpg')
+    },
 
     /**
      * Calculates the months between the given date and the current date, then formats the given date and months.

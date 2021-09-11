@@ -32,7 +32,7 @@
               <!-- Primary Image -->
               <div class="col-lg-4">
                 <h5>Primary Image:</h5>
-                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../public/default-product.jpg')"
+                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../public/default-image.jpg')"
                      id="primary-image" alt="primary image">
               </div>
 
@@ -160,7 +160,7 @@ export default {
       if (this.images.length > 0) {
         document.getElementById("primary-image").src = this.getImageSrc(this.primaryImageFilename);
       } else {
-        document.getElementById("primary-image").src = require('../../public/default-product.jpg');
+        document.getElementById("primary-image").src = require('../../public/default-image.jpg');
       }
 
       this.selectedImage = null;
