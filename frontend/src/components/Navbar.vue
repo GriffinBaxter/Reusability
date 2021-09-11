@@ -61,7 +61,7 @@
           </div>
 
           <button id="act-as-wrapper" @click="toggleInteractAs">
-            <img :src="getPrimaryImageSrc(currentUser.images)"
+            <img :src="getPrimaryImageSrc(currentUser)"
                  class="rounded-circle img-fluid" id="act-as-image" alt="Acting as image"/>
           </button>
 
@@ -574,9 +574,9 @@ export default {
 
       this.refreshDropdown();
     },
-    getPrimaryImageSrc(images) {
-      if (images.length > 0) {
-        for (let image of images) {
+    getPrimaryImageSrc(currentUser) {
+      if (currentUser != null && currentUser.images.length > 0) {
+        for (let image of currentUser.images) {
           if (image.isPrimary) {
             return Api.getServerURL() + "/" + image.thumbnailFilename;
           }
