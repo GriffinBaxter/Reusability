@@ -901,6 +901,12 @@ public class ListingResource {
         }
     }
 
+    @DeleteMapping("/business/{businessId}/listings/{listingId}")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Successfully deleted")
+    public void deleteListing(@CookieValue(value = "JSESSIONID", required = false) String sessionToken ,@PathVariable Integer businessId, @PathVariable  Integer listingId) {
+
+    }
+
 
     /**
      * This method parses the search criteria and then calls the needed methods to execute the "query".
