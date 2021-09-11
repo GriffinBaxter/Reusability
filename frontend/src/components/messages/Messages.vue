@@ -18,10 +18,10 @@
         </div>
       </div>
     </div>
-    <div v-if="conversationIsOpen">
+    <div v-if="conversationIsOpen" style="right: 15px;">
       <SendMessage id="send-message" v-if="!deletedConversation"/>
       <div v-else style="background-color: lightblue">
-        <p class="text-center m-0 py-3">Conversation has been deleted by other user</p>
+        <p class="text-center m-0 py-3 pe-2">Conversation has been deleted by the other user</p>
       </div>
     </div>
   </div>
