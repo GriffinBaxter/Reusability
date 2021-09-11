@@ -91,7 +91,7 @@ export default {
           if (err.response.status === 401) {
             this.$router.push({name: "InvalidToken"})
           } else {
-            this.toastErrorMessage(`${err.response.status} - ${err.response.message}`)
+            this.toastErrorMessage(`${err.response.status} - ${err.response.data.message}`)
           }
         } else if (err.request) {
           this.toastErrorMessage("Timeout")
