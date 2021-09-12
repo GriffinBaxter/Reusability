@@ -10,7 +10,6 @@ import org.seng302.model.Product;
 import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
-import org.seng302.model.repository.ProductRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -134,7 +133,7 @@ class ProductRepositoryCustomTests {
         product2 = new Product(
                 "APP-LE",
                 business,
-                "Beans",
+                "Apples",
                 "Description",
                 "A Manufacturer",
                 20.00,
@@ -145,7 +144,7 @@ class ProductRepositoryCustomTests {
         product3 = new Product(
                 "APP-LE3",
                 business,
-                "Beans",
+                "Gala Apples",
                 "Description",
                 "A Manufacturer",
                 null,
@@ -252,19 +251,20 @@ class ProductRepositoryCustomTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedNames = new ArrayList<>();
         orderedNames.add("Apple");
-        orderedNames.add("Beans");
-        orderedNames.add("Beans");
+        orderedNames.add("Apples");
         orderedNames.add("Duct-Tape");
+        orderedNames.add("Gala Apples");
         orderedNames.add("Product");
         ArrayList<String> orderedProductIds = new ArrayList<>();
         orderedProductIds.add("APPLE");
         orderedProductIds.add("APP-LE");
-        orderedProductIds.add("APP-LE3");
         orderedProductIds.add("DUCT");
+        orderedProductIds.add("APP-LE3");
         orderedProductIds.add("PROD");
 
         // when
         Page<Product> productPage = productRepository.findProductsByBusinessId(businessId, pageable);
+        System.out.println(productPage.getContent());
 
         // then
         for (int i = 0; i < productPage.getContent().size(); i++) {
@@ -286,19 +286,20 @@ class ProductRepositoryCustomTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
         ArrayList<String> orderedNames = new ArrayList<>();
         orderedNames.add("Product");
+        orderedNames.add("Gala Apples");
         orderedNames.add("Duct-Tape");
-        orderedNames.add("Beans");
-        orderedNames.add("Beans");
+        orderedNames.add("Apples");
         orderedNames.add("Apple");
         ArrayList<String> orderedProductIds = new ArrayList<>();
         orderedProductIds.add("PROD");
+        orderedProductIds.add("APP-LE3");
         orderedProductIds.add("DUCT");
         orderedProductIds.add("APP-LE");
-        orderedProductIds.add("APP-LE3");
         orderedProductIds.add("APPLE");
 
         // when
         Page<Product> productPage = productRepository.findProductsByBusinessId(businessId, pageable);
+        System.out.println(productPage.getContent());
 
         // then
         for (int i = 0; i < productPage.getContent().size(); i++) {
@@ -698,8 +699,8 @@ class ProductRepositoryCustomTests {
     @Test
     void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcode_ReturnListing() {
         // given
-        List<String> search = List.of("");
-        List<String> fields = List.of("");
+        List<String> search = List.of("Apple");
+        List<String> fields = List.of("name");
         String barcode = "9300675024235";
         int pageNo = 0;
         int pageSize = 2;
@@ -721,8 +722,8 @@ class ProductRepositoryCustomTests {
     @Test
     void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withInvalidBarcode_ReturnNoListing() {
         // given
-        List<String> search = List.of("");
-        List<String> fields = List.of("");
+        List<String> search = List.of("Apple");
+        List<String> fields = List.of("name");
         String barcode = "111111111111111";
         int pageNo = 1;
         int pageSize = 2;
@@ -742,8 +743,8 @@ class ProductRepositoryCustomTests {
     @Test
     void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcode_ReturnMultipleListings() {
         // given
-        List<String> search = List.of("");
-        List<String> fields = List.of("");
+        List<String> search = List.of("Apple");
+        List<String> fields = List.of("name");
         String barcode = "9300675024235";
         int pageNo = 0;
         int pageSize = 2;
@@ -766,8 +767,8 @@ class ProductRepositoryCustomTests {
     @Test
     void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcodeForTwoBusinesses_ReturnBusinessListing() {
         // given
-        List<String> search = List.of("");
-        List<String> fields = List.of("");
+        List<String> search = List.of("Apple");
+        List<String> fields = List.of("name");
         String barcode = "9415767624207";
         int pageNo = 0;
         int pageSize = 5;
