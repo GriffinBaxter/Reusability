@@ -11,9 +11,12 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.Business;
+import org.seng302.model.Image;
+import org.seng302.model.UserImage;
 import org.seng302.model.enums.Role;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +33,7 @@ public abstract class UserPayloadParent {
     private String created;
     private Role role;
     private List<BusinessPayload> businessesAdministered;
+    private List<ImagePayload> images;
 
 
     public UserPayloadParent (
@@ -42,7 +46,8 @@ public abstract class UserPayloadParent {
             String email,
             LocalDateTime created,
             Role role,
-            List<Business> businessesAdministeredObject
+            List<Business> businessesAdministeredObject,
+            List<UserImage> userImages
     ) throws Exception {
         this.id = id;
         this.firstName = firstName;
@@ -57,6 +62,7 @@ public abstract class UserPayloadParent {
         if (this.businessesAdministered.isEmpty()){
             this.businessesAdministered.add(null);
         }
+        this.images = ImagePayload.convertToImagePayload(userImages == null ? null : new ArrayList<>(userImages));
     }
 
     public int getId() {
@@ -99,6 +105,10 @@ public abstract class UserPayloadParent {
         return businessesAdministered;
     }
 
+    public List<ImagePayload> getImages() {
+        return images;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -137,5 +147,9 @@ public abstract class UserPayloadParent {
 
     public void setBusinessesAdministered(List<BusinessPayload> businessesAdministered) {
         this.businessesAdministered = businessesAdministered;
+    }
+
+    public void setImages(List<ImagePayload> images) {
+        this.images = images;
     }
 }

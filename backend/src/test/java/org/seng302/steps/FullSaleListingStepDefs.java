@@ -206,6 +206,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                             "\"created\":\"" + user.getCreated() + "\"," +
                             "\"role\":\"" + user.getRole() + "\"," +
                             "\"businessesAdministered\":[null]," +
+                            "\"images\":[]," +
                             "\"dateOfBirth\":\"" + user.getDateOfBirth() + "\"," +
                             "\"phoneNumber\":\"" + user.getPhoneNumber() + "\"," +
                             "\"homeAddress\":" + user.getHomeAddress() + "}]," +

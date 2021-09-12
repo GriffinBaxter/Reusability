@@ -2814,6 +2814,13 @@ components:
           description: '(Implemented in U6): A list of businesses for which the user is an administrator'
           items:
             $ref: '#/components/schemas/Business'
+        images:
+          type: array
+          readOnly: true
+          description: 'user images'
+          items:
+            $ref: '#/components/schemas/Image'
+
 
     MarketplaceCardNotification:
       type: object
