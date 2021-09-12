@@ -6,6 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.controller.InventoryItemResource;
 import org.seng302.controller.ListingResource;
+import org.seng302.controller.ProductResource;
 import org.seng302.controller.UserResource;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
@@ -44,6 +45,9 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
 
     @Autowired
     private MockMvc listingMVC;
+
+    @Autowired
+    private MockMvc productMVC;
 
     @Autowired
     @MockBean
@@ -85,6 +89,10 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
+    @Autowired
+    @MockBean
+    private ProductUpdateService productUpdateService;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -98,6 +106,36 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
             "\"password\": \"%s\"}";
     private final String expectedUserIdJson = "{\"userId\":%s}";
 
+    private final String expectedProductJson = "{\"id\":\"%s\"," +
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"manufacturer\":\"%s\"," +
+            "\"recommendedRetailPrice\":%.1f," +
+            "\"created\":\"%s\"," +
+            "\"images\":[]," +
+            "\"business\":{" +
+            "\"id\":%d," +
+            "\"administrators\":" +
+            "[{\"id\":%d," +
+            "\"firstName\":\"%s\"," +
+            "\"lastName\":\"%s\"," +
+            "\"middleName\":\"%s\"," +
+            "\"nickname\":\"%s\"," +
+            "\"bio\":\"%s\"," +
+            "\"email\":\"%s\"," +
+            "\"created\":\"%s\"," +
+            "\"role\":\"%s\"," +
+            "\"businessesAdministered\":[null]," +
+            "\"dateOfBirth\":\"%s\"," +
+            "\"phoneNumber\":\"%s\"," +
+            "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +
+            "\"primaryAdministratorId\":%d," +
+            "\"name\":\"%s\"," +
+            "\"description\":\"%s\"," +
+            "\"address\":%s," +
+            "\"businessType\":\"%s\"," +
+            "\"created\":\"%s\"}," +
+            "\"barcode\":\"%s\"}";
 
     @Before
     public void createMockMvc() {
@@ -111,7 +149,9 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
         listingNotificationRepository = mock(ListingNotificationRepository.class);
         soldListingNotificationRepository = mock(SoldListingNotificationRepository.class);
         bookmarkedListingMessageRepository = mock(BookmarkedListingMessageRepository.class);
+        productUpdateService = mock(ProductUpdateService.class);
 
+        this.productMVC = MockMvcBuilders.standaloneSetup(new ProductResource(productRepository, businessRepository, userRepository, productUpdateService)).build();
         this.inventoryMVC = MockMvcBuilders.standaloneSetup(new InventoryItemResource(inventoryRepository, productRepository, businessRepository, userRepository)).build();
         this.listingMVC = MockMvcBuilders.standaloneSetup(new ListingResource(listingRepository, inventoryRepository, productRepository, businessRepository, userRepository, soldListingRepository, listingNotificationRepository, soldListingNotificationRepository, bookmarkedListingMessageRepository)).build();
         this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
@@ -163,6 +203,59 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
 
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, user.getId()));
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Given("I have a product with a barcode {string}")
+    public void iHaveAProductWithABarcode(String barcode) throws Exception {
+        product = new Product(
+                "TEST-LIST",
+                business,
+                "Listing",
+                "description",
+                "manufacturer",
+                Double.parseDouble("4.5"),
+                barcode
+        );
+    }
+
+    @When("I request to retrieve products for my business with barcode {string}")
+    public void iRequestToRetrieveProductsForMyBusinessWithBarcode(String barcode) throws Exception {
+        List<Product> list = List.of(product);
+        Page<Product> pagedResponse = new PageImpl<>(list);
+
+        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(List.of("TEST-LIST"), List.of("id"), business.getId(), paging, barcode)).thenReturn(pagedResponse);
+
+        response = productMVC.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("searchQuery", "TEST-LIST")
+                .param("searchBy", "id")
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .param("barcode", barcode)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+    }
+
+    @Then("My product is returned in a list by its self")
+    public void myProductIsReturnedInAListByItsSelf() throws UnsupportedEncodingException {
+
+        String expectedJSON = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "]";
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 
     @Given("I have a inventory item with a barcode {string}")

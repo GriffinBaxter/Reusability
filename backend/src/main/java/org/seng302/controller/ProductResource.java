@@ -458,7 +458,6 @@ public class ProductResource {
 
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
 
-
         if (barcode != null) {
             return productRepository.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(names, searchBy, businessId, paging, barcode);
 
