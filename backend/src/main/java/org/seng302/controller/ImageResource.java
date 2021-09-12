@@ -252,6 +252,19 @@ public class ImageResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(storedImageId));
     }
 
+    /**
+     * This method checks to see whether a user is logged in before calling the necessary helper functions
+     * needed to delete an image.
+     *
+     * @param sessionToken a token used to identify a logged in user.
+     * @param uncheckedImageType a string representation of the image type to be checked.
+     * @param userId the id of user which the image belongs to. This is only required when deleting a user image.
+     * @param businessId the id of business which the product (and image) belong to. This is only required when deleting
+     *                   a business or product image.
+     * @param productId the id of the product which the image belongs to. This is only required when deleting a product
+     *                  image.
+     * @param imageId the id of the image to be deleted.
+     */
     @Transactional
     @DeleteMapping("/images/{imageId}")
     @ResponseStatus(value = HttpStatus.OK, reason = "Image deleted successfully")
@@ -406,7 +419,8 @@ public class ImageResource {
      * Throws a NOT_ACCEPTABLE error is the user id does not exist.
      *
      * @param userId the id of the user to check if it exists.
-     * @return user
+     * @return user a user with an id matching userId.
+     * @throws ResponseStatusException an HTTP error with code and error message.
      */
     private User getVerifiedUser(Integer userId) throws ResponseStatusException {
         Optional<User> user = userRepository.findById(userId);
@@ -422,7 +436,8 @@ public class ImageResource {
      * Throws a NOT_ACCEPTABLE error is the business id does not exist.
      *
      * @param businessId the id of the business to check if it exists.
-     * @return business
+     * @return business a business which has an id matching businessId
+     * @throws ResponseStatusException an HTTP error with code and error message.
      */
     private Business getVerifiedBusiness(Integer businessId) throws ResponseStatusException {
         Optional<Business> business = businessRepository.findBusinessById(businessId);
@@ -439,6 +454,7 @@ public class ImageResource {
      *
      * @param productId the id of the product to check if it exists.
      * @param business a business which has the product.
+     * @throws ResponseStatusException an HTTP error with code and error message.
      */
     private void verifyProductId(String productId, Business business) throws ResponseStatusException {
         Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, business.getId());
@@ -456,6 +472,7 @@ public class ImageResource {
      * @param imageId the id of the image.
      * @param businessId the id of the business which has the product.
      * @param productId the id of the product which has the images,
+     * @throws ResponseStatusException an HTTP error with code and error message.
      */
     private ProductImage verifyProductImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
         Optional<ProductImage> image = productImageRepository.findProductImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
@@ -491,7 +508,7 @@ public class ImageResource {
     }
 
     /**
-     * This method performs verification before, deleting a product image.
+     * This method performs verification before deleting a product image.
      * In order for an image to be deleted:
      *                                    the supplied businessId must be for an existing business
      *                                    the logged in user must be a business admin or application admin
@@ -534,7 +551,7 @@ public class ImageResource {
     }
 
     /**
-     * This method performs verification before, deleting an user image.
+     * This method performs verification before deleting a user image.
      * In order for an image to be deleted:
      *                                    the userId must be for an existing user
      *                                    the currentUser trying to delete the user must be the "owner" or an application admin
@@ -580,6 +597,7 @@ public class ImageResource {
      *
      * @param userId the id of the user which has images.
      * @param imageId the id of the image.
+     * @throws ResponseStatusException an HTTP error with code and error message.
      */
     private UserImage verifyUserImageId(Integer imageId, Integer userId, User currentUser) throws ResponseStatusException  {
         Optional<UserImage> image = userImageRepository.findImageByIdAndUserId(imageId, userId);
