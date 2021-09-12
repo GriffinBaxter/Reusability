@@ -84,6 +84,7 @@ public class ListingResource {
 
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
 
+
     /**
      * Constructor used to insert mocked repositories for testing.
      *
@@ -904,6 +905,40 @@ public class ListingResource {
     @DeleteMapping("/business/{businessId}/listings/{listingId}")
     @ResponseStatus(value = HttpStatus.OK, reason = "Successfully deleted")
     public void deleteListing(@CookieValue(value = "JSESSIONID", required = false) String sessionToken ,@PathVariable Integer businessId, @PathVariable  Integer listingId) {
+
+        // Checking for authroization --> 401
+        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User retrieved, ID: {}.", user.getId());
+
+        // Checking that the busines id is valid --> 406
+        Optional<Business> business = businessRepository.findBusinessById(businessId);
+        if (business.isEmpty()) {
+            String errorMessage = String.format("Business id (id: %d) provided by user (id: %d) was invalid", businessId, user.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Business id doesn't exist");
+        }
+
+        // Checking the the listing exists --> 406
+        Optional<Listing> listing = listingRepository.findListingByBusinessIdAndId(businessId, listingId);
+        if (listing.isEmpty()) {
+            String errorMessage = String.format("listing id (id: %d) provided by user (id: %d) for Business (id: %d) was invalid", listingId, user.getId(), businessId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Listing id doesn't exist");
+        }
+
+        // Check that the listing is not closed --> 406
+        if (listing.get().getCloses().isAfter(LocalDateTime.now())) {
+            String errorMessage = String.format("listing (id: %d) was provided by user (id: %d) for Business (id: %d) was closed", listingId, user.getId(), businessId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Listing is closed.");
+        }
+
+        // Check that the user has permissions --> 403
+        if (!user.getBusinessesAdministered().contains(business.get().getId()) && !Authorization.isGAAorDGAA(user)) {
+            String errorMessage = String.format("listing (id: %d) was provided by user (id: %d) for Business (id: %d) was closed", listingId, user.getId(), businessId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not a business administrator or a global application administrator");
+        }
 
     }
 
