@@ -1653,4 +1653,249 @@ class ImageResourceIntegrationTests {
         assertThat(response.getErrorMessage()).isEqualTo("Given business does not exist.");
     }
 
+    //------------------------------------ User Image Deletion Endpoint Tests ---------------------------------------
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing user  at
+     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "USER_IMAGE")
+                .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that another existing image is made the primary image when the current primary image is deleted and an OK response is
+     * returned.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndMultipleImagesExist_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        UserImage newUserImage = new UserImage(2, userId, "storage/test2", "test2/test2", false);
+        List<UserImage> userImages = List.of(newUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(Collections.emptyList());
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
+        when(userImageRepository.findUserImageByUserId(userId)).thenReturn(userImages);
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "USER_IMAGE")
+                .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(userImages.get(0).getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when deleting an image of an existing user
+     * at the file path user-images -> IMAGE_UUID but the user does not have administration rights i.e.
+     * not "owner" or application admin.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocationButIncorrectAccessRights_thenReceiveForbiddenStatus() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "USER_IMAGE")
+                .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an existing user
+     * but the image id does not exist.
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndImageWithGivenImageIdDoesNotExistsAtExpectedFilePathLocation_thenReceiveNotAcceptedStatus() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.empty());
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "USER_IMAGE")
+                .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an non-existing user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdDoesNotExist_thenReceiveNotAcceptedStatus() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "USER_IMAGE")
+                .param("userId", "6000"))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when deleting an image with an invalid image type.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenInvalidImageType_thenReceiveBadRequestStatus() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "CAT_IMAGE")
+                .param("userId", "6000"))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid image type");
+    }
+
+    /**
+     * Tests that a UNAUTHORISED status is received when deleting an image when a user is not logged in.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserNotLoggedIn_thenReceiveUnauthorisedStatus() throws Exception {
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId()))
+                .param("uncheckedImageType", "USER_IMAGE")
+                .param("userId", "6000"))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing user at
+     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location. Test specifically for when a user is a DGAA and deleting another user's image.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndLoggedInUserIsDGAAAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "USER_IMAGE")
+                .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing user at
+     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location. Test specifically for when a user is a GAA and deleting another user's image.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndLoggedInUserIsGAAAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "USER_IMAGE")
+                .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
 }
