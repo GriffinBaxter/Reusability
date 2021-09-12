@@ -288,19 +288,13 @@ export default {
         })
     },
 
-    // Sends a delete request to the backend to delete the image of a selected product for a business.
-    deleteProductImage: (businessId, productId, imageId) => {
-        return instance.delete(`/images/${imageId}?uncheckedImageType=PRODUCT_IMAGE&businessId=${businessId}&productId=${productId}`, {
+    // Sends a delete request to the backend to delete the image.
+    deleteImage: (query, imageId) => {
+        return instance.delete(`/images/${imageId}${query}`, {
             withCredentials: true
         })
     },
 
-    // Sends a delete request to the backend to delete the image of a selected user.
-    deleteUserImage: (userId, imageId) => {
-        return instance.delete(`/images/${imageId}?uncheckedImageType=USER_IMAGE&userId=${userId}`, {
-            withCredentials: true
-        })
-    },
 
     // Uploads an image to a given product
     uploadImage: (query, image) => {

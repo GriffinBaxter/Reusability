@@ -207,22 +207,8 @@ export default {
      * to delete it.
      */
     deleteSelectedImage() {
-      switch (this.location) {
-        case "Product":
-          Api.deleteProductImage(this.$props.id, this.currentData.data.id , this.selectedImage)
-              .then( () => { location.reload(); }).catch((error) => { this.handleError(error); })
-          break;
-        case "User":
-          Api.deleteUserImage(this.currentData.data.id, this.selectedImage)
-              .then( () => { location.reload(); }).catch((error) => { this.handleError(error); })
-          break;
-        case "Business":
-          //TODO to be implemented
-          break;
-        default:
-          this.formErrorModalMessage = "Sorry, something went wrong...";
-          break;
-      }
+      Api.deleteImage(this.getQueryForParams(), this.selectedImage)
+          .then( () => { location.reload(); }).catch((error) => { this.handleError(error); })
     },
 
     /**
