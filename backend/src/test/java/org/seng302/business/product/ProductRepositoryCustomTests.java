@@ -10,6 +10,7 @@ import org.seng302.model.Product;
 import org.seng302.model.repository.ProductRepository;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
+import org.seng302.model.repository.ProductRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -30,13 +31,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * FindProductsByBusinessId test class - specifically for testing the pagination and ordering of the
- * findProductsByBusinessId method in ProductRepository.
+ * ProductRepositoryCustomTests test class - specifically for testing the pagination and ordering of the
+ * findAllProductsByBusinessIdAndIncludedFields and method in findAllProductsByBusinessIdAndIncludedFieldsAndBarcode.
  */
 @DataJpaTest
 @ContextConfiguration(classes = {Main.class})
 @ActiveProfiles("test")
-class FindProductsByBusinessIdTests {
+class ProductRepositoryCustomTests {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -44,11 +45,15 @@ class FindProductsByBusinessIdTests {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private ProductRepositoryCustom productRepositoryCustom;
+
     private Address address;
 
     private User user;
 
     private Business business;
+    private Business business2;
     private Integer businessId;
 
     private Product product1;
@@ -92,6 +97,7 @@ class FindProductsByBusinessIdTests {
         );
         user = entityManager.persist(user);
         entityManager.flush();
+
         business = new Business(
                 user.getId(),
                 "example name",
@@ -105,6 +111,17 @@ class FindProductsByBusinessIdTests {
         businessId = business.getId();
         entityManager.flush();
 
+        business2 = new Business(
+                user.getId(),
+                "Business name",
+                "Desc.",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.now(),
+                user
+        );
+        business2 = entityManager.persist(business2);
+        entityManager.flush();
 
         product1 = new Product(
                 "APPLE",
@@ -113,7 +130,7 @@ class FindProductsByBusinessIdTests {
                 "A Description",
                 "Manufacturer",
                 21.00,
-                ""
+                "9300675024235"
         );
         product1.setCreated((LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0, 0))));
 
@@ -124,7 +141,7 @@ class FindProductsByBusinessIdTests {
                 "Description",
                 "A Manufacturer",
                 20.00,
-                ""
+                "9415767624207"
         );
         product2.setCreated((LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0, 0))));
 
@@ -135,7 +152,7 @@ class FindProductsByBusinessIdTests {
                 "Description",
                 "A Manufacturer",
                 null,
-                ""
+                "9310140001531"
         );
         product3.setCreated((LocalDateTime.of(LocalDate.of(2021, 1, 1), LocalTime.of(0, 0))));
 
@@ -146,7 +163,7 @@ class FindProductsByBusinessIdTests {
                 "Brand new Description",
                 "A New Manufacturer",
                 10.00,
-                ""
+                "9415767624207"
         );
         product4.setCreated(LocalDateTime.of(LocalDate.of(2021, 2, 1), LocalTime.of(0, 0)));
 
@@ -168,6 +185,8 @@ class FindProductsByBusinessIdTests {
 
         entityManager.flush();
     }
+
+    // --------------------------------- findAllProductsByBusinessIdAndIncludedFields ----------------------------------
 
     /**
      * Tests that the findProductsByBusinessId functionality will order products by product ID
@@ -672,6 +691,100 @@ class FindProductsByBusinessIdTests {
         assertThat(productPage.getSize()).isEqualTo(2);
         assertThat(productPage.getContent().get(0).getProductId()).isEqualTo("APPLE");
         assertThat(productPage.getContent().get(1).getProductId()).isEqualTo("DUCT");
+    }
+
+    // -------------------------- findAllProductsByBusinessIdAndIncludedFieldsAndBarcode -------------------------------
+
+    /**
+     * Tests the findAllProductsByBusinessIdAndIncludedFieldsAndBarcode method returns the correct Product
+     */
+    @Test
+    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcode_ReturnListing() {
+        // given
+        List<String> search = List.of("");
+        List<String> fields = List.of("");
+        String barcode = "9300675024235";
+        int pageNo = 0;
+        int pageSize = 2;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productPage = productRepositoryCustom.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
+
+        // then
+        assertThat(productPage.getContent().size()).isEqualTo(1);
+        assertThat(productPage.getContent().get(0).getBarcode()).isEqualTo("9300675024235");
+    }
+
+    /**
+     * Tests the findAllProductsByBusinessIdAndIncludedFieldsAndBarcode method returns an empty list if barcode doesn't
+     * match the barcode of a product
+     */
+    @Test
+    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withInvalidBarcode_ReturnNoListing() {
+        // given
+        List<String> search = List.of("");
+        List<String> fields = List.of("");
+        String barcode = "111111111111111";
+        int pageNo = 1;
+        int pageSize = 2;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productPage = productRepositoryCustom.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
+
+        // then
+        assertThat(productPage.getContent().size()).isZero();
+    }
+
+    /**
+     * Tests findAllProductsByBusinessIdAndIncludedFieldsAndBarcode method returns all products with the requested barcode
+     */
+    @Test
+    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcode_ReturnMultipleListings() {
+        // given
+        List<String> search = List.of("");
+        List<String> fields = List.of("");
+        String barcode = "9300675024235";
+        int pageNo = 0;
+        int pageSize = 2;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productPage = productRepositoryCustom.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
+
+        // then
+        assertThat(productPage.getContent().size()).isGreaterThan(1);
+        for (int i = 0; i < productPage.getContent().size(); i++) {
+            assertThat(productPage.getContent().get(0).getBarcode()).isEqualTo("9300675024235");
+        }
+    }
+
+    /**
+     * Tests findAllProductsByBusinessIdAndIncludedFieldsAndBarcode method only returns values for the current business and barcode
+     */
+    @Test
+    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcodeForTwoBusinesses_ReturnBusinessListing() {
+        // given
+        List<String> search = List.of("");
+        List<String> fields = List.of("");
+        String barcode = "9415767624207";
+        int pageNo = 0;
+        int pageSize = 5;
+        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Product> productPage = productRepositoryCustom.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
+
+        // then
+        assertThat(productPage.getContent().size()).isNotZero();
+        for (int i = 0; i < productPage.getContent().size(); i++) {
+            assertThat(productPage.getContent().get(0).getBarcode()).isEqualTo("9415767624207");
+        }
     }
 
 }

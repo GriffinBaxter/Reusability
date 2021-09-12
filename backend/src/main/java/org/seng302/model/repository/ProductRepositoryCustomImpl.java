@@ -19,9 +19,6 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     @Autowired
     private EntityManager entityManager;
 
-    @Autowired
-    private CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-
     /**
      * Search for products for a business by selected fields
      * @param search list of values to search for
@@ -33,6 +30,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     @Override
     public Page<Product> findAllProductsByBusinessIdAndIncludedFields(List<String> search, List<String> fields, Integer businessId, Pageable pageable) {
 
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = criteriaBuilder.createQuery(Product.class);
 
         Root<Product> product = query.from(Product.class);
@@ -86,6 +84,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                                                                                 Pageable pageable,
                                                                                 String barcode) {
 
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = criteriaBuilder.createQuery(Product.class);
 
         Root<Product> product = query.from(Product.class);
